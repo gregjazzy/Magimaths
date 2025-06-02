@@ -1,0 +1,40 @@
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Exemple concret pleine largeur */}
+          <div className="mt-8 bg-blue-50 p-6 rounded-xl border-2 border-blue-300">
+            <h4 className="text-xl font-bold text-blue-800 mb-4 text-center">📝 Exemple : f(x) = 2(x - 1)² - 3</h4>
+            <div className="bg-white rounded-lg overflow-hidden border-2 border-blue-400">
+              <table className="w-full border-collapse text-lg">
+                <thead>
+                  <tr>
+                    <th className="p-4 bg-blue-800 text-white font-bold">x</th>
+                    <th className="p-4 bg-blue-100 text-blue-800 font-bold">-∞</th>
+                    <th className="p-4 bg-yellow-200 text-yellow-900 font-bold">1</th>
+                    <th className="p-4 bg-blue-100 text-blue-800 font-bold">+∞</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td className="p-4 bg-blue-800 text-white font-bold">f(x)</td>
+                    <td className="p-6 text-center bg-red-50">
+                      <div className="text-3xl text-red-500">↘</div>
+                      <div className="text-red-600">décroît</div>
+                    </td>
+                    <td className="p-6 text-center bg-green-100">
+                      <div className="text-sm text-green-700 font-bold">MIN</div>
+                      <div className="text-2xl font-bold text-green-800">-3</div>
+                    </td>
+                    <td className="p-6 text-center bg-green-50">
+                      <div className="text-3xl text-green-500">↗</div>
+                      <div className="text-green-600">croît</div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div className="text-center mt-7"> 
