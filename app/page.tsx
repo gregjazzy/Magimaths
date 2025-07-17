@@ -31,7 +31,7 @@ export default function HomePage() {
   const chaptersGrouped = getChaptersGroupedByClass()
 
   const renderClassOverview = () => (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
       {availableClasses.map((classLevel) => {
         const config = classConfig[classLevel]
         const classChapters = chaptersGrouped[classLevel] || []
@@ -41,7 +41,7 @@ export default function HomePage() {
           <Link
             key={classLevel}
             href={`/${classLevel.toLowerCase()}`}
-            className="group relative bg-white rounded-3xl shadow-xl border border-gray-100 hover:border-gray-200 p-6 hover:shadow-2xl transition-all duration-500 cursor-pointer block transform hover:scale-110 hover:-translate-y-3 overflow-hidden backdrop-blur-sm"
+            className="group relative bg-white rounded-2xl sm:rounded-3xl shadow-xl border border-gray-100 hover:border-gray-200 p-4 sm:p-6 hover:shadow-2xl transition-all duration-500 cursor-pointer block transform hover:scale-105 sm:hover:scale-110 hover:-translate-y-2 sm:hover:-translate-y-3 overflow-hidden backdrop-blur-sm"
           >
             {/* Effet de fond magique */}
             <div 
@@ -64,36 +64,36 @@ export default function HomePage() {
             </div>
             
             <div className="relative z-10">
-            <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center space-x-4">
+            <div className="flex items-center justify-between mb-3 sm:mb-4">
+                <div className="flex items-center space-x-3 sm:space-x-4">
                   <div 
-                    className="w-14 h-14 rounded-2xl flex items-center justify-center text-white text-2xl font-bold shadow-xl transform group-hover:scale-125 group-hover:rotate-12 transition-all duration-300"
+                    className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl flex items-center justify-center text-white text-xl sm:text-2xl font-bold shadow-xl transform group-hover:scale-125 group-hover:rotate-12 transition-all duration-300"
                     style={{ background: `linear-gradient(135deg, ${config.color}, ${config.color}CC, ${config.color}AA)` }}
                   >
                     {config.icon}
                   </div>
                 <div>
-                    <h3 className="text-xl font-bold text-gray-900 group-hover:text-gray-700 transition-colors">{config.name}</h3>
-                    <p className="text-sm text-gray-500 flex items-center gap-1">
-                      <span className="w-2 h-2 rounded-full bg-green-400"></span>
+                    <h3 className="text-lg sm:text-xl font-bold text-gray-900 group-hover:text-gray-700 transition-colors">{config.name}</h3>
+                    <p className="text-xs sm:text-sm text-gray-500 flex items-center gap-1">
+                      <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-green-400"></span>
                       {classChapters.length} chapitres
                     </p>
                   </div>
                 </div>
-                <ChevronRight className="w-6 h-6 text-gray-400 group-hover:text-gray-600 group-hover:translate-x-1 transition-all duration-300" />
+                <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6 text-gray-400 group-hover:text-gray-600 group-hover:translate-x-1 transition-all duration-300" />
             </div>
             
-              <div className="space-y-3 pt-4 border-t border-gray-100">
-              <div className="flex items-center justify-between text-sm">
+              <div className="space-y-2 sm:space-y-3 pt-3 sm:pt-4 border-t border-gray-100">
+              <div className="flex items-center justify-between text-xs sm:text-sm">
                   <span className="text-gray-600 flex items-center gap-1">
-                    <Trophy className="w-4 h-4" />
+                    <Trophy className="w-3 h-3 sm:w-4 sm:h-4" />
                     XP Total
                   </span>
                   <span className="font-bold text-blue-600">{totalXP}</span>
               </div>
-              <div className="flex items-center justify-between text-sm">
+              <div className="flex items-center justify-between text-xs sm:text-sm">
                   <span className="text-gray-600 flex items-center gap-1">
-                    <Clock className="w-4 h-4" />
+                    <Clock className="w-3 h-3 sm:w-4 sm:h-4" />
                     Durée
                   </span>
                   <span className="font-bold text-purple-600">{Math.floor(classChapters.reduce((sum, ch) => sum + ch.estimatedTime, 0) / 60)}h</span>
@@ -224,12 +224,12 @@ export default function HomePage() {
         <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-purple-500/5 to-pink-500/5 animate-pulse"></div>
         
         {/* Constellation de particules magiques */}
-        <div className="absolute top-20 left-10 w-64 h-64 bg-blue-400/30 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute top-40 right-20 w-48 h-48 bg-purple-400/30 rounded-full blur-3xl animate-pulse" style={{animationDelay: '2s'}}></div>
-        <div className="absolute bottom-20 left-20 w-56 h-56 bg-pink-400/30 rounded-full blur-3xl animate-pulse" style={{animationDelay: '4s'}}></div>
-        <div className="absolute bottom-40 right-40 w-32 h-32 bg-indigo-400/30 rounded-full blur-3xl animate-pulse" style={{animationDelay: '1s'}}></div>
-        <div className="absolute top-1/2 left-1/4 w-20 h-20 bg-yellow-400/25 rounded-full blur-2xl animate-pulse" style={{animationDelay: '3s'}}></div>
-        <div className="absolute top-1/3 right-1/3 w-28 h-28 bg-emerald-400/25 rounded-full blur-2xl animate-pulse" style={{animationDelay: '5s'}}></div>
+        <div className="absolute top-20 left-5 sm:left-10 w-32 sm:w-48 md:w-64 h-32 sm:h-48 md:h-64 bg-blue-400/30 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute top-40 right-5 sm:right-10 md:right-20 w-24 sm:w-36 md:w-48 h-24 sm:h-36 md:h-48 bg-purple-400/30 rounded-full blur-3xl animate-pulse" style={{animationDelay: '2s'}}></div>
+        <div className="absolute bottom-20 left-5 sm:left-10 md:left-20 w-28 sm:w-42 md:w-56 h-28 sm:h-42 md:h-56 bg-pink-400/30 rounded-full blur-3xl animate-pulse" style={{animationDelay: '4s'}}></div>
+        <div className="absolute bottom-40 right-10 sm:right-20 md:right-40 w-16 sm:w-24 md:w-32 h-16 sm:h-24 md:h-32 bg-indigo-400/30 rounded-full blur-3xl animate-pulse" style={{animationDelay: '1s'}}></div>
+        <div className="absolute top-1/2 left-1/4 w-10 sm:w-16 md:w-20 h-10 sm:h-16 md:h-20 bg-yellow-400/25 rounded-full blur-2xl animate-pulse" style={{animationDelay: '3s'}}></div>
+        <div className="absolute top-1/3 right-1/3 w-14 sm:w-20 md:w-28 h-14 sm:h-20 md:h-28 bg-emerald-400/25 rounded-full blur-2xl animate-pulse" style={{animationDelay: '5s'}}></div>
         
         {/* Étoiles scintillantes */}
         <div className="absolute top-32 left-32 w-2 h-2 bg-yellow-400 rounded-full animate-ping" style={{animationDelay: '1s'}}></div>
@@ -258,19 +258,19 @@ export default function HomePage() {
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 rounded-full blur-xl opacity-30 group-hover:opacity-50 transition-opacity duration-500 scale-125"></div>
                 
                 {/* Logo principal */}
-                <div className="relative w-20 h-20 bg-gradient-to-br from-blue-600 via-purple-600 to-pink-600 rounded-3xl flex items-center justify-center text-white text-3xl font-black shadow-2xl transform rotate-12 group-hover:rotate-0 transition-all duration-700 group-hover:scale-125">
+                <div className="relative w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-blue-600 via-purple-600 to-pink-600 rounded-2xl sm:rounded-3xl flex items-center justify-center text-white text-2xl sm:text-3xl font-black shadow-2xl transform rotate-12 group-hover:rotate-0 transition-all duration-700 group-hover:scale-125">
                   ∫
                   {/* Étincelles internes */}
-                  <div className="absolute inset-2 border border-white/30 rounded-2xl animate-pulse"></div>
+                  <div className="absolute inset-2 border border-white/30 rounded-xl sm:rounded-2xl animate-pulse"></div>
                 </div>
                 
                 {/* Particules orbitales */}
-                <div className="absolute -top-3 -right-3 w-6 h-6 bg-gradient-to-r from-yellow-400 to-orange-400 rounded-full flex items-center justify-center shadow-xl animate-bounce">
-                  <Sparkles className="w-4 h-4 text-white" />
+                <div className="absolute -top-2 -right-2 sm:-top-3 sm:-right-3 w-5 h-5 sm:w-6 sm:h-6 bg-gradient-to-r from-yellow-400 to-orange-400 rounded-full flex items-center justify-center shadow-xl animate-bounce">
+                  <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
                 </div>
-                <div className="absolute -bottom-2 -left-2 w-4 h-4 bg-gradient-to-r from-emerald-400 to-teal-400 rounded-full animate-pulse shadow-lg"></div>
-                <div className="absolute top-1 right-1 w-3 h-3 bg-gradient-to-r from-pink-400 to-rose-400 rounded-full animate-ping"></div>
-                <div className="absolute bottom-1 left-1 w-2 h-2 bg-gradient-to-r from-cyan-400 to-blue-400 rounded-full animate-bounce" style={{animationDelay: '1s'}}></div>
+                <div className="absolute -bottom-1 -left-1 sm:-bottom-2 sm:-left-2 w-3 h-3 sm:w-4 sm:h-4 bg-gradient-to-r from-emerald-400 to-teal-400 rounded-full animate-pulse shadow-lg"></div>
+                <div className="absolute top-1 right-1 w-2 h-2 sm:w-3 sm:h-3 bg-gradient-to-r from-pink-400 to-rose-400 rounded-full animate-ping"></div>
+                <div className="absolute bottom-1 left-1 w-1.5 h-1.5 sm:w-2 sm:h-2 bg-gradient-to-r from-cyan-400 to-blue-400 rounded-full animate-bounce" style={{animationDelay: '1s'}}></div>
                 
                 {/* Rayons de lumière */}
                 <div className="absolute top-0 left-1/2 w-px h-6 bg-gradient-to-t from-yellow-400 to-transparent transform -translate-x-1/2 -translate-y-full animate-pulse"></div>
@@ -282,14 +282,14 @@ export default function HomePage() {
             
             {/* Titre holographique */}
             <div className="relative mb-2 pb-2">
-              <h1 className="text-6xl font-black bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent tracking-tight relative leading-tight pb-1">
+              <h1 className="text-4xl sm:text-6xl font-black bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent tracking-tight relative leading-tight pb-1">
                 MagiMaths ✨
                 {/* Effet holographique */}
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 via-purple-600/20 to-pink-600/20 blur-lg -z-10 animate-pulse"></div>
               </h1>
               {/* Reflet sous le titre */}
               <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-1">
-                <div className="text-3xl font-black bg-gradient-to-t from-transparent via-gray-300/50 to-gray-400/80 bg-clip-text text-transparent tracking-tight opacity-40">
+                <div className="text-2xl sm:text-3xl font-black bg-gradient-to-t from-transparent via-gray-300/50 to-gray-400/80 bg-clip-text text-transparent tracking-tight opacity-40">
                   MagiMaths ✨
                 </div>
               </div>
@@ -333,7 +333,7 @@ export default function HomePage() {
 
 
       {/* Main content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-6 sm:py-8">
         {!selectedClass && renderClassOverview()}
         {selectedClass && renderClassDetail()}
       </div>

@@ -23,19 +23,19 @@ export default function PremierePage() {
 
       {/* Header moderne */}
       <div className="relative z-10 bg-white/80 backdrop-blur-sm shadow-sm border-b border-white/20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-6">
-              <Link href="/" className="p-2 hover:bg-white/60 rounded-lg transition-colors">
-                <ChevronLeft className="w-6 h-6 text-gray-600" />
+            <div className="flex items-center space-x-3 sm:space-x-4 lg:space-x-6">
+              <Link href="/" className="p-1.5 sm:p-2 hover:bg-white/60 rounded-lg transition-colors">
+                <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6 text-gray-600" />
               </Link>
-              <div className="flex items-center space-x-3">
-                <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-green-500 rounded-2xl flex items-center justify-center text-white text-2xl font-bold shadow-lg">
+              <div className="flex items-center space-x-2 sm:space-x-3">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-emerald-500 to-green-500 rounded-xl sm:rounded-2xl flex items-center justify-center text-white text-lg sm:text-2xl font-bold shadow-lg">
                   {config.icon}
                 </div>
                 <div>
-                  <h1 className="text-3xl font-bold text-gray-900">{config.name}</h1>
-                  <p className="text-gray-600 mt-1">Découvrez les mathématiques de 1ère</p>
+                  <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">{config.name}</h1>
+                  <p className="text-gray-600 mt-1 text-sm sm:text-base">Découvrez les mathématiques de 1ère</p>
                 </div>
               </div>
             </div>
