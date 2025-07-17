@@ -1,7 +1,8 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import 'katex/dist/katex.min.css';
 
 interface MathFormulaProps {
   formula: string;
@@ -10,6 +11,7 @@ interface MathFormulaProps {
   variables?: { [key: string]: number };
   onVariableChange?: (variable: string, value: number) => void;
   className?: string;
+  inline?: boolean;
 }
 
 export default function MathFormula({ 
@@ -18,10 +20,19 @@ export default function MathFormula({
   interactive = false,
   variables = {},
   onVariableChange,
-  className = ''
+  className = '',
+  inline = false
 }: MathFormulaProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [showExplanation, setShowExplanation] = useState(false);
+  const [katex, setKatex] = useState<any>(null);
+
+  useEffect(() => {
+    // Import dynamique de KaTeX côté client
+    import('katex').then((katexModule) => {
+      setKatex(katexModule.default);
+    });
+  }, []);
 
   const renderFormula = () => {
     let displayFormula = formula;
@@ -35,8 +46,37 @@ export default function MathFormula({
       );
     });
 
-    return displayFormula;
+    if (!katex) {
+      // Fallback pendant le chargement
+      return <span className="font-mono text-gray-600">{displayFormula}</span>;
+    }
+
+    try {
+      const html = katex.renderToString(displayFormula, {
+        throwOnError: false,
+        displayMode: !inline,
+        output: 'html'
+      });
+
+      return (
+        <span 
+          dangerouslySetInnerHTML={{ __html: html }}
+          className="katex-formula"
+        />
+      );
+    } catch (error) {
+      console.warn('Erreur de rendu KaTeX:', error);
+      return <span className="font-mono text-gray-600">{displayFormula}</span>;
+    }
   };
+
+  if (inline) {
+    return (
+      <span className={`inline-math ${className}`}>
+        {renderFormula()}
+      </span>
+    );
+  }
 
   return (
     <div className={`relative ${className}`}>
@@ -53,9 +93,8 @@ export default function MathFormula({
         onClick={() => interactive && setShowExplanation(!showExplanation)}
       >
         <motion.div 
-          className="text-2xl md:text-3xl font-math text-gray-800"
+          className="text-xl md:text-2xl text-gray-800"
           animate={{ 
-            color: isHovered ? '#3b82f6' : '#1f2937',
             scale: isHovered ? 1.05 : 1
           }}
           transition={{ duration: 0.2 }}
@@ -86,7 +125,7 @@ export default function MathFormula({
         >
           {Object.keys(variables).map(variable => (
             <div key={variable} className="flex items-center space-x-3">
-              <span className="font-math font-semibold text-gray-700 w-8">
+              <span className="font-semibold text-gray-700 w-8">
                 {variable} =
               </span>
               <input
@@ -118,7 +157,15 @@ export default function MathFormula({
         </motion.div>
       )}
 
-      <style jsx>{`
+      <style jsx global>{`
+        .katex-formula .katex {
+          font-size: 1.2em;
+        }
+        
+        .katex-formula .katex-display {
+          margin: 0;
+        }
+        
         .slider::-webkit-slider-thumb {
           appearance: none;
           height: 20px;

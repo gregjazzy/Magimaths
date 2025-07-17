@@ -29,11 +29,15 @@ export interface UserXP {
   nextLevelXP: number;
 }
 
+// Types pour les niveaux de classe
+export type ClassLevel = 'CE1' | 'CE2' | 'CM1' | 'CM2' | '6eme' | '5eme' | '4eme' | '3eme' | '2nde' | '1ere' | 'terminale';
+
 // Types pour les chapitres et cours
 export interface Chapter {
   id: string;
   title: string;
   description: string;
+  classLevel: ClassLevel;
   category: ChapterCategory;
   difficulty: DifficultyLevel;
   estimatedTime: number; // en minutes
@@ -44,9 +48,10 @@ export interface Chapter {
   exercises: Exercise[];
   isLocked: boolean;
   order: number;
+  parentChapter?: string; // Pour organiser les sous-chapitres
 }
 
-export type ChapterCategory = 'algebra' | 'analysis' | 'geometry' | 'probability';
+export type ChapterCategory = 'algebra' | 'analysis' | 'geometry' | 'probability' | 'numeracy' | 'measurement' | 'statistics' | 'programming' | 'data' | 'functions';
 
 export type DifficultyLevel = 'beginner' | 'intermediate' | 'advanced';
 

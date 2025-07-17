@@ -1,0 +1,21 @@
+# Fichiers protégés - Équations du second degré
+# Ces fichiers ne doivent PAS être modifiés
+
+# Pages principales
+app/chapitre/equations-second-degre/page.tsx
+app/chapitre/equations-second-degre-forme-canonique/page.tsx
+app/chapitre/equations-second-degre-variations/page.tsx
+app/chapitre/equations-second-degre-resolution/page.tsx
+app/chapitre/equations-second-degre-techniques-avancees/page.tsx
+app/chapitre/equations-second-degre-tableaux-signes/page.tsx
+app/chapitre/equations-second-degre-parametres/page.tsx
+app/chapitre/equations-second-degre-equations-cube/page.tsx
+
+# Composants
+app/chapitre/equations-second-degre/components/GraphSection.tsx
+app/chapitre/equations-second-degre/components/QuizSection.tsx
+
+# Fichiers de sauvegarde (ne pas supprimer)
+app/chapitre/equations-second-degre-forme-canonique/page.tsx.backup
+app/chapitre/equations-second-degre-resolution/page.tsx.backup
+app/chapitre/equations-second-degre-variations/page.tsx.backup 

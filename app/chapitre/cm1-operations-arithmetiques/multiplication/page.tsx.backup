@@ -1,0 +1,1417 @@
+'use client';
+
+import { useState } from 'react';
+import Link from 'next/link';
+import { ArrowLeft, CheckCircle, XCircle, RefreshCw, Trophy, Target, Eye, RotateCcw } from 'lucide-react';
+
+export default function MultiplicationPage() {
+  const [currentExercise, setCurrentExercise] = useState(0);
+  const [userAnswer, setUserAnswer] = useState('');
+  const [showAnswer, setShowAnswer] = useState(false);
+  const [isCorrect, setIsCorrect] = useState(false);
+  const [score, setScore] = useState(0);
+  const [attempts, setAttempts] = useState(0);
+  const [showDemo, setShowDemo] = useState(true);
+  const [activeDemo, setActiveDemo] = useState('multiplication-2x2');
+  const [animationStep, setAnimationStep] = useState(0);
+
+  const exercises = [
+    {
+      id: 1,
+      type: 'multiplication',
+      operation: '23 × 45',
+      number1: 23,
+      number2: 45,
+      answer: 1035,
+      difficulty: 'Moyen',
+      explanation: 'Multiplication posée : 23 × 45 = 1035',
+      steps: [
+        '3 × 5 = 15 → je pose 5, retenue 1',
+        '2 × 5 = 10, + 1 (retenue) = 11 → je pose 1, retenue 1',
+        'Je pose la retenue 1 → premier résultat partiel : 115',
+        '3 × 4 = 12 → je pose 2, retenue 1',
+        '2 × 4 = 8, + 1 (retenue) = 9 → je pose 9',
+        'Je décale d\'un rang → deuxième résultat partiel : 920',
+        '115 + 920 = 1035'
+      ]
+    },
+    {
+      id: 2,
+      type: 'multiplication',
+      operation: '56 × 78',
+      number1: 56,
+      number2: 78,
+      answer: 4368,
+      difficulty: 'Moyen',
+      explanation: 'Multiplication posée : 56 × 78 = 4368',
+      steps: [
+        '6 × 8 = 48 → je pose 8, retenue 4',
+        '5 × 8 = 40, + 4 (retenue) = 44 → je pose 4, retenue 4',
+        'Je pose la retenue 4 → premier résultat partiel : 448',
+        '6 × 7 = 42 → je pose 2, retenue 4',
+        '5 × 7 = 35, + 4 (retenue) = 39 → je pose 9, retenue 3',
+        'Je pose la retenue 3 → je décale d\'un rang → deuxième résultat partiel : 3920',
+        '448 + 3920 = 4368'
+      ]
+    },
+    {
+      id: 3,
+      type: 'multiplication',
+      operation: '123 × 45',
+      number1: 123,
+      number2: 45,
+      answer: 5535,
+      difficulty: 'Difficile',
+      explanation: 'Multiplication posée : 123 × 45 = 5535',
+      steps: [
+        '3 × 5 = 15 → je pose 5, retenue 1',
+        '2 × 5 = 10, + 1 (retenue) = 11 → je pose 1, retenue 1',
+        '1 × 5 = 5, + 1 (retenue) = 6 → je pose 6',
+        'Premier résultat partiel : 615',
+        '3 × 4 = 12 → je pose 2, retenue 1',
+        '2 × 4 = 8, + 1 (retenue) = 9 → je pose 9',
+        '1 × 4 = 4 → je pose 4',
+        'Je décale d\'un rang → deuxième résultat partiel : 4920',
+        '615 + 4920 = 5535'
+      ]
+    },
+    {
+      id: 4,
+      type: 'multiplication',
+      operation: '234 × 56',
+      number1: 234,
+      number2: 56,
+      answer: 13104,
+      difficulty: 'Difficile',
+      explanation: 'Multiplication posée : 234 × 56 = 13104',
+      steps: [
+        '4 × 6 = 24 → je pose 4, retenue 2',
+        '3 × 6 = 18, + 2 (retenue) = 20 → je pose 0, retenue 2',
+        '2 × 6 = 12, + 2 (retenue) = 14 → je pose 4, retenue 1',
+        'Je pose la retenue 1 → premier résultat partiel : 1404',
+        '4 × 5 = 20 → je pose 0, retenue 2',
+        '3 × 5 = 15, + 2 (retenue) = 17 → je pose 7, retenue 1',
+        '2 × 5 = 10, + 1 (retenue) = 11 → je pose 1, retenue 1',
+        'Je pose la retenue 1 → je décale d\'un rang → deuxième résultat partiel : 11700',
+        '1404 + 11700 = 13104'
+      ]
+    },
+    {
+      id: 5,
+      type: 'multiplication',
+      operation: '12,5 × 3,4',
+      number1: 12.5,
+      number2: 3.4,
+      answer: 42.5,
+      difficulty: 'Difficile',
+      explanation: 'Multiplication décimale : 12,5 × 3,4 = 42,50',
+      steps: [
+        'Je transforme : 125 × 34 (j\'ignore les virgules)',
+        '5 × 4 = 20 → je pose 0, retenue 2',
+        '2 × 4 = 8, + 2 (retenue) = 10 → je pose 0, retenue 1',
+        '1 × 4 = 4, + 1 (retenue) = 5 → je pose 5',
+        'Premier résultat partiel : 500',
+        'Je décale d\'un rang et multiplie par 3 → deuxième résultat partiel : 3750',
+        '500 + 3750 = 4250',
+        'Je place la virgule : 1 + 1 = 2 chiffres après → 42,50'
+      ]
+    }
+  ];
+
+  const getCurrentExercise = () => exercises[currentExercise];
+
+  const nextStep = () => {
+    const maxSteps = getMaxSteps();
+    if (animationStep < maxSteps - 1) {
+      setAnimationStep(animationStep + 1);
+    }
+  };
+
+  const prevStep = () => {
+    if (animationStep > 0) {
+      setAnimationStep(animationStep - 1);
+    }
+  };
+
+  const resetDemo = () => {
+    setAnimationStep(0);
+  };
+
+  const getMaxSteps = () => {
+    if (activeDemo === 'multiplication-2x2') return 8;
+    if (activeDemo === 'multiplication-3x2') return 10;
+    if (activeDemo === 'multiplication-3x3') return 16; // Beaucoup plus d'étapes pour détailler
+    if (activeDemo === 'multiplication-decimaux') return 8;
+    return 8;
+  };
+
+  const checkAnswer = () => {
+    const correct = parseInt(userAnswer) === getCurrentExercise().answer;
+    setIsCorrect(correct);
+    setShowAnswer(true);
+    setAttempts(attempts + 1);
+    if (correct) {
+      setScore(score + 1);
+    }
+  };
+
+  const nextExercise = () => {
+    if (currentExercise < exercises.length - 1) {
+      setCurrentExercise(currentExercise + 1);
+    }
+    setUserAnswer('');
+    setShowAnswer(false);
+    setIsCorrect(false);
+  };
+
+  const resetExercise = () => {
+    setUserAnswer('');
+    setShowAnswer(false);
+    setIsCorrect(false);
+  };
+
+  const Multiplication2x2 = () => {
+    // 23 × 45 = 1035
+    const steps = [
+      'Je place les nombres en colonne, alignés à droite',
+      '3 × 5 = 15',
+      '2 × 5 = 10',
+      'Premier résultat partiel : 115',
+      '3 × 4 = 12',
+      '2 × 4 = 8',
+      'Deuxième résultat partiel : 920',
+      'Addition finale : 115 + 920 = 1035'
+    ];
+
+    const getHighlightClass = (position: string, step: number): string => {
+      let baseClass = 'w-10 text-center transition-all duration-500 ';
+      
+      // Illumination des chiffres selon l'étape
+      if (step === 1 && (position === '3' || position === '5')) {
+        return baseClass + 'bg-yellow-300 text-gray-900 shadow-lg scale-110 animate-pulse';
+      }
+      if (step === 2 && (position === '2' || position === '5')) {
+        return baseClass + 'bg-yellow-300 text-gray-900 shadow-lg scale-110 animate-pulse';
+      }
+      if (step === 4 && (position === '3' || position === '4')) {
+        return baseClass + 'bg-yellow-300 text-gray-900 shadow-lg scale-110 animate-pulse';
+      }
+      if (step === 5 && (position === '2' || position === '4')) {
+        return baseClass + 'bg-yellow-300 text-gray-900 shadow-lg scale-110 animate-pulse';
+      }
+      
+      return baseClass + 'text-gray-900';
+    };
+
+    return (
+      <div className="space-y-4">
+        <div className="bg-blue-50 p-6 rounded-lg">
+          <h4 className="font-bold text-blue-900 mb-4">
+            Multiplication 2×2 chiffres : 23 × 45
+          </h4>
+          
+          <div className="flex items-center gap-8">
+            <div className="text-center">
+              <div className="font-mono text-2xl space-y-2">
+                {/* Grille avec alignement parfait */}
+                <div className="inline-block">
+                  {/* Premier nombre avec retenues - aligné à droite */}
+                  <div className="flex relative">
+                    <span className="w-10"></span>
+                    {/* Retenue pour 2×5 */}
+                    <span className={`absolute -top-4 left-10 text-xs text-red-600 font-bold ${animationStep >= 2 ? 'opacity-100' : 'opacity-0'}`}>
+                      {animationStep >= 2 ? '¹' : ''}
+                    </span>
+                    <span className={getHighlightClass('2', animationStep)}>
+                      2
+                    </span>
+                    <span className={getHighlightClass('3', animationStep)}>
+                      3
+                    </span>
+                  </div>
+                  
+                  {/* Symbole multiplication et second nombre - aligné à droite */}
+                  <div className="flex relative">
+                    <span className="w-10 text-center text-gray-900">×</span>
+                    {/* Retenue pour 2×4 */}
+                    <span className={`absolute -top-4 left-10 text-xs text-red-600 font-bold ${animationStep >= 5 ? 'opacity-100' : 'opacity-0'}`}>
+                      {animationStep >= 5 ? '¹' : ''}
+                    </span>
+                    <span className={getHighlightClass('4', animationStep)}>
+                      4
+                    </span>
+                    <span className={getHighlightClass('5', animationStep)}>
+                      5
+                    </span>
+                  </div>
+                  
+                  <div className="border-t-2 border-gray-400 my-1"></div>
+                  
+                  {/* Premier résultat partiel avec construction progressive - aligné à droite */}
+                  <div className="flex">
+                    <span className={`w-10 text-center transition-all duration-500 ${animationStep >= 3 ? 'bg-green-200 text-gray-900' : 'text-gray-900'}`}>
+                      {animationStep >= 3 ? '1' : ''}
+                    </span>
+                    <span className={`w-10 text-center transition-all duration-500 ${animationStep >= 2 ? 'bg-green-200 text-gray-900' : 'text-gray-900'}`}>
+                      {animationStep >= 2 ? '1' : ''}
+                    </span>
+                    <span className={`w-10 text-center transition-all duration-500 ${animationStep >= 1 ? 'bg-green-200 text-gray-900' : 'text-gray-900'}`}>
+                      {animationStep >= 1 ? '5' : ''}
+                    </span>
+                  </div>
+                  
+                  {/* Deuxième résultat partiel avec construction progressive - aligné à droite */}
+                  <div className="flex">
+                    <span className="w-10 text-center text-gray-900">+</span>
+                    <span className={`w-10 text-center transition-all duration-500 ${animationStep >= 6 ? 'bg-green-200 text-gray-900' : 'text-gray-900'}`}>
+                      {animationStep >= 6 ? '9' : ''}
+                    </span>
+                    <span className={`w-10 text-center transition-all duration-500 ${animationStep >= 5 ? 'bg-green-200 text-gray-900' : 'text-gray-900'}`}>
+                      {animationStep >= 5 ? '2' : ''}
+                    </span>
+                    <span className={`w-10 text-center transition-all duration-500 ${animationStep >= 6 ? 'bg-green-200 text-gray-900' : 'text-gray-900'}`}>
+                      {animationStep >= 6 ? '0' : ''}
+                    </span>
+                  </div>
+                  
+                  <div className="border-t-2 border-gray-400 my-1"></div>
+                  
+                  {/* Résultat final avec construction progressive - aligné à droite */}
+                  <div className="flex">
+                    <span className="w-10 text-center text-gray-900">=</span>
+                    <span className={`w-10 text-center transition-all duration-500 ${animationStep >= 7 ? 'bg-purple-200 text-gray-900 font-bold' : 'text-gray-900'}`}>
+                      {animationStep >= 7 ? '1' : ''}
+                    </span>
+                    <span className={`w-10 text-center transition-all duration-500 ${animationStep >= 7 ? 'bg-purple-200 text-gray-900 font-bold' : 'text-gray-900'}`}>
+                      {animationStep >= 7 ? '0' : ''}
+                    </span>
+                    <span className={`w-10 text-center transition-all duration-500 ${animationStep >= 7 ? 'bg-purple-200 text-gray-900 font-bold' : 'text-gray-900'}`}>
+                      {animationStep >= 7 ? '3' : ''}
+                    </span>
+                    <span className={`w-10 text-center transition-all duration-500 ${animationStep >= 7 ? 'bg-purple-200 text-gray-900 font-bold' : 'text-gray-900'}`}>
+                      {animationStep >= 7 ? '5' : ''}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div className="flex-1">
+              <div className="bg-white p-4 rounded border-l-4 border-blue-500">
+                <p className="text-sm font-medium text-gray-800">
+                  {steps[animationStep] || steps[0]}
+                </p>
+                {/* Calcul détaillé selon l'étape */}
+                <div className="mt-3 p-3 bg-gray-50 rounded text-sm">
+                  {animationStep === 1 && (
+                    <div className="text-blue-700 font-mono">
+                      <span className="bg-yellow-200 px-1">3</span> × <span className="bg-yellow-200 px-1">5</span> = <span className="bg-green-200 px-1">15</span>
+                      <br />→ Je pose <span className="font-bold">5</span> et je retiens <span className="font-bold text-red-600">1</span>
+                    </div>
+                  )}
+                  {animationStep === 2 && (
+                    <div className="text-blue-700 font-mono">
+                      <span className="bg-yellow-200 px-1">2</span> × <span className="bg-yellow-200 px-1">5</span> = <span className="bg-green-200 px-1">10</span>
+                      <br />10 + <span className="text-red-600 font-bold">1</span> (retenue) = <span className="bg-green-200 px-1">11</span>
+                      <br />→ Je pose <span className="font-bold">1</span> et je retiens <span className="font-bold text-red-600">1</span>
+                    </div>
+                  )}
+                  {animationStep === 3 && (
+                    <div className="text-blue-700 font-mono">
+                      Je pose la retenue <span className="font-bold text-red-600">1</span>
+                      <br />→ Premier résultat partiel : <span className="bg-green-200 px-1 font-bold">115</span>
+                    </div>
+                  )}
+                  {animationStep === 4 && (
+                    <div className="text-blue-700 font-mono">
+                      <span className="bg-yellow-200 px-1">3</span> × <span className="bg-yellow-200 px-1">4</span> = <span className="bg-green-200 px-1">12</span>
+                      <br />→ Je pose <span className="font-bold">2</span> et je retiens <span className="font-bold text-red-600">1</span>
+                    </div>
+                  )}
+                  {animationStep === 5 && (
+                    <div className="text-blue-700 font-mono">
+                      <span className="bg-yellow-200 px-1">2</span> × <span className="bg-yellow-200 px-1">4</span> = <span className="bg-green-200 px-1">8</span>
+                      <br />8 + <span className="text-red-600 font-bold">1</span> (retenue) = <span className="bg-green-200 px-1">9</span>
+                      <br />→ Je pose <span className="font-bold">9</span>
+                    </div>
+                  )}
+                  {animationStep === 6 && (
+                    <div className="text-blue-700 font-mono">
+                      Multiplication par 4 (dizaines) → je décale d'un rang
+                      <br />92 × 10 = <span className="bg-green-200 px-1 font-bold">920</span>
+                    </div>
+                  )}
+                  {animationStep === 7 && (
+                    <div className="text-blue-700 font-mono">
+                      <span className="bg-green-200 px-1">115</span> + <span className="bg-green-200 px-1">920</span> = <span className="bg-purple-200 px-1 font-bold">1035</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const Multiplication3x2 = () => {
+    // 123 × 45 = 5535
+    const steps = [
+      'Je place les nombres en colonne, alignés à droite',
+      '3 × 5 = 15',
+      '2 × 5 = 10',
+      '1 × 5 = 5',
+      'Premier résultat partiel : 615',
+      '3 × 4 = 12',
+      '2 × 4 = 8',
+      '1 × 4 = 4',
+      'Deuxième résultat partiel : 4920',
+      'Addition finale : 615 + 4920 = 5535'
+    ];
+
+    const getHighlightClass = (position: string, step: number): string => {
+      let baseClass = 'w-10 text-center transition-all duration-500 ';
+      
+      // Illumination des chiffres selon l'étape
+      if (step === 1 && (position === '3' || position === '5')) {
+        return baseClass + 'bg-yellow-300 text-gray-900 shadow-lg scale-110 animate-pulse';
+      }
+      if (step === 2 && (position === '2' || position === '5')) {
+        return baseClass + 'bg-yellow-300 text-gray-900 shadow-lg scale-110 animate-pulse';
+      }
+      if (step === 3 && (position === '1' || position === '5')) {
+        return baseClass + 'bg-yellow-300 text-gray-900 shadow-lg scale-110 animate-pulse';
+      }
+      if (step === 5 && (position === '3' || position === '4')) {
+        return baseClass + 'bg-yellow-300 text-gray-900 shadow-lg scale-110 animate-pulse';
+      }
+      if (step === 6 && (position === '2' || position === '4')) {
+        return baseClass + 'bg-yellow-300 text-gray-900 shadow-lg scale-110 animate-pulse';
+      }
+      if (step === 7 && (position === '1' || position === '4')) {
+        return baseClass + 'bg-yellow-300 text-gray-900 shadow-lg scale-110 animate-pulse';
+      }
+      
+      return baseClass + 'text-gray-900';
+    };
+
+    return (
+      <div className="space-y-4">
+        <div className="bg-green-50 p-6 rounded-lg">
+          <h4 className="font-bold text-green-900 mb-4">
+            Multiplication 3×2 chiffres : 123 × 45
+          </h4>
+          
+          <div className="flex items-center gap-8">
+                          <div className="text-center">
+                <div className="font-mono text-2xl space-y-2">
+                  {/* Grille avec alignement parfait */}
+                  <div className="inline-block">
+                    {/* Premier nombre avec retenues - aligné à droite */}
+                    <div className="flex relative">
+                      {/* Retenues pour ×5 */}
+                      <span className={`absolute -top-4 left-10 text-xs text-red-600 font-bold ${animationStep >= 3 ? 'opacity-100' : 'opacity-0'}`}>
+                        {animationStep >= 3 ? '¹' : ''}
+                      </span>
+                      <span className={`absolute -top-4 left-20 text-xs text-red-600 font-bold ${animationStep >= 2 ? 'opacity-100' : 'opacity-0'}`}>
+                        {animationStep >= 2 ? '¹' : ''}
+                      </span>
+                      <span className={getHighlightClass('1', animationStep)}>
+                        1
+                      </span>
+                      <span className={getHighlightClass('2', animationStep)}>
+                        2
+                      </span>
+                      <span className={getHighlightClass('3', animationStep)}>
+                        3
+                      </span>
+                    </div>
+                    
+                    {/* Symbole multiplication et second nombre - aligné à droite */}
+                    <div className="flex relative">
+                      <span className="w-10 text-center text-gray-900">×</span>
+                      {/* Retenue pour ×4 */}
+                      <span className={`absolute -top-4 left-20 text-xs text-red-600 font-bold ${animationStep >= 6 ? 'opacity-100' : 'opacity-0'}`}>
+                        {animationStep >= 6 ? '¹' : ''}
+                      </span>
+                      <span className={getHighlightClass('4', animationStep)}>
+                        4
+                      </span>
+                      <span className={getHighlightClass('5', animationStep)}>
+                        5
+                      </span>
+                    </div>
+                    
+                    <div className="border-t-2 border-gray-400 my-1"></div>
+                    
+                    {/* Premier résultat partiel avec construction progressive - aligné à droite */}
+                    <div className="flex">
+                      <span className={`w-10 text-center transition-all duration-500 ${animationStep >= 3 ? 'bg-green-200 text-gray-900' : 'text-gray-900'}`}>
+                        {animationStep >= 3 ? '6' : ''}
+                      </span>
+                      <span className={`w-10 text-center transition-all duration-500 ${animationStep >= 2 ? 'bg-green-200 text-gray-900' : 'text-gray-900'}`}>
+                        {animationStep >= 2 ? '1' : ''}
+                      </span>
+                      <span className={`w-10 text-center transition-all duration-500 ${animationStep >= 1 ? 'bg-green-200 text-gray-900' : 'text-gray-900'}`}>
+                        {animationStep >= 1 ? '5' : ''}
+                      </span>
+                    </div>
+                    
+                    {/* Deuxième résultat partiel avec construction progressive - aligné à droite */}
+                    <div className="flex">
+                      <span className="w-10 text-center text-gray-900">+</span>
+                      <span className={`w-10 text-center transition-all duration-500 ${animationStep >= 7 ? 'bg-green-200 text-gray-900' : 'text-gray-900'}`}>
+                        {animationStep >= 7 ? '4' : ''}
+                      </span>
+                      <span className={`w-10 text-center transition-all duration-500 ${animationStep >= 6 ? 'bg-green-200 text-gray-900' : 'text-gray-900'}`}>
+                        {animationStep >= 6 ? '9' : ''}
+                      </span>
+                      <span className={`w-10 text-center transition-all duration-500 ${animationStep >= 5 ? 'bg-green-200 text-gray-900' : 'text-gray-900'}`}>
+                        {animationStep >= 5 ? '2' : ''}
+                      </span>
+                      <span className={`w-10 text-center transition-all duration-500 ${animationStep >= 8 ? 'bg-green-200 text-gray-900' : 'text-gray-900'}`}>
+                        {animationStep >= 8 ? '0' : ''}
+                      </span>
+                    </div>
+                    
+                    <div className="border-t-2 border-gray-400 my-1"></div>
+                    
+                    {/* Résultat final - aligné à droite */}
+                    <div className="flex">
+                      <span className="w-10 text-center transition-all duration-500 ${animationStep >= 9 ? 'bg-purple-200 text-gray-900 font-bold' : 'text-gray-900'}`}>
+                        {animationStep >= 9 ? '5' : ''}
+                      </span>
+                      <span className={`w-10 text-center transition-all duration-500 ${animationStep >= 9 ? 'bg-purple-200 text-gray-900 font-bold' : 'text-gray-900'}`}>
+                        {animationStep >= 9 ? '5' : ''}
+                      </span>
+                      <span className={`w-10 text-center transition-all duration-500 ${animationStep >= 9 ? 'bg-purple-200 text-gray-900 font-bold' : 'text-gray-900'}`}>
+                        {animationStep >= 9 ? '3' : ''}
+                      </span>
+                      <span className={`w-10 text-center transition-all duration-500 ${animationStep >= 9 ? 'bg-purple-200 text-gray-900 font-bold' : 'text-gray-900'}`}>
+                        {animationStep >= 9 ? '5' : ''}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            
+            <div className="flex-1">
+              <div className="bg-white p-4 rounded border-l-4 border-green-500">
+                <p className="text-sm font-medium text-gray-800">
+                  {steps[animationStep] || steps[0]}
+                </p>
+                {/* Calcul détaillé selon l'étape */}
+                <div className="mt-3 p-3 bg-gray-50 rounded text-sm">
+                  {animationStep === 1 && (
+                    <div className="text-green-700 font-mono">
+                      <span className="bg-yellow-200 px-1">3</span> × <span className="bg-yellow-200 px-1">5</span> = <span className="bg-green-200 px-1">15</span>
+                      <br />→ Je pose <span className="font-bold">5</span> et je retiens <span className="font-bold text-red-600">1</span>
+                    </div>
+                  )}
+                  {animationStep === 2 && (
+                    <div className="text-green-700 font-mono">
+                      <span className="bg-yellow-200 px-1">2</span> × <span className="bg-yellow-200 px-1">5</span> = <span className="bg-green-200 px-1">10</span>
+                      <br />10 + <span className="text-red-600 font-bold">1</span> (retenue) = <span className="bg-green-200 px-1">11</span>
+                      <br />→ Je pose <span className="font-bold">1</span> et je retiens <span className="font-bold text-red-600">1</span>
+                    </div>
+                  )}
+                  {animationStep === 3 && (
+                    <div className="text-green-700 font-mono">
+                      <span className="bg-yellow-200 px-1">1</span> × <span className="bg-yellow-200 px-1">5</span> = <span className="bg-green-200 px-1">5</span>
+                      <br />5 + <span className="text-red-600 font-bold">1</span> (retenue) = <span className="bg-green-200 px-1">6</span>
+                      <br />→ Je pose <span className="font-bold">6</span>
+                    </div>
+                  )}
+                  {animationStep === 4 && (
+                    <div className="text-green-700 font-mono">
+                      Premier résultat partiel : <span className="bg-green-200 px-1 font-bold">615</span>
+                    </div>
+                  )}
+                  {animationStep === 5 && (
+                    <div className="text-green-700 font-mono">
+                      <span className="bg-yellow-200 px-1">3</span> × <span className="bg-yellow-200 px-1">4</span> = <span className="bg-green-200 px-1">12</span>
+                      <br />→ Je pose <span className="font-bold">2</span> et je retiens <span className="font-bold text-red-600">1</span>
+                    </div>
+                  )}
+                  {animationStep === 6 && (
+                    <div className="text-green-700 font-mono">
+                      <span className="bg-yellow-200 px-1">2</span> × <span className="bg-yellow-200 px-1">4</span> = <span className="bg-green-200 px-1">8</span>
+                      <br />8 + <span className="text-red-600 font-bold">1</span> (retenue) = <span className="bg-green-200 px-1">9</span>
+                      <br />→ Je pose <span className="font-bold">9</span>
+                    </div>
+                  )}
+                  {animationStep === 7 && (
+                    <div className="text-green-700 font-mono">
+                      <span className="bg-yellow-200 px-1">1</span> × <span className="bg-yellow-200 px-1">4</span> = <span className="bg-green-200 px-1">4</span>
+                      <br />→ Je pose <span className="font-bold">4</span>
+                    </div>
+                  )}
+                  {animationStep === 8 && (
+                    <div className="text-green-700 font-mono">
+                      Multiplication par 4 (dizaines) → je décale d'un rang
+                      <br />492 × 10 = <span className="bg-green-200 px-1 font-bold">4920</span>
+                    </div>
+                  )}
+                  {animationStep === 9 && (
+                    <div className="text-green-700 font-mono">
+                      <span className="bg-green-200 px-1">615</span> + <span className="bg-green-200 px-1">4920</span> = <span className="bg-purple-200 px-1 font-bold">5535</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const Multiplication3x3 = () => {
+    // 123 × 456 = 56088
+    const steps = [
+      'Je place les nombres en colonne, alignés à droite',
+      '3 × 6 = 18 → je pose 8, retenue 1',
+      '2 × 6 = 12, + 1 (retenue) = 13 → je pose 3, retenue 1',
+      '1 × 6 = 6, + 1 (retenue) = 7 → je pose 7',
+      'Premier résultat partiel : 738',
+      '3 × 5 = 15 → je pose 5, retenue 1',
+      '2 × 5 = 10, + 1 (retenue) = 11 → je pose 1, retenue 1',
+      '1 × 5 = 5, + 1 (retenue) = 6 → je pose 6',
+      'Je décale d\'un rang → deuxième résultat partiel : 6150',
+      '3 × 4 = 12 → je pose 2, retenue 1',
+      '2 × 4 = 8, + 1 (retenue) = 9 → je pose 9',
+      '1 × 4 = 4 → je pose 4',
+      'Je décale de deux rangs → troisième résultat partiel : 49200',
+      'J\'additionne tous les résultats partiels',
+      '738 + 6150 = 6888',
+      '6888 + 49200 = 56088'
+    ];
+
+    const getHighlightClass = (position: string, step: number): string => {
+      let baseClass = 'w-8 text-center transition-all duration-500 ';
+      
+      // Illumination des chiffres selon l'étape
+      if (step === 1 && (position === '3' || position === '6')) {
+        return baseClass + 'bg-yellow-300 text-gray-900 shadow-lg scale-110 animate-pulse';
+      }
+      if (step === 2 && (position === '2' || position === '6')) {
+        return baseClass + 'bg-yellow-300 text-gray-900 shadow-lg scale-110 animate-pulse';
+      }
+      if (step === 3 && (position === '1' || position === '6')) {
+        return baseClass + 'bg-yellow-300 text-gray-900 shadow-lg scale-110 animate-pulse';
+      }
+      if (step === 5 && (position === '3' || position === '5')) {
+        return baseClass + 'bg-yellow-300 text-gray-900 shadow-lg scale-110 animate-pulse';
+      }
+      if (step === 6 && (position === '2' || position === '5')) {
+        return baseClass + 'bg-yellow-300 text-gray-900 shadow-lg scale-110 animate-pulse';
+      }
+      if (step === 7 && (position === '1' || position === '5')) {
+        return baseClass + 'bg-yellow-300 text-gray-900 shadow-lg scale-110 animate-pulse';
+      }
+      if (step === 9 && (position === '3' || position === '4')) {
+        return baseClass + 'bg-yellow-300 text-gray-900 shadow-lg scale-110 animate-pulse';
+      }
+      if (step === 10 && (position === '2' || position === '4')) {
+        return baseClass + 'bg-yellow-300 text-gray-900 shadow-lg scale-110 animate-pulse';
+      }
+      if (step === 11 && (position === '1' || position === '4')) {
+        return baseClass + 'bg-yellow-300 text-gray-900 shadow-lg scale-110 animate-pulse';
+      }
+      
+      return baseClass + 'text-gray-900';
+    };
+
+    return (
+      <div className="space-y-4">
+        <div className="bg-red-50 p-6 rounded-lg">
+          <h4 className="font-bold text-red-900 mb-4">
+            Multiplication 3×3 chiffres : 123 × 456
+          </h4>
+          
+          <div className="flex items-center gap-8">
+            <div className="text-center">
+              <div className="font-mono text-xl space-y-2">
+                {/* Grille avec alignement parfait */}
+                <div className="inline-block">
+                  {/* Premier nombre avec retenues */}
+                  <div className="flex relative">
+                    <span className="w-12"></span>
+                    {/* Retenues pour ×6 */}
+                    <span className={`absolute -top-4 left-20 text-xs text-red-600 font-bold ${animationStep >= 3 ? 'opacity-100' : 'opacity-0'}`}>
+                      {animationStep >= 3 ? '¹' : ''}
+                    </span>
+                    <span className={`absolute -top-4 left-12 text-xs text-red-600 font-bold ${animationStep >= 2 ? 'opacity-100' : 'opacity-0'}`}>
+                      {animationStep >= 2 ? '¹' : ''}
+                    </span>
+                    <span className={getHighlightClass('1', animationStep)}>
+                      1
+                    </span>
+                    <span className={getHighlightClass('2', animationStep)}>
+                      2
+                    </span>
+                    <span className={getHighlightClass('3', animationStep)}>
+                      3
+                    </span>
+                  </div>
+                  
+                  {/* Symbole multiplication et second nombre */}
+                  <div className="flex relative">
+                    <span className="w-12 text-center text-gray-900">×</span>
+                    {/* Retenues pour ×5 */}
+                    <span className={`absolute -top-4 left-20 text-xs text-red-600 font-bold ${animationStep >= 7 ? 'opacity-100' : 'opacity-0'}`}>
+                      {animationStep >= 7 ? '¹' : ''}
+                    </span>
+                    <span className={`absolute -top-4 left-12 text-xs text-red-600 font-bold ${animationStep >= 6 ? 'opacity-100' : 'opacity-0'}`}>
+                      {animationStep >= 6 ? '¹' : ''}
+                    </span>
+                    {/* Retenue pour ×4 */}
+                    <span className={`absolute -top-4 left-4 text-xs text-red-600 font-bold ${animationStep >= 10 ? 'opacity-100' : 'opacity-0'}`}>
+                      {animationStep >= 10 ? '¹' : ''}
+                    </span>
+                    <span className={getHighlightClass('4', animationStep)}>
+                      4
+                    </span>
+                    <span className={getHighlightClass('5', animationStep)}>
+                      5
+                    </span>
+                    <span className={getHighlightClass('6', animationStep)}>
+                      6
+                    </span>
+                  </div>
+                  
+                  <div className="border-t-2 border-gray-400 my-1"></div>
+                  
+                  {/* Premier résultat partiel (×6) */}
+                  <div className="flex">
+                    <span className="w-12"></span>
+                    <span className={`w-8 text-center transition-all duration-500 ${animationStep >= 3 ? 'bg-green-200 text-gray-900' : 'text-gray-900'}`}>
+                      {animationStep >= 3 ? '7' : ''}
+                    </span>
+                    <span className={`w-8 text-center transition-all duration-500 ${animationStep >= 2 ? 'bg-green-200 text-gray-900' : 'text-gray-900'}`}>
+                      {animationStep >= 2 ? '3' : ''}
+                    </span>
+                    <span className={`w-8 text-center transition-all duration-500 ${animationStep >= 1 ? 'bg-green-200 text-gray-900' : 'text-gray-900'}`}>
+                      {animationStep >= 1 ? '8' : ''}
+                    </span>
+                  </div>
+                  
+                  {/* Deuxième résultat partiel (×5, décalé) */}
+                  <div className="flex">
+                    <span className="w-12 text-center text-gray-900">+</span>
+                    <span className={`w-8 text-center transition-all duration-500 ${animationStep >= 7 ? 'bg-green-200 text-gray-900' : 'text-gray-900'}`}>
+                      {animationStep >= 7 ? '6' : ''}
+                    </span>
+                    <span className={`w-8 text-center transition-all duration-500 ${animationStep >= 6 ? 'bg-green-200 text-gray-900' : 'text-gray-900'}`}>
+                      {animationStep >= 6 ? '1' : ''}
+                    </span>
+                    <span className={`w-8 text-center transition-all duration-500 ${animationStep >= 5 ? 'bg-green-200 text-gray-900' : 'text-gray-900'}`}>
+                      {animationStep >= 5 ? '5' : ''}
+                    </span>
+                    <span className={`w-8 text-center transition-all duration-500 ${animationStep >= 8 ? 'bg-green-200 text-gray-900' : 'text-gray-900'}`}>
+                      {animationStep >= 8 ? '0' : ''}
+                    </span>
+                  </div>
+                  
+                  {/* Troisième résultat partiel (×4, décalé de 2) */}
+                  <div className="flex">
+                    <span className="w-12 text-center text-gray-900">+</span>
+                    <span className={`w-8 text-center transition-all duration-500 ${animationStep >= 11 ? 'bg-green-200 text-gray-900' : 'text-gray-900'}`}>
+                      {animationStep >= 11 ? '4' : ''}
+                    </span>
+                    <span className={`w-8 text-center transition-all duration-500 ${animationStep >= 10 ? 'bg-green-200 text-gray-900' : 'text-gray-900'}`}>
+                      {animationStep >= 10 ? '9' : ''}
+                    </span>
+                    <span className={`w-8 text-center transition-all duration-500 ${animationStep >= 9 ? 'bg-green-200 text-gray-900' : 'text-gray-900'}`}>
+                      {animationStep >= 9 ? '2' : ''}
+                    </span>
+                    <span className={`w-8 text-center transition-all duration-500 ${animationStep >= 12 ? 'bg-green-200 text-gray-900' : 'text-gray-900'}`}>
+                      {animationStep >= 12 ? '0' : ''}
+                    </span>
+                    <span className={`w-8 text-center transition-all duration-500 ${animationStep >= 12 ? 'bg-green-200 text-gray-900' : 'text-gray-900'}`}>
+                      {animationStep >= 12 ? '0' : ''}
+                    </span>
+                  </div>
+                  
+                  <div className="border-t-2 border-gray-400 my-1"></div>
+                  
+                  {/* Résultat final */}
+                  <div className="flex">
+                    <span className="w-12 text-center text-gray-900">=</span>
+                    <span className={`w-8 text-center transition-all duration-500 ${animationStep >= 15 ? 'bg-purple-200 text-gray-900 font-bold' : 'text-gray-900'}`}>
+                      {animationStep >= 15 ? '5' : ''}
+                    </span>
+                    <span className={`w-8 text-center transition-all duration-500 ${animationStep >= 15 ? 'bg-purple-200 text-gray-900 font-bold' : 'text-gray-900'}`}>
+                      {animationStep >= 15 ? '6' : ''}
+                    </span>
+                    <span className={`w-8 text-center transition-all duration-500 ${animationStep >= 15 ? 'bg-purple-200 text-gray-900 font-bold' : 'text-gray-900'}`}>
+                      {animationStep >= 15 ? '0' : ''}
+                    </span>
+                    <span className={`w-8 text-center transition-all duration-500 ${animationStep >= 15 ? 'bg-purple-200 text-gray-900 font-bold' : 'text-gray-900'}`}>
+                      {animationStep >= 15 ? '8' : ''}
+                    </span>
+                    <span className={`w-8 text-center transition-all duration-500 ${animationStep >= 15 ? 'bg-purple-200 text-gray-900 font-bold' : 'text-gray-900'}`}>
+                      {animationStep >= 15 ? '8' : ''}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div className="flex-1">
+              <div className="bg-white p-4 rounded border-l-4 border-red-500">
+                <p className="text-sm font-medium text-gray-800">
+                  {steps[animationStep] || steps[0]}
+                </p>
+                
+                {/* Calcul détaillé selon l'étape */}
+                <div className="mt-3 p-3 bg-gray-50 rounded text-sm">
+                  {animationStep === 1 && (
+                    <div className="text-red-700 font-mono">
+                      <span className="bg-yellow-200 px-1 rounded">3</span> × <span className="bg-yellow-200 px-1 rounded">6</span> = <span className="bg-green-200 px-1 rounded">18</span>
+                      <br />→ Je pose <span className="font-bold">8</span> et je retiens <span className="font-bold text-red-600">1</span>
+                    </div>
+                  )}
+                  {animationStep === 2 && (
+                    <div className="text-red-700 font-mono">
+                      <span className="bg-yellow-200 px-1 rounded">2</span> × <span className="bg-yellow-200 px-1 rounded">6</span> = <span className="bg-green-200 px-1 rounded">12</span>
+                      <br />12 + <span className="text-red-600 font-bold">1</span> (retenue) = <span className="bg-green-200 px-1 rounded">13</span>
+                      <br />→ Je pose <span className="font-bold">3</span> et je retiens <span className="font-bold text-red-600">1</span>
+                    </div>
+                  )}
+                  {animationStep === 3 && (
+                    <div className="text-red-700 font-mono">
+                      <span className="bg-yellow-200 px-1 rounded">1</span> × <span className="bg-yellow-200 px-1 rounded">6</span> = <span className="bg-green-200 px-1 rounded">6</span>
+                      <br />6 + <span className="text-red-600 font-bold">1</span> (retenue) = <span className="bg-green-200 px-1 rounded">7</span>
+                      <br />→ Je pose <span className="font-bold">7</span>
+                    </div>
+                  )}
+                  {animationStep === 4 && (
+                    <div className="text-red-700 font-mono">
+                      Premier résultat partiel : <span className="bg-green-200 px-1 rounded font-bold">738</span>
+                      <br />Maintenant je passe au 5 (dizaines)
+                    </div>
+                  )}
+                  {animationStep === 5 && (
+                    <div className="text-red-700 font-mono">
+                      <span className="bg-yellow-200 px-1 rounded">3</span> × <span className="bg-yellow-200 px-1 rounded">5</span> = <span className="bg-green-200 px-1 rounded">15</span>
+                      <br />→ Je pose <span className="font-bold">5</span> et je retiens <span className="font-bold text-red-600">1</span>
+                    </div>
+                  )}
+                  {animationStep === 6 && (
+                    <div className="text-red-700 font-mono">
+                      <span className="bg-yellow-200 px-1 rounded">2</span> × <span className="bg-yellow-200 px-1 rounded">5</span> = <span className="bg-green-200 px-1 rounded">10</span>
+                      <br />10 + <span className="text-red-600 font-bold">1</span> (retenue) = <span className="bg-green-200 px-1 rounded">11</span>
+                      <br />→ Je pose <span className="font-bold">1</span> et je retiens <span className="font-bold text-red-600">1</span>
+                    </div>
+                  )}
+                  {animationStep === 7 && (
+                    <div className="text-red-700 font-mono">
+                      <span className="bg-yellow-200 px-1 rounded">1</span> × <span className="bg-yellow-200 px-1 rounded">5</span> = <span className="bg-green-200 px-1 rounded">5</span>
+                      <br />5 + <span className="text-red-600 font-bold">1</span> (retenue) = <span className="bg-green-200 px-1 rounded">6</span>
+                      <br />→ Je pose <span className="font-bold">6</span>
+                    </div>
+                  )}
+                  {animationStep === 8 && (
+                    <div className="text-red-700 font-mono">
+                      Multiplication par 5 (dizaines) → je décale d'un rang
+                      <br />615 × 10 = <span className="bg-green-200 px-1 rounded font-bold">6150</span>
+                    </div>
+                  )}
+                  {animationStep === 9 && (
+                    <div className="text-red-700 font-mono">
+                      <span className="bg-yellow-200 px-1 rounded">3</span> × <span className="bg-yellow-200 px-1 rounded">4</span> = <span className="bg-green-200 px-1 rounded">12</span>
+                      <br />→ Je pose <span className="font-bold">2</span> et je retiens <span className="font-bold text-red-600">1</span>
+                    </div>
+                  )}
+                  {animationStep === 10 && (
+                    <div className="text-red-700 font-mono">
+                      <span className="bg-yellow-200 px-1 rounded">2</span> × <span className="bg-yellow-200 px-1 rounded">4</span> = <span className="bg-green-200 px-1 rounded">8</span>
+                      <br />8 + <span className="text-red-600 font-bold">1</span> (retenue) = <span className="bg-green-200 px-1 rounded">9</span>
+                      <br />→ Je pose <span className="font-bold">9</span>
+                    </div>
+                  )}
+                  {animationStep === 11 && (
+                    <div className="text-red-700 font-mono">
+                      <span className="bg-yellow-200 px-1 rounded">1</span> × <span className="bg-yellow-200 px-1 rounded">4</span> = <span className="bg-green-200 px-1 rounded">4</span>
+                      <br />→ Je pose <span className="font-bold">4</span>
+                    </div>
+                  )}
+                  {animationStep === 12 && (
+                    <div className="text-red-700 font-mono">
+                      Multiplication par 4 (centaines) → je décale de deux rangs
+                      <br />492 × 100 = <span className="bg-green-200 px-1 rounded font-bold">49200</span>
+                    </div>
+                  )}
+                  {animationStep === 13 && (
+                    <div className="text-red-700 font-mono">
+                      Maintenant j'additionne tous les résultats partiels :
+                      <br /><span className="bg-green-200 px-1 rounded">738</span> + <span className="bg-green-200 px-1 rounded">6150</span> + <span className="bg-green-200 px-1 rounded">49200</span>
+                    </div>
+                  )}
+                  {animationStep === 14 && (
+                    <div className="text-red-700 font-mono">
+                      Première addition : <span className="bg-green-200 px-1 rounded">738</span> + <span className="bg-green-200 px-1 rounded">6150</span> = <span className="bg-orange-200 px-1 rounded">6888</span>
+                    </div>
+                  )}
+                  {animationStep === 15 && (
+                    <div className="text-red-700 font-mono">
+                      Addition finale : <span className="bg-orange-200 px-1 rounded">6888</span> + <span className="bg-green-200 px-1 rounded">49200</span> = <span className="bg-purple-200 px-1 rounded font-bold">56088</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const MultiplicationDecimaux = () => {
+    // 12,5 × 3,4 = 42,50
+    const steps = [
+      'Je place les nombres en colonne (j\'ignore les virgules)',
+      '125 × 4 = 500',
+      '125 × 3 = 375 (décalé) = 3750',
+      'Addition : 500 + 3750 = 4250',
+      'Je place la virgule : 1+1=2 chiffres → 42,50'
+    ];
+
+    const getHighlightClass = (position: string, step: number): string => {
+      let baseClass = 'w-10 text-center transition-all duration-500 ';
+      
+      // Illumination des chiffres selon l'étape
+      if (step === 1 && (position === '125' || position === '4')) {
+        return baseClass + 'bg-yellow-300 text-gray-900 shadow-lg scale-110 animate-pulse';
+      }
+      if (step === 2 && (position === '125' || position === '3')) {
+        return baseClass + 'bg-yellow-300 text-gray-900 shadow-lg scale-110 animate-pulse';
+      }
+      
+      return baseClass + 'text-gray-900';
+    };
+
+    return (
+      <div className="space-y-4">
+        <div className="bg-purple-50 p-6 rounded-lg">
+          <h4 className="font-bold text-purple-900 mb-4">
+            Multiplication avec décimaux : 12,5 × 3,4
+          </h4>
+          
+          <div className="flex items-center gap-8">
+            <div className="text-center">
+              <div className="font-mono text-2xl space-y-2">
+                {/* Grille avec alignement parfait */}
+                <div className="inline-block">
+                  {/* Premier nombre */}
+                  <div className="flex">
+                    <span className="w-12"></span>
+                    <span className={`w-10 text-center transition-all duration-500 ${animationStep >= 1 ? (animationStep <= 2 ? 'bg-yellow-300 text-gray-900' : 'text-gray-900') : 'text-gray-900'}`}>
+                      1
+                    </span>
+                    <span className={`w-10 text-center transition-all duration-500 ${animationStep >= 1 ? (animationStep <= 2 ? 'bg-yellow-300 text-gray-900' : 'text-gray-900') : 'text-gray-900'}`}>
+                      2
+                    </span>
+                    <span className="w-2 text-center text-gray-900">,</span>
+                    <span className={`w-10 text-center transition-all duration-500 ${animationStep >= 1 ? (animationStep <= 2 ? 'bg-yellow-300 text-gray-900' : 'text-gray-900') : 'text-gray-900'}`}>
+                      5
+                    </span>
+                  </div>
+                  
+                  {/* Symbole multiplication et second nombre */}
+                  <div className="flex">
+                    <span className="w-12 text-center text-gray-900">×</span>
+                    <span className="w-10"></span>
+                    <span className={`w-10 text-center transition-all duration-500 ${animationStep === 2 ? 'bg-yellow-300 text-gray-900 shadow-lg scale-110 animate-pulse' : 'text-gray-900'}`}>
+                      3
+                    </span>
+                    <span className="w-2 text-center text-gray-900">,</span>
+                    <span className={`w-10 text-center transition-all duration-500 ${animationStep === 1 ? 'bg-yellow-300 text-gray-900 shadow-lg scale-110 animate-pulse' : 'text-gray-900'}`}>
+                      4
+                    </span>
+                  </div>
+                  
+                  <div className="border-t-2 border-gray-400 my-1"></div>
+                  
+                  {/* Premier résultat partiel */}
+                  <div className="flex">
+                    <span className="w-12"></span>
+                    <span className={`w-10 text-center transition-all duration-500 ${animationStep >= 1 ? 'bg-green-200 text-gray-900' : 'text-gray-900'}`}>
+                      {animationStep >= 1 ? '5' : ''}
+                    </span>
+                    <span className={`w-10 text-center transition-all duration-500 ${animationStep >= 1 ? 'bg-green-200 text-gray-900' : 'text-gray-900'}`}>
+                      {animationStep >= 1 ? '0' : ''}
+                    </span>
+                    <span className="w-2"></span>
+                    <span className={`w-10 text-center transition-all duration-500 ${animationStep >= 1 ? 'bg-green-200 text-gray-900' : 'text-gray-900'}`}>
+                      {animationStep >= 1 ? '0' : ''}
+                    </span>
+                  </div>
+                  
+                  {/* Deuxième résultat partiel */}
+                  <div className="flex">
+                    <span className="w-12 text-center text-gray-900">+</span>
+                    <span className={`w-10 text-center transition-all duration-500 ${animationStep >= 2 ? 'bg-green-200 text-gray-900' : 'text-gray-900'}`}>
+                      {animationStep >= 2 ? '3' : ''}
+                    </span>
+                    <span className={`w-10 text-center transition-all duration-500 ${animationStep >= 2 ? 'bg-green-200 text-gray-900' : 'text-gray-900'}`}>
+                      {animationStep >= 2 ? '7' : ''}
+                    </span>
+                    <span className="w-2"></span>
+                    <span className={`w-10 text-center transition-all duration-500 ${animationStep >= 2 ? 'bg-green-200 text-gray-900' : 'text-gray-900'}`}>
+                      {animationStep >= 2 ? '5' : ''}
+                    </span>
+                    <span className={`w-10 text-center transition-all duration-500 ${animationStep >= 2 ? 'bg-green-200 text-gray-900' : 'text-gray-900'}`}>
+                      {animationStep >= 2 ? '0' : ''}
+                    </span>
+                  </div>
+                  
+                  <div className="border-t-2 border-gray-400 my-1"></div>
+                  
+                  {/* Résultat sans virgule */}
+                  <div className="flex">
+                    <span className="w-12"></span>
+                    <span className={`w-10 text-center transition-all duration-500 ${animationStep >= 3 ? 'bg-orange-200 text-gray-900' : 'text-gray-900'}`}>
+                      {animationStep >= 3 ? '4' : ''}
+                    </span>
+                    <span className={`w-10 text-center transition-all duration-500 ${animationStep >= 3 ? 'bg-orange-200 text-gray-900' : 'text-gray-900'}`}>
+                      {animationStep >= 3 ? '2' : ''}
+                    </span>
+                    <span className="w-2"></span>
+                    <span className={`w-10 text-center transition-all duration-500 ${animationStep >= 3 ? 'bg-orange-200 text-gray-900' : 'text-gray-900'}`}>
+                      {animationStep >= 3 ? '5' : ''}
+                    </span>
+                    <span className={`w-10 text-center transition-all duration-500 ${animationStep >= 3 ? 'bg-orange-200 text-gray-900' : 'text-gray-900'}`}>
+                      {animationStep >= 3 ? '0' : ''}
+                    </span>
+                  </div>
+                  
+                  {/* Résultat final avec virgule */}
+                  <div className="flex">
+                    <span className="w-12 text-center text-gray-900">=</span>
+                    <span className={`w-10 text-center transition-all duration-500 ${animationStep >= 4 ? 'bg-purple-200 text-gray-900 font-bold' : 'text-gray-900'}`}>
+                      {animationStep >= 4 ? '4' : ''}
+                    </span>
+                    <span className={`w-10 text-center transition-all duration-500 ${animationStep >= 4 ? 'bg-purple-200 text-gray-900 font-bold' : 'text-gray-900'}`}>
+                      {animationStep >= 4 ? '2' : ''}
+                    </span>
+                    <span className="w-2 text-center text-gray-900">{animationStep >= 4 ? ',' : ''}</span>
+                    <span className={`w-10 text-center transition-all duration-500 ${animationStep >= 4 ? 'bg-purple-200 text-gray-900 font-bold' : 'text-gray-900'}`}>
+                      {animationStep >= 4 ? '5' : ''}
+                    </span>
+                    <span className={`w-10 text-center transition-all duration-500 ${animationStep >= 4 ? 'bg-purple-200 text-gray-900 font-bold' : 'text-gray-900'}`}>
+                      {animationStep >= 4 ? '0' : ''}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div className="flex-1">
+              <div className="bg-white p-4 rounded border-l-4 border-purple-500">
+                <p className="text-sm font-medium text-gray-800">
+                  {steps[animationStep] || steps[0]}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 p-4">
+      <div className="max-w-4xl mx-auto">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-8">
+          <Link
+            href="/chapitre/cm1-operations-arithmetiques"
+            className="flex items-center gap-2 text-blue-600 hover:text-blue-800 transition-colors"
+          >
+            <ArrowLeft className="w-5 h-5" />
+            Retour au chapitre
+          </Link>
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-lg shadow">
+              <Trophy className="w-5 h-5 text-amber-600" />
+              <span className="font-semibold text-gray-700">Score: {score}/{attempts}</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Title */}
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold text-gray-800 mb-2">
+            Multiplication en colonne
+          </h1>
+          <p className="text-gray-600">
+            Maîtrise la multiplication posée avec plusieurs chiffres et nombres décimaux
+          </p>
+        </div>
+
+        {/* Navigation tabs */}
+        <div className="flex flex-wrap justify-center gap-2 mb-8">
+          <button
+            onClick={() => setShowDemo(true)}
+            className={`px-6 py-3 rounded-lg font-medium transition-colors ${
+              showDemo ? 'bg-blue-500 text-white' : 'bg-white text-blue-500 hover:bg-blue-50'
+            }`}
+          >
+            📚 Points méthode
+          </button>
+          <button
+            onClick={() => setShowDemo(false)}
+            className={`px-6 py-3 rounded-lg font-medium transition-colors ${
+              !showDemo ? 'bg-blue-500 text-white' : 'bg-white text-blue-500 hover:bg-blue-50'
+            }`}
+          >
+            💪 Exercices
+          </button>
+        </div>
+
+        {showDemo ? (
+          <div className="space-y-6">
+            {/* Méthode selector */}
+            <div className="bg-white rounded-xl shadow-lg p-6">
+              <h2 className="text-xl font-bold text-gray-800 mb-4">Choisissez la méthode à étudier</h2>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <button
+                  onClick={() => { setActiveDemo('multiplication-2x2'); resetDemo(); }}
+                  className={`p-4 rounded-lg border-2 transition-colors ${
+                    activeDemo === 'multiplication-2x2' 
+                      ? 'border-blue-500 bg-blue-500 text-white' 
+                      : 'border-gray-200 hover:border-blue-300 bg-white text-gray-800'
+                  }`}
+                >
+                  <div className="text-2xl mb-2">×</div>
+                  <span className="text-sm font-medium">2×2 chiffres</span>
+                </button>
+                <button
+                  onClick={() => { setActiveDemo('multiplication-3x2'); resetDemo(); }}
+                  className={`p-4 rounded-lg border-2 transition-colors ${
+                    activeDemo === 'multiplication-3x2' 
+                      ? 'border-green-500 bg-green-500 text-white' 
+                      : 'border-gray-200 hover:border-green-300 bg-white text-gray-800'
+                  }`}
+                >
+                  <div className="text-2xl mb-2">×</div>
+                  <span className="text-sm font-medium">3×2 chiffres</span>
+                </button>
+                <button
+                  onClick={() => { setActiveDemo('multiplication-3x3'); resetDemo(); }}
+                  className={`p-4 rounded-lg border-2 transition-colors ${
+                    activeDemo === 'multiplication-3x3' 
+                      ? 'border-red-500 bg-red-500 text-white' 
+                      : 'border-gray-200 hover:border-red-300 bg-white text-gray-800'
+                  }`}
+                >
+                  <div className="text-2xl mb-2">×</div>
+                  <span className="text-sm font-medium">3×3 chiffres</span>
+                </button>
+                <button
+                  onClick={() => { setActiveDemo('multiplication-decimaux'); resetDemo(); }}
+                  className={`p-4 rounded-lg border-2 transition-colors ${
+                    activeDemo === 'multiplication-decimaux' 
+                      ? 'border-purple-500 bg-purple-500 text-white' 
+                      : 'border-gray-200 hover:border-purple-300 bg-white text-gray-800'
+                  }`}
+                >
+                  <div className="text-2xl mb-2">×</div>
+                  <span className="text-sm font-medium">Avec décimaux</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Animation controls */}
+            <div className="bg-white rounded-xl shadow-lg p-6">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h3 className="text-lg font-bold text-gray-800">Démonstration étape par étape</h3>
+                  <p className="text-sm text-gray-600 mt-1">
+                    ⚡ Cliquez sur "Suivant" pour voir chaque calcul en détail
+                  </p>
+                </div>
+                <div className="flex items-center gap-4">
+                  <div className="text-center">
+                    <span className="text-sm text-gray-600">
+                      Étape {animationStep + 1} sur {getMaxSteps()}
+                    </span>
+                    <div className="w-32 bg-gray-200 rounded-full h-2 mt-1">
+                      <div 
+                        className="bg-blue-500 h-2 rounded-full transition-all duration-300"
+                        style={{ width: `${((animationStep + 1) / getMaxSteps()) * 100}%` }}
+                      ></div>
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={prevStep}
+                      disabled={animationStep === 0}
+                      className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <ArrowLeft className="w-4 h-4" />
+                      Précédent
+                    </button>
+                    <button
+                      onClick={nextStep}
+                      disabled={animationStep >= getMaxSteps() - 1}
+                      className="flex items-center gap-2 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-semibold"
+                    >
+                      {animationStep >= getMaxSteps() - 1 ? 'Terminé' : 'Suivant'}
+                      <ArrowLeft className="w-4 h-4 rotate-180" />
+                    </button>
+                    <button
+                      onClick={resetDemo}
+                      className="flex items-center gap-2 px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors"
+                    >
+                      <RotateCcw className="w-4 h-4" />
+                      Reset
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Animation content */}
+              {activeDemo === 'multiplication-2x2' && <Multiplication2x2 />}
+              {activeDemo === 'multiplication-3x2' && <Multiplication3x2 />}
+              {activeDemo === 'multiplication-3x3' && <Multiplication3x3 />}
+              {activeDemo === 'multiplication-decimaux' && <MultiplicationDecimaux />}
+            </div>
+
+            {/* Règles importantes */}
+            <div className="bg-white rounded-xl shadow-lg p-6">
+              <h3 className="text-lg font-bold text-gray-800 mb-4">Règles importantes à retenir</h3>
+              <div className="grid md:grid-cols-2 gap-6">
+                <div className="space-y-3">
+                  <h4 className="font-semibold text-blue-600 flex items-center gap-2">
+                    <span className="text-2xl">×</span>
+                    Pour la multiplication posée :
+                  </h4>
+                  <ul className="space-y-2 text-sm text-gray-700">
+                    <li className="flex items-start gap-2">
+                      <span className="text-blue-600">•</span>
+                      Multiplier par chaque chiffre du multiplicateur
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-blue-600">•</span>
+                      Décaler les résultats partiels selon la position
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-blue-600">•</span>
+                      Additionner tous les résultats partiels
+                    </li>
+                  </ul>
+                </div>
+                <div className="space-y-3">
+                  <h4 className="font-semibold text-purple-600 flex items-center gap-2">
+                    <span className="text-2xl">×</span>
+                    Pour les nombres décimaux :
+                  </h4>
+                  <ul className="space-y-2 text-sm text-gray-700">
+                    <li className="flex items-start gap-2">
+                      <span className="text-purple-600">•</span>
+                      Multiplier sans tenir compte des virgules
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-purple-600">•</span>
+                      Compter le nombre de chiffres après les virgules
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-purple-600">•</span>
+                      Placer la virgule dans le résultat final
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        ) : (
+          // Exercices section
+          <div className="space-y-6">
+            {/* Progress */}
+            <div className="bg-white rounded-xl shadow-lg p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-bold text-gray-800">
+                  Exercice {currentExercise + 1} sur {exercises.length}
+                </h2>
+                <div className="flex items-center gap-2">
+                  <Target className="w-5 h-5 text-purple-600" />
+                  <span className="text-sm text-gray-700">
+                    Difficulté : {getCurrentExercise().difficulty}
+                  </span>
+                </div>
+              </div>
+              
+              <div className="w-full bg-gray-200 rounded-full h-2">
+                <div
+                  className="bg-purple-500 h-2 rounded-full transition-all duration-300"
+                  style={{ width: `${((currentExercise + 1) / exercises.length) * 100}%` }}
+                />
+              </div>
+            </div>
+
+            {/* Exercise */}
+            <div className="bg-white rounded-xl shadow-lg p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <span className="text-2xl">×</span>
+                <h3 className="text-lg font-bold text-gray-800">
+                  Multiplication en colonne
+                </h3>
+              </div>
+
+              <div className="text-center mb-6">
+                <div className="inline-block bg-gray-50 p-8 rounded-lg border-2 border-gray-200">
+                  <div className="font-mono text-3xl text-gray-800">
+                    {getCurrentExercise().operation}
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Votre réponse :
+                  </label>
+                  <input
+                    type="number"
+                    value={userAnswer}
+                    onChange={(e) => setUserAnswer(e.target.value)}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg text-center"
+                    placeholder="Tapez votre réponse..."
+                    disabled={showAnswer}
+                  />
+                </div>
+
+                {!showAnswer ? (
+                  <div className="flex gap-3">
+                    <button
+                      onClick={checkAnswer}
+                      disabled={!userAnswer}
+                      className="flex-1 bg-green-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                    >
+                      <CheckCircle className="w-5 h-5" />
+                      Vérifier
+                    </button>
+                    <button
+                      onClick={resetExercise}
+                      className="px-6 py-3 bg-gray-500 text-white rounded-lg font-semibold hover:bg-gray-600 transition-colors flex items-center justify-center gap-2"
+                    >
+                      <RefreshCw className="w-5 h-5" />
+                      Reset
+                    </button>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    <div className={`p-4 rounded-lg border-2 ${isCorrect ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}`}>
+                      <div className="flex items-center gap-2 mb-2">
+                        {isCorrect ? (
+                          <CheckCircle className="w-6 h-6 text-green-600" />
+                        ) : (
+                          <XCircle className="w-6 h-6 text-red-600" />
+                        )}
+                        <span className={`font-semibold ${isCorrect ? 'text-green-800' : 'text-red-800'}`}>
+                          {isCorrect ? 'Correct !' : 'Incorrect'}
+                        </span>
+                      </div>
+                      {!isCorrect && (
+                        <p className="text-red-800">
+                          La bonne réponse est : <span className="font-bold text-red-900">{getCurrentExercise().answer}</span>
+                        </p>
+                      )}
+                      <p className="text-gray-800 mt-2">
+                        {getCurrentExercise().explanation}
+                      </p>
+                      
+                      {/* Étapes détaillées */}
+                      <div className="mt-4 p-3 bg-white rounded border-l-4 border-blue-400">
+                        <h4 className="font-semibold text-gray-800 mb-2">Étapes du calcul :</h4>
+                        <ol className="text-sm space-y-1">
+                          {getCurrentExercise().steps.map((step, index) => (
+                            <li key={index} className="flex items-start gap-2">
+                              <span className="text-blue-600 font-bold">{index + 1}.</span>
+                              <span className="text-gray-800">{step}</span>
+                            </li>
+                          ))}
+                        </ol>
+                      </div>
+                    </div>
+
+                    <div className="flex gap-3">
+                      {currentExercise < exercises.length - 1 ? (
+                        <button
+                          onClick={nextExercise}
+                          className="flex-1 bg-blue-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-600 transition-colors flex items-center justify-center gap-2"
+                        >
+                          Exercice suivant
+                          <ArrowLeft className="w-5 h-5 rotate-180" />
+                        </button>
+                      ) : (
+                        <Link
+                          href="/chapitre/cm1-operations-arithmetiques"
+                          className="flex-1 bg-purple-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-purple-600 transition-colors flex items-center justify-center gap-2"
+                        >
+                          <Trophy className="w-5 h-5" />
+                          Chapitre terminé !
+                        </Link>
+                      )}
+                      <button
+                        onClick={resetExercise}
+                        className="px-6 py-3 bg-gray-500 text-white rounded-lg font-semibold hover:bg-gray-600 transition-colors flex items-center justify-center gap-2"
+                      >
+                        <RefreshCw className="w-5 h-5" />
+                        Recommencer
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Conseils */}
+            <div className="bg-white rounded-xl shadow-lg p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <Eye className="w-5 h-5 text-blue-600" />
+                <h3 className="text-lg font-bold text-gray-800">Conseils pour réussir</h3>
+              </div>
+              <div className="grid md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <h4 className="font-semibold text-gray-700">✖️ Multiplication posée :</h4>
+                  <ul className="text-sm text-gray-700 space-y-1">
+                    <li>• Aligne bien les chiffres par position (droite vers gauche)</li>
+                    <li>• Commence toujours par les unités du multiplicateur</li>
+                    <li>• Calcule chaque produit élémentaire (avec retenues)</li>
+                    <li>• N'oublie pas de décaler les résultats partiels</li>
+                    <li>• Additionne soigneusement tous les résultats</li>
+                  </ul>
+                </div>
+                <div className="space-y-2">
+                  <h4 className="font-semibold text-gray-700">🔢 Nombres décimaux :</h4>
+                  <ul className="text-sm text-gray-700 space-y-1">
+                    <li>• Compte les chiffres après les virgules au total</li>
+                    <li>• Multiplie comme des nombres entiers (ignore les virgules)</li>
+                    <li>• Place la virgule dans le résultat final au bon endroit</li>
+                    <li>• Vérifie que le résultat est cohérent avec l'ordre de grandeur</li>
+                  </ul>
+                </div>
+              </div>
+              
+              <div className="mt-6 p-4 bg-blue-50 rounded-lg">
+                <h4 className="font-semibold text-blue-800 mb-2">💡 Comment utiliser l'animation :</h4>
+                <div className="text-sm text-blue-700 space-y-1">
+                  <p>• Cliquez sur <strong>"Suivant"</strong> pour voir chaque calcul élémentaire</p>
+                  <p>• Observez bien les retenues qui apparaissent en rouge</p>
+                  <p>• Suivez les couleurs : <span className="bg-yellow-200 px-1">jaune</span> = chiffres multipliés, <span className="bg-green-200 px-1">vert</span> = résultats partiels</p>
+                  <p>• Utilisez <strong>"Précédent"</strong> pour revoir une étape</p>
+                  <p>• Cliquez sur <strong>"Reset"</strong> pour recommencer depuis le début</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+} 

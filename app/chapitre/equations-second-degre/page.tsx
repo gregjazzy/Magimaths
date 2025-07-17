@@ -1,59 +1,19 @@
 'use client';
 
-import { useState, lazy, Suspense, useEffect } from 'react';
-import dynamic from 'next/dynamic';
-import { ArrowLeft, Play, Lightbulb, Target, Trophy, ArrowRight } from 'lucide-react';
-import Link from 'next/link';
-
-// Lazy loading des composants lourds
-const MotionDiv = dynamic(() => import('framer-motion').then(mod => ({ default: mod.motion.div })), {
-  ssr: false,
-  loading: () => <div className="animate-pulse bg-gray-200 h-8 rounded"></div>
-});
-
-// Lazy loading des sections lourdes
-const GraphSection = lazy(() => import('./components/GraphSection'));
-const QuizSection = lazy(() => import('./components/QuizSection'));
-
-// Composant de loading
-const SectionSkeleton = () => (
-  <div className="animate-pulse bg-white rounded-3xl p-8 shadow-xl border border-gray-200">
-    <div className="space-y-4">
-      <div className="h-6 bg-gray-200 rounded w-3/4 mx-auto"></div>
-      <div className="h-4 bg-gray-200 rounded w-1/2 mx-auto"></div>
-      <div className="h-32 bg-gray-200 rounded"></div>
-    </div>
-  </div>
-);
+import { useState } from 'react';
+import ChapterLayout from '../../components/ChapterLayout';
+import ExerciseCard from '../../components/ExerciseCard';
+import FormulaSection from '../../components/FormulaSection';
 
 export default function EquationsSecondDegrePage() {
-  const [a, setA] = useState(1);
-  const [b, setB] = useState(-3);
-  const [c, setC] = useState(2);
-  const [showGraphDetail, setShowGraphDetail] = useState(false);
-  const [xpEarned, setXpEarned] = useState(0);
-  const [completedSections, setCompletedSections] = useState<string[]>([]);
-  const [currentQuizQuestion, setCurrentQuizQuestion] = useState(0);
-  const [selectedAnswer, setSelectedAnswer] = useState<boolean | null>(null);
-  const [hasAnswered, setHasAnswered] = useState(false);
-  const [showQuizResult, setShowQuizResult] = useState(false);
-  const [isAnswerCorrect, setIsAnswerCorrect] = useState(false);
-  const [quizCompleted, setQuizCompleted] = useState(false);
-  const [correctAnswers, setCorrectAnswers] = useState(0);
-  const [showCorrection, setShowCorrection] = useState(false);
-  const [showExercice5, setShowExercice5] = useState(false);
-  const [showExercice6, setShowExercice6] = useState(false);
-
-  // États pour le graphique interactif
   const [coefficients, setCoefficients] = useState({ a: 1, b: 0, c: 0 });
-  
-  // États pour le quiz
+  const [currentQuizQuestion, setCurrentQuizQuestion] = useState(0);
   const [quizAnswers, setQuizAnswers] = useState<boolean[]>([]);
   const [showQuizResults, setShowQuizResults] = useState(false);
   const [currentQuestionAnswered, setCurrentQuestionAnswered] = useState(false);
+  const [showCorrection, setShowCorrection] = useState(false);
   const [lastAnswerCorrect, setLastAnswerCorrect] = useState(false);
 
-  // Données du quiz avec corrections détaillées
   const quizQuestions = [
     { 
       equation: "3x² + 2x - 1 = 0", 
@@ -102,34 +62,20 @@ export default function EquationsSecondDegrePage() {
     }
   ];
 
-  // Animation variants
-  const sectionVariants = {
-    hidden: { opacity: 0, y: 50 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.6 } }
-  };
-
-  // Fonction pour générer les points de la parabole
   const generateParabolaPoints = () => {
     const points = [];
     const { a, b, c } = coefficients;
     for (let x = -8; x <= 8; x += 0.3) {
       const y = a * x * x + b * x + c;
-      if (y >= -15 && y <= 15) { // Ajuster les limites d'affichage
+      if (y >= -15 && y <= 15) {
         points.push(`${(x + 8) * 12.5},${(15 - y) * 8 + 120}`);
       }
     }
     return points.join(' ');
   };
 
-  const handleSectionComplete = (sectionName: string, xp: number) => {
-    if (!completedSections.includes(sectionName)) {
-      setCompletedSections(prev => [...prev, sectionName]);
-      setXpEarned(prev => prev + xp);
-    }
-  };
-
   const handleQuizAnswer = (answer: boolean) => {
-    if (currentQuestionAnswered) return; // Empêcher double-clic
+    if (currentQuestionAnswered) return;
     
     const correct = answer === quizQuestions[currentQuizQuestion].isSecondDegree;
     setQuizAnswers(prev => [...prev, correct]);
@@ -139,7 +85,6 @@ export default function EquationsSecondDegrePage() {
     if (!correct) {
       setShowCorrection(true);
     } else {
-      // Si correct, passer à la suite après un délai
       setTimeout(() => {
         moveToNextQuestion();
       }, 1500);
@@ -153,7 +98,6 @@ export default function EquationsSecondDegrePage() {
       setShowCorrection(false);
     } else {
       setShowQuizResults(true);
-      handleSectionComplete('quiz', 35);
     }
   };
 
@@ -164,74 +108,13 @@ export default function EquationsSecondDegrePage() {
     }, 300);
   };
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
-      {/* Header fixe avec navigation */}
-      <header className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-sm border-b border-gray-200">
-        <div className="max-w-4xl mx-auto px-4 py-3">
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center space-x-4">
-              <Link href="/" className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors">
-                <ArrowLeft className="h-5 w-5" />
-                <span>Retour</span>
-              </Link>
-              <div className="h-6 w-px bg-gray-300" />
-              <div>
-                <h1 className="text-lg font-bold text-gray-900">Équations du Second Degré</h1>
-                <p className="text-sm text-gray-600">Chapitre complet • {xpEarned} XP gagnés</p>
-              </div>
-            </div>
-            <div className="text-sm text-gray-600">
-              {completedSections.length}/4 sections
-            </div>
-          </div>
-          
-          {/* Navigation par onglets */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-            <div className="flex items-center justify-center px-3 py-2 bg-blue-500 text-white rounded-lg font-medium relative overflow-hidden">
-              <span className="text-sm font-semibold">1. Intro</span>
-              <div className="absolute top-1 right-1 w-2 h-2 bg-white rounded-full animate-pulse"></div>
-            </div>
-            <Link href="/chapitre/equations-second-degre-forme-canonique" className="flex items-center justify-center px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-medium transition-colors text-center">
-              <span className="text-sm">2. Canonique</span>
-            </Link>
-            <Link href="/chapitre/equations-second-degre-variations" className="flex items-center justify-center px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-medium transition-colors text-center">
-              <span className="text-sm">3. Variations</span>
-            </Link>
-            <Link href="/chapitre/equations-second-degre-resolution" className="flex items-center justify-center px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-medium transition-colors text-center">
-              <span className="text-sm">4. Résolution</span>
-            </Link>
-            <Link href="/chapitre/equations-second-degre-techniques-avancees" className="flex items-center justify-center px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-medium transition-colors text-center">
-              <span className="text-sm">5. Techniques</span>
-            </Link>
-            <Link href="/chapitre/equations-second-degre-tableaux-signes" className="flex items-center justify-center px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-medium transition-colors text-center">
-              <span className="text-sm">6. Inéquations</span>
-            </Link>
-            <Link href="/chapitre/equations-second-degre-parametres" className="flex items-center justify-center px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-medium transition-colors text-center">
-              <span className="text-sm">7. Paramètres</span>
-            </Link>
-            <Link href="/chapitre/equations-second-degre-equations-cube" className="flex items-center justify-center px-3 py-2 bg-purple-500 hover:bg-purple-600 text-white rounded-lg font-medium transition-colors text-center relative overflow-hidden">
-              <span className="text-sm font-semibold">8. Cube</span>
-              <div className="absolute top-1 right-1 w-2 h-2 bg-white rounded-full animate-pulse"></div>
-            </Link>
-          </div>
-        </div>
-      </header>
-
-      <div className="pt-20 max-w-4xl mx-auto p-6 space-y-12">
-        
-        {/* Section 1: Introduction */}
-        <section className="bg-white rounded-3xl p-8 shadow-xl border border-gray-200">
-          <div className="text-center mb-8">
-            <div className="inline-flex items-center space-x-2 bg-blue-100 px-4 py-2 rounded-full mb-4">
-              <Lightbulb className="h-5 w-5 text-blue-600" />
-              <span className="font-semibold text-blue-800">Découverte</span>
-            </div>
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">
-              Qu'est-ce qu'une équation du second degré ? 🤔
-            </h2>
-          </div>
-
+  const sections = [
+    {
+      id: 'intro',
+      title: 'Qu\'est-ce qu\'une équation du second degré ? 🤔',
+      icon: '💡',
+      content: (
+        <div className="space-y-8">
           <div className="grid md:grid-cols-2 gap-8 items-center">
             <div className="space-y-6">
               <div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white p-6 rounded-2xl">
@@ -281,118 +164,210 @@ export default function EquationsSecondDegrePage() {
               </div>
             </div>
           </div>
-
-          <div className="text-center mt-8">
-            <button
-              onClick={() => handleSectionComplete('intro', 20)}
-              className={`px-6 py-3 rounded-xl font-semibold transition-all transform hover:scale-105 ${
-                completedSections.includes('intro')
-                  ? 'bg-green-500 text-white'
-                  : 'bg-blue-500 hover:bg-blue-600 text-white'
-              }`}
-            >
-              {completedSections.includes('intro') ? '✓ Compris ! +20 XP' : 'J\'ai compris ! +20 XP'}
-            </button>
+        </div>
+      ),
+      xpReward: 20
+    },
+    {
+      id: 'graph',
+      title: 'Représentation graphique 📊',
+      icon: '📈',
+      content: (
+        <div className="space-y-6">
+          <div className="bg-gradient-to-r from-green-500 to-blue-600 text-white p-6 rounded-2xl">
+            <h3 className="text-xl font-bold mb-3">Le graphique d'une équation du second degré</h3>
+            <p className="text-lg">
+              Le graphique d'une fonction du second degré f(x) = ax² + bx + c est une <strong>parabole</strong> !
+            </p>
           </div>
-        </section>
 
-        {/* Section 2: Graphique Interactif - Lazy Loaded */}
-        <Suspense fallback={<SectionSkeleton />}>
-          <GraphSection onSectionComplete={handleSectionComplete} completedSections={completedSections} />
-        </Suspense>
-
-        {/* Section 3: Détective des Coefficients */}
-        <section className="bg-white rounded-3xl p-8 shadow-xl border border-gray-200">
-          <div className="text-center mb-8">
-            <div className="inline-flex items-center space-x-2 bg-orange-100 px-4 py-2 rounded-full mb-4">
-              <Target className="h-5 w-5 text-orange-600" />
-              <span className="font-semibold text-orange-800">Entraînement</span>
+          <div className="bg-white p-6 rounded-xl border-2 border-gray-300">
+            <h4 className="font-bold text-gray-800 mb-4">🎛️ Graphique interactif</h4>
+            <div className="text-center mb-4">
+              <div className="font-mono text-lg font-bold text-blue-600">
+                f(x) = {coefficients.a}x² + {coefficients.b}x + {coefficients.c}
+              </div>
             </div>
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">
-              Détective des Coefficients 🕵️
-            </h2>
-            <p className="text-gray-600">Identifie les valeurs de a, b et c dans ces équations</p>
-          </div>
-
-          <div className="grid md:grid-cols-2 gap-6">
-            <div className="p-6 bg-gradient-to-br from-blue-50 to-purple-50 rounded-2xl border-2 border-blue-200">
-              <h3 className="font-mono text-xl font-bold text-center mb-4 text-gray-900">2x² - 6x + 3 = 0</h3>
-              <div className="space-y-3">
-                <div className="flex justify-between items-center p-3 bg-white rounded-lg shadow-sm">
-                  <span className="font-bold text-gray-900">Coefficient a :</span>
-                  <span className="bg-green-100 px-3 py-1 rounded text-green-800 font-bold">2</span>
-                </div>
-                <div className="flex justify-between items-center p-3 bg-white rounded-lg shadow-sm">
-                  <span className="font-bold text-gray-900">Coefficient b :</span>
-                  <span className="bg-yellow-100 px-3 py-1 rounded text-yellow-800 font-bold">-6</span>
-                </div>
-                <div className="flex justify-between items-center p-3 bg-white rounded-lg shadow-sm">
-                  <span className="font-bold text-gray-900">Coefficient c :</span>
-                  <span className="bg-purple-100 px-3 py-1 rounded text-purple-800 font-bold">3</span>
-                </div>
+            
+            <div className="grid grid-cols-3 gap-4 mb-6">
+              <div>
+                <label className="block text-sm font-bold text-gray-700 mb-2">a = {coefficients.a}</label>
+                <input
+                  type="range"
+                  min="-2"
+                  max="2"
+                  step="0.5"
+                  value={coefficients.a}
+                  onChange={(e) => setCoefficients(prev => ({ ...prev, a: parseFloat(e.target.value) }))}
+                  className="w-full h-2 bg-blue-200 rounded-lg appearance-none cursor-pointer"
+                />
+                <div className="text-xs text-gray-500 mt-1">Influence l'ouverture</div>
+              </div>
+              <div>
+                <label className="block text-sm font-bold text-gray-700 mb-2">b = {coefficients.b}</label>
+                <input
+                  type="range"
+                  min="-5"
+                  max="5"
+                  step="1"
+                  value={coefficients.b}
+                  onChange={(e) => setCoefficients(prev => ({ ...prev, b: parseFloat(e.target.value) }))}
+                  className="w-full h-2 bg-green-200 rounded-lg appearance-none cursor-pointer"
+                />
+                <div className="text-xs text-gray-500 mt-1">Influence la position</div>
+              </div>
+              <div>
+                <label className="block text-sm font-bold text-gray-700 mb-2">c = {coefficients.c}</label>
+                <input
+                  type="range"
+                  min="-5"
+                  max="5"
+                  step="1"
+                  value={coefficients.c}
+                  onChange={(e) => setCoefficients(prev => ({ ...prev, c: parseFloat(e.target.value) }))}
+                  className="w-full h-2 bg-purple-200 rounded-lg appearance-none cursor-pointer"
+                />
+                <div className="text-xs text-gray-500 mt-1">Décalage vertical</div>
               </div>
             </div>
 
-            <div className="p-6 bg-gradient-to-br from-green-50 to-yellow-50 rounded-2xl border-2 border-green-200">
-              <h3 className="font-mono text-xl font-bold text-center mb-4 text-gray-900">-x² + 4 = 0</h3>
-              <div className="space-y-3">
-                <div className="flex justify-between items-center p-3 bg-white rounded-lg shadow-sm">
-                  <span className="font-bold text-gray-900">Coefficient a :</span>
-                  <span className="bg-green-100 px-3 py-1 rounded text-green-800 font-bold">-1</span>
-                </div>
-                <div className="flex justify-between items-center p-3 bg-white rounded-lg shadow-sm">
-                  <span className="font-bold text-gray-900">Coefficient b :</span>
-                  <span className="bg-yellow-100 px-3 py-1 rounded text-yellow-800 font-bold">0</span>
-                </div>
-                <div className="flex justify-between items-center p-3 bg-white rounded-lg shadow-sm">
-                  <span className="font-bold text-gray-900">Coefficient c :</span>
-                  <span className="bg-purple-100 px-3 py-1 rounded text-purple-800 font-bold">4</span>
+            <svg viewBox="0 0 200 200" className="w-full h-64 bg-gray-50 rounded-lg border">
+              <defs>
+                <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
+                  <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#e5e7eb" strokeWidth="0.5"/>
+                </pattern>
+              </defs>
+              <rect width="200" height="200" fill="url(#grid)" />
+              
+              <line x1="0" y1="100" x2="200" y2="100" stroke="#6b7280" strokeWidth="2" opacity="0.7"/>
+              <line x1="100" y1="0" x2="100" y2="200" stroke="#6b7280" strokeWidth="2" opacity="0.7"/>
+              
+              <polyline
+                points={generateParabolaPoints()}
+                fill="none"
+                stroke="#3b82f6"
+                strokeWidth="3"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              
+              <circle cx="100" cy="100" r="3" fill="#ef4444" />
+              <text x="105" y="105" fontSize="8" fill="#374151">O</text>
+            </svg>
+          </div>
+        </div>
+      ),
+      xpReward: 25
+    },
+    {
+      id: 'quiz',
+      title: 'Quiz : Reconnaître les équations du second degré 🎯',
+      icon: '🧠',
+      content: (
+        <div className="space-y-6">
+          {!showQuizResults ? (
+            <div className="bg-white p-6 rounded-xl border-2 border-gray-300">
+              <div className="flex justify-between items-center mb-4">
+                <h4 className="font-bold text-gray-800">
+                  Question {currentQuizQuestion + 1} sur {quizQuestions.length}
+                </h4>
+                <div className="text-sm text-gray-600">
+                  Score: {quizAnswers.filter(Boolean).length} / {quizAnswers.length}
                 </div>
               </div>
+              
+              <div className="text-center mb-6">
+                <div className="font-mono text-2xl font-bold text-blue-600 mb-2">
+                  {quizQuestions[currentQuizQuestion].equation}
+                </div>
+                <p className="text-gray-600">Cette équation est-elle du second degré ?</p>
+              </div>
+
+              <div className="flex justify-center space-x-4 mb-6">
+                <button
+                  onClick={() => handleQuizAnswer(true)}
+                  disabled={currentQuestionAnswered}
+                  className={`px-8 py-3 rounded-xl font-semibold transition-all ${
+                    currentQuestionAnswered
+                      ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                      : 'bg-green-500 hover:bg-green-600 text-white transform hover:scale-105'
+                  }`}
+                >
+                  ✅ Oui
+                </button>
+                <button
+                  onClick={() => handleQuizAnswer(false)}
+                  disabled={currentQuestionAnswered}
+                  className={`px-8 py-3 rounded-xl font-semibold transition-all ${
+                    currentQuestionAnswered
+                      ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                      : 'bg-red-500 hover:bg-red-600 text-white transform hover:scale-105'
+                  }`}
+                >
+                  ❌ Non
+                </button>
+              </div>
+
+              {currentQuestionAnswered && (
+                <div className={`p-4 rounded-lg border-l-4 ${
+                  lastAnswerCorrect ? 'bg-green-50 border-green-400' : 'bg-red-50 border-red-400'
+                }`}>
+                  <div className={`font-bold ${
+                    lastAnswerCorrect ? 'text-green-800' : 'text-red-800'
+                  }`}>
+                    {lastAnswerCorrect ? '✅ Correct !' : '❌ Incorrect'}
+                  </div>
+                  <div className="text-sm text-gray-600 mt-1">
+                    {quizQuestions[currentQuizQuestion].explanation}
+                  </div>
+                </div>
+              )}
+
+              {showCorrection && (
+                <div className="mt-4 p-4 bg-blue-50 border-l-4 border-blue-400 rounded-r-lg">
+                  <div className="font-bold text-blue-800 mb-2">
+                    {quizQuestions[currentQuizQuestion].detailedCorrection.why}
+                  </div>
+                  <div className="text-sm text-blue-700 whitespace-pre-line">
+                    {quizQuestions[currentQuizQuestion].detailedCorrection.details}
+                  </div>
+                  <button
+                    onClick={handleCorrectionValidated}
+                    className="mt-3 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+                  >
+                    Compris ! Continuer
+                  </button>
+                </div>
+              )}
             </div>
-          </div>
+          ) : (
+            <div className="bg-white p-6 rounded-xl border-2 border-gray-300 text-center">
+              <div className="text-4xl mb-4">🎉</div>
+              <h4 className="text-2xl font-bold text-gray-800 mb-4">Quiz terminé !</h4>
+              <div className="text-lg text-gray-600 mb-6">
+                Score final : {quizAnswers.filter(Boolean).length} / {quizAnswers.length}
+              </div>
+              <div className="bg-gradient-to-r from-green-500 to-blue-600 text-white p-4 rounded-lg">
+                <div className="font-bold">+35 XP gagné !</div>
+                <div className="text-sm mt-1">Excellente compréhension des équations du second degré</div>
+              </div>
+            </div>
+          )}
+        </div>
+      ),
+      xpReward: 35
+    }
+  ];
 
-          <div className="text-center mt-8">
-            <button
-              onClick={() => handleSectionComplete('detective', 25)}
-              className={`px-6 py-3 rounded-xl font-semibold transition-all transform hover:scale-105 ${
-                completedSections.includes('detective')
-                  ? 'bg-green-500 text-white'
-                  : 'bg-orange-500 hover:bg-orange-600 text-white'
-              }`}
-            >
-              {completedSections.includes('detective') ? '✓ Maîtrisé ! +25 XP' : 'C\'est clair ! +25 XP'}
-            </button>
-          </div>
-        </section>
-
-        {/* Section 4: Quiz - Lazy Loaded */}
-        <Suspense fallback={<SectionSkeleton />}>
-          <QuizSection onSectionComplete={handleSectionComplete} completedSections={completedSections} />
-        </Suspense>
-      </div>
-
-      {/* Styles pour les sliders */}
-      <style jsx>{`
-        .slider::-webkit-slider-thumb {
-          appearance: none;
-          height: 20px;
-          width: 20px;
-          border-radius: 50%;
-          background: #8b5cf6;
-          cursor: pointer;
-          box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-        }
-        .slider::-moz-range-thumb {
-          height: 20px;
-          width: 20px;
-          border-radius: 50%;
-          background: #8b5cf6;
-          cursor: pointer;
-          border: none;
-          box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-        }
-      `}</style>
-    </div>
+  return (
+    <ChapterLayout
+      title="Équations du Second Degré"
+      description="Découverte et reconnaissance des équations du second degré"
+      sections={sections}
+      navigation={{
+        previous: { href: '/chapitre/equations-second-degre-overview', text: 'Vue d\'ensemble' },
+        next: { href: '/chapitre/equations-second-degre-resolution', text: 'Résolution' }
+      }}
+    />
   );
 } 

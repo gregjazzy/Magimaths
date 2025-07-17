@@ -1,0 +1,49 @@
+{
+  "name": "MathPremière - Cours interactifs de mathématiques",
+  "short_name": "MathPremière",
+  "description": "Application interactive pour l'apprentissage des mathématiques en classe de première",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#3b82f6",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "fr",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["education", "utilities"],
+  "shortcuts": [
+    {
+      "name": "Équations du second degré",
+      "short_name": "Équations 2nd",
+      "description": "Accès direct aux cours sur les équations du second degré",
+      "url": "/chapitre/equations-second-degre",
+      "icons": [
+        {
+          "src": "/favicon.svg",
+          "sizes": "any",
+          "type": "image/svg+xml"
+        }
+      ]
+    },
+    {
+      "name": "Fonction exponentielle",
+      "short_name": "Exponentielle",
+      "description": "Accès direct aux cours sur la fonction exponentielle",
+      "url": "/chapitre/exponentielle",
+      "icons": [
+        {
+          "src": "/favicon.svg",
+          "sizes": "any",
+          "type": "image/svg+xml"
+        }
+      ]
+    }
+  ]
+} 

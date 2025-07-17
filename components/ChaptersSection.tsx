@@ -3,10 +3,15 @@
 import { motion } from 'framer-motion';
 import { ArrowRight, BookOpen, Clock, Star, Trophy } from 'lucide-react';
 import Link from 'next/link';
-import { chaptersData } from '@/lib/chapters';
-import { Chapter } from '@/types';
+import { getChaptersGroupedByClass, getAvailableClassLevels } from '@/lib/chapters';
+import { Chapter, ClassLevel } from '@/types';
+import { useState } from 'react';
 
 export default function ChaptersSection() {
+  const [selectedClass, setSelectedClass] = useState<ClassLevel>('1ere');
+  const chaptersGroupedByClass = getChaptersGroupedByClass();
+  const availableClassLevels = getAvailableClassLevels();
+
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -22,67 +27,117 @@ export default function ChaptersSection() {
     visible: { opacity: 1, y: 0 }
   };
 
-  // Grouper les chapitres par catégorie
-  const chaptersByCategory = chaptersData.reduce((acc: Record<string, Chapter[]>, chapter: Chapter) => {
-    if (!acc[chapter.category]) {
-      acc[chapter.category] = [];
-    }
-    acc[chapter.category].push(chapter);
-    return acc;
-  }, {});
-
-  // Debug - ajouter un console.log
-  console.log('Chapitres par catégorie:', chaptersByCategory);
-  console.log('Chapitres algebra:', chaptersByCategory.algebra);
-
-  const categoryInfo = {
-    algebra: {
-      title: 'Algèbre',
-      description: 'Équations, inéquations et systèmes',
-      color: 'from-purple-400 to-pink-500',
+  const getClassInfo = (classLevel: ClassLevel) => {
+    const classInfo = {
+      CE1: {
+        title: 'CE1 - Cours Élémentaire 1ère année',
+        description: 'Premiers apprentissages en mathématiques',
+        color: 'from-red-400 to-pink-500',
+        bgColor: 'bg-red-50',
+        borderColor: 'border-red-200'
+      },
+      CE2: {
+        title: 'CE2 - Cours Élémentaire 2ème année',
+        description: 'Consolidation des bases',
+        color: 'from-orange-400 to-red-500',
+        bgColor: 'bg-orange-50',
+        borderColor: 'border-orange-200'
+      },
+      CM1: {
+        title: 'CM1 - Cours Moyen 1ère année',
+        description: 'Développement des compétences',
+        color: 'from-yellow-400 to-orange-500',
+        bgColor: 'bg-yellow-50',
+        borderColor: 'border-yellow-200'
+      },
+      CM2: {
+        title: 'CM2 - Cours Moyen 2ème année',
+        description: 'Préparation au collège',
+        color: 'from-green-400 to-yellow-500',
+        bgColor: 'bg-green-50',
+        borderColor: 'border-green-200'
+      },
+      '6eme': {
+        title: '6ème - Cycle 3',
+        description: 'Entrée au collège',
+        color: 'from-blue-400 to-green-500',
+        bgColor: 'bg-blue-50',
+        borderColor: 'border-blue-200'
+      },
+      '5eme': {
+        title: '5ème - Cycle 4',
+        description: 'Développement au collège',
+        color: 'from-indigo-400 to-blue-500',
+        bgColor: 'bg-indigo-50',
+        borderColor: 'border-indigo-200'
+      },
+      '4eme': {
+        title: '4ème - Cycle 4',
+        description: 'Approfondissement',
+        color: 'from-purple-400 to-indigo-500',
       bgColor: 'bg-purple-50',
       borderColor: 'border-purple-200'
     },
-    analysis: {
-      title: 'Analyse',
-      description: 'Fonctions, dérivées et suites',
-      color: 'from-blue-400 to-cyan-500',
-      bgColor: 'bg-blue-50',
-      borderColor: 'border-blue-200'
+      '3eme': {
+        title: '3ème - Cycle 4',
+        description: 'Préparation au lycée',
+        color: 'from-pink-400 to-purple-500',
+        bgColor: 'bg-pink-50',
+        borderColor: 'border-pink-200'
+      },
+      '2nde': {
+        title: '2nde - Seconde',
+        description: 'Entrée au lycée',
+        color: 'from-emerald-400 to-cyan-500',
+        bgColor: 'bg-emerald-50',
+        borderColor: 'border-emerald-200'
     },
-    geometry: {
-      title: 'Géométrie',
-      description: 'Trigonométrie et produits scalaires',
-      color: 'from-green-400 to-emerald-500',
-      bgColor: 'bg-green-50',
-      borderColor: 'border-green-200'
+      '1ere': {
+        title: '1ère - Première',
+        description: 'Spécialisation mathématiques',
+        color: 'from-cyan-400 to-blue-500',
+        bgColor: 'bg-cyan-50',
+        borderColor: 'border-cyan-200'
     },
-    probability: {
-      title: 'Statistiques & Probabilités',
-      description: 'Probabilités et variables aléatoires',
-      color: 'from-orange-400 to-yellow-500',
-      bgColor: 'bg-orange-50',
-      borderColor: 'border-orange-200'
+      terminale: {
+        title: 'Terminale',
+        description: 'Préparation au supérieur',
+        color: 'from-slate-400 to-gray-600',
+        bgColor: 'bg-slate-50',
+        borderColor: 'border-slate-200'
     }
+    };
+    
+    return classInfo[classLevel];
   };
 
-  const getDifficultyColor = (difficulty: string) => {
-    switch (difficulty) {
-      case 'beginner': return 'bg-green-100 text-green-800';
-      case 'intermediate': return 'bg-yellow-100 text-yellow-800';
-      case 'advanced': return 'bg-red-100 text-red-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
+
+
+  const isChapterAvailable = (chapterId: string) => {
+    const availableChapters = ['equations-second-degre', 'exponentielle', 'nombres-derives', 'fonctions-references-derivees'];
+    return availableChapters.includes(chapterId);
   };
 
-  const getDifficultyLabel = (difficulty: string) => {
-    switch (difficulty) {
-      case 'beginner': return 'Débutant';
-      case 'intermediate': return 'Intermédiaire';
-      case 'advanced': return 'Avancé';
-      default: return difficulty;
-    }
+  const getChapterXP = (chapterId: string) => {
+    const xpMap: { [key: string]: string } = {
+      'exponentielle': '150 XP',
+      'nombres-derives': '220 XP',
+      'fonctions-references-derivees': '200 XP'
+    };
+    return xpMap[chapterId] || '110 XP';
   };
+
+  const getChapterSections = (chapterId: string) => {
+    const sectionsMap: { [key: string]: string } = {
+      'exponentielle': '6 sections progressives',
+      'nombres-derives': '4 sections + techniques avancées',
+      'fonctions-references-derivees': '3 sections + mémo'
+    };
+    return sectionsMap[chapterId] || '4 sections interactives';
+  };
+
+  const selectedClassInfo = getClassInfo(selectedClass);
+  const selectedChapters = chaptersGroupedByClass[selectedClass] || [];
 
   return (
     <section id="chapitres" className="py-20 bg-gradient-to-br from-gray-50 to-blue-50">
@@ -97,50 +152,69 @@ export default function ChaptersSection() {
             Tous les Chapitres
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Explore tous les concepts essentiels de mathématiques première. 
+            Explore tous les concepts essentiels de mathématiques du CE1 à la terminale. 
             Chaque chapitre est conçu pour être interactif et amusant !
           </p>
         </motion.div>
 
-        <div className="space-y-16">
-          {Object.entries(chaptersByCategory).map(([category, categoryChapters]) => {
-            const info = categoryInfo[category as keyof typeof categoryInfo];
-            
-            return (
+        {/* Sélecteur de classe */}
+        <div className="mb-12">
+          <div className="flex flex-wrap justify-center gap-2 mb-8">
+            {availableClassLevels.map((classLevel) => (
+              <button
+                key={classLevel}
+                onClick={() => setSelectedClass(classLevel)}
+                className={`px-6 py-3 rounded-full text-sm font-semibold transition-all duration-300 ${
+                  selectedClass === classLevel
+                    ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg transform scale-105'
+                    : 'bg-white text-gray-700 border-2 border-gray-200 hover:border-blue-300 hover:shadow-md'
+                }`}
+              >
+                {classLevel}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Affichage des chapitres de la classe sélectionnée */}
               <motion.div
-                key={category}
+          key={selectedClass}
                 variants={containerVariants}
                 initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true }}
+          animate="visible"
                 className="space-y-8"
               >
-                <div className={`${info.bgColor} ${info.borderColor} border-2 rounded-3xl p-6`}>
+          <div className={`${selectedClassInfo.bgColor} ${selectedClassInfo.borderColor} border-2 rounded-3xl p-6`}>
                   <div className="text-center mb-8">
-                    <div className={`inline-flex items-center space-x-3 bg-gradient-to-r ${info.color} text-white px-6 py-3 rounded-2xl mb-4`}>
+              <div className={`inline-flex items-center space-x-3 bg-gradient-to-r ${selectedClassInfo.color} text-white px-6 py-3 rounded-2xl mb-4`}>
                       <BookOpen className="h-6 w-6" />
-                      <h3 className="text-2xl font-bold">{info.title}</h3>
+                <h3 className="text-2xl font-bold">{selectedClassInfo.title}</h3>
+              </div>
+              <p className="text-gray-600 text-lg">{selectedClassInfo.description}</p>
+              <div className="mt-4 text-sm text-gray-500">
+                {selectedChapters.length} chapitre{selectedChapters.length > 1 ? 's' : ''} disponible{selectedChapters.length > 1 ? 's' : ''}
                     </div>
-                    <p className="text-gray-600 text-lg">{info.description}</p>
                   </div>
 
+            {selectedChapters.length > 0 ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {categoryChapters.map((chapter: Chapter, index: number) => {
-                      // Créer le lien pour les chapitres disponibles
-                      if (chapter.id === 'equations-second-degre' || chapter.id === 'exponentielle') {
+                {selectedChapters.map((chapter: Chapter) => {
+                  const isAvailable = isChapterAvailable(chapter.id);
+                  
+                  if (isAvailable) {
                         return (
-                          <Link 
-                            key={chapter.id}
-                            href={`/chapitre/${chapter.id}`}
-                            className="block"
-                          >
+                                      <Link
+              key={chapter.id}
+              href={chapter.id === 'equations-second-degre' ? '/chapitre/equations-second-degre-overview' : `/chapitre/${chapter.id}`}
+              className="block"
+            >
                             <motion.div
                               variants={cardVariants}
                               className="bg-white rounded-2xl p-6 shadow-lg border-2 border-gray-200 hover:shadow-xl transition-all duration-300 group cursor-pointer hover:scale-105"
                             >
                               <div className="flex items-center justify-between mb-4">
                                 <div className="flex items-center space-x-3">
-                                  <div className={`p-3 bg-gradient-to-r ${info.color} rounded-xl text-white`}>
+                              <div className={`p-3 bg-gradient-to-r ${selectedClassInfo.color} rounded-xl text-white`}>
                                     <span className="text-2xl">{chapter.icon}</span>
                                   </div>
                                   <div>
@@ -148,9 +222,6 @@ export default function ChaptersSection() {
                                       {chapter.title}
                                     </h4>
                                     <div className="flex items-center space-x-2 mt-1">
-                                      <span className={`px-2 py-1 rounded-full text-xs font-semibold ${getDifficultyColor(chapter.difficulty)}`}>
-                                        {getDifficultyLabel(chapter.difficulty)}
-                                      </span>
                                       <span className="px-2 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800">
                                         ✨ Disponible !
                                       </span>
@@ -173,14 +244,14 @@ export default function ChaptersSection() {
                                   </div>
                                   <div className="flex items-center space-x-1 text-gray-500">
                                     <Trophy className="h-4 w-4" />
-                                    <span>{chapter.id === 'exponentielle' ? '150 XP' : '110 XP'}</span>
+                                <span>{getChapterXP(chapter.id)}</span>
                                   </div>
                                 </div>
 
                                 <div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white p-3 rounded-xl text-center">
                                   <div className="font-bold text-sm">🚀 Commencer maintenant !</div>
                                   <div className="text-xs opacity-90">
-                                    {chapter.id === 'exponentielle' ? '6 sections progressives' : '4 sections interactives'}
+                                {getChapterSections(chapter.id)}
                                   </div>
                                 </div>
                               </div>
@@ -189,26 +260,26 @@ export default function ChaptersSection() {
                         );
                       }
 
-                      // Pour les autres chapitres (non disponibles)
+                  // Pour les chapitres non disponibles
                       return (
                         <motion.div
                           key={chapter.id}
                           variants={cardVariants}
-                          className="bg-white rounded-2xl p-6 shadow-lg border-2 border-gray-200 hover:shadow-xl transition-all duration-300 group"
+                      className="bg-white rounded-2xl p-6 shadow-lg border-2 border-gray-200 opacity-75 cursor-not-allowed"
                         >
                           <div className="flex items-center justify-between mb-4">
                             <div className="flex items-center space-x-3">
-                              <div className={`p-3 bg-gradient-to-r ${info.color} rounded-xl text-white`}>
+                          <div className={`p-3 bg-gradient-to-r from-gray-400 to-gray-500 rounded-xl text-white`}>
                                 <span className="text-2xl">{chapter.icon}</span>
                               </div>
                               <div>
-                                <h4 className="font-bold text-gray-900 text-lg group-hover:text-blue-600 transition-colors">
+                            <h4 className="font-bold text-gray-900 text-lg">
                                   {chapter.title}
                                 </h4>
                                 <div className="flex items-center space-x-2 mt-1">
-                                  <span className={`px-2 py-1 rounded-full text-xs font-semibold ${getDifficultyColor(chapter.difficulty)}`}>
-                                    {getDifficultyLabel(chapter.difficulty)}
-                                  </span>
+                              <span className="px-2 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-600">
+                                🔒 Bientôt disponible
+                              </span>
                                 </div>
                               </div>
                             </div>
@@ -226,58 +297,32 @@ export default function ChaptersSection() {
                               </div>
                               <div className="flex items-center space-x-1 text-gray-500">
                                 <Trophy className="h-4 w-4" />
-                                <span>110 XP</span>
+                            <span>100 XP</span>
                               </div>
                             </div>
 
-                            <div className="w-full bg-gray-200 rounded-full h-2">
-                              <div 
-                                className={`bg-gradient-to-r ${info.color} h-2 rounded-full`}
-                                style={{ width: '0%' }}
-                              />
-                            </div>
-                            
-                            <div className="flex items-center justify-between">
-                              <div className="flex -space-x-2">
-                                {[1, 2, 3].map((i) => (
-                                  <div
-                                    key={i}
-                                    className="w-6 h-6 rounded-full bg-gray-300 border-2 border-white flex items-center justify-center"
-                                  >
-                                    <span className="text-xs text-gray-600">👤</span>
-                                  </div>
-                                ))}
-                              </div>
-                              <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
-                                Bientôt disponible
-                              </span>
-                            </div>
+                        <div className="bg-gradient-to-r from-gray-400 to-gray-500 text-white p-3 rounded-xl text-center">
+                          <div className="font-bold text-sm">🔒 Bientôt disponible</div>
+                          <div className="text-xs opacity-90">
+                            En cours de développement...
                           </div>
-                        </motion.div>
-                      );
-                    })}
                   </div>
                 </div>
               </motion.div>
             );
           })}
         </div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="text-center mt-16"
-        >
-          <div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-2xl p-8 max-w-2xl mx-auto">
-            <h3 className="text-2xl font-bold mb-4">Plus de chapitres arrivent !</h3>
-            <p className="text-blue-100 mb-6">
-              Nous ajoutons régulièrement de nouveaux chapitres interactifs. 
-              Inscris-toi pour être notifié des nouveautés !
-            </p>
-            <button className="bg-white text-blue-600 px-6 py-3 rounded-xl font-semibold hover:bg-gray-100 transition-colors">
-              Me tenir au courant
-            </button>
+            ) : (
+              <div className="text-center py-16">
+                <div className="text-gray-400 text-6xl mb-4">📚</div>
+                <h3 className="text-xl font-semibold text-gray-700 mb-2">
+                  Aucun chapitre pour cette classe
+                </h3>
+                <p className="text-gray-500">
+                  Les chapitres pour cette classe sont en cours de développement.
+                </p>
+              </div>
+            )}
           </div>
         </motion.div>
       </div>
