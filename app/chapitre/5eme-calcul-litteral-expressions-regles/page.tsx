@@ -851,6 +851,9 @@ export default function ExpressionsReglesPage() {
   const [currentExercise, setCurrentExercise] = useState(0)
   const [showSolution, setShowSolution] = useState(false)
   const [solutionStep, setSolutionStep] = useState(0)
+  const [userAnswer, setUserAnswer] = useState('')
+  const [showAnswer, setShowAnswer] = useState(false)
+  const [answerFeedback, setAnswerFeedback] = useState<'correct' | 'incorrect' | null>(null)
   
   // États pour l'animation des chats
   const [catAnimationStep, setCatAnimationStep] = useState(0)
@@ -868,6 +871,47 @@ export default function ExpressionsReglesPage() {
   const resetExercise = () => {
     setShowSolution(false)
     setSolutionStep(0)
+    setUserAnswer('')
+    setShowAnswer(false)
+    setAnswerFeedback(null)
+  }
+
+  const checkAnswer = () => {
+    let correctAnswer = ''
+    
+    // Déterminer la réponse correcte selon le contexte
+    if (mainTab === 'addition') {
+      if (exerciseLevel === 'normal') {
+        correctAnswer = normalExercises[currentExercise].steps[normalExercises[currentExercise].steps.length - 1].expr
+      } else if (exerciseLevel === 'beast') {
+        correctAnswer = beastExercises[currentExercise].steps[beastExercises[currentExercise].steps.length - 1].expr
+      }
+    } else if (mainTab === 'multiplication') {
+      correctAnswer = normalMultiplicationExercises[currentExercise].steps[normalMultiplicationExercises[currentExercise].steps.length - 1].expr
+    }
+    
+    const userAnswerTrimmed = userAnswer.trim().toLowerCase().replace(/\s+/g, '')
+    const correctAnswerTrimmed = correctAnswer.trim().toLowerCase().replace(/\s+/g, '')
+    
+    // Variantes acceptées (avec ou sans espaces, parenthèses optionnelles)
+    const normalizeAnswer = (answer: string) => {
+      return answer
+        .replace(/\s+/g, '') // Supprimer tous les espaces
+        .replace(/\+\-/g, '-') // +- devient -
+        .replace(/\-\+/g, '-') // -+ devient -
+        .replace(/\*\*/g, '^') // ** devient ^
+        .replace(/×/g, '*') // × devient *
+    }
+    
+    const normalizedUser = normalizeAnswer(userAnswerTrimmed)
+    const normalizedCorrect = normalizeAnswer(correctAnswerTrimmed)
+    
+    if (normalizedUser === normalizedCorrect) {
+      setAnswerFeedback('correct')
+    } else {
+      setAnswerFeedback('incorrect')
+    }
+    setShowAnswer(true)
   }
 
   const nextSolutionStep = () => {
@@ -1449,6 +1493,60 @@ export default function ExpressionsReglesPage() {
                     </div>
                   </div>
 
+                  {/* Éditeur de réponse */}
+                  <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-6 border-2 border-blue-300 shadow-md">
+                    <h4 className="font-semibold text-blue-800 mb-4 text-lg">📝 Votre réponse :</h4>
+                    <div className="flex gap-3 items-center">
+                      <input
+                        type="text"
+                        value={userAnswer}
+                        onChange={(e) => setUserAnswer(e.target.value)}
+                        placeholder="Tapez votre réponse ici... (ex: 5x)"
+                        className="flex-1 px-4 py-3 border-2 border-blue-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-mono text-lg bg-white shadow-sm text-gray-900 placeholder-gray-500"
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            checkAnswer()
+                          }
+                        }}
+                        autoFocus
+                      />
+                      <button
+                        onClick={checkAnswer}
+                        disabled={!userAnswer.trim()}
+                        className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-semibold shadow-sm"
+                      >
+                        ✓ Valider
+                      </button>
+                    </div>
+                    
+                    {/* Feedback de réponse */}
+                    {showAnswer && (
+                      <div className={`mt-4 p-4 rounded-lg border ${
+                        answerFeedback === 'correct' 
+                          ? 'bg-green-50 border-green-200' 
+                          : 'bg-red-50 border-red-200'
+                      }`}>
+                        <div className="flex items-center gap-2">
+                          {answerFeedback === 'correct' ? (
+                            <>
+                              <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
+                                <span className="text-white text-sm font-bold">✓</span>
+                              </div>
+                              <span className="text-green-800 font-semibold">Correct ! Bonne réponse</span>
+                            </>
+                          ) : (
+                            <>
+                              <div className="w-5 h-5 bg-red-500 rounded-full flex items-center justify-center">
+                                <span className="text-white text-sm font-bold">✗</span>
+                              </div>
+                              <span className="text-red-800 font-semibold">Incorrect. Essayez encore ou consultez la solution</span>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
                   {/* Boutons de contrôle */}
                   <div className="flex gap-3 justify-center">
                     <button
@@ -1560,6 +1658,60 @@ export default function ExpressionsReglesPage() {
                     <div className="text-2xl font-mono text-red-900 text-center">
                       {beastExercises[currentExercise].question}
                     </div>
+                  </div>
+
+                  {/* Éditeur de réponse */}
+                  <div className="bg-gradient-to-r from-red-50 to-pink-50 rounded-lg p-6 border-2 border-red-300 shadow-md">
+                    <h4 className="font-semibold text-red-800 mb-4 text-lg">🔥 Votre réponse (Beast Mode) :</h4>
+                    <div className="flex gap-3 items-center">
+                      <input
+                        type="text"
+                        value={userAnswer}
+                        onChange={(e) => setUserAnswer(e.target.value)}
+                        placeholder="Défi difficile ! Tapez votre réponse..."
+                        className="flex-1 px-4 py-3 border-2 border-red-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 font-mono text-lg bg-white shadow-sm text-gray-900 placeholder-gray-500"
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            checkAnswer()
+                          }
+                        }}
+                        autoFocus
+                      />
+                      <button
+                        onClick={checkAnswer}
+                        disabled={!userAnswer.trim()}
+                        className="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-semibold shadow-sm"
+                      >
+                        🔥 Valider
+                      </button>
+                    </div>
+                    
+                    {/* Feedback de réponse */}
+                    {showAnswer && (
+                      <div className={`mt-4 p-4 rounded-lg border ${
+                        answerFeedback === 'correct' 
+                          ? 'bg-green-50 border-green-200' 
+                          : 'bg-red-50 border-red-200'
+                      }`}>
+                        <div className="flex items-center gap-2">
+                          {answerFeedback === 'correct' ? (
+                            <>
+                              <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
+                                <span className="text-white text-sm font-bold">✓</span>
+                              </div>
+                              <span className="text-green-800 font-semibold">Correct ! Bonne réponse</span>
+                            </>
+                          ) : (
+                            <>
+                              <div className="w-5 h-5 bg-red-500 rounded-full flex items-center justify-center">
+                                <span className="text-white text-sm font-bold">✗</span>
+                              </div>
+                              <span className="text-red-800 font-semibold">Incorrect. Essayez encore ou consultez la solution</span>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                   {/* Boutons de contrôle */}
@@ -1908,6 +2060,60 @@ export default function ExpressionsReglesPage() {
                       <div className="text-2xl font-mono text-center bg-white p-4 rounded-lg border border-amber-300 text-gray-900">
                         {currentEx.question}
                       </div>
+                    </div>
+
+                    {/* Éditeur de réponse */}
+                    <div className="bg-gradient-to-r from-orange-50 to-amber-50 rounded-lg p-6 border-2 border-orange-300 shadow-md">
+                      <h4 className="font-semibold text-orange-800 mb-4 text-lg">✖️ Votre réponse (Multiplication) :</h4>
+                      <div className="flex gap-3 items-center">
+                        <input
+                          type="text"
+                          value={userAnswer}
+                          onChange={(e) => setUserAnswer(e.target.value)}
+                          placeholder="Multipliez et simplifiez... (ex: 6x²)"
+                          className="flex-1 px-4 py-3 border-2 border-orange-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 font-mono text-lg bg-white shadow-sm text-gray-900 placeholder-gray-500"
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                              checkAnswer()
+                            }
+                          }}
+                          autoFocus
+                        />
+                        <button
+                          onClick={checkAnswer}
+                          disabled={!userAnswer.trim()}
+                          className="px-6 py-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-semibold shadow-sm"
+                        >
+                          ✖️ Valider
+                        </button>
+                      </div>
+                      
+                      {/* Feedback de réponse */}
+                      {showAnswer && (
+                        <div className={`mt-4 p-4 rounded-lg border ${
+                          answerFeedback === 'correct' 
+                            ? 'bg-green-50 border-green-200' 
+                            : 'bg-red-50 border-red-200'
+                        }`}>
+                          <div className="flex items-center gap-2">
+                            {answerFeedback === 'correct' ? (
+                              <>
+                                <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
+                                  <span className="text-white text-sm font-bold">✓</span>
+                                </div>
+                                <span className="text-green-800 font-semibold">Correct ! Bonne réponse</span>
+                              </>
+                            ) : (
+                              <>
+                                <div className="w-5 h-5 bg-red-500 rounded-full flex items-center justify-center">
+                                  <span className="text-white text-sm font-bold">✗</span>
+                                </div>
+                                <span className="text-red-800 font-semibold">Incorrect. Essayez encore ou consultez la solution</span>
+                              </>
+                            )}
+                          </div>
+                        </div>
+                      )}
                     </div>
 
                     {/* Boutons d'action */}

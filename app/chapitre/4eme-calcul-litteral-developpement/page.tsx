@@ -222,12 +222,12 @@ export default function DeveloppementPage() {
                 <div className="bg-white rounded-lg p-6 border border-blue-100">
                   <h3 className="text-lg font-semibold text-gray-800 mb-4">Exemple détaillé</h3>
                   <div className="space-y-3">
-                    <div className="p-3 bg-gray-50 rounded font-mono text-lg">
+                    <div className="p-3 bg-gray-50 rounded font-mono text-lg text-gray-800">
                       3(x + 2) = ?
                     </div>
                     <div className="p-3 bg-blue-50 rounded">
                       <p className="text-blue-800">On distribue le 3 à chaque terme de la parenthèse :</p>
-                      <p className="font-mono text-lg mt-2">3(x + 2) = 3 × x + 3 × 2 = 3x + 6</p>
+                      <p className="font-mono text-lg mt-2 text-blue-900">3(x + 2) = 3 × x + 3 × 2 = 3x + 6</p>
                     </div>
                   </div>
                 </div>
