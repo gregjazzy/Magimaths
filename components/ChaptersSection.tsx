@@ -210,7 +210,7 @@ export default function ChaptersSection() {
             >
                             <motion.div
                               variants={cardVariants}
-                              className="bg-white rounded-2xl p-6 shadow-lg border-2 border-gray-200 hover:shadow-xl transition-all duration-300 group cursor-pointer hover:scale-105"
+                              className="bg-white rounded-3xl p-6 shadow-xl border border-gray-100 hover:border-gray-200 hover:shadow-2xl transition-all duration-500 group cursor-pointer hover:scale-110 hover:-translate-y-3"
                             >
                               <div className="flex items-center justify-between mb-4">
                                 <div className="flex items-center space-x-3">
@@ -222,9 +222,13 @@ export default function ChaptersSection() {
                                       {chapter.title}
                                     </h4>
                                     <div className="flex items-center space-x-2 mt-1">
-                                      <span className="px-2 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800">
-                                        ✨ Disponible !
+                                      <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded-full">
+                                        {chapter.difficulty}
                                       </span>
+                                      <div className="flex items-center text-green-600">
+                                        <div className="w-2 h-2 bg-green-500 rounded-full mr-1"></div>
+                                        <span className="text-xs font-medium">Disponible</span>
+                                      </div>
                                     </div>
                                   </div>
                                 </div>
@@ -248,10 +252,20 @@ export default function ChaptersSection() {
                                   </div>
                                 </div>
 
-                                <div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white p-3 rounded-xl text-center">
-                                  <div className="font-bold text-sm">🚀 Commencer maintenant !</div>
-                                  <div className="text-xs opacity-90">
-                                {getChapterSections(chapter.id)}
+                                <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+                                  <div className="flex items-center space-x-3 text-sm text-gray-500">
+                                    <div className="flex items-center gap-1">
+                                      <Clock className="w-4 h-4" />
+                                      <span className="font-medium">{chapter.estimatedTime}min</span>
+                                    </div>
+                                    <div className="flex items-center gap-1">
+                                      <div className="w-4 h-4 text-yellow-500 animate-pulse">⭐</div>
+                                      <span className="font-bold text-yellow-600">{getChapterXP(chapter.id)}</span>
+                                    </div>
+                                  </div>
+                                  <div className="flex items-center space-x-1 text-blue-600 group-hover:text-blue-700 transform group-hover:translate-x-1 transition-all duration-300">
+                                    <div className="w-4 h-4">▶️</div>
+                                    <span className="text-sm font-bold">Démarrer</span>
                                   </div>
                                 </div>
                               </div>

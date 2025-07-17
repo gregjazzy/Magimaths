@@ -61,127 +61,145 @@ export default function FonctionsReferencesDerivesPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-cyan-50 via-blue-50 to-indigo-100">
-      {/* Header fixe avec navigation */}
-      <header className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-200">
-        <div className="max-w-4xl mx-auto px-4 py-2">
-          {/* Titre et infos sur une ligne compacte */}
-          <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center space-x-3">
-              <Link href="/" className="flex items-center space-x-1 text-gray-600 hover:text-gray-900 transition-colors">
-                <ArrowLeft className="h-4 w-4" />
-                <span className="text-sm">Retour</span>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 relative overflow-hidden">
+      {/* Particules de fond pour l'effet magique */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-20 left-10 w-64 h-64 bg-blue-300/20 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute top-40 right-20 w-48 h-48 bg-purple-300/20 rounded-full blur-3xl animate-pulse" style={{animationDelay: '2s'}}></div>
+        <div className="absolute bottom-20 left-20 w-56 h-56 bg-pink-300/20 rounded-full blur-3xl animate-pulse" style={{animationDelay: '4s'}}></div>
+        <div className="absolute bottom-40 right-40 w-32 h-32 bg-indigo-300/20 rounded-full blur-3xl animate-pulse" style={{animationDelay: '1s'}}></div>
+      </div>
+
+      {/* Header moderne */}
+      <div className="relative z-10 bg-white/80 backdrop-blur-sm shadow-sm border-b border-white/20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-6">
+              <Link href="/chapitre/fonctions-references-derivees-overview" className="p-2 hover:bg-white/60 rounded-lg transition-colors">
+                <ArrowLeft className="w-6 h-6 text-gray-600" />
               </Link>
-              <div className="h-4 w-px bg-gray-300" />
-              <h1 className="text-base font-bold text-gray-900">Fonctions de Référence et Dérivées</h1>
-              <div className="flex items-center space-x-2 text-xs text-gray-500">
-                <span className="bg-cyan-100 px-2 py-1 rounded text-cyan-700">{totalXP} XP</span>
-                <span className="bg-blue-100 px-2 py-1 rounded text-blue-700">0/3</span>
+              <div>
+                <h1 className="text-3xl font-bold text-gray-900">Fonctions de Référence et Dérivées</h1>
+                <p className="text-gray-600 mt-1">Maîtrisez les dérivées des fonctions usuelles</p>
+              </div>
+            </div>
+            <div className="flex items-center space-x-4">
+              <div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-4 py-2 rounded-full text-sm font-medium">
+                {totalXP} XP disponibles
               </div>
             </div>
           </div>
-          
-          {/* Navigation compacte */}
-          <div className="grid grid-cols-3 gap-1">
-            <Link href="/chapitre/fonctions-references-derivees/domaine-derivabilite" className="flex items-center justify-center px-2 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded text-xs font-medium transition-colors text-center">
-              Domaine de dérivabilité
-            </Link>
-            <Link href="/chapitre/fonctions-references-derivees/formules-base" className="flex items-center justify-center px-2 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded text-xs font-medium transition-colors text-center">
-              Formules de base
-            </Link>
-            <Link href="/chapitre/fonctions-references-derivees/formules-complexes" className="flex items-center justify-center px-2 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded text-xs font-medium transition-colors text-center">
-              Formules complexes
-            </Link>
+        </div>
+      </div>
+
+      {/* Main content */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
+        
+        {/* Introduction */}
+        <div className="mb-8">
+          <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-xl border border-white/20 text-center">
+            <div className="relative">
+              <div className="absolute top-3 right-3 w-5 h-5 text-yellow-400 animate-pulse">✨</div>
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">
+                Maîtrisez les dérivées des fonctions usuelles
+              </h2>
+              <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+                Apprenez à calculer les dérivées des fonctions de référence avec des formules et des techniques avancées.
+              </p>
+            </div>
           </div>
         </div>
-      </header>
 
-      <div className="pt-20 max-w-4xl mx-auto p-6 space-y-10">
-        
-        {/* Introduction du chapitre */}
-        <section className="bg-white rounded-3xl p-8 shadow-xl border border-gray-200">
-          <div className="text-center mb-8">
-            <div className="inline-flex items-center space-x-2 bg-cyan-100 px-4 py-2 rounded-full mb-4">
-              <Target className="h-5 w-5 text-cyan-600" />
-              <span className="font-semibold text-cyan-800">Concept Fondamental</span>
-            </div>
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">
-              📐 Fonctions de référence et dérivées
-            </h2>
-            <p className="text-xl text-gray-600 mb-6">
-              Maîtrise toutes les formules essentielles pour calculer les dérivées
-            </p>
+        {/* Grille des sections */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {sections.map((section) => (
+            <div key={section.id} className="group relative bg-white/90 backdrop-blur-sm rounded-3xl p-6 shadow-xl border border-white/20 hover:border-white/40 hover:shadow-2xl transition-all duration-500 hover:scale-105 hover:-translate-y-2 overflow-hidden">
+              {/* Barre colorée animée */}
+              <div 
+                className="absolute top-0 left-0 right-0 h-1 transition-all duration-500 group-hover:h-2"
+                style={{ background: `linear-gradient(90deg, ${section.color.replace('from-', '').replace('to-', '').replace(' ', ', ')})` }}
+              />
+              
+              {/* Particules magiques */}
+              <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                <div className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></div>
+              </div>
+              <div className="absolute bottom-3 left-3 opacity-0 group-hover:opacity-100 transition-opacity duration-700">
+                <div className="w-1 h-1 bg-blue-400 rounded-full animate-pulse" style={{animationDelay: '0.3s'}}></div>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-6">
-            {sections.map((section, index) => (
-              <div key={section.id} className={`${section.bgColor} ${section.borderColor} border-2 rounded-2xl p-6 hover:shadow-lg transition-all`}>
-                <div className="text-center">
-                  <div className="text-4xl mb-3">{section.icon}</div>
-                  <h3 className="text-lg font-bold text-gray-900 mb-2">
+              <div className="relative z-10">
+                <div className="flex items-center space-x-4 mb-4">
+                  <div className="text-3xl transform group-hover:scale-110 group-hover:rotate-6 transition-all duration-300">
+                    {section.icon}
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
                     {section.title}
                   </h3>
-                  <p className="text-sm text-gray-600 mb-4">
+                    <div className="flex items-center gap-2 mt-1">
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${getDifficultyColor(section.difficulty)}`}>
+                        {section.difficulty}
+                      </span>
+                      <div className="flex items-center text-green-600">
+                        <div className="w-2 h-2 bg-green-500 rounded-full mr-1"></div>
+                        <span className="text-xs font-medium">Disponible</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <p className="text-gray-600 text-sm mb-4 line-clamp-2">
                     {section.description}
                   </p>
-                  <div className="flex items-center justify-center space-x-2 text-xs text-gray-500 mb-4">
+                
+                <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
                     <div className="flex items-center space-x-1">
-                      <Clock className="h-3 w-3" />
+                    <Clock className="w-4 h-4" />
                       <span>{section.estimatedTime}</span>
                     </div>
                     <div className="flex items-center space-x-1">
-                      <Trophy className="h-3 w-3" />
+                    <Trophy className="w-4 h-4" />
                       <span>{section.xp} XP</span>
-                    </div>
                   </div>
-                  <span className={`px-2 py-1 rounded-full text-xs font-semibold ${getDifficultyColor(section.difficulty)} mb-4 inline-block`}>
-                    {section.difficulty}
-                  </span>
-                  <div className="mt-4">
-                    <Link href={`/chapitre/fonctions-references-derivees/${section.id}`}>
-                      <button className={`bg-gradient-to-r ${section.color} text-white px-4 py-2 rounded-lg font-bold hover:shadow-lg transition-all flex items-center space-x-2 mx-auto group text-sm`}>
-                        <Play className="h-4 w-4" />
-                        <span>Commencer</span>
-                        <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                      </button>
-                    </Link>
-                  </div>
+                </div>
+                
+                <Link 
+                  href={`/chapitre/fonctions-references-derivees/${section.id}`}
+                  className={`w-full bg-gradient-to-r ${section.color} text-white py-3 px-4 rounded-xl font-bold text-center inline-block hover:opacity-90 transition-all transform hover:scale-105 shadow-lg hover:shadow-xl`}
+                >
+                  <Play className="inline w-4 h-4 mr-2" />
+                  Commencer
+                </Link>
                 </div>
               </div>
             ))}
           </div>
-        </section>
 
-        {/* Récapitulatif */}
-        <section className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-3xl p-8 shadow-xl text-white">
-          <div className="text-center">
-            <div className="text-5xl mb-6">🎯</div>
-            <h2 className="text-3xl font-bold mb-6">
-              OBJECTIFS DU CHAPITRE
+        {/* Progression générale */}
+        <div className="mt-8 bg-white/80 backdrop-blur-sm rounded-3xl p-6 shadow-xl border border-white/20">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-2xl font-bold text-gray-900">
+              <Target className="inline w-6 h-6 mr-2" />
+              Progression générale
             </h2>
-            <div className="grid md:grid-cols-3 gap-6 mt-8">
-              <div className="bg-white/20 p-6 rounded-2xl">
-                <div className="text-3xl mb-3">📍</div>
-                <h3 className="text-xl font-bold mb-2">Comprendre</h3>
-                <p className="text-indigo-100">Le domaine de dérivabilité des fonctions</p>
-              </div>
-              <div className="bg-white/20 p-6 rounded-2xl">
-                <div className="text-3xl mb-3">📋</div>
-                <h3 className="text-xl font-bold mb-2">Mémoriser</h3>
-                <p className="text-indigo-100">Les formules de dérivation essentielles</p>
-              </div>
-              <div className="bg-white/20 p-6 rounded-2xl">
-                <div className="text-3xl mb-3">🏆</div>
-                <h3 className="text-xl font-bold mb-2">Maîtriser</h3>
-                <p className="text-indigo-100">Les techniques avancées de dérivation</p>
-              </div>
-            </div>
-            <div className="mt-8 bg-white/30 p-4 rounded-2xl">
-              <div className="text-2xl font-bold">Total : {totalXP} XP à gagner</div>
-              <div className="text-sm mt-2 text-indigo-100">Durée estimée : 75 minutes</div>
+            <div className="text-sm text-gray-600">
+              0 / {sections.length} sections terminées
             </div>
           </div>
-        </section>
+          
+          <div className="w-full bg-gray-200 rounded-full h-3 mb-2">
+            <div 
+              className="bg-gradient-to-r from-green-500 to-emerald-500 h-3 rounded-full transition-all duration-500"
+              style={{ width: '0%' }}
+            ></div>
+          </div>
+          
+          <div className="flex justify-between items-center text-sm text-gray-600">
+            <span>0% terminé</span>
+            <span>XP total possible: {totalXP}</span>
+          </div>
+        </div>
       </div>
     </div>
   );

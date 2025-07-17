@@ -77,35 +77,47 @@ export default function NombresDerivesOverviewPage() {
   }, 0);
 
     return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 relative overflow-hidden">
+      {/* Particules de fond pour l'effet glassmorphism */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-20 left-10 w-64 h-64 bg-blue-300/20 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute top-40 right-20 w-48 h-48 bg-purple-300/20 rounded-full blur-3xl animate-pulse" style={{animationDelay: '2s'}}></div>
+        <div className="absolute bottom-20 left-20 w-56 h-56 bg-pink-300/20 rounded-full blur-3xl animate-pulse" style={{animationDelay: '4s'}}></div>
+        <div className="absolute bottom-40 right-40 w-32 h-32 bg-indigo-300/20 rounded-full blur-3xl animate-pulse" style={{animationDelay: '1s'}}></div>
+      </div>
+
       {/* Header */}
-      <header className="bg-white shadow-sm border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+      <div className="relative z-10 bg-white/80 backdrop-blur-sm shadow-sm border-b border-white/20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <Link href="/" className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors">
-                <ArrowLeft className="h-5 w-5" />
-                <span>Retour aux classes</span>
+            <div className="flex items-center space-x-6">
+              <Link href="/1ere" className="p-2 hover:bg-white/60 rounded-lg transition-colors">
+                <ArrowLeft className="w-6 h-6 text-gray-600" />
               </Link>
-              <div className="h-6 w-px bg-gray-300" />
-              <div className="flex items-center space-x-2">
-                <div className="p-2 bg-blue-100 rounded-lg">
-                  <TrendingUp className="h-6 w-6 text-blue-600" />
+              <div>
+                <h1 className="text-3xl font-bold text-gray-900">Nombres Dérivés</h1>
+                <p className="text-gray-600 mt-1">Explorez les concepts fondamentaux de la dérivation</p>
+              </div>
+            </div>
+            <div className="flex items-center space-x-4">
+              <div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-4 py-2 rounded-full text-sm font-medium">
+                {Math.floor(totalDuration / 60)}h {totalDuration % 60}min
                 </div>
-                <h1 className="text-2xl font-bold text-gray-900">Nombres Dérivés</h1>
+              <div className="bg-gradient-to-r from-green-500 to-blue-500 text-white px-4 py-2 rounded-full text-sm font-medium">
+                {totalXP} XP
               </div>
             </div>
           </div>
         </div>
-      </header>
+      </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         
         {/* Stats Overview */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
+          <div className="bg-white/60 backdrop-blur-md rounded-2xl p-6 shadow-lg border border-white/30 hover:bg-white/70 transition-all duration-300">
             <div className="flex items-center">
-              <div className="p-3 bg-blue-100 rounded-lg">
+              <div className="p-3 bg-blue-100/80 backdrop-blur-sm rounded-lg">
                 <BookOpen className="h-6 w-6 text-blue-600" />
               </div>
               <div className="ml-4">
@@ -115,9 +127,9 @@ export default function NombresDerivesOverviewPage() {
             </div>
           </div>
           
-          <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
+          <div className="bg-white/60 backdrop-blur-md rounded-2xl p-6 shadow-lg border border-white/30 hover:bg-white/70 transition-all duration-300">
             <div className="flex items-center">
-              <div className="p-3 bg-green-100 rounded-lg">
+              <div className="p-3 bg-green-100/80 backdrop-blur-sm rounded-lg">
                 <Clock className="h-6 w-6 text-green-600" />
               </div>
               <div className="ml-4">
@@ -127,9 +139,9 @@ export default function NombresDerivesOverviewPage() {
             </div>
           </div>
           
-          <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
+          <div className="bg-white/60 backdrop-blur-md rounded-2xl p-6 shadow-lg border border-white/30 hover:bg-white/70 transition-all duration-300">
             <div className="flex items-center">
-              <div className="p-3 bg-purple-100 rounded-lg">
+              <div className="p-3 bg-purple-100/80 backdrop-blur-sm rounded-lg">
                 <Trophy className="h-6 w-6 text-purple-600" />
               </div>
               <div className="ml-4">
@@ -143,10 +155,13 @@ export default function NombresDerivesOverviewPage() {
         {/* Chapters Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {chapters.map((chapter) => (
-            <div key={chapter.id} className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-all duration-300">
+            <div key={chapter.id} className="group relative bg-white/70 backdrop-blur-lg rounded-3xl shadow-lg border border-white/20 hover:border-white/40 overflow-hidden hover:shadow-xl hover:bg-white/80 transition-all duration-500 hover:scale-105 hover:-translate-y-2">
               <div className={`h-2 bg-gradient-to-r ${chapter.gradient}`} />
               
-              <div className="p-6">
+              {/* Effet de lumière glassmorphism */}
+              <div className="absolute inset-0 bg-gradient-to-br from-white/30 via-transparent to-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+              
+              <div className="relative p-6 z-10">
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex items-center space-x-3">
                     <div className={`w-8 h-8 rounded-full bg-gradient-to-r ${chapter.gradient} flex items-center justify-center text-white font-bold text-sm`}>

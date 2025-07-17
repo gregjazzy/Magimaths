@@ -636,9 +636,9 @@ export default function AirePage() {
           </Link>
         </div>
         
-        <div className="bg-white rounded-2xl p-8 shadow-lg border border-green-100">
+        <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-xl border border-white/20">
           <div className="flex items-center gap-4 mb-6">
-            <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-500 rounded-2xl flex items-center justify-center text-white text-2xl font-bold">
+            <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-500 rounded-2xl flex items-center justify-center text-white text-2xl font-bold shadow-lg">
               ⬜
             </div>
             <div>
@@ -661,8 +661,8 @@ export default function AirePage() {
                 onClick={() => setCurrentSection(tab.id as any)}
                 className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${
                   currentSection === tab.id
-                    ? 'bg-green-500 text-white shadow-lg'
-                    : 'bg-white text-gray-700 hover:bg-gray-50'
+                    ? 'bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-lg'
+                    : 'bg-white/60 text-gray-700 hover:bg-white/80'
                 }`}
               >
                 <tab.icon size={16} />

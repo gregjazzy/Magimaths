@@ -5,11 +5,11 @@ import { ChevronLeft, Clock, Trophy, BookOpen, Play } from 'lucide-react'
 import Link from 'next/link'
 import { getChaptersByClass } from '@/lib/chapters'
 
-export default function CM1Page() {
+export default function PremierePage() {
   const [hoveredChapter, setHoveredChapter] = useState<string | null>(null)
   
-  const cm1Chapters = getChaptersByClass('CM1')
-  const config = { color: '#45b7d1', icon: '📝', name: 'CM1' }
+  const premiereChapters = getChaptersByClass('1ere')
+  const config = { color: '#10b981', icon: '🎓', name: '1ère' }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 relative overflow-hidden">
@@ -30,12 +30,12 @@ export default function CM1Page() {
                 <ChevronLeft className="w-6 h-6 text-gray-600" />
               </Link>
               <div className="flex items-center space-x-3">
-                <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-2xl flex items-center justify-center text-white text-2xl font-bold shadow-lg">
+                <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-green-500 rounded-2xl flex items-center justify-center text-white text-2xl font-bold shadow-lg">
                   {config.icon}
                 </div>
                 <div>
                   <h1 className="text-3xl font-bold text-gray-900">{config.name}</h1>
-                  <p className="text-gray-600 mt-1">Découvrez les mathématiques du CM1</p>
+                  <p className="text-gray-600 mt-1">Découvrez les mathématiques de 1ère</p>
                 </div>
               </div>
             </div>
@@ -44,9 +44,9 @@ export default function CM1Page() {
       </div>
 
       {/* Main content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {cm1Chapters.map((chapter) => {
+          {premiereChapters.map((chapter) => {
             const totalXP = chapter.estimatedTime * 2
             return (
               <Link
@@ -54,17 +54,12 @@ export default function CM1Page() {
                 href={
                   chapter.id === 'equations-second-degre' ? '/chapitre/equations-second-degre-overview' :
                   chapter.id === 'nombres-derives' ? '/chapitre/nombres-derives-overview' :
+                  chapter.id === 'fonctions-references-derivees' ? '/chapitre/fonctions-references-derivees-overview' :
                   `/chapitre/${chapter.id}`
                 }
                 className="group block"
               >
-                <div className="relative bg-white rounded-3xl shadow-xl border border-gray-100 hover:border-gray-200 p-6 hover:shadow-2xl transition-all duration-500 cursor-pointer transform hover:scale-110 hover:-translate-y-3 overflow-hidden backdrop-blur-sm">
-                  {/* Effet de fond magique */}
-                  <div 
-                    className="absolute inset-0 opacity-0 group-hover:opacity-15 transition-opacity duration-500"
-                    style={{ background: `radial-gradient(circle at center, ${config.color}20, transparent 70%)` }}
-                  />
-                  
+                <div className="group relative bg-white/90 backdrop-blur-sm rounded-3xl p-6 shadow-xl border border-white/20 hover:border-white/40 hover:shadow-2xl transition-all duration-500 hover:scale-105 hover:-translate-y-2 overflow-hidden">
                   {/* Barre colorée animée */}
                   <div 
                     className="absolute top-0 left-0 right-0 h-1 transition-all duration-500 group-hover:h-2"
@@ -73,13 +68,10 @@ export default function CM1Page() {
                   
                   {/* Particules magiques */}
                   <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                    <div className="w-5 h-5 text-yellow-400 animate-pulse">✨</div>
+                    <div className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></div>
                   </div>
                   <div className="absolute bottom-3 left-3 opacity-0 group-hover:opacity-100 transition-opacity duration-700">
-                    <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse" style={{animationDelay: '0.3s'}}></div>
-                  </div>
-                  <div className="absolute top-1/2 right-8 opacity-0 group-hover:opacity-100 transition-opacity duration-600">
-                    <div className="w-1 h-1 bg-purple-400 rounded-full animate-pulse" style={{animationDelay: '0.7s'}}></div>
+                    <div className="w-1 h-1 bg-blue-400 rounded-full animate-pulse" style={{animationDelay: '0.3s'}}></div>
                   </div>
                   
                   <div className="relative z-10">
@@ -101,45 +93,36 @@ export default function CM1Page() {
                             <span className="text-xs font-medium">Disponible</span>
                           </div>
                         </div>
-                  </div>
-                </div>
-                
+                      </div>
+                    </div>
+                    
                     <p className="text-gray-600 text-sm mb-4 line-clamp-2">
-                  {chapter.description}
-                </p>
-                
-                    <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-                      <div className="flex items-center space-x-3 text-sm text-gray-500">
-                        <div className="flex items-center gap-1">
-                    <Clock className="w-4 h-4" />
-                          <span className="font-medium">{chapter.estimatedTime}min</span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <div className="w-4 h-4 text-yellow-500 animate-pulse">⭐</div>
-                          <span className="font-bold text-yellow-600">{totalXP} XP</span>
-                        </div>
+                      {chapter.description}
+                    </p>
+                    
+                    <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
+                      <div className="flex items-center space-x-1">
+                        <Clock className="w-4 h-4" />
+                        <span>{chapter.estimatedTime} min</span>
                       </div>
-                      <div className="flex items-center space-x-1 text-blue-600 group-hover:text-blue-700 transform group-hover:translate-x-1 transition-all duration-300">
-                        <Play className="w-4 h-4" />
-                        <span className="text-sm font-bold">Démarrer</span>
+                      <div className="flex items-center space-x-1">
+                        <Trophy className="w-4 h-4" />
+                        <span>{totalXP} XP</span>
                       </div>
-                  </div>
+                    </div>
+                    
+                    <div className="w-full bg-gradient-to-r text-white py-3 px-4 rounded-xl font-bold text-center hover:opacity-90 transition-all transform hover:scale-105 shadow-lg hover:shadow-xl"
+                         style={{ background: `linear-gradient(90deg, ${config.color}, ${config.color}CC)` }}>
+                      <Play className="inline w-4 h-4 mr-2" />
+                      Commencer
+                    </div>
                   </div>
                 </div>
-                </Link>
+              </Link>
             )
           })}
         </div>
       </div>
-
-      {/* Footer */}
-      <footer className="bg-white border-t border-gray-200 mt-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="text-center text-gray-500">
-            <p>© 2024 Mathématiques CM1 - Application d'apprentissage interactive</p>
-          </div>
-        </div>
-      </footer>
     </div>
   )
 } 

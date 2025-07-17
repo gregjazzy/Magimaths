@@ -425,8 +425,16 @@ export default function TempsPage() {
         }
         `}
       </style>
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-red-50">
-      <div className="container mx-auto px-4 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 relative overflow-hidden">
+      {/* Particules de fond pour l'effet magique */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-20 left-10 w-64 h-64 bg-blue-300/20 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute top-40 right-20 w-48 h-48 bg-purple-300/20 rounded-full blur-3xl animate-pulse" style={{animationDelay: '2s'}}></div>
+        <div className="absolute bottom-20 left-20 w-56 h-56 bg-pink-300/20 rounded-full blur-3xl animate-pulse" style={{animationDelay: '4s'}}></div>
+        <div className="absolute bottom-40 right-40 w-32 h-32 bg-indigo-300/20 rounded-full blur-3xl animate-pulse" style={{animationDelay: '1s'}}></div>
+      </div>
+
+      <div className="container mx-auto px-4 py-8 relative z-10">
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center gap-4 mb-6">
@@ -436,7 +444,7 @@ export default function TempsPage() {
             </Link>
           </div>
           
-          <div className="bg-white rounded-2xl p-8 shadow-lg border border-orange-100">
+          <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-xl border border-white/20">
             <div className="flex items-center gap-4 mb-6">
               <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-red-500 rounded-2xl flex items-center justify-center text-white text-2xl font-bold">
                 ⏰
@@ -456,34 +464,36 @@ export default function TempsPage() {
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-4 mb-8">
-          <button
-            onClick={() => setActiveTab('methode')}
-            className={`px-6 py-3 rounded-lg font-medium transition-all ${
-              activeTab === 'methode'
-                ? 'bg-orange-500 text-white shadow-lg'
-                : 'bg-white text-gray-700 hover:bg-gray-50'
-            }`}
-          >
-            📖 Méthode
-          </button>
-          <button
-            onClick={() => setActiveTab('exercices')}
-            className={`px-6 py-3 rounded-lg font-medium transition-all ${
-              activeTab === 'exercices'
-                ? 'bg-orange-500 text-white shadow-lg'
-                : 'bg-white text-gray-700 hover:bg-gray-50'
-            }`}
-          >
-            ✏️ Exercices ({filteredExercises.length})
-          </button>
+        <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-2 shadow-xl border border-white/20 mb-8">
+          <div className="flex gap-2">
+            <button
+              onClick={() => setActiveTab('methode')}
+              className={`flex-1 px-6 py-3 rounded-2xl font-medium transition-all ${
+                activeTab === 'methode'
+                  ? 'bg-orange-500 text-white shadow-lg'
+                  : 'text-gray-700 hover:bg-gray-50'
+              }`}
+            >
+              📖 Méthode
+            </button>
+            <button
+              onClick={() => setActiveTab('exercices')}
+              className={`flex-1 px-6 py-3 rounded-2xl font-medium transition-all ${
+                activeTab === 'exercices'
+                  ? 'bg-orange-500 text-white shadow-lg'
+                  : 'text-gray-700 hover:bg-gray-50'
+              }`}
+            >
+              ✏️ Exercices ({filteredExercises.length})
+            </button>
+          </div>
         </div>
 
         {/* Contenu Méthode */}
         {activeTab === 'methode' && (
           <div className="space-y-8">
             {/* Section 1: Les unités de temps */}
-            <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-8">
+            <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border border-white/20 p-8">
               <h2 className="text-2xl font-bold text-gray-800 mb-6">⏰ Les unités de temps</h2>
               
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
@@ -727,7 +737,7 @@ export default function TempsPage() {
             </div>
 
             {/* Section 3: Exercices de conversions interactifs */}
-            <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-8">
+            <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border border-white/20 p-8">
               <h2 className="text-2xl font-bold text-gray-800 mb-6">🔄 Exercices de conversions ({conversionExercises.length} exercices)</h2>
               
               {/* Navigation entre exercices de conversion */}
@@ -816,7 +826,7 @@ export default function TempsPage() {
 
 
             {/* Section 4: Horloge interactive */}
-            <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-8">
+            <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border border-white/20 p-8">
               <h2 className="text-2xl font-bold text-gray-800 mb-6">🕐 Horloge interactive</h2>
               
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -1089,7 +1099,7 @@ export default function TempsPage() {
               <p className="text-gray-600 text-center mb-8">Apprends à calculer facilement les durées et horaires !</p>
               
               {/* Méthode 1: Calculer une durée entre 2 horaires */}
-              <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-6 mb-8">
+              <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border border-white/20 p-6 mb-8">
                 <h3 className="text-2xl font-bold text-green-700 mb-4">🕐 Méthode 1: Calculer une durée</h3>
                 <p className="text-gray-700 mb-4">Comment calculer le temps écoulé entre deux horaires ?</p>
                 
@@ -1176,7 +1186,7 @@ export default function TempsPage() {
                   </div>
                   
               {/* Méthode 2: Trouver un horaire */}
-              <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-6 mb-8">
+              <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border border-white/20 p-6 mb-8">
                 <h3 className="text-2xl font-bold text-purple-700 mb-4">🕐 Méthode 2: Trouver un horaire</h3>
                 <p className="text-gray-700 mb-4">Comment trouver l'heure de fin ou de début ?</p>
                 
@@ -1265,7 +1275,7 @@ export default function TempsPage() {
                 </div>
                 
               {/* Exercices interactifs */}
-              <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-6">
+              <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border border-white/20 p-6">
                 <h3 className="text-2xl font-bold text-blue-700 mb-4">🎯 Exercices interactifs</h3>
                 <p className="text-gray-700 mb-6">Entraîne-toi avec ces exercices pratiques ! 20 exercices par série.</p>
                 
@@ -1580,7 +1590,7 @@ export default function TempsPage() {
         {activeTab === 'exercices' && (
           <div className="space-y-8">
             {/* Filtres */}
-            <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-6">
+            <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border border-white/20 p-6">
               <h3 className="font-bold text-gray-800 mb-4">🎯 Filtrer les exercices</h3>
               <div className="flex flex-wrap gap-2">
                 {[
@@ -1613,7 +1623,7 @@ export default function TempsPage() {
             />
 
             {/* Exercice actuel */}
-            <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-8">
+            <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border border-white/20 p-8">
               <div className="flex justify-between items-center mb-6">
                 <div>
                   <div className="flex items-center gap-4">

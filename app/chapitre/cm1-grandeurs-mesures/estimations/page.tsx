@@ -129,8 +129,16 @@ export default function EstimationsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-50 to-rose-50">
-      <div className="container mx-auto px-4 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 relative overflow-hidden">
+      {/* Particules de fond pour l'effet magique */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-20 left-10 w-64 h-64 bg-blue-300/20 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute top-40 right-20 w-48 h-48 bg-purple-300/20 rounded-full blur-3xl animate-pulse" style={{animationDelay: '2s'}}></div>
+        <div className="absolute bottom-20 left-20 w-56 h-56 bg-pink-300/20 rounded-full blur-3xl animate-pulse" style={{animationDelay: '4s'}}></div>
+        <div className="absolute bottom-40 right-40 w-32 h-32 bg-indigo-300/20 rounded-full blur-3xl animate-pulse" style={{animationDelay: '1s'}}></div>
+      </div>
+
+      <div className="container mx-auto px-4 py-8 relative z-10">
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center gap-4 mb-6">
@@ -140,7 +148,7 @@ export default function EstimationsPage() {
             </Link>
           </div>
           
-          <div className="bg-white rounded-2xl p-8 shadow-lg border border-pink-100">
+          <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-xl border border-white/20">
             <div className="flex items-center gap-4 mb-6">
               <div className="w-16 h-16 bg-gradient-to-br from-pink-500 to-rose-500 rounded-2xl flex items-center justify-center text-white text-2xl font-bold">
                 🎯
@@ -156,34 +164,36 @@ export default function EstimationsPage() {
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-4 mb-8">
+        <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-2 shadow-xl border border-white/20 mb-8">
+          <div className="flex gap-2">
           <button
             onClick={() => setActiveTab('methode')}
-            className={`px-6 py-3 rounded-lg font-medium transition-all ${
+              className={`flex-1 px-6 py-3 rounded-2xl font-medium transition-all ${
               activeTab === 'methode'
                 ? 'bg-pink-500 text-white shadow-lg'
-                : 'bg-white text-gray-700 hover:bg-gray-50'
+                  : 'text-gray-700 hover:bg-gray-50'
             }`}
           >
             📚 Méthode
           </button>
           <button
             onClick={() => setActiveTab('exercices')}
-            className={`px-6 py-3 rounded-lg font-medium transition-all ${
+              className={`flex-1 px-6 py-3 rounded-2xl font-medium transition-all ${
               activeTab === 'exercices'
                 ? 'bg-pink-500 text-white shadow-lg'
-                : 'bg-white text-gray-700 hover:bg-gray-50'
+                  : 'text-gray-700 hover:bg-gray-50'
             }`}
           >
             🏃 Exercices (40)
           </button>
+          </div>
         </div>
 
         {/* Méthode Tab */}
         {activeTab === 'methode' && (
           <div className="space-y-8">
             {/* Méthode d'estimation */}
-            <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-8">
+            <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border border-white/20 p-8">
               <h2 className="text-2xl font-bold text-gray-800 mb-6">📏 Méthode d'estimation</h2>
               
               <div className="space-y-6">
@@ -267,7 +277,7 @@ export default function EstimationsPage() {
         {activeTab === 'exercices' && (
           <div className="space-y-8">
             {/* Filtres */}
-            <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-6">
+            <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border border-white/20 p-6">
               <h2 className="text-xl font-bold text-gray-800 mb-4">🎯 Filtrer les exercices</h2>
               <div className="flex flex-wrap gap-2">
                 {[
@@ -293,7 +303,7 @@ export default function EstimationsPage() {
             </div>
 
             {/* Exercice actuel */}
-            <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-8">
+            <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border border-white/20 p-8">
               <div className="flex justify-between items-center mb-6">
                 <div>
                   <h2 className="text-2xl font-bold text-gray-800">

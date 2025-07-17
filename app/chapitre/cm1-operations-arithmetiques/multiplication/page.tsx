@@ -1327,8 +1327,16 @@ export default function MultiplicationPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 p-4">
-      <div className="max-w-4xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 relative overflow-hidden p-4">
+      {/* Particules de fond pour l'effet magique */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-20 left-10 w-64 h-64 bg-blue-300/20 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute top-40 right-20 w-48 h-48 bg-purple-300/20 rounded-full blur-3xl animate-pulse" style={{animationDelay: '2s'}}></div>
+        <div className="absolute bottom-20 left-20 w-56 h-56 bg-pink-300/20 rounded-full blur-3xl animate-pulse" style={{animationDelay: '4s'}}></div>
+        <div className="absolute bottom-40 right-40 w-32 h-32 bg-indigo-300/20 rounded-full blur-3xl animate-pulse" style={{animationDelay: '1s'}}></div>
+      </div>
+
+      <div className="max-w-4xl mx-auto relative z-10">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <Link
@@ -1379,7 +1387,7 @@ export default function MultiplicationPage() {
         {showDemo ? (
           <div className="space-y-6">
             {/* Méthode selector */}
-            <div className="bg-white rounded-xl shadow-lg p-6">
+            <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border border-white/20 p-6">
               <h2 className="text-xl font-bold text-gray-800 mb-4">Choisissez la méthode à étudier</h2>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <button
@@ -1430,7 +1438,7 @@ export default function MultiplicationPage() {
             </div>
 
             {/* Animation controls */}
-            <div className="bg-white rounded-xl shadow-lg p-6">
+            <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border border-white/20 p-6">
               <div className="flex items-center justify-between mb-4">
                 <div>
                   <h3 className="text-lg font-bold text-gray-800">Démonstration étape par étape</h3>
@@ -1486,7 +1494,7 @@ export default function MultiplicationPage() {
             </div>
 
             {/* Règles importantes */}
-            <div className="bg-white rounded-xl shadow-lg p-6">
+            <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border border-white/20 p-6">
               <h3 className="text-lg font-bold text-gray-800 mb-4">Règles importantes à retenir</h3>
               <div className="grid md:grid-cols-2 gap-6">
                 <div className="space-y-3">
@@ -1536,7 +1544,7 @@ export default function MultiplicationPage() {
           // Exercices section
           <div className="space-y-6">
             {/* Sélecteur de type d'exercice */}
-            <div className="bg-white rounded-xl shadow-lg p-6">
+            <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border border-white/20 p-6">
               <h2 className="text-xl font-bold text-gray-800 mb-4">Choisir le type d'exercice</h2>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <button
@@ -1591,7 +1599,7 @@ export default function MultiplicationPage() {
             </div>
 
             {/* Progress */}
-            <div className="bg-white rounded-xl shadow-lg p-6">
+            <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border border-white/20 p-6">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-xl font-bold text-gray-800">
                   Exercice {currentExercise + 1} sur {filteredExercises.length}
@@ -1613,7 +1621,7 @@ export default function MultiplicationPage() {
             </div>
 
             {/* Exercise */}
-            <div className="bg-white rounded-xl shadow-lg p-6">
+            <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border border-white/20 p-6">
               <div className="flex items-center gap-2 mb-4">
                 <span className="text-2xl">×</span>
                 <h3 className="text-lg font-bold text-gray-800">
@@ -1714,7 +1722,7 @@ export default function MultiplicationPage() {
             </div>
 
             {/* Conseils */}
-            <div className="bg-white rounded-xl shadow-lg p-6">
+            <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border border-white/20 p-6">
               <div className="flex items-center gap-2 mb-4">
                 <Eye className="w-5 h-5 text-blue-600" />
                 <h3 className="text-lg font-bold text-gray-800">Conseils pour réussir</h3>

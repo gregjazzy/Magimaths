@@ -187,7 +187,7 @@ export default function CalculMentalPage() {
           </div>
 
           {/* Écran d'accueil */}
-          <div className="bg-white rounded-xl shadow-lg p-8 text-center">
+          <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border border-white/20 p-8 text-center">
             <div className="mb-8">
               <div className="w-24 h-24 bg-orange-500 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Zap className="w-12 h-12 text-white" />
@@ -229,8 +229,16 @@ export default function CalculMentalPage() {
   const { accuracy, avgTime } = calculateStats();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-yellow-100 p-4">
-      <div className="max-w-4xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 relative overflow-hidden p-4">
+      {/* Particules de fond pour l'effet magique */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-20 left-10 w-64 h-64 bg-blue-300/20 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute top-40 right-20 w-48 h-48 bg-purple-300/20 rounded-full blur-3xl animate-pulse" style={{animationDelay: '2s'}}></div>
+        <div className="absolute bottom-20 left-20 w-56 h-56 bg-pink-300/20 rounded-full blur-3xl animate-pulse" style={{animationDelay: '4s'}}></div>
+        <div className="absolute bottom-40 right-40 w-32 h-32 bg-indigo-300/20 rounded-full blur-3xl animate-pulse" style={{animationDelay: '1s'}}></div>
+      </div>
+
+      <div className="max-w-4xl mx-auto relative z-10">
         {/* Header */}
         <div className="flex items-center gap-4 mb-8">
           <Link href="/chapitre/cm1-operations-arithmetiques" className="p-2 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow">
@@ -243,7 +251,7 @@ export default function CalculMentalPage() {
         </div>
 
         {/* Progression et stats */}
-        <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
+        <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border border-white/20 p-6 mb-8">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
               <Calculator className="w-6 h-6 text-orange-600" />
@@ -275,7 +283,7 @@ export default function CalculMentalPage() {
         </div>
 
         {/* Exercice principal */}
-        <div className="bg-white rounded-xl shadow-lg p-8 mb-8">
+        <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border border-white/20 p-8 mb-8">
           <div className="text-center mb-6">
             <div className={`inline-block px-3 py-1 rounded-full text-sm font-medium mb-4 ${getDifficultyColor(getCurrentExercise().difficulty)}`}>
               {getCurrentExercise().difficulty}
@@ -384,7 +392,7 @@ export default function CalculMentalPage() {
         </div>
 
         {/* Conseils */}
-        <div className="bg-white rounded-xl shadow-lg p-6">
+        <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border border-white/20 p-6">
           <div className="flex items-center gap-2 mb-4">
             <Eye className="w-5 h-5 text-orange-600" />
             <h3 className="text-lg font-bold text-gray-800">Stratégies de calcul mental</h3>
