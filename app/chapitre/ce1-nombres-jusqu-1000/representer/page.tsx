@@ -20,26 +20,30 @@ export default function RepresenterNombresCE1Page() {
   };
 
   const exercises = [
-    { number: 50, range: '0-100', tolerance: 5 },
-    { number: 75, range: '0-100', tolerance: 5 },
-    { number: 25, range: '0-100', tolerance: 5 },
-    { number: 90, range: '0-100', tolerance: 5 },
-    { number: 150, range: '100-200', tolerance: 5 },
-    { number: 175, range: '100-200', tolerance: 5 },
+    { number: 35, range: '0-100', tolerance: 5 },
+    { number: 47, range: '0-100', tolerance: 5 },
+    { number: 73, range: '0-100', tolerance: 5 },
+    { number: 83, range: '0-100', tolerance: 5 },
+    { number: 27, range: '0-100', tolerance: 5 },
+    { number: 64, range: '0-100', tolerance: 5 },
     { number: 125, range: '100-200', tolerance: 5 },
-    { number: 190, range: '100-200', tolerance: 5 },
-    { number: 250, range: '200-300', tolerance: 5 },
-    { number: 275, range: '200-300', tolerance: 5 },
+    { number: 147, range: '100-200', tolerance: 5 },
+    { number: 165, range: '100-200', tolerance: 5 },
+    { number: 185, range: '100-200', tolerance: 5 },
+    { number: 135, range: '100-200', tolerance: 5 },
+    { number: 175, range: '100-200', tolerance: 5 },
+    { number: 215, range: '200-300', tolerance: 5 },
+    { number: 235, range: '200-300', tolerance: 5 },
+    { number: 267, range: '200-300', tolerance: 5 },
+    { number: 285, range: '200-300', tolerance: 5 },
     { number: 225, range: '200-300', tolerance: 5 },
-    { number: 290, range: '200-300', tolerance: 5 },
-    { number: 500, range: '0-1000', tolerance: 25 },
-    { number: 750, range: '0-1000', tolerance: 25 },
+    { number: 275, range: '200-300', tolerance: 5 },
+    { number: 150, range: '0-1000', tolerance: 25 },
+    { number: 350, range: '0-1000', tolerance: 25 },
+    { number: 650, range: '0-1000', tolerance: 25 },
+    { number: 850, range: '0-1000', tolerance: 25 },
     { number: 250, range: '0-1000', tolerance: 25 },
-    { number: 900, range: '0-1000', tolerance: 25 },
-    { number: 300, range: '0-1000', tolerance: 25 },
-    { number: 600, range: '0-1000', tolerance: 25 },
-    { number: 800, range: '0-1000', tolerance: 25 },
-    { number: 400, range: '0-1000', tolerance: 25 }
+    { number: 750, range: '0-1000', tolerance: 25 }
   ];
 
   const generateGraduations = (range: string) => {
@@ -199,11 +203,11 @@ export default function RepresenterNombresCE1Page() {
 
             {/* Droite numérique interactive */}
             <div className="bg-white rounded-xl p-8 shadow-lg">
-              <h3 className="text-xl font-bold mb-6 text-center text-gray-900">
+              <h3 className="text-xl font-bold mb-12 text-center text-gray-900">
                 📏 Droite numérique de {selectedRange}
               </h3>
               
-              <div className="relative mb-8">
+              <div className="relative mb-16 mt-12">
                 {/* Ligne principale */}
                 <div className="h-2 bg-gray-300 rounded-full relative">
                   {/* Graduations */}
@@ -223,44 +227,44 @@ export default function RepresenterNombresCE1Page() {
               </div>
 
               {/* Nombres d'exemple à placer */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {selectedRange === '0-100' && [30, 60, 80, 95].map((num) => (
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-12">
+                {selectedRange === '0-100' && [35, 47, 73, 83].map((num) => (
                   <div key={num} className="text-center">
                     <div className="bg-yellow-100 rounded-lg p-3 mb-2">
                       <div className="text-2xl font-bold text-yellow-800">{num}</div>
                     </div>
                     <div className="text-sm text-gray-600">
-                      Position : {getPositionPercentage(num, selectedRange).toFixed(0)}%
+                      À placer sur la droite
                     </div>
                   </div>
                 ))}
-                {selectedRange === '100-200' && [120, 150, 180, 195].map((num) => (
+                {selectedRange === '100-200' && [125, 147, 165, 185].map((num) => (
                   <div key={num} className="text-center">
                     <div className="bg-yellow-100 rounded-lg p-3 mb-2">
                       <div className="text-2xl font-bold text-yellow-800">{num}</div>
                     </div>
                     <div className="text-sm text-gray-600">
-                      Position : {getPositionPercentage(num, selectedRange).toFixed(0)}%
+                      À placer sur la droite
                     </div>
                   </div>
                 ))}
-                {selectedRange === '200-300' && [220, 250, 280, 295].map((num) => (
+                {selectedRange === '200-300' && [215, 235, 267, 285].map((num) => (
                   <div key={num} className="text-center">
                     <div className="bg-yellow-100 rounded-lg p-3 mb-2">
                       <div className="text-2xl font-bold text-yellow-800">{num}</div>
                     </div>
                     <div className="text-sm text-gray-600">
-                      Position : {getPositionPercentage(num, selectedRange).toFixed(0)}%
+                      À placer sur la droite
                     </div>
                   </div>
                 ))}
-                {selectedRange === '0-1000' && [200, 400, 600, 800].map((num) => (
+                {selectedRange === '0-1000' && [150, 350, 650, 850].map((num) => (
                   <div key={num} className="text-center">
                     <div className="bg-yellow-100 rounded-lg p-3 mb-2">
                       <div className="text-2xl font-bold text-yellow-800">{num}</div>
                     </div>
                     <div className="text-sm text-gray-600">
-                      Position : {getPositionPercentage(num, selectedRange).toFixed(0)}%
+                      À placer sur la droite
                     </div>
                   </div>
                 ))}
