@@ -338,7 +338,12 @@ export default function IntroductionEquationsPage() {
                           <div className="text-2xl font-bold text-purple-600 mb-2">
                             {example.equation}
                           </div>
-                          <div className="text-sm text-gray-600">{example.description}</div>
+                          <div className="text-sm text-gray-600">
+                            {'description' in example ? example.description : 
+                             'test' in example ? example.test : 
+                             'steps' in example ? 'Exemple détaillé' : 
+                             'Exemple'}
+                          </div>
                         </div>
                       ))}
                     </div>
@@ -362,13 +367,17 @@ export default function IntroductionEquationsPage() {
                   <div>
                     <h3 className="text-xl font-bold text-gray-800 mb-4">Exemples de vérification</h3>
                     <div className="space-y-4">
-                      {courseContent[1].content.examples.map((example, index) => (
+                      {courseContent[1].content.examples?.map((example, index) => (
                         <div key={index} className="bg-gray-50 rounded-lg p-6">
                           <div className="text-lg font-bold text-purple-600 mb-3">
                             {example.equation}
                           </div>
-                          <div className="text-gray-700 mb-2">{example.test}</div>
-                          <div className="font-bold text-green-600">{example.conclusion}</div>
+                          {'test' in example && (
+                            <div className="text-gray-700 mb-2">{example.test}</div>
+                          )}
+                          {'conclusion' in example && (
+                            <div className="font-bold text-green-600">{example.conclusion}</div>
+                          )}
                         </div>
                       ))}
                     </div>
@@ -392,7 +401,7 @@ export default function IntroductionEquationsPage() {
                   <div>
                     <h3 className="text-xl font-bold text-gray-800 mb-4">Règles de transformation</h3>
                     <div className="space-y-3">
-                      {courseContent[2].content.rules.map((rule, index) => (
+                      {courseContent[2].content.rules?.map((rule, index) => (
                         <div key={index} className="bg-gray-50 rounded-lg p-4">
                           <div className="text-gray-800">• {rule}</div>
                         </div>
@@ -403,7 +412,7 @@ export default function IntroductionEquationsPage() {
                   <div>
                     <h3 className="text-xl font-bold text-gray-800 mb-4">Méthode générale</h3>
                     <div className="space-y-3">
-                      {courseContent[2].content.method.map((step, index) => (
+                      {courseContent[2].content.method?.map((step, index) => (
                         <div key={index} className="bg-blue-50 rounded-lg p-4">
                           <div className="text-blue-800 font-semibold">{step}</div>
                         </div>
@@ -416,29 +425,33 @@ export default function IntroductionEquationsPage() {
               {/* Section 4: Exemples */}
               {currentCourseSection === 3 && (
                 <div className="space-y-8">
-                  {courseContent[3].content.examples.map((example, index) => (
+                  {courseContent[3].content.examples?.map((example, index) => (
                     <div key={index} className="bg-gray-50 rounded-lg p-6">
                       <h3 className="text-xl font-bold text-gray-800 mb-4">
                         Exemple {index + 1} : {example.equation}
                       </h3>
                       
-                      <div className="space-y-3 mb-6">
-                        {example.steps.map((step, stepIndex) => (
-                          <div key={stepIndex} className="flex items-center space-x-4">
-                            <div className="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold text-sm">
-                              {stepIndex + 1}
+                      {'steps' in example && (
+                        <div className="space-y-3 mb-6">
+                          {example.steps.map((step: any, stepIndex: number) => (
+                            <div key={stepIndex} className="flex items-center space-x-4">
+                              <div className="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold text-sm">
+                                {stepIndex + 1}
+                              </div>
+                              <div className="flex-1">
+                                <div className="text-lg font-mono">{step.step}</div>
+                                <div className="text-sm text-gray-600">{step.explanation}</div>
+                              </div>
                             </div>
-                            <div className="flex-1">
-                              <div className="text-lg font-mono">{step.step}</div>
-                              <div className="text-sm text-gray-600">{step.explanation}</div>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
+                          ))}
+                        </div>
+                      )}
 
-                      <div className="bg-green-100 rounded-lg p-4">
-                        <div className="text-green-800 font-semibold">{example.verification}</div>
-                      </div>
+                      {'verification' in example && (
+                        <div className="bg-green-100 rounded-lg p-4">
+                          <div className="text-green-800 font-semibold">{example.verification}</div>
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>
