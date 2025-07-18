@@ -197,7 +197,7 @@ export default function EcrireNombresCE1Page() {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div>
                   <h4 className="font-bold text-green-600 mb-3">Centaines</h4>
-                  <div className="space-y-1 text-sm">
+                  <div className="space-y-1 text-sm text-gray-800">
                     <div>Cent = 100</div>
                     <div>Deux cent = 200</div>
                     <div>Trois cent = 300</div>
@@ -211,7 +211,7 @@ export default function EcrireNombresCE1Page() {
                 </div>
                 <div>
                   <h4 className="font-bold text-blue-600 mb-3">Dizaines</h4>
-                  <div className="space-y-1 text-sm">
+                  <div className="space-y-1 text-sm text-gray-800">
                     <div>Dix = 10</div>
                     <div>Vingt = 20</div>
                     <div>Trente = 30</div>
@@ -225,7 +225,7 @@ export default function EcrireNombresCE1Page() {
                 </div>
                 <div>
                   <h4 className="font-bold text-purple-600 mb-3">Unités</h4>
-                  <div className="space-y-1 text-sm">
+                  <div className="space-y-1 text-sm text-gray-800">
                     <div>Un = 1</div>
                     <div>Deux = 2</div>
                     <div>Trois = 3</div>
