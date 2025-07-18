@@ -308,7 +308,7 @@ export default function LireNombresCE2Page() {
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                   <div className="bg-red-50 rounded-lg p-4 text-center">
-                    <div className="text-3xl mb-2">🔟🔟🔟</div>
+                    <div className="text-3xl mb-2">1️⃣0️⃣0️⃣0️⃣</div>
                     <h3 className="font-bold text-red-800">Milliers</h3>
                     <p className="text-red-700 text-sm">1 000, 2 000...</p>
                   </div>

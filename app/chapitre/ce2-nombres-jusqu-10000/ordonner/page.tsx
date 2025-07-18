@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, CheckCircle, XCircle, RotateCcw, ArrowUp, ArrowDown } from 'lucide-react';
 
-export default function OrdonnerNombresCE1Page() {
+export default function OrdonnerNombresCE2Page() {
   const [currentExercise, setCurrentExercise] = useState(0);
   const [userAnswer, setUserAnswer] = useState('');
   const [userAnswers, setUserAnswers] = useState<string[]>([]);
@@ -13,130 +13,130 @@ export default function OrdonnerNombresCE1Page() {
   const [score, setScore] = useState(0);
   const [exerciseType, setExerciseType] = useState<'ranger' | 'encadrer' | 'suites' | 'comparer' | 'encadrer-unites'>('ranger');
 
-  // Exercices de rangement CE1 (nombres jusqu'à 1000) - nombres complexes
+  // Exercices de rangement pour CE2 (nombres jusqu'à 10000) - nombres variés et réalistes
   const rangerExercises = [
-    { numbers: [807, 509, 853, 187, 583], answer: [187, 509, 583, 807, 853], order: 'croissant' },
-    { numbers: [749, 379, 479, 739, 439], answer: [749, 739, 479, 439, 379], order: 'décroissant' },
-    { numbers: [919, 179, 719, 197, 793], answer: [179, 197, 719, 793, 919], order: 'croissant' },
-    { numbers: [487, 847, 409, 89, 809], answer: [847, 809, 487, 409, 89], order: 'décroissant' },
-    { numbers: [237, 569, 127, 459, 791], answer: [127, 237, 459, 569, 791], order: 'croissant' },
-    { numbers: [679, 349, 793, 237, 569], answer: [793, 679, 569, 349, 237], order: 'décroissant' },
-    { numbers: [159, 349, 237, 127, 459], answer: [127, 159, 237, 349, 459], order: 'croissant' },
-    { numbers: [793, 569, 237, 459, 127], answer: [793, 569, 459, 237, 127], order: 'décroissant' },
-    { numbers: [329, 537, 259, 527, 239], answer: [239, 259, 329, 527, 537], order: 'croissant' },
-    { numbers: [469, 769, 649, 479, 749], answer: [769, 749, 649, 479, 469], order: 'décroissant' },
-    { numbers: [149, 547, 159, 457, 519], answer: [149, 159, 457, 519, 547], order: 'croissant' },
-    { numbers: [687, 829, 269, 629, 867], answer: [867, 829, 687, 629, 269], order: 'décroissant' },
-    { numbers: [399, 739, 379, 793, 937], answer: [379, 399, 739, 793, 937], order: 'croissant' },
-    { numbers: [149, 847, 419, 189, 819], answer: [847, 819, 419, 189, 149], order: 'décroissant' },
-    { numbers: [259, 657, 529, 269, 629], answer: [259, 269, 529, 629, 657], order: 'croissant' },
-    { numbers: [419, 217, 129, 427, 247], answer: [129, 217, 247, 419, 427], order: 'croissant' },
-    { numbers: [967, 797, 679, 697, 979], answer: [979, 967, 797, 697, 679], order: 'décroissant' },
-    { numbers: [587, 359, 837, 389, 857], answer: [359, 389, 587, 837, 857], order: 'croissant' },
-    { numbers: [729, 927, 279, 797, 299], answer: [927, 797, 729, 299, 279], order: 'décroissant' },
-    { numbers: [167, 467, 149, 619, 647], answer: [149, 167, 467, 619, 647], order: 'croissant' },
-    { numbers: [839, 399, 897, 389, 939], answer: [939, 897, 839, 399, 389], order: 'décroissant' }
+    { numbers: [8743, 5087, 8519, 1863, 5814], answer: [1863, 5087, 5814, 8519, 8743], order: 'croissant' },
+    { numbers: [7428, 3749, 4732, 7341, 4378], answer: [7428, 7341, 4732, 4378, 3749], order: 'décroissant' },
+    { numbers: [9176, 1794, 7193, 1977, 7918], answer: [1794, 1977, 7193, 7918, 9176], order: 'croissant' },
+    { numbers: [4806, 8405, 4083, 849, 8047], answer: [8405, 8047, 4806, 4083, 849], order: 'décroissant' },
+    { numbers: [2347, 5673, 1239, 4567, 7896], answer: [1239, 2347, 4567, 5673, 7896], order: 'croissant' },
+    { numbers: [6784, 3458, 7893, 2348, 5674], answer: [7893, 6784, 5674, 3458, 2348], order: 'décroissant' },
+    { numbers: [1567, 3456, 2349, 1238, 4569], answer: [1238, 1567, 2349, 3456, 4569], order: 'croissant' },
+    { numbers: [7897, 5678, 2347, 4568, 1239], answer: [7897, 5678, 4568, 2347, 1239], order: 'décroissant' },
+    { numbers: [3256, 5327, 2539, 5238, 2357], answer: [2357, 2539, 3256, 5238, 5327], order: 'croissant' },
+    { numbers: [4679, 7648, 6479, 4768, 7469], answer: [7648, 7469, 6479, 4768, 4679], order: 'décroissant' },
+    { numbers: [1457, 5419, 1549, 4519, 5149], answer: [1457, 1549, 4519, 5149, 5419], order: 'croissant' },
+    { numbers: [6827, 8269, 2689, 6289, 8627], answer: [8627, 8269, 6827, 6289, 2689], order: 'décroissant' },
+    { numbers: [3978, 7398, 3798, 7938, 9378], answer: [3798, 3978, 7398, 7938, 9378], order: 'croissant' },
+    { numbers: [1487, 8419, 4189, 1849, 8149], answer: [8419, 8149, 4189, 1849, 1487], order: 'décroissant' },
+    { numbers: [2567, 6529, 5269, 2659, 6259], answer: [2567, 2659, 5269, 6259, 6529], order: 'croissant' },
+    { numbers: [4127, 2149, 1249, 4219, 2419], answer: [1249, 2149, 2419, 4127, 4219], order: 'croissant' },
+    { numbers: [9678, 7968, 6798, 6978, 9768], answer: [9768, 9678, 7968, 6978, 6798], order: 'décroissant' },
+    { numbers: [5837, 3587, 8357, 3857, 8537], answer: [3587, 3857, 5837, 8357, 8537], order: 'croissant' },
+    { numbers: [7298, 9278, 2798, 7928, 2978], answer: [9278, 7928, 7298, 2978, 2798], order: 'décroissant' },
+    { numbers: [1647, 4619, 1469, 6149, 6419], answer: [1469, 1647, 4619, 6149, 6419], order: 'croissant' },
+    { numbers: [8397, 3987, 8937, 3897, 9387], answer: [9387, 8937, 8397, 3987, 3897], order: 'décroissant' }
   ];
 
-  // Exercices d'encadrement CE1 (nombres jusqu'à 1000) - nombres complexes
+  // Exercices d'encadrement pour CE2 (nombres jusqu'à 10000) - nombres complexes
   const encadrerExercises = [
-    { number: 547, before: 546, after: 548 },
-    { number: 709, before: 708, after: 710 },
-    { number: 859, before: 858, after: 860 },
-    { number: 907, before: 906, after: 908 },
-    { number: 607, before: 606, after: 608 },
-    { number: 789, before: 788, after: 790 },
-    { number: 379, before: 378, after: 380 },
-    { number: 339, before: 338, after: 340 },
-    { number: 309, before: 308, after: 310 },
-    { number: 739, before: 738, after: 740 },
-    { number: 409, before: 408, after: 410 },
-    { number: 297, before: 296, after: 298 },
-    { number: 507, before: 506, after: 508 },
-    { number: 659, before: 658, after: 660 },
-    { number: 197, before: 196, after: 198 },
-    { number: 429, before: 428, after: 430 },
-    { number: 689, before: 688, after: 690 },
-    { number: 157, before: 156, after: 158 },
-    { number: 769, before: 768, after: 770 },
-    { number: 837, before: 836, after: 838 },
-    { number: 497, before: 496, after: 498 }
+    { number: 5463, before: 5462, after: 5464 },
+    { number: 7089, before: 7088, after: 7090 },
+    { number: 8571, before: 8570, after: 8572 },
+    { number: 9037, before: 9036, after: 9038 },
+    { number: 6019, before: 6018, after: 6020 },
+    { number: 7849, before: 7848, after: 7850 },
+    { number: 3728, before: 3727, after: 3729 },
+    { number: 3378, before: 3377, after: 3379 },
+    { number: 3079, before: 3078, after: 3080 },
+    { number: 7337, before: 7336, after: 7338 },
+    { number: 4017, before: 4016, after: 4018 },
+    { number: 2997, before: 2996, after: 2998 },
+    { number: 5043, before: 5042, after: 5044 },
+    { number: 6507, before: 6506, after: 6508 },
+    { number: 1997, before: 1996, after: 1998 },
+    { number: 4258, before: 4257, after: 4259 },
+    { number: 6879, before: 6878, after: 6880 },
+    { number: 1509, before: 1508, after: 1510 },
+    { number: 7647, before: 7646, after: 7648 },
+    { number: 8297, before: 8296, after: 8298 },
+    { number: 4919, before: 4918, after: 4920 }
   ];
 
-  // Exercices de suites CE1 (nombres jusqu'à 1000) - nombres complexes
+  // Exercices de suites pour CE2 (nombres jusqu'à 10000) - nombres complexes
   const suitesExercises = [
-    { sequence: [97, 99, 101, '?', '?'], step: 2, answers: ['103', '105'] },
-    { sequence: [179, 184, 189, '?', '?'], step: 5, answers: ['194', '199'] },
-    { sequence: [139, 149, 159, '?', '?'], step: 10, answers: ['169', '179'] },
-    { sequence: [159, 157, 155, '?', '?'], step: -2, answers: ['153', '151'] },
-    { sequence: [89, 91, 93, '?', '?'], step: 2, answers: ['95', '97'] },
-    { sequence: [119, 117, 115, '?', '?'], step: -2, answers: ['113', '111'] },
-    { sequence: [79, 84, 89, '?', '?'], step: 5, answers: ['94', '99'] },
-    { sequence: [169, 159, 149, '?', '?'], step: -10, answers: ['139', '129'] },
-    { sequence: [239, 241, 243, '?', '?'], step: 2, answers: ['245', '247'] },
-    { sequence: [359, 354, 349, '?', '?'], step: -5, answers: ['344', '339'] },
-    { sequence: [129, 139, 149, '?', '?'], step: 10, answers: ['159', '169'] },
-    { sequence: [197, 195, 193, '?', '?'], step: -2, answers: ['191', '189'] },
-    { sequence: [469, 474, 479, '?', '?'], step: 5, answers: ['484', '489'] },
-    { sequence: [679, 669, 659, '?', '?'], step: -10, answers: ['649', '639'] },
-    { sequence: [149, 151, 153, '?', '?'], step: 2, answers: ['155', '157'] },
-    { sequence: [269, 271, 273, '?', '?'], step: 2, answers: ['275', '277'] },
-    { sequence: [389, 394, 399, '?', '?'], step: 5, answers: ['404', '409'] },
-    { sequence: [549, 539, 529, '?', '?'], step: -10, answers: ['519', '509'] },
-    { sequence: [429, 427, 425, '?', '?'], step: -2, answers: ['423', '421'] },
-    { sequence: [619, 624, 629, '?', '?'], step: 5, answers: ['634', '639'] },
-    { sequence: [759, 749, 739, '?', '?'], step: -10, answers: ['729', '719'] }
+    { sequence: [927, 947, 967, '?', '?'], step: 20, answers: ['987', '1007'] },
+    { sequence: [1753, 1803, 1853, '?', '?'], step: 50, answers: ['1903', '1953'] },
+    { sequence: [1337, 1437, 1537, '?', '?'], step: 100, answers: ['1637', '1737'] },
+    { sequence: [1579, 1559, 1539, '?', '?'], step: -20, answers: ['1519', '1499'] },
+    { sequence: [857, 877, 897, '?', '?'], step: 20, answers: ['917', '937'] },
+    { sequence: [1129, 1109, 1089, '?', '?'], step: -20, answers: ['1069', '1049'] },
+    { sequence: [739, 789, 839, '?', '?'], step: 50, answers: ['889', '939'] },
+    { sequence: [1607, 1507, 1407, '?', '?'], step: -100, answers: ['1307', '1207'] },
+    { sequence: [2347, 2367, 2387, '?', '?'], step: 20, answers: ['2407', '2427'] },
+    { sequence: [3509, 3459, 3409, '?', '?'], step: -50, answers: ['3359', '3309'] },
+    { sequence: [1259, 1359, 1459, '?', '?'], step: 100, answers: ['1559', '1659'] },
+    { sequence: [1989, 1969, 1949, '?', '?'], step: -20, answers: ['1929', '1909'] },
+    { sequence: [4659, 4709, 4759, '?', '?'], step: 50, answers: ['4809', '4859'] },
+    { sequence: [6709, 6609, 6509, '?', '?'], step: -100, answers: ['6409', '6309'] },
+    { sequence: [1479, 1499, 1519, '?', '?'], step: 20, answers: ['1539', '1559'] },
+    { sequence: [2679, 2699, 2719, '?', '?'], step: 20, answers: ['2739', '2759'] },
+    { sequence: [3809, 3859, 3909, '?', '?'], step: 50, answers: ['3959', '4009'] },
+    { sequence: [5409, 5309, 5209, '?', '?'], step: -100, answers: ['5109', '5009'] },
+    { sequence: [4269, 4249, 4229, '?', '?'], step: -20, answers: ['4209', '4189'] },
+    { sequence: [6159, 6209, 6259, '?', '?'], step: 50, answers: ['6309', '6359'] },
+    { sequence: [7589, 7489, 7389, '?', '?'], step: -100, answers: ['7289', '7189'] }
   ];
 
-  // Exercices de comparaison CE1 (nombres jusqu'à 1000) - nombres complexes
+  // Exercices de comparaison avec >, <, = (20 exercices) pour CE2 - nombres complexes
   const comparerExercises = [
-    { number1: 459, number2: 349, answer: '>', explanation: '459 > 349' },
-    { number1: 129, number2: 239, answer: '<', explanation: '129 < 239' },
-    { number1: 793, number2: 793, answer: '=', explanation: '793 = 793' },
-    { number1: 569, number2: 459, answer: '>', explanation: '569 > 459' },
-    { number1: 239, number2: 349, answer: '<', explanation: '239 < 349' },
-    { number1: 507, number2: 507, answer: '=', explanation: '507 = 507' },
-    { number1: 679, number2: 237, answer: '>', explanation: '679 > 237' },
-    { number1: 149, number2: 459, answer: '<', explanation: '149 < 459' },
-    { number1: 327, number2: 327, answer: '=', explanation: '327 = 327' },
-    { number1: 897, number2: 237, answer: '>', explanation: '897 > 237' },
-    { number1: 237, number2: 569, answer: '<', explanation: '237 < 569' },
-    { number1: 459, number2: 459, answer: '=', explanation: '459 = 459' },
-    { number1: 729, number2: 349, answer: '>', explanation: '729 > 349' },
-    { number1: 159, number2: 237, answer: '<', explanation: '159 < 237' },
-    { number1: 679, number2: 679, answer: '=', explanation: '679 = 679' },
-    { number1: 849, number2: 237, answer: '>', explanation: '849 > 237' },
-    { number1: 237, number2: 793, answer: '<', explanation: '237 < 793' },
-    { number1: 569, number2: 569, answer: '=', explanation: '569 = 569' },
-    { number1: 917, number2: 459, answer: '>', explanation: '917 > 459' },
-    { number1: 129, number2: 459, answer: '<', explanation: '129 < 459' }
+    { number1: 4863, number2: 3792, answer: '>', explanation: '4863 > 3792' },
+    { number1: 1247, number2: 2349, answer: '<', explanation: '1247 < 2349' },
+    { number1: 7893, number2: 7893, answer: '=', explanation: '7893 = 7893' },
+    { number1: 5679, number2: 4863, answer: '>', explanation: '5679 > 4863' },
+    { number1: 2349, number2: 3456, answer: '<', explanation: '2349 < 3456' },
+    { number1: 5034, number2: 5034, answer: '=', explanation: '5034 = 5034' },
+    { number1: 6789, number2: 2467, answer: '>', explanation: '6789 > 2467' },
+    { number1: 1456, number2: 4863, answer: '<', explanation: '1456 < 4863' },
+    { number1: 3217, number2: 3217, answer: '=', explanation: '3217 = 3217' },
+    { number1: 8901, number2: 2573, answer: '>', explanation: '8901 > 2573' },
+    { number1: 2467, number2: 5679, answer: '<', explanation: '2467 < 5679' },
+    { number1: 4863, number2: 4863, answer: '=', explanation: '4863 = 4863' },
+    { number1: 7298, number2: 3486, answer: '>', explanation: '7298 > 3486' },
+    { number1: 1567, number2: 2749, answer: '<', explanation: '1567 < 2749' },
+    { number1: 6789, number2: 6789, answer: '=', explanation: '6789 = 6789' },
+    { number1: 8456, number2: 2793, answer: '>', explanation: '8456 > 2793' },
+    { number1: 2467, number2: 7893, answer: '<', explanation: '2467 < 7893' },
+    { number1: 5679, number2: 5679, answer: '=', explanation: '5679 = 5679' },
+    { number1: 9123, number2: 4863, answer: '>', explanation: '9123 > 4863' },
+    { number1: 1274, number2: 4863, answer: '<', explanation: '1274 < 4863' }
   ];
 
-  // Exercices d'encadrement par unités, dizaines, centaines CE1 (20 exercices) - nombres complexes
+  // Exercices d'encadrement par unités, dizaines, centaines, milliers (20 exercices) pour CE2 - nombres complexes
   const encadrerUnitesExercises = [
-    { number: 459, type: 'unité', before: 458, after: 460, explanation: '458 < 459 < 460' },
-    { number: 237, type: 'unité', before: 236, after: 238, explanation: '236 < 237 < 238' },
-    { number: 569, type: 'unité', before: 568, after: 570, explanation: '568 < 569 < 570' },
-    { number: 127, type: 'unité', before: 126, after: 128, explanation: '126 < 127 < 128' },
-    { number: 793, type: 'unité', before: 792, after: 794, explanation: '792 < 793 < 794' },
-    { number: 349, type: 'unité', before: 348, after: 350, explanation: '348 < 349 < 350' },
-    { number: 679, type: 'unité', before: 678, after: 680, explanation: '678 < 679 < 680' },
-    { number: 459, type: 'dizaine', before: 450, after: 460, explanation: '450 < 459 < 460' },
-    { number: 237, type: 'dizaine', before: 230, after: 240, explanation: '230 < 237 < 240' },
-    { number: 793, type: 'dizaine', before: 790, after: 800, explanation: '790 < 793 < 800' },
-    { number: 569, type: 'dizaine', before: 560, after: 570, explanation: '560 < 569 < 570' },
-    { number: 127, type: 'dizaine', before: 120, after: 130, explanation: '120 < 127 < 130' },
-    { number: 849, type: 'dizaine', before: 840, after: 850, explanation: '840 < 849 < 850' },
-    { number: 327, type: 'dizaine', before: 320, after: 330, explanation: '320 < 327 < 330' },
-    { number: 569, type: 'centaine', before: 500, after: 600, explanation: '500 < 569 < 600' },
-    { number: 127, type: 'centaine', before: 100, after: 200, explanation: '100 < 127 < 200' },
-    { number: 349, type: 'centaine', before: 300, after: 400, explanation: '300 < 349 < 400' },
-    { number: 793, type: 'centaine', before: 700, after: 800, explanation: '700 < 793 < 800' },
-    { number: 237, type: 'centaine', before: 200, after: 300, explanation: '200 < 237 < 300' },
-    { number: 459, type: 'centaine', before: 400, after: 500, explanation: '400 < 459 < 500' }
+    { number: 4863, type: 'unité', before: 4862, after: 4864, explanation: '4862 < 4863 < 4864' },
+    { number: 2349, type: 'unité', before: 2348, after: 2350, explanation: '2348 < 2349 < 2350' },
+    { number: 5679, type: 'unité', before: 5678, after: 5680, explanation: '5678 < 5679 < 5680' },
+    { number: 1237, type: 'unité', before: 1236, after: 1238, explanation: '1236 < 1237 < 1238' },
+    { number: 7893, type: 'unité', before: 7892, after: 7894, explanation: '7892 < 7893 < 7894' },
+    { number: 4863, type: 'dizaine', before: 4860, after: 4870, explanation: '4860 < 4863 < 4870' },
+    { number: 2349, type: 'dizaine', before: 2340, after: 2350, explanation: '2340 < 2349 < 2350' },
+    { number: 7896, type: 'dizaine', before: 7890, after: 7900, explanation: '7890 < 7896 < 7900' },
+    { number: 5679, type: 'dizaine', before: 5670, after: 5680, explanation: '5670 < 5679 < 5680' },
+    { number: 1237, type: 'dizaine', before: 1230, after: 1240, explanation: '1230 < 1237 < 1240' },
+    { number: 8456, type: 'dizaine', before: 8450, after: 8460, explanation: '8450 < 8456 < 8460' },
+    { number: 5679, type: 'centaine', before: 5600, after: 5700, explanation: '5600 < 5679 < 5700' },
+    { number: 1237, type: 'centaine', before: 1200, after: 1300, explanation: '1200 < 1237 < 1300' },
+    { number: 3456, type: 'centaine', before: 3400, after: 3500, explanation: '3400 < 3456 < 3500' },
+    { number: 7893, type: 'centaine', before: 7800, after: 7900, explanation: '7800 < 7893 < 7900' },
+    { number: 2349, type: 'centaine', before: 2300, after: 2400, explanation: '2300 < 2349 < 2400' },
+    { number: 5679, type: 'millier', before: 5000, after: 6000, explanation: '5000 < 5679 < 6000' },
+    { number: 1237, type: 'millier', before: 1000, after: 2000, explanation: '1000 < 1237 < 2000' },
+    { number: 7893, type: 'millier', before: 7000, after: 8000, explanation: '7000 < 7893 < 8000' },
+    { number: 4863, type: 'millier', before: 4000, after: 5000, explanation: '4000 < 4863 < 5000' }
   ];
 
-    const getCurrentExercises = () => {
+  const getCurrentExercises = () => {
     switch (exerciseType) {
       case 'ranger': return rangerExercises;
       case 'encadrer': return encadrerExercises;
@@ -213,30 +213,22 @@ export default function OrdonnerNombresCE1Page() {
     setUserAnswers(newAnswers);
   };
 
-  const moveNumber = (fromIndex: number, toIndex: number) => {
-    const newAnswers = [...userAnswers];
-    const temp = newAnswers[fromIndex];
-    newAnswers[fromIndex] = newAnswers[toIndex];
-    newAnswers[toIndex] = temp;
-    setUserAnswers(newAnswers);
-  };
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-50 to-rose-100">
+    <div className="min-h-screen bg-gradient-to-br from-teal-50 to-cyan-100">
       <div className="max-w-6xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8">
-          <Link href="/chapitre/ce1-nombres-jusqu-1000" className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors mb-4">
+          <Link href="/chapitre/ce2-nombres-jusqu-10000" className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors mb-4">
             <ArrowLeft className="w-4 h-4" />
             <span>Retour au chapitre</span>
           </Link>
           
           <div className="bg-white rounded-xl p-6 shadow-lg text-center">
             <h1 className="text-4xl font-bold text-gray-900 mb-4">
-              🔢 Ordonner les nombres
+              🔢 Ordonner les nombres jusqu'à 10 000
             </h1>
             <p className="text-lg text-gray-600">
-              Apprends à comparer et ranger les nombres jusqu'à 1000 !
+              Apprends à comparer et ranger les nombres jusqu'à 10 000 !
             </p>
           </div>
         </div>
@@ -248,8 +240,8 @@ export default function OrdonnerNombresCE1Page() {
               onClick={() => setShowExercises(false)}
               className={`px-8 py-4 rounded-xl font-bold transition-all transform hover:scale-105 shadow-md ${
                 !showExercises 
-                  ? 'bg-gradient-to-r from-pink-500 to-rose-600 text-white shadow-lg' 
-                  : 'text-gray-700 hover:bg-gradient-to-r hover:from-pink-100 hover:to-rose-100 hover:text-pink-800'
+                  ? 'bg-gradient-to-r from-teal-500 to-cyan-600 text-white shadow-lg' 
+                  : 'text-gray-700 hover:bg-gradient-to-r hover:from-teal-100 hover:to-cyan-100 hover:text-teal-800'
               }`}
             >
               📖 Cours
@@ -258,8 +250,8 @@ export default function OrdonnerNombresCE1Page() {
               onClick={() => setShowExercises(true)}
               className={`px-8 py-4 rounded-xl font-bold transition-all transform hover:scale-105 shadow-md ml-2 ${
                 showExercises 
-                  ? 'bg-gradient-to-r from-rose-500 to-pink-600 text-white shadow-lg' 
-                  : 'text-gray-700 hover:bg-gradient-to-r hover:from-rose-100 hover:to-pink-100 hover:text-rose-800'
+                  ? 'bg-gradient-to-r from-cyan-500 to-teal-600 text-white shadow-lg' 
+                  : 'text-gray-700 hover:bg-gradient-to-r hover:from-cyan-100 hover:to-teal-100 hover:text-cyan-800'
               }`}
             >
               ✏️ Exercices ({score}/{getCurrentExercises().length})
@@ -280,19 +272,19 @@ export default function OrdonnerNombresCE1Page() {
                   <div className="text-6xl mb-3">🔴</div>
                   <h3 className="font-bold text-red-800 mb-2">Plus grand que</h3>
                   <div className="text-4xl font-bold text-red-600 mb-2">&gt;</div>
-                  <p className="text-red-700">567 &gt; 234</p>
+                  <p className="text-red-700">5 670 &gt; 2 340</p>
                 </div>
                 <div className="bg-blue-50 rounded-lg p-6 text-center">
                   <div className="text-6xl mb-3">🔵</div>
                   <h3 className="font-bold text-blue-800 mb-2">Plus petit que</h3>
                   <div className="text-4xl font-bold text-blue-600 mb-2">&lt;</div>
-                  <p className="text-blue-700">234 &lt; 567</p>
+                  <p className="text-blue-700">2 340 &lt; 5 670</p>
                 </div>
                 <div className="bg-green-50 rounded-lg p-6 text-center">
                   <div className="text-6xl mb-3">🟢</div>
                   <h3 className="font-bold text-green-800 mb-2">Égal à</h3>
                   <div className="text-4xl font-bold text-green-600 mb-2">=</div>
-                  <p className="text-green-700">345 = 345</p>
+                  <p className="text-green-700">3 450 = 3 450</p>
                 </div>
               </div>
             </div>
@@ -300,24 +292,28 @@ export default function OrdonnerNombresCE1Page() {
             {/* Comment comparer */}
             <div className="bg-white rounded-xl p-6 shadow-lg">
               <h2 className="text-2xl font-bold text-center mb-6 text-gray-900">
-                🧠 Comment comparer deux nombres ?
+                🧠 Comment comparer deux nombres jusqu'à 10 000 ?
               </h2>
               <div className="space-y-4">
                 <div className="bg-yellow-50 rounded-lg p-4">
                   <h3 className="font-bold text-yellow-800 mb-2">1. Compare le nombre de chiffres</h3>
-                  <p className="text-yellow-700">567 (3 chiffres) &gt; 89 (2 chiffres)</p>
+                  <p className="text-yellow-700">5 670 (4 chiffres) &gt; 890 (3 chiffres)</p>
                 </div>
                 <div className="bg-orange-50 rounded-lg p-4">
-                  <h3 className="font-bold text-orange-800 mb-2">2. Compare les centaines</h3>
-                  <p className="text-orange-700">567 vs 234 → 5 &gt; 2 donc 567 &gt; 234</p>
+                  <h3 className="font-bold text-orange-800 mb-2">2. Compare les milliers</h3>
+                  <p className="text-orange-700">5 670 vs 2 340 → 5 &gt; 2 donc 5 670 &gt; 2 340</p>
                 </div>
                 <div className="bg-purple-50 rounded-lg p-4">
-                  <h3 className="font-bold text-purple-800 mb-2">3. Si égales, compare les dizaines</h3>
-                  <p className="text-purple-700">567 vs 534 → 6 &gt; 3 donc 567 &gt; 534</p>
+                  <h3 className="font-bold text-purple-800 mb-2">3. Si égaux, compare les centaines</h3>
+                  <p className="text-purple-700">5 670 vs 5 340 → 6 &gt; 3 donc 5 670 &gt; 5 340</p>
                 </div>
                 <div className="bg-indigo-50 rounded-lg p-4">
-                  <h3 className="font-bold text-indigo-800 mb-2">4. Si égales, compare les unités</h3>
-                  <p className="text-indigo-700">567 vs 562 → 7 &gt; 2 donc 567 &gt; 562</p>
+                  <h3 className="font-bold text-indigo-800 mb-2">4. Si égales, compare les dizaines</h3>
+                  <p className="text-indigo-700">5 670 vs 5 620 → 7 &gt; 2 donc 5 670 &gt; 5 620</p>
+                </div>
+                <div className="bg-teal-50 rounded-lg p-4">
+                  <h3 className="font-bold text-teal-800 mb-2">5. Si égales, compare les unités</h3>
+                  <p className="text-teal-700">5 670 vs 5 672 → 0 &lt; 2 donc 5 670 &lt; 5 672</p>
                 </div>
               </div>
             </div>
@@ -335,9 +331,9 @@ export default function OrdonnerNombresCE1Page() {
                   </h3>
                   <div className="space-y-2">
                     <div className="text-center">
-                      <div className="font-bold text-gray-700">Avant : 567, 234, 789</div>
+                      <div className="font-bold text-gray-700">Avant : 5 670, 2 340, 7 890</div>
                       <div className="text-2xl">⬇️</div>
-                      <div className="font-bold text-green-700">Après : 234, 567, 789</div>
+                      <div className="font-bold text-green-700">Après : 2 340, 5 670, 7 890</div>
                     </div>
                   </div>
                 </div>
@@ -348,9 +344,9 @@ export default function OrdonnerNombresCE1Page() {
                   </h3>
                   <div className="space-y-2">
                     <div className="text-center">
-                      <div className="font-bold text-gray-700">Avant : 234, 567, 789</div>
+                      <div className="font-bold text-gray-700">Avant : 2 340, 5 670, 7 890</div>
                       <div className="text-2xl">⬇️</div>
-                      <div className="font-bold text-red-700">Après : 789, 567, 234</div>
+                      <div className="font-bold text-red-700">Après : 7 890, 5 670, 2 340</div>
                     </div>
                   </div>
                 </div>
@@ -358,10 +354,11 @@ export default function OrdonnerNombresCE1Page() {
             </div>
 
             {/* Conseils */}
-            <div className="bg-gradient-to-r from-pink-400 to-rose-400 rounded-xl p-6 text-white">
+            <div className="bg-gradient-to-r from-teal-400 to-cyan-400 rounded-xl p-6 text-white">
               <h3 className="text-xl font-bold mb-3">💡 Astuces pour bien ordonner</h3>
               <ul className="space-y-2">
-                <li>• Regarde d'abord les centaines</li>
+                <li>• Regarde d'abord les milliers (le premier chiffre)</li>
+                <li>• Si ils sont égaux, regarde les centaines</li>
                 <li>• Si elles sont égales, regarde les dizaines</li>
                 <li>• Si elles sont égales, regarde les unités</li>
                 <li>• Croissant = comme compter (1, 2, 3...)</li>
@@ -379,7 +376,7 @@ export default function OrdonnerNombresCE1Page() {
                   ✏️ Exercice {currentExercise + 1} sur {getCurrentExercises().length}
                 </h2>
                 <div className="flex items-center space-x-4">
-                  <div className="text-lg font-bold text-pink-600">
+                  <div className="text-lg font-bold text-teal-600">
                     Score : {score}/{getCurrentExercises().length}
                   </div>
                   <button
@@ -443,7 +440,7 @@ export default function OrdonnerNombresCE1Page() {
                         : 'bg-gradient-to-r from-cyan-200 to-blue-200 text-cyan-800 hover:from-cyan-300 hover:to-blue-300 hover:text-cyan-900 border-2 border-cyan-300'
                     }`}
                   >
-                    🎯 Encadrer (U, D, C)
+                    🎯 Encadrer (U, D, C, M)
                   </button>
                 </div>
               </div>
@@ -475,7 +472,7 @@ export default function OrdonnerNombresCE1Page() {
                     <div className="flex justify-center space-x-2 mb-6 flex-wrap">
                       {rangerExercises[currentExercise].numbers.map((num, index) => (
                         <div key={index} className="text-2xl font-bold text-purple-600 bg-purple-100 rounded-lg p-3 mb-2">
-                          {num}
+                          {num.toLocaleString()}
                         </div>
                       ))}
                     </div>
@@ -491,7 +488,7 @@ export default function OrdonnerNombresCE1Page() {
                           value={userAnswers[index] || ''}
                           onChange={(e) => updateOrderAnswer(index, e.target.value)}
                           placeholder="?"
-                          className="w-20 h-20 text-center text-lg font-bold border-2 border-gray-300 rounded-lg focus:border-rose-500 focus:outline-none bg-white text-gray-900 mb-2"
+                          className="w-24 h-20 text-center text-lg font-bold border-2 border-gray-300 rounded-lg focus:border-cyan-500 focus:outline-none bg-white text-gray-900 mb-2"
                         />
                       ))}
                     </div>
@@ -511,11 +508,11 @@ export default function OrdonnerNombresCE1Page() {
                       value={userAnswers[0] || ''}
                       onChange={(e) => updateOrderAnswer(0, e.target.value)}
                       placeholder="?"
-                      className="w-24 h-24 text-center text-2xl font-bold border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none bg-white text-gray-900"
+                      className="w-28 h-24 text-center text-2xl font-bold border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none bg-white text-gray-900"
                     />
                     <div className="text-3xl font-bold text-gray-600">&lt;</div>
-                    <div className="text-4xl font-bold text-red-600 bg-red-100 rounded-lg p-4">
-                      {encadrerExercises[currentExercise].number}
+                    <div className="text-3xl font-bold text-red-600 bg-red-100 rounded-lg p-4">
+                      {encadrerExercises[currentExercise].number.toLocaleString()}
                     </div>
                     <div className="text-3xl font-bold text-gray-600">&lt;</div>
                     <input
@@ -523,7 +520,7 @@ export default function OrdonnerNombresCE1Page() {
                       value={userAnswers[1] || ''}
                       onChange={(e) => updateOrderAnswer(1, e.target.value)}
                       placeholder="?"
-                      className="w-24 h-24 text-center text-2xl font-bold border-2 border-gray-300 rounded-lg focus:border-green-500 focus:outline-none bg-white text-gray-900"
+                      className="w-28 h-24 text-center text-2xl font-bold border-2 border-gray-300 rounded-lg focus:border-green-500 focus:outline-none bg-white text-gray-900"
                     />
                   </div>
                 </>
@@ -537,12 +534,12 @@ export default function OrdonnerNombresCE1Page() {
                   
                   <div className="flex justify-center space-x-4 mb-8">
                     {suitesExercises[currentExercise].sequence.map((item, index) => (
-                      <div key={index} className={`w-24 h-24 rounded-lg flex items-center justify-center text-2xl font-bold ${
+                      <div key={index} className={`w-28 h-24 rounded-lg flex items-center justify-center text-xl font-bold ${
                         item === '?' 
                           ? 'bg-yellow-200 text-yellow-800' 
                           : 'bg-gray-200 text-gray-800'
                       }`}>
-                        {item}
+                        {item === '?' ? '?' : typeof item === 'number' ? item.toLocaleString() : item}
                       </div>
                     ))}
                   </div>
@@ -555,7 +552,7 @@ export default function OrdonnerNombresCE1Page() {
                         value={userAnswers[0] || ''}
                         onChange={(e) => updateOrderAnswer(0, e.target.value)}
                         placeholder="?"
-                        className="w-24 h-16 text-center text-xl font-bold border-2 border-gray-300 rounded-lg focus:border-yellow-500 focus:outline-none bg-white text-gray-900"
+                        className="w-28 h-16 text-center text-xl font-bold border-2 border-gray-300 rounded-lg focus:border-yellow-500 focus:outline-none bg-white text-gray-900"
                       />
                     </div>
                     <div className="text-center">
@@ -565,7 +562,7 @@ export default function OrdonnerNombresCE1Page() {
                         value={userAnswers[1] || ''}
                         onChange={(e) => updateOrderAnswer(1, e.target.value)}
                         placeholder="?"
-                        className="w-24 h-16 text-center text-xl font-bold border-2 border-gray-300 rounded-lg focus:border-yellow-500 focus:outline-none bg-white text-gray-900"
+                        className="w-28 h-16 text-center text-xl font-bold border-2 border-gray-300 rounded-lg focus:border-yellow-500 focus:outline-none bg-white text-gray-900"
                       />
                     </div>
                   </div>
@@ -580,7 +577,7 @@ export default function OrdonnerNombresCE1Page() {
                   
                   <div className="flex justify-center items-center space-x-4 mb-8">
                     <div className="text-4xl font-bold text-blue-600 bg-blue-100 rounded-lg p-4">
-                      {comparerExercises[currentExercise].number1}
+                      {comparerExercises[currentExercise].number1.toLocaleString()}
                     </div>
                     <input
                       type="text"
@@ -590,7 +587,7 @@ export default function OrdonnerNombresCE1Page() {
                       className="w-24 h-24 text-center text-4xl font-bold border-2 border-gray-300 rounded-lg focus:border-yellow-500 focus:outline-none bg-white text-gray-900"
                     />
                     <div className="text-4xl font-bold text-green-600 bg-green-100 rounded-lg p-4">
-                      {comparerExercises[currentExercise].number2}
+                      {comparerExercises[currentExercise].number2.toLocaleString()}
                     </div>
                   </div>
                   
@@ -623,7 +620,8 @@ export default function OrdonnerNombresCE1Page() {
               {exerciseType === 'encadrer-unites' && (
                 <>
                   <h3 className="text-xl font-bold mb-6 text-gray-900">
-                    🎯 Encadre ce nombre à la {encadrerUnitesExercises[currentExercise].type}
+                    🎯 Encadre ce nombre à {encadrerUnitesExercises[currentExercise].type === 'unité' ? 'l\'' : 'la '}
+                    {encadrerUnitesExercises[currentExercise].type === 'millier' ? 'au millier' : encadrerUnitesExercises[currentExercise].type}
                   </h3>
                   
                   <div className="flex justify-center items-center space-x-4 mb-8">
@@ -632,11 +630,11 @@ export default function OrdonnerNombresCE1Page() {
                       value={userAnswers[0] || ''}
                       onChange={(e) => updateOrderAnswer(0, e.target.value)}
                       placeholder="?"
-                      className="w-24 h-24 text-center text-2xl font-bold border-2 border-gray-300 rounded-lg focus:border-cyan-500 focus:outline-none bg-white text-gray-900"
+                      className="w-28 h-24 text-center text-xl font-bold border-2 border-gray-300 rounded-lg focus:border-cyan-500 focus:outline-none bg-white text-gray-900"
                     />
                     <div className="text-3xl font-bold text-gray-600">&lt;</div>
-                    <div className="text-4xl font-bold text-cyan-600 bg-cyan-100 rounded-lg p-4">
-                      {encadrerUnitesExercises[currentExercise].number}
+                    <div className="text-3xl font-bold text-cyan-600 bg-cyan-100 rounded-lg p-4">
+                      {encadrerUnitesExercises[currentExercise].number.toLocaleString()}
                     </div>
                     <div className="text-3xl font-bold text-gray-600">&lt;</div>
                     <input
@@ -644,20 +642,23 @@ export default function OrdonnerNombresCE1Page() {
                       value={userAnswers[1] || ''}
                       onChange={(e) => updateOrderAnswer(1, e.target.value)}
                       placeholder="?"
-                      className="w-24 h-24 text-center text-2xl font-bold border-2 border-gray-300 rounded-lg focus:border-cyan-500 focus:outline-none bg-white text-gray-900"
+                      className="w-28 h-24 text-center text-xl font-bold border-2 border-gray-300 rounded-lg focus:border-cyan-500 focus:outline-none bg-white text-gray-900"
                     />
                   </div>
                   
                   <div className="mb-8">
                     <p className="text-gray-600 text-lg">
-                      Encadre {encadrerUnitesExercises[currentExercise].number} à la {encadrerUnitesExercises[currentExercise].type}
+                      Encadre {encadrerUnitesExercises[currentExercise].number.toLocaleString()} {encadrerUnitesExercises[currentExercise].type === 'unité' ? 'à l\'' : 'à la '}
+                      {encadrerUnitesExercises[currentExercise].type === 'millier' ? 'au millier' : encadrerUnitesExercises[currentExercise].type}
                     </p>
                     <p className="text-gray-500 text-sm mt-2">
                       {encadrerUnitesExercises[currentExercise].type === 'unité' 
-                        ? 'Exemple : 455 < 456 < 457' 
+                        ? 'Exemple : 4566 < 4567 < 4568' 
                         : encadrerUnitesExercises[currentExercise].type === 'dizaine' 
-                        ? 'Exemple : 450 < 456 < 460' 
-                        : 'Exemple : 400 < 456 < 500'}
+                        ? 'Exemple : 4560 < 4567 < 4570' 
+                        : encadrerUnitesExercises[currentExercise].type === 'centaine'
+                        ? 'Exemple : 4500 < 4567 < 4600'
+                        : 'Exemple : 4000 < 4567 < 5000'}
                     </p>
                   </div>
                 </>
@@ -707,10 +708,10 @@ export default function OrdonnerNombresCE1Page() {
                         <XCircle className="w-8 h-8" />
                         <span className="font-bold text-xl">
                           {exerciseType === 'ranger' && 
-                            `Pas tout à fait... La bonne réponse est : ${((getCurrentExercises()[currentExercise] as any).answer as number[]).join(', ')}`
+                            `Pas tout à fait... La bonne réponse est : ${((getCurrentExercises()[currentExercise] as any).answer as number[]).map(n => n.toLocaleString()).join(', ')}`
                           }
                           {exerciseType === 'encadrer' && 
-                            `Pas tout à fait... La bonne réponse est : ${(getCurrentExercises()[currentExercise] as any).before} < ${(getCurrentExercises()[currentExercise] as any).number} < ${(getCurrentExercises()[currentExercise] as any).after}`
+                            `Pas tout à fait... La bonne réponse est : ${((getCurrentExercises()[currentExercise] as any).before as number).toLocaleString()} < ${((getCurrentExercises()[currentExercise] as any).number as number).toLocaleString()} < ${((getCurrentExercises()[currentExercise] as any).after as number).toLocaleString()}`
                           }
                           {exerciseType === 'suites' && 
                             `Pas tout à fait... La bonne réponse est : ${((getCurrentExercises()[currentExercise] as any).answers as string[]).join(', ')}`
@@ -765,11 +766,11 @@ export default function OrdonnerNombresCE1Page() {
                 <div className="text-4xl mb-3">🎉</div>
                 <h3 className="text-2xl font-bold mb-2">Fantastique !</h3>
                 <p className="text-lg">
-                  {exerciseType === 'ranger' && 'Tu sais maintenant comparer tous les nombres jusqu\'à 1000 !'}
-                  {exerciseType === 'encadrer' && 'Tu sais maintenant ordonner tous les nombres jusqu\'à 1000 !'}
+                  {exerciseType === 'ranger' && 'Tu sais maintenant comparer tous les nombres jusqu\'à 10 000 !'}
+                  {exerciseType === 'encadrer' && 'Tu sais maintenant ordonner tous les nombres jusqu\'à 10 000 !'}
                   {exerciseType === 'suites' && 'Tu sais maintenant trouver les nombres manquants !'}
                   {exerciseType === 'comparer' && 'Tu sais maintenant comparer avec les signes <, > et = !'}
-                  {exerciseType === 'encadrer-unites' && 'Tu sais maintenant encadrer à l\'unité, à la dizaine et à la centaine !'}
+                  {exerciseType === 'encadrer-unites' && 'Tu sais maintenant encadrer à l\'unité, à la dizaine, à la centaine et au millier !'}
                 </p>
                 <p className="text-xl font-bold mt-4">
                   Score final : {score}/{getCurrentExercises().length}

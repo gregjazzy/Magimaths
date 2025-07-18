@@ -335,6 +335,22 @@ export const chaptersData: Chapter[] = [
     order: 20
   },
   {
+    id: 'cm1-calcul-mental',
+    title: 'Calcul mental',
+    description: 'Développer des stratégies de calcul rapide et des automatismes',
+    classLevel: 'CM1',
+    category: 'numeracy',
+    difficulty: 'intermediate',
+    estimatedTime: 60,
+    prerequisites: [],
+    color: '#45b7d1',
+    icon: '🧠',
+    lessons: [],
+    exercises: [],
+    isLocked: false,
+    order: 21
+  },
+  {
     id: 'cm1-grandeurs-mesures',
     title: 'Grandeurs et mesures',
     description: 'Longueurs, masses, contenances, angles, temps et durées ; estimations, conversions simples et résolution de problèmes',

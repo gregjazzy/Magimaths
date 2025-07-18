@@ -44,6 +44,15 @@ export default function CE2NombresJusqu10000Page() {
       duration: '10 min',
       xp: 15,
       color: 'from-orange-500 to-red-500'
+    },
+    {
+      id: 'ordonner',
+      title: 'Ordonner les nombres',
+      description: 'Comparer et ranger les nombres jusqu\'à 10 000',
+      icon: '🔢',
+      duration: '12 min',
+      xp: 18,
+      color: 'from-teal-500 to-cyan-500'
     }
   ];
 

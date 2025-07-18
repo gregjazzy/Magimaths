@@ -78,7 +78,7 @@ export default function SubstitutionPage() {
         { text: "Résultat", expr: "18", color: "text-purple-600" }
       ]
     },
-
+    
     // Niveau 2 : Avec nombres négatifs
     {
       id: 6,
@@ -143,7 +143,7 @@ export default function SubstitutionPage() {
         { text: "Résultat", expr: "13", color: "text-purple-600" }
       ]
     },
-
+    
     // Niveau 4 : Variables négatives
     {
       id: 11,
@@ -169,7 +169,7 @@ export default function SubstitutionPage() {
         { text: "Résultat", expr: "-8", color: "text-purple-600" }
       ]
     },
-
+    
     // Niveau 5 : Deux variables
     {
       id: 13,
@@ -611,7 +611,7 @@ export default function SubstitutionPage() {
                 <div className="text-2xl font-bold text-gray-900 mb-2">{currentEx.question}</div>
                 <div className="text-lg text-blue-700 font-semibold">pour {currentEx.variable}</div>
               </div>
-
+                
               <div className="flex flex-col items-center gap-4">
                   <input
                     type="text"
@@ -632,7 +632,7 @@ export default function SubstitutionPage() {
                 {showAnswer && (
                   <div className={`flex items-center gap-2 text-lg font-semibold ${
                     answerFeedback === 'correct' ? 'text-green-700' : 'text-red-700'
-                  }`}>
+                      }`}>
                     {answerFeedback === 'correct' ? (
                       <>
                         <CheckCircle className="w-6 h-6" />
@@ -676,7 +676,7 @@ export default function SubstitutionPage() {
                       onClick={prevSolutionStep}
                       disabled={solutionStep === 0}
                       className="px-3 py-1 bg-gray-300 text-gray-700 rounded disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-400 transition-colors text-sm"
-                    >
+                        >
                       ←
                         </button>
                         <button

@@ -488,8 +488,34 @@ export default function DeveloppementPage() {
   const currentEx = exercises[currentExercise]
   const currentAdvancedEx = advancedExercises[currentAdvancedExercise]
 
+  // Fonction pour normaliser les expressions mathématiques
+  const normalizeExpression = (expr: string): string => {
+    return expr
+      .trim()
+      .toLowerCase()
+      .replace(/\s+/g, '') // Supprimer tous les espaces
+      .replace(/\+/g, '+') // Normaliser les signes plus
+      .replace(/\-/g, '-') // Normaliser les signes moins
+      .replace(/\*/g, '') // Supprimer les signes de multiplication explicites
+      .replace(/×/g, '') // Supprimer les signes de multiplication unicode
+      .replace(/\²/g, '²') // Normaliser les exposants
+      .replace(/\^2/g, '²') // Convertir ^2 en ²
+      .replace(/\^3/g, '³') // Convertir ^3 en ³
+      .replace(/([0-9])([a-z])/g, '$1$2') // Assurer que les coefficients sont collés aux variables
+      .replace(/([a-z])([0-9])/g, '$1$2') // Assurer que les variables sont collées aux coefficients
+      .replace(/([a-z])([a-z])/g, '$1$2') // Assurer que les variables sont collées entre elles
+      .replace(/\+\+/g, '+') // Corriger les doubles signes
+      .replace(/\-\-/g, '+') // Corriger les doubles signes négatifs
+      .replace(/^\+/, '') // Supprimer le signe + au début
+      .replace(/([0-9a-z])([+-])/g, '$1$2') // Assurer l'espacement correct
+      .replace(/([+-])([0-9a-z])/g, '$1$2'); // Assurer l'espacement correct
+  }
+
   const checkAnswer = () => {
-    if (userAnswer.trim() === currentEx.answer) {
+    const normalizedUserAnswer = normalizeExpression(userAnswer);
+    const normalizedCorrectAnswer = normalizeExpression(currentEx.answer);
+    
+    if (normalizedUserAnswer === normalizedCorrectAnswer) {
       setScore(score + 1)
       setCorrectAnswers(correctAnswers + 1)
       setAnswerFeedback('correct')
@@ -508,7 +534,10 @@ export default function DeveloppementPage() {
   }
 
   const checkAdvancedAnswer = () => {
-    if (advancedUserAnswer.trim() === currentAdvancedEx.answer) {
+    const normalizedAdvancedUserAnswer = normalizeExpression(advancedUserAnswer);
+    const normalizedAdvancedCorrectAnswer = normalizeExpression(currentAdvancedEx.answer);
+    
+    if (normalizedAdvancedUserAnswer === normalizedAdvancedCorrectAnswer) {
       setAdvancedScore(advancedScore + 1)
       setCorrectAnswersAdvanced(correctAnswersAdvanced + 1)
       setAdvancedAnswerFeedback('correct')
@@ -1086,15 +1115,15 @@ export default function DeveloppementPage() {
                       {showAnswer && (
                         <div className="space-y-4">
                           <div className={`p-4 rounded-lg border ${
-                            userAnswer.trim() === currentEx.answer
+                            normalizeExpression(userAnswer) === normalizeExpression(currentEx.answer)
                               ? 'bg-green-50 border-green-200'
                               : 'bg-red-50 border-red-200'
                           }`}>
                             <div className="flex items-center gap-2 mb-2">
                               <span className={`font-semibold ${
-                                userAnswer.trim() === currentEx.answer ? 'text-green-800' : 'text-red-800'
+                                normalizeExpression(userAnswer) === normalizeExpression(currentEx.answer) ? 'text-green-800' : 'text-red-800'
                               }`}>
-                                {userAnswer.trim() === currentEx.answer ? '✅ Correct !' : '❌ Incorrect'}
+                                {normalizeExpression(userAnswer) === normalizeExpression(currentEx.answer) ? '✅ Correct !' : '❌ Incorrect'}
                               </span>
                             </div>
                             <p className="text-sm text-gray-700">
@@ -1303,15 +1332,15 @@ export default function DeveloppementPage() {
                       {showAdvancedAnswer && (
                         <div className="space-y-4">
                           <div className={`p-4 rounded-lg border ${
-                            advancedUserAnswer.trim() === currentAdvancedEx.answer
+                            normalizeExpression(advancedUserAnswer) === normalizeExpression(currentAdvancedEx.answer)
                               ? 'bg-green-50 border-green-200'
                               : 'bg-red-50 border-red-200'
                           }`}>
                             <div className="flex items-center gap-2 mb-2">
                               <span className={`font-semibold ${
-                                advancedUserAnswer.trim() === currentAdvancedEx.answer ? 'text-green-800' : 'text-red-800'
+                                normalizeExpression(advancedUserAnswer) === normalizeExpression(currentAdvancedEx.answer) ? 'text-green-800' : 'text-red-800'
                               }`}>
-                                {advancedUserAnswer.trim() === currentAdvancedEx.answer ? '🏆 Excellent !' : '❌ Incorrect'}
+                                {normalizeExpression(advancedUserAnswer) === normalizeExpression(currentAdvancedEx.answer) ? '🏆 Excellent !' : '❌ Incorrect'}
                               </span>
                             </div>
                             <p className="text-sm text-gray-700">

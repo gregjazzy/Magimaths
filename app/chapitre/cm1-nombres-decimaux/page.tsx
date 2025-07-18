@@ -10,13 +10,22 @@ export default function NombresDecimauxPage() {
 
   const sections = [
     {
+      id: 'introduction',
+      title: 'Introduction aux nombres décimaux',
+      description: 'Comprendre ce qu\'est un nombre décimal et les fractions usuelles',
+      icon: '📚',
+      duration: '5 min',
+      xp: 10,
+      color: 'from-blue-500 to-cyan-500'
+    },
+    {
       id: 'lire',
       title: 'Lire un nombre décimal',
       description: 'Apprendre à lire les nombres décimaux',
       icon: '👁️',
       duration: '10 min',
       xp: 15,
-      color: 'from-green-500 to-emerald-500'
+      color: 'from-teal-500 to-green-500'
     },
     {
       id: 'ecrire',
@@ -25,7 +34,7 @@ export default function NombresDecimauxPage() {
       icon: '✏️',
       duration: '15 min',
       xp: 20,
-      color: 'from-blue-500 to-cyan-500'
+      color: 'from-indigo-500 to-blue-500'
     },
     {
       id: 'decomposition',

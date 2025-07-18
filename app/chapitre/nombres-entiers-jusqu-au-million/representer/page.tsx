@@ -16,242 +16,242 @@ export default function RepresenterNombresEntiersPage() {
   const [draggedNumber, setDraggedNumber] = useState<number | null>(null);
 
   const exercises = [
-    // Exercices Faciles (1-6) - Nombres à 4 chiffres
+    // Exercices Faciles (1-6) - Nombres à 4 chiffres - nombres complexes
          {
        id: 1,
        type: 'placement' as const,
        title: "Placer le nombre sur la droite graduée",
-       number: 2450,
+       number: 2463,
        min: 2000,
        max: 3000,
        step: 50,
        displayStep: 200,
        difficulty: "Facile",
-       explanation: "2450 est situé entre 2400 et 2600, exactement au milieu",
-       hint: "Graduations principales : 2000, 2200, 2400, 2600, 2800, 3000. Place 2450 entre 2400 et 2600"
+       explanation: "2463 est situé entre 2400 et 2600, plus près de 2400",
+       hint: "Graduations principales : 2000, 2200, 2400, 2600, 2800, 3000. Place 2463 entre 2400 et 2600"
      },
          {
        id: 2,
        type: 'placement' as const,
        title: "Placer le nombre sur la droite graduée",
-       number: 1650,
+       number: 1687,
        min: 1000,
        max: 2000,
        step: 25,
        displayStep: 250,
        difficulty: "Facile",
-       explanation: "1650 est situé entre 1500 et 1750, plus près de 1750",
-       hint: "Graduations principales : 1000, 1250, 1500, 1750, 2000. Place 1650 entre 1500 et 1750"
+       explanation: "1687 est situé entre 1500 et 1750, plus près de 1750",
+       hint: "Graduations principales : 1000, 1250, 1500, 1750, 2000. Place 1687 entre 1500 et 1750"
      },
     {
       id: 3,
       type: 'comparison' as const,
       title: "Quel nombre est le plus grand ?",
-      numbers: [4750, 4570, 4705],
-      correct: 4750,
+      numbers: [4783, 4597, 4729],
+      correct: 4783,
       difficulty: "Facile",
-      explanation: "4750 > 4705 > 4570 car on compare les centaines puis les dizaines",
-      hint: "Compare les chiffres de gauche à droite : 4750 a 7 centaines, 4705 a 7 centaines mais 5 dizaines"
+      explanation: "4783 > 4729 > 4597 car on compare les centaines puis les dizaines",
+      hint: "Compare les chiffres de gauche à droite : 4783 a 7 centaines, 4729 a 7 centaines mais 8 dizaines"
     },
          {
        id: 4,
        type: 'placement' as const,
        title: "Placer le nombre sur la droite graduée",
-       number: 3580,
+       number: 3594,
        min: 3000,
        max: 4000,
        step: 20,
        displayStep: 200,
        difficulty: "Facile",
-       explanation: "3580 est situé entre 3500 et 3600, plus près de 3600",
-       hint: "Graduations principales : 3000, 3200, 3400, 3600, 3800, 4000. Place 3580 entre 3400 et 3600"
+       explanation: "3594 est situé entre 3400 et 3600, plus près de 3600",
+       hint: "Graduations principales : 3000, 3200, 3400, 3600, 3800, 4000. Place 3594 entre 3400 et 3600"
      },
     {
       id: 5,
       type: 'comparison' as const,
       title: "Quel nombre est le plus petit ?",
-      numbers: [8945, 8549, 8954],
-      correct: 8549,
+      numbers: [8967, 8579, 8986],
+      correct: 8579,
       difficulty: "Facile",
-      explanation: "8549 < 8945 < 8954 car on compare les centaines : 5 < 9",
-      hint: "Compare les centaines : 8549 a 5 centaines, les autres ont 9 centaines"
+      explanation: "8579 < 8967 < 8986 car on compare les centaines : 5 < 9",
+      hint: "Compare les centaines : 8579 a 5 centaines, les autres ont 9 centaines"
     },
               {
        id: 6,
        type: 'placement' as const,
        title: "Placer le nombre sur la droite graduée",
-       number: 5470,
+       number: 5483,
        min: 5000,
        max: 6000,
        step: 10,
        displayStep: 200,
        difficulty: "Facile",
-       explanation: "5470 est situé entre 5400 et 5500, plus près de 5500",
-       hint: "Graduations principales : 5000, 5200, 5400, 5600, 5800, 6000. Place 5470 entre 5400 et 5600"
+       explanation: "5483 est situé entre 5400 et 5500, plus près de 5500",
+       hint: "Graduations principales : 5000, 5200, 5400, 5600, 5800, 6000. Place 5483 entre 5400 et 5600"
      },
 
-    // Exercices Moyens (7-14) - Nombres à 5-6 chiffres
+    // Exercices Moyens (7-14) - Nombres à 5-6 chiffres - nombres complexes
      {
        id: 7,
        type: 'placement' as const,
        title: "Placer le nombre sur la droite graduée",
-       number: 26750,
+       number: 26847,
        min: 20000,
        max: 30000,
        step: 250,
        displayStep: 2000,
        difficulty: "Moyen",
-       explanation: "26750 est situé entre 26000 et 28000, plus près de 26000",
-       hint: "Graduations principales : 20000, 22000, 24000, 26000, 28000, 30000. Place 26750 entre 26000 et 28000"
+       explanation: "26847 est situé entre 26000 et 28000, plus près de 26000",
+       hint: "Graduations principales : 20000, 22000, 24000, 26000, 28000, 30000. Place 26847 entre 26000 et 28000"
      },
          {
        id: 8,
        type: 'comparison' as const,
        title: "Quel nombre est le plus grand ?",
-       numbers: [67890, 67980, 67809],
-       correct: 67980,
+       numbers: [67913, 67987, 67839],
+       correct: 67987,
        difficulty: "Moyen",
-       explanation: "67980 > 67890 > 67809 car on compare les centaines : 9 > 8 > 0",
-       hint: "Compare les centaines : 67980 a 9 centaines, 67890 a 8 centaines, 67809 a 0 centaines"
+       explanation: "67987 > 67913 > 67839 car on compare les centaines : 9 > 9 > 8, puis les dizaines",
+       hint: "Compare les centaines : 67987 a 9 centaines, 67913 a 9 centaines, 67839 a 8 centaines"
      },
          {
        id: 9,
        type: 'placement' as const,
        title: "Placer le nombre sur la droite graduée",
-       number: 132800,
+       number: 132847,
        min: 120000,
        max: 160000,
        step: 400,
        displayStep: 5000,
        difficulty: "Moyen",
-       explanation: "132800 est situé entre 130000 et 135000, plus près de 135000",
-       hint: "Graduations principales : 120000, 125000, 130000, 135000, 140000. Place 132800 entre 130000 et 135000"
+       explanation: "132847 est situé entre 130000 et 135000, plus près de 135000",
+       hint: "Graduations principales : 120000, 125000, 130000, 135000, 140000. Place 132847 entre 130000 et 135000"
      },
     {
       id: 10,
       type: 'comparison' as const,
       title: "Range ces nombres du plus petit au plus grand",
-      numbers: [234500, 243500, 324500, 342500],
-      correct: 234500,
+      numbers: [234596, 243579, 324587, 342568],
+      correct: 234596,
       difficulty: "Moyen",
-      explanation: "Ordre croissant : 234500 < 243500 < 324500 < 342500",
+      explanation: "Ordre croissant : 234596 < 243579 < 324587 < 342568",
       hint: "Compare les dizaines de milliers : 23, 24, 32, 34"
     },
          {
        id: 11,
        type: 'placement' as const,
        title: "Placer le nombre sur la droite graduée",
-       number: 74350,
+       number: 74369,
        min: 70000,
        max: 80000,
        step: 50,
        displayStep: 2000,
        difficulty: "Moyen",
-       explanation: "74350 est situé entre 74000 et 75000, plus près de 74000",
-       hint: "Graduations principales : 70000, 72000, 74000, 76000, 78000, 80000. Place 74350 entre 74000 et 76000"
+       explanation: "74369 est situé entre 74000 et 75000, plus près de 74000",
+       hint: "Graduations principales : 70000, 72000, 74000, 76000, 78000, 80000. Place 74369 entre 74000 et 76000"
      },
     {
       id: 12,
       type: 'comparison' as const,
       title: "Quel nombre est le plus petit ?",
-      numbers: [456789, 465789, 564789],
-      correct: 456789,
+      numbers: [456827, 465819, 564847],
+      correct: 456827,
       difficulty: "Moyen",
-      explanation: "456789 < 465789 < 564789 car on compare les dizaines de milliers",
+      explanation: "456827 < 465819 < 564847 car on compare les dizaines de milliers",
       hint: "Compare les dizaines de milliers : 45, 46, 56"
     },
          {
        id: 13,
        type: 'placement' as const,
        title: "Placer le nombre sur la droite graduée",
-       number: 193750,
+       number: 193769,
        min: 180000,
        max: 200000,
        step: 250,
        displayStep: 5000,
        difficulty: "Moyen",
-       explanation: "193750 est situé entre 192500 et 195000, plus près de 195000",
-       hint: "Graduations principales : 180000, 185000, 190000, 195000, 200000. Place 193750 entre 190000 et 195000"
+       explanation: "193769 est situé entre 192500 et 195000, plus près de 195000",
+       hint: "Graduations principales : 180000, 185000, 190000, 195000, 200000. Place 193769 entre 190000 et 195000"
      },
     {
       id: 14,
       type: 'comparison' as const,
       title: "Quel nombre est le plus grand ?",
-      numbers: [890123, 809123, 980123],
-      correct: 980123,
+      numbers: [890179, 809167, 980143],
+      correct: 980143,
       difficulty: "Moyen",
-      explanation: "980123 > 890123 > 809123 car on compare les centaines de milliers : 9 > 8",
-      hint: "Compare les centaines de milliers : 980123 a 9, les autres ont 8"
+      explanation: "980143 > 890179 > 809167 car on compare les centaines de milliers : 9 > 8",
+      hint: "Compare les centaines de milliers : 980143 a 9, les autres ont 8"
     },
 
-    // Exercices Difficiles (15-20) - Nombres à 7 chiffres (millions)
+    // Exercices Difficiles (15-20) - Nombres à 7 chiffres (millions) - nombres complexes
          {
        id: 15,
        type: 'placement' as const,
        title: "Placer le nombre sur la droite graduée",
-       number: 2780000,
+       number: 2794637,
        min: 2000000,
        max: 3000000,
        step: 20000,
        displayStep: 200000,
        difficulty: "Difficile",
-       explanation: "2780000 est situé entre 2700000 et 2800000, plus près de 2800000",
-       hint: "Graduations principales : 2000000, 2200000, 2400000, 2600000, 2800000, 3000000. Place 2780000 entre 2600000 et 2800000"
+       explanation: "2794637 est situé entre 2700000 et 2800000, plus près de 2800000",
+       hint: "Graduations principales : 2000000, 2200000, 2400000, 2600000, 2800000, 3000000. Place 2794637 entre 2600000 et 2800000"
      },
     {
       id: 16,
       type: 'comparison' as const,
       title: "Quel nombre est le plus grand ?",
-      numbers: [7890000, 7980000, 7809000],
-      correct: 7980000,
+      numbers: [7896347, 7987294, 7836597],
+      correct: 7987294,
       difficulty: "Difficile",
-      explanation: "7980000 > 7890000 > 7809000 car on compare les dizaines de milliers",
-      hint: "Compare les dizaines de milliers : 798, 789, 780"
+      explanation: "7987294 > 7896347 > 7836597 car on compare les dizaines de milliers",
+      hint: "Compare les dizaines de milliers : 798, 789, 783"
     },
          {
        id: 17,
        type: 'placement' as const,
        title: "Placer le nombre sur la droite graduée",
-       number: 4320000,
+       number: 4327849,
        min: 4000000,
        max: 5000000,
        step: 10000,
        displayStep: 200000,
        difficulty: "Difficile",
-       explanation: "4320000 est situé entre 4250000 et 4375000, plus près de 4375000",
-       hint: "Graduations principales : 4000000, 4200000, 4400000, 4600000, 4800000, 5000000. Place 4320000 entre 4200000 et 4400000"
+       explanation: "4327849 est situé entre 4250000 et 4375000, plus près de 4375000",
+       hint: "Graduations principales : 4000000, 4200000, 4400000, 4600000, 4800000, 5000000. Place 4327849 entre 4200000 et 4400000"
      },
     {
       id: 18,
       type: 'comparison' as const,
       title: "Range ces nombres du plus petit au plus grand",
-      numbers: [6789000, 6798000, 6879000, 6897000],
-      correct: 6789000,
+      numbers: [6789374, 6798259, 6879146, 6897385],
+      correct: 6789374,
       difficulty: "Difficile",
-      explanation: "Ordre croissant : 6789000 < 6798000 < 6879000 < 6897000",
+      explanation: "Ordre croissant : 6789374 < 6798259 < 6879146 < 6897385",
       hint: "Compare les milliers : 6789, 6798, 6879, 6897"
     },
          {
        id: 19,
        type: 'placement' as const,
        title: "Placer le nombre sur la droite graduée",
-       number: 8350000,
+       number: 8359476,
        min: 8000000,
        max: 9000000,
        step: 50000,
        displayStep: 200000,
        difficulty: "Difficile",
-       explanation: "8350000 est situé entre 8300000 et 8400000, plus près de 8300000",
-       hint: "Graduations principales : 8000000, 8200000, 8400000, 8600000, 8800000, 9000000. Place 8350000 entre 8200000 et 8400000"
+       explanation: "8359476 est situé entre 8300000 et 8400000, plus près de 8300000",
+       hint: "Graduations principales : 8000000, 8200000, 8400000, 8600000, 8800000, 9000000. Place 8359476 entre 8200000 et 8400000"
      },
     {
       id: 20,
       type: 'comparison' as const,
       title: "Quel nombre est le plus petit ?",
-      numbers: [9876543, 9867543, 9786543],
-      correct: 9786543,
+      numbers: [9876597, 9867583, 9786569],
+      correct: 9786569,
       difficulty: "Difficile",
-      explanation: "9786543 < 9867543 < 9876543 car on compare les dizaines de milliers : 78 < 86 < 87",
+      explanation: "9786569 < 9867583 < 9876597 car on compare les dizaines de milliers : 78 < 86 < 87",
       hint: "Compare les dizaines de milliers : 978, 986, 987"
     }
   ];

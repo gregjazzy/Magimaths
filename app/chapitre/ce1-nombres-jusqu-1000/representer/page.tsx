@@ -4,6 +4,37 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, CheckCircle, XCircle, RotateCcw, Target } from 'lucide-react';
 
+// Styles personnalisés pour les animations
+const animationStyles = `
+  @keyframes bounce {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+  
+  .bounce-animation {
+    animation: bounce 0.6s ease-in-out infinite;
+  }
+  
+  @keyframes highlight {
+    0%, 100% {
+      transform: scale(1);
+      box-shadow: 0 0 0 rgba(239, 68, 68, 0.5);
+    }
+    50% {
+      transform: scale(1.05);
+      box-shadow: 0 0 20px rgba(239, 68, 68, 0.8);
+    }
+  }
+  
+  .highlight-animation {
+    animation: highlight 1s ease-in-out;
+  }
+`;
+
 export default function RepresenterNombresCE1Page() {
   const [selectedRange, setSelectedRange] = useState('0-100');
   const [currentExercise, setCurrentExercise] = useState(0);
@@ -11,12 +42,26 @@ export default function RepresenterNombresCE1Page() {
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
   const [showExercises, setShowExercises] = useState(false);
   const [score, setScore] = useState(0);
+  
+  // États pour l'animation
+  const [animationStep, setAnimationStep] = useState(0);
+  const [isAnimating, setIsAnimating] = useState(false);
+  const [placedNumbers, setPlacedNumbers] = useState<number[]>([]);
+  const [animationStarted, setAnimationStarted] = useState(false);
 
   const ranges = {
     '0-100': { min: 0, max: 100, step: 10 },
     '100-200': { min: 100, max: 200, step: 10 },
     '200-300': { min: 200, max: 300, step: 10 },
     '0-1000': { min: 0, max: 1000, step: 100 }
+  };
+
+  // Nombres à placer pour chaque plage
+  const numbersToPlace = {
+    '0-100': [35, 47, 73, 83],
+    '100-200': [125, 147, 165, 185],
+    '200-300': [215, 235, 267, 285],
+    '0-1000': [150, 350, 650, 850]
   };
 
   const exercises = [
@@ -107,8 +152,54 @@ export default function RepresenterNombresCE1Page() {
     setScore(0);
   };
 
+  // Fonctions pour l'animation
+  const getCurrentNumbers = () => {
+    return numbersToPlace[selectedRange as keyof typeof numbersToPlace] || [];
+  };
+
+  const startAnimation = () => {
+    setAnimationStarted(true);
+    setAnimationStep(0);
+    setPlacedNumbers([]);
+    setIsAnimating(false);
+  };
+
+  const nextAnimationStep = () => {
+    const numbers = getCurrentNumbers();
+    
+    if (animationStep < numbers.length && !isAnimating && animationStarted) {
+      setIsAnimating(true);
+      const currentNumber = numbers[animationStep];
+      
+      // Placer immédiatement le nombre sur la droite
+      setPlacedNumbers(prev => [...prev, currentNumber]);
+      
+      // Avancer à l'étape suivante
+      setTimeout(() => {
+        setAnimationStep(animationStep + 1);
+        setIsAnimating(false);
+      }, 800);
+    }
+  };
+
+  const resetAnimation = () => {
+    setAnimationStep(0);
+    setPlacedNumbers([]);
+    setIsAnimating(false);
+    setAnimationStarted(false);
+  };
+
+  // Réinitialiser l'animation quand on change de plage
+  const handleRangeChange = (range: string) => {
+    setSelectedRange(range);
+    resetAnimation();
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-red-100">
+      {/* Injection des styles CSS personnalisés */}
+      <style jsx>{animationStyles}</style>
+      
       <div className="max-w-6xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8">
@@ -188,7 +279,7 @@ export default function RepresenterNombresCE1Page() {
                 {Object.keys(ranges).map((range) => (
                   <button
                     key={range}
-                    onClick={() => setSelectedRange(range)}
+                    onClick={() => handleRangeChange(range)}
                     className={`p-4 rounded-lg font-bold text-lg transition-all ${
                       selectedRange === range
                         ? 'bg-orange-500 text-white shadow-lg scale-105'
@@ -201,74 +292,187 @@ export default function RepresenterNombresCE1Page() {
               </div>
             </div>
 
-            {/* Droite numérique interactive */}
+            {/* Droite numérique interactive avec animation */}
             <div className="bg-white rounded-xl p-8 shadow-lg">
-              <h3 className="text-xl font-bold mb-12 text-center text-gray-900">
+              <h3 className="text-xl font-bold mb-8 text-center text-gray-900">
                 📏 Droite numérique de {selectedRange}
               </h3>
+              
+              {/* Contrôles d'animation */}
+              <div className="flex justify-center space-x-4 mb-8">
+                {!animationStarted ? (
+                  <button
+                    onClick={startAnimation}
+                    className="bg-green-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-green-600 transition-colors"
+                  >
+                    🎬 Démarrer l'animation
+                  </button>
+                ) : (
+                  <>
+                    <button
+                      onClick={nextAnimationStep}
+                      disabled={animationStep >= getCurrentNumbers().length || isAnimating}
+                      className="bg-blue-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-blue-600 transition-colors disabled:opacity-50"
+                    >
+                      ➡️ Étape suivante
+                    </button>
+                    <button
+                      onClick={resetAnimation}
+                      className="bg-gray-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-gray-600 transition-colors"
+                    >
+                      🔄 Recommencer
+                    </button>
+                  </>
+                )}
+              </div>
+
+              {/* Indicateur d'étape */}
+              {animationStarted && (
+                <div className="text-center mb-6">
+                  <div className="bg-blue-100 rounded-lg p-3 inline-block">
+                    <span className="text-blue-800 font-bold">
+                      Étape {animationStep} sur {getCurrentNumbers().length}
+                    </span>
+                    <div className="text-sm mt-1">
+                      Nombres placés : {placedNumbers.length > 0 ? placedNumbers.join(', ') : 'Aucun'}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Message d'explication */}
+              {!animationStarted && (
+                <div className="text-center mb-6">
+                  <div className="bg-yellow-100 rounded-lg p-4 inline-block">
+                    <span className="text-yellow-800 font-bold">
+                      👆 Clique sur "Démarrer l'animation" pour commencer !
+                    </span>
+                  </div>
+                </div>
+              )}
+
+              {/* Message pour les étapes */}
+              {animationStarted && animationStep < getCurrentNumbers().length && !isAnimating && (
+                <div className="text-center mb-6">
+                  <div className="bg-blue-100 rounded-lg p-4 inline-block">
+                    <span className="text-blue-800 font-bold">
+                      👆 Clique sur "Étape suivante" pour placer le nombre {getCurrentNumbers()[animationStep]} !
+                    </span>
+                  </div>
+                </div>
+              )}
+
+              {/* Message pendant l'animation */}
+              {isAnimating && (
+                <div className="text-center mb-6">
+                  <div className="bg-purple-100 rounded-lg p-4 inline-block animate-pulse">
+                    <span className="text-purple-800 font-bold">
+                      ✨ Le nombre {getCurrentNumbers()[animationStep - 1]} se place sur la droite ! ✨
+                    </span>
+                  </div>
+                </div>
+              )}
               
               <div className="relative mb-16 mt-12">
                 {/* Ligne principale */}
                 <div className="h-2 bg-gray-300 rounded-full relative">
                   {/* Graduations */}
-                  {generateGraduations(selectedRange).map((value, index) => (
-                    <div
-                      key={value}
-                      className="absolute top-0 transform -translate-x-1/2"
-                      style={{ left: `${getPositionPercentage(value, selectedRange)}%` }}
-                    >
-                      <div className="w-1 h-6 bg-gray-600 -mt-2"></div>
-                      <div className="text-sm font-bold text-gray-700 mt-1 text-center transform -translate-x-1/2">
-                        {value}
+                  {generateGraduations(selectedRange).map((value, index) => {
+                    const position = getPositionPercentage(value, selectedRange);
+                    return (
+                      <div
+                        key={value}
+                        className="absolute top-0 transform -translate-x-1/2"
+                        style={{ left: `${position}%` }}
+                      >
+                        <div className="w-1 h-6 bg-gray-600 -mt-2"></div>
+                        <div className="text-sm font-bold text-gray-700 mt-1 text-center transform -translate-x-1/2">
+                          {value}
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
+
+                  {/* Nombres placés sur la droite */}
+                  {placedNumbers.map((num, index) => {
+                    const isLatestPlaced = index === placedNumbers.length - 1;
+                    const position = getPositionPercentage(num, selectedRange);
+                    return (
+                      <div
+                        key={num}
+                        className={`absolute top-0 transform -translate-x-1/2 ${
+                          isLatestPlaced ? 'highlight-animation' : ''
+                        }`}
+                        style={{ left: `${position}%` }}
+                      >
+                        <div className="w-3 h-10 bg-red-500 rounded -mt-4 shadow-lg"></div>
+                        <div className="text-sm font-bold text-white mt-1 text-center transform -translate-x-1/2 bg-red-500 px-3 py-2 rounded-lg shadow-lg border-2 border-red-300">
+                          {num}
+                        </div>
+                        {/* Petit effet de brillance */}
+                        {isLatestPlaced && (
+                          <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -mt-8">
+                            <div className="text-yellow-400 text-xl animate-bounce">✨</div>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
 
-              {/* Nombres d'exemple à placer */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-12">
-                {selectedRange === '0-100' && [35, 47, 73, 83].map((num) => (
-                  <div key={num} className="text-center">
-                    <div className="bg-yellow-100 rounded-lg p-3 mb-2">
-                      <div className="text-2xl font-bold text-yellow-800">{num}</div>
+              {/* Nombres à placer avec animation */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-12 relative">
+                {getCurrentNumbers().map((num, index) => {
+                  const isCurrentNumber = index === animationStep && !placedNumbers.includes(num);
+                  const isPlaced = placedNumbers.includes(num);
+                  const isWaiting = index > animationStep;
+                  
+                  return (
+                    <div key={num} className="text-center relative">
+                      <div className={`rounded-lg p-3 mb-2 transition-all duration-500 ${
+                        isCurrentNumber && isAnimating 
+                          ? 'bg-blue-200 transform scale-110 bounce-animation' 
+                          : isCurrentNumber 
+                          ? 'bg-blue-200 transform scale-110 shadow-lg' 
+                          : isPlaced 
+                          ? 'bg-green-200 opacity-70' 
+                          : 'bg-yellow-100'
+                      }`}>
+                        <div className={`text-2xl font-bold transition-colors ${
+                          isCurrentNumber 
+                            ? 'text-blue-800' 
+                            : isPlaced 
+                            ? 'text-green-800' 
+                            : 'text-yellow-800'
+                        }`}>
+                          {num}
+                        </div>
+                      </div>
+                      
+                      <div className="text-sm text-gray-600">
+                        {isPlaced ? '✅ Placé !' : isCurrentNumber ? '👆 En cours' : isWaiting ? '⏳ En attente' : 'À placer'}
+                      </div>
                     </div>
-                    <div className="text-sm text-gray-600">
-                      À placer sur la droite
-                    </div>
-                  </div>
-                ))}
-                {selectedRange === '100-200' && [125, 147, 165, 185].map((num) => (
-                  <div key={num} className="text-center">
-                    <div className="bg-yellow-100 rounded-lg p-3 mb-2">
-                      <div className="text-2xl font-bold text-yellow-800">{num}</div>
-                    </div>
-                    <div className="text-sm text-gray-600">
-                      À placer sur la droite
-                    </div>
-                  </div>
-                ))}
-                {selectedRange === '200-300' && [215, 235, 267, 285].map((num) => (
-                  <div key={num} className="text-center">
-                    <div className="bg-yellow-100 rounded-lg p-3 mb-2">
-                      <div className="text-2xl font-bold text-yellow-800">{num}</div>
-                    </div>
-                    <div className="text-sm text-gray-600">
-                      À placer sur la droite
-                    </div>
-                  </div>
-                ))}
-                {selectedRange === '0-1000' && [150, 350, 650, 850].map((num) => (
-                  <div key={num} className="text-center">
-                    <div className="bg-yellow-100 rounded-lg p-3 mb-2">
-                      <div className="text-2xl font-bold text-yellow-800">{num}</div>
-                    </div>
-                    <div className="text-sm text-gray-600">
-                      À placer sur la droite
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
+
+              {/* Message de fin */}
+              {animationStarted && placedNumbers.length === getCurrentNumbers().length && placedNumbers.length > 0 && (
+                <div className="mt-8 bg-green-100 rounded-lg p-6 text-center">
+                  <div className="text-4xl mb-3">🎉</div>
+                  <h4 className="text-xl font-bold text-green-800 mb-2">
+                    Félicitations !
+                  </h4>
+                  <p className="text-green-700">
+                    Tous les nombres ont été placés correctement sur la droite numérique !
+                  </p>
+                  <p className="text-green-600 mt-2">
+                    Clique sur "Recommencer" pour refaire l'animation.
+                  </p>
+                </div>
+              )}
             </div>
 
             {/* Conseils */}

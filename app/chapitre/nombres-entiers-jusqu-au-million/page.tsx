@@ -44,6 +44,15 @@ export default function NombresEntiersJusquAuMillionPage() {
       duration: '15 min',
       xp: 20,
       color: 'from-orange-500 to-red-500'
+    },
+    {
+      id: 'ordonner',
+      title: 'Ordonner les nombres',
+      description: 'Comparer et ranger les nombres jusqu\'au million',
+      icon: '🔢',
+      duration: '20 min',
+      xp: 25,
+      color: 'from-indigo-500 to-purple-500'
     }
   ];
 
