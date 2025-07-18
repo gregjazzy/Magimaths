@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { ArrowLeft, BookOpen, Target } from 'lucide-react'
+import { ArrowLeft, BookOpen, Target, Play, RotateCcw, CheckCircle, XCircle } from 'lucide-react'
 import Link from 'next/link'
 
 export default function SubstitutionPage() {
@@ -9,205 +9,334 @@ export default function SubstitutionPage() {
   const [currentExercise, setCurrentExercise] = useState(0)
   const [userAnswer, setUserAnswer] = useState('')
   const [showAnswer, setShowAnswer] = useState(false)
-  const [score, setScore] = useState(0)
-  const [currentStep, setCurrentStep] = useState(0)
+  const [answerFeedback, setAnswerFeedback] = useState<'correct' | 'incorrect' | null>(null)
+  const [correctAnswers, setCorrectAnswers] = useState(0)
+  const [showIncrement, setShowIncrement] = useState(false)
 
+  // États pour la solution détaillée
+  const [showSolution, setShowSolution] = useState(false)
+  const [solutionStep, setSolutionStep] = useState(0)
+
+  // EXERCICES DE SUBSTITUTION - Progression graduelle
   const exercises = [
     // Niveau 1 : Substitution simple avec nombres positifs
     {
-      id: 'sub1',
-      question: 'Calculer 2x pour x = 3',
-      userInput: true,
-      answer: '6',
+      id: 1,
+      question: "Calculer 3x pour x = 4",
+      variable: "x = 4",
+      expression: "3x",
       steps: [
-        'Remplacer x par 3 : 2 × 3',
-        'Calculer : 6',
-        'Résultat final : 6'
+        { text: "Expression de départ", expr: "3x", color: "text-blue-600" },
+        { text: "Remplacer x par 4", expr: "3 × 4", color: "text-green-600" },
+        { text: "Résultat", expr: "12", color: "text-purple-600" }
       ]
     },
     {
-      id: 'sub2',
-      question: 'Calculer 5a pour a = 4',
-      userInput: true,
-      answer: '20',
+      id: 2,
+      question: "Calculer x + 5 pour x = 7",
+      variable: "x = 7",
+      expression: "x + 5",
       steps: [
-        'Remplacer a par 4 : 5 × 4',
-        'Calculer : 20',
-        'Résultat final : 20'
+        { text: "Expression de départ", expr: "x + 5", color: "text-blue-600" },
+        { text: "Remplacer x par 7", expr: "7 + 5", color: "text-green-600" },
+        { text: "Résultat", expr: "12", color: "text-purple-600" }
       ]
     },
     {
-      id: 'sub3',
-      question: 'Calculer x + 7 pour x = 5',
-      userInput: true,
-      answer: '12',
+      id: 3,
+      question: "Calculer 2a - 3 pour a = 6",
+      variable: "a = 6",
+      expression: "2a - 3",
       steps: [
-        'Remplacer x par 5 : 5 + 7',
-        'Calculer : 12',
-        'Résultat final : 12'
-      ]
-    },
-    
-    // Niveau 2 : Addition et soustraction
-    {
-      id: 'sub4',
-      question: 'Calculer 3x + 2 pour x = 4',
-      userInput: true,
-      answer: '14',
-      steps: [
-        'Remplacer x par 4 : 3 × 4 + 2',
-        'Calculer la multiplication : 12 + 2', 
-        'Calculer la somme : 14',
-        'Résultat final : 14'
+        { text: "Expression de départ", expr: "2a - 3", color: "text-blue-600" },
+        { text: "Remplacer a par 6", expr: "2 × 6 - 3", color: "text-green-600" },
+        { text: "Calculer 2 × 6", expr: "12 - 3", color: "text-orange-600" },
+        { text: "Résultat", expr: "9", color: "text-purple-600" }
       ]
     },
     {
-      id: 'sub5',
-      question: 'Calculer 2a - 5 pour a = 6',
-      userInput: true,
-      answer: '7',
+      id: 4,
+      question: "Calculer y² pour y = 5",
+      variable: "y = 5",
+      expression: "y²",
       steps: [
-        'Remplacer a par 6 : 2 × 6 - 5',
-        'Calculer la multiplication : 12 - 5',
-        'Calculer la soustraction : 7',
-        'Résultat final : 7'
+        { text: "Expression de départ", expr: "y²", color: "text-blue-600" },
+        { text: "Remplacer y par 5", expr: "5²", color: "text-green-600" },
+        { text: "Calculer 5²", expr: "5 × 5", color: "text-orange-600" },
+        { text: "Résultat", expr: "25", color: "text-purple-600" }
       ]
     },
     {
-      id: 'sub6',
-      question: 'Calculer 4y - 3 pour y = 2',
-      userInput: true,
-      answer: '5',
+      id: 5,
+      question: "Calculer 3x + 2y pour x = 4 et y = 3",
+      variable: "x = 4, y = 3",
+      expression: "3x + 2y",
       steps: [
-        'Remplacer y par 2 : 4 × 2 - 3',
-        'Calculer la multiplication : 8 - 3',
-        'Calculer la soustraction : 5',
-        'Résultat final : 5'
+        { text: "Expression de départ", expr: "3x + 2y", color: "text-blue-600" },
+        { text: "Remplacer x par 4 et y par 3", expr: "3 × 4 + 2 × 3", color: "text-green-600" },
+        { text: "Calculer chaque terme", expr: "12 + 6", color: "text-orange-600" },
+        { text: "Résultat", expr: "18", color: "text-purple-600" }
       ]
     },
-    
-    // Niveau 3 : Nombres négatifs
+
+    // Niveau 2 : Avec nombres négatifs
     {
-      id: 'sub7',
-      question: 'Calculer 3x + 5 pour x = -2',
-      userInput: true,
-      answer: '-1',
+      id: 6,
+      question: "Calculer 2x - 5 pour x = 1",
+      variable: "x = 1",
+      expression: "2x - 5",
       steps: [
-        'Remplacer x par -2 : 3 × (-2) + 5',
-        'Calculer la multiplication : -6 + 5',
-        'Calculer la somme : -1',
-        'Résultat final : -1'
-      ]
-    },
-    {
-      id: 'sub8',
-      question: 'Calculer 2b - 7 pour b = -3',
-      userInput: true,
-      answer: '-13',
-      steps: [
-        'Remplacer b par -3 : 2 × (-3) - 7',
-        'Calculer la multiplication : -6 - 7',
-        'Calculer la soustraction : -13',
-        'Résultat final : -13'
-      ]
-    },
-    
-    // Niveau 4 : Expressions avec deux variables
-    {
-      id: 'sub9',
-      question: 'Calculer 2x + 3y pour x = 4 et y = 2',
-      userInput: true,
-      answer: '14',
-      steps: [
-        'Remplacer x par 4 et y par 2 : 2 × 4 + 3 × 2',
-        'Calculer les multiplications : 8 + 6',
-        'Calculer la somme : 14',
-        'Résultat final : 14'
+        { text: "Expression de départ", expr: "2x - 5", color: "text-blue-600" },
+        { text: "Remplacer x par 1", expr: "2 × 1 - 5", color: "text-green-600" },
+        { text: "Calculer", expr: "2 - 5", color: "text-orange-600" },
+        { text: "Résultat", expr: "-3", color: "text-purple-600" }
       ]
     },
     {
-      id: 'sub10',
-      question: 'Calculer a + 2b pour a = -1 et b = 4',
-      userInput: true,
-      answer: '7',
+      id: 7,
+      question: "Calculer -3a pour a = 4",
+      variable: "a = 4",
+      expression: "-3a",
       steps: [
-        'Remplacer a par -1 et b par 4 : -1 + 2 × 4',
-        'Calculer la multiplication : -1 + 8',
-        'Calculer la somme : 7',
-        'Résultat final : 7'
-      ]
-    },
-    
-    // Niveau 5 : Carrés et puissances
-    {
-      id: 'sub11',
-      question: 'Calculer x² + 1 pour x = 3',
-      userInput: true,
-      answer: '10',
-      steps: [
-        'Remplacer x par 3 : 3² + 1',
-        'Calculer la puissance : 9 + 1',
-        'Calculer la somme : 10',
-        'Résultat final : 10'
+        { text: "Expression de départ", expr: "-3a", color: "text-blue-600" },
+        { text: "Remplacer a par 4", expr: "-3 × 4", color: "text-green-600" },
+        { text: "Résultat", expr: "-12", color: "text-purple-600" }
       ]
     },
     {
-      id: 'sub12',
-      question: 'Calculer 2x² - 3 pour x = 2',
-      userInput: true,
-      answer: '5',
+      id: 8,
+      question: "Calculer x² - 2x pour x = 3",
+      variable: "x = 3",
+      expression: "x² - 2x",
       steps: [
-        'Remplacer x par 2 : 2 × 2² - 3',
-        'Calculer la puissance : 2 × 4 - 3',
-        'Calculer la multiplication : 8 - 3',
-        'Calculer la soustraction : 5',
-        'Résultat final : 5'
+        { text: "Expression de départ", expr: "x² - 2x", color: "text-blue-600" },
+        { text: "Remplacer x par 3", expr: "3² - 2 × 3", color: "text-green-600" },
+        { text: "Calculer x²", expr: "9 - 2 × 3", color: "text-orange-600" },
+        { text: "Calculer 2x", expr: "9 - 6", color: "text-red-600" },
+        { text: "Résultat", expr: "3", color: "text-purple-600" }
+      ]
+    },
+
+    // Niveau 3 : Expressions plus complexes
+    {
+      id: 9,
+      question: "Calculer (x + 1)(x - 2) pour x = 5",
+      variable: "x = 5",
+      expression: "(x + 1)(x - 2)",
+      steps: [
+        { text: "Expression de départ", expr: "(x + 1)(x - 2)", color: "text-blue-600" },
+        { text: "Remplacer x par 5", expr: "(5 + 1)(5 - 2)", color: "text-green-600" },
+        { text: "Calculer les parenthèses", expr: "6 × 3", color: "text-orange-600" },
+        { text: "Résultat", expr: "18", color: "text-purple-600" }
+      ]
+    },
+    {
+      id: 10,
+      question: "Calculer 2a² + 3a - 1 pour a = 2",
+      variable: "a = 2",
+      expression: "2a² + 3a - 1",
+      steps: [
+        { text: "Expression de départ", expr: "2a² + 3a - 1", color: "text-blue-600" },
+        { text: "Remplacer a par 2", expr: "2 × 2² + 3 × 2 - 1", color: "text-green-600" },
+        { text: "Calculer a²", expr: "2 × 4 + 3 × 2 - 1", color: "text-orange-600" },
+        { text: "Calculer chaque terme", expr: "8 + 6 - 1", color: "text-red-600" },
+        { text: "Résultat", expr: "13", color: "text-purple-600" }
+      ]
+    },
+
+    // Niveau 4 : Variables négatives
+    {
+      id: 11,
+      question: "Calculer x² + x pour x = -3",
+      variable: "x = -3",
+      expression: "x² + x",
+      steps: [
+        { text: "Expression de départ", expr: "x² + x", color: "text-blue-600" },
+        { text: "Remplacer x par -3", expr: "(-3)² + (-3)", color: "text-green-600" },
+        { text: "Calculer (-3)²", expr: "9 + (-3)", color: "text-orange-600" },
+        { text: "Résultat", expr: "6", color: "text-purple-600" }
+      ]
+    },
+    {
+      id: 12,
+      question: "Calculer -2y² pour y = -2",
+      variable: "y = -2",
+      expression: "-2y²",
+      steps: [
+        { text: "Expression de départ", expr: "-2y²", color: "text-blue-600" },
+        { text: "Remplacer y par -2", expr: "-2 × (-2)²", color: "text-green-600" },
+        { text: "Calculer (-2)²", expr: "-2 × 4", color: "text-orange-600" },
+        { text: "Résultat", expr: "-8", color: "text-purple-600" }
+      ]
+    },
+
+    // Niveau 5 : Deux variables
+    {
+      id: 13,
+      question: "Calculer xy + 2 pour x = 3 et y = -1",
+      variable: "x = 3, y = -1",
+      expression: "xy + 2",
+      steps: [
+        { text: "Expression de départ", expr: "xy + 2", color: "text-blue-600" },
+        { text: "Remplacer x par 3 et y par -1", expr: "3 × (-1) + 2", color: "text-green-600" },
+        { text: "Calculer xy", expr: "-3 + 2", color: "text-orange-600" },
+        { text: "Résultat", expr: "-1", color: "text-purple-600" }
+      ]
+    },
+    {
+      id: 14,
+      question: "Calculer a² - b² pour a = 4 et b = 3",
+      variable: "a = 4, b = 3",
+      expression: "a² - b²",
+      steps: [
+        { text: "Expression de départ", expr: "a² - b²", color: "text-blue-600" },
+        { text: "Remplacer a par 4 et b par 3", expr: "4² - 3²", color: "text-green-600" },
+        { text: "Calculer les carrés", expr: "16 - 9", color: "text-orange-600" },
+        { text: "Résultat", expr: "7", color: "text-purple-600" }
+      ]
+    },
+    {
+      id: 15,
+      question: "Calculer (x + y)² pour x = 2 et y = 5",
+      variable: "x = 2, y = 5",
+      expression: "(x + y)²",
+      steps: [
+        { text: "Expression de départ", expr: "(x + y)²", color: "text-blue-600" },
+        { text: "Remplacer x par 2 et y par 5", expr: "(2 + 5)²", color: "text-green-600" },
+        { text: "Calculer la parenthèse", expr: "7²", color: "text-orange-600" },
+        { text: "Résultat", expr: "49", color: "text-purple-600" }
+      ]
+    },
+
+    // Type 6 : Comparaison de deux expressions
+    {
+      id: 16,
+      question: "On considère A = 2x² + x - 7 et B = 3(x - 2) + 3\n\nCalculer A et B pour x = 2",
+      variable: "x = 2",
+      expression: "A et B",
+      steps: [
+        { text: "Expression A = 2x² + x - 7", expr: "A = 2x² + x - 7", color: "text-blue-600" },
+        { text: "Remplacer x par 2 dans A", expr: "A = 2(2)² + 2 - 7", color: "text-green-600" },
+        { text: "Calculer A", expr: "A = 2×4 + 2 - 7 = 8 + 2 - 7 = 3", color: "text-orange-600" },
+        { text: "Expression B = 3(x - 2) + 3", expr: "B = 3(x - 2) + 3", color: "text-blue-600" },
+        { text: "Remplacer x par 2 dans B", expr: "B = 3(2 - 2) + 3", color: "text-green-600" },
+        { text: "Calculer B", expr: "B = 3×0 + 3 = 0 + 3 = 3", color: "text-orange-600" },
+        { text: "Résultat", expr: "A = 3 et B = 3", color: "text-purple-600" }
+      ]
+    },
+    {
+      id: 17,
+      question: "Avec A = 2x² + x - 7 et B = 3(x - 2) + 3\n\nCalculer A et B pour x = -1",
+      variable: "x = -1",
+      expression: "A et B",
+      steps: [
+        { text: "Expression A = 2x² + x - 7", expr: "A = 2x² + x - 7", color: "text-blue-600" },
+        { text: "Remplacer x par -1 dans A", expr: "A = 2(-1)² + (-1) - 7", color: "text-green-600" },
+        { text: "Calculer A", expr: "A = 2×1 - 1 - 7 = 2 - 1 - 7 = -6", color: "text-orange-600" },
+        { text: "Expression B = 3(x - 2) + 3", expr: "B = 3(x - 2) + 3", color: "text-blue-600" },
+        { text: "Remplacer x par -1 dans B", expr: "B = 3(-1 - 2) + 3", color: "text-green-600" },
+        { text: "Calculer B", expr: "B = 3×(-3) + 3 = -9 + 3 = -6", color: "text-orange-600" },
+        { text: "Résultat", expr: "A = -6 et B = -6", color: "text-purple-600" }
+      ]
+    },
+    {
+      id: 18,
+      question: "Avec A = x² - 4 et B = (x - 2)(x + 2)\n\nCalculer A et B pour x = 3",
+      variable: "x = 3",
+      expression: "A et B",
+      steps: [
+        { text: "Expression A = x² - 4", expr: "A = x² - 4", color: "text-blue-600" },
+        { text: "Remplacer x par 3 dans A", expr: "A = 3² - 4", color: "text-green-600" },
+        { text: "Calculer A", expr: "A = 9 - 4 = 5", color: "text-orange-600" },
+        { text: "Expression B = (x - 2)(x + 2)", expr: "B = (x - 2)(x + 2)", color: "text-blue-600" },
+        { text: "Remplacer x par 3 dans B", expr: "B = (3 - 2)(3 + 2)", color: "text-green-600" },
+        { text: "Calculer B", expr: "B = 1 × 5 = 5", color: "text-orange-600" },
+        { text: "Résultat", expr: "A = 5 et B = 5", color: "text-purple-600" }
+      ]
+    },
+    {
+      id: 19,
+      question: "Avec A = 3x + 1 et B = 2x + 5\n\nCalculer A et B pour x = 4. A et B sont-elles égales ?",
+      variable: "x = 4",
+      expression: "A et B",
+      steps: [
+        { text: "Expression A = 3x + 1", expr: "A = 3x + 1", color: "text-blue-600" },
+        { text: "Remplacer x par 4 dans A", expr: "A = 3×4 + 1", color: "text-green-600" },
+        { text: "Calculer A", expr: "A = 12 + 1 = 13", color: "text-orange-600" },
+        { text: "Expression B = 2x + 5", expr: "B = 2x + 5", color: "text-blue-600" },
+        { text: "Remplacer x par 4 dans B", expr: "B = 2×4 + 5", color: "text-green-600" },
+        { text: "Calculer B", expr: "B = 8 + 5 = 13", color: "text-orange-600" },
+        { text: "Résultat", expr: "A = 13 et B = 13 (égales)", color: "text-purple-600" }
+      ]
+    },
+    {
+      id: 20,
+      question: "Avec A = x² + 2x + 1 et B = (x + 1)²\n\nCalculer A et B pour x = 2. Que remarquez-vous ?",
+      variable: "x = 2",
+      expression: "A et B",
+      steps: [
+        { text: "Expression A = x² + 2x + 1", expr: "A = x² + 2x + 1", color: "text-blue-600" },
+        { text: "Remplacer x par 2 dans A", expr: "A = 2² + 2×2 + 1", color: "text-green-600" },
+        { text: "Calculer A", expr: "A = 4 + 4 + 1 = 9", color: "text-orange-600" },
+        { text: "Expression B = (x + 1)²", expr: "B = (x + 1)²", color: "text-blue-600" },
+        { text: "Remplacer x par 2 dans B", expr: "B = (2 + 1)²", color: "text-green-600" },
+        { text: "Calculer B", expr: "B = 3² = 9", color: "text-orange-600" },
+        { text: "Résultat", expr: "A = 9 et B = 9 (identiques)", color: "text-purple-600" }
       ]
     }
   ]
 
   const currentEx = exercises[currentExercise]
 
+  // Fonctions pour gérer les exercices
+  const resetExercise = () => {
+    setShowSolution(false)
+    setSolutionStep(0)
+    setUserAnswer('')
+    setShowAnswer(false)
+    setAnswerFeedback(null)
+  }
+
   const checkAnswer = () => {
-    if (userAnswer.trim() === currentEx.answer) {
-      setScore(score + 1)
-      setShowAnswer(true)
-      setCurrentStep(0)
-      return true
+    const correctAnswer = currentEx.steps[currentEx.steps.length - 1].expr
+    
+    const userAnswerTrimmed = userAnswer.trim().toLowerCase().replace(/\s+/g, '')
+    const correctAnswerTrimmed = correctAnswer.trim().toLowerCase().replace(/\s+/g, '')
+    
+    if (userAnswerTrimmed === correctAnswerTrimmed) {
+      setAnswerFeedback('correct')
+      setCorrectAnswers(prev => prev + 1)
+      setShowIncrement(true)
+      setTimeout(() => setShowIncrement(false), 2000)
     } else {
-      setShowAnswer(true)
-      setCurrentStep(0)
-      return false
+      setAnswerFeedback('incorrect')
     }
+    setShowAnswer(true)
   }
 
-  const nextStep = () => {
-    if (currentStep < currentEx.steps.length - 1) {
-      setCurrentStep(currentStep + 1)
-    }
+  const nextSolutionStep = () => {
+    setSolutionStep(prev => prev + 1)
   }
 
-  const prevStep = () => {
-    if (currentStep > 0) {
-      setCurrentStep(currentStep - 1)
-    }
+  const prevSolutionStep = () => {
+    setSolutionStep(prev => Math.max(prev - 1, 0))
+  }
+
+  const resetSolutionStep = () => {
+    setSolutionStep(0)
   }
 
   const nextExercise = () => {
     if (currentExercise < exercises.length - 1) {
       setCurrentExercise(currentExercise + 1)
-      setUserAnswer('')
-      setShowAnswer(false)
-      setCurrentStep(0)
+      resetExercise()
     }
   }
 
   const prevExercise = () => {
     if (currentExercise > 0) {
       setCurrentExercise(currentExercise - 1)
-      setUserAnswer('')
-      setShowAnswer(false)
-      setCurrentStep(0)
+      resetExercise()
     }
   }
 
@@ -227,19 +356,19 @@ export default function SubstitutionPage() {
           </div>
           
           <div className="bg-white rounded-2xl p-8 shadow-lg border border-blue-100">
-            <div className="flex items-center gap-4 mb-6">
+            <div className="flex items-center gap-6 mb-6">
               <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-2xl flex items-center justify-center text-white text-2xl">
-                🔢
+                ➗
               </div>
-              <div>
+              <div className="flex-1">
                 <h1 className="text-3xl font-bold text-gray-800 mb-2">Substitution</h1>
                 <p className="text-gray-600 text-lg">
                   Remplacer les variables par des valeurs numériques
                 </p>
               </div>
-              <div className="ml-auto text-right">
+              <div className="text-right">
                 <div className="text-sm text-gray-600">Durée estimée</div>
-                <div className="text-xl font-semibold text-blue-600">15 minutes</div>
+                <div className="text-xl font-semibold text-blue-600">20 minutes</div>
               </div>
             </div>
 
@@ -265,7 +394,7 @@ export default function SubstitutionPage() {
                 }`}
               >
                 <Target className="inline w-4 h-4 mr-2" />
-                Exercices
+                Exercices ({correctAnswers}/{exercises.length})
               </button>
             </div>
           </div>
@@ -274,35 +403,160 @@ export default function SubstitutionPage() {
         {/* Cours */}
         {activeTab === 'cours' && (
           <div className="space-y-8">
-            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-8 border border-blue-200">
+            {/* Principe de base */}
+            <div className="bg-white rounded-2xl p-8 shadow-lg border border-blue-100">
               <h2 className="text-2xl font-bold text-blue-800 mb-6">🎯 Qu'est-ce que la substitution ?</h2>
               
               <div className="space-y-6">
-                <div className="bg-white rounded-lg p-6 border border-blue-100">
-                  <h3 className="text-lg font-semibold text-gray-800 mb-4">Définition</h3>
-                  <p className="text-gray-700 leading-relaxed mb-4">
-                    La <strong>substitution</strong> consiste à remplacer la variable d'une expression littérale par une valeur numérique donnée.
+                <div className="bg-blue-50 rounded-xl p-6 border border-blue-200">
+                  <h3 className="text-xl font-bold text-blue-700 mb-4">Principe</h3>
+                  <p className="text-gray-700 mb-4">
+                    La <span className="font-bold text-blue-600">substitution</span> consiste à remplacer une ou plusieurs variables 
+                    par des valeurs numériques dans une expression littérale, puis à calculer le résultat.
                   </p>
                   
-                  <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
-                    <h4 className="font-semibold text-blue-800 mb-2">Exemple</h4>
-                    <p className="text-blue-700">
-                      Pour calculer <span className="font-mono">3x + 2</span> avec <span className="font-mono">x = 4</span> :
-                    </p>
-                    <div className="font-mono text-lg mt-2 space-y-1">
-                      <div>3x + 2 = 3 × 4 + 2 = 12 + 2 = 14</div>
+                  <div className="bg-white p-4 rounded-lg border border-blue-300">
+                    <div className="text-center">
+                      <div className="text-lg font-mono text-blue-800 mb-2">Expression littérale → Substitution → Calcul numérique</div>
+                      <div className="text-sm text-gray-600">3x + 2 → 3 × 5 + 2 → 17 (pour x = 5)</div>
                     </div>
                   </div>
                 </div>
 
-                <div className="bg-white rounded-lg p-6 border border-blue-100">
-                  <h3 className="text-lg font-semibold text-gray-800 mb-4">Méthode</h3>
-                  <ol className="list-decimal list-inside space-y-2 text-gray-700">
-                    <li>Repérer la variable dans l'expression</li>
-                    <li>Remplacer la variable par la valeur donnée</li>
-                    <li>Effectuer les calculs en respectant les priorités</li>
-                    <li>Donner le résultat final</li>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Méthode */}
+                  <div className="bg-green-50 rounded-xl p-6 border border-green-200">
+                    <h3 className="text-lg font-bold text-green-700 mb-4">📝 Méthode</h3>
+                    <ol className="space-y-3 text-gray-700">
+                      <li className="flex items-start gap-3">
+                        <span className="bg-green-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold">1</span>
+                        <span>Identifier la ou les variables</span>
+                      </li>
+                      <li className="flex items-start gap-3">
+                        <span className="bg-green-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold">2</span>
+                        <span>Remplacer chaque variable par sa valeur</span>
+                      </li>
+                      <li className="flex items-start gap-3">
+                        <span className="bg-green-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold">3</span>
+                        <span>Respecter les priorités opératoires</span>
+                      </li>
+                      <li className="flex items-start gap-3">
+                        <span className="bg-green-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold">4</span>
+                        <span>Calculer le résultat</span>
+                      </li>
+                    </ol>
+                  </div>
+
+                  {/* Attention */}
+                  <div className="bg-orange-50 rounded-xl p-6 border border-orange-200">
+                    <h3 className="text-lg font-bold text-orange-700 mb-4">⚠️ Points d'attention</h3>
+                    <ul className="space-y-3 text-gray-700">
+                      <li className="flex items-start gap-3">
+                        <span className="text-orange-500">•</span>
+                        <span><strong>Parenthèses :</strong> (-3)² = 9 mais -3² = -9</span>
+                      </li>
+                      <li className="flex items-start gap-3">
+                        <span className="text-orange-500">•</span>
+                        <span><strong>Multiplication :</strong> 2x = 2 × x</span>
+                      </li>
+                      <li className="flex items-start gap-3">
+                        <span className="text-orange-500">•</span>
+                        <span><strong>Priorités :</strong> Puissances avant multiplications</span>
+                      </li>
+                      <li className="flex items-start gap-3">
+                        <span className="text-orange-500">•</span>
+                        <span><strong>Signes :</strong> Attention aux nombres négatifs</span>
+                      </li>
+                    </ul>
+                  </div>
+
+                  {/* Comparaison */}
+                  <div className="bg-purple-50 rounded-xl p-6 border border-purple-200">
+                    <h3 className="text-lg font-bold text-purple-700 mb-4">🔍 Comparaison d'expressions</h3>
+                    <div className="space-y-3 text-gray-700">
+                      <p className="mb-3">Pour comparer deux expressions A et B :</p>
+                      <ol className="space-y-2 list-decimal list-inside">
+                        <li>Calculer A pour la valeur donnée</li>
+                        <li>Calculer B pour la même valeur</li>
+                        <li>Comparer les résultats obtenus</li>
+                        <li>Conclure : A = B, A &gt; B ou A &lt; B</li>
                   </ol>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Exemples détaillés */}
+            <div className="bg-white rounded-2xl p-8 shadow-lg border border-blue-100">
+              <h2 className="text-2xl font-bold text-green-800 mb-6">📚 Exemples détaillés</h2>
+              
+              <div className="space-y-8">
+                {/* Exemple 1 */}
+                <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
+                  <h3 className="text-lg font-bold text-gray-800 mb-4">Exemple 1 : Substitution simple</h3>
+                  <div className="space-y-3">
+                    <div className="bg-blue-100 p-3 rounded-lg">
+                      <span className="font-bold text-gray-800">Expression :</span> <span className="text-gray-700">5x - 2 pour x = 4</span>
+                    </div>
+                    <div className="bg-green-100 p-3 rounded-lg">
+                      <span className="font-bold text-gray-800">Substitution :</span> <span className="text-gray-700">5 × 4 - 2</span>
+                    </div>
+                    <div className="bg-yellow-100 p-3 rounded-lg">
+                      <span className="font-bold text-gray-800">Calcul :</span> <span className="text-gray-700">20 - 2 = 18</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Exemple 2 */}
+                <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
+                  <h3 className="text-lg font-bold text-gray-800 mb-4">Exemple 2 : Avec une puissance</h3>
+                  <div className="space-y-3">
+                    <div className="bg-blue-100 p-3 rounded-lg">
+                      <span className="font-bold text-gray-800">Expression :</span> <span className="text-gray-700">x² + 3x pour x = -2</span>
+                    </div>
+                    <div className="bg-green-100 p-3 rounded-lg">
+                      <span className="font-bold text-gray-800">Substitution :</span> <span className="text-gray-700">(-2)² + 3 × (-2)</span>
+                    </div>
+                    <div className="bg-yellow-100 p-3 rounded-lg">
+                      <span className="font-bold text-gray-800">Calcul :</span> <span className="text-gray-700">4 + (-6) = -2</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Exemple 3 */}
+                <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
+                  <h3 className="text-lg font-bold text-gray-800 mb-4">Exemple 3 : Deux variables</h3>
+                  <div className="space-y-3">
+                    <div className="bg-blue-100 p-3 rounded-lg">
+                      <span className="font-bold text-gray-800">Expression :</span> <span className="text-gray-700">2a + 3b pour a = 5 et b = -1</span>
+                    </div>
+                    <div className="bg-green-100 p-3 rounded-lg">
+                      <span className="font-bold text-gray-800">Substitution :</span> <span className="text-gray-700">2 × 5 + 3 × (-1)</span>
+                    </div>
+                    <div className="bg-yellow-100 p-3 rounded-lg">
+                      <span className="font-bold text-gray-800">Calcul :</span> <span className="text-gray-700">10 + (-3) = 7</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Exemple 4 */}
+                <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
+                  <h3 className="text-lg font-bold text-gray-800 mb-4">Exemple 4 : Comparaison de deux expressions</h3>
+                  <div className="space-y-3">
+                    <div className="bg-blue-100 p-3 rounded-lg">
+                      <span className="font-bold text-gray-800">Expressions :</span> <span className="text-gray-700">A = 2x² + x - 7 et B = 3(x - 2) + 3 pour x = 2</span>
+                    </div>
+                    <div className="bg-green-100 p-3 rounded-lg">
+                      <span className="font-bold text-gray-800">Calcul A :</span> <span className="text-gray-700">2(2)² + 2 - 7 = 8 + 2 - 7 = 3</span>
+                    </div>
+                    <div className="bg-green-100 p-3 rounded-lg">
+                      <span className="font-bold text-gray-800">Calcul B :</span> <span className="text-gray-700">3(2 - 2) + 3 = 3 × 0 + 3 = 3</span>
+                    </div>
+                    <div className="bg-yellow-100 p-3 rounded-lg">
+                      <span className="font-bold text-gray-800">Conclusion :</span> <span className="text-gray-700">A = B = 3 pour x = 2</span>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -312,114 +566,143 @@ export default function SubstitutionPage() {
         {/* Exercices */}
         {activeTab === 'exercices' && (
           <div className="space-y-8">
-            <div className="bg-white rounded-xl p-8 border border-gray-200">
-              <h2 className="text-2xl font-bold text-gray-800 mb-6">🎯 Exercices de substitution</h2>
-              
-              <div className="flex items-center justify-between mb-6">
-                <h3 className="text-lg font-semibold text-gray-800">
-                  Exercice {currentExercise + 1} sur {exercises.length}
-                </h3>
-                <div className="text-sm text-gray-600">
-                  Score : {score}/{exercises.length}
+            {/* Header exercices */}
+            <div className="bg-white rounded-2xl p-6 shadow-lg border border-blue-100">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-2xl font-bold text-blue-900">
+                  Exercice {currentExercise + 1} / {exercises.length}
+                </h2>
+                <div className="flex items-center gap-4">
+                  <div className="text-sm text-gray-800">Score: {correctAnswers}/{exercises.length}</div>
+                  {showIncrement && (
+                    <div className="text-green-700 font-bold animate-pulse">+1 !</div>
+                  )}
                 </div>
               </div>
 
-              <div className="bg-gray-50 p-6 rounded-lg mb-6">
-                <h4 className="text-xl font-semibold text-gray-800 mb-4">
-                  {currentEx.question}
-                </h4>
-                
-                <div className="flex gap-4 mb-4">
+              <div className="flex gap-2 mb-4">
+                <button
+                  onClick={prevExercise}
+                  disabled={currentExercise === 0}
+                  className="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-400 transition-colors"
+                >
+                  Précédent
+                </button>
+                <button
+                  onClick={nextExercise}
+                  disabled={currentExercise === exercises.length - 1}
+                  className="px-4 py-2 bg-blue-500 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-600 transition-colors"
+                >
+                  Suivant
+                </button>
+                <button
+                  onClick={resetExercise}
+                  className="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors"
+                >
+                  <RotateCcw className="inline w-4 h-4 mr-2" />
+                  Reset
+                </button>
+              </div>
+            </div>
+
+            {/* Question */}
+            <div className="bg-white rounded-2xl p-6 shadow-lg border border-blue-100">
+              <div className="text-center mb-6">
+                <div className="text-2xl font-bold text-gray-900 mb-2">{currentEx.question}</div>
+                <div className="text-lg text-blue-700 font-semibold">pour {currentEx.variable}</div>
+              </div>
+
+              <div className="flex flex-col items-center gap-4">
                   <input
                     type="text"
                     value={userAnswer}
                     onChange={(e) => setUserAnswer(e.target.value)}
                     placeholder="Votre réponse..."
-                    className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    disabled={showAnswer}
+                  className="w-64 px-4 py-3 border-2 border-gray-300 rounded-xl text-center text-lg font-semibold text-gray-900 bg-white focus:border-blue-500 focus:outline-none"
                   />
+                
                   <button
                     onClick={checkAnswer}
-                    disabled={showAnswer || !userAnswer.trim()}
-                    className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50"
+                  disabled={!userAnswer.trim()}
+                  className="px-6 py-3 bg-blue-500 text-white rounded-xl font-semibold hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     Vérifier
                   </button>
-                </div>
 
                 {showAnswer && (
-                  <div className="space-y-4">
-                    <div className={`p-4 rounded-lg ${
-                      userAnswer.trim() === currentEx.answer
-                        ? 'bg-green-50 border border-green-200'
-                        : 'bg-red-50 border border-red-200'
-                    }`}>
-                      <p className={`font-semibold ${
-                        userAnswer.trim() === currentEx.answer
-                          ? 'text-green-800'
-                          : 'text-red-800'
-                      }`}>
-                        {userAnswer.trim() === currentEx.answer ? '✅ Correct !' : '❌ Incorrect'}
-                      </p>
-                      <p className="text-sm text-gray-700 mt-1">
-                        La bonne réponse est : <span className="font-mono font-bold">{currentEx.answer}</span>
-                      </p>
+                  <div className={`flex items-center gap-2 text-lg font-semibold ${
+                    answerFeedback === 'correct' ? 'text-green-700' : 'text-red-700'
+                  }`}>
+                    {answerFeedback === 'correct' ? (
+                      <>
+                        <CheckCircle className="w-6 h-6" />
+                        <span>Correct ! La réponse est {currentEx.steps[currentEx.steps.length - 1].expr}</span>
+                      </>
+                    ) : (
+                      <>
+                        <XCircle className="w-6 h-6" />
+                        <span>Incorrect. La réponse est {currentEx.steps[currentEx.steps.length - 1].expr}</span>
+                      </>
+                    )}
+                  </div>
+                )}
+              </div>
                     </div>
 
-                    <div className="bg-indigo-50 p-4 rounded-lg border border-indigo-200">
-                      <h5 className="font-semibold text-indigo-800 mb-2">Résolution détaillée :</h5>
-                      <div className="space-y-2">
-                        {currentEx.steps.map((step, index) => (
-                          <div
-                            key={index}
-                            className={`p-2 rounded transition-all duration-300 ${
-                              index <= currentStep
-                                ? 'bg-indigo-100 text-indigo-800'
-                                : 'bg-gray-100 text-gray-500'
-                            }`}
-                          >
-                            <span className="font-mono">{step}</span>
+            {/* Solution détaillée */}
+            <div className="bg-white rounded-2xl p-6 shadow-lg border border-blue-100">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-xl font-bold text-purple-900">Solution détaillée</h3>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => setShowSolution(!showSolution)}
+                    className="px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-colors"
+                  >
+                    {showSolution ? 'Masquer' : 'Afficher'} la solution
+                  </button>
                           </div>
-                        ))}
                       </div>
                       
-                      <div className="flex gap-2 mt-4">
+              {showSolution && (
+                <div className="space-y-4">
+                  <div className="flex gap-2 mb-4">
+                    <button
+                      onClick={resetSolutionStep}
+                      className="px-3 py-1 bg-gray-300 text-gray-700 rounded hover:bg-gray-400 transition-colors text-sm"
+                    >
+                      Début
+                    </button>
                         <button
-                          onClick={prevStep}
-                          disabled={currentStep === 0}
-                          className="px-3 py-1 bg-indigo-500 text-white rounded hover:bg-indigo-600 disabled:opacity-50"
-                        >
-                          ← Étape précédente
+                      onClick={prevSolutionStep}
+                      disabled={solutionStep === 0}
+                      className="px-3 py-1 bg-gray-300 text-gray-700 rounded disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-400 transition-colors text-sm"
+                    >
+                      ←
                         </button>
                         <button
-                          onClick={nextStep}
-                          disabled={currentStep === currentEx.steps.length - 1}
-                          className="px-3 py-1 bg-indigo-500 text-white rounded hover:bg-indigo-600 disabled:opacity-50"
-                        >
-                          Étape suivante →
+                      onClick={nextSolutionStep}
+                      disabled={solutionStep === currentEx.steps.length - 1}
+                      className="px-3 py-1 bg-gray-300 text-gray-700 rounded disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-400 transition-colors text-sm"
+                    >
+                      →
                         </button>
+                    <span className="px-3 py-1 text-sm text-gray-800">
+                      Étape {solutionStep + 1} / {currentEx.steps.length}
+                    </span>
+                  </div>
+
+                  <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
+                    <div className="text-center">
+                      <div className="text-lg font-semibold mb-2 text-gray-800">
+                        {currentEx.steps[solutionStep].text}
+                      </div>
+                      <div className="text-2xl font-mono font-bold text-gray-900">
+                        {currentEx.steps[solutionStep].expr}
+                      </div>
                       </div>
                     </div>
                   </div>
                 )}
-              </div>
-
-              <div className="flex justify-between">
-                <button
-                  onClick={prevExercise}
-                  disabled={currentExercise === 0}
-                  className="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 disabled:opacity-50"
-                >
-                  ← Exercice précédent
-                </button>
-                <button
-                  onClick={nextExercise}
-                  disabled={currentExercise === exercises.length - 1}
-                  className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50"
-                >
-                  Exercice suivant →
-                </button>
-              </div>
             </div>
           </div>
         )}

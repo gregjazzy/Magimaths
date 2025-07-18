@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { ArrowLeft, BookOpen, Target, Calculator, RotateCcw } from 'lucide-react'
 import Link from 'next/link'
+import MathEditor from '@/components/MathEditor'
 
 // Données des exercices d'addition
 const normalExercises = [
@@ -495,351 +496,338 @@ const beastMultiplicationExercises = [
       { text: "Coefficients : 7 × 2 = 14", expr: "14 × x × y", color: "text-orange-600" },
       { text: "Résultat final", expr: "14xy", color: "text-purple-600" }
     ]
-  }
-]
-
-const beastExercises = [
-  {
-    id: 1,
-    question: "5x - 2x + 3x",
-    steps: [
-      { text: "Expression de départ", expr: "5x - 2x + 3x", color: "text-blue-600" },
-      { text: "Résultat final", expr: "6x", color: "text-purple-600" }
-    ]
   },
-  {
-    id: 2,
-    question: "8a - 3a - 2a",
-    steps: [
-      { text: "Expression de départ", expr: "8a - 3a - 2a", color: "text-blue-600" },
-      { text: "Résultat final", expr: "3a", color: "text-purple-600" }
-    ]
-  },
-  {
-    id: 3,
-    question: "2(3x + x) - 4x",
-    steps: [
-      { text: "Expression de départ", expr: "2(3x + x) - 4x", color: "text-blue-600" },
-      { text: "Priorité aux parenthèses", expr: "2(4x) - 4x", color: "text-orange-600" },
-      { text: "On distribue le 2", expr: "8x - 4x", color: "text-green-600" },
-      { text: "Résultat final", expr: "4x", color: "text-purple-600" }
-    ]
-  },
-  {
-    id: 4,
-    question: "6y - (2y + 3y)",
-    steps: [
-      { text: "Expression de départ", expr: "6y - (2y + 3y)", color: "text-blue-600" },
-      { text: "D'abord la parenthèse", expr: "6y - 5y", color: "text-orange-600" },
-      { text: "Résultat final", expr: "y", color: "text-purple-600" }
-    ]
-  },
-  {
-    id: 5,
-    question: "3x + 2(4x - x)",
-    steps: [
-      { text: "Expression de départ", expr: "3x + 2(4x - x)", color: "text-blue-600" },
-      { text: "Priorité aux parenthèses", expr: "3x + 2(3x)", color: "text-orange-600" },
-      { text: "On distribue le 2", expr: "3x + 6x", color: "text-green-600" },
-      { text: "Résultat final", expr: "9x", color: "text-purple-600" }
-    ]
-  },
-  {
-    id: 6,
-    question: "3a + 2(a + 4a)",
-    steps: [
-      { text: "Expression de départ", expr: "3a + 2(a + 4a)", color: "text-blue-600" },
-      { text: "Priorité aux parenthèses", expr: "3a + 2(5a)", color: "text-orange-600" },
-      { text: "On distribue le 2", expr: "3a + 10a", color: "text-green-600" },
-      { text: "Résultat final", expr: "13a", color: "text-purple-600" }
-    ]
-  },
-  {
-    id: 7,
-    question: "4(2x - x) + 3x",
-    steps: [
-      { text: "Expression de départ", expr: "4(2x - x) + 3x", color: "text-blue-600" },
-      { text: "Priorité aux parenthèses", expr: "4(x) + 3x", color: "text-orange-600" },
-      { text: "On distribue le 4", expr: "4x + 3x", color: "text-green-600" },
-      { text: "Résultat final", expr: "7x", color: "text-purple-600" }
-    ]
-  },
-  {
-    id: 8,
-    question: "3(2y + y) + 4y",
-    steps: [
-      { text: "Expression de départ", expr: "3(2y + y) + 4y", color: "text-blue-600" },
-      { text: "Priorité aux parenthèses", expr: "3(3y) + 4y", color: "text-orange-600" },
-      { text: "On distribue le 3", expr: "9y + 4y", color: "text-green-600" },
-      { text: "Résultat final", expr: "13y", color: "text-purple-600" }
-    ]
-  },
-  {
-    id: 9,
-    question: "7z - (3z - 6z) + 2z",
-    steps: [
-      { text: "Expression de départ", expr: "7z - (3z - 6z) + 2z", color: "text-blue-600" },
-      { text: "Priorité aux parenthèses", expr: "7z - (-3z) + 2z", color: "text-orange-600" },
-      { text: "Moins devant la parenthèse", expr: "7z + 3z + 2z", color: "text-green-600" },
-      { text: "Résultat final", expr: "12z", color: "text-purple-600" }
-    ]
-  },
-  {
-    id: 10,
-    question: "2(5w - 3w) - 4w",
-    steps: [
-      { text: "Expression de départ", expr: "2(5w - 3w) - 4w", color: "text-blue-600" },
-      { text: "Priorité aux parenthèses", expr: "2(2w) - 4w", color: "text-orange-600" },
-      { text: "On distribue le 2", expr: "4w - 4w", color: "text-green-600" },
-      { text: "Résultat final", expr: "0", color: "text-purple-600" }
-    ]
-  },
+  
+  // Niveau 2 : Introduction de 3 lettres (x, y, z)
   {
     id: 11,
-    question: "5x + 3(2x - x)",
+    question: "2xyz × 3x",
     steps: [
-      { text: "Expression de départ", expr: "5x + 3(2x - x)", color: "text-blue-600" },
-      { text: "Priorité aux parenthèses", expr: "5x + 3(x)", color: "text-orange-600" },
-      { text: "On distribue le 3", expr: "5x + 3x", color: "text-green-600" },
-      { text: "Résultat final", expr: "8x", color: "text-purple-600" }
+      { text: "Expression de départ", expr: "2xyz × 3x", color: "text-blue-600" },
+      { text: "Coefficients : 2 × 3 = 6", expr: "6 × xyz × x", color: "text-orange-600" },
+      { text: "Résultat final", expr: "6x²yz", color: "text-purple-600" }
     ]
   },
   {
     id: 12,
-    question: "2(3t + t) + 4(t - 2t)",
+    question: "4xy × 5z",
     steps: [
-      { text: "Expression de départ", expr: "2(3t + t) + 4(t - 2t)", color: "text-blue-600" },
-      { text: "Priorité aux parenthèses", expr: "2(4t) + 4(-t)", color: "text-orange-600" },
-      { text: "On distribue les coefficients", expr: "8t - 4t", color: "text-green-600" },
-      { text: "Résultat final", expr: "4t", color: "text-purple-600" }
+      { text: "Expression de départ", expr: "4xy × 5z", color: "text-blue-600" },
+      { text: "Coefficients : 4 × 5 = 20", expr: "20 × xy × z", color: "text-orange-600" },
+      { text: "Résultat final", expr: "20xyz", color: "text-purple-600" }
     ]
   },
   {
     id: 13,
-    question: "2(3xy - xy) + 4xy - 5xy",
+    question: "6xyz × 2y",
     steps: [
-      { text: "Expression de départ", expr: "2(3xy - xy) + 4xy - 5xy", color: "text-blue-600" },
-      { text: "Priorité aux parenthèses", expr: "2(2xy) + 4xy - 5xy", color: "text-orange-600" },
-      { text: "On distribue le 2", expr: "4xy + 4xy - 5xy", color: "text-green-600" },
-      { text: "Résultat final", expr: "3xy", color: "text-purple-600" }
+      { text: "Expression de départ", expr: "6xyz × 2y", color: "text-blue-600" },
+      { text: "Coefficients : 6 × 2 = 12", expr: "12 × xyz × y", color: "text-orange-600" },
+      { text: "Résultat final", expr: "12xy²z", color: "text-purple-600" }
     ]
   },
   {
     id: 14,
-    question: "3(2x²y - x²y) - (4x²y + x²y)",
+    question: "3xz × 4yz",
     steps: [
-      { text: "Expression de départ", expr: "3(2x²y - x²y) - (4x²y + x²y)", color: "text-blue-600" },
-      { text: "Priorité aux parenthèses", expr: "3(x²y) - (5x²y)", color: "text-orange-600" },
-      { text: "On distribue", expr: "3x²y - 5x²y", color: "text-green-600" },
-      { text: "Résultat final", expr: "-2x²y", color: "text-purple-600" }
+      { text: "Expression de départ", expr: "3xz × 4yz", color: "text-blue-600" },
+      { text: "Coefficients : 3 × 4 = 12", expr: "12 × xz × yz", color: "text-orange-600" },
+      { text: "Résultat final", expr: "12xyz²", color: "text-purple-600" }
     ]
   },
   {
     id: 15,
-    question: "5xy² + 2(3xy² - xy²) + xy²",
+    question: "5xy × 2xz",
     steps: [
-      { text: "Expression de départ", expr: "5xy² + 2(3xy² - xy²) + xy²", color: "text-blue-600" },
-      { text: "Priorité aux parenthèses", expr: "5xy² + 2(2xy²) + xy²", color: "text-orange-600" },
-      { text: "On distribue le 2", expr: "5xy² + 4xy² + xy²", color: "text-green-600" },
-      { text: "Résultat final", expr: "10xy²", color: "text-purple-600" }
+      { text: "Expression de départ", expr: "5xy × 2xz", color: "text-blue-600" },
+      { text: "Coefficients : 5 × 2 = 10", expr: "10 × xy × xz", color: "text-orange-600" },
+      { text: "Résultat final", expr: "10x²yz", color: "text-purple-600" }
     ]
   },
   
-  // Niveau 7 : Moins devant parenthèses complexes
+  // Niveau 3 : Expressions plus complexes avec 3 lettres
   {
     id: 16,
-    question: "7xy - (2xy + 3xy - xy) + 4xy",
+    question: "8xyz × 3z",
     steps: [
-      { text: "Expression de départ", expr: "7xy - (2xy + 3xy - xy) + 4xy", color: "text-blue-600" },
-      { text: "Priorité aux parenthèses", expr: "7xy - (4xy) + 4xy", color: "text-orange-600" },
-      { text: "Moins devant parenthèse", expr: "7xy - 4xy + 4xy", color: "text-green-600" },
-      { text: "Résultat final", expr: "7xy", color: "text-purple-600" }
+      { text: "Expression de départ", expr: "8xyz × 3z", color: "text-blue-600" },
+      { text: "Coefficients : 8 × 3 = 24", expr: "24 × xyz × z", color: "text-orange-600" },
+      { text: "Résultat final", expr: "24xyz²", color: "text-purple-600" }
     ]
   },
   {
     id: 17,
-    question: "5x²y - (6x²y - 2x²y + 3x²y) + 8x²y",
+    question: "7yz × 2xyz",
     steps: [
-      { text: "Expression de départ", expr: "5x²y - (6x²y - 2x²y + 3x²y) + 8x²y", color: "text-blue-600" },
-      { text: "Priorité aux parenthèses", expr: "5x²y - (7x²y) + 8x²y", color: "text-orange-600" },
-      { text: "Moins devant parenthèse", expr: "5x²y - 7x²y + 8x²y", color: "text-green-600" },
-      { text: "Résultat final", expr: "6x²y", color: "text-purple-600" }
+      { text: "Expression de départ", expr: "7yz × 2xyz", color: "text-blue-600" },
+      { text: "Coefficients : 7 × 2 = 14", expr: "14 × yz × xyz", color: "text-orange-600" },
+      { text: "Résultat final", expr: "14xy²z²", color: "text-purple-600" }
     ]
   },
-  
-  // Niveau 8 : Parenthèses mixtes (variables et nombres)
   {
     id: 18,
-    question: "3x - (2x - 4) + 5x - (3x + 7)",
+    question: "9x × 4xyz",
     steps: [
-      { text: "Expression de départ", expr: "3x - (2x - 4) + 5x - (3x + 7)", color: "text-blue-600" },
-      { text: "Moins devant parenthèse change les signes", expr: "3x - 2x + 4 + 5x - 3x - 7", color: "text-orange-600" },
-      { text: "Séparer variables et nombres", expr: "3x - 2x + 5x - 3x + 4 - 7", color: "text-green-600" },
-      { text: "Résultat final", expr: "3x - 3", color: "text-purple-600" }
+      { text: "Expression de départ", expr: "9x × 4xyz", color: "text-blue-600" },
+      { text: "Coefficients : 9 × 4 = 36", expr: "36 × x × xyz", color: "text-orange-600" },
+      { text: "Résultat final", expr: "36x²yz", color: "text-purple-600" }
     ]
   },
   {
     id: 19,
-    question: "4xy - (2xy + 6) + 3xy - (xy - 5)",
+    question: "6xz × 5yz",
     steps: [
-      { text: "Expression de départ", expr: "4xy - (2xy + 6) + 3xy - (xy - 5)", color: "text-blue-600" },
-      { text: "Moins devant parenthèse change les signes", expr: "4xy - 2xy - 6 + 3xy - xy + 5", color: "text-orange-600" },
-      { text: "Séparer variables et nombres", expr: "4xy - 2xy + 3xy - xy - 6 + 5", color: "text-green-600" },
-      { text: "Résultat final", expr: "4xy - 1", color: "text-purple-600" }
+      { text: "Expression de départ", expr: "6xz × 5yz", color: "text-blue-600" },
+      { text: "Coefficients : 6 × 5 = 30", expr: "30 × xz × yz", color: "text-orange-600" },
+      { text: "Résultat final", expr: "30xyz²", color: "text-purple-600" }
     ]
   },
-  
-  // Niveau 9 : Parenthèses avec 3 membres très complexes
   {
     id: 20,
-    question: "6x - (2x² - 4x + 3) + 5x² - (3x² + 2x - 7)",
+    question: "10xyz × 2xyz",
     steps: [
-      { text: "Expression de départ", expr: "6x - (2x² - 4x + 3) + 5x² - (3x² + 2x - 7)", color: "text-blue-600" },
-      { text: "Moins devant parenthèse change les signes", expr: "6x - 2x² + 4x - 3 + 5x² - 3x² - 2x + 7", color: "text-orange-600" },
-      { text: "Séparer par type", expr: "6x + 4x - 2x - 2x² + 5x² - 3x² - 3 + 7", color: "text-green-600" },
-      { text: "Résultat final", expr: "8x + 0x² + 4 = 8x + 4", color: "text-purple-600" }
+      { text: "Expression de départ", expr: "10xyz × 2xyz", color: "text-blue-600" },
+      { text: "Coefficients : 10 × 2 = 20", expr: "20 × xyz × xyz", color: "text-orange-600" },
+      { text: "Résultat final", expr: "20x²y²z²", color: "text-purple-600" }
+    ]
+  }
+]
+
+const beastExercises = [
+  // Niveau 1 : Expressions longues avec plusieurs variables
+  {
+    id: 1,
+    question: "7x - 5y + 3x - 2y + 4x - 9y",
+    steps: [
+      { text: "Expression de départ", expr: "7x - 5y + 3x - 2y + 4x - 9y", color: "text-blue-600" },
+      { text: "Séparer par variable", expr: "7x + 3x + 4x - 5y - 2y - 9y", color: "text-orange-600" },
+      { text: "Résultat final", expr: "14x - 16y", color: "text-purple-600" }
+    ]
+  },
+  {
+    id: 2,
+    question: "8a - 12b + 5a - 7b + 3a - 4b",
+    steps: [
+      { text: "Expression de départ", expr: "8a - 12b + 5a - 7b + 3a - 4b", color: "text-blue-600" },
+      { text: "Séparer par variable", expr: "8a + 5a + 3a - 12b - 7b - 4b", color: "text-orange-600" },
+      { text: "Résultat final", expr: "16a - 23b", color: "text-purple-600" }
+    ]
+  },
+  {
+    id: 3,
+    question: "9xy - 6x + 4xy - 3x + 2xy - 5x",
+    steps: [
+      { text: "Expression de départ", expr: "9xy - 6x + 4xy - 3x + 2xy - 5x", color: "text-blue-600" },
+      { text: "Séparer par type", expr: "9xy + 4xy + 2xy - 6x - 3x - 5x", color: "text-orange-600" },
+      { text: "Résultat final", expr: "15xy - 14x", color: "text-purple-600" }
     ]
   },
   
-  // Niveau 10 : MODE DIABOLIQUE - Parenthèses multiples avec coefficients
+  // Niveau 2 : Parenthèses négatives
+  {
+    id: 4,
+    question: "12x - (5x - 3x + 7x)",
+    steps: [
+      { text: "Expression de départ", expr: "12x - (5x - 3x + 7x)", color: "text-blue-600" },
+      { text: "Simplifier dans la parenthèse", expr: "12x - (9x)", color: "text-orange-600" },
+      { text: "Résultat final", expr: "3x", color: "text-purple-600" }
+    ]
+  },
+  {
+    id: 5,
+    question: "8y - (6y - 2y + 4y - 3y)",
+    steps: [
+      { text: "Expression de départ", expr: "8y - (6y - 2y + 4y - 3y)", color: "text-blue-600" },
+      { text: "Simplifier dans la parenthèse", expr: "8y - (5y)", color: "text-orange-600" },
+      { text: "Résultat final", expr: "3y", color: "text-purple-600" }
+    ]
+  },
+  {
+    id: 6,
+    question: "15a - (8a - 4a + 6a - 2a)",
+    steps: [
+      { text: "Expression de départ", expr: "15a - (8a - 4a + 6a - 2a)", color: "text-blue-600" },
+      { text: "Simplifier dans la parenthèse", expr: "15a - (8a)", color: "text-orange-600" },
+      { text: "Résultat final", expr: "7a", color: "text-purple-600" }
+    ]
+  },
+  
+  // Niveau 3 : Expressions avec termes négatifs
+  {
+    id: 7,
+    question: "-3x + 7x - 5x + 9x - 2x",
+    steps: [
+      { text: "Expression de départ", expr: "-3x + 7x - 5x + 9x - 2x", color: "text-blue-600" },
+      { text: "Calcul des coefficients", expr: "-3 + 7 - 5 + 9 - 2 = 6", color: "text-orange-600" },
+      { text: "Résultat final", expr: "6x", color: "text-purple-600" }
+    ]
+  },
+  {
+    id: 8,
+    question: "-8y + 4y - 6y + 11y - 3y",
+    steps: [
+      { text: "Expression de départ", expr: "-8y + 4y - 6y + 11y - 3y", color: "text-blue-600" },
+      { text: "Calcul des coefficients", expr: "-8 + 4 - 6 + 11 - 3 = -2", color: "text-orange-600" },
+      { text: "Résultat final", expr: "-2y", color: "text-purple-600" }
+    ]
+  },
+  {
+    id: 9,
+    question: "-5ab + 8ab - 12ab + 6ab - 3ab",
+    steps: [
+      { text: "Expression de départ", expr: "-5ab + 8ab - 12ab + 6ab - 3ab", color: "text-blue-600" },
+      { text: "Calcul des coefficients", expr: "-5 + 8 - 12 + 6 - 3 = -6", color: "text-orange-600" },
+      { text: "Résultat final", expr: "-6ab", color: "text-purple-600" }
+    ]
+  },
+  
+  // Niveau 4 : Parenthèses avec plusieurs termes
+  {
+    id: 10,
+    question: "10x - (3x - 7x + 2x) + 5x",
+    steps: [
+      { text: "Expression de départ", expr: "10x - (3x - 7x + 2x) + 5x", color: "text-blue-600" },
+      { text: "Simplifier dans la parenthèse", expr: "10x - (-2x) + 5x", color: "text-orange-600" },
+      { text: "Moins devant parenthèse", expr: "10x + 2x + 5x", color: "text-green-600" },
+      { text: "Résultat final", expr: "17x", color: "text-purple-600" }
+    ]
+  },
+  {
+    id: 11,
+    question: "14y - (6y - 9y + 4y) - 3y",
+    steps: [
+      { text: "Expression de départ", expr: "14y - (6y - 9y + 4y) - 3y", color: "text-blue-600" },
+      { text: "Simplifier dans la parenthèse", expr: "14y - (y) - 3y", color: "text-orange-600" },
+      { text: "Résultat final", expr: "10y", color: "text-purple-600" }
+    ]
+  },
+  {
+    id: 12,
+    question: "18z - (5z - 8z + 7z) + 2z",
+    steps: [
+      { text: "Expression de départ", expr: "18z - (5z - 8z + 7z) + 2z", color: "text-blue-600" },
+      { text: "Simplifier dans la parenthèse", expr: "18z - (4z) + 2z", color: "text-orange-600" },
+      { text: "Résultat final", expr: "16z", color: "text-purple-600" }
+    ]
+  },
+  
+  // Niveau 5 : Mélange variables et nombres
+  {
+    id: 13,
+    question: "12x + 8 - 7x - 5 + 3x - 11",
+    steps: [
+      { text: "Expression de départ", expr: "12x + 8 - 7x - 5 + 3x - 11", color: "text-blue-600" },
+      { text: "Séparer variables et nombres", expr: "12x - 7x + 3x + 8 - 5 - 11", color: "text-orange-600" },
+      { text: "Résultat final", expr: "8x - 8", color: "text-purple-600" }
+    ]
+  },
+  {
+    id: 14,
+    question: "9y - 6 + 4y + 12 - 5y - 9",
+    steps: [
+      { text: "Expression de départ", expr: "9y - 6 + 4y + 12 - 5y - 9", color: "text-blue-600" },
+      { text: "Séparer variables et nombres", expr: "9y + 4y - 5y - 6 + 12 - 9", color: "text-orange-600" },
+      { text: "Résultat final", expr: "8y - 3", color: "text-purple-600" }
+    ]
+  },
+  {
+    id: 15,
+    question: "15a - 12 + 3a - 7 + 6a + 4",
+    steps: [
+      { text: "Expression de départ", expr: "15a - 12 + 3a - 7 + 6a + 4", color: "text-blue-600" },
+      { text: "Séparer variables et nombres", expr: "15a + 3a + 6a - 12 - 7 + 4", color: "text-orange-600" },
+      { text: "Résultat final", expr: "24a - 15", color: "text-purple-600" }
+    ]
+  },
+  
+  // Niveau 6 : Expressions complexes avec parenthèses
+  {
+    id: 16,
+    question: "20x - (8x - 3x + 5x) - (4x - 7x)",
+    steps: [
+      { text: "Expression de départ", expr: "20x - (8x - 3x + 5x) - (4x - 7x)", color: "text-blue-600" },
+      { text: "Simplifier les parenthèses", expr: "20x - (10x) - (-3x)", color: "text-orange-600" },
+      { text: "Appliquer les signes", expr: "20x - 10x + 3x", color: "text-green-600" },
+      { text: "Résultat final", expr: "13x", color: "text-purple-600" }
+    ]
+  },
+  {
+    id: 17,
+    question: "16y - (9y - 4y + 2y) + (7y - 11y)",
+    steps: [
+      { text: "Expression de départ", expr: "16y - (9y - 4y + 2y) + (7y - 11y)", color: "text-blue-600" },
+      { text: "Simplifier les parenthèses", expr: "16y - (7y) + (-4y)", color: "text-orange-600" },
+      { text: "Appliquer les signes", expr: "16y - 7y - 4y", color: "text-green-600" },
+      { text: "Résultat final", expr: "5y", color: "text-purple-600" }
+    ]
+  },
+  {
+    id: 18,
+    question: "25z - (12z - 6z + 3z) - (8z - 15z)",
+    steps: [
+      { text: "Expression de départ", expr: "25z - (12z - 6z + 3z) - (8z - 15z)", color: "text-blue-600" },
+      { text: "Simplifier les parenthèses", expr: "25z - (9z) - (-7z)", color: "text-orange-600" },
+      { text: "Appliquer les signes", expr: "25z - 9z + 7z", color: "text-green-600" },
+      { text: "Résultat final", expr: "23z", color: "text-purple-600" }
+    ]
+  },
+  
+  // Niveau 7 : Plusieurs variables et parenthèses
+  {
+    id: 19,
+    question: "8x - 5y - (3x - 2y) + 6x - (4y - x)",
+    steps: [
+      { text: "Expression de départ", expr: "8x - 5y - (3x - 2y) + 6x - (4y - x)", color: "text-blue-600" },
+      { text: "Distribuer les signes", expr: "8x - 5y - 3x + 2y + 6x - 4y + x", color: "text-orange-600" },
+      { text: "Séparer par variable", expr: "8x - 3x + 6x + x - 5y + 2y - 4y", color: "text-green-600" },
+      { text: "Résultat final", expr: "12x - 7y", color: "text-purple-600" }
+    ]
+  },
+  {
+    id: 20,
+    question: "12a - 8b - (5a - 3b) + 7a - (6b - 2a)",
+    steps: [
+      { text: "Expression de départ", expr: "12a - 8b - (5a - 3b) + 7a - (6b - 2a)", color: "text-blue-600" },
+      { text: "Distribuer les signes", expr: "12a - 8b - 5a + 3b + 7a - 6b + 2a", color: "text-orange-600" },
+      { text: "Séparer par variable", expr: "12a - 5a + 7a + 2a - 8b + 3b - 6b", color: "text-green-600" },
+      { text: "Résultat final", expr: "16a - 11b", color: "text-purple-600" }
+    ]
+  },
+  
+  // Niveau 8 : Expressions très complexes
   {
     id: 21,
-    question: "3(2xy - 4x²y + 1) - (3xy + x²y - 5) + 4xy",
+    question: "30x - 15y - (12x - 8y + 5x) + (7y - 9x)",
     steps: [
-      { text: "Expression de départ", expr: "3(2xy - 4x²y + 1) - (3xy + x²y - 5) + 4xy", color: "text-blue-600" },
-      { text: "Distribuer le 3", expr: "6xy - 12x²y + 3 - (3xy + x²y - 5) + 4xy", color: "text-orange-600" },
-      { text: "Moins devant la parenthèse", expr: "6xy - 12x²y + 3 - 3xy - x²y + 5 + 4xy", color: "text-green-600" },
-      { text: "Séparer par type", expr: "6xy - 3xy + 4xy - 12x²y - x²y + 3 + 5", color: "text-red-600" },
-      { text: "Résultat final", expr: "7xy - 13x²y + 8", color: "text-purple-600" }
+      { text: "Expression de départ", expr: "30x - 15y - (12x - 8y + 5x) + (7y - 9x)", color: "text-blue-600" },
+      { text: "Simplifier les parenthèses", expr: "30x - 15y - (17x - 8y) + (7y - 9x)", color: "text-orange-600" },
+      { text: "Distribuer les signes", expr: "30x - 15y - 17x + 8y + 7y - 9x", color: "text-green-600" },
+      { text: "Séparer par variable", expr: "30x - 17x - 9x - 15y + 8y + 7y", color: "text-red-600" },
+      { text: "Résultat final", expr: "4x + 0y = 4x", color: "text-purple-600" }
     ]
   },
   {
     id: 22,
-    question: "5xy² - (2xy² + 3x²y - 4) + 3(xy² - 2x²y + 1) - 7",
+    question: "45a - 20b - (18a - 12b + 7a) - (9b - 15a)",
     steps: [
-      { text: "Expression de départ", expr: "5xy² - (2xy² + 3x²y - 4) + 3(xy² - 2x²y + 1) - 7", color: "text-blue-600" },
-      { text: "Moins devant parenthèse", expr: "5xy² - 2xy² - 3x²y + 4 + 3(xy² - 2x²y + 1) - 7", color: "text-orange-600" },
-      { text: "Distribuer le 3", expr: "5xy² - 2xy² - 3x²y + 4 + 3xy² - 6x²y + 3 - 7", color: "text-green-600" },
-      { text: "Séparer par type", expr: "5xy² - 2xy² + 3xy² - 3x²y - 6x²y + 4 + 3 - 7", color: "text-red-600" },
-      { text: "Résultat final", expr: "6xy² - 9x²y + 0 = 6xy² - 9x²y", color: "text-purple-600" }
+      { text: "Expression de départ", expr: "45a - 20b - (18a - 12b + 7a) - (9b - 15a)", color: "text-blue-600" },
+      { text: "Simplifier les parenthèses", expr: "45a - 20b - (25a - 12b) - (9b - 15a)", color: "text-orange-600" },
+      { text: "Distribuer les signes", expr: "45a - 20b - 25a + 12b - 9b + 15a", color: "text-green-600" },
+      { text: "Séparer par variable", expr: "45a - 25a + 15a - 20b + 12b - 9b", color: "text-red-600" },
+      { text: "Résultat final", expr: "35a - 17b", color: "text-purple-600" }
     ]
   },
   
-  // Niveau 11 : MODE ULTRA-DIABOLIQUE - Parenthèses imbriquées et multiples
+  // Niveau 9 : Expressions avec nombres et variables complexes
   {
     id: 23,
-    question: "2x - (4x - (2x + 5)) + 5x - (3x - 2)",
+    question: "18x - 24 - (9x - 15 + 3x) + (12 - 6x)",
     steps: [
-      { text: "Expression de départ", expr: "2x - (4x - (2x + 5)) + 5x - (3x - 2)", color: "text-blue-600" },
-      { text: "Priorité parenthèse interne", expr: "2x - (4x - 2x - 5) + 5x - (3x - 2)", color: "text-orange-600" },
-      { text: "Simplifier dans la parenthèse", expr: "2x - (2x - 5) + 5x - (3x - 2)", color: "text-green-600" },
-      { text: "Moins devant la parenthèse", expr: "2x - 2x + 5 + 5x - (3x - 2)", color: "text-red-600" },
-      { text: "Moins devant dernière parenthèse", expr: "2x - 2x + 5 + 5x - 3x + 2", color: "text-amber-600" },
-      { text: "Séparer par type", expr: "2x - 2x + 5x - 3x + 5 + 2", color: "text-indigo-600" },
-      { text: "Résultat final", expr: "2x + 7", color: "text-purple-600" }
-    ]
-  },
-  {
-    id: 24,
-    question: "4(3xy - 2x²y + 3) - (5xy - (3x²y - 2xy) + 1) - 6",
-    steps: [
-      { text: "Expression de départ", expr: "4(3xy - 2x²y + 3) - (5xy - (3x²y - 2xy) + 1) - 6", color: "text-blue-600" },
-      { text: "Parenthèse interne", expr: "4(3xy - 2x²y + 3) - (5xy - 3x²y + 2xy + 1) - 6", color: "text-orange-600" },
-      { text: "Simplifier dans la parenthèse", expr: "4(3xy - 2x²y + 3) - (7xy - 3x²y + 1) - 6", color: "text-green-600" },
-      { text: "Distribuer le 4", expr: "12xy - 8x²y + 12 - (7xy - 3x²y + 1) - 6", color: "text-red-600" },
-      { text: "Moins devant la parenthèse", expr: "12xy - 8x²y + 12 - 7xy + 3x²y - 1 - 6", color: "text-amber-600" },
-      { text: "Séparer par type", expr: "12xy - 7xy - 8x²y + 3x²y + 12 - 1 - 6", color: "text-indigo-600" },
-      { text: "Résultat final", expr: "5xy - 5x²y + 5", color: "text-purple-600" }
-    ]
-  },
-  
-  // Niveau 12 : MODE APOCALYPSE - Le summum de la complexité
-  {
-    id: 25,
-    question: "3x² - (4x - (2x² - x + 1) + 5x) + 7x - (2x² + 3x - 4)",
-    steps: [
-      { text: "Expression de départ", expr: "3x² - (4x - (2x² - x + 1) + 5x) + 7x - (2x² + 3x - 4)", color: "text-blue-600" },
-      { text: "Moins devant la parenthèse interne", expr: "3x² - (4x - 2x² + x - 1 + 5x) + 7x - (2x² + 3x - 4)", color: "text-orange-600" },
-      { text: "Simplifier dans la parenthèse", expr: "3x² - (10x - 2x² - 1) + 7x - (2x² + 3x - 4)", color: "text-green-600" },
-      { text: "Moins devant la parenthèse", expr: "3x² - 10x + 2x² + 1 + 7x - (2x² + 3x - 4)", color: "text-red-600" },
-      { text: "Moins devant dernière parenthèse", expr: "3x² - 10x + 2x² + 1 + 7x - 2x² - 3x + 4", color: "text-amber-600" },
-      { text: "Séparer par type", expr: "3x² + 2x² - 2x² - 10x + 7x - 3x + 1 + 4", color: "text-indigo-600" },
-      { text: "Résultat final", expr: "3x² - 6x + 5", color: "text-purple-600" }
-    ]
-  },
-  
-  // Niveau 13 : MULTIPLICATION AVEC NOMBRES NÉGATIFS - Beast Mode
-  {
-    id: 26,
-    question: "(-3xy) × (-4x²y)",
-    steps: [
-      { text: "Expression de départ", expr: "(-3xy) × (-4x²y)", color: "text-blue-600" },
-      { text: "Coefficients : (-3) × (-4) = +12", expr: "12 × xy × x²y", color: "text-orange-600" },
-      { text: "Regrouper", expr: "12x³y²", color: "text-purple-600" }
-    ]
-  },
-  {
-    id: 27,
-    question: "-(2x)(3xy - 4x² + 5y)",
-    steps: [
-      { text: "Expression de départ", expr: "-(2x)(3xy - 4x² + 5y)", color: "text-blue-600" },
-      { text: "Distribution", expr: "-(2x) × 3xy - (2x) × (-4x²) - (2x) × 5y", color: "text-orange-600" },
-      { text: "Résultat final", expr: "-6x²y + 8x³ - 10xy", color: "text-purple-600" }
-    ]
-  },
-  {
-    id: 28,
-    question: "-(5x²y) × (-2xy + 3y²)",
-    steps: [
-      { text: "Expression de départ", expr: "-(5x²y) × (-2xy + 3y²)", color: "text-blue-600" },
-      { text: "Distribution", expr: "-(5x²y) × (-2xy) - (5x²y) × 3y²", color: "text-orange-600" },
-      { text: "Résultat final", expr: "10x³y² - 15x²y³", color: "text-purple-600" }
-    ]
-  },
-  {
-    id: 29,
-    question: "(-3x + 2y) × (-4x)",
-    steps: [
-      { text: "Expression de départ", expr: "(-3x + 2y) × (-4x)", color: "text-blue-600" },
-      { text: "Distribution", expr: "(-3x) × (-4x) + 2y × (-4x)", color: "text-orange-600" },
-      { text: "Résultat final", expr: "12x² - 8xy", color: "text-purple-600" }
-    ]
-  },
-  {
-    id: 30,
-    question: "-(2x²y) × (-3x + 4y - 5z)",
-    steps: [
-      { text: "Expression de départ", expr: "-(2x²y) × (-3x + 4y - 5z)", color: "text-blue-600" },
-      { text: "Distribution", expr: "-(2x²y) × (-3x) - (2x²y) × 4y - (2x²y) × (-5z)", color: "text-orange-600" },
-      { text: "Résultat final", expr: "6x³y - 8x²y² + 10x²yz", color: "text-purple-600" }
-    ]
-  },
-  {
-    id: 31,
-    question: "-(4xy) × (-2x²y + 3xy² - y³)",
-    steps: [
-      { text: "Expression de départ", expr: "-(4xy) × (-2x²y + 3xy² - y³)", color: "text-blue-600" },
-      { text: "Distribution", expr: "-(4xy) × (-2x²y) - (4xy) × 3xy² - (4xy) × (-y³)", color: "text-orange-600" },
-      { text: "Résultat final", expr: "8x³y² - 12x²y³ + 4xy⁴", color: "text-purple-600" }
-    ]
-  },
-  {
-    id: 32,
-    question: "(-x + 3y) × (-2x - 4y)",
-    steps: [
-      { text: "Expression de départ", expr: "(-x + 3y) × (-2x - 4y)", color: "text-blue-600" },
-      { text: "Distribution complète", expr: "(-x) × (-2x) + (-x) × (-4y) + 3y × (-2x) + 3y × (-4y)", color: "text-orange-600" },
-      { text: "Simplifier", expr: "2x² + 4xy - 6xy - 12y²", color: "text-green-600" },
-      { text: "Résultat final", expr: "2x² - 2xy - 12y²", color: "text-purple-600" }
-    ]
-  },
-  {
-    id: 33,
-    question: "-(3x²) × (-2x + 5y - 4z + 7)",
-    steps: [
-      { text: "Expression de départ", expr: "-(3x²) × (-2x + 5y - 4z + 7)", color: "text-blue-600" },
-      { text: "Distribution", expr: "-(3x²) × (-2x) - (3x²) × 5y - (3x²) × (-4z) - (3x²) × 7", color: "text-orange-600" },
-      { text: "Résultat final", expr: "6x³ - 15x²y + 12x²z - 21x²", color: "text-purple-600" }
+      { text: "Expression de départ", expr: "18x - 24 - (9x - 15 + 3x) + (12 - 6x)", color: "text-blue-600" },
+      { text: "Simplifier les parenthèses", expr: "18x - 24 - (12x - 15) + (12 - 6x)", color: "text-orange-600" },
+      { text: "Distribuer les signes", expr: "18x - 24 - 12x + 15 + 12 - 6x", color: "text-green-600" },
+      { text: "Séparer variables et nombres", expr: "18x - 12x - 6x - 24 + 15 + 12", color: "text-red-600" },
+      { text: "Résultat final", expr: "0x + 3 = 3", color: "text-purple-600" }
     ]
   }
 ]
@@ -854,6 +842,25 @@ export default function ExpressionsReglesPage() {
   const [userAnswer, setUserAnswer] = useState('')
   const [showAnswer, setShowAnswer] = useState(false)
   const [answerFeedback, setAnswerFeedback] = useState<'correct' | 'incorrect' | null>(null)
+  
+  // Compteurs de bonnes réponses pour les additions
+  const [correctAnswersNormal, setCorrectAnswersNormal] = useState(0)
+  const [correctAnswersBeast, setCorrectAnswersBeast] = useState(0)
+  const [showIncrement, setShowIncrement] = useState(false)
+  
+  // Compteurs de bonnes réponses pour les multiplications
+  const [correctAnswersMultiNormal, setCorrectAnswersMultiNormal] = useState(0)
+  const [correctAnswersMultiBeast, setCorrectAnswersMultiBeast] = useState(0)
+  const [showIncrementMulti, setShowIncrementMulti] = useState(false)
+  
+  // Réinitialiser les compteurs quand on change d'onglet principal
+  useEffect(() => {
+    if (mainTab === 'addition') {
+      resetMultiCounters()
+    } else if (mainTab === 'multiplication') {
+      resetCounters()
+    }
+  }, [mainTab])
   
   // États pour l'animation des chats
   const [catAnimationStep, setCatAnimationStep] = useState(0)
@@ -876,6 +883,16 @@ export default function ExpressionsReglesPage() {
     setAnswerFeedback(null)
   }
 
+  const resetCounters = () => {
+    setCorrectAnswersNormal(0)
+    setCorrectAnswersBeast(0)
+  }
+
+  const resetMultiCounters = () => {
+    setCorrectAnswersMultiNormal(0)
+    setCorrectAnswersMultiBeast(0)
+  }
+
   const checkAnswer = () => {
     let correctAnswer = ''
     
@@ -887,7 +904,11 @@ export default function ExpressionsReglesPage() {
         correctAnswer = beastExercises[currentExercise].steps[beastExercises[currentExercise].steps.length - 1].expr
       }
     } else if (mainTab === 'multiplication') {
-      correctAnswer = normalMultiplicationExercises[currentExercise].steps[normalMultiplicationExercises[currentExercise].steps.length - 1].expr
+      if (exerciseLevel === 'normal') {
+        correctAnswer = normalMultiplicationExercises[currentExercise].steps[normalMultiplicationExercises[currentExercise].steps.length - 1].expr
+      } else if (exerciseLevel === 'beast') {
+        correctAnswer = beastMultiplicationExercises[currentExercise].steps[beastMultiplicationExercises[currentExercise].steps.length - 1].expr
+      }
     }
     
     const userAnswerTrimmed = userAnswer.trim().toLowerCase().replace(/\s+/g, '')
@@ -906,8 +927,52 @@ export default function ExpressionsReglesPage() {
     const normalizedUser = normalizeAnswer(userAnswerTrimmed)
     const normalizedCorrect = normalizeAnswer(correctAnswerTrimmed)
     
+    console.log('Checking answer:', { normalizedUser, normalizedCorrect, mainTab, exerciseLevel })
+    
     if (normalizedUser === normalizedCorrect) {
       setAnswerFeedback('correct')
+      
+      // Incrémenter le compteur pour les exercices d'addition
+      if (mainTab === 'addition') {
+        if (exerciseLevel === 'normal') {
+          console.log('Incrementing normal counter')
+          setCorrectAnswersNormal(prev => {
+            console.log('Normal counter before:', prev)
+            return prev + 1
+          })
+        } else if (exerciseLevel === 'beast') {
+          console.log('Incrementing beast counter')
+          setCorrectAnswersBeast(prev => {
+            console.log('Beast counter before:', prev)
+            return prev + 1
+          })
+        }
+        
+        // Afficher une indication visuelle temporaire
+        setShowIncrement(true)
+        setTimeout(() => setShowIncrement(false), 2000)
+      }
+      
+      // Incrémenter le compteur pour les exercices de multiplication
+      if (mainTab === 'multiplication') {
+        if (exerciseLevel === 'normal') {
+          console.log('Incrementing multiplication normal counter')
+          setCorrectAnswersMultiNormal(prev => {
+            console.log('Multi normal counter before:', prev)
+            return prev + 1
+          })
+        } else if (exerciseLevel === 'beast') {
+          console.log('Incrementing multiplication beast counter')
+          setCorrectAnswersMultiBeast(prev => {
+            console.log('Multi beast counter before:', prev)
+            return prev + 1
+          })
+        }
+        
+        // Afficher une indication visuelle temporaire
+        setShowIncrementMulti(true)
+        setTimeout(() => setShowIncrementMulti(false), 2000)
+      }
     } else {
       setAnswerFeedback('incorrect')
     }
@@ -1034,23 +1099,28 @@ export default function ExpressionsReglesPage() {
 
             {/* Tabs principaux - centrés et plus gros */}
             <div className="flex justify-center gap-4 mb-8">
-              {[
-                { id: 'addition', label: 'Addition', icon: '➕' },
-                { id: 'multiplication', label: 'Multiplication', icon: '✖️' }
-              ].map(tab => (
-                <button
-                  key={tab.id}
-                  onClick={() => setMainTab(tab.id as any)}
-                  className={`flex items-center gap-3 px-8 py-4 rounded-xl transition-colors font-semibold text-lg ${
-                    mainTab === tab.id
-                      ? 'bg-purple-500 text-white shadow-lg transform scale-105'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200 hover:shadow-md'
-                  }`}
-                >
-                  <span className="text-2xl">{tab.icon}</span>
-                  <span>{tab.label}</span>
-                </button>
-              ))}
+              <button
+                onClick={() => setMainTab('addition')}
+                className={`flex items-center gap-3 px-8 py-4 rounded-xl transition-colors font-semibold text-lg ${
+                  mainTab === 'addition'
+                    ? 'bg-purple-500 text-white shadow-lg transform scale-105'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200 hover:shadow-md'
+                }`}
+              >
+                <span className="text-2xl">➕</span>
+                <span>Addition</span>
+              </button>
+              <button
+                onClick={() => setMainTab('multiplication')}
+                className={`flex items-center gap-3 px-8 py-4 rounded-xl transition-colors font-semibold text-lg ${
+                  mainTab === 'multiplication'
+                    ? 'bg-purple-500 text-white shadow-lg transform scale-105'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200 hover:shadow-md'
+                }`}
+              >
+                <span className="text-2xl">✖️</span>
+                <span>Multiplication</span>
+              </button>
             </div>
 
             {/* Indicateur de sous-section - centré */}
@@ -1065,23 +1135,28 @@ export default function ExpressionsReglesPage() {
               
               {/* Tabs secondaires - centrés */}
               <div className="flex justify-center gap-4">
-                {[
-                  { id: 'cours', label: 'Cours', icon: BookOpen },
-                  { id: 'exercices', label: 'Exercices', icon: Target }
-                ].map(tab => (
-                  <button
-                    key={tab.id}
-                    onClick={() => setSubTab(tab.id as any)}
-                    className={`flex items-center gap-2 px-6 py-3 rounded-lg transition-colors font-medium ${
-                      subTab === tab.id
-                        ? 'bg-blue-500 text-white shadow-md'
-                        : 'bg-gray-50 text-gray-600 hover:bg-gray-100 border border-gray-200'
-                    }`}
-                  >
-                    <tab.icon size={16} />
-                    <span>{tab.label}</span>
-                  </button>
-                ))}
+                <button
+                  onClick={() => setSubTab('cours')}
+                  className={`flex items-center gap-2 px-6 py-3 rounded-lg transition-colors font-medium ${
+                    subTab === 'cours'
+                      ? 'bg-blue-500 text-white shadow-md'
+                      : 'bg-gray-50 text-gray-600 hover:bg-gray-100 border border-gray-200'
+                  }`}
+                >
+                  <BookOpen size={16} />
+                  <span>Cours</span>
+                </button>
+                <button
+                  onClick={() => setSubTab('exercices')}
+                  className={`flex items-center gap-2 px-6 py-3 rounded-lg transition-colors font-medium ${
+                    subTab === 'exercices'
+                      ? 'bg-blue-500 text-white shadow-md'
+                      : 'bg-gray-50 text-gray-600 hover:bg-gray-100 border border-gray-200'
+                  }`}
+                >
+                  <Target size={16} />
+                  <span>Exercices</span>
+                </button>
               </div>
             </div>
           </div>
@@ -1093,6 +1168,18 @@ export default function ExpressionsReglesPage() {
             {/* Règles de calcul Addition */}
             <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-8 border border-green-200">
               <h2 className="text-2xl font-bold text-green-800 mb-6">➕ Règle de base</h2>
+              
+              {/* Règles essentielles en haut */}
+              <div className="bg-white rounded-lg p-6 border border-green-100 mb-6">
+                <h4 className="font-semibold text-green-800 mb-4">✅ À retenir</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-2">
+                  <div className="text-green-700">• <strong>a + a = 2a</strong> (termes identiques)</div>
+                  <div className="text-green-700">• <strong>a + b</strong> ne se simplifie pas</div>
+                  <div className="text-green-700">• <strong>2a + 3a = 5a</strong> (addition coefficients)</div>
+                  <div className="text-green-700">• <strong>a + 2a = 3a</strong> (coefficient implicite)</div>
+                  <div className="text-green-700">• <strong>3x + 2y + x = 4x + 2y</strong> (regrouper)</div>
+                </div>
+              </div>
               
               <div className="space-y-6">
                 <div className="bg-white rounded-lg p-6 border border-green-100">
@@ -1419,36 +1506,57 @@ export default function ExpressionsReglesPage() {
             {/* Sélecteur de niveau */}
             <div className="bg-white rounded-xl p-6 shadow-lg border border-gray-200">
               <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
-                <h2 className="text-xl font-bold text-gray-800">Exercices - Addition</h2>
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => {
-                      setExerciseLevel('normal')
-                      setCurrentExercise(0)
-                      resetExercise()
-                    }}
-                    className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                      exerciseLevel === 'normal' 
-                        ? 'bg-blue-600 text-white' 
-                        : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                    }`}
-                  >
-                    📝 Normal
-                  </button>
-                  <button
-                    onClick={() => {
-                      setExerciseLevel('beast')
-                      setCurrentExercise(0)
-                      resetExercise()
-                    }}
-                    className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                      exerciseLevel === 'beast' 
-                        ? 'bg-red-600 text-white' 
-                        : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                    }`}
-                  >
-                    🔥 Beast Mode
-                  </button>
+                <div className="flex items-center gap-4">
+                  <h2 className="text-xl font-bold text-gray-800">Exercices - Addition</h2>
+                  
+                  {/* Compteur de bonnes réponses - Boutons cliquables */}
+                  <div className="flex gap-3 items-center">
+                    <button
+                      onClick={() => {
+                        setExerciseLevel('normal')
+                        setCurrentExercise(0)
+                        resetExercise()
+                      }}
+                      className={`flex items-center gap-2 px-4 py-2 rounded-lg text-base font-bold shadow-md transition-colors ${
+                        exerciseLevel === 'normal' 
+                          ? 'bg-blue-600 text-white' 
+                          : 'bg-blue-500 text-white hover:bg-blue-600'
+                      }`}
+                    >
+                      <span className="text-xl">📝</span>
+                      Normal: {correctAnswersNormal}/{normalExercises.length}
+                    </button>
+                    <button
+                      onClick={() => {
+                        setExerciseLevel('beast')
+                        setCurrentExercise(0)
+                        resetExercise()
+                      }}
+                      className={`flex items-center gap-2 px-4 py-2 rounded-lg text-base font-bold shadow-md transition-colors ${
+                        exerciseLevel === 'beast' 
+                          ? 'bg-red-600 text-white' 
+                          : 'bg-red-500 text-white hover:bg-red-600'
+                      }`}
+                    >
+                      <span className="text-xl">🔥</span>
+                      Beast: {correctAnswersBeast}/{beastExercises.length}
+                    </button>
+                    {showIncrement && (
+                      <div className="flex items-center gap-2 px-3 py-1 bg-green-500 text-white rounded-lg text-sm font-bold animate-pulse">
+                        <span className="text-lg">✅</span>
+                        +1 !
+                      </div>
+                    )}
+                    
+                    {/* Bouton de réinitialisation des compteurs */}
+                    <button
+                      onClick={resetCounters}
+                      className="px-3 py-2 rounded-lg font-medium transition-colors bg-gray-500 text-white hover:bg-gray-600"
+                      title="Réinitialiser les compteurs"
+                    >
+                      <RotateCcw size={18} />
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -1457,9 +1565,23 @@ export default function ExpressionsReglesPage() {
             {exerciseLevel === 'normal' && (
               <div className="bg-white rounded-xl p-6 shadow-lg border border-gray-200">
                 <div className="flex flex-col sm:flex-row gap-4 items-center justify-between mb-6">
-                  <h3 className="text-lg font-semibold text-blue-800">
-                    Exercice {currentExercise + 1} / {normalExercises.length}
-                  </h3>
+                  <div className="flex items-center gap-4">
+                    <h3 className="text-lg font-semibold text-blue-800">
+                      Exercice {currentExercise + 1} / {normalExercises.length}
+                    </h3>
+                    {/* Barre de progression */}
+                    <div className="flex items-center gap-2">
+                      <div className="w-32 bg-gray-200 rounded-full h-2">
+                        <div 
+                          className="bg-blue-500 h-2 rounded-full transition-all duration-300"
+                          style={{ width: `${((currentExercise + 1) / normalExercises.length) * 100}%` }}
+                        />
+                      </div>
+                      <span className="text-sm text-gray-600 font-medium">
+                        {Math.round(((currentExercise + 1) / normalExercises.length) * 100)}%
+                      </span>
+                    </div>
+                  </div>
                   <div className="flex gap-2">
                     <button
                       onClick={() => {
@@ -1484,68 +1606,55 @@ export default function ExpressionsReglesPage() {
                   </div>
                 </div>
 
-                <div className="space-y-6">
-                  {/* Question */}
-                  <div className="bg-blue-50 rounded-lg p-6 border border-blue-200">
-                    <h4 className="font-semibold text-blue-800 mb-3">Simplifier l'expression :</h4>
-                    <div className="text-2xl font-mono text-blue-900 text-center">
+                <div className="space-y-4">
+                  {/* Question avec score intégré */}
+                  <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
+                    <div className="flex items-center justify-between mb-3">
+                      <h4 className="font-semibold text-blue-800">Simplifier l'expression :</h4>
+                      <span className="inline-flex items-center gap-1 px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-semibold">
+                        🎯 {correctAnswersNormal}/{normalExercises.length}
+                      </span>
+                    </div>
+                    <div className="text-xl font-mono text-blue-900 text-center">
                       {normalExercises[currentExercise].question}
                     </div>
                   </div>
 
                   {/* Éditeur de réponse */}
-                  <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-6 border-2 border-blue-300 shadow-md">
-                    <h4 className="font-semibold text-blue-800 mb-4 text-lg">📝 Votre réponse :</h4>
-                    <div className="flex gap-3 items-center">
-                      <input
-                        type="text"
-                        value={userAnswer}
-                        onChange={(e) => setUserAnswer(e.target.value)}
-                        placeholder="Tapez votre réponse ici... (ex: 5x)"
-                        className="flex-1 px-4 py-3 border-2 border-blue-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-mono text-lg bg-white shadow-sm text-gray-900 placeholder-gray-500"
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter') {
-                            checkAnswer()
-                          }
-                        }}
-                        autoFocus
-                      />
-                      <button
-                        onClick={checkAnswer}
-                        disabled={!userAnswer.trim()}
-                        className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-semibold shadow-sm"
-                      >
-                        ✓ Valider
-                      </button>
-                    </div>
-                    
-                    {/* Feedback de réponse */}
-                    {showAnswer && (
-                      <div className={`mt-4 p-4 rounded-lg border ${
-                        answerFeedback === 'correct' 
-                          ? 'bg-green-50 border-green-200' 
-                          : 'bg-red-50 border-red-200'
-                      }`}>
-                        <div className="flex items-center gap-2">
-                          {answerFeedback === 'correct' ? (
-                            <>
-                              <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
-                                <span className="text-white text-sm font-bold">✓</span>
-                              </div>
-                              <span className="text-green-800 font-semibold">Correct ! Bonne réponse</span>
-                            </>
-                          ) : (
-                            <>
-                              <div className="w-5 h-5 bg-red-500 rounded-full flex items-center justify-center">
-                                <span className="text-white text-sm font-bold">✗</span>
-                              </div>
-                              <span className="text-red-800 font-semibold">Incorrect. Essayez encore ou consultez la solution</span>
-                            </>
-                          )}
-                        </div>
+                  <MathEditor
+                    value={userAnswer}
+                    onChange={setUserAnswer}
+                    placeholder="Tapez votre réponse ici... (ex: 5x)"
+                    onSubmit={checkAnswer}
+                    theme="blue"
+                  />
+                  
+                  {/* Feedback de réponse */}
+                  {showAnswer && (
+                    <div className={`p-4 rounded-lg border ${
+                      answerFeedback === 'correct' 
+                        ? 'bg-green-50 border-green-200' 
+                        : 'bg-red-50 border-red-200'
+                    }`}>
+                      <div className="flex items-center gap-2">
+                        {answerFeedback === 'correct' ? (
+                          <>
+                            <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
+                              <span className="text-white text-sm font-bold">✓</span>
+                            </div>
+                            <span className="text-green-800 font-semibold">Correct ! Bonne réponse</span>
+                          </>
+                        ) : (
+                          <>
+                            <div className="w-5 h-5 bg-red-500 rounded-full flex items-center justify-center">
+                              <span className="text-white text-sm font-bold">✗</span>
+                            </div>
+                            <span className="text-red-800 font-semibold">Incorrect. Essayez encore ou consultez la solution</span>
+                          </>
+                        )}
                       </div>
-                    )}
-                  </div>
+                    </div>
+                  )}
 
                   {/* Boutons de contrôle */}
                   <div className="flex gap-3 justify-center">
@@ -1620,11 +1729,25 @@ export default function ExpressionsReglesPage() {
             {exerciseLevel === 'beast' && (
               <div className="bg-white rounded-xl p-6 shadow-lg border border-red-200">
                 <div className="flex flex-col sm:flex-row gap-4 items-center justify-between mb-6">
-                  <h3 className="text-lg font-semibold text-red-800 flex items-center gap-2">
-                    <span className="text-2xl">🔥</span>
-                    Beast Mode - Exercice {currentExercise + 1} / {beastExercises.length}
-                    <span className="text-2xl">🔥</span>
-                  </h3>
+                  <div className="flex items-center gap-4">
+                    <h3 className="text-lg font-semibold text-red-800 flex items-center gap-2">
+                      <span className="text-2xl">🔥</span>
+                      Beast Mode - Exercice {currentExercise + 1} / {beastExercises.length}
+                      <span className="text-2xl">🔥</span>
+                    </h3>
+                    {/* Barre de progression Beast Mode */}
+                    <div className="flex items-center gap-2">
+                      <div className="w-32 bg-gray-200 rounded-full h-2">
+                        <div 
+                          className="bg-red-500 h-2 rounded-full transition-all duration-300"
+                          style={{ width: `${((currentExercise + 1) / beastExercises.length) * 100}%` }}
+                        />
+                      </div>
+                      <span className="text-sm text-gray-600 font-medium">
+                        {Math.round(((currentExercise + 1) / beastExercises.length) * 100)}%
+                      </span>
+                    </div>
+                  </div>
                   <div className="flex gap-2">
                     <button
                       onClick={() => {
@@ -1649,70 +1772,55 @@ export default function ExpressionsReglesPage() {
                   </div>
                 </div>
 
-                <div className="space-y-6">
-                  {/* Question */}
-                  <div className="bg-red-50 rounded-lg p-6 border border-red-200">
-                    <h4 className="font-semibold text-red-800 mb-3">
-                      ⚡ Défi ! Simplifier l'expression avec priorités opératoires :
-                    </h4>
-                    <div className="text-2xl font-mono text-red-900 text-center">
+                <div className="space-y-4">
+                  {/* Question Beast Mode avec score intégré */}
+                  <div className="bg-red-50 rounded-lg p-4 border border-red-200">
+                    <div className="flex items-center justify-between mb-3">
+                      <h4 className="font-semibold text-red-800">🔥 Défi Beast Mode :</h4>
+                      <span className="inline-flex items-center gap-1 px-3 py-1 bg-orange-100 text-orange-700 rounded-full text-sm font-semibold">
+                        🔥 {correctAnswersBeast}/{beastExercises.length}
+                      </span>
+                    </div>
+                    <div className="text-xl font-mono text-red-900 text-center">
                       {beastExercises[currentExercise].question}
                     </div>
                   </div>
 
-                  {/* Éditeur de réponse */}
-                  <div className="bg-gradient-to-r from-red-50 to-pink-50 rounded-lg p-6 border-2 border-red-300 shadow-md">
-                    <h4 className="font-semibold text-red-800 mb-4 text-lg">🔥 Votre réponse (Beast Mode) :</h4>
-                    <div className="flex gap-3 items-center">
-                      <input
-                        type="text"
-                        value={userAnswer}
-                        onChange={(e) => setUserAnswer(e.target.value)}
-                        placeholder="Défi difficile ! Tapez votre réponse..."
-                        className="flex-1 px-4 py-3 border-2 border-red-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 font-mono text-lg bg-white shadow-sm text-gray-900 placeholder-gray-500"
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter') {
-                            checkAnswer()
-                          }
-                        }}
-                        autoFocus
-                      />
-                      <button
-                        onClick={checkAnswer}
-                        disabled={!userAnswer.trim()}
-                        className="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-semibold shadow-sm"
-                      >
-                        🔥 Valider
-                      </button>
-                    </div>
-                    
-                    {/* Feedback de réponse */}
-                    {showAnswer && (
-                      <div className={`mt-4 p-4 rounded-lg border ${
-                        answerFeedback === 'correct' 
-                          ? 'bg-green-50 border-green-200' 
-                          : 'bg-red-50 border-red-200'
-                      }`}>
-                        <div className="flex items-center gap-2">
-                          {answerFeedback === 'correct' ? (
-                            <>
-                              <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
-                                <span className="text-white text-sm font-bold">✓</span>
-                              </div>
-                              <span className="text-green-800 font-semibold">Correct ! Bonne réponse</span>
-                            </>
-                          ) : (
-                            <>
-                              <div className="w-5 h-5 bg-red-500 rounded-full flex items-center justify-center">
-                                <span className="text-white text-sm font-bold">✗</span>
-                              </div>
-                              <span className="text-red-800 font-semibold">Incorrect. Essayez encore ou consultez la solution</span>
-                            </>
-                          )}
-                        </div>
+                  {/* Éditeur de réponse Beast Mode */}
+                  <MathEditor
+                    value={userAnswer}
+                    onChange={setUserAnswer}
+                    placeholder="Défi difficile ! Tapez votre réponse..."
+                    onSubmit={checkAnswer}
+                    theme="red"
+                  />
+                  
+                  {/* Feedback de réponse */}
+                  {showAnswer && (
+                    <div className={`p-4 rounded-lg border ${
+                      answerFeedback === 'correct' 
+                        ? 'bg-green-50 border-green-200' 
+                        : 'bg-red-50 border-red-200'
+                    }`}>
+                      <div className="flex items-center gap-2">
+                        {answerFeedback === 'correct' ? (
+                          <>
+                            <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
+                              <span className="text-white text-sm font-bold">✓</span>
+                            </div>
+                            <span className="text-green-800 font-semibold">Correct ! Bonne réponse</span>
+                          </>
+                        ) : (
+                          <>
+                            <div className="w-5 h-5 bg-red-500 rounded-full flex items-center justify-center">
+                              <span className="text-white text-sm font-bold">✗</span>
+                            </div>
+                            <span className="text-red-800 font-semibold">Incorrect. Essayez encore ou consultez la solution</span>
+                          </>
+                        )}
                       </div>
-                    )}
-                  </div>
+                    </div>
+                  )}
 
                   {/* Boutons de contrôle */}
                   <div className="flex gap-3 justify-center">
@@ -1791,6 +1899,18 @@ export default function ExpressionsReglesPage() {
             {/* Règles de calcul Multiplication */}
             <div className="bg-gradient-to-br from-orange-50 to-amber-50 rounded-xl p-8 border border-orange-200">
               <h2 className="text-2xl font-bold text-orange-800 mb-6">✖️ Règle de base</h2>
+              
+              {/* Règles essentielles en haut */}
+              <div className="bg-white rounded-lg p-6 border border-orange-100 mb-6">
+                <h4 className="font-semibold text-orange-800 mb-4">✅ À retenir</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-2">
+                  <div className="text-orange-700">• <strong>3 × x = 3x</strong> (pas de signe ×)</div>
+                  <div className="text-orange-700">• <strong>x × y = xy</strong> (ordre alphabétique)</div>
+                  <div className="text-orange-700">• <strong>x × x = x²</strong> (puissances)</div>
+                  <div className="text-orange-700">• <strong>2x × 3y = 6xy</strong> (coefficients)</div>
+                  <div className="text-orange-700">• <strong>2xy × 2x = 4x²y</strong> (variables multiples)</div>
+                </div>
+              </div>
               
               <div className="space-y-6">
                 <div className="bg-white rounded-lg p-6 border border-orange-100">
@@ -1996,22 +2116,7 @@ export default function ExpressionsReglesPage() {
               </div>
             </div>
 
-            {/* Résumé */}
-            <div className="bg-gradient-to-br from-purple-50 to-indigo-50 rounded-xl p-8 border border-purple-200">
-              <h2 className="text-2xl font-bold text-purple-800 mb-6">📝 Résumé des règles</h2>
-              
-              <div className="bg-white rounded-lg p-6 border border-purple-100">
-                <h4 className="font-semibold text-purple-800 mb-4">✅ À retenir</h4>
-                <ul className="space-y-2 text-purple-700">
-                  <li>• <strong>3 × x = 3x</strong> (pas de signe ×)</li>
-                  <li>• <strong>x × y = xy</strong> (ordre alphabétique)</li>
-                  <li>• <strong>x × x = x²</strong> (puissances)</li>
-                  <li>• <strong>2x × 3y = 6xy</strong> (coefficients)</li>
-                  <li>• <strong>x² × x³ = x⁵</strong> (lettres avec puissances)</li>
-                  <li>• <strong>x² × x = x³</strong> (addition des puissances)</li>
-                </ul>
-              </div>
-            </div>
+
           </div>
         )}
 
@@ -2021,100 +2126,163 @@ export default function ExpressionsReglesPage() {
             {/* Sélecteur de niveau */}
             <div className="bg-white rounded-xl p-6 shadow-lg border border-gray-200">
               <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
-                <h2 className="text-xl font-bold text-gray-800">Exercices - Multiplication</h2>
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => {
-                      setExerciseLevel('normal')
-                      setCurrentExercise(0)
-                      resetExercise()
-                    }}
-                    className="px-4 py-2 rounded-lg font-medium bg-blue-600 text-white"
-                  >
-                    📝 Normal
-                  </button>
+                <div className="flex items-center gap-4">
+                  <h2 className="text-xl font-bold text-gray-800">Exercices - Multiplication</h2>
+                  
+                  {/* Compteur de bonnes réponses - Boutons cliquables */}
+                  <div className="flex gap-3 items-center">
+                    <button
+                      onClick={() => {
+                        setExerciseLevel('normal')
+                        setCurrentExercise(0)
+                        resetExercise()
+                      }}
+                      className={`flex items-center gap-2 px-4 py-2 rounded-lg text-base font-bold shadow-md transition-colors ${
+                        exerciseLevel === 'normal' 
+                          ? 'bg-blue-600 text-white' 
+                          : 'bg-blue-500 text-white hover:bg-blue-600'
+                      }`}
+                    >
+                      <span className="text-xl">📝</span>
+                      Normal: {correctAnswersMultiNormal}/{normalMultiplicationExercises.length}
+                    </button>
+                    <button
+                      onClick={() => {
+                        setExerciseLevel('beast')
+                        setCurrentExercise(0)
+                        resetExercise()
+                      }}
+                      className={`flex items-center gap-2 px-4 py-2 rounded-lg text-base font-bold shadow-md transition-colors ${
+                        exerciseLevel === 'beast' 
+                          ? 'bg-red-600 text-white' 
+                          : 'bg-red-500 text-white hover:bg-red-600'
+                      }`}
+                    >
+                      <span className="text-xl">🔥</span>
+                      Beast: {correctAnswersMultiBeast}/{beastMultiplicationExercises.length}
+                    </button>
+                    {showIncrementMulti && (
+                      <div className="flex items-center gap-2 px-3 py-1 bg-green-500 text-white rounded-lg text-sm font-bold animate-pulse">
+                        <span className="text-lg">✅</span>
+                        +1 !
+                      </div>
+                    )}
+                    
+                    {/* Bouton de réinitialisation des compteurs */}
+                    <button
+                      onClick={resetMultiCounters}
+                      className="px-3 py-2 rounded-lg font-medium transition-colors bg-gray-500 text-white hover:bg-gray-600"
+                      title="Réinitialiser les compteurs"
+                    >
+                      <RotateCcw size={18} />
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
 
-            {/* Exercices Multiplication */}
-            <div className="bg-white rounded-xl p-8 shadow-lg border border-gray-200">
-              <div className="flex flex-col sm:flex-row gap-4 items-center justify-between mb-6">
-                <h3 className="text-lg font-semibold text-gray-800">
-                  📝 Exercices Normaux
-                </h3>
-                <div className="text-sm text-gray-600">
-                  Exercice {currentExercise + 1} sur {normalMultiplicationExercises.length}
+            {/* Exercices Normaux */}
+            {exerciseLevel === 'normal' && (
+              <div className="bg-white rounded-xl p-6 shadow-lg border border-gray-200">
+                <div className="flex flex-col sm:flex-row gap-4 items-center justify-between mb-6">
+                  <div className="flex items-center gap-4">
+                    <h3 className="text-lg font-semibold text-blue-800">
+                      Exercice {currentExercise + 1} / {normalMultiplicationExercises.length}
+                    </h3>
+                    {/* Barre de progression */}
+                    <div className="flex items-center gap-2">
+                      <div className="w-32 bg-gray-200 rounded-full h-2">
+                        <div 
+                          className="bg-blue-500 h-2 rounded-full transition-all duration-300"
+                          style={{ width: `${((currentExercise + 1) / normalMultiplicationExercises.length) * 100}%` }}
+                        />
+                      </div>
+                      <span className="text-sm text-gray-600 font-medium">
+                        {Math.round(((currentExercise + 1) / normalMultiplicationExercises.length) * 100)}%
+                      </span>
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => {
+                        setCurrentExercise(prev => Math.max(prev - 1, 0))
+                        resetExercise()
+                      }}
+                      disabled={currentExercise === 0}
+                      className="px-3 py-1 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 disabled:opacity-50"
+                    >
+                      Précédent
+                    </button>
+                    <button
+                      onClick={() => {
+                        setCurrentExercise(prev => Math.min(prev + 1, normalMultiplicationExercises.length - 1))
+                        resetExercise()
+                      }}
+                      disabled={currentExercise === normalMultiplicationExercises.length - 1}
+                      className="px-3 py-1 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 disabled:opacity-50"
+                    >
+                      Suivant
+                    </button>
+                  </div>
                 </div>
-              </div>
 
-              {(() => {
-                const exercises = normalMultiplicationExercises
-                const currentEx = exercises[currentExercise]
+                {(() => {
+                  const exercises = normalMultiplicationExercises
+                  const currentEx = exercises[currentExercise]
                 
                 return (
                   <div className="space-y-6">
-                    {/* Question */}
+                    {/* Question avec score intégré */}
                     <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-lg p-6 border border-amber-200">
-                      <h4 className="text-lg font-semibold text-amber-800 mb-4">Question :</h4>
+                      <div className="flex items-center justify-between mb-4">
+                        <h4 className="text-lg font-semibold text-amber-800">Question :</h4>
+                        <span className="inline-flex items-center gap-1 px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-semibold">
+                          🎯 {correctAnswersMultiNormal}/{normalMultiplicationExercises.length}
+                        </span>
+                      </div>
                       <div className="text-2xl font-mono text-center bg-white p-4 rounded-lg border border-amber-300 text-gray-900">
                         {currentEx.question}
                       </div>
                     </div>
 
-                    {/* Éditeur de réponse */}
-                    <div className="bg-gradient-to-r from-orange-50 to-amber-50 rounded-lg p-6 border-2 border-orange-300 shadow-md">
+                    {/* Éditeur de réponse mathématique Multiplication */}
+                    <div className="mb-4">
                       <h4 className="font-semibold text-orange-800 mb-4 text-lg">✖️ Votre réponse (Multiplication) :</h4>
-                      <div className="flex gap-3 items-center">
-                        <input
-                          type="text"
-                          value={userAnswer}
-                          onChange={(e) => setUserAnswer(e.target.value)}
-                          placeholder="Multipliez et simplifiez... (ex: 6x²)"
-                          className="flex-1 px-4 py-3 border-2 border-orange-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 font-mono text-lg bg-white shadow-sm text-gray-900 placeholder-gray-500"
-                          onKeyDown={(e) => {
-                            if (e.key === 'Enter') {
-                              checkAnswer()
-                            }
-                          }}
-                          autoFocus
-                        />
-                        <button
-                          onClick={checkAnswer}
-                          disabled={!userAnswer.trim()}
-                          className="px-6 py-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-semibold shadow-sm"
-                        >
-                          ✖️ Valider
-                        </button>
-                      </div>
-                      
-                      {/* Feedback de réponse */}
-                      {showAnswer && (
-                        <div className={`mt-4 p-4 rounded-lg border ${
-                          answerFeedback === 'correct' 
-                            ? 'bg-green-50 border-green-200' 
-                            : 'bg-red-50 border-red-200'
-                        }`}>
-                          <div className="flex items-center gap-2">
-                            {answerFeedback === 'correct' ? (
-                              <>
-                                <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
-                                  <span className="text-white text-sm font-bold">✓</span>
-                                </div>
-                                <span className="text-green-800 font-semibold">Correct ! Bonne réponse</span>
-                              </>
-                            ) : (
-                              <>
-                                <div className="w-5 h-5 bg-red-500 rounded-full flex items-center justify-center">
-                                  <span className="text-white text-sm font-bold">✗</span>
-                                </div>
-                                <span className="text-red-800 font-semibold">Incorrect. Essayez encore ou consultez la solution</span>
-                              </>
-                            )}
-                          </div>
-                        </div>
-                      )}
+                      <MathEditor
+                        value={userAnswer}
+                        onChange={setUserAnswer}
+                        placeholder="Multipliez et simplifiez... (ex: 6x²)"
+                        onSubmit={checkAnswer}
+                        theme="orange"
+                      />
                     </div>
+                    
+                    {/* Feedback de réponse */}
+                    {showAnswer && (
+                      <div className={`p-4 rounded-lg border ${
+                        answerFeedback === 'correct' 
+                          ? 'bg-green-50 border-green-200' 
+                          : 'bg-red-50 border-red-200'
+                      }`}>
+                        <div className="flex items-center gap-2">
+                          {answerFeedback === 'correct' ? (
+                            <>
+                              <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
+                                <span className="text-white text-sm font-bold">✓</span>
+                              </div>
+                              <span className="text-green-800 font-semibold">Correct ! Bonne réponse</span>
+                            </>
+                          ) : (
+                            <>
+                              <div className="w-5 h-5 bg-red-500 rounded-full flex items-center justify-center">
+                                <span className="text-white text-sm font-bold">✗</span>
+                              </div>
+                              <span className="text-red-800 font-semibold">Incorrect. Essayez encore ou consultez la solution</span>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    )}
 
                     {/* Boutons d'action */}
                     <div className="flex flex-wrap gap-3 justify-center">
@@ -2250,7 +2418,194 @@ export default function ExpressionsReglesPage() {
                   </div>
                 )
               })()}
-            </div>
+              </div>
+            )}
+
+            {/* Exercices Beast Mode */}
+            {exerciseLevel === 'beast' && (
+              <div className="bg-white rounded-xl p-6 shadow-lg border border-gray-200">
+                <div className="flex flex-col sm:flex-row gap-4 items-center justify-between mb-6">
+                  <div className="flex items-center gap-4">
+                    <h3 className="text-lg font-semibold text-red-800">
+                      Exercice {currentExercise + 1} / {beastMultiplicationExercises.length}
+                    </h3>
+                    {/* Barre de progression */}
+                    <div className="flex items-center gap-2">
+                      <div className="w-32 bg-gray-200 rounded-full h-2">
+                        <div 
+                          className="bg-red-500 h-2 rounded-full transition-all duration-300"
+                          style={{ width: `${((currentExercise + 1) / beastMultiplicationExercises.length) * 100}%` }}
+                        />
+                      </div>
+                      <span className="text-sm text-gray-600 font-medium">
+                        {Math.round(((currentExercise + 1) / beastMultiplicationExercises.length) * 100)}%
+                      </span>
+                    </div>
+                  </div>
+                                     <div className="flex gap-2">
+                     <button
+                       onClick={() => {
+                         setCurrentExercise(prev => Math.max(prev - 1, 0))
+                         resetExercise()
+                       }}
+                       disabled={currentExercise === 0}
+                       className="px-3 py-1 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 disabled:opacity-50"
+                     >
+                       Précédent
+                     </button>
+                     <button
+                       onClick={() => {
+                         setCurrentExercise(prev => Math.min(prev + 1, beastMultiplicationExercises.length - 1))
+                         resetExercise()
+                       }}
+                       disabled={currentExercise === beastMultiplicationExercises.length - 1}
+                       className="px-3 py-1 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 disabled:opacity-50"
+                     >
+                       Suivant
+                     </button>
+                   </div>
+                </div>
+
+                {(() => {
+                  const exercises = beastMultiplicationExercises
+                  const currentEx = exercises[currentExercise]
+                  
+                  return (
+                                         <div className="space-y-6">
+                       {/* Question Beast Mode avec score intégré */}
+                       <div className="bg-gradient-to-r from-red-50 to-orange-50 rounded-lg p-6 border border-red-200">
+                         <div className="flex items-center justify-between mb-4">
+                           <h4 className="text-lg font-semibold text-red-800">🔥 Défi Beast Mode :</h4>
+                           <span className="inline-flex items-center gap-1 px-3 py-1 bg-orange-100 text-orange-700 rounded-full text-sm font-semibold">
+                             🔥 {correctAnswersMultiBeast}/{beastMultiplicationExercises.length}
+                           </span>
+                         </div>
+                         <div className="text-2xl font-mono text-center bg-white p-4 rounded-lg border border-red-300 text-gray-900">
+                           {currentEx.question}
+                         </div>
+                       </div>
+
+                      {/* Éditeur de réponse mathématique Beast Mode */}
+                      <div className="mb-4">
+                        <h4 className="font-semibold text-red-800 mb-4 text-lg">🔥 Votre réponse (Beast Mode) :</h4>
+                        <MathEditor
+                          value={userAnswer}
+                          onChange={setUserAnswer}
+                          placeholder="Multipliez et simplifiez... (ex: 6x²)"
+                          onSubmit={checkAnswer}
+                          theme="red"
+                        />
+                      </div>
+                      
+                      {/* Feedback de réponse */}
+                      {showAnswer && (
+                        <div className={`p-4 rounded-lg border ${
+                          answerFeedback === 'correct' 
+                            ? 'bg-green-50 border-green-200' 
+                            : 'bg-red-50 border-red-200'
+                        }`}>
+                          <div className="flex items-center gap-2">
+                            {answerFeedback === 'correct' ? (
+                              <>
+                                <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
+                                  <span className="text-white text-sm font-bold">✓</span>
+                                </div>
+                                <span className="text-green-800 font-semibold">Correct ! Bonne réponse</span>
+                              </>
+                            ) : (
+                              <>
+                                <div className="w-5 h-5 bg-red-500 rounded-full flex items-center justify-center">
+                                  <span className="text-white text-sm font-bold">✗</span>
+                                </div>
+                                <span className="text-red-800 font-semibold">Incorrect. Essayez encore ou consultez la solution</span>
+                              </>
+                            )}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Boutons d'action */}
+                      <div className="flex flex-wrap gap-3 justify-center">
+                        <button
+                          onClick={() => setShowSolution(!showSolution)}
+                          className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors flex items-center gap-2"
+                        >
+                          <Calculator size={16} />
+                          {showSolution ? 'Masquer' : 'Voir'} la solution
+                        </button>
+                        
+                        <button
+                          onClick={resetExercise}
+                          className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors flex items-center gap-2"
+                        >
+                          <RotateCcw size={16} />
+                          Recommencer
+                        </button>
+                      </div>
+
+                      {/* Solution */}
+                      {showSolution && (
+                        <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg p-6 border border-green-200">
+                          <h4 className="text-lg font-semibold text-green-800 mb-4">Solution :</h4>
+                          
+                          <div className="space-y-3">
+                            {currentEx.steps.map((step, index) => {
+                              const stepColors = [
+                                'border-blue-300 bg-blue-50',
+                                'border-orange-300 bg-orange-50',
+                                'border-green-300 bg-green-50',
+                                'border-purple-300 bg-purple-50',
+                                'border-pink-300 bg-pink-50'
+                              ]
+                              
+                              return (
+                                <div key={index} className={`p-4 rounded-lg border ${stepColors[index % stepColors.length]}`}>
+                                  <div className="flex items-center gap-3">
+                                    <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center font-bold text-gray-700 border-2 border-gray-300">
+                                      {index + 1}
+                                    </div>
+                                    <div>
+                                      <div className="font-medium text-gray-700">{step.text}</div>
+                                      <div className={`text-xl font-mono mt-1 ${step.color}`}>{step.expr}</div>
+                                    </div>
+                                  </div>
+                                </div>
+                              )
+                            })}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Navigation */}
+                      <div className="flex justify-between items-center pt-4">
+                        {currentExercise > 0 && (
+                          <button
+                            onClick={() => {
+                              setCurrentExercise(currentExercise - 1)
+                              resetExercise()
+                            }}
+                            className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors"
+                          >
+                            ← Exercice précédent
+                          </button>
+                        )}
+                        {currentExercise < beastMultiplicationExercises.length - 1 && (
+                          <button
+                            onClick={() => {
+                              setCurrentExercise(currentExercise + 1)
+                              resetExercise()
+                            }}
+                            className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors ml-auto"
+                          >
+                            Exercice suivant →
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  )
+                })()}
+              </div>
+            )}
           </div>
         )}
       </div>

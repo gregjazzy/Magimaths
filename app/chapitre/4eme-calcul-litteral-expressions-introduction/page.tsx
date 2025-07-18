@@ -72,38 +72,7 @@ export default function ExpressionsIntroductionPage() {
                 </div>
               </div>
 
-              <div className="bg-white rounded-lg p-6 border border-blue-100">
-                <h3 className="text-lg font-semibold text-gray-800 mb-4">Vocabulaire important</h3>
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div className="bg-green-50 p-4 rounded-lg border border-green-200">
-                    <h4 className="font-semibold text-green-800 mb-2">Variable</h4>
-                    <p className="text-green-700 text-sm">
-                      La lettre qui représente un nombre inconnu (x, y, a, b...)
-                    </p>
-                  </div>
-                  
-                  <div className="bg-orange-50 p-4 rounded-lg border border-orange-200">
-                    <h4 className="font-semibold text-orange-800 mb-2">Coefficient</h4>
-                    <p className="text-orange-700 text-sm">
-                      Le nombre devant la variable (dans 3x, le coefficient est 3)
-                    </p>
-                  </div>
-                  
-                  <div className="bg-indigo-50 p-4 rounded-lg border border-indigo-200">
-                    <h4 className="font-semibold text-indigo-800 mb-2">Terme</h4>
-                    <p className="text-indigo-700 text-sm">
-                      Chaque élément séparé par + ou - (3x, 2, -5y...)
-                    </p>
-                  </div>
-                  
-                  <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
-                    <h4 className="font-semibold text-yellow-800 mb-2">Constante</h4>
-                    <p className="text-yellow-700 text-sm">
-                      Un nombre seul, sans variable (le 2 dans 3x + 2)
-                    </p>
-                  </div>
-                </div>
-              </div>
+
             </div>
           </div>
         </div>

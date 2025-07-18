@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { ArrowLeft, BookOpen, Target, Zap } from 'lucide-react'
+import { ArrowLeft, BookOpen, Target, Zap, RotateCcw } from 'lucide-react'
 import Link from 'next/link'
 
 export default function DeveloppementPage() {
@@ -17,6 +17,18 @@ export default function DeveloppementPage() {
   const [advancedScore, setAdvancedScore] = useState(0)
   const [devAnimationStep, setDevAnimationStep] = useState(0)
   const [devAnimating, setDevAnimating] = useState(false)
+  const [devAnimationStep2, setDevAnimationStep2] = useState(0)
+  const [devAnimating2, setDevAnimating2] = useState(false)
+  
+  // Compteurs de bonnes/mauvaises réponses
+  const [correctAnswers, setCorrectAnswers] = useState(0)
+  const [wrongAnswers, setWrongAnswers] = useState(0)
+  const [correctAnswersAdvanced, setCorrectAnswersAdvanced] = useState(0)
+  const [wrongAnswersAdvanced, setWrongAnswersAdvanced] = useState(0)
+  const [answerFeedback, setAnswerFeedback] = useState<'correct' | 'incorrect' | null>(null)
+  const [showFeedback, setShowFeedback] = useState(false)
+  const [advancedAnswerFeedback, setAdvancedAnswerFeedback] = useState<'correct' | 'incorrect' | null>(null)
+  const [showAdvancedFeedback, setShowAdvancedFeedback] = useState(false)
 
 
   const exercises = [
@@ -66,49 +78,49 @@ export default function DeveloppementPage() {
       ]
     },
     
-    // Niveau 2 : Développement avec facteurs variables
+    // Niveau 2 : Développement avec facteurs variables et variables dans parenthèses
     {
       id: 'dev5',
-      question: 'Développer : 3x(2 + 1)',
-      answer: '6x + 3x',
+      question: 'Développer : 3x(2 + y)',
+      answer: '6x + 3xy',
       steps: [
-        '3x(2 + 1)',
-        '3x(2 + 1) = 3x × 2 + 3x × 1',
-        '3x(2 + 1) = 6x + 3x',
-        'Résultat : 6x + 3x'
+        '3x(2 + y)',
+        '3x(2 + y) = 3x × 2 + 3x × y',
+        '3x(2 + y) = 6x + 3xy',
+        'Résultat : 6x + 3xy'
       ]
     },
     {
       id: 'dev6',
-      question: 'Développer : 2y(3 + 4)',
-      answer: '6y + 8y',
+      question: 'Développer : x(3 + 2y)',
+      answer: '3x + 2xy',
       steps: [
-        '2y(3 + 4)',
-        '2y(3 + 4) = 2y × 3 + 2y × 4',
-        '2y(3 + 4) = 6y + 8y',
-        'Résultat : 6y + 8y'
+        'x(3 + 2y)',
+        'x(3 + 2y) = x × 3 + x × 2y',
+        'x(3 + 2y) = 3x + 2xy',
+        'Résultat : 3x + 2xy'
       ]
     },
     {
       id: 'dev7',
-      question: 'Développer : 5a(1 + 2)',
-      answer: '5a + 10a',
+      question: 'Développer : 2y(a + 3)',
+      answer: '2ya + 6y',
       steps: [
-        '5a(1 + 2)',
-        '5a(1 + 2) = 5a × 1 + 5a × 2',
-        '5a(1 + 2) = 5a + 10a',
-        'Résultat : 5a + 10a'
+        '2y(a + 3)',
+        '2y(a + 3) = 2y × a + 2y × 3',
+        '2y(a + 3) = 2ya + 6y',
+        'Résultat : 2ya + 6y'
       ]
     },
     {
       id: 'dev8',
-      question: 'Développer : 4b(2 + 3)',
-      answer: '8b + 12b',
+      question: 'Développer : 4(b + 2x)',
+      answer: '4b + 8x',
       steps: [
-        '4b(2 + 3)',
-        '4b(2 + 3) = 4b × 2 + 4b × 3',
-        '4b(2 + 3) = 8b + 12b',
-        'Résultat : 8b + 12b'
+        '4(b + 2x)',
+        '4(b + 2x) = 4 × b + 4 × 2x',
+        '4(b + 2x) = 4b + 8x',
+        'Résultat : 4b + 8x'
       ]
     },
     
@@ -158,181 +170,181 @@ export default function DeveloppementPage() {
       ]
     },
     
-    // Niveau 4 : Développements avec coefficients multiples
+    // Niveau 4 : Développements avec coefficients multiples et soustractions
     {
       id: 'dev13',
-      question: 'Développer : 2(3x + 4)',
-      answer: '6x + 8',
+      question: 'Développer : 2(3x - 4)',
+      answer: '6x - 8',
       steps: [
-        '2(3x + 4)',
-        '2(3x + 4) = 2 × 3x + 2 × 4',
-        '2(3x + 4) = 6x + 8',
-        'Résultat : 6x + 8'
+        '2(3x - 4)',
+        '2(3x - 4) = 2 × 3x + 2 × (-4)',
+        '2(3x - 4) = 6x - 8',
+        'Résultat : 6x - 8'
       ]
     },
     {
       id: 'dev14',
-      question: 'Développer : 3(2y + 5)',
-      answer: '6y + 15',
+      question: 'Développer : 3x(2y - 5)',
+      answer: '6xy - 15x',
       steps: [
-        '3(2y + 5)',
-        '3(2y + 5) = 3 × 2y + 3 × 5',
-        '3(2y + 5) = 6y + 15',
-        'Résultat : 6y + 15'
+        '3x(2y - 5)',
+        '3x(2y - 5) = 3x × 2y + 3x × (-5)',
+        '3x(2y - 5) = 6xy - 15x',
+        'Résultat : 6xy - 15x'
       ]
     },
     {
       id: 'dev15',
-      question: 'Développer : 4(5a + 2)',
-      answer: '20a + 8',
+      question: 'Développer : y(5a - 2x)',
+      answer: '5ay - 2xy',
       steps: [
-        '4(5a + 2)',
-        '4(5a + 2) = 4 × 5a + 4 × 2',
-        '4(5a + 2) = 20a + 8',
-        'Résultat : 20a + 8'
+        'y(5a - 2x)',
+        'y(5a - 2x) = y × 5a + y × (-2x)',
+        'y(5a - 2x) = 5ay - 2xy',
+        'Résultat : 5ay - 2xy'
       ]
     },
     {
       id: 'dev16',
-      question: 'Développer : 5(2b + 3)',
-      answer: '10b + 15',
+      question: 'Développer : 4x(3 - 2y)',
+      answer: '12x - 8xy',
       steps: [
-        '5(2b + 3)',
-        '5(2b + 3) = 5 × 2b + 5 × 3',
-        '5(2b + 3) = 10b + 15',
-        'Résultat : 10b + 15'
+        '4x(3 - 2y)',
+        '4x(3 - 2y) = 4x × 3 + 4x × (-2y)',
+        '4x(3 - 2y) = 12x - 8xy',
+        'Résultat : 12x - 8xy'
       ]
     },
     
-    // Niveau 5 : Développements avec variables au carré
+    // Niveau 5 : Développements avec variables au carré et soustractions
     {
       id: 'dev17',
-      question: 'Développer : x(x + 4)',
-      answer: 'x² + 4x',
+      question: 'Développer : x(2x - 3)',
+      answer: '2x² - 3x',
       steps: [
-        'x(x + 4)',
-        'x(x + 4) = x × x + x × 4',
-        'x(x + 4) = x² + 4x',
-        'Résultat : x² + 4x'
+        'x(2x - 3)',
+        'x(2x - 3) = x × 2x + x × (-3)',
+        'x(2x - 3) = 2x² - 3x',
+        'Résultat : 2x² - 3x'
       ]
     },
     {
       id: 'dev18',
-      question: 'Développer : 3y(y + 2)',
-      answer: '3y² + 6y',
+      question: 'Développer : 3y(y - 2x)',
+      answer: '3y² - 6xy',
       steps: [
-        '3y(y + 2)',
-        '3y(y + 2) = 3y × y + 3y × 2',
-        '3y(y + 2) = 3y² + 6y',
-        'Résultat : 3y² + 6y'
+        '3y(y - 2x)',
+        '3y(y - 2x) = 3y × y + 3y × (-2x)',
+        '3y(y - 2x) = 3y² - 6xy',
+        'Résultat : 3y² - 6xy'
       ]
     },
     {
       id: 'dev19',
-      question: 'Développer : a(a + 5)',
-      answer: 'a² + 5a',
+      question: 'Développer : 2a(3a + y)',
+      answer: '6a² + 2ay',
       steps: [
-        'a(a + 5)',
-        'a(a + 5) = a × a + a × 5',
-        'a(a + 5) = a² + 5a',
-        'Résultat : a² + 5a'
+        '2a(3a + y)',
+        '2a(3a + y) = 2a × 3a + 2a × y',
+        '2a(3a + y) = 6a² + 2ay',
+        'Résultat : 6a² + 2ay'
       ]
     },
     {
       id: 'dev20',
-      question: 'Développer : 4b(b + 3)',
-      answer: '4b² + 12b',
+      question: 'Développer : 5x(x - 2y)',
+      answer: '5x² - 10xy',
       steps: [
-        '4b(b + 3)',
-        '4b(b + 3) = 4b × b + 4b × 3',
-        '4b(b + 3) = 4b² + 12b',
-        'Résultat : 4b² + 12b'
+        '5x(x - 2y)',
+        '5x(x - 2y) = 5x × x + 5x × (-2y)',
+        '5x(x - 2y) = 5x² - 10xy',
+        'Résultat : 5x² - 10xy'
       ]
     }
   ]
 
   const advancedExercises = [
-    // Niveau 1 : Expressions simples avec plusieurs variables
+    // Niveau 1 : Expressions simples avec plusieurs variables et soustractions
     {
       id: 'adv1',
-      question: 'Développer : 2a(3b + 4c)',
-      answer: '6ab + 8ac',
+      question: 'Développer : 2a(3b - 4c)',
+      answer: '6ab - 8ac',
       steps: [
-        '2a(3b + 4c)',
-        '2a(3b + 4c) = 2a × 3b + 2a × 4c',
-        '2a(3b + 4c) = 6ab + 8ac',
-        'Résultat : 6ab + 8ac'
+        '2a(3b - 4c)',
+        '2a(3b - 4c) = 2a × 3b + 2a × (-4c)',
+        '2a(3b - 4c) = 6ab - 8ac',
+        'Résultat : 6ab - 8ac'
       ]
     },
     {
       id: 'adv2',
-      question: 'Développer : 3xy(2x + 5y)',
-      answer: '6x²y + 15xy²',
+      question: 'Développer : x(2y - 3z)',
+      answer: '2xy - 3xz',
       steps: [
-        '3xy(2x + 5y)',
-        '3xy(2x + 5y) = 3xy × 2x + 3xy × 5y',
-        '3xy(2x + 5y) = 6x²y + 15xy²',
-        'Résultat : 6x²y + 15xy²'
+        'x(2y - 3z)',
+        'x(2y - 3z) = x × 2y + x × (-3z)',
+        'x(2y - 3z) = 2xy - 3xz',
+        'Résultat : 2xy - 3xz'
       ]
     },
     {
       id: 'adv3',
-      question: 'Développer : 4ab(a + 2b + 3c)',
-      answer: '4a²b + 8ab² + 12abc',
+      question: 'Développer : 3xy(2x - y + 4z)',
+      answer: '6x²y - 3xy² + 12xyz',
       steps: [
-        '4ab(a + 2b + 3c)',
-        '4ab(a + 2b + 3c) = 4ab × a + 4ab × 2b + 4ab × 3c',
-        '4ab(a + 2b + 3c) = 4a²b + 8ab² + 12abc',
-        'Résultat : 4a²b + 8ab² + 12abc'
+        '3xy(2x - y + 4z)',
+        '3xy(2x - y + 4z) = 3xy × 2x + 3xy × (-y) + 3xy × 4z',
+        '3xy(2x - y + 4z) = 6x²y - 3xy² + 12xyz',
+        'Résultat : 6x²y - 3xy² + 12xyz'
       ]
     },
     {
       id: 'adv4',
-      question: 'Développer : 5pq(3p + 2q + 4r)',
-      answer: '15p²q + 10pq² + 20pqr',
+      question: 'Développer : 4ab(2a - 3b + c)',
+      answer: '8a²b - 12ab² + 4abc',
       steps: [
-        '5pq(3p + 2q + 4r)',
-        '5pq(3p + 2q + 4r) = 5pq × 3p + 5pq × 2q + 5pq × 4r',
-        '5pq(3p + 2q + 4r) = 15p²q + 10pq² + 20pqr',
-        'Résultat : 15p²q + 10pq² + 20pqr'
+        '4ab(2a - 3b + c)',
+        '4ab(2a - 3b + c) = 4ab × 2a + 4ab × (-3b) + 4ab × c',
+        '4ab(2a - 3b + c) = 8a²b - 12ab² + 4abc',
+        'Résultat : 8a²b - 12ab² + 4abc'
       ]
     },
     
-    // Niveau 2 : Double distributivité
+    // Niveau 2 : Double distributivité avec soustractions
     {
       id: 'adv5',
-      question: 'Développer et simplifier : 2(3x + 4) + 5(2x + 1)',
-      answer: '16x + 13',
+      question: 'Développer et simplifier : 2x(3 - y) + 5(2x + 1)',
+      answer: '16x - 2xy + 5',
       steps: [
-        '2(3x + 4) + 5(2x + 1)',
-        '2(3x + 4) + 5(2x + 1) = 6x + 8 + 10x + 5',
-        '2(3x + 4) + 5(2x + 1) = 6x + 10x + 8 + 5',
-        '2(3x + 4) + 5(2x + 1) = 16x + 13',
-        'Résultat : 16x + 13'
+        '2x(3 - y) + 5(2x + 1)',
+        '2x(3 - y) + 5(2x + 1) = 6x - 2xy + 10x + 5',
+        '2x(3 - y) + 5(2x + 1) = 6x + 10x - 2xy + 5',
+        '2x(3 - y) + 5(2x + 1) = 16x - 2xy + 5',
+        'Résultat : 16x - 2xy + 5'
       ]
     },
     {
       id: 'adv6',
-      question: 'Développer et simplifier : 3(2a + 5) + 4(3a + 2)',
-      answer: '18a + 23',
+      question: 'Développer et simplifier : 3y(2a - 5) + 4(3a + y)',
+      answer: '6ay - 15y + 12a + 4y',
       steps: [
-        '3(2a + 5) + 4(3a + 2)',
-        '3(2a + 5) + 4(3a + 2) = 6a + 15 + 12a + 8',
-        '3(2a + 5) + 4(3a + 2) = 6a + 12a + 15 + 8',
-        '3(2a + 5) + 4(3a + 2) = 18a + 23',
-        'Résultat : 18a + 23'
+        '3y(2a - 5) + 4(3a + y)',
+        '3y(2a - 5) + 4(3a + y) = 6ay - 15y + 12a + 4y',
+        '3y(2a - 5) + 4(3a + y) = 6ay + 12a - 15y + 4y',
+        '3y(2a - 5) + 4(3a + y) = 6ay + 12a - 11y',
+        'Résultat : 6ay + 12a - 11y'
       ]
     },
     {
       id: 'adv7',
-      question: 'Développer et simplifier : x(2x + 3) + 2x(x + 4)',
-      answer: '4x² + 11x',
+      question: 'Développer et simplifier : x(2x - 3y) + 2y(x + 4)',
+      answer: '2x² - 3xy + 2xy + 8y',
       steps: [
-        'x(2x + 3) + 2x(x + 4)',
-        'x(2x + 3) + 2x(x + 4) = 2x² + 3x + 2x² + 8x',
-        'x(2x + 3) + 2x(x + 4) = 2x² + 2x² + 3x + 8x',
-        'x(2x + 3) + 2x(x + 4) = 4x² + 11x',
-        'Résultat : 4x² + 11x'
+        'x(2x - 3y) + 2y(x + 4)',
+        'x(2x - 3y) + 2y(x + 4) = 2x² - 3xy + 2xy + 8y',
+        'x(2x - 3y) + 2y(x + 4) = 2x² - 3xy + 2xy + 8y',
+        'x(2x - 3y) + 2y(x + 4) = 2x² - xy + 8y',
+        'Résultat : 2x² - xy + 8y'
       ]
     },
     {
@@ -479,10 +491,18 @@ export default function DeveloppementPage() {
   const checkAnswer = () => {
     if (userAnswer.trim() === currentEx.answer) {
       setScore(score + 1)
+      setCorrectAnswers(correctAnswers + 1)
+      setAnswerFeedback('correct')
       setShowAnswer(true)
+      setShowFeedback(true)
+      setTimeout(() => setShowFeedback(false), 3000)
       return true
     } else {
+      setWrongAnswers(wrongAnswers + 1)
+      setAnswerFeedback('incorrect')
       setShowAnswer(true)
+      setShowFeedback(true)
+      setTimeout(() => setShowFeedback(false), 3000)
       return false
     }
   }
@@ -490,12 +510,33 @@ export default function DeveloppementPage() {
   const checkAdvancedAnswer = () => {
     if (advancedUserAnswer.trim() === currentAdvancedEx.answer) {
       setAdvancedScore(advancedScore + 1)
+      setCorrectAnswersAdvanced(correctAnswersAdvanced + 1)
+      setAdvancedAnswerFeedback('correct')
       setShowAdvancedAnswer(true)
+      setShowAdvancedFeedback(true)
+      setTimeout(() => setShowAdvancedFeedback(false), 3000)
       return true
     } else {
+      setWrongAnswersAdvanced(wrongAnswersAdvanced + 1)
+      setAdvancedAnswerFeedback('incorrect')
       setShowAdvancedAnswer(true)
+      setShowAdvancedFeedback(true)
+      setTimeout(() => setShowAdvancedFeedback(false), 3000)
       return false
     }
+  }
+
+  const resetCounters = () => {
+    setCorrectAnswers(0)
+    setWrongAnswers(0)
+    setCorrectAnswersAdvanced(0)
+    setWrongAnswersAdvanced(0)
+    setScore(0)
+    setAdvancedScore(0)
+    setAnswerFeedback(null)
+    setShowFeedback(false)
+    setAdvancedAnswerFeedback(null)
+    setShowAdvancedFeedback(false)
   }
 
   return (
@@ -671,7 +712,97 @@ export default function DeveloppementPage() {
 
                 </div>
 
+                {/* Animation Distributivité 2 */}
+                <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-6 border border-green-200">
+                  <h3 className="text-2xl font-bold text-green-800 mb-6 text-center">🎯 Animation : Distributivité avancée</h3>
+                  
+                  <div className="bg-green-100 p-4 rounded-lg border border-green-200 mb-6">
+                    <p className="text-green-700 font-medium text-center text-lg">
+                      Comment développer <strong>5x(2x - 3)</strong> ?
+                    </p>
+                  </div>
 
+                  <div className="bg-white rounded-lg p-6 border border-green-200">
+                    <div className="flex items-center justify-center gap-4 mb-4">
+                      <h4 className="text-lg font-semibold text-green-800">
+                        Animation : 5x(2x - 3)
+                      </h4>
+                      <button
+                        onClick={() => {
+                          setDevAnimationStep2(0)
+                          setDevAnimating2(true)
+                          setTimeout(() => setDevAnimationStep2(1), 2000)
+                          setTimeout(() => setDevAnimationStep2(2), 4000)
+                          setTimeout(() => setDevAnimationStep2(3), 6000)
+                          setTimeout(() => setDevAnimationStep2(4), 8000)
+                          setTimeout(() => setDevAnimationStep2(5), 10000)
+                          setTimeout(() => setDevAnimating2(false), 11000)
+                        }}
+                        className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium text-sm"
+                      >
+                        {devAnimating2 ? 'Animation en cours...' : 'Démarrer l\'animation'}
+                      </button>
+                    </div>
+                    
+                    <div className="space-y-6 relative min-h-[400px]">
+                      {/* Expression de départ */}
+                      <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                        <div className="font-mono text-2xl text-center text-gray-800 relative">
+                          {/* Expression statique qui reste visible */}
+                          <div className="flex items-center justify-center">
+                            <span className="text-black text-2xl font-semibold">5x(2x - 3)</span>
+                          </div>
+                          
+                          {/* Flèche qui apparaît */}
+                          {devAnimationStep2 >= 1 && (
+                            <div className="absolute top-10 left-1/2 transform -translate-x-1/2 text-4xl text-green-600 animate-pulse">
+                              ↓
+                            </div>
+                          )}
+                        </div>
+                        
+                        {/* Explication */}
+                        {devAnimationStep2 >= 2 && (
+                          <div className="absolute top-20 left-1/2 transform -translate-x-1/2 w-full">
+                            <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
+                              <p className="text-yellow-800 font-semibold text-center">
+                                Le 5x se distribue à chaque terme dans la parenthèse
+                              </p>
+                            </div>
+                          </div>
+                        )}
+                        
+                        {/* Étapes de développement */}
+                        {devAnimationStep2 >= 3 && (
+                          <div className="absolute top-40 left-1/2 transform -translate-x-1/2">
+                            <div className="bg-green-50 p-3 rounded-lg border border-green-200">
+                              <span className="text-green-700 font-bold text-xl font-mono">5x(2x - 3) = 5x × 2x + 5x × (-3)</span>
+                            </div>
+                          </div>
+                        )}
+                        
+                        {devAnimationStep2 >= 4 && (
+                          <div className="absolute top-60 left-1/2 transform -translate-x-1/2">
+                            <div className="bg-purple-50 p-3 rounded-lg border border-purple-200">
+                              <span className="text-purple-700 font-bold text-xl font-mono">5x(2x - 3) = 10x² - 15x</span>
+                            </div>
+                          </div>
+                        )}
+                        
+                        {/* Résultat final */}
+                        {devAnimationStep2 >= 5 && (
+                          <div className="absolute top-80 left-1/2 transform -translate-x-1/2">
+                            <div className="bg-orange-50 p-4 rounded-lg border border-orange-200">
+                              <span className="text-orange-800 font-bold text-3xl animate-bounce font-mono">
+                                Résultat : 10x² - 15x
+                              </span>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
 
                 <div className="bg-white rounded-lg p-6 border border-red-100">
                   <h3 className="text-lg font-semibold text-gray-800 mb-4">Exemples détaillés</h3>
@@ -688,68 +819,6 @@ export default function DeveloppementPage() {
                   </div>
                 </div>
 
-                {/* Nouvelle section : Règle du moins devant la parenthèse */}
-                <div className="bg-gradient-to-br from-orange-50 to-red-50 rounded-xl p-6 border border-orange-200">
-                  <h3 className="text-xl font-bold text-orange-800 mb-6">⚠️ Règle importante : Le moins devant la parenthèse</h3>
-                  
-                  <div className="bg-orange-100 p-4 rounded-lg border border-orange-200 mb-6">
-                    <h4 className="font-semibold text-orange-800 mb-2">Règle fondamentale</h4>
-                    <p className="text-orange-700 font-medium">
-                      Quand il y a un <strong>moins (-)</strong> devant une parenthèse, tous les signes à l'intérieur de la parenthèse <strong>changent</strong> !
-                    </p>
-                  </div>
-
-                  <div className="space-y-4">
-                    <div className="bg-white p-4 rounded-lg border border-orange-200">
-                      <p className="font-semibold text-gray-800 mb-3">📝 Exemples avec le moins devant la parenthèse :</p>
-                      
-                      <div className="space-y-4">
-                        <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-                          <p className="font-semibold text-gray-800 mb-2">Exemple 1 : -(x + 3)</p>
-                          <div className="text-sm text-gray-700 space-y-1 font-mono">
-                            <div>-(x + 3)</div>
-                            <div className="text-orange-600">• Le + devient - et le +3 devient -3</div>
-                            <div>-(x + 3) = -x - 3</div>
-                            <div>• <strong>Résultat : -x - 3</strong></div>
-                          </div>
-                        </div>
-
-                        <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-                          <p className="font-semibold text-gray-800 mb-2">Exemple 2 : -(2x - 5)</p>
-                          <div className="text-sm text-gray-700 space-y-1 font-mono">
-                            <div>-(2x - 5)</div>
-                            <div className="text-orange-600">• Le +2x devient -2x et le -5 devient +5</div>
-                            <div>-(2x - 5) = -2x + 5</div>
-                            <div>• <strong>Résultat : -2x + 5</strong></div>
-                          </div>
-                        </div>
-
-                        <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-                          <p className="font-semibold text-gray-800 mb-2">Exemple 3 : 3 - (x + 4)</p>
-                          <div className="text-sm text-gray-700 space-y-1 font-mono">
-                            <div>3 - (x + 4)</div>
-                            <div className="text-orange-600">• On développe d'abord -(x + 4) = -x - 4</div>
-                            <div>3 - (x + 4) = 3 + (-x - 4)</div>
-                            <div>3 - (x + 4) = 3 - x - 4</div>
-                            <div>3 - (x + 4) = -x - 1</div>
-                            <div>• <strong>Résultat : -x - 1</strong></div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="bg-red-50 p-4 rounded-lg border border-red-200">
-                      <h4 className="font-semibold text-red-800 mb-2">💡 Mémo pour retenir</h4>
-                      <ul className="text-red-700 space-y-2 text-sm">
-                        <li>• <strong>+ devient -</strong> quand il y a un moins devant</li>
-                        <li>• <strong>- devient +</strong> quand il y a un moins devant</li>
-                        <li>• Cette règle s'applique à <strong>tous les termes</strong> dans la parenthèse</li>
-                        <li>• Attention à ne pas oublier de changer <strong>tous les signes</strong> !</li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-
 
               </div>
             </div>
@@ -758,14 +827,119 @@ export default function DeveloppementPage() {
 
         {activeTab === 'exercices' && (
           <div className="space-y-6">
+            {/* Récapitulatif des performances */}
+            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-200">
+              <h3 className="text-2xl font-bold text-blue-800 mb-4 text-center">📊 Récapitulatif des performances</h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="bg-white p-4 rounded-lg border border-blue-100">
+                  <div className="text-center">
+                    <div className="text-3xl font-bold text-blue-600 mb-2">
+                      {correctAnswers + correctAnswersAdvanced}
+                    </div>
+                    <div className="text-blue-800 font-semibold">Bonnes réponses totales</div>
+                  </div>
+                </div>
+                <div className="bg-white p-4 rounded-lg border border-blue-100">
+                  <div className="text-center">
+                    <div className="text-3xl font-bold text-purple-600 mb-2">
+                      {wrongAnswers + wrongAnswersAdvanced}
+                    </div>
+                    <div className="text-purple-800 font-semibold">Erreurs totales</div>
+                  </div>
+                </div>
+                <div className="bg-white p-4 rounded-lg border border-blue-100">
+                  <div className="text-center">
+                    <div className="text-3xl font-bold text-green-600 mb-2">
+                      {(correctAnswers + correctAnswersAdvanced) + (wrongAnswers + wrongAnswersAdvanced) > 0 
+                        ? Math.round(((correctAnswers + correctAnswersAdvanced) / ((correctAnswers + correctAnswersAdvanced) + (wrongAnswers + wrongAnswersAdvanced))) * 100) 
+                        : 0}%
+                    </div>
+                    <div className="text-green-800 font-semibold">Taux de réussite global</div>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="bg-white p-4 rounded-lg border border-blue-100">
+                  <h4 className="font-bold text-blue-800 mb-2">📚 Exercices Basiques</h4>
+                  <div className="flex justify-between items-center">
+                    <span className="text-green-600 font-semibold">✅ {correctAnswers}</span>
+                    <span className="text-red-600 font-semibold">❌ {wrongAnswers}</span>
+                    <span className="text-blue-600 font-semibold">
+                      {correctAnswers + wrongAnswers > 0 
+                        ? Math.round((correctAnswers / (correctAnswers + wrongAnswers)) * 100) 
+                        : 0}%
+                    </span>
+                  </div>
+                </div>
+                <div className="bg-white p-4 rounded-lg border border-blue-100">
+                  <h4 className="font-bold text-purple-800 mb-2">⚡ Exercices Avancés</h4>
+                  <div className="flex justify-between items-center">
+                    <span className="text-green-600 font-semibold">✅ {correctAnswersAdvanced}</span>
+                    <span className="text-red-600 font-semibold">❌ {wrongAnswersAdvanced}</span>
+                    <span className="text-purple-600 font-semibold">
+                      {correctAnswersAdvanced + wrongAnswersAdvanced > 0 
+                        ? Math.round((correctAnswersAdvanced / (correctAnswersAdvanced + wrongAnswersAdvanced)) * 100) 
+                        : 0}%
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
             <div className="bg-white rounded-xl p-8 shadow-lg border border-gray-200">
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-xl font-bold text-gray-800">Exercices - Développement</h2>
-                <div className="text-right">
-                  <div className="text-sm text-gray-600">Score</div>
-                  <div className="text-2xl font-bold text-red-600">{score}</div>
+                <div className="flex items-center gap-4">
+                  <div className="bg-green-100 px-4 py-2 rounded-lg border border-green-200">
+                    <span className="text-green-800 font-semibold">✅ Bonnes</span>
+                    <span className="text-green-900 font-bold ml-2 text-xl">{correctAnswers}</span>
+                  </div>
+                  <div className="bg-red-100 px-4 py-2 rounded-lg border border-red-200">
+                    <span className="text-red-800 font-semibold">❌ Mauvaises</span>
+                    <span className="text-red-900 font-bold ml-2 text-xl">{wrongAnswers}</span>
+                  </div>
+                  <div className="bg-blue-100 px-4 py-2 rounded-lg border border-blue-200">
+                    <span className="text-blue-800 font-semibold">🏆 Score</span>
+                    <span className="text-blue-900 font-bold ml-2 text-xl">{score}</span>
+                  </div>
+                  <div className="bg-orange-100 px-4 py-2 rounded-lg border border-orange-200">
+                    <span className="text-orange-800 font-semibold">📊 Taux de réussite</span>
+                    <span className="text-orange-900 font-bold ml-2 text-xl">
+                      {correctAnswers + wrongAnswers > 0 
+                        ? Math.round((correctAnswers / (correctAnswers + wrongAnswers)) * 100) 
+                        : 0}%
+                    </span>
+                  </div>
+                  <div className="bg-gray-100 px-4 py-2 rounded-lg border border-gray-200">
+                    <span className="text-gray-800 font-semibold">📚 Difficulté</span>
+                    <span className="text-gray-900 font-bold ml-2">★★★☆☆</span>
+                  </div>
+                  <button
+                    onClick={resetCounters}
+                    className="bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded-lg border border-gray-300 transition-colors"
+                    title="Réinitialiser les compteurs"
+                  >
+                    <div className="flex items-center gap-2">
+                      <RotateCcw size={16} className="text-gray-600" />
+                      <span className="text-gray-800 font-semibold">Reset</span>
+                    </div>
+                  </button>
                 </div>
               </div>
+
+              {/* Feedback temporaire */}
+              {showFeedback && (
+                <div className="text-center mb-6">
+                  <span className={`inline-block px-4 py-2 rounded-lg font-semibold text-sm animate-pulse ${
+                    answerFeedback === 'correct' 
+                      ? 'bg-green-100 text-green-700' 
+                      : 'bg-red-100 text-red-700'
+                  }`}>
+                    {answerFeedback === 'correct' ? '✅ Bonne réponse !' : '❌ Réponse incorrecte'}
+                  </span>
+                </div>
+              )}
 
               {/* Sub-tabs for Exercices */}
               <div className="flex gap-2 mb-6">
@@ -804,6 +978,8 @@ export default function DeveloppementPage() {
                                 setCurrentExercise(currentExercise > 0 ? currentExercise - 1 : exercises.length - 1)
                                 setUserAnswer('')
                                 setShowAnswer(false)
+                                setAnswerFeedback(null)
+                                setShowFeedback(false)
                               }}
                               disabled={currentExercise === 0}
                               className={`px-3 py-2 text-white rounded-lg font-semibold text-sm ${
@@ -819,6 +995,8 @@ export default function DeveloppementPage() {
                                 setCurrentExercise(currentExercise + 1)
                                 setUserAnswer('')
                                 setShowAnswer(false)
+                                setAnswerFeedback(null)
+                                setShowFeedback(false)
                               }}
                               disabled={currentExercise === exercises.length - 1}
                               className={`px-3 py-2 text-white rounded-lg font-semibold text-sm ${
@@ -947,14 +1125,40 @@ export default function DeveloppementPage() {
                       Exercices avancés avec développements multiples, puissances élevées et simplifications complexes
                     </p>
                     <div className="flex items-center justify-center gap-4">
-                      <div className="bg-purple-100 px-4 py-2 rounded-lg">
+                      <div className="bg-green-100 px-4 py-2 rounded-lg border border-green-200">
+                        <span className="text-green-800 font-semibold">✅ Bonnes</span>
+                        <span className="text-green-900 font-bold ml-2 text-xl">{correctAnswersAdvanced}</span>
+                      </div>
+                      <div className="bg-red-100 px-4 py-2 rounded-lg border border-red-200">
+                        <span className="text-red-800 font-semibold">❌ Mauvaises</span>
+                        <span className="text-red-900 font-bold ml-2 text-xl">{wrongAnswersAdvanced}</span>
+                      </div>
+                      <div className="bg-purple-100 px-4 py-2 rounded-lg border border-purple-200">
                         <span className="text-purple-800 font-semibold">🏆 Score Expert</span>
                         <span className="text-purple-900 font-bold ml-2 text-xl">{advancedScore}</span>
                       </div>
-                      <div className="bg-purple-100 px-4 py-2 rounded-lg">
-                        <span className="text-purple-800 font-semibold">📊 Difficulté</span>
-                        <span className="text-purple-900 font-bold ml-2">★★★★★</span>
+                      <div className="bg-blue-100 px-4 py-2 rounded-lg border border-blue-200">
+                        <span className="text-blue-800 font-semibold">📊 Taux de réussite</span>
+                        <span className="text-blue-900 font-bold ml-2 text-xl">
+                          {correctAnswersAdvanced + wrongAnswersAdvanced > 0 
+                            ? Math.round((correctAnswersAdvanced / (correctAnswersAdvanced + wrongAnswersAdvanced)) * 100) 
+                            : 0}%
+                        </span>
                       </div>
+                      <div className="bg-yellow-100 px-4 py-2 rounded-lg border border-yellow-200">
+                        <span className="text-yellow-800 font-semibold">⚡ Difficulté</span>
+                        <span className="text-yellow-900 font-bold ml-2">★★★★★</span>
+                      </div>
+                      <button
+                        onClick={resetCounters}
+                        className="bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded-lg border border-gray-300 transition-colors"
+                        title="Réinitialiser les compteurs"
+                      >
+                        <div className="flex items-center gap-2">
+                          <RotateCcw size={16} className="text-gray-600" />
+                          <span className="text-gray-800 font-semibold">Reset</span>
+                        </div>
+                      </button>
                     </div>
                   </div>
 
@@ -972,6 +1176,8 @@ export default function DeveloppementPage() {
                                 setCurrentAdvancedExercise(currentAdvancedExercise > 0 ? currentAdvancedExercise - 1 : advancedExercises.length - 1)
                                 setAdvancedUserAnswer('')
                                 setShowAdvancedAnswer(false)
+                                setAdvancedAnswerFeedback(null)
+                                setShowAdvancedFeedback(false)
                               }}
                               disabled={currentAdvancedExercise === 0}
                               className={`px-3 py-2 text-white rounded-lg font-semibold text-sm ${
@@ -987,6 +1193,8 @@ export default function DeveloppementPage() {
                                 setCurrentAdvancedExercise(currentAdvancedExercise + 1)
                                 setAdvancedUserAnswer('')
                                 setShowAdvancedAnswer(false)
+                                setAdvancedAnswerFeedback(null)
+                                setShowAdvancedFeedback(false)
                               }}
                               disabled={currentAdvancedExercise === advancedExercises.length - 1}
                               className={`px-3 py-2 text-white rounded-lg font-semibold text-sm ${
@@ -1000,6 +1208,19 @@ export default function DeveloppementPage() {
                           </div>
                         </div>
                       </div>
+                      
+                      {/* Feedback temporaire pour exercices avancés */}
+                      {showAdvancedFeedback && (
+                        <div className="text-center mb-6">
+                          <span className={`inline-block px-6 py-3 rounded-xl font-bold text-base animate-pulse ${
+                            advancedAnswerFeedback === 'correct' 
+                              ? 'bg-green-100 text-green-800 border-2 border-green-300' 
+                              : 'bg-red-100 text-red-800 border-2 border-red-300'
+                          }`}>
+                            {advancedAnswerFeedback === 'correct' ? '🏆 Excellente réponse ! Mode Expert maîtrisé !' : '❌ Réponse incorrecte - Réessayez !'}
+                          </span>
+                        </div>
+                      )}
                       
                       <div className="space-y-4 mb-4">
                         {/* Éditeur de réponse pour exercices avancés */}
