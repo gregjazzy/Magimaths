@@ -87,15 +87,77 @@ export default function DecompositionNombresCE1Page() {
   const animateDecomposition = async () => {
     setIsAnimating(true);
     
-    // Animation des chiffres qui se séparent
+    // Animation des chiffres avec leurs cases colorées correspondantes
     const digits = selectedNumber.split('');
+    const decomposed = decomposeNumber(selectedNumber);
     
-    for (let i = 0; i < digits.length; i++) {
-      const element = document.getElementById(`demo-digit-${i}`);
-      if (element) {
-        element.classList.add('animate-pulse', 'scale-125', 'text-red-600');
-        await new Promise(resolve => setTimeout(resolve, 800));
-        element.classList.remove('animate-pulse', 'scale-125', 'text-red-600');
+    // Définir les correspondances selon le nombre de chiffres
+    const animations = [];
+    
+    if (digits.length >= 3) {
+      // Pour les nombres à 3 chiffres (ou plus)
+      animations.push({
+        digitId: 'demo-digit-0',
+        boxId: 'centaines-box',
+        color: 'bg-red-300',
+        label: 'centaines'
+      });
+      animations.push({
+        digitId: 'demo-digit-1', 
+        boxId: 'dizaines-box',
+        color: 'bg-blue-300',
+        label: 'dizaines'
+      });
+      animations.push({
+        digitId: 'demo-digit-2',
+        boxId: 'unites-box', 
+        color: 'bg-green-300',
+        label: 'unités'
+      });
+    } else if (digits.length === 2) {
+      // Pour les nombres à 2 chiffres
+      animations.push({
+        digitId: 'demo-digit-0',
+        boxId: 'dizaines-box',
+        color: 'bg-blue-300', 
+        label: 'dizaines'
+      });
+      animations.push({
+        digitId: 'demo-digit-1',
+        boxId: 'unites-box',
+        color: 'bg-green-300',
+        label: 'unités'
+      });
+    } else {
+      // Pour les nombres à 1 chiffre
+      animations.push({
+        digitId: 'demo-digit-0',
+        boxId: 'unites-box',
+        color: 'bg-green-300',
+        label: 'unités'
+      });
+    }
+    
+    // Exécuter les animations
+    for (const animation of animations) {
+      const digitElement = document.getElementById(animation.digitId);
+      const boxElement = document.getElementById(animation.boxId);
+      
+      if (digitElement && boxElement) {
+        // Animer le chiffre
+        digitElement.classList.add('animate-pulse', 'scale-125', 'text-orange-600');
+        
+        // Animer la case colorée correspondante
+        boxElement.classList.add('animate-pulse', 'scale-110', animation.color, 'shadow-2xl', 'border-2', 'border-orange-400');
+        
+        await new Promise(resolve => setTimeout(resolve, 1200));
+        
+        // Remettre les styles normaux
+        digitElement.classList.remove('animate-pulse', 'scale-125', 'text-orange-600');
+        boxElement.classList.remove('animate-pulse', 'scale-110', animation.color, 'shadow-2xl', 'border-2', 'border-orange-400');
+        
+        // Petit délai entre chaque animation
+        await new Promise(resolve => setTimeout(resolve, 300));
       }
     }
     
@@ -284,7 +346,7 @@ export default function DecompositionNombresCE1Page() {
                 {/* Centaines */}
                 <div className="text-center">
                   <div className="text-2xl mb-2">⬇️</div>
-                  <div className="bg-red-100 rounded-lg p-4">
+                  <div className="bg-red-100 rounded-lg p-4 transition-all duration-300" id="centaines-box">
                     <div className="text-3xl font-bold text-red-600 mb-2">
                       {decomposeNumber(selectedNumber).centaines}
                     </div>
@@ -298,7 +360,7 @@ export default function DecompositionNombresCE1Page() {
                 {/* Dizaines */}
                 <div className="text-center">
                   <div className="text-2xl mb-2">⬇️</div>
-                  <div className="bg-blue-100 rounded-lg p-4">
+                  <div className="bg-blue-100 rounded-lg p-4 transition-all duration-300" id="dizaines-box">
                     <div className="text-3xl font-bold text-blue-600 mb-2">
                       {decomposeNumber(selectedNumber).dizaines}
                     </div>
@@ -312,7 +374,7 @@ export default function DecompositionNombresCE1Page() {
                 {/* Unités */}
                 <div className="text-center">
                   <div className="text-2xl mb-2">⬇️</div>
-                  <div className="bg-green-100 rounded-lg p-4">
+                  <div className="bg-green-100 rounded-lg p-4 transition-all duration-300" id="unites-box">
                     <div className="text-3xl font-bold text-green-600 mb-2">
                       {decomposeNumber(selectedNumber).unites}
                     </div>
