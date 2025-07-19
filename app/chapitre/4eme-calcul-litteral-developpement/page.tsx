@@ -1444,18 +1444,18 @@ export default function DeveloppementPage() {
                               {/* a de (a+1) = 50, 1 de (a+1) = 90, a de (a+2) = 280, 2 de (a+2) = 320 */}
                               
                               {/* Flèches du niveau HAUT (a × a et a × 2) */}
-                              {/* Flèche 1: a × a - niveau haut */}
+                              {/* Flèche 1: a × a - niveau haut - du a bleu au a rouge */}
                               {animationStep >= 1 && (
                                 <g>
                                   <path
-                                    d="M 50 20 Q 165 5 280 20"
+                                    d="M 50 28 Q 165 -5 280 28"
                                     stroke="#8b5cf6"
                                     strokeWidth="3"
                                     fill="none"
                                     markerEnd="url(#arrowhead-purple)"
                                     className="animate-pulse"
                                   />
-                                  <text x="165" y="15" textAnchor="middle" className="text-xs fill-purple-600 font-bold">a × a = a²</text>
+                                  <text x="165" y="5" textAnchor="middle" className="text-xs fill-purple-600 font-bold">a × a = a²</text>
                                 </g>
                               )}
                               
