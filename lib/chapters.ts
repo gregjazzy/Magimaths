@@ -825,6 +825,23 @@ export const chaptersData: Chapter[] = [
     parentChapter: '5eme-calcul-litteral'
   },
   {
+    id: '5eme-calcul-litteral-factorisation',
+    title: 'Factorisation',
+    description: 'Factoriser des expressions littérales simples',
+    classLevel: '5eme',
+    category: 'algebra',
+    difficulty: 'intermediate',
+    estimatedTime: 20,
+    prerequisites: ['5eme-calcul-litteral-developpement'],
+    color: '#ff9ff3',
+    icon: '🎯',
+    lessons: [],
+    exercises: [],
+    isLocked: false,
+    order: 40.5,
+    parentChapter: '5eme-calcul-litteral'
+  },
+  {
     id: '5eme-priorites-operations',
     title: 'Priorités des opérations',
     description: 'Ordre des opérations, expressions numériques',
