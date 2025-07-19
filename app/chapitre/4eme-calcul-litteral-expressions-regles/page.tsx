@@ -2010,8 +2010,8 @@ export default function ExpressionsReglesPage() {
 
                       {/* Animation SCL avec puissances */}
                       <div className="bg-white rounded-lg p-6 border border-blue-200">
-                        <div className="flex items-center justify-center gap-4 mb-4">
-                          <h4 className="text-lg font-semibold text-blue-800">
+                        <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 mb-4">
+                          <h4 className="text-base sm:text-lg font-semibold text-blue-800 text-center">
                             Animation : -2x³ × 2x² = -4x⁵
                           </h4>
                           <button
@@ -2026,69 +2026,69 @@ export default function ExpressionsReglesPage() {
                               setTimeout(() => setSclStep(6), 12000)
                               setTimeout(() => setSclAnimating(false), 13000)
                             }}
-                            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium text-sm"
+                            className="px-3 sm:px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium text-xs sm:text-sm"
                           >
-                            {sclAnimating ? 'Animation en cours...' : 'Démarrer l\'animation'}
+                            {sclAnimating ? 'En cours...' : 'Démarrer'}
                           </button>
               </div>
 
-                        <div className="space-y-6 relative min-h-[450px]">
+                        <div className="space-y-6 relative min-h-[350px] sm:min-h-[450px]">
                           {/* Expression de départ */}
                           <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-                            <div className="font-mono text-lg text-center text-gray-800 relative">
+                            <div className="font-mono text-base sm:text-lg text-center text-gray-800 relative">
                               {/* Expression statique qui reste visible en haut */}
                               <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1">
-                                <span className="text-gray-700 text-lg font-semibold bg-white px-3 py-1 rounded-lg border border-gray-300 shadow-sm">-2x³ × 2x²</span>
+                                <span className="text-gray-700 text-sm sm:text-lg font-semibold bg-white px-2 sm:px-3 py-1 rounded-lg border border-gray-300 shadow-sm">-2x³ × 2x²</span>
                               </div>
                               
-                              {/* Éléments qui glissent */}
+                              {/* Éléments qui glissent - Version mobile et desktop */}
                               <span id="sign-minus" className={`inline-block transition-all duration-1000 ${
-                                sclStep >= 1 ? 'transform translate-x-[-10rem] translate-y-20 text-red-900 scale-150 opacity-100' : 'opacity-0'
+                                sclStep >= 1 ? 'transform translate-x-[-5rem] sm:translate-x-[-10rem] translate-y-16 sm:translate-y-20 text-red-900 scale-125 sm:scale-150 opacity-100' : 'opacity-0'
                               }`}>-</span>
                               <span id="number-2-left" className={`inline-block transition-all duration-1000 ${
-                                sclStep >= 2 ? 'transform translate-x-[-12rem] translate-y-44 text-green-600 scale-125 opacity-100' : 'opacity-0'
+                                sclStep >= 2 ? 'transform translate-x-[-6rem] sm:translate-x-[-12rem] translate-y-32 sm:translate-y-44 text-green-600 scale-110 sm:scale-125 opacity-100' : 'opacity-0'
                               }`}>2</span>
                               <span id="letters-x3" className={`inline-block transition-all duration-1000 ${
-                                sclStep >= 3 ? 'transform translate-x-[-15rem] translate-y-60 text-purple-600 scale-110 opacity-100' : 'opacity-0'
+                                sclStep >= 3 ? 'transform translate-x-[-7rem] sm:translate-x-[-15rem] translate-y-48 sm:translate-y-60 text-purple-600 scale-105 sm:scale-110 opacity-100' : 'opacity-0'
                               }`}>x³</span>
-                              <span className={`mx-2 transition-opacity duration-1000 ${sclStep >= 1 ? 'opacity-30' : 'opacity-100'} ${sclStep >= 3 ? 'opacity-0' : ''}`}>×</span>
+                              <span className={`mx-1 sm:mx-2 transition-opacity duration-1000 ${sclStep >= 1 ? 'opacity-30' : 'opacity-100'} ${sclStep >= 3 ? 'opacity-0' : ''}`}>×</span>
                               <span id="sign-plus" className={`inline-block transition-all duration-1000 ${
-                                sclStep >= 1 ? 'transform translate-x-[-8rem] translate-y-20 text-red-700 scale-120 opacity-100' : 'opacity-0'
+                                sclStep >= 1 ? 'transform translate-x-[-4rem] sm:translate-x-[-8rem] translate-y-16 sm:translate-y-20 text-red-700 scale-110 sm:scale-120 opacity-100' : 'opacity-0'
                               }`}>+</span>
                               <span id="number-2-right" className={`inline-block transition-all duration-1000 ${
-                                sclStep >= 2 ? 'transform translate-x-[-10rem] translate-y-44 text-green-600 scale-125 opacity-100' : 'opacity-0'
+                                sclStep >= 2 ? 'transform translate-x-[-5rem] sm:translate-x-[-10rem] translate-y-32 sm:translate-y-44 text-green-600 scale-110 sm:scale-125 opacity-100' : 'opacity-0'
                               }`}>2</span>
                               <span id="letters-x2" className={`inline-block transition-all duration-1000 ${
-                                sclStep >= 3 ? 'transform translate-x-[-13rem] translate-y-60 text-purple-600 scale-110 opacity-100' : 'opacity-0'
+                                sclStep >= 3 ? 'transform translate-x-[-6rem] sm:translate-x-[-13rem] translate-y-48 sm:translate-y-60 text-purple-600 scale-105 sm:scale-110 opacity-100' : 'opacity-0'
                               }`}>x²</span>
                             </div>
                             
-                            {/* Calculs qui apparaissent quand les éléments glissent */}
+                            {/* Calculs qui apparaissent quand les éléments glissent - Responsive */}
                             {sclStep >= 1 && (
-                              <div className="absolute top-28 left-1/2 transform -translate-x-8">
-                                <span className="text-red-600 font-bold text-2xl">(-) × (+) = <span className="bg-red-50 px-2 py-1 rounded-lg border-2 border-red-200">-</span></span>
+                              <div className="absolute top-20 sm:top-28 left-1/2 transform -translate-x-1/2 sm:-translate-x-8">
+                                <span className="text-red-600 font-bold text-lg sm:text-2xl">(-) × (+) = <span className="bg-red-50 px-1 sm:px-2 py-1 rounded-lg border-2 border-red-200">-</span></span>
                               </div>
                             )}
                             {sclStep >= 2 && (
-                              <div className="absolute top-48 left-1/2 transform -translate-x-6">
-                                <span className="text-green-600 font-bold text-2xl">2 × 2 = <span className="bg-green-50 px-2 py-1 rounded-lg border-2 border-green-200">4</span></span>
+                              <div className="absolute top-36 sm:top-48 left-1/2 transform -translate-x-1/2 sm:-translate-x-6">
+                                <span className="text-green-600 font-bold text-lg sm:text-2xl">2 × 2 = <span className="bg-green-50 px-1 sm:px-2 py-1 rounded-lg border-2 border-green-200">4</span></span>
                               </div>
                             )}
                             {sclStep >= 3 && (
-                              <div className="absolute top-64 left-1/2 transform -translate-x-12">
-                                <span className="text-purple-600 font-bold text-2xl">x³ × x² = <span className="bg-purple-50 px-2 py-1 rounded-lg border-2 border-purple-200">x⁵</span></span>
+                              <div className="absolute top-52 sm:top-64 left-1/2 transform -translate-x-1/2 sm:-translate-x-12">
+                                <span className="text-purple-600 font-bold text-lg sm:text-2xl">x³ × x² = <span className="bg-purple-50 px-1 sm:px-2 py-1 rounded-lg border-2 border-purple-200">x⁵</span></span>
                               </div>
                             )}
                             {sclStep >= 4 && (
-                              <div className="absolute top-80 left-1/2 transform -translate-x-10">
-                                <span className="text-blue-600 font-bold text-xl">Puissances : 3 + 2 = <span className="bg-blue-50 px-2 py-1 rounded-lg border-2 border-blue-200">5</span></span>
+                              <div className="absolute top-68 sm:top-80 left-1/2 transform -translate-x-1/2 sm:-translate-x-10">
+                                <span className="text-blue-600 font-bold text-base sm:text-xl">Puissances : 3 + 2 = <span className="bg-blue-50 px-1 sm:px-2 py-1 rounded-lg border-2 border-blue-200">5</span></span>
                               </div>
                             )}
                             
                             {/* Résultat final */}
                             {sclStep >= 6 && (
-                              <div className="absolute top-96 left-1/2 transform -translate-x-1/2">
-                                <span className="text-gray-800 font-bold text-3xl animate-bounce">Résultat : -4x⁵</span>
+                              <div className="absolute top-80 sm:top-96 left-1/2 transform -translate-x-1/2">
+                                <span className="text-gray-800 font-bold text-xl sm:text-3xl animate-bounce">Résultat : -4x⁵</span>
                               </div>
                             )}
                           </div>
@@ -2110,8 +2110,8 @@ export default function ExpressionsReglesPage() {
                   
                   {/* Animation 1 : -a × a = -a² */}
                   <div className="bg-white rounded-lg p-6 border border-red-200 mb-6">
-                    <div className="flex items-center justify-center gap-4 mb-4">
-                      <h4 className="text-lg font-semibold text-red-800">
+                    <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 mb-4">
+                      <h4 className="text-base sm:text-lg font-semibold text-red-800 text-center">
                         Animation 1 : -a × a = -a²
                       </h4>
                       <button
@@ -2124,17 +2124,17 @@ export default function ExpressionsReglesPage() {
                           setTimeout(() => setNegativeStep1(4), 6000)
                           setTimeout(() => setNegativeAnimating1(false), 7000)
                         }}
-                        className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium text-sm"
+                        className="px-3 sm:px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium text-xs sm:text-sm"
                       >
-                        {negativeAnimating1 ? 'Animation en cours...' : 'Démarrer l\'animation'}
+                        {negativeAnimating1 ? 'En cours...' : 'Démarrer'}
                       </button>
                     </div>
 
-                    <div className="space-y-6 relative min-h-[300px]">
+                    <div className="space-y-6 relative min-h-[250px] sm:min-h-[300px]">
                       <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-                        <div className="font-mono text-lg text-center text-gray-800 relative">
+                        <div className="font-mono text-base sm:text-lg text-center text-gray-800 relative">
                           <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1">
-                            <span className="text-gray-700 text-lg font-semibold bg-white px-3 py-1 rounded-lg border border-gray-300 shadow-sm">-a × a</span>
+                            <span className="text-gray-700 text-sm sm:text-lg font-semibold bg-white px-2 sm:px-3 py-1 rounded-lg border border-gray-300 shadow-sm">-a × a</span>
                           </div>
                           
                           <span className={`inline-block ${
@@ -2143,7 +2143,7 @@ export default function ExpressionsReglesPage() {
                           <span className={`inline-block ${
                             negativeStep1 >= 2 ? 'text-blue-600 opacity-100' : 'opacity-0'
                           }`}>a</span>
-                          <span className={`mx-2 ${negativeStep1 >= 1 ? 'opacity-30' : 'opacity-100'} ${negativeStep1 >= 2 ? 'opacity-0' : ''}`}>×</span>
+                          <span className={`mx-1 sm:mx-2 ${negativeStep1 >= 1 ? 'opacity-30' : 'opacity-100'} ${negativeStep1 >= 2 ? 'opacity-0' : ''}`}>×</span>
                           <span className={`inline-block ${
                             negativeStep1 >= 1 ? 'text-green-600 opacity-100' : 'opacity-0'
                           }`}>+</span>
@@ -2153,18 +2153,18 @@ export default function ExpressionsReglesPage() {
                         </div>
                         
                         {negativeStep1 >= 2 && (
-                          <div className="absolute top-20 left-1/2 transform -translate-x-8">
-                            <span className="text-red-600 font-bold text-2xl">(-) × (+) = <span className="bg-red-50 px-2 py-1 rounded-lg border-2 border-red-200">(-)</span></span>
+                          <div className="absolute top-16 sm:top-20 left-1/2 transform -translate-x-1/2 sm:-translate-x-8">
+                            <span className="text-red-600 font-bold text-lg sm:text-2xl">(-) × (+) = <span className="bg-red-50 px-1 sm:px-2 py-1 rounded-lg border-2 border-red-200">(-)</span></span>
                           </div>
                         )}
                         {negativeStep1 >= 3 && (
-                          <div className="absolute top-36 left-1/2 transform -translate-x-6">
-                            <span className="text-blue-600 font-bold text-2xl">a × a = <span className="bg-blue-50 px-2 py-1 rounded-lg border-2 border-blue-200">a²</span></span>
+                          <div className="absolute top-28 sm:top-36 left-1/2 transform -translate-x-1/2 sm:-translate-x-6">
+                            <span className="text-blue-600 font-bold text-lg sm:text-2xl">a × a = <span className="bg-blue-50 px-1 sm:px-2 py-1 rounded-lg border-2 border-blue-200">a²</span></span>
                           </div>
                         )}
                         {negativeStep1 >= 4 && (
-                          <div className="absolute top-52 left-1/2 transform -translate-x-6">
-                            <span className="text-gray-800 font-bold text-3xl animate-bounce">Résultat : -a²</span>
+                          <div className="absolute top-40 sm:top-52 left-1/2 transform -translate-x-1/2 sm:-translate-x-6">
+                            <span className="text-gray-800 font-bold text-xl sm:text-3xl animate-bounce">Résultat : -a²</span>
                           </div>
                         )}
                       </div>
@@ -2173,8 +2173,8 @@ export default function ExpressionsReglesPage() {
 
                   {/* Animation 2 : -a × -a² = +a³ */}
                   <div className="bg-white rounded-lg p-6 border border-green-200 mb-6">
-                    <div className="flex items-center justify-center gap-4 mb-4">
-                      <h4 className="text-lg font-semibold text-green-800">
+                    <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 mb-4">
+                      <h4 className="text-base sm:text-lg font-semibold text-green-800 text-center">
                         Animation 2 : -a × -a² = +a³
                       </h4>
                       <button
@@ -2187,17 +2187,17 @@ export default function ExpressionsReglesPage() {
                           setTimeout(() => setNegativeStep2(4), 6000)
                           setTimeout(() => setNegativeAnimating2(false), 7000)
                         }}
-                        className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium text-sm"
+                        className="px-3 sm:px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium text-xs sm:text-sm"
                       >
-                        {negativeAnimating2 ? 'Animation en cours...' : 'Démarrer l\'animation'}
+                        {negativeAnimating2 ? 'En cours...' : 'Démarrer'}
                       </button>
                     </div>
 
-                    <div className="space-y-6 relative min-h-[300px]">
+                    <div className="space-y-6 relative min-h-[250px] sm:min-h-[300px]">
                       <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-                        <div className="font-mono text-lg text-center text-gray-800 relative">
+                        <div className="font-mono text-base sm:text-lg text-center text-gray-800 relative">
                           <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1">
-                            <span className="text-gray-700 text-lg font-semibold bg-white px-3 py-1 rounded-lg border border-gray-300 shadow-sm">-a × -a²</span>
+                            <span className="text-gray-700 text-sm sm:text-lg font-semibold bg-white px-2 sm:px-3 py-1 rounded-lg border border-gray-300 shadow-sm">-a × -a²</span>
                           </div>
                           
                           <span className={`inline-block ${
@@ -2206,7 +2206,7 @@ export default function ExpressionsReglesPage() {
                           <span className={`inline-block ${
                             negativeStep2 >= 2 ? 'text-blue-600 opacity-100' : 'opacity-0'
                           }`}>a</span>
-                          <span className={`mx-2 ${negativeStep2 >= 1 ? 'opacity-30' : 'opacity-100'} ${negativeStep2 >= 2 ? 'opacity-0' : ''}`}>×</span>
+                          <span className={`mx-1 sm:mx-2 ${negativeStep2 >= 1 ? 'opacity-30' : 'opacity-100'} ${negativeStep2 >= 2 ? 'opacity-0' : ''}`}>×</span>
                           <span className={`inline-block ${
                             negativeStep2 >= 1 ? 'text-red-600 opacity-100' : 'opacity-0'
                           }`}>-</span>
@@ -2216,18 +2216,18 @@ export default function ExpressionsReglesPage() {
                         </div>
                         
                         {negativeStep2 >= 2 && (
-                          <div className="absolute top-20 left-1/2 transform -translate-x-8">
-                            <span className="text-green-600 font-bold text-2xl">(-) × (-) = <span className="bg-green-50 px-2 py-1 rounded-lg border-2 border-green-200">(+)</span></span>
+                          <div className="absolute top-16 sm:top-20 left-1/2 transform -translate-x-1/2 sm:-translate-x-8">
+                            <span className="text-green-600 font-bold text-lg sm:text-2xl">(-) × (-) = <span className="bg-green-50 px-1 sm:px-2 py-1 rounded-lg border-2 border-green-200">(+)</span></span>
                           </div>
                         )}
                         {negativeStep2 >= 3 && (
-                          <div className="absolute top-36 left-1/2 transform -translate-x-6">
-                            <span className="text-blue-600 font-bold text-2xl">a × a² = <span className="bg-blue-50 px-2 py-1 rounded-lg border-2 border-blue-200">a³</span></span>
+                          <div className="absolute top-28 sm:top-36 left-1/2 transform -translate-x-1/2 sm:-translate-x-6">
+                            <span className="text-blue-600 font-bold text-lg sm:text-2xl">a × a² = <span className="bg-blue-50 px-1 sm:px-2 py-1 rounded-lg border-2 border-blue-200">a³</span></span>
                           </div>
                         )}
                         {negativeStep2 >= 4 && (
-                          <div className="absolute top-52 left-1/2 transform -translate-x-6">
-                            <span className="text-gray-800 font-bold text-3xl animate-bounce">Résultat : +a³</span>
+                          <div className="absolute top-40 sm:top-52 left-1/2 transform -translate-x-1/2 sm:-translate-x-6">
+                            <span className="text-gray-800 font-bold text-xl sm:text-3xl animate-bounce">Résultat : +a³</span>
                           </div>
                         )}
                       </div>
@@ -2257,11 +2257,11 @@ export default function ExpressionsReglesPage() {
                       </button>
                     </div>
 
-                    <div className="space-y-6 relative min-h-[400px]">
+                    <div className="space-y-6 relative min-h-[320px] sm:min-h-[400px]">
                       <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-                        <div className="font-mono text-lg text-center text-gray-800 relative">
+                        <div className="font-mono text-base sm:text-lg text-center text-gray-800 relative">
                           <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1">
-                            <span className="text-gray-700 text-lg font-semibold bg-white px-3 py-1 rounded-lg border border-gray-300 shadow-sm">-3xy × -2x²z</span>
+                            <span className="text-gray-700 text-sm sm:text-lg font-semibold bg-white px-2 sm:px-3 py-1 rounded-lg border border-gray-300 shadow-sm">-3xy × -2x²z</span>
                           </div>
                           
                           <span className={`inline-block ${
