@@ -1442,18 +1442,18 @@ export default function DeveloppementPage() {
                           {animationStep >= 1 && (
                             <div className="absolute inset-0 pointer-events-none">
                               <svg className="w-full h-full" viewBox="0 0 400 100" style={{ top: '10px' }}>
-                                {/* Flèche 1: a × b - du premier 'a' au 'b' */}
+                                {/* Flèche 1: a × b - du premier 'a' au 'b' - belle parabole */}
                                 {animationStep >= 1 && (
                                   <g>
                                     <path
-                                      d="M 30 15 Q 200 -10 240 15"
+                                      d="M 30 15 Q 135 -25 250 15"
                                       stroke="#8b5cf6"
                                       strokeWidth="3"
                                       fill="none"
                                       markerEnd="url(#arrowhead-purple)"
                                       className="animate-pulse"
                                     />
-                                    <text x="135" y="0" textAnchor="middle" className="text-xs fill-purple-600 font-bold">a × b = ab</text>
+                                    <text x="140" y="-10" textAnchor="middle" className="text-xs fill-purple-600 font-bold">a × b = ab</text>
                                   </g>
                                 )}
                                 
