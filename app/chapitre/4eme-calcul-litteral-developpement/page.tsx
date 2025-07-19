@@ -133,16 +133,16 @@ export default function DeveloppementPage() {
     {
       id: 'double',
       title: '🚀 Double Distributivité',
-      expression: '(a + 1)(a + 2)',
+      expression: '(a + 1)(b + 2)',
       steps: [
-        { phase: 'initial', content: '(a + 1)(a + 2)', description: 'Deux parenthèses à multiplier' },
-        { phase: 'arrow1', content: '(a + 1)(a + 2)', description: 'Première flèche : a × a' },
-        { phase: 'arrow2', content: '(a + 1)(a + 2)', description: 'Deuxième flèche : a × 2' },
-        { phase: 'arrow3', content: '(a + 1)(a + 2)', description: 'Troisième flèche : 1 × a' },
-        { phase: 'arrow4', content: '(a + 1)(a + 2)', description: 'Quatrième flèche : 1 × 2' },
-        { phase: 'distribute', content: 'a×a + a×2 + 1×a + 1×2', description: 'Récapitulatif de tous les produits' },
-        { phase: 'expand', content: 'a² + 2a + a + 2', description: 'Développement complet' },
-        { phase: 'calculate', content: 'a² + 3a + 2', description: 'Réduction finale : regrouper les termes similaires' }
+        { phase: 'initial', content: '(a + 1)(b + 2)', description: 'Deux parenthèses à multiplier' },
+        { phase: 'arrow1', content: '(a + 1)(b + 2)', description: 'Première flèche : a × b' },
+        { phase: 'arrow2', content: '(a + 1)(b + 2)', description: 'Deuxième flèche : a × 2' },
+        { phase: 'arrow3', content: '(a + 1)(b + 2)', description: 'Troisième flèche : 1 × b' },
+        { phase: 'arrow4', content: '(a + 1)(b + 2)', description: 'Quatrième flèche : 1 × 2' },
+        { phase: 'distribute', content: 'a×b + a×2 + 1×b + 1×2', description: 'Récapitulatif de tous les produits' },
+        { phase: 'expand', content: 'ab + 2a + b + 2', description: 'Développement complet' },
+        { phase: 'calculate', content: 'ab + 2a + b + 2', description: 'Résultat final : impossible de regrouper davantage' }
       ]
     }
   ]
@@ -1433,18 +1433,18 @@ export default function DeveloppementPage() {
                       <div className="text-center p-4 bg-gray-50 rounded-lg">
                         <div className="text-3xl sm:text-4xl font-mono font-bold text-gray-800 mb-4">
                           <span className="text-blue-600 font-extrabold">(a + 1)</span>
-                          <span className="text-red-600 font-extrabold">(a + 2)</span>
+                          <span className="text-red-600 font-extrabold">(b + 2)</span>
                         </div>
                         
                         {/* Flèches visuelles progressives */}
                         {animationStep >= 1 && (
                           <div className="relative mt-4 mb-8">
                             <svg className="w-full h-24" viewBox="0 0 500 100">
-                              {/* Positions des termes : (a + 1) × (a + 2) */}
-                              {/* a de (a+1) = 50, 1 de (a+1) = 90, a de (a+2) = 280, 2 de (a+2) = 320 */}
+                              {/* Positions des termes : (a + 1) × (b + 2) */}
+                              {/* a de (a+1) = 50, 1 de (a+1) = 90, b de (b+2) = 280, 2 de (b+2) = 320 */}
                               
-                              {/* Flèches du niveau HAUT (a × a et a × 2) */}
-                              {/* Flèche 1: a × a - niveau haut - du a bleu au a rouge */}
+                              {/* Flèches du niveau HAUT (a × b et a × 2) */}
+                              {/* Flèche 1: a × b - niveau haut - du a bleu au b rouge */}
                               {animationStep >= 1 && (
                                 <g>
                                   <path
@@ -1455,7 +1455,7 @@ export default function DeveloppementPage() {
                                     markerEnd="url(#arrowhead-purple)"
                                     className="animate-pulse"
                                   />
-                                  <text x="165" y="5" textAnchor="middle" className="text-xs fill-purple-600 font-bold">a × a = a²</text>
+                                  <text x="165" y="5" textAnchor="middle" className="text-xs fill-purple-600 font-bold">a × b = ab</text>
                                 </g>
                               )}
                               
@@ -1474,8 +1474,8 @@ export default function DeveloppementPage() {
                                 </g>
                               )}
                               
-                              {/* Flèches du niveau BAS (1 × a et 1 × 2) */}
-                              {/* Flèche 3: 1 × a - niveau bas */}
+                              {/* Flèches du niveau BAS (1 × b et 1 × 2) */}
+                              {/* Flèche 3: 1 × b - niveau bas */}
                               {animationStep >= 3 && (
                                 <g>
                                   <path
@@ -1486,7 +1486,7 @@ export default function DeveloppementPage() {
                                     markerEnd="url(#arrowhead-red)"
                                     className="animate-pulse"
                                   />
-                                  <text x="185" y="75" textAnchor="middle" className="text-xs fill-red-600 font-bold">1 × a = a</text>
+                                  <text x="185" y="75" textAnchor="middle" className="text-xs fill-red-600 font-bold">1 × b = b</text>
                                 </g>
                               )}
                               
@@ -1508,7 +1508,7 @@ export default function DeveloppementPage() {
                               {/* Termes visuels pour référence */}
                               <text x="50" y="30" textAnchor="middle" className="text-sm fill-blue-600 font-bold">a</text>
                               <text x="90" y="45" textAnchor="middle" className="text-sm fill-blue-600 font-bold">1</text>
-                              <text x="280" y="30" textAnchor="middle" className="text-sm fill-red-600 font-bold">a</text>
+                              <text x="280" y="30" textAnchor="middle" className="text-sm fill-red-600 font-bold">b</text>
                               <text x="320" y="30" textAnchor="middle" className="text-sm fill-red-600 font-bold">2</text>
                               
                               {/* Définitions des pointes de flèches */}
@@ -1533,16 +1533,16 @@ export default function DeveloppementPage() {
                         <p className="text-gray-600">Expression de départ</p>
                       </div>
                       
-                      {/* Étape 1: Flèche a × a */}
+                      {/* Étape 1: Flèche a × b */}
                       {animationStep >= 1 && (
                         <div className="p-4 bg-purple-50 rounded-lg border-l-4 border-purple-500">
                           <div className="flex items-center justify-between">
                             <div className="text-xl font-mono font-bold">
                               <span className="text-blue-600 bg-blue-200 px-2 rounded">a</span>
                               <span className="text-gray-600"> × </span>
-                              <span className="text-red-600 bg-red-200 px-2 rounded">a</span>
+                              <span className="text-red-600 bg-red-200 px-2 rounded">b</span>
                               <span className="text-gray-600"> = </span>
-                              <span className="text-purple-600 font-extrabold">a²</span>
+                              <span className="text-purple-600 font-extrabold">ab</span>
                             </div>
                             <div className="text-sm text-gray-600">Première flèche</div>
                           </div>
@@ -1565,16 +1565,16 @@ export default function DeveloppementPage() {
                         </div>
                       )}
                       
-                      {/* Étape 3: Flèche 1 × a */}
+                      {/* Étape 3: Flèche 1 × b */}
                       {animationStep >= 3 && (
                         <div className="p-4 bg-red-50 rounded-lg border-l-4 border-red-500">
                           <div className="flex items-center justify-between">
                             <div className="text-xl font-mono font-bold">
                               <span className="text-blue-600 bg-blue-200 px-2 rounded">1</span>
                               <span className="text-gray-600"> × </span>
-                              <span className="text-red-600 bg-red-200 px-2 rounded">a</span>
+                              <span className="text-red-600 bg-red-200 px-2 rounded">b</span>
                               <span className="text-gray-600"> = </span>
-                              <span className="text-red-600 font-extrabold">a</span>
+                              <span className="text-red-600 font-extrabold">b</span>
                             </div>
                             <div className="text-sm text-gray-600">Troisième flèche</div>
                           </div>
@@ -1602,11 +1602,11 @@ export default function DeveloppementPage() {
                         <div className="p-4 bg-yellow-50 rounded-lg border-l-4 border-yellow-500">
                           <div className="text-center">
                             <div className="text-2xl font-mono font-bold mb-2">
-                              <span className="text-purple-600 font-extrabold">a²</span>
+                              <span className="text-purple-600 font-extrabold">ab</span>
                               <span className="text-gray-600"> + </span>
                               <span className="text-green-600 font-extrabold">2a</span>
                               <span className="text-gray-600"> + </span>
-                              <span className="text-red-600 font-extrabold">a</span>
+                              <span className="text-red-600 font-extrabold">b</span>
                               <span className="text-gray-600"> + </span>
                               <span className="text-orange-600 font-extrabold">2</span>
                             </div>
@@ -1620,7 +1620,7 @@ export default function DeveloppementPage() {
                         <div className="p-4 bg-indigo-50 rounded-lg border-l-4 border-indigo-500">
                           <div className="text-center">
                             <div className="text-2xl font-mono font-bold mb-2">
-                              <span className="text-indigo-600">a² + 2a + a + 2</span>
+                              <span className="text-indigo-600">ab + 2a + b + 2</span>
                             </div>
                             <p className="text-gray-600">Développement complet</p>
                           </div>
@@ -1632,9 +1632,9 @@ export default function DeveloppementPage() {
                         <div className="p-4 bg-green-100 rounded-lg border-l-4 border-green-600">
                           <div className="text-center">
                             <div className="text-3xl font-mono font-bold mb-2">
-                              <span className="text-green-700 font-extrabold">a² + 3a + 2</span>
+                              <span className="text-green-700 font-extrabold">ab + 2a + b + 2</span>
                             </div>
-                            <p className="text-gray-600">Résultat final : regrouper les termes similaires</p>
+                            <p className="text-gray-600">Résultat final : impossible de regrouper davantage</p>
                           </div>
                         </div>
                       )}
