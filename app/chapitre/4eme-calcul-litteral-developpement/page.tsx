@@ -1441,19 +1441,19 @@ export default function DeveloppementPage() {
                           {/* Flèches SVG superposées */}
                           {animationStep >= 1 && (
                             <div className="absolute inset-0 pointer-events-none">
-                              <svg className="w-full h-full" viewBox="0 0 400 100" style={{ top: '10px' }}>
+                              <svg className="w-full h-full" viewBox="0 -40 400 140" style={{ top: '10px' }}>
                                 {/* Flèche 1: a × b - du premier 'a' au 'b' - belle parabole */}
                                 {animationStep >= 1 && (
                                   <g>
                                     <path
-                                      d="M 30 15 Q 135 -25 250 15"
+                                      d="M 30 35 Q 140 -25 260 35"
                                       stroke="#8b5cf6"
-                                      strokeWidth="3"
+                                      strokeWidth="4"
                                       fill="none"
                                       markerEnd="url(#arrowhead-purple)"
                                       className="animate-pulse"
                                     />
-                                    <text x="140" y="-10" textAnchor="middle" className="text-xs fill-purple-600 font-bold">a × b = ab</text>
+                                    <text x="145" y="-15" textAnchor="middle" className="text-sm fill-purple-600 font-bold">a × b = ab</text>
                                   </g>
                                 )}
                                 
@@ -1461,14 +1461,14 @@ export default function DeveloppementPage() {
                                 {animationStep >= 2 && (
                                   <g>
                                     <path
-                                      d="M 30 15 Q 200 5 280 15"
+                                      d="M 30 35 Q 200 15 300 35"
                                       stroke="#059669"
                                       strokeWidth="3"
                                       fill="none"
                                       markerEnd="url(#arrowhead-green)"
                                       className="animate-pulse"
                                     />
-                                    <text x="155" y="20" textAnchor="middle" className="text-xs fill-green-600 font-bold">a × 2 = 2a</text>
+                                    <text x="165" y="30" textAnchor="middle" className="text-xs fill-green-600 font-bold">a × 2 = 2a</text>
                                   </g>
                                 )}
                                 
@@ -1476,14 +1476,14 @@ export default function DeveloppementPage() {
                                 {animationStep >= 3 && (
                                   <g>
                                     <path
-                                      d="M 70 25 Q 155 70 240 25"
+                                      d="M 80 45 Q 170 90 260 45"
                                       stroke="#dc2626"
                                       strokeWidth="3"
                                       fill="none"
                                       markerEnd="url(#arrowhead-red)"
                                       className="animate-pulse"
                                     />
-                                    <text x="155" y="65" textAnchor="middle" className="text-xs fill-red-600 font-bold">1 × b = b</text>
+                                    <text x="170" y="85" textAnchor="middle" className="text-xs fill-red-600 font-bold">1 × b = b</text>
                                   </g>
                                 )}
                                 
@@ -1491,14 +1491,14 @@ export default function DeveloppementPage() {
                                 {animationStep >= 4 && (
                                   <g>
                                     <path
-                                      d="M 70 25 Q 175 75 280 25"
+                                      d="M 80 45 Q 190 95 300 45"
                                       stroke="#ea580c"
                                       strokeWidth="3"
                                       fill="none"
                                       markerEnd="url(#arrowhead-orange)"
                                       className="animate-pulse"
                                     />
-                                    <text x="175" y="80" textAnchor="middle" className="text-xs fill-orange-600 font-bold">1 × 2 = 2</text>
+                                    <text x="190" y="100" textAnchor="middle" className="text-xs fill-orange-600 font-bold">1 × 2 = 2</text>
                                   </g>
                                 )}
                                 
