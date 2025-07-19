@@ -136,11 +136,13 @@ export default function DeveloppementPage() {
       expression: '(a + 1)(a + 2)',
       steps: [
         { phase: 'initial', content: '(a + 1)(a + 2)', description: 'Deux parenthèses à multiplier' },
-        { phase: 'schema', content: '(a + 1)(a + 2)', description: 'Schéma : chaque terme de la première × chaque terme de la seconde' },
-        { phase: 'highlight', content: '(a + 1)(a + 2)', description: 'Chaque terme × chaque terme' },
-        { phase: 'distribute', content: 'a×a + a×2 + 1×a + 1×2', description: 'Tous les produits' },
+        { phase: 'arrow1', content: '(a + 1)(a + 2)', description: 'Première flèche : a × a' },
+        { phase: 'arrow2', content: '(a + 1)(a + 2)', description: 'Deuxième flèche : a × 2' },
+        { phase: 'arrow3', content: '(a + 1)(a + 2)', description: 'Troisième flèche : 1 × a' },
+        { phase: 'arrow4', content: '(a + 1)(a + 2)', description: 'Quatrième flèche : 1 × 2' },
+        { phase: 'distribute', content: 'a×a + a×2 + 1×a + 1×2', description: 'Récapitulatif de tous les produits' },
         { phase: 'expand', content: 'a² + 2a + a + 2', description: 'Développement complet' },
-        { phase: 'calculate', content: 'a² + 3a + 2', description: 'Réduction finale' }
+        { phase: 'calculate', content: 'a² + 3a + 2', description: 'Réduction finale : regrouper les termes similaires' }
       ]
     }
   ]
@@ -1425,85 +1427,127 @@ export default function DeveloppementPage() {
                   {selectedAnimation === 2 && (
                     <div className="space-y-8">
                       {/* Expression de départ - TOUJOURS VISIBLE */}
-                      <div className="text-center">
-                        <div className="text-4xl font-mono font-bold text-gray-800 mb-6">
-                          <span className={`${animationStep === 2 ? 'text-blue-600 bg-blue-100 px-2 rounded animate-pulse' : 'text-blue-600 font-extrabold'}`}>(a + 1)</span>
-                          <span className={`${animationStep === 2 ? 'text-red-600 bg-red-100 px-2 rounded animate-pulse' : 'text-red-600 font-extrabold'}`}>(a + 2)</span>
+                      {animationStep === 0 && (
+                        <div className="text-center">
+                          <div className="text-4xl font-mono font-bold text-gray-800 mb-6">
+                            <span className="text-blue-600 font-extrabold">(a + 1)</span>
+                            <span className="text-red-600 font-extrabold">(a + 2)</span>
+                          </div>
                         </div>
-                      </div>
+                      )}
                       
-                      {/* Schéma avec flèches - Étape 1 */}
-                      {animationStep === 1 && (
+                      {/* Animation progressive des flèches */}
+                      {(animationStep >= 1 && animationStep <= 4) && (
                         <div className="flex justify-center mb-6 sm:mb-8">
-                          <div className="relative w-full max-w-md sm:max-w-2xl">
+                          <div className="relative w-full max-w-lg">
                             <div className="flex items-center justify-center">
-                              {/* Expression avec schéma */}
-                              <div className="relative w-full">
-                                <div className="text-xl sm:text-3xl font-mono font-bold text-gray-800 mb-4 text-center">
-                                  <span className="text-blue-600 bg-blue-50 px-2 sm:px-3 py-1 sm:py-2 rounded-lg mr-1 sm:mr-2">(a + b)</span>
-                                  <span className="text-gray-600 mx-1 sm:mx-2">×</span>
-                                  <span className="text-red-600 bg-red-50 px-2 sm:px-3 py-1 sm:py-2 rounded-lg ml-1 sm:ml-2">(c + d)</span>
+                              {/* Expression avec positions précises */}
+                              <div className="relative">
+                                <div className="text-2xl sm:text-4xl font-mono font-bold text-gray-800 mb-8 text-center">
+                                  <span className="text-blue-600 bg-blue-50 px-3 py-2 rounded-lg">
+                                    <span className={animationStep === 1 || animationStep === 2 ? 'bg-blue-200 px-1 rounded' : ''}>a</span>
+                                    <span className="text-gray-600"> + </span>
+                                    <span className={animationStep === 3 || animationStep === 4 ? 'bg-blue-200 px-1 rounded' : ''}>1</span>
+                                  </span>
+                                  <span className="text-gray-600 mx-3">×</span>
+                                  <span className="text-red-600 bg-red-50 px-3 py-2 rounded-lg">
+                                    <span className={animationStep === 1 || animationStep === 3 ? 'bg-red-200 px-1 rounded' : ''}>a</span>
+                                    <span className="text-gray-600"> + </span>
+                                    <span className={animationStep === 2 || animationStep === 4 ? 'bg-red-200 px-1 rounded' : ''}>2</span>
+                                  </span>
                                 </div>
                                 
-                                {/* SVG des flèches - Responsive */}
-                                <svg className="absolute top-12 sm:top-16 left-0 w-full h-24 sm:h-32" viewBox="0 0 400 120">
-                                  {/* Flèches bleues partant de (a + b) */}
-                                  <path
-                                    d="M 70 10 Q 140 30 200 50"
-                                    stroke="#3b82f6"
-                                    strokeWidth="2"
-                                    fill="none"
-                                    markerEnd="url(#arrowhead-blue)"
-                                    className="animate-pulse"
-                                  />
-                                  <path
-                                    d="M 70 10 Q 140 15 270 50"
-                                    stroke="#3b82f6"
-                                    strokeWidth="2"
-                                    fill="none"
-                                    markerEnd="url(#arrowhead-blue)"
-                                    className="animate-pulse"
-                                  />
+                                {/* SVG avec flèches progressives */}
+                                <svg className="absolute top-16 sm:top-20 left-0 w-full h-20" viewBox="0 0 300 80">
+                                  {/* Flèche 1: a × a */}
+                                  {animationStep >= 1 && (
+                                    <path
+                                      d="M 45 10 Q 90 25 135 10"
+                                      stroke="#8b5cf6"
+                                      strokeWidth="3"
+                                      fill="none"
+                                      markerEnd="url(#arrowhead-purple)"
+                                      className="animate-pulse"
+                                    />
+                                  )}
                                   
-                                  {/* Flèches rouges partant de (c + d) */}
-                                  <path
-                                    d="M 330 10 Q 260 30 240 50"
-                                    stroke="#ef4444"
-                                    strokeWidth="2"
-                                    fill="none"
-                                    markerEnd="url(#arrowhead-red)"
-                                    className="animate-pulse"
-                                  />
-                                  <path
-                                    d="M 330 10 Q 260 15 130 50"
-                                    stroke="#ef4444"
-                                    strokeWidth="2"
-                                    fill="none"
-                                    markerEnd="url(#arrowhead-red)"
-                                    className="animate-pulse"
-                                  />
+                                  {/* Flèche 2: a × 2 */}
+                                  {animationStep >= 2 && (
+                                    <path
+                                      d="M 45 10 Q 110 30 175 10"
+                                      stroke="#059669"
+                                      strokeWidth="3"
+                                      fill="none"
+                                      markerEnd="url(#arrowhead-green)"
+                                      className="animate-pulse"
+                                    />
+                                  )}
                                   
-                                  {/* Définition des pointes de flèches */}
+                                  {/* Flèche 3: 1 × a */}
+                                  {animationStep >= 3 && (
+                                    <path
+                                      d="M 85 10 Q 110 30 135 10"
+                                      stroke="#dc2626"
+                                      strokeWidth="3"
+                                      fill="none"
+                                      markerEnd="url(#arrowhead-red)"
+                                      className="animate-pulse"
+                                    />
+                                  )}
+                                  
+                                  {/* Flèche 4: 1 × 2 */}
+                                  {animationStep >= 4 && (
+                                    <path
+                                      d="M 85 10 Q 130 25 175 10"
+                                      stroke="#ea580c"
+                                      strokeWidth="3"
+                                      fill="none"
+                                      markerEnd="url(#arrowhead-orange)"
+                                      className="animate-pulse"
+                                    />
+                                  )}
+                                  
+                                  {/* Définitions des pointes de flèches */}
                                   <defs>
-                                    <marker id="arrowhead-blue" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
-                                      <polygon points="0 0, 8 3, 0 6" fill="#3b82f6" />
+                                    <marker id="arrowhead-purple" markerWidth="10" markerHeight="8" refX="10" refY="4" orient="auto">
+                                      <polygon points="0 0, 10 4, 0 8" fill="#8b5cf6" />
                                     </marker>
-                                    <marker id="arrowhead-red" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
-                                      <polygon points="0 0, 8 3, 0 6" fill="#ef4444" />
+                                    <marker id="arrowhead-green" markerWidth="10" markerHeight="8" refX="10" refY="4" orient="auto">
+                                      <polygon points="0 0, 10 4, 0 8" fill="#059669" />
+                                    </marker>
+                                    <marker id="arrowhead-red" markerWidth="10" markerHeight="8" refX="10" refY="4" orient="auto">
+                                      <polygon points="0 0, 10 4, 0 8" fill="#dc2626" />
+                                    </marker>
+                                    <marker id="arrowhead-orange" markerWidth="10" markerHeight="8" refX="10" refY="4" orient="auto">
+                                      <polygon points="0 0, 10 4, 0 8" fill="#ea580c" />
                                     </marker>
                                   </defs>
                                 </svg>
                                 
-                                {/* Résultat développé */}
-                                <div className="text-center mt-12 sm:mt-16">
-                                  <div className="text-lg sm:text-2xl font-mono font-bold bg-yellow-50 px-3 sm:px-4 py-2 sm:py-3 rounded-lg border-2 border-yellow-300">
-                                    <span className="text-blue-600">a</span><span className="text-red-600">c</span>
-                                    <span className="text-gray-600"> + </span>
-                                    <span className="text-blue-600">a</span><span className="text-red-600">d</span>
-                                    <span className="text-gray-600"> + </span>
-                                    <span className="text-blue-600">b</span><span className="text-red-600">c</span>
-                                    <span className="text-gray-600"> + </span>
-                                    <span className="text-blue-600">b</span><span className="text-red-600">d</span>
+                                {/* Résultats progressifs */}
+                                <div className="text-center mt-16 sm:mt-20">
+                                  <div className="text-xl sm:text-2xl font-mono font-bold bg-yellow-50 px-4 py-3 rounded-lg border-2 border-yellow-300 min-h-[60px] flex items-center justify-center">
+                                    {animationStep >= 1 && (
+                                      <span className="text-purple-600 font-extrabold">a²</span>
+                                    )}
+                                    {animationStep >= 2 && (
+                                      <>
+                                        <span className="text-gray-600"> + </span>
+                                        <span className="text-green-600 font-extrabold">2a</span>
+                                      </>
+                                    )}
+                                    {animationStep >= 3 && (
+                                      <>
+                                        <span className="text-gray-600"> + </span>
+                                        <span className="text-red-600 font-extrabold">a</span>
+                                      </>
+                                    )}
+                                    {animationStep >= 4 && (
+                                      <>
+                                        <span className="text-gray-600"> + </span>
+                                        <span className="text-orange-600 font-extrabold">2</span>
+                                      </>
+                                    )}
                                   </div>
                                 </div>
                               </div>
@@ -1514,46 +1558,46 @@ export default function DeveloppementPage() {
                       
                       {/* Étapes qui apparaissent progressivement et restent affichées */}
                       <div className="space-y-4">
-                        {/* Étape 2: Tous les produits - Reste visible */}
+                        {/* Étape 5: Tous les produits - Reste visible */}
                         <div 
                           className="text-2xl font-mono font-bold transition-all duration-1000 ease-in-out text-center"
                           style={{ 
-                            opacity: animationStep >= 3 ? 1 : 0,
-                            transform: animationStep >= 3 ? 'translateY(0)' : 'translateY(20px)'
+                            opacity: animationStep >= 5 ? 1 : 0,
+                            transform: animationStep >= 5 ? 'translateY(0)' : 'translateY(20px)'
                           }}
                         >
-                          <span className="text-blue-600 font-extrabold">a × a</span>
+                          <span className="text-purple-600 font-extrabold">a × a</span>
                           <span className="text-gray-600"> + </span>
-                          <span className="text-blue-600 font-extrabold">a</span>
+                          <span className="text-green-600 font-extrabold">a</span>
                           <span className="text-gray-600"> × </span>
-                          <span className="text-red-600 font-extrabold">2</span>
+                          <span className="text-green-600 font-extrabold">2</span>
                           <span className="text-gray-600"> + </span>
-                          <span className="text-blue-600 font-extrabold">1</span>
+                          <span className="text-red-600 font-extrabold">1</span>
                           <span className="text-gray-600"> × </span>
                           <span className="text-red-600 font-extrabold">a</span>
                           <span className="text-gray-600"> + </span>
-                          <span className="text-blue-600 font-extrabold">1</span>
+                          <span className="text-orange-600 font-extrabold">1</span>
                           <span className="text-gray-600"> × </span>
-                          <span className="text-red-600 font-extrabold">2</span>
+                          <span className="text-orange-600 font-extrabold">2</span>
                         </div>
                         
-                        {/* Étape 3: Développement - Reste visible */}
+                        {/* Étape 6: Développement - Reste visible */}
                         <div 
                           className="text-2xl font-mono font-bold transition-all duration-1000 ease-in-out text-center"
                           style={{ 
-                            opacity: animationStep >= 4 ? 1 : 0,
-                            transform: animationStep >= 4 ? 'translateY(0)' : 'translateY(20px)'
+                            opacity: animationStep >= 6 ? 1 : 0,
+                            transform: animationStep >= 6 ? 'translateY(0)' : 'translateY(20px)'
                           }}
                         >
                           <span className="text-purple-600">a² + 2a + a + 2</span>
                         </div>
                         
-                        {/* Étape 4: Résultat final - Reste visible */}
+                        {/* Étape 7: Résultat final - Reste visible */}
                         <div 
                           className="text-3xl font-mono font-bold transition-all duration-1000 ease-in-out text-center"
                           style={{ 
-                            opacity: animationStep >= 5 ? 1 : 0,
-                            transform: animationStep >= 5 ? 'translateY(0)' : 'translateY(20px)'
+                            opacity: animationStep >= 7 ? 1 : 0,
+                            transform: animationStep >= 7 ? 'translateY(0)' : 'translateY(20px)'
                           }}
                         >
                           <span className="text-green-600 font-extrabold">a² + 3a + 2</span>
