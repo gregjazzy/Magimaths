@@ -136,6 +136,7 @@ export default function DeveloppementPage() {
       expression: '(a + 1)(a + 2)',
       steps: [
         { phase: 'initial', content: '(a + 1)(a + 2)', description: 'Deux parenthèses à multiplier' },
+        { phase: 'schema', content: '(a + 1)(a + 2)', description: 'Schéma : chaque terme de la première × chaque terme de la seconde' },
         { phase: 'highlight', content: '(a + 1)(a + 2)', description: 'Chaque terme × chaque terme' },
         { phase: 'distribute', content: 'a×a + a×2 + 1×a + 1×2', description: 'Tous les produits' },
         { phase: 'expand', content: 'a² + 2a + a + 2', description: 'Développement complet' },
@@ -1426,19 +1427,99 @@ export default function DeveloppementPage() {
                       {/* Expression de départ - TOUJOURS VISIBLE */}
                       <div className="text-center">
                         <div className="text-4xl font-mono font-bold text-gray-800 mb-6">
-                          <span className={`${animationStep === 1 ? 'text-blue-600 bg-blue-100 px-2 rounded animate-pulse' : 'text-blue-600 font-extrabold'}`}>(a + 1)</span>
-                          <span className={`${animationStep === 1 ? 'text-red-600 bg-red-100 px-2 rounded animate-pulse' : 'text-red-600 font-extrabold'}`}>(a + 2)</span>
+                          <span className={`${animationStep === 2 ? 'text-blue-600 bg-blue-100 px-2 rounded animate-pulse' : 'text-blue-600 font-extrabold'}`}>(a + 1)</span>
+                          <span className={`${animationStep === 2 ? 'text-red-600 bg-red-100 px-2 rounded animate-pulse' : 'text-red-600 font-extrabold'}`}>(a + 2)</span>
                         </div>
                       </div>
                       
+                      {/* Schéma avec flèches - Étape 1 */}
+                      {animationStep === 1 && (
+                        <div className="flex justify-center mb-6 sm:mb-8">
+                          <div className="relative w-full max-w-md sm:max-w-2xl">
+                            <div className="flex items-center justify-center">
+                              {/* Expression avec schéma */}
+                              <div className="relative w-full">
+                                <div className="text-xl sm:text-3xl font-mono font-bold text-gray-800 mb-4 text-center">
+                                  <span className="text-blue-600 bg-blue-50 px-2 sm:px-3 py-1 sm:py-2 rounded-lg mr-1 sm:mr-2">(a + b)</span>
+                                  <span className="text-gray-600 mx-1 sm:mx-2">×</span>
+                                  <span className="text-red-600 bg-red-50 px-2 sm:px-3 py-1 sm:py-2 rounded-lg ml-1 sm:ml-2">(c + d)</span>
+                                </div>
+                                
+                                {/* SVG des flèches - Responsive */}
+                                <svg className="absolute top-12 sm:top-16 left-0 w-full h-24 sm:h-32" viewBox="0 0 400 120">
+                                  {/* Flèches bleues partant de (a + b) */}
+                                  <path
+                                    d="M 70 10 Q 140 30 200 50"
+                                    stroke="#3b82f6"
+                                    strokeWidth="2"
+                                    fill="none"
+                                    markerEnd="url(#arrowhead-blue)"
+                                    className="animate-pulse"
+                                  />
+                                  <path
+                                    d="M 70 10 Q 140 15 270 50"
+                                    stroke="#3b82f6"
+                                    strokeWidth="2"
+                                    fill="none"
+                                    markerEnd="url(#arrowhead-blue)"
+                                    className="animate-pulse"
+                                  />
+                                  
+                                  {/* Flèches rouges partant de (c + d) */}
+                                  <path
+                                    d="M 330 10 Q 260 30 240 50"
+                                    stroke="#ef4444"
+                                    strokeWidth="2"
+                                    fill="none"
+                                    markerEnd="url(#arrowhead-red)"
+                                    className="animate-pulse"
+                                  />
+                                  <path
+                                    d="M 330 10 Q 260 15 130 50"
+                                    stroke="#ef4444"
+                                    strokeWidth="2"
+                                    fill="none"
+                                    markerEnd="url(#arrowhead-red)"
+                                    className="animate-pulse"
+                                  />
+                                  
+                                  {/* Définition des pointes de flèches */}
+                                  <defs>
+                                    <marker id="arrowhead-blue" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+                                      <polygon points="0 0, 8 3, 0 6" fill="#3b82f6" />
+                                    </marker>
+                                    <marker id="arrowhead-red" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+                                      <polygon points="0 0, 8 3, 0 6" fill="#ef4444" />
+                                    </marker>
+                                  </defs>
+                                </svg>
+                                
+                                {/* Résultat développé */}
+                                <div className="text-center mt-12 sm:mt-16">
+                                  <div className="text-lg sm:text-2xl font-mono font-bold bg-yellow-50 px-3 sm:px-4 py-2 sm:py-3 rounded-lg border-2 border-yellow-300">
+                                    <span className="text-blue-600">a</span><span className="text-red-600">c</span>
+                                    <span className="text-gray-600"> + </span>
+                                    <span className="text-blue-600">a</span><span className="text-red-600">d</span>
+                                    <span className="text-gray-600"> + </span>
+                                    <span className="text-blue-600">b</span><span className="text-red-600">c</span>
+                                    <span className="text-gray-600"> + </span>
+                                    <span className="text-blue-600">b</span><span className="text-red-600">d</span>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                      
                       {/* Étapes qui apparaissent progressivement et restent affichées */}
                       <div className="space-y-4">
-                        {/* Étape 1: Tous les produits - Reste visible */}
+                        {/* Étape 2: Tous les produits - Reste visible */}
                         <div 
                           className="text-2xl font-mono font-bold transition-all duration-1000 ease-in-out text-center"
                           style={{ 
-                            opacity: animationStep >= 2 ? 1 : 0,
-                            transform: animationStep >= 2 ? 'translateY(0)' : 'translateY(20px)'
+                            opacity: animationStep >= 3 ? 1 : 0,
+                            transform: animationStep >= 3 ? 'translateY(0)' : 'translateY(20px)'
                           }}
                         >
                           <span className="text-blue-600 font-extrabold">a × a</span>
@@ -1456,23 +1537,23 @@ export default function DeveloppementPage() {
                           <span className="text-red-600 font-extrabold">2</span>
                         </div>
                         
-                        {/* Étape 2: Développement - Reste visible */}
+                        {/* Étape 3: Développement - Reste visible */}
                         <div 
                           className="text-2xl font-mono font-bold transition-all duration-1000 ease-in-out text-center"
                           style={{ 
-                            opacity: animationStep >= 3 ? 1 : 0,
-                            transform: animationStep >= 3 ? 'translateY(0)' : 'translateY(20px)'
+                            opacity: animationStep >= 4 ? 1 : 0,
+                            transform: animationStep >= 4 ? 'translateY(0)' : 'translateY(20px)'
                           }}
                         >
                           <span className="text-purple-600">a² + 2a + a + 2</span>
                         </div>
                         
-                        {/* Étape 3: Résultat final - Reste visible */}
+                        {/* Étape 4: Résultat final - Reste visible */}
                         <div 
                           className="text-3xl font-mono font-bold transition-all duration-1000 ease-in-out text-center"
                           style={{ 
-                            opacity: animationStep >= 4 ? 1 : 0,
-                            transform: animationStep >= 4 ? 'translateY(0)' : 'translateY(20px)'
+                            opacity: animationStep >= 5 ? 1 : 0,
+                            transform: animationStep >= 5 ? 'translateY(0)' : 'translateY(20px)'
                           }}
                         >
                           <span className="text-green-600 font-extrabold">a² + 3a + 2</span>
