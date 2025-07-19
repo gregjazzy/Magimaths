@@ -1431,104 +1431,96 @@ export default function DeveloppementPage() {
                     <div className="space-y-6">
                       {/* Expression de départ - TOUJOURS VISIBLE */}
                       <div className="text-center p-4 bg-gray-50 rounded-lg">
-                        <div className="text-3xl sm:text-4xl font-mono font-bold text-gray-800 mb-4">
-                          <span className="text-blue-600 font-extrabold">(a + 1)</span>
-                          <span className="text-red-600 font-extrabold">(b + 2)</span>
-                        </div>
-                        
-                        {/* Flèches visuelles progressives */}
-                        {animationStep >= 1 && (
-                          <div className="relative mt-4 mb-8">
-                            <svg className="w-full h-24" viewBox="0 0 500 100">
-                              {/* Positions des termes : (a + 1) × (b + 2) */}
-                              {/* a de (a+1) = 50, 1 de (a+1) = 90, b de (b+2) = 280, 2 de (b+2) = 320 */}
-                              
-                              {/* Flèches du niveau HAUT (a × b et a × 2) */}
-                              {/* Flèche 1: a × b - niveau haut - du a bleu au b rouge */}
-                              {animationStep >= 1 && (
-                                <g>
-                                  <path
-                                    d="M 50 28 Q 165 -5 280 28"
-                                    stroke="#8b5cf6"
-                                    strokeWidth="3"
-                                    fill="none"
-                                    markerEnd="url(#arrowhead-purple)"
-                                    className="animate-pulse"
-                                  />
-                                  <text x="165" y="5" textAnchor="middle" className="text-xs fill-purple-600 font-bold">a × b = ab</text>
-                                </g>
-                              )}
-                              
-                              {/* Flèche 2: a × 2 - niveau haut */}
-                              {animationStep >= 2 && (
-                                <g>
-                                  <path
-                                    d="M 50 20 Q 185 10 320 20"
-                                    stroke="#059669"
-                                    strokeWidth="3"
-                                    fill="none"
-                                    markerEnd="url(#arrowhead-green)"
-                                    className="animate-pulse"
-                                  />
-                                  <text x="185" y="25" textAnchor="middle" className="text-xs fill-green-600 font-bold">a × 2 = 2a</text>
-                                </g>
-                              )}
-                              
-                              {/* Flèches du niveau BAS (1 × b et 1 × 2) */}
-                              {/* Flèche 3: 1 × b - niveau bas */}
-                              {animationStep >= 3 && (
-                                <g>
-                                  <path
-                                    d="M 90 35 Q 185 80 280 35"
-                                    stroke="#dc2626"
-                                    strokeWidth="3"
-                                    fill="none"
-                                    markerEnd="url(#arrowhead-red)"
-                                    className="animate-pulse"
-                                  />
-                                  <text x="185" y="75" textAnchor="middle" className="text-xs fill-red-600 font-bold">1 × b = b</text>
-                                </g>
-                              )}
-                              
-                              {/* Flèche 4: 1 × 2 - niveau bas */}
-                              {animationStep >= 4 && (
-                                <g>
-                                  <path
-                                    d="M 90 35 Q 205 85 320 35"
-                                    stroke="#ea580c"
-                                    strokeWidth="3"
-                                    fill="none"
-                                    markerEnd="url(#arrowhead-orange)"
-                                    className="animate-pulse"
-                                  />
-                                  <text x="205" y="90" textAnchor="middle" className="text-xs fill-orange-600 font-bold">1 × 2 = 2</text>
-                                </g>
-                              )}
-                              
-                              {/* Termes visuels pour référence */}
-                              <text x="50" y="30" textAnchor="middle" className="text-sm fill-blue-600 font-bold">a</text>
-                              <text x="90" y="45" textAnchor="middle" className="text-sm fill-blue-600 font-bold">1</text>
-                              <text x="280" y="30" textAnchor="middle" className="text-sm fill-red-600 font-bold">b</text>
-                              <text x="320" y="30" textAnchor="middle" className="text-sm fill-red-600 font-bold">2</text>
-                              
-                              {/* Définitions des pointes de flèches */}
-                              <defs>
-                                <marker id="arrowhead-purple" markerWidth="10" markerHeight="8" refX="10" refY="4" orient="auto">
-                                  <polygon points="0 0, 10 4, 0 8" fill="#8b5cf6" />
-                                </marker>
-                                <marker id="arrowhead-green" markerWidth="10" markerHeight="8" refX="10" refY="4" orient="auto">
-                                  <polygon points="0 0, 10 4, 0 8" fill="#059669" />
-                                </marker>
-                                <marker id="arrowhead-red" markerWidth="10" markerHeight="8" refX="10" refY="4" orient="auto">
-                                  <polygon points="0 0, 10 4, 0 8" fill="#dc2626" />
-                                </marker>
-                                <marker id="arrowhead-orange" markerWidth="10" markerHeight="8" refX="10" refY="4" orient="auto">
-                                  <polygon points="0 0, 10 4, 0 8" fill="#ea580c" />
-                                </marker>
-                              </defs>
-                            </svg>
+                        {/* Expression avec overlay pour les flèches */}
+                        <div className="relative">
+                          <div className="text-3xl sm:text-4xl font-mono font-bold text-gray-800 mb-4 text-center">
+                            <span className="text-blue-600 font-extrabold" id="term-a">(a + 1)</span>
+                            <span className="text-red-600 font-extrabold ml-2" id="term-b">(b + 2)</span>
                           </div>
-                        )}
+                          
+                          {/* Flèches SVG superposées */}
+                          {animationStep >= 1 && (
+                            <div className="absolute inset-0 pointer-events-none">
+                              <svg className="w-full h-full" viewBox="0 0 400 100" style={{ top: '10px' }}>
+                                {/* Flèche 1: a × b - du premier 'a' au 'b' */}
+                                {animationStep >= 1 && (
+                                  <g>
+                                    <path
+                                      d="M 30 15 Q 200 -10 240 15"
+                                      stroke="#8b5cf6"
+                                      strokeWidth="3"
+                                      fill="none"
+                                      markerEnd="url(#arrowhead-purple)"
+                                      className="animate-pulse"
+                                    />
+                                    <text x="135" y="0" textAnchor="middle" className="text-xs fill-purple-600 font-bold">a × b = ab</text>
+                                  </g>
+                                )}
+                                
+                                {/* Flèche 2: a × 2 - du premier 'a' au '2' */}
+                                {animationStep >= 2 && (
+                                  <g>
+                                    <path
+                                      d="M 30 15 Q 200 5 280 15"
+                                      stroke="#059669"
+                                      strokeWidth="3"
+                                      fill="none"
+                                      markerEnd="url(#arrowhead-green)"
+                                      className="animate-pulse"
+                                    />
+                                    <text x="155" y="20" textAnchor="middle" className="text-xs fill-green-600 font-bold">a × 2 = 2a</text>
+                                  </g>
+                                )}
+                                
+                                {/* Flèche 3: 1 × b - du '1' au 'b' */}
+                                {animationStep >= 3 && (
+                                  <g>
+                                    <path
+                                      d="M 70 25 Q 155 70 240 25"
+                                      stroke="#dc2626"
+                                      strokeWidth="3"
+                                      fill="none"
+                                      markerEnd="url(#arrowhead-red)"
+                                      className="animate-pulse"
+                                    />
+                                    <text x="155" y="65" textAnchor="middle" className="text-xs fill-red-600 font-bold">1 × b = b</text>
+                                  </g>
+                                )}
+                                
+                                {/* Flèche 4: 1 × 2 - du '1' au '2' */}
+                                {animationStep >= 4 && (
+                                  <g>
+                                    <path
+                                      d="M 70 25 Q 175 75 280 25"
+                                      stroke="#ea580c"
+                                      strokeWidth="3"
+                                      fill="none"
+                                      markerEnd="url(#arrowhead-orange)"
+                                      className="animate-pulse"
+                                    />
+                                    <text x="175" y="80" textAnchor="middle" className="text-xs fill-orange-600 font-bold">1 × 2 = 2</text>
+                                  </g>
+                                )}
+                                
+                                {/* Définitions des pointes de flèches */}
+                                <defs>
+                                  <marker id="arrowhead-purple" markerWidth="10" markerHeight="8" refX="10" refY="4" orient="auto">
+                                    <polygon points="0 0, 10 4, 0 8" fill="#8b5cf6" />
+                                  </marker>
+                                  <marker id="arrowhead-green" markerWidth="10" markerHeight="8" refX="10" refY="4" orient="auto">
+                                    <polygon points="0 0, 10 4, 0 8" fill="#059669" />
+                                  </marker>
+                                  <marker id="arrowhead-red" markerWidth="10" markerHeight="8" refX="10" refY="4" orient="auto">
+                                    <polygon points="0 0, 10 4, 0 8" fill="#dc2626" />
+                                  </marker>
+                                  <marker id="arrowhead-orange" markerWidth="10" markerHeight="8" refX="10" refY="4" orient="auto">
+                                    <polygon points="0 0, 10 4, 0 8" fill="#ea580c" />
+                                  </marker>
+                                </defs>
+                              </svg>
+                            </div>
+                          )}
+                        </div>
                         
                         <p className="text-gray-600">Expression de départ</p>
                       </div>
