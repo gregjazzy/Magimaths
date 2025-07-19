@@ -178,12 +178,12 @@ const normalExercises = [
   },
   {
     id: 17,
-    question: "2x²y - (3x²y - (-5x²y)) + 4x²y",
+    question: "2x²y - [3x²y - (-5x²y)] + 4x²y",
     steps: [
-      { text: "Expression de départ", expr: "2x²y - (3x²y - (-5x²y)) + 4x²y", color: "text-blue-600" },
-      { text: "Règle dans parenthèse : moins par moins", expr: "2x²y - (3x²y + 5x²y) + 4x²y", color: "text-orange-600" },
-      { text: "Simplifier dans parenthèse", expr: "2x²y - (8x²y) + 4x²y", color: "text-green-600" },
-      { text: "Moins devant parenthèse", expr: "2x²y - 8x²y + 4x²y", color: "text-red-600" },
+      { text: "Expression de départ", expr: "2x²y - [3x²y - (-5x²y)] + 4x²y", color: "text-blue-600" },
+      { text: "Règle dans crochets : moins par moins", expr: "2x²y - [3x²y + 5x²y] + 4x²y", color: "text-orange-600" },
+      { text: "Simplifier dans crochets", expr: "2x²y - [8x²y] + 4x²y", color: "text-green-600" },
+      { text: "Moins devant crochets", expr: "2x²y - 8x²y + 4x²y", color: "text-red-600" },
       { text: "Résultat final", expr: "-2x²y", color: "text-purple-600" }
     ]
   },
@@ -191,22 +191,22 @@ const normalExercises = [
   // Niveau 8 : Parenthèses avec plusieurs types (x et nombre) et doubles signes
   {
     id: 18,
-    question: "4x - (2x - (-3)) + 7x - (-5)",
+    question: "4x - [2x - (-3)] + 7x - (-5)",
     steps: [
-      { text: "Expression de départ", expr: "4x - (2x - (-3)) + 7x - (-5)", color: "text-blue-600" },
-      { text: "Règle dans parenthèse : moins par moins", expr: "4x - (2x + 3) + 7x + 5", color: "text-orange-600" },
-      { text: "Moins devant parenthèse change les signes", expr: "4x - 2x - 3 + 7x + 5", color: "text-green-600" },
+      { text: "Expression de départ", expr: "4x - [2x - (-3)] + 7x - (-5)", color: "text-blue-600" },
+      { text: "Règle dans crochets : moins par moins", expr: "4x - [2x + 3] + 7x + 5", color: "text-orange-600" },
+      { text: "Moins devant crochets change les signes", expr: "4x - 2x - 3 + 7x + 5", color: "text-green-600" },
       { text: "Séparer variables et nombres", expr: "4x - 2x + 7x - 3 + 5", color: "text-red-600" },
       { text: "Résultat final", expr: "9x + 2", color: "text-purple-600" }
     ]
   },
   {
     id: 19,
-    question: "6xy - (3xy - (-2)) + 4xy - (-8)",
+    question: "6xy - [3xy - (-2)] + 4xy - (-8)",
     steps: [
-      { text: "Expression de départ", expr: "6xy - (3xy - (-2)) + 4xy - (-8)", color: "text-blue-600" },
-      { text: "Règle : moins par moins fait plus", expr: "6xy - (3xy + 2) + 4xy + 8", color: "text-orange-600" },
-      { text: "Moins devant parenthèse change les signes", expr: "6xy - 3xy - 2 + 4xy + 8", color: "text-green-600" },
+      { text: "Expression de départ", expr: "6xy - [3xy - (-2)] + 4xy - (-8)", color: "text-blue-600" },
+      { text: "Règle : moins par moins fait plus", expr: "6xy - [3xy + 2] + 4xy + 8", color: "text-orange-600" },
+      { text: "Moins devant crochets change les signes", expr: "6xy - 3xy - 2 + 4xy + 8", color: "text-green-600" },
       { text: "Séparer variables et nombres", expr: "6xy - 3xy + 4xy - 2 + 8", color: "text-red-600" },
       { text: "Résultat final", expr: "7xy + 6", color: "text-purple-600" }
     ]
@@ -215,11 +215,11 @@ const normalExercises = [
   // Niveau 9 : Parenthèses avec 3 membres (x, x² et nombre) et doubles signes
   {
     id: 20,
-    question: "5x - (2x² - (-3x) - (-4)) + 3x² - (-1)",
+    question: "5x - [2x² - (-3x) - (-4)] + 3x² - (-1)",
     steps: [
-      { text: "Expression de départ", expr: "5x - (2x² - (-3x) - (-4)) + 3x² - (-1)", color: "text-blue-600" },
-      { text: "Règle dans parenthèse : moins par moins", expr: "5x - (2x² + 3x + 4) + 3x² + 1", color: "text-orange-600" },
-      { text: "Moins devant parenthèse change les signes", expr: "5x - 2x² - 3x - 4 + 3x² + 1", color: "text-green-600" },
+      { text: "Expression de départ", expr: "5x - [2x² - (-3x) - (-4)] + 3x² - (-1)", color: "text-blue-600" },
+      { text: "Règle dans crochets : moins par moins", expr: "5x - [2x² + 3x + 4] + 3x² + 1", color: "text-orange-600" },
+      { text: "Moins devant crochets change les signes", expr: "5x - 2x² - 3x - 4 + 3x² + 1", color: "text-green-600" },
       { text: "Séparer par type", expr: "5x - 3x - 2x² + 3x² - 4 + 1", color: "text-red-600" },
       { text: "Résultat final", expr: "2x + x² - 3", color: "text-purple-600" }
     ]
@@ -647,23 +647,23 @@ const beastExercises = [
   // Niveau 2 : TRIPLETS DE VARIABLES + Parenthèses avec puissances BEAST !
   {
     id: 4,
-    question: "12xyz - ((-5x²y) - (-3xyz) + (-7x²y))",
+    question: "12xyz - [(-5x²y) - (-3xyz) + (-7x²y)]",
     steps: [
-      { text: "Expression de départ", expr: "12xyz - ((-5x²y) - (-3xyz) + (-7x²y))", color: "text-blue-600" },
-      { text: "🔥 Dans parenthèse : - (-3xyz) = +3xyz", expr: "12xyz - (-5x²y + 3xyz - 7x²y)", color: "text-orange-600" },
-      { text: "Simplifier parenthèse", expr: "12xyz - (-12x²y + 3xyz)", color: "text-green-600" },
-      { text: "🔥 BEAST : - (-12x²y + 3xyz) = +12x²y - 3xyz", expr: "12xyz + 12x²y - 3xyz", color: "text-red-600" },
+      { text: "Expression de départ", expr: "12xyz - [(-5x²y) - (-3xyz) + (-7x²y)]", color: "text-blue-600" },
+      { text: "🔥 Dans crochets : - (-3xyz) = +3xyz", expr: "12xyz - [-5x²y + 3xyz - 7x²y]", color: "text-orange-600" },
+      { text: "Simplifier crochets", expr: "12xyz - [-12x²y + 3xyz]", color: "text-green-600" },
+      { text: "🔥 BEAST : - [-12x²y + 3xyz] = +12x²y - 3xyz", expr: "12xyz + 12x²y - 3xyz", color: "text-red-600" },
       { text: "Résultat final", expr: "9xyz + 12x²y", color: "text-purple-600" }
     ]
   },
   {
     id: 5,
-    question: "8x²y² - ((-6xyz) - (-2x²y²) + (-4xyz) - (-3x²y²))",
+    question: "8x²y² - [(-6xyz) - (-2x²y²) + (-4xyz) - (-3x²y²)]",
     steps: [
-      { text: "Expression de départ", expr: "8x²y² - ((-6xyz) - (-2x²y²) + (-4xyz) - (-3x²y²))", color: "text-blue-600" },
-      { text: "🔥 Dans parenthèse : traiter les doubles signes", expr: "8x²y² - (-6xyz + 2x²y² - 4xyz + 3x²y²)", color: "text-orange-600" },
-      { text: "Simplifier parenthèse", expr: "8x²y² - (-10xyz + 5x²y²)", color: "text-green-600" },
-      { text: "🔥 BEAST : - (-10xyz + 5x²y²) = +10xyz - 5x²y²", expr: "8x²y² + 10xyz - 5x²y²", color: "text-red-600" },
+      { text: "Expression de départ", expr: "8x²y² - [(-6xyz) - (-2x²y²) + (-4xyz) - (-3x²y²)]", color: "text-blue-600" },
+      { text: "🔥 Dans crochets : traiter les doubles signes", expr: "8x²y² - [-6xyz + 2x²y² - 4xyz + 3x²y²]", color: "text-orange-600" },
+      { text: "Simplifier crochets", expr: "8x²y² - [-10xyz + 5x²y²]", color: "text-green-600" },
+      { text: "🔥 BEAST : - [-10xyz + 5x²y²] = +10xyz - 5x²y²", expr: "8x²y² + 10xyz - 5x²y²", color: "text-red-600" },
       { text: "Résultat final", expr: "3x²y² + 10xyz", color: "text-purple-600" }
     ]
   },
@@ -693,23 +693,23 @@ const beastExercises = [
   // Niveau 4 : COMPLEXITÉ EXPLOSÉE - Parenthèses avec variables à puissances mixtes BEAST !
   {
     id: 8,
-    question: "10x³y² - ((-3x³y²) - (-7xy⁴) + (-2x³y²)) + (-5xy⁴)",
+    question: "10x³y² - [(-3x³y²) - (-7xy⁴) + (-2x³y²)] + (-5xy⁴)",
     steps: [
-      { text: "Expression de départ", expr: "10x³y² - ((-3x³y²) - (-7xy⁴) + (-2x³y²)) + (-5xy⁴)", color: "text-blue-600" },
-      { text: "🔥 Dans parenthèse : - (-7xy⁴) = +7xy⁴", expr: "10x³y² - (-3x³y² + 7xy⁴ - 2x³y²) - 5xy⁴", color: "text-orange-600" },
-      { text: "Simplifier parenthèse", expr: "10x³y² - (-5x³y² + 7xy⁴) - 5xy⁴", color: "text-green-600" },
-      { text: "🔥 BEAST : - (-5x³y² + 7xy⁴) = +5x³y² - 7xy⁴", expr: "10x³y² + 5x³y² - 7xy⁴ - 5xy⁴", color: "text-red-600" },
+      { text: "Expression de départ", expr: "10x³y² - [(-3x³y²) - (-7xy⁴) + (-2x³y²)] + (-5xy⁴)", color: "text-blue-600" },
+      { text: "🔥 Dans crochets : - (-7xy⁴) = +7xy⁴", expr: "10x³y² - [-3x³y² + 7xy⁴ - 2x³y²] - 5xy⁴", color: "text-orange-600" },
+      { text: "Simplifier crochets", expr: "10x³y² - [-5x³y² + 7xy⁴] - 5xy⁴", color: "text-green-600" },
+      { text: "🔥 BEAST : - [-5x³y² + 7xy⁴] = +5x³y² - 7xy⁴", expr: "10x³y² + 5x³y² - 7xy⁴ - 5xy⁴", color: "text-red-600" },
       { text: "Résultat final", expr: "15x³y² - 12xy⁴", color: "text-purple-600" }
     ]
   },
   {
     id: 9,
-    question: "14x²y³z - ((-6x²y³z) - (-9xyz⁵) + (-4x²y³z)) - (-3xyz⁵)",
+    question: "14x²y³z - [(-6x²y³z) - (-9xyz⁵) + (-4x²y³z)] - (-3xyz⁵)",
     steps: [
-      { text: "Expression de départ", expr: "14x²y³z - ((-6x²y³z) - (-9xyz⁵) + (-4x²y³z)) - (-3xyz⁵)", color: "text-blue-600" },
-      { text: "🔥 Dans parenthèse et fin : doubles signes", expr: "14x²y³z - (-6x²y³z + 9xyz⁵ - 4x²y³z) + 3xyz⁵", color: "text-orange-600" },
-      { text: "Simplifier parenthèse", expr: "14x²y³z - (-10x²y³z + 9xyz⁵) + 3xyz⁵", color: "text-green-600" },
-      { text: "🔥 BEAST : - (-10x²y³z + 9xyz⁵) = +10x²y³z - 9xyz⁵", expr: "14x²y³z + 10x²y³z - 9xyz⁵ + 3xyz⁵", color: "text-red-600" },
+      { text: "Expression de départ", expr: "14x²y³z - [(-6x²y³z) - (-9xyz⁵) + (-4x²y³z)] - (-3xyz⁵)", color: "text-blue-600" },
+      { text: "🔥 Dans crochets et fin : doubles signes", expr: "14x²y³z - [-6x²y³z + 9xyz⁵ - 4x²y³z] + 3xyz⁵", color: "text-orange-600" },
+      { text: "Simplifier crochets", expr: "14x²y³z - [-10x²y³z + 9xyz⁵] + 3xyz⁵", color: "text-green-600" },
+      { text: "🔥 BEAST : - [-10x²y³z + 9xyz⁵] = +10x²y³z - 9xyz⁵", expr: "14x²y³z + 10x²y³z - 9xyz⁵ + 3xyz⁵", color: "text-red-600" },
       { text: "Résultat final", expr: "24x²y³z - 6xyz⁵", color: "text-purple-600" }
     ]
   },
@@ -717,22 +717,22 @@ const beastExercises = [
   // Niveau 5 : DOUBLE PARENTHÈSES + Variables à puissances EXTRÊMES !
   {
     id: 10,
-    question: "12x⁵y² - (-8) - ((-7x⁵y²) - (-5) + (-3xyz⁶)) + (-11)",
+    question: "12x⁵y² - (-8) - [(-7x⁵y²) - (-5) + (-3xyz⁶)] + (-11)",
     steps: [
-      { text: "Expression de départ", expr: "12x⁵y² - (-8) - ((-7x⁵y²) - (-5) + (-3xyz⁶)) + (-11)", color: "text-blue-600" },
-      { text: "🔥 Traiter - (-8) = +8 et dans parenthèse", expr: "12x⁵y² + 8 - (-7x⁵y² + 5 - 3xyz⁶) - 11", color: "text-orange-600" },
-      { text: "Simplifier parenthèse", expr: "12x⁵y² + 8 - (-7x⁵y² + 5 - 3xyz⁶) - 11", color: "text-green-600" },
-      { text: "🔥 Distribuer : - (-7x⁵y² + 5 - 3xyz⁶) = +7x⁵y² - 5 + 3xyz⁶", expr: "12x⁵y² + 8 + 7x⁵y² - 5 + 3xyz⁶ - 11", color: "text-red-600" },
+      { text: "Expression de départ", expr: "12x⁵y² - (-8) - [(-7x⁵y²) - (-5) + (-3xyz⁶)] + (-11)", color: "text-blue-600" },
+      { text: "🔥 Traiter - (-8) = +8 et dans crochets", expr: "12x⁵y² + 8 - [-7x⁵y² + 5 - 3xyz⁶] - 11", color: "text-orange-600" },
+      { text: "Simplifier crochets", expr: "12x⁵y² + 8 - [-7x⁵y² + 5 - 3xyz⁶] - 11", color: "text-green-600" },
+      { text: "🔥 Distribuer : - [-7x⁵y² + 5 - 3xyz⁶] = +7x⁵y² - 5 + 3xyz⁶", expr: "12x⁵y² + 8 + 7x⁵y² - 5 + 3xyz⁶ - 11", color: "text-red-600" },
       { text: "Regrouper", expr: "19x⁵y² + 3xyz⁶ - 8", color: "text-purple-600" }
     ]
   },
   {
     id: 11,
-    question: "9y - (-6) + ((-4y) + (-12) - (-5y)) - (-9)",
+    question: "9y - (-6) + [(-4y) + (-12) - (-5y)] - (-9)",
     steps: [
-      { text: "Expression de départ", expr: "9y - (-6) + ((-4y) + (-12) - (-5y)) - (-9)", color: "text-blue-600" },
-      { text: "🔥 Doubles signes début/fin", expr: "9y + 6 + (-4y - 12 + 5y) + 9", color: "text-orange-600" },
-      { text: "Simplifier parenthèse", expr: "9y + 6 + (y - 12) + 9", color: "text-green-600" },
+      { text: "Expression de départ", expr: "9y - (-6) + [(-4y) + (-12) - (-5y)] - (-9)", color: "text-blue-600" },
+      { text: "🔥 Doubles signes début/fin", expr: "9y + 6 + [-4y - 12 + 5y] + 9", color: "text-orange-600" },
+      { text: "Simplifier crochets", expr: "9y + 6 + [y - 12] + 9", color: "text-green-600" },
       { text: "Distribuer", expr: "9y + 6 + y - 12 + 9", color: "text-red-600" },
       { text: "Résultat final", expr: "10y + 3", color: "text-purple-600" }
     ]
@@ -741,22 +741,22 @@ const beastExercises = [
   // Niveau 6 : CHAOS ORGANISÉ - Variables xy, x², nombres, doubles signes
   {
     id: 12,
-    question: "15x² - (-3xy) - ((-2x²) + (-5xy) - (-4x²)) + (-7xy)",
+    question: "15x² - (-3xy) - [(-2x²) + (-5xy) - (-4x²)] + (-7xy)",
     steps: [
-      { text: "Expression de départ", expr: "15x² - (-3xy) - ((-2x²) + (-5xy) - (-4x²)) + (-7xy)", color: "text-blue-600" },
-      { text: "🔥 Début : - (-3xy) = +3xy", expr: "15x² + 3xy - (-2x² - 5xy + 4x²) - 7xy", color: "text-orange-600" },
-      { text: "Simplifier parenthèse", expr: "15x² + 3xy - (2x² - 5xy) - 7xy", color: "text-green-600" },
+      { text: "Expression de départ", expr: "15x² - (-3xy) - [(-2x²) + (-5xy) - (-4x²)] + (-7xy)", color: "text-blue-600" },
+      { text: "🔥 Début : - (-3xy) = +3xy", expr: "15x² + 3xy - [-2x² - 5xy + 4x²] - 7xy", color: "text-orange-600" },
+      { text: "Simplifier crochets", expr: "15x² + 3xy - [2x² - 5xy] - 7xy", color: "text-green-600" },
       { text: "Distribuer", expr: "15x² + 3xy - 2x² + 5xy - 7xy", color: "text-red-600" },
       { text: "Regrouper", expr: "13x² + xy", color: "text-purple-600" }
     ]
   },
   {
     id: 13,
-    question: "8xy - (-12) + ((-3xy) - (-7) + (-2xy)) - (-15)",
+    question: "8xy - (-12) + [(-3xy) - (-7) + (-2xy)] - (-15)",
     steps: [
-      { text: "Expression de départ", expr: "8xy - (-12) + ((-3xy) - (-7) + (-2xy)) - (-15)", color: "text-blue-600" },
-      { text: "🔥 Doubles signes externes", expr: "8xy + 12 + (-3xy + 7 - 2xy) + 15", color: "text-orange-600" },
-      { text: "Simplifier parenthèse", expr: "8xy + 12 + (-5xy + 7) + 15", color: "text-green-600" },
+      { text: "Expression de départ", expr: "8xy - (-12) + [(-3xy) - (-7) + (-2xy)] - (-15)", color: "text-blue-600" },
+      { text: "🔥 Doubles signes externes", expr: "8xy + 12 + [-3xy + 7 - 2xy] + 15", color: "text-orange-600" },
+      { text: "Simplifier crochets", expr: "8xy + 12 + [-5xy + 7] + 15", color: "text-green-600" },
       { text: "Distribuer", expr: "8xy + 12 - 5xy + 7 + 15", color: "text-red-600" },
       { text: "Résultat final", expr: "3xy + 34", color: "text-purple-600" }
     ]
@@ -765,26 +765,26 @@ const beastExercises = [
   // Niveau 7 : ENFER ORGANISATIONNEL - Parenthèses imbriquées
   {
     id: 14,
-    question: "20x - ((-8x) - ((-3x) + (-5x)) + (-7x))",
+    question: "20x - [(-8x) - ((-3x) + (-5x)) + (-7x)]",
     steps: [
-      { text: "Expression de départ", expr: "20x - ((-8x) - ((-3x) + (-5x)) + (-7x))", color: "text-blue-600" },
-      { text: "🔥 Parenthèse interne", expr: "20x - (-8x - (-3x - 5x) - 7x)", color: "text-orange-600" },
-      { text: "Simplifier interne", expr: "20x - (-8x - (-8x) - 7x)", color: "text-green-600" },
-      { text: "🔥 - (-8x) = +8x", expr: "20x - (-8x + 8x - 7x)", color: "text-red-600" },
-      { text: "Simplifier parenthèse", expr: "20x - (-7x)", color: "text-amber-600" },
-      { text: "🔥 - (-7x) = +7x", expr: "20x + 7x", color: "text-indigo-600" },
+      { text: "Expression de départ", expr: "20x - [(-8x) - ((-3x) + (-5x)) + (-7x)]", color: "text-blue-600" },
+      { text: "🔥 Parenthèse interne", expr: "20x - [-8x - (-3x - 5x) - 7x]", color: "text-orange-600" },
+      { text: "Simplifier interne", expr: "20x - [-8x - (-8x) - 7x]", color: "text-green-600" },
+      { text: "🔥 - (-8x) = +8x", expr: "20x - [-8x + 8x - 7x]", color: "text-red-600" },
+      { text: "Simplifier crochets", expr: "20x - [-7x]", color: "text-amber-600" },
+      { text: "🔥 - [-7x] = +7x", expr: "20x + 7x", color: "text-indigo-600" },
       { text: "Résultat final", expr: "27x", color: "text-purple-600" }
     ]
   },
   {
     id: 15,
-    question: "16a - (-12b) - ((-5a) - ((-8b) + (-3a)) - (-4b))",
+    question: "16a - (-12b) - [(-5a) - ((-8b) + (-3a)) - (-4b)]",
     steps: [
-      { text: "Expression de départ", expr: "16a - (-12b) - ((-5a) - ((-8b) + (-3a)) - (-4b))", color: "text-blue-600" },
-      { text: "🔥 Début : - (-12b) = +12b", expr: "16a + 12b - (-5a - (-8b - 3a) + 4b)", color: "text-orange-600" },
-      { text: "Parenthèse interne", expr: "16a + 12b - (-5a - (-11b) + 4b)", color: "text-green-600" },
-      { text: "🔥 - (-11b) = +11b", expr: "16a + 12b - (-5a + 11b + 4b)", color: "text-red-600" },
-      { text: "Simplifier parenthèse", expr: "16a + 12b - (-5a + 15b)", color: "text-amber-600" },
+      { text: "Expression de départ", expr: "16a - (-12b) - [(-5a) - ((-8b) + (-3a)) - (-4b)]", color: "text-blue-600" },
+      { text: "🔥 Début : - (-12b) = +12b", expr: "16a + 12b - [-5a - (-8b - 3a) + 4b]", color: "text-orange-600" },
+      { text: "Parenthèse interne", expr: "16a + 12b - [-5a - (-11b) + 4b]", color: "text-green-600" },
+      { text: "🔥 - (-11b) = +11b", expr: "16a + 12b - [-5a + 11b + 4b]", color: "text-red-600" },
+      { text: "Simplifier crochets", expr: "16a + 12b - [-5a + 15b]", color: "text-amber-600" },
       { text: "Distribuer", expr: "16a + 12b + 5a - 15b", color: "text-indigo-600" },
       { text: "Résultat final", expr: "21a - 3b", color: "text-purple-600" }
     ]
@@ -793,14 +793,14 @@ const beastExercises = [
   // Niveau 8 : APOCALYPSE MATHÉMATIQUE - Variables multiples + parenthèses multiples
   {
     id: 16,
-    question: "25xy - (-18x) - ((-12xy) + (-7x) - ((-5xy) - (-9x)))",
+    question: "25xy - (-18x) - [(-12xy) + (-7x) - ((-5xy) - (-9x))]",
     steps: [
-      { text: "Expression de départ", expr: "25xy - (-18x) - ((-12xy) + (-7x) - ((-5xy) - (-9x)))", color: "text-blue-600" },
-      { text: "🔥 - (-18x) = +18x", expr: "25xy + 18x - (-12xy - 7x - (-5xy + 9x))", color: "text-orange-600" },
-      { text: "Parenthèse interne", expr: "25xy + 18x - (-12xy - 7x - (-5xy + 9x))", color: "text-green-600" },
-      { text: "🔥 - (-5xy + 9x) = +5xy - 9x", expr: "25xy + 18x - (-12xy - 7x + 5xy - 9x)", color: "text-red-600" },
-      { text: "Simplifier parenthèse", expr: "25xy + 18x - (-7xy - 16x)", color: "text-amber-600" },
-      { text: "🔥 - (-7xy - 16x) = +7xy + 16x", expr: "25xy + 18x + 7xy + 16x", color: "text-indigo-600" },
+      { text: "Expression de départ", expr: "25xy - (-18x) - [(-12xy) + (-7x) - ((-5xy) - (-9x))]", color: "text-blue-600" },
+      { text: "🔥 - (-18x) = +18x", expr: "25xy + 18x - [-12xy - 7x - (-5xy + 9x)]", color: "text-orange-600" },
+      { text: "Parenthèse interne", expr: "25xy + 18x - [-12xy - 7x - (-5xy + 9x)]", color: "text-green-600" },
+      { text: "🔥 - (-5xy + 9x) = +5xy - 9x", expr: "25xy + 18x - [-12xy - 7x + 5xy - 9x]", color: "text-red-600" },
+      { text: "Simplifier crochets", expr: "25xy + 18x - [-7xy - 16x]", color: "text-amber-600" },
+      { text: "🔥 - [-7xy - 16x] = +7xy + 16x", expr: "25xy + 18x + 7xy + 16x", color: "text-indigo-600" },
       { text: "Résultat final", expr: "32xy + 34x", color: "text-purple-600" }
     ]
   },
@@ -808,13 +808,13 @@ const beastExercises = [
   // Niveau 9 : BOSS FINAL - Maximum de complexité
   {
     id: 17,
-    question: "30x - (-25) - ((-15x) - ((-8) + (-12x)) + (-7) - ((-20x) - (-13)))",
+    question: "30x - (-25) - [(-15x) - ((-8) + (-12x)) + (-7) - ((-20x) - (-13))]",
     steps: [
-      { text: "Expression de départ", expr: "30x - (-25) - ((-15x) - ((-8) + (-12x)) + (-7) - ((-20x) - (-13)))", color: "text-blue-600" },
-      { text: "🔥 - (-25) = +25", expr: "30x + 25 - (-15x - (-8 - 12x) - 7 - (-20x + 13))", color: "text-orange-600" },
-      { text: "Parenthèses internes", expr: "30x + 25 - (-15x - (-20x) - 7 - (-7x))", color: "text-green-600" },
-      { text: "🔥 Doubles signes : - (-20x) = +20x, - (-7x) = +7x", expr: "30x + 25 - (-15x + 20x - 7 + 7x)", color: "text-red-600" },
-      { text: "Simplifier parenthèse", expr: "30x + 25 - (12x - 7)", color: "text-amber-600" },
+      { text: "Expression de départ", expr: "30x - (-25) - [(-15x) - ((-8) + (-12x)) + (-7) - ((-20x) - (-13))]", color: "text-blue-600" },
+      { text: "🔥 - (-25) = +25", expr: "30x + 25 - [-15x - (-8 - 12x) - 7 - (-20x + 13)]", color: "text-orange-600" },
+      { text: "Parenthèses internes", expr: "30x + 25 - [-15x - (-20x) - 7 - (-7x)]", color: "text-green-600" },
+      { text: "🔥 Doubles signes : - (-20x) = +20x, - (-7x) = +7x", expr: "30x + 25 - [-15x + 20x - 7 + 7x]", color: "text-red-600" },
+      { text: "Simplifier crochets", expr: "30x + 25 - [12x - 7]", color: "text-amber-600" },
       { text: "Distribuer", expr: "30x + 25 - 12x + 7", color: "text-indigo-600" },
       { text: "Résultat final", expr: "18x + 32", color: "text-purple-600" }
     ]
@@ -823,13 +823,13 @@ const beastExercises = [
   // Niveau 10 : BEAST ULTIME - Variables xy², x²y, nombres, parenthèses imbriquées
   {
     id: 18,
-    question: "40xy² - (-28x²y) - ((-15xy²) - ((-12x²y) + (-8xy²)) - (-25) + ((-18x²y) - (-35)))",
+    question: "40xy² - (-28x²y) - [(-15xy²) - ((-12x²y) + (-8xy²)) - (-25) + ((-18x²y) - (-35))]",
     steps: [
-      { text: "Expression de départ", expr: "40xy² - (-28x²y) - ((-15xy²) - ((-12x²y) + (-8xy²)) - (-25) + ((-18x²y) - (-35)))", color: "text-blue-600" },
-      { text: "🔥 - (-28x²y) = +28x²y", expr: "40xy² + 28x²y - (-15xy² - (-12x²y - 8xy²) + 25 + (-18x²y + 35))", color: "text-orange-600" },
-      { text: "Parenthèses internes", expr: "40xy² + 28x²y - (-15xy² - (-20x²y) + 25 + (-18x²y + 35))", color: "text-green-600" },
-      { text: "🔥 - (-20x²y) = +20x²y", expr: "40xy² + 28x²y - (-15xy² + 20x²y + 25 - 18x²y + 35)", color: "text-red-600" },
-      { text: "Simplifier parenthèse", expr: "40xy² + 28x²y - (-15xy² + 2x²y + 60)", color: "text-amber-600" },
+      { text: "Expression de départ", expr: "40xy² - (-28x²y) - [(-15xy²) - ((-12x²y) + (-8xy²)) - (-25) + ((-18x²y) - (-35))]", color: "text-blue-600" },
+      { text: "🔥 - (-28x²y) = +28x²y", expr: "40xy² + 28x²y - [-15xy² - (-12x²y - 8xy²) + 25 + (-18x²y + 35)]", color: "text-orange-600" },
+      { text: "Parenthèses internes", expr: "40xy² + 28x²y - [-15xy² - (-20x²y) + 25 + (-18x²y + 35)]", color: "text-green-600" },
+      { text: "🔥 - (-20x²y) = +20x²y", expr: "40xy² + 28x²y - [-15xy² + 20x²y + 25 - 18x²y + 35]", color: "text-red-600" },
+      { text: "Simplifier crochets", expr: "40xy² + 28x²y - [-15xy² + 2x²y + 60]", color: "text-amber-600" },
       { text: "Distribuer", expr: "40xy² + 28x²y + 15xy² - 2x²y - 60", color: "text-indigo-600" },
       { text: "Résultat final", expr: "55xy² + 26x²y - 60", color: "text-purple-600" }
     ]
