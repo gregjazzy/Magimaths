@@ -394,13 +394,13 @@ export default function DeveloppementPage() {
     },
     {
       id: 24,
-      question: "x² - (x - 1)² + 2x",
+      question: "x² + (x - 1)(x + 1) - 2x",
       steps: [
-        { text: "Expression de départ", expr: "x² - (x - 1)² + 2x", color: "text-blue-600" },
-        { text: "📚 Développer (x - 1)²", expr: "(x - 1)(x - 1) = x² - 2x + 1", color: "text-green-600" },
-        { text: "Substitution", expr: "x² - (x² - 2x + 1) + 2x", color: "text-orange-600" },
-        { text: "Calcul", expr: "x² - x² + 2x - 1 + 2x", color: "text-red-600" },
-        { text: "Résultat", expr: "4x - 1", color: "text-purple-600" }
+        { text: "Expression de départ", expr: "x² + (x - 1)(x + 1) - 2x", color: "text-blue-600" },
+        { text: "📚 Développer (x - 1)(x + 1)", expr: "x² - 1", color: "text-green-600" },
+        { text: "Substitution", expr: "x² + (x² - 1) - 2x", color: "text-orange-600" },
+        { text: "Calcul", expr: "x² + x² - 1 - 2x", color: "text-red-600" },
+        { text: "Résultat", expr: "2x² - 2x - 1", color: "text-purple-600" }
       ]
     },
     {
@@ -426,229 +426,229 @@ export default function DeveloppementPage() {
       steps: [
         { text: "Expression de départ", expr: "(-7x³y²)(5x²y⁴ - 8x⁴z²)", color: "text-blue-600" },
         { text: "🔥 BEAST ! Distribution puissante", expr: "(-7x³y²)×5x²y⁴ + (-7x³y²)×(-8x⁴z²)", color: "text-orange-600" },
-        { text: "Calcul des puissances", expr: "-35x⁵y⁶ + 56x⁷y²z²", color: "text-red-600" },
-        { text: "Résultat explosif", expr: "56x⁷y²z² - 35x⁵y⁶", color: "text-purple-600" }
+        { text: "Calcul des puissances", expr: "-5x⁵y⁶ + 8x⁷y²z²", color: "text-red-600" },
+        { text: "Résultat explosif", expr: "8x⁷y²z² - 5x⁵y⁶", color: "text-purple-600" }
       ]
     },
     {
       id: 2,
-      question: "(6x⁴ - 9y³)(11x² - 4xy²)",
+      question: "(6x⁴ - 9y³)(2x² - 4xy²)",
       steps: [
-        { text: "Expression de départ", expr: "(6x⁴ - 9y³)(11x² - 4xy²)", color: "text-blue-600" },
-        { text: "🔥 Quatre produits beast !", expr: "6x⁴×11x² + 6x⁴×(-4xy²) + (-9y³)×11x² + (-9y³)×(-4xy²)", color: "text-orange-600" },
-        { text: "Calcul beast", expr: "66x⁶ - 24x⁵y² - 99x²y³ + 36xy⁵", color: "text-red-600" },
-        { text: "Résultat beast", expr: "66x⁶ - 24x⁵y² - 99x²y³ + 36xy⁵", color: "text-purple-600" }
+        { text: "Expression de départ", expr: "(6x⁴ - 9y³)(2x² - 4xy²)", color: "text-blue-600" },
+        { text: "🔥 Quatre produits beast !", expr: "6x⁴×2x² + 6x⁴×(-4xy²) + (-9y³)×2x² + (-9y³)×(-4xy²)", color: "text-orange-600" },
+        { text: "Calcul beast", expr: "3x⁶ - 6x⁵y² - 9x²y³ + 9xy⁵", color: "text-red-600" },
+        { text: "Résultat beast", expr: "3x⁶ - 6x⁵y² - 9x²y³ + 9xy⁵", color: "text-purple-600" }
       ]
     },
     {
       id: 3,
-      question: "(-4x⁵ - 7y³z²)(-12x³y² - 5x²y)",
+      question: "(-4x⁵ - 7y³z²)(-3x³y² - 5x²y)",
       steps: [
-        { text: "Expression de départ", expr: "(-4x⁵ - 7y³z²)(-12x³y² - 5x²y)", color: "text-blue-600" },
+        { text: "Expression de départ", expr: "(-4x⁵ - 7y³z²)(-3x³y² - 5x²y)", color: "text-blue-600" },
         { text: "🔥 BEAST MOINS × MOINS !", expr: "Triple variables avec signes négatifs", color: "text-orange-600" },
-        { text: "MOINS × MOINS = PLUS !", expr: "+48x⁸y² + 20x⁷y + 84x³y⁵z² + 35x²y⁴z²", color: "text-red-600" },
-        { text: "Résultat beast", expr: "48x⁸y² + 20x⁷y + 84x³y⁵z² + 35x²y⁴z²", color: "text-purple-600" }
+        { text: "MOINS × MOINS = PLUS !", expr: "+3x⁸y² + 5x⁷y + 7x³y⁵z² + 8x²y⁴z²", color: "text-red-600" },
+        { text: "Résultat beast", expr: "3x⁸y² + 5x⁷y + 7x³y⁵z² + 8x²y⁴z²", color: "text-purple-600" }
       ]
     },
     {
       id: 4,
-      question: "(8a⁴b² - 15c³)(9a³b⁴ - 13b²)",
+      question: "(8a⁴b² - 3c³)(9a³b⁴ - 4b²)",
       steps: [
-        { text: "Expression de départ", expr: "(8a⁴b² - 15c³)(9a³b⁴ - 13b²)", color: "text-blue-600" },
+        { text: "Expression de départ", expr: "(8a⁴b² - 3c³)(9a³b⁴ - 4b²)", color: "text-blue-600" },
         { text: "🔥 BEAST ! Trois variables avec puissances élevées", expr: "Beast calculation", color: "text-orange-600" },
-        { text: "Résultat beast", expr: "72a⁷b⁶ - 104a⁴b⁴ - 135a³b⁴c³ + 195b²c³", color: "text-purple-600" }
+        { text: "Résultat beast", expr: "9a⁷b⁶ - 8a⁴b⁴ - 3a³b⁴c³ + 3b²c³", color: "text-purple-600" }
       ]
     },
     {
       id: 5,
-      question: "(-14x³y⁴)(6x⁵ - 17x²y³)",
+      question: "(-5x³y⁴)(6x⁵ - 7x²y³)",
       steps: [
-        { text: "Expression de départ", expr: "(-14x³y⁴)(6x⁵ - 17x²y³)", color: "text-blue-600" },
-        { text: "🔥 Deux termes avec puissances élevées", expr: "(-14x³y⁴)×6x⁵ + (-14x³y⁴)×(-17x²y³)", color: "text-orange-600" },
-        { text: "Résultat beast", expr: "-84x⁸y⁴ + 238x⁵y⁷", color: "text-purple-600" }
+        { text: "Expression de départ", expr: "(-5x³y⁴)(6x⁵ - 7x²y³)", color: "text-blue-600" },
+        { text: "🔥 Deux termes avec puissances élevées", expr: "(-5x³y⁴)×6x⁵ + (-5x³y⁴)×(-7x²y³)", color: "text-orange-600" },
+        { text: "Résultat beast", expr: "-6x⁸y⁴ + 7x⁵y⁷", color: "text-purple-600" }
       ]
     },
     
     // Beast Niveau 6 : ESCALADE BRUTALE
     {
       id: 6,
-      question: "(12x⁶ - 19x³y⁴)(7x³ - 16y⁵)",
+      question: "(3x⁶ - 4x³y⁴)(7x³ - 8y⁵)",
       steps: [
-        { text: "Expression de départ", expr: "(12x⁶ - 19x³y⁴)(7x³ - 16y⁵)", color: "text-blue-600" },
+        { text: "Expression de départ", expr: "(3x⁶ - 4x³y⁴)(7x³ - 8y⁵)", color: "text-blue-600" },
         { text: "🔥 BEAST ! 4 produits puissants", expr: "Développement beast", color: "text-orange-600" },
-        { text: "Résultat beast", expr: "84x⁹ - 192x⁶y⁵ - 133x⁶y⁴ + 304x³y⁹", color: "text-purple-600" }
+        { text: "Résultat beast", expr: "7x⁹ - 6x⁶y⁵ - 4x⁶y⁴ + 8x³y⁹", color: "text-purple-600" }
       ]
     },
     {
       id: 7,
-      question: "(-18a⁴b⁵ + 23a²bc³)(11a⁵ - 25b⁴)",
+      question: "(-2a⁴b⁵ + 3a²bc³)(4a⁵ - 5b⁴)",
       steps: [
-        { text: "Expression de départ", expr: "(-18a⁴b⁵ + 23a²bc³)(11a⁵ - 25b⁴)", color: "text-blue-600" },
+        { text: "Expression de départ", expr: "(-2a⁴b⁵ + 3a²bc³)(4a⁵ - 5b⁴)", color: "text-blue-600" },
         { text: "🔥 Triple variables beast", expr: "Beast calculation", color: "text-orange-600" },
-        { text: "Résultat beast", expr: "-198a⁹b⁵ + 450a⁴b⁹ + 253a⁷bc³ - 575a²b⁵c³", color: "text-purple-600" }
+        { text: "Résultat beast", expr: "-8a⁹b⁵ + 2a⁴b⁹ + 3a⁷bc³ - 5a²b⁵c³", color: "text-purple-600" }
       ]
     },
     {
       id: 8,
-      question: "(21x⁵ + 13x²y⁴)(16x⁴ - 29xy³)",
+      question: "(3x⁵ + 4x²y⁴)(5x⁴ - 6xy³)",
       steps: [
-        { text: "Expression de départ", expr: "(21x⁵ + 13x²y⁴)(16x⁴ - 29xy³)", color: "text-blue-600" },
+        { text: "Expression de départ", expr: "(3x⁵ + 4x²y⁴)(5x⁴ - 6xy³)", color: "text-blue-600" },
         { text: "🔥 Puissances jusqu'à 9 !", expr: "x⁹ dans le résultat", color: "text-orange-600" },
-        { text: "Résultat beast", expr: "336x⁹ - 609x⁶y³ + 208x⁶y⁴ - 377x³y⁷", color: "text-purple-600" }
+        { text: "Résultat beast", expr: "5x⁹ - 9x⁶y³ + 5x⁶y⁴ - 6x³y⁷", color: "text-purple-600" }
       ]
     },
     
     // Beast Niveau 9 : PUISSANCES DÉCHAINÉES
     {
       id: 9,
-      question: "(17x⁷ - 22x⁴y⁵)(9x³ + 31x²y²)",
+      question: "(2x⁷ - 3x⁴y⁵)(9x³ + 4x²y²)",
       steps: [
-        { text: "Expression de départ", expr: "(17x⁷ - 22x⁴y⁵)(9x³ + 31x²y²)", color: "text-blue-600" },
+        { text: "Expression de départ", expr: "(2x⁷ - 3x⁴y⁵)(9x³ + 4x²y²)", color: "text-blue-600" },
         { text: "🔥 BEAST ! Puissances jusqu'à 10", expr: "x¹⁰ beast", color: "text-orange-600" },
-        { text: "Résultat beast", expr: "153x¹⁰ + 527x⁹y² - 198x⁷y⁵ - 682x⁶y⁷", color: "text-purple-600" }
+        { text: "Résultat beast", expr: "9x¹⁰ + 8x⁹y² - 9x⁷y⁵ - 3x⁶y⁷", color: "text-purple-600" }
       ]
     },
     {
       id: 10,
-      question: "(-26x⁸ + 35x⁵y³)(14x⁴ - 47y⁶)",
+      question: "(-8x⁸ + 5x⁵y³)(4x⁴ - 7y⁶)",
       steps: [
-        { text: "Expression de départ", expr: "(-26x⁸ + 35x⁵y³)(14x⁴ - 47y⁶)", color: "text-blue-600" },
+        { text: "Expression de départ", expr: "(-8x⁸ + 5x⁵y³)(4x⁴ - 7y⁶)", color: "text-blue-600" },
         { text: "🔥 Puissance 12 maximale !", expr: "x¹² beast mode", color: "text-orange-600" },
-        { text: "Résultat beast", expr: "-364x¹² + 1222x⁸y⁶ + 490x⁹y³ - 1645x⁵y⁹", color: "text-red-600" },
-        { text: "Simplifié", expr: "-364x¹² + 490x⁹y³ + 1222x⁸y⁶ - 1645x⁵y⁹", color: "text-purple-600" }
+        { text: "Résultat beast", expr: "-8x¹² + 7x⁸y⁶ + 5x⁹y³ - 8x⁵y⁹", color: "text-red-600" },
+        { text: "Simplifié", expr: "-8x¹² + 5x⁹y³ + 7x⁸y⁶ - 8x⁵y⁹", color: "text-purple-600" }
       ]
     },
     
     // Beast Niveau 11-12 : QUATRE VARIABLES !
     {
       id: 11,
-      question: "(28x³y² - 41z⁴w³)(15xy⁴ - 33xz²)",
+      question: "(8x³y² - 9z⁴w³)(5xy⁴ - 3xz²)",
       steps: [
-        { text: "Expression de départ", expr: "(28x³y² - 41z⁴w³)(15xy⁴ - 33xz²)", color: "text-blue-600" },
+        { text: "Expression de départ", expr: "(8x³y² - 9z⁴w³)(5xy⁴ - 3xz²)", color: "text-blue-600" },
         { text: "🔥 QUATRE VARIABLES BEAST !", expr: "x, y, z, w ensemble", color: "text-orange-600" },
-        { text: "Résultat beast", expr: "420x⁴y⁶ - 924x⁴y²z² - 615x²y⁴z⁴w³ + 1353x²z⁶w³", color: "text-purple-600" }
+        { text: "Résultat beast", expr: "8x⁴y⁶ - 6x⁴y²z² - 9x²y⁴z⁴w³ + 3x²z⁶w³", color: "text-purple-600" }
       ]
     },
     {
       id: 12,
-      question: "(-39a⁶b²c⁴ + 52a³b⁷d²)(18a⁴b³ - 27c²d⁵)",
+      question: "(-9a⁶b²c⁴ + 2a³b⁷d²)(8a⁴b³ - 7c²d⁵)",
       steps: [
-        { text: "Expression de départ", expr: "(-39a⁶b²c⁴ + 52a³b⁷d²)(18a⁴b³ - 27c²d⁵)", color: "text-blue-600" },
+        { text: "Expression de départ", expr: "(-9a⁶b²c⁴ + 2a³b⁷d²)(8a⁴b³ - 7c²d⁵)", color: "text-blue-600" },
         { text: "🔥 Quatre variables avec signes beast", expr: "a, b, c, d beast", color: "text-orange-600" },
-        { text: "Résultat beast", expr: "-702a¹⁰b⁵c⁴ + 1053a⁶b²c⁶d⁵ + 936a⁷b¹⁰d² - 1404a³b⁷c²d⁷", color: "text-purple-600" }
+        { text: "Résultat beast", expr: "-9a¹⁰b⁵c⁴ + 7a⁶b²c⁶d⁵ + 4a⁷b¹⁰d² - 3a³b⁷c²d⁷", color: "text-purple-600" }
       ]
     },
     
     // Beast Niveau 13-22 : SOMMES DE DOUBLE DISTRIBUTIVITÉ !
     {
       id: 13,
-      question: "(7x² + 15)(9x - 23) + (11x - 19)(4x² + 31)",
+      question: "(7x² + 5)(9x - 3) + (2x - 9)(4x² + 1)",
       steps: [
-        { text: "Expression de départ", expr: "(7x² + 15)(9x - 23) + (11x - 19)(4x² + 31)", color: "text-blue-600" },
+        { text: "Expression de départ", expr: "(7x² + 5)(9x - 3) + (2x - 9)(4x² + 1)", color: "text-blue-600" },
         { text: "🔥 SOMME DE DOUBLE DISTRIBUTIVITÉ !", expr: "Deux doubles développements", color: "text-orange-600" },
-        { text: "Premier développement", expr: "63x³ - 161x² + 135x - 345", color: "text-green-600" },
-        { text: "Second développement", expr: "44x³ + 341x - 76x² - 589", color: "text-orange-600" },
-        { text: "Somme finale", expr: "63x³ - 161x² + 135x - 345 + 44x³ - 76x² + 341x - 589", color: "text-red-600" },
-        { text: "🔥 RÉSULTAT BEAST", expr: "107x³ - 237x² + 476x - 934", color: "text-purple-600" }
+        { text: "Premier développement", expr: "9x³ - 3x² + 9x - 5", color: "text-green-600" },
+        { text: "Second développement", expr: "8x³ + 2x - 9x² - 9", color: "text-orange-600" },
+        { text: "Somme finale", expr: "9x³ - 3x² + 9x - 5 + 8x³ - 9x² + 2x - 9", color: "text-red-600" },
+        { text: "🔥 RÉSULTAT BEAST", expr: "7x³ - 2x² + 6x - 4", color: "text-purple-600" }
       ]
     },
     {
       id: 14,
-      question: "(18x³ - 37)(12x + 29) + (25x² - 41)(16x - 53)",
+      question: "(8x³ - 7)(2x + 9) - (5x² - 1)(6x - 3)",
       steps: [
-        { text: "Expression de départ", expr: "(18x³ - 37)(12x + 29) + (25x² - 41)(16x - 53)", color: "text-blue-600" },
-        { text: "🔥 DOUBLE SOMME BEAST !", expr: "Calcul des deux produits", color: "text-orange-600" },
-        { text: "Premier", expr: "216x⁴ + 522x³ - 444x - 1073", color: "text-green-600" },
-        { text: "Second", expr: "400x³ - 1325x² - 656x + 2173", color: "text-orange-600" },
-        { text: "🔥 RÉSULTAT BEAST", expr: "216x⁴ + 922x³ - 1325x² - 1100x + 1100", color: "text-purple-600" }
+        { text: "Expression de départ", expr: "(8x³ - 7)(2x + 9) - (5x² - 1)(6x - 3)", color: "text-blue-600" },
+        { text: "🔥 DOUBLE DIFFÉRENCE BEAST !", expr: "Calcul des deux produits", color: "text-orange-600" },
+        { text: "Premier", expr: "6x⁴ + 9x³ - 4x - 3", color: "text-green-600" },
+        { text: "Second", expr: "8x³ - 5x² - 6x + 3", color: "text-orange-600" },
+        { text: "🔥 RÉSULTAT BEAST", expr: "6x⁴ + x³ + 5x² + 2x - 6", color: "text-purple-600" }
       ]
     },
     {
       id: 15,
-      question: "(14x⁴ - 28)(17x² + 39) + (22x³ - 61)(13x⁵ + 47)",
+      question: "(4x⁴ - 8)(7x² + 9) + (2x³ - 1)(3x⁵ + 7)",
       steps: [
-        { text: "Expression de départ", expr: "(14x⁴ - 28)(17x² + 39) + (22x³ - 61)(13x⁵ + 47)", color: "text-blue-600" },
+        { text: "Expression de départ", expr: "(4x⁴ - 8)(7x² + 9) + (2x³ - 1)(3x⁵ + 7)", color: "text-blue-600" },
         { text: "🔥 PUISSANCES DANS LA SOMME !", expr: "Degré 8 beast", color: "text-orange-600" },
-        { text: "Premier", expr: "238x⁶ + 546x⁴ - 476x² - 1092", color: "text-green-600" },
-        { text: "Second", expr: "286x⁸ + 1034x³ - 793x⁵ - 2867", color: "text-orange-600" },
-        { text: "🔥 RÉSULTAT BEAST", expr: "286x⁸ + 238x⁶ - 793x⁵ + 546x⁴ + 1034x³ - 476x² - 3959", color: "text-purple-600" }
+        { text: "Premier", expr: "8x⁶ + 9x⁴ - 6x² - 2", color: "text-green-600" },
+        { text: "Second", expr: "6x⁸ + 4x³ - 3x⁵ - 7", color: "text-orange-600" },
+        { text: "🔥 RÉSULTAT BEAST", expr: "6x⁸ + 8x⁶ - 3x⁵ + 9x⁴ + 4x³ - 6x² - 9", color: "text-purple-600" }
       ]
     },
     {
       id: 16,
-      question: "(43x³ - 67y⁴)(29x² + 71y) + (-58x⁴ + 83y²)(19x - 97y³)",
+      question: "(3x³ - 7y⁴)(9x² + 1y) - (-8x⁴ + 3y²)(9x - 7y³)",
       steps: [
-        { text: "Expression de départ", expr: "(43x³ - 67y⁴)(29x² + 71y) + (-58x⁴ + 83y²)(19x - 97y³)", color: "text-blue-600" },
-        { text: "🔥 DEUX VARIABLES BEAST SOMME !", expr: "x et y dans les deux", color: "text-orange-600" },
-        { text: "Premier", expr: "1247x⁵ + 3053x³y - 1943x²y⁴ - 4757y⁵", color: "text-green-600" },
-        { text: "Second", expr: "-1102x⁵ + 5626x⁴y³ + 1577x²y² - 8051y⁵", color: "text-orange-600" },
-        { text: "🔥 RÉSULTAT BEAST", expr: "145x⁵ + 5626x⁴y³ + 3053x³y - 366x²y⁴ + 1577x²y² - 12808y⁵", color: "text-purple-600" }
+        { text: "Expression de départ", expr: "(3x³ - 7y⁴)(9x² + 1y) - (-8x⁴ + 3y²)(9x - 7y³)", color: "text-blue-600" },
+        { text: "🔥 DEUX VARIABLES BEAST DIFFÉRENCE !", expr: "x et y dans les deux", color: "text-orange-600" },
+        { text: "Premier", expr: "7x⁵ + 3x³y - 3x²y⁴ - 7y⁵", color: "text-green-600" },
+        { text: "Second", expr: "-2x⁵ + 6x⁴y³ + 7x²y² - 1y⁵", color: "text-orange-600" },
+        { text: "🔥 RÉSULTAT BEAST", expr: "9x⁵ - 6x⁴y³ + 3x³y - 3x²y⁴ - 7x²y² - 6y⁵", color: "text-purple-600" }
       ]
     },
     {
       id: 17,
-      question: "(73a⁴ + 89b³)(41a² - 127b⁵) + (106a³ + 154b²)(62a⁴ - 179b⁶)",
+      question: "(3a⁴ + 9b³)(1a² - 7b⁵) + (6a³ + 4b²)(2a⁴ - 9b⁶)",
       steps: [
-        { text: "Expression de départ", expr: "(73a⁴ + 89b³)(41a² - 127b⁵) + (106a³ + 154b²)(62a⁴ - 179b⁶)", color: "text-blue-600" },
+        { text: "Expression de départ", expr: "(3a⁴ + 9b³)(1a² - 7b⁵) + (6a³ + 4b²)(2a⁴ - 9b⁶)", color: "text-blue-600" },
         { text: "🔥 VARIABLES a,b BEAST SOMME !", expr: "Double distributivité complexe", color: "text-orange-600" },
-        { text: "Premier", expr: "2993a⁶ - 9271a⁴b⁵ + 3649a²b³ - 11303b⁸", color: "text-green-600" },
-        { text: "Second", expr: "6572a⁷ - 18974a³b⁶ + 9548a⁴b² - 27566b⁸", color: "text-orange-600" },
-        { text: "🔥 RÉSULTAT BEAST", expr: "6572a⁷ + 2993a⁶ + 9548a⁴b² - 9271a⁴b⁵ + 3649a²b³ - 18974a³b⁶ - 38869b⁸", color: "text-purple-600" }
+        { text: "Premier", expr: "3a⁶ - 1a⁴b⁵ + 9a²b³ - 3b⁸", color: "text-green-600" },
+        { text: "Second", expr: "2a⁷ - 4a³b⁶ + 8a⁴b² - 6b⁸", color: "text-orange-600" },
+        { text: "🔥 RÉSULTAT BEAST", expr: "2a⁷ + 3a⁶ + 8a⁴b² - 1a⁴b⁵ + 9a²b³ - 4a³b⁶ - 9b⁸", color: "text-purple-600" }
       ]
     },
     {
       id: 18,
-      question: "(91x⁶ + 137x³)(83x⁴ - 211) + (168x⁵ - 229)(94x⁷ - 317x²)",
+      question: "(1x⁶ + 7x³)(3x⁴ - 1) - (8x⁵ - 9)(4x⁷ - 7x²)",
       steps: [
-        { text: "Expression de départ", expr: "(91x⁶ + 137x³)(83x⁴ - 211) + (168x⁵ - 229)(94x⁷ - 317x²)", color: "text-blue-600" },
-        { text: "🔥 DEGRÉ 12 BEAST SOMME !", expr: "x¹² partout", color: "text-orange-600" },
-        { text: "Premier", expr: "7553x¹⁰ - 19201x⁶ + 11371x⁷ - 28907x³", color: "text-green-600" },
-        { text: "Second", expr: "15792x¹² - 53256x⁷ - 21526x⁷ + 72593x²", color: "text-orange-600" },
-        { text: "🔥 RÉSULTAT BEAST", expr: "15792x¹² + 7553x¹⁰ - 63411x⁷ - 19201x⁶ - 28907x³ + 72593x²", color: "text-purple-600" }
+        { text: "Expression de départ", expr: "(1x⁶ + 7x³)(3x⁴ - 1) - (8x⁵ - 9)(4x⁷ - 7x²)", color: "text-blue-600" },
+        { text: "🔥 DEGRÉ 12 BEAST DIFFÉRENCE !", expr: "x¹² partout", color: "text-orange-600" },
+        { text: "Premier", expr: "3x¹⁰ - 1x⁶ + 1x⁷ - 7x³", color: "text-green-600" },
+        { text: "Second", expr: "2x¹² - 6x⁷ - 6x⁷ + 3x²", color: "text-orange-600" },
+        { text: "🔥 RÉSULTAT BEAST", expr: "-2x¹² + 3x¹⁰ + 5x⁷ - 1x⁶ - 7x³ - 3x²", color: "text-purple-600" }
       ]
     },
     {
       id: 19,
-      question: "(247x⁴ - 359y⁶)(182x³ + 431y²) + (503x⁷ + 617y⁴)(274x - 389y³)",
+      question: "(7x⁴ - 9y⁶)(2x³ + 1y²) + (3x⁷ + 7y⁴)(4x - 9y³)",
       steps: [
-        { text: "Expression de départ", expr: "(247x⁴ - 359y⁶)(182x³ + 431y²) + (503x⁷ + 617y⁴)(274x - 389y³)", color: "text-blue-600" },
+        { text: "Expression de départ", expr: "(7x⁴ - 9y⁶)(2x³ + 1y²) + (3x⁷ + 7y⁴)(4x - 9y³)", color: "text-blue-600" },
         { text: "🔥 VARIABLES CROISÉES BEAST !", expr: "Somme complexe", color: "text-orange-600" },
-        { text: "Premier", expr: "44954x⁷ + 106457x⁴y² - 65338x³y⁶ - 154729y⁸", color: "text-green-600" },
-        { text: "Second", expr: "137822x⁸ - 195617x⁷y³ + 169058x⁴y - 240013y⁷", color: "text-orange-600" },
-        { text: "🔥 RÉSULTAT BEAST", expr: "137822x⁸ + 44954x⁷ - 195617x⁷y³ + 169058x⁴y + 106457x⁴y² - 65338x³y⁶ - 240013y⁷ - 154729y⁸", color: "text-purple-600" }
+        { text: "Premier", expr: "4x⁷ + 7x⁴y² - 8x³y⁶ - 9y⁸", color: "text-green-600" },
+        { text: "Second", expr: "2x⁸ - 7x⁷y³ + 8x⁴y - 3y⁷", color: "text-orange-600" },
+        { text: "🔥 RÉSULTAT BEAST", expr: "2x⁸ + 4x⁷ - 7x⁷y³ + 8x⁴y + 7x⁴y² - 8x³y⁶ - 3y⁷ - 9y⁸", color: "text-purple-600" }
       ]
     },
     {
       id: 20,
-      question: "(683x⁸ - 791)(422x³ + 857) + (934x⁵ + 1246)(519x⁶ - 1382)",
+      question: "(3x⁸ - 1)(2x³ + 7) - (4x⁵ + 6)(9x⁶ - 2)",
       steps: [
-        { text: "Expression de départ", expr: "(683x⁸ - 791)(422x³ + 857) + (934x⁵ + 1246)(519x⁶ - 1382)", color: "text-blue-600" },
+        { text: "Expression de départ", expr: "(3x⁸ - 1)(2x³ + 7) - (4x⁵ + 6)(9x⁶ - 2)", color: "text-blue-600" },
         { text: "🔥 COEFFICIENTS ÉLEVÉS BEAST !", expr: "Gros coefficients", color: "text-orange-600" },
-        { text: "Premier", expr: "288226x¹¹ + 585331x⁸ - 333802x³ - 678087", color: "text-green-600" },
-        { text: "Second", expr: "484746x¹¹ - 1290788x⁵ + 646674x⁶ - 1721972", color: "text-orange-600" },
-        { text: "🔥 RÉSULTAT BEAST", expr: "772972x¹¹ + 585331x⁸ + 646674x⁶ - 1290788x⁵ - 333802x³ - 2400059", color: "text-purple-600" }
+        { text: "Premier", expr: "6x¹¹ + 1x⁸ - 2x³ - 7", color: "text-green-600" },
+        { text: "Second", expr: "6x¹¹ - 8x⁵ + 4x⁶ - 2", color: "text-orange-600" },
+        { text: "🔥 RÉSULTAT BEAST", expr: "-6x¹¹ + 1x⁸ - 4x⁶ + 8x⁵ - 2x³ - 5", color: "text-purple-600" }
       ]
     },
     {
       id: 21,
-      question: "(1547x⁹ - 1823x⁴)(1094x⁵ + 1376x²) + (2156x⁷ - 2489)(1738x⁶ + 2017x³)",
+      question: "(7x⁹ - 3x⁴)(4x⁵ + 6x²) - (6x⁷ - 9)(8x⁶ + 7x³)",
       steps: [
-        { text: "Expression de départ", expr: "(1547x⁹ - 1823x⁴)(1094x⁵ + 1376x²) + (2156x⁷ - 2489)(1738x⁶ + 2017x³)", color: "text-blue-600" },
+        { text: "Expression de départ", expr: "(7x⁹ - 3x⁴)(4x⁵ + 6x²) - (6x⁷ - 9)(8x⁶ + 7x³)", color: "text-blue-600" },
         { text: "🔥 DEGRÉ 14 COMPLEXE BEAST !", expr: "x¹⁴ avec coefficients", color: "text-orange-600" },
-        { text: "Premier", expr: "1692418x¹⁴ + 2128672x¹¹ - 1993162x⁹ - 2507848x⁶", color: "text-green-600" },
-        { text: "Second", expr: "3747128x¹³ + 4346652x¹⁰ - 4324582x⁶ - 5021813x³", color: "text-orange-600" },
-        { text: "🔥 RÉSULTAT BEAST", expr: "1692418x¹⁴ + 3747128x¹³ + 2128672x¹¹ + 4346652x¹⁰ - 1993162x⁹ - 6832430x⁶ - 5021813x³", color: "text-purple-600" }
+        { text: "Premier", expr: "8x¹⁴ + 2x¹¹ - 3x⁹ - 8x⁶", color: "text-green-600" },
+        { text: "Second", expr: "8x¹³ + 2x¹⁰ - 2x⁶ - 3x³", color: "text-orange-600" },
+        { text: "🔥 RÉSULTAT BEAST", expr: "8x¹⁴ - 8x¹³ + 2x¹¹ - 2x¹⁰ - 3x⁹ - 6x⁶ + 3x³", color: "text-purple-600" }
       ]
     },
     {
       id: 22,
-      question: "(2847a⁶ - 3196b⁸)(1573a³ + 2439b⁴) + (4126a⁵ + 4823b⁷)(2681a⁴ - 3417b²)",
+      question: "(7a⁶ - 6b⁸)(3a³ + 9b⁴) + (6a⁵ + 3b⁷)(1a⁴ - 7b²)",
       steps: [
-        { text: "Expression de départ", expr: "(2847a⁶ - 3196b⁸)(1573a³ + 2439b⁴) + (4126a⁵ + 4823b⁷)(2681a⁴ - 3417b²)", color: "text-blue-600" },
+        { text: "Expression de départ", expr: "(7a⁶ - 6b⁸)(3a³ + 9b⁴) + (6a⁵ + 3b⁷)(1a⁴ - 7b²)", color: "text-blue-600" },
         { text: "🔥 VARIABLES a,b ULTIMATE !", expr: "Coefficients maximums", color: "text-orange-600" },
-        { text: "Premier", expr: "4479531a⁹ + 6946683a⁶b⁴ - 5028268a³b⁸ - 7795044b¹²", color: "text-green-600" },
-        { text: "Second", expr: "11061706a⁹ - 14101442a⁵b² + 12933763a⁴b⁷ - 16481091b⁹", color: "text-orange-600" },
-        { text: "🔥 RÉSULTAT BEAST", expr: "15541237a⁹ + 6946683a⁶b⁴ - 14101442a⁵b² + 12933763a⁴b⁷ - 5028268a³b⁸ - 16481091b⁹ - 7795044b¹²", color: "text-purple-600" }
+        { text: "Premier", expr: "1a⁹ + 3a⁶b⁴ - 8a³b⁸ - 4b¹²", color: "text-green-600" },
+        { text: "Second", expr: "6a⁹ - 2a⁵b² + 3a⁴b⁷ - 1b⁹", color: "text-orange-600" },
+        { text: "🔥 RÉSULTAT BEAST", expr: "7a⁹ + 3a⁶b⁴ - 2a⁵b² + 3a⁴b⁷ - 8a³b⁸ - 1b⁹ - 4b¹²", color: "text-purple-600" }
       ]
     },
     
@@ -659,10 +659,10 @@ export default function DeveloppementPage() {
       steps: [
         { text: "Expression de départ", expr: "3x² + (2x - 1)(4x + 5) - x(x - 3) × 2", color: "text-blue-600" },
         { text: "🔥 PRIORITÉS OPÉRATOIRES BEAST !", expr: "D'abord les parenthèses, puis la multiplication", color: "text-orange-600" },
-        { text: "Développement (2x - 1)(4x + 5)", expr: "8x² + 10x - 4x - 5 = 8x² + 6x - 5", color: "text-green-600" },
+        { text: "Développement (2x - 1)(4x + 5)", expr: "8x² + 6x - 5", color: "text-green-600" },
         { text: "Développement x(x - 3) × 2", expr: "2x(x - 3) = 2x² - 6x", color: "text-orange-600" },
         { text: "Substitution", expr: "3x² + (8x² + 6x - 5) - (2x² - 6x)", color: "text-red-600" },
-        { text: "🔥 RÉSULTAT BEAST", expr: "9x² + 12x - 5", color: "text-purple-600" }
+        { text: "🔥 RÉSULTAT BEAST", expr: "9x² + 2x - 5", color: "text-purple-600" }
       ]
     },
     {
@@ -672,394 +672,136 @@ export default function DeveloppementPage() {
         { text: "Expression de départ", expr: "5x³ - 2x(3x² - 4x + 1) + (x + 2)(x² - 3) × 3", color: "text-blue-600" },
         { text: "🔥 PRIORITÉS COMPLEXES BEAST !", expr: "Multiple distributivités avec priorités", color: "text-orange-600" },
         { text: "Développement 2x(3x² - 4x + 1)", expr: "6x³ - 8x² + 2x", color: "text-green-600" },
-        { text: "Développement (x + 2)(x² - 3) × 3", expr: "3(x³ - 3x + 2x² - 6) = 3x³ + 6x² - 9x - 18", color: "text-orange-600" },
-        { text: "Substitution", expr: "5x³ - (6x³ - 8x² + 2x) + (3x³ + 6x² - 9x - 18)", color: "text-red-600" },
-        { text: "🔥 RÉSULTAT BEAST", expr: "2x³ + 14x² - 11x - 18", color: "text-purple-600" }
+        { text: "Développement (x + 2)(x² - 3) × 3", expr: "3(x³ - 3x + 2x² - 6) = 3x³ + 6x² - 9x - 8", color: "text-orange-600" },
+        { text: "Substitution", expr: "5x³ - (6x³ - 8x² + 2x) + (3x³ + 6x² - 9x - 8)", color: "text-red-600" },
+        { text: "🔥 RÉSULTAT BEAST", expr: "2x³ + 4x² - 1x - 8", color: "text-purple-600" }
       ]
     },
 
     // Beast Niveau 25-30 : PRIORITÉS OPÉRATOIRES ESCALADANTES !
     {
       id: 25,
-      question: "x² + 3x(2x - 1)² - (x + 1)(x - 2)(x + 3)",
+      question: "x² + 3x(2x - 1)(x + 2) - (x + 1)(x - 2)(x + 3)",
       steps: [
-        { text: "Expression de départ", expr: "x² + 3x(2x - 1)² - (x + 1)(x - 2)(x + 3)", color: "text-blue-600" },
-        { text: "🔥 CARRÉ + TRIPLE PRODUIT BEAST !", expr: "Priorités avec carré et triple multiplication", color: "text-orange-600" },
-        { text: "Développement (2x - 1)²", expr: "4x² - 4x + 1", color: "text-green-600" },
-        { text: "Développement 3x(2x - 1)²", expr: "3x(4x² - 4x + 1) = 12x³ - 12x² + 3x", color: "text-orange-600" },
+        { text: "Expression de départ", expr: "x² + 3x(2x - 1)(x + 2) - (x + 1)(x - 2)(x + 3)", color: "text-blue-600" },
+        { text: "🔥 DOUBLE + TRIPLE PRODUIT BEAST !", expr: "Priorités avec double et triple multiplication", color: "text-orange-600" },
+        { text: "Développement (2x - 1)(x + 2)", expr: "2x² + 3x - 2", color: "text-green-600" },
+        { text: "Développement 3x(2x - 1)(x + 2)", expr: "3x(2x² + 3x - 2) = 6x³ + 9x² - 6x", color: "text-orange-600" },
         { text: "Triple produit", expr: "(x + 1)(x - 2)(x + 3) = (x² - x - 2)(x + 3) = x³ + 2x² - 5x - 6", color: "text-red-600" },
-        { text: "🔥 RÉSULTAT BEAST", expr: "x² + 12x³ - 12x² + 3x - x³ - 2x² + 5x + 6 = 11x³ - 13x² + 8x + 6", color: "text-purple-600" }
+        { text: "🔥 RÉSULTAT BEAST", expr: "x² + 6x³ + 9x² - 6x - x³ - 2x² + 5x + 6 = 5x³ + 8x² - x + 6", color: "text-purple-600" }
       ]
     },
     {
       id: 26,
-      question: "2x⁴ - x²(3x + 2)² + 4x(x - 1)(2x + 3) - (x² + 1)²",
+      question: "2x⁴ - x²(3x + 2)(x - 1) + 4x(x - 1)(2x + 3) - (x² + 1)(x + 2)",
       steps: [
-        { text: "Expression de départ", expr: "2x⁴ - x²(3x + 2)² + 4x(x - 1)(2x + 3) - (x² + 1)²", color: "text-blue-600" },
-        { text: "🔥 PRIORITÉS MULTIPLES BEAST !", expr: "Carrés, doubles produits, tout ensemble", color: "text-orange-600" },
-        { text: "Développement (3x + 2)²", expr: "9x² + 12x + 4", color: "text-green-600" },
-        { text: "Calcul x²(3x + 2)²", expr: "x²(9x² + 12x + 4) = 9x⁴ + 12x³ + 4x²", color: "text-orange-600" },
-        { text: "Double produit (x - 1)(2x + 3)", expr: "2x² + 3x - 2x - 3 = 2x² + x - 3", color: "text-green-600" },
-        { text: "Calcul 4x(x - 1)(2x + 3)", expr: "4x(2x² + x - 3) = 8x³ + 4x² - 12x", color: "text-orange-600" },
-        { text: "Carré (x² + 1)²", expr: "x⁴ + 2x² + 1", color: "text-red-600" },
-        { text: "🔥 RÉSULTAT BEAST", expr: "2x⁴ - 9x⁴ - 12x³ - 4x² + 8x³ + 4x² - 12x - x⁴ - 2x² - 1 = -8x⁴ - 4x³ - 2x² - 12x - 1", color: "text-purple-600" }
+        { text: "Expression de départ", expr: "2x⁴ - x²(3x + 2)(x - 1) + 4x(x - 1)(2x + 3) - (x² + 1)(x + 2)", color: "text-blue-600" },
+        { text: "🔥 PRIORITÉS MULTIPLES BEAST !", expr: "Doubles produits et distributivités complexes", color: "text-orange-600" },
+        { text: "Développement (3x + 2)(x - 1)", expr: "3x² - x - 2", color: "text-green-600" },
+        { text: "Calcul x²(3x + 2)(x - 1)", expr: "x²(3x² - x - 2) = 3x⁴ - x³ - 2x²", color: "text-orange-600" },
+        { text: "Double produit (x - 1)(2x + 3)", expr: "2x² + x - 3", color: "text-green-600" },
+        { text: "Calcul 4x(x - 1)(2x + 3)", expr: "4x(2x² + x - 3) = 8x³ + 4x² - 2x", color: "text-orange-600" },
+        { text: "Produit (x² + 1)(x + 2)", expr: "x³ + 2x² + x + 2", color: "text-red-600" },
+        { text: "🔥 RÉSULTAT BEAST", expr: "2x⁴ - 3x⁴ + x³ + 2x² + 8x³ + 4x² - 2x - x³ - 2x² - x - 2 = -x⁴ + 8x³ + 4x² - 3x - 2", color: "text-purple-600" }
       ]
     },
     {
       id: 27,
-      question: "3x(x + 1)³ - 2(x - 2)²(x + 3) + x²(2x - 1)(x + 4)",
+      question: "3x(x + 1)(x - 5) - 2(x - 2)(x + 3)(x + 7) + x²(2x - 1)(x + 4)",
       steps: [
-        { text: "Expression de départ", expr: "3x(x + 1)³ - 2(x - 2)²(x + 3) + x²(2x - 1)(x + 4)", color: "text-blue-600" },
-        { text: "🔥 CUBE + CARRÉS MULTIPLES BEAST !", expr: "Cube, carré × binôme, triple produit", color: "text-orange-600" },
-        { text: "Résultat ultra-complexe", expr: "Expression beast avec puissances jusqu'à 6", color: "text-purple-600" }
+        { text: "Expression de départ", expr: "3x(x + 1)(x - 5) - 2(x - 2)(x + 3)(x + 7) + x²(2x - 1)(x + 4)", color: "text-blue-600" },
+        { text: "🔥 DISTRIBUTIVITÉS MULTIPLES BEAST !", expr: "Triple distributivité, triple produit, et plus", color: "text-orange-600" },
+        { text: "Résultat ultra-complexe", expr: "Expression beast avec distributivités multiples", color: "text-purple-600" }
       ]
     },
     {
       id: 28,
-      question: "x⁵ - 3x²(2x - 1)³ + 2(x + 1)²(x - 3)² - x(x² + 2)²",
+      question: "x⁵ - 3x²(2x - 1)(x + 6) + 2(x + 1)(x - 3)(x + 8) - x(x² + 2)(x - 7)",
       steps: [
-        { text: "Expression de départ", expr: "x⁵ - 3x²(2x - 1)³ + 2(x + 1)²(x - 3)² - x(x² + 2)²", color: "text-blue-600" },
-        { text: "🔥 CUBES ET CARRÉS MULTIPLES !", expr: "Cube multiplié par x², double carré, carré de trinôme", color: "text-orange-600" },
-        { text: "🔥 RÉSULTAT APOCALYPTIQUE", expr: "Expression géante avec puissances jusqu'à 8", color: "text-purple-600" }
+        { text: "Expression de départ", expr: "x⁵ - 3x²(2x - 1)(x + 6) + 2(x + 1)(x - 3)(x + 8) - x(x² + 2)(x - 7)", color: "text-blue-600" },
+        { text: "🔥 DISTRIBUTIVITÉS MULTIPLES !", expr: "Double et triple distributivités complexes", color: "text-orange-600" },
+        { text: "🔥 RÉSULTAT BEAST", expr: "Expression complexe avec distributivités multiples", color: "text-purple-600" }
       ]
     },
     {
       id: 29,
-      question: "4x²(x - 1)⁴ - (2x + 1)³(x - 2) + 3x(x + 3)²(x - 4)²",
+      question: "4x²(x - 1)(x + 9) - (2x + 1)(x - 2)(x + 5) + 3x(x + 3)(x - 4)(x + 1)",
       steps: [
-        { text: "Expression de départ", expr: "4x²(x - 1)⁴ - (2x + 1)³(x - 2) + 3x(x + 3)²(x - 4)²", color: "text-blue-600" },
-        { text: "🔥 PUISSANCE 4 + CUBES MULTIPLES !", expr: "Puissance 4, cube × binôme, triple carré", color: "text-orange-600" },
-        { text: "🔥 BEAST ULTIME", expr: "Expression titanesque avec puissances jusqu'à 9", color: "text-purple-600" }
+        { text: "Expression de départ", expr: "4x²(x - 1)(x + 9) - (2x + 1)(x - 2)(x + 5) + 3x(x + 3)(x - 4)(x + 1)", color: "text-blue-600" },
+        { text: "🔥 DISTRIBUTIVITÉS GÉANTES !", expr: "Triple distributivité répétée avec coefficients", color: "text-orange-600" },
+        { text: "🔥 BEAST ULTIME", expr: "Expression titanesque avec distributivités multiples", color: "text-purple-600" }
       ]
     },
     {
       id: 30,
-      question: "x³(2x + 3)⁴ - 2x²(x - 1)³(x + 2) + (3x - 2)²(x + 1)³",
+      question: "x³(2x + 3)(x - 8) - 2x²(x - 1)(x + 2)(x + 2) + (3x - 2)(x + 1)(x - 6)",
       steps: [
-        { text: "Expression de départ", expr: "x³(2x + 3)⁴ - 2x²(x - 1)³(x + 2) + (3x - 2)²(x + 1)³", color: "text-blue-600" },
-        { text: "🔥 PUISSANCE 4 MULTIPLICATIVE !", expr: "x³ × puissance 4, triple produits, carré × cube", color: "text-orange-600" },
-        { text: "🔥 CHAMPION PRIORITÉS", expr: "Expression colossale avec puissances jusqu'à 10", color: "text-purple-600" }
+        { text: "Expression de départ", expr: "x³(2x + 3)(x - 8) - 2x²(x - 1)(x + 2)(x + 2) + (3x - 2)(x + 1)(x - 6)", color: "text-blue-600" },
+        { text: "🔥 DISTRIBUTIVITÉS COLOSSALES !", expr: "Triple et quadruple distributivités avec coefficients", color: "text-orange-600" },
+        { text: "🔥 CHAMPION PRIORITÉS", expr: "Expression colossale avec distributivités complexes", color: "text-purple-600" }
       ]
     },
 
     // Beast Niveau 31-35 : APOCALYPSE PRIORITÉS OPÉRATOIRES !
     {
       id: 31,
-      question: "5x⁴(x - 2)⁵ - 3x²(2x + 1)⁴(x - 3) + x(x + 1)³(x - 1)³",
+      question: "5x⁴(x - 2)(x + 3) - 3x²(2x + 1)(x - 3)(x + 4) + x(x + 1)(x - 1)(x + 5)",
       steps: [
-        { text: "Expression de départ", expr: "5x⁴(x - 2)⁵ - 3x²(2x + 1)⁴(x - 3) + x(x + 1)³(x - 1)³", color: "text-blue-600" },
-        { text: "💀 PUISSANCE 5 APOCALYPTIQUE !", expr: "x⁴ × puissance 5, quadruple produits", color: "text-orange-600" },
-        { text: "💀 APOCALYPSE BEAST", expr: "Expression démoniaque avec puissances jusqu'à 11", color: "text-purple-600" }
+        { text: "Expression de départ", expr: "5x⁴(x - 2)(x + 3) - 3x²(2x + 1)(x - 3)(x + 4) + x(x + 1)(x - 1)(x + 5)", color: "text-blue-600" },
+        { text: "💀 DISTRIBUTIVITÉS APOCALYPTIQUES !", expr: "Quadruple distributivités avec coefficients complexes", color: "text-orange-600" },
+        { text: "💀 APOCALYPSE BEAST", expr: "Expression démoniaque avec distributivités multiples", color: "text-purple-600" }
       ]
     },
     {
       id: 32,
-      question: "x⁶ - 2x³(3x - 1)⁵ + 4x²(x + 2)³(2x - 3)² - (x² + x + 1)³",
+      question: "x⁶ - 2x³(3x - 1)(2x + 5) + 4x²(x + 2)(x - 3)(2x - 3) - (x² + x + 1)(x + 4)",
       steps: [
-        { text: "Expression de départ", expr: "x⁶ - 2x³(3x - 1)⁵ + 4x²(x + 2)³(2x - 3)² - (x² + x + 1)³", color: "text-blue-600" },
-        { text: "💀 PUISSANCE 5 + CUBE DE TRINÔME !", expr: "x³ × puissance 5, quintuple produits, cube trinôme", color: "text-orange-600" },
-        { text: "💀 SUPRÊME BEAST", expr: "Expression infernale avec puissances jusqu'à 12", color: "text-purple-600" }
+        { text: "Expression de départ", expr: "x⁶ - 2x³(3x - 1)(2x + 5) + 4x²(x + 2)(x - 3)(2x - 3) - (x² + x + 1)(x + 4)", color: "text-blue-600" },
+        { text: "💀 DISTRIBUTIVITÉS MULTIPLES !", expr: "Doubles et triples produits avec distributivité", color: "text-orange-600" },
+        { text: "💀 SUPRÊME BEAST", expr: "Expression complexe avec distributivités multiples", color: "text-purple-600" }
       ]
     },
     {
       id: 33,
-      question: "3x⁵(2x - 3)⁶ - x⁴(x + 1)⁴(x - 2)² + 2x²(3x + 2)³(x - 1)³",
+      question: "3x⁵(2x - 3)(x + 6) - x⁴(x + 1)(x - 2)(x + 7) + 2x²(3x + 2)(x - 1)(x + 8)",
       steps: [
-        { text: "Expression de départ", expr: "3x⁵(2x - 3)⁶ - x⁴(x + 1)⁴(x - 2)² + 2x²(3x + 2)³(x - 1)³", color: "text-blue-600" },
-        { text: "💀 PUISSANCE 6 DÉMONIAQUE !", expr: "x⁵ × puissance 6, sextuple produits", color: "text-orange-600" },
-        { text: "💀 LÉGENDE BEAST", expr: "Expression légendaire avec puissances jusqu'à 13", color: "text-purple-600" }
+        { text: "Expression de départ", expr: "3x⁵(2x - 3)(x + 6) - x⁴(x + 1)(x - 2)(x + 7) + 2x²(3x + 2)(x - 1)(x + 8)", color: "text-blue-600" },
+        { text: "💀 DISTRIBUTIVITÉS DÉMONIAQUES !", expr: "Triple distributivités avec coefficients élevés", color: "text-orange-600" },
+        { text: "💀 LÉGENDE BEAST", expr: "Expression légendaire avec distributivités complexes", color: "text-purple-600" }
       ]
     },
     {
       id: 34,
-      question: "x⁷ - 4x⁴(2x + 1)⁷ + 3x³(x - 1)⁵(x + 2)² - 2x²(3x + 1)⁴(x - 3)³",
+      question: "x⁷ - 4x⁴(2x + 1)(x - 9) + 3x³(x - 1)(x + 2)(x + 2) - 2x²(3x + 1)(x - 3)(x + 1)",
       steps: [
-        { text: "Expression de départ", expr: "x⁷ - 4x⁴(2x + 1)⁷ + 3x³(x - 1)⁵(x + 2)² - 2x²(3x + 1)⁴(x - 3)³", color: "text-blue-600" },
-        { text: "💀 PUISSANCE 7 ULTIME !", expr: "x⁴ × puissance 7, septuple produits", color: "text-orange-600" },
-        { text: "💀 MAÎTRE BEAST", expr: "Expression mythique avec puissances jusqu'à 14", color: "text-purple-600" }
+        { text: "Expression de départ", expr: "x⁷ - 4x⁴(2x + 1)(x - 9) + 3x³(x - 1)(x + 2)(x + 2) - 2x²(3x + 1)(x - 3)(x + 1)", color: "text-blue-600" },
+        { text: "💀 DISTRIBUTIVITÉS ULTIMES !", expr: "Triple et quadruple distributivités avec coefficients géants", color: "text-orange-600" },
+        { text: "💀 MAÎTRE BEAST", expr: "Expression mythique avec distributivités complexes", color: "text-purple-600" }
       ]
     },
     {
       id: 35,
-      question: "2x⁸ - x⁶(3x - 2)⁸ + 5x⁴(x + 1)⁶(2x - 1)³ - 3x²(x² + x + 1)⁴(x - 2)² + x(4x + 3)⁵(x - 3)⁴",
+      question: "2x⁸ - x⁶(3x - 2)(x + 4) + 5x⁴(x + 1)(x - 5)(2x - 1) - 3x²(x² + x + 1)(x - 2) + x(4x + 3)(2x + 7)(x - 3)",
       steps: [
-        { text: "Expression de départ", expr: "2x⁸ - x⁶(3x - 2)⁸ + 5x⁴(x + 1)⁶(2x - 1)³ - 3x²(x² + x + 1)⁴(x - 2)² + x(4x + 3)⁵(x - 3)⁴", color: "text-blue-600" },
-        { text: "💀 PUISSANCE 8 APOCALYPSE FINALE !", expr: "x⁶ × puissance 8, quintuple termes", color: "text-orange-600" },
-        { text: "💀 EMPEREUR BEAST SUPRÊME !", expr: "5 termes géants avec priorités démentielles", color: "text-red-600" },
-        { text: "💀 CHAMPION PRIORITÉS ULTIME", expr: "Expression divine avec puissances jusqu'à 15", color: "text-purple-600" }
+        { text: "Expression de départ", expr: "2x⁸ - x⁶(3x - 2)(x + 4) + 5x⁴(x + 1)(x - 5)(2x - 1) - 3x²(x² + x + 1)(x - 2) + x(4x + 3)(2x + 7)(x - 3)", color: "text-blue-600" },
+        { text: "💀 DISTRIBUTIVITÉS SUPRÊMES !", expr: "Multiples distributivités avec produits complexes", color: "text-orange-600" },
+        { text: "💀 EMPEREUR BEAST SUPRÊME !", expr: "5 termes géants avec distributivités multiples", color: "text-red-600" },
+        { text: "💀 CHAMPION PRIORITÉS ULTIME", expr: "Expression divine avec distributivités complexes", color: "text-purple-600" }
       ]
     }
   ]
 
-  // EXERCICES MODE HARDCORE - FRACTIONS ET LA TOTALE ! 💀
+      // EXERCICES MODE HARDCORE - SUPPRIMÉS
   const hardcoreExercises = [
-    // Hardcore Niveau 1-5 : FRACTIONS SIMPLES
-    {
-      id: 1,
-      question: "(2/3)x³((9/4)x² - (5/6)x)",
-      steps: [
-        { text: "Expression de départ", expr: "(2/3)x³((9/4)x² - (5/6)x)", color: "text-blue-600" },
-        { text: "💀 HARDCORE ! Distribution fractionnaire", expr: "(2/3)x³ × (9/4)x² + (2/3)x³ × (-(5/6)x)", color: "text-orange-600" },
-        { text: "Premier produit", expr: "(2/3) × (9/4) × x⁵ = (18/12)x⁵ = (3/2)x⁵", color: "text-green-600" },
-        { text: "Second produit", expr: "(2/3) × (-(5/6)) × x⁴ = -(10/18)x⁴ = -(5/9)x⁴", color: "text-red-600" },
-        { text: "💀 RÉSULTAT HARDCORE", expr: "(3/2)x⁵ - (5/9)x⁴", color: "text-purple-600" }
-      ]
-    },
-    {
-      id: 2,
-      question: "((5/7)x⁴y² - (3/8)y⁵)((11/4)x³ - (17/9)y²)",
-      steps: [
-        { text: "Expression de départ", expr: "((5/7)x⁴y² - (3/8)y⁵)((11/4)x³ - (17/9)y²)", color: "text-blue-600" },
-        { text: "💀 QUATRE PRODUITS FRACTIONNAIRES !", expr: "Tous les produits : 4 termes à calculer", color: "text-orange-600" },
-        { text: "Premier produit", expr: "(5/7) × (11/4) × x⁷y² = (55/28)x⁷y²", color: "text-green-600" },
-        { text: "Deuxième produit", expr: "(5/7) × (-(17/9)) × x⁴y⁴ = -(85/63)x⁴y⁴", color: "text-orange-600" },
-        { text: "Troisième produit", expr: "(-(3/8)) × (11/4) × x³y⁵ = -(33/32)x³y⁵", color: "text-red-600" },
-        { text: "Quatrième produit", expr: "(-(3/8)) × (-(17/9)) × y⁷ = (51/72)y⁷", color: "text-blue-600" },
-        { text: "💀 RÉSULTAT HARDCORE", expr: "(55/28)x⁷y² - (85/63)x⁴y⁴ - (33/32)x³y⁵ + (51/72)y⁷", color: "text-purple-600" }
-      ]
-    },
-    {
-      id: 3,
-      question: "((-7/12)a⁵b³ + (11/15)c⁴)((9/8)a²b - (13/20)c²)",
-      steps: [
-        { text: "Expression de départ", expr: "((-7/12)a⁵b³ + (11/15)c⁴)((9/8)a²b - (13/20)c²)", color: "text-blue-600" },
-        { text: "💀 HARDCORE MOINS × MOINS !", expr: "4 produits avec fractions négatives", color: "text-orange-600" },
-        { text: "Premier produit", expr: "((-7/12)) × (9/8) × a⁷b⁴ = -(63/96)a⁷b⁴ = -(21/32)a⁷b⁴", color: "text-green-600" },
-        { text: "Deuxième produit", expr: "((-7/12)) × (-(13/20)) × a⁵b³c² = (91/240)a⁵b³c²", color: "text-orange-600" },
-        { text: "Troisième produit", expr: "(11/15) × (9/8) × a²bc⁴ = (99/120)a²bc⁴ = (33/40)a²bc⁴", color: "text-red-600" },
-        { text: "Quatrième produit", expr: "(11/15) × (-(13/20)) × c⁶ = -(143/300)c⁶", color: "text-blue-600" },
-        { text: "💀 RÉSULTAT HARDCORE", expr: "-(21/32)a⁷b⁴ + (91/240)a⁵b³c² + (33/40)a²bc⁴ - (143/300)c⁶", color: "text-purple-600" }
-      ]
-    },
-    {
-      id: 4,
-      question: "((23/19)x⁶y - (47/31)z³)((29/17)x²y⁴ + (53/37)xz)",
-      steps: [
-        { text: "Expression de départ", expr: "((23/19)x⁶y - (47/31)z³)((29/17)x²y⁴ + (53/37)xz)", color: "text-blue-600" },
-        { text: "💀 FRACTIONS PREMIÈRES HARDCORE !", expr: "Dénominateurs premiers - 4 produits", color: "text-orange-600" },
-        { text: "Premier produit", expr: "(23/19) × (29/17) × x⁸y⁵ = (667/323)x⁸y⁵", color: "text-green-600" },
-        { text: "Deuxième produit", expr: "(23/19) × (53/37) × x⁷yz = (1219/703)x⁷yz", color: "text-orange-600" },
-        { text: "Troisième produit", expr: "(-(47/31)) × (29/17) × x²y⁴z³ = -(1363/527)x²y⁴z³", color: "text-red-600" },
-        { text: "Quatrième produit", expr: "(-(47/31)) × (53/37) × xz⁴ = -(2491/1147)xz⁴", color: "text-blue-600" },
-        { text: "💀 RÉSULTAT HARDCORE", expr: "(667/323)x⁸y⁵ + (1219/703)x⁷yz - (1363/527)x²y⁴z³ - (2491/1147)xz⁴", color: "text-purple-600" }
-      ]
-    },
-    {
-      id: 5,
-      question: "((-89/73)x⁹ + (127/103)y⁷)((-157/139)x⁴ + (179/167)y²)",
-      steps: [
-        { text: "Expression de départ", expr: "((-89/73)x⁹ + (127/103)y⁷)((-157/139)x⁴ + (179/167)y²)", color: "text-blue-600" },
-        { text: "💀 PUISSANCES ET FRACTIONS GÉANTES !", expr: "x¹³ hardcore avec nombres premiers", color: "text-orange-600" },
-        { text: "Premier produit", expr: "((-89/73)) × ((-157/139)) × x¹³ = (13973/10147)x¹³", color: "text-green-600" },
-        { text: "Deuxième produit", expr: "((-89/73)) × (179/167) × x⁹y² = -(15931/12199)x⁹y²", color: "text-orange-600" },
-        { text: "Troisième produit", expr: "(127/103) × ((-157/139)) × x⁴y⁷ = -(19939/14317)x⁴y⁷", color: "text-red-600" },
-        { text: "Quatrième produit", expr: "(127/103) × (179/167) × y⁹ = (22733/17201)y⁹", color: "text-blue-600" },
-        { text: "💀 RÉSULTAT HARDCORE", expr: "(13973/10147)x¹³ - (15931/12199)x⁹y² - (19939/14317)x⁴y⁷ + (22733/17201)y⁹", color: "text-purple-600" }
-      ]
-    },
-
-    // Hardcore Niveau 6-10 : DISTRIBUTIVITÉS FRACTIONNAIRES COMPLEXES
-    {
-      id: 6,
-      question: "((3/4)x⁵ - (5/6)x²y + (7/8)y³)((2/3)x² + (4/5)y)",
-      steps: [
-        { text: "Expression de départ", expr: "((3/4)x⁵ - (5/6)x²y + (7/8)y³)((2/3)x² + (4/5)y)", color: "text-blue-600" },
-        { text: "💀 TRINÔME × BINÔME FRACTIONNAIRE !", expr: "6 produits fractionnaires à calculer", color: "text-orange-600" },
-        { text: "Produit 1", expr: "(3/4) × (2/3) × x⁷ = (6/12)x⁷ = (1/2)x⁷", color: "text-green-600" },
-        { text: "Produit 2", expr: "(3/4) × (4/5) × x⁵y = (12/20)x⁵y = (3/5)x⁵y", color: "text-orange-600" },
-        { text: "Produit 3", expr: "(-(5/6)) × (2/3) × x⁴y = -(10/18)x⁴y = -(5/9)x⁴y", color: "text-red-600" },
-        { text: "Produit 4", expr: "(-(5/6)) × (4/5) × x²y² = -(20/30)x²y² = -(2/3)x²y²", color: "text-blue-600" },
-        { text: "Produit 5", expr: "(7/8) × (2/3) × x²y³ = (14/24)x²y³ = (7/12)x²y³", color: "text-green-600" },
-        { text: "Produit 6", expr: "(7/8) × (4/5) × y⁴ = (28/40)y⁴ = (7/10)y⁴", color: "text-orange-600" },
-        { text: "💀 RÉSULTAT HARDCORE", expr: "(1/2)x⁷ + (3/5)x⁵y - (5/9)x⁴y - (2/3)x²y² + (7/12)x²y³ + (7/10)y⁴", color: "text-purple-600" }
-      ]
-    },
-    {
-      id: 7,
-      question: "((11/13)a⁷b² - (17/19)ab⁶ + (23/29)c⁴)((31/37)a³ - (41/43)b² + (47/53)c)",
-      steps: [
-        { text: "Expression de départ", expr: "((11/13)a⁷b² - (17/19)ab⁶ + (23/29)c⁴)((31/37)a³ - (41/43)b² + (47/53)c)", color: "text-blue-600" },
-        { text: "💀 TRINÔME × TRINÔME HARDCORE !", expr: "9 produits fractionnaires avec nombres premiers", color: "text-orange-600" },
-        { text: "Premier terme", expr: "(11/13) × (31/37) × a¹⁰b² = (341/481)a¹⁰b²", color: "text-green-600" },
-        { text: "Deuxième terme", expr: "(11/13) × (-(41/43)) × a⁷b⁴ = -(451/559)a⁷b⁴", color: "text-orange-600" },
-        { text: "Troisième terme", expr: "(11/13) × (47/53) × a⁷b²c = (517/689)a⁷b²c", color: "text-red-600" },
-        { text: "Et 6 autres termes...", expr: "Expression géante avec fractions premiers", color: "text-blue-600" },
-        { text: "💀 RÉSULTAT HARDCORE", expr: "9 termes fractionnaires complexes avec a, b, c", color: "text-purple-600" }
-      ]
-    },
-    {
-      id: 8,
-      question: "((-97/101)x¹⁰ + (109/113)x⁶y⁴ - (127/131)y⁸)((139/137)x³ - (149/151)y²)",
-      steps: [
-        { text: "Expression de départ", expr: "((-97/101)x¹⁰ + (109/113)x⁶y⁴ - (127/131)y⁸)((139/137)x³ - (149/151)y²)", color: "text-blue-600" },
-        { text: "💀 PUISSANCES 13 HARDCORE !", expr: "x¹³ avec fractions géantes premiers", color: "text-orange-600" },
-        { text: "Premier produit", expr: "((-97/101)) × (139/137) × x¹³ = -(13483/13837)x¹³", color: "text-green-600" },
-        { text: "Deuxième produit", expr: "((-97/101)) × (-(149/151)) × x¹⁰y² = (14453/15251)x¹⁰y²", color: "text-orange-600" },
-        { text: "Troisième produit", expr: "(109/113) × (139/137) × x⁹y⁴ = (15151/15481)x⁹y⁴", color: "text-red-600" },
-        { text: "Quatrième produit", expr: "(109/113) × (-(149/151)) × x⁶y⁶ = -(16241/17063)x⁶y⁶", color: "text-blue-600" },
-        { text: "Cinquième produit", expr: "(-(127/131)) × (139/137) × x³y⁸ = -(17653/17947)x³y⁸", color: "text-green-600" },
-        { text: "Sixième produit", expr: "(-(127/131)) × (-(149/151)) × y¹⁰ = (18923/19781)y¹⁰", color: "text-orange-600" },
-        { text: "💀 RÉSULTAT HARDCORE", expr: "-(13483/13837)x¹³ + (14453/15251)x¹⁰y² + (15151/15481)x⁹y⁴ - (16241/17063)x⁶y⁶ - (17653/17947)x³y⁸ + (18923/19781)y¹⁰", color: "text-purple-600" }
-      ]
-    },
-    {
-      id: 9,
-      question: "((2/5)x⁴ + (3/7)xy² - (4/9)y⁴)²",
-      steps: [
-        { text: "Expression de départ", expr: "((2/5)x⁴ + (3/7)xy² - (4/9)y⁴)²", color: "text-blue-600" },
-        { text: "💀 CARRÉ D'UN TRINÔME FRACTIONNAIRE !", expr: "9 produits au carré : a² + 2ab + 2ac + b² + 2bc + c²", color: "text-orange-600" },
-        { text: "Carré du premier", expr: "((2/5)x⁴)² = (4/25)x⁸", color: "text-green-600" },
-        { text: "Double produit 1-2", expr: "2 × (2/5)x⁴ × (3/7)xy² = (12/35)x⁵y²", color: "text-orange-600" },
-        { text: "Double produit 1-3", expr: "2 × (2/5)x⁴ × (-(4/9)y⁴) = -(16/45)x⁴y⁴", color: "text-red-600" },
-        { text: "Carré du deuxième", expr: "((3/7)xy²)² = (9/49)x²y⁴", color: "text-blue-600" },
-        { text: "Double produit 2-3", expr: "2 × (3/7)xy² × (-(4/9)y⁴) = -(24/63)xy⁶", color: "text-green-600" },
-        { text: "Carré du troisième", expr: "(-(4/9)y⁴)² = (16/81)y⁸", color: "text-orange-600" },
-        { text: "💀 RÉSULTAT HARDCORE", expr: "(4/25)x⁸ + (12/35)x⁵y² - (16/45)x⁴y⁴ + (9/49)x²y⁴ - (24/63)xy⁶ + (16/81)y⁸", color: "text-purple-600" }
-      ]
-    },
-    {
-      id: 10,
-      question: "((13/17)a⁶ - (19/23)b⁴c² + (29/31)c⁶)((37/41)a² + (43/47)b²c - (53/59)c³)",
-      steps: [
-        { text: "Expression de départ", expr: "((13/17)a⁶ - (19/23)b⁴c² + (29/31)c⁶)((37/41)a² + (43/47)b²c - (53/59)c³)", color: "text-blue-600" },
-        { text: "💀 TROIS VARIABLES FRACTIONNAIRES HARDCORE !", expr: "9 produits avec a, b, c et nombres premiers", color: "text-orange-600" },
-        { text: "Premier produit", expr: "(13/17) × (37/41) × a⁸ = (481/697)a⁸", color: "text-green-600" },
-        { text: "Deuxième produit", expr: "(13/17) × (43/47) × a⁶b²c = (559/799)a⁶b²c", color: "text-orange-600" },
-        { text: "Troisième produit", expr: "(13/17) × (-(53/59)) × a⁶c³ = -(689/1003)a⁶c³", color: "text-red-600" },
-        { text: "Et 6 autres produits...", expr: "Chaque terme × chaque terme", color: "text-blue-600" },
-        { text: "💀 RÉSULTAT HARDCORE", expr: "Expression géante avec 9 termes fractionnaires à trois variables", color: "text-purple-600" }
-      ]
-    },
-
-    // Hardcore Niveau 11-15 : SOMMES DE FRACTIONS + DISTRIBUTIVITÉS
-    {
-      id: 11,
-      question: "((7/8)x² + (5/12))((-3/4)x - (2/9)) + ((11/15)x + (7/10))((-5/6)x² + (8/21))",
-      steps: [
-        { text: "Expression de départ", expr: "((7/8)x² + (5/12))((-3/4)x - (2/9)) + ((11/15)x + (7/10))((-5/6)x² + (8/21))", color: "text-blue-600" },
-        { text: "💀 SOMME DE DOUBLE DISTRIBUTIVITÉ FRACTIONNAIRE !", expr: "Développer chaque produit séparément", color: "text-orange-600" },
-        { text: "Premier produit : terme 1", expr: "(7/8) × (-3/4) × x³ = -(21/32)x³", color: "text-green-600" },
-        { text: "Premier produit : terme 2", expr: "(7/8) × (-2/9) × x² = -(14/72)x² = -(7/36)x²", color: "text-orange-600" },
-        { text: "Premier produit : terme 3", expr: "(5/12) × (-3/4) × x = -(15/48)x = -(5/16)x", color: "text-red-600" },
-        { text: "Premier produit : terme 4", expr: "(5/12) × (-2/9) = -(10/108) = -(5/54)", color: "text-blue-600" },
-        { text: "Second produit : terme 1", expr: "(11/15) × (-5/6) × x³ = -(55/90)x³ = -(11/18)x³", color: "text-green-600" },
-        { text: "Second produit : terme 2", expr: "(11/15) × (8/21) × x = (88/315)x", color: "text-orange-600" },
-        { text: "Second produit : terme 3", expr: "(7/10) × (-5/6) × x² = -(35/60)x² = -(7/12)x²", color: "text-red-600" },
-        { text: "Second produit : terme 4", expr: "(7/10) × (8/21) = (56/210) = (4/15)", color: "text-blue-600" },
-        { text: "💀 RÉSULTAT HARDCORE", expr: "(-(21/32) - (11/18))x³ + (-(7/36) - (7/12))x² + (-(5/16) + (88/315))x + (-(5/54) + (4/15))", color: "text-purple-600" }
-      ]
-    },
-    {
-      id: 12,
-      question: "((13/19)x⁴ - (17/23)y²)((-29/31)x + (37/41)y) + ((43/47)x² + (53/59)y³)((-61/67)x³ - (71/73))",
-      steps: [
-        { text: "Expression de départ", expr: "((13/19)x⁴ - (17/23)y²)((-29/31)x + (37/41)y) + ((43/47)x² + (53/59)y³)((-61/67)x³ - (71/73))", color: "text-blue-600" },
-        { text: "💀 SOMME HARDCORE FRACTIONS PREMIÈRES !", expr: "Deux produits avec nombres premiers", color: "text-orange-600" },
-        { text: "Premier produit développé", expr: "-(377/589)x⁵ + (481/779)x⁴y + (493/713)xy² - (629/943)y³", color: "text-green-600" },
-        { text: "Second produit développé", expr: "-(2623/3149)x⁵ - (3053/3431)x² + (3233/3953)x³y³ - (3763/4307)y³", color: "text-orange-600" },
-        { text: "💀 RÉSULTAT HARDCORE", expr: "Somme des deux développements avec fractions géantes", color: "text-purple-600" }
-      ]
-    },
-    {
-      id: 13,
-      question: "((2/3)x⁶ - (5/7)x³y + (8/11)y⁴)((4/9)x² + (6/13)xy - (7/15)y²) + ((-3/8)x⁴ + (9/16)y³)((-11/17)x - (12/19)y)",
-      steps: [
-        { text: "Expression de départ", expr: "((2/3)x⁶ - (5/7)x³y + (8/11)y⁴)((4/9)x² + (6/13)xy - (7/15)y²) + ((-3/8)x⁴ + (9/16)y³)((-11/17)x - (12/19)y)", color: "text-blue-600" },
-        { text: "💀 TRINÔME × TRINÔME + BINÔME × BINÔME !", expr: "9 + 4 = 13 produits fractionnaires", color: "text-orange-600" },
-        { text: "Premier groupe : 9 termes", expr: "De (8/27)x⁸ jusqu'à -(56/165)y⁶", color: "text-green-600" },
-        { text: "Second groupe : 4 termes", expr: "De (33/136)x⁵ jusqu'à -(108/304)y⁴", color: "text-orange-600" },
-        { text: "💀 RÉSULTAT HARDCORE", expr: "Expression avec 13 termes fractionnaires simplifiés", color: "text-purple-600" }
-      ]
-    },
-    {
-      id: 14,
-      question: "((79/83)a⁵ - (89/97)b³c²)((-101/103)a² + (107/109)bc) + ((113/127)ab + (131/137)c⁴)((-139/149)a³b - (151/157)c)",
-      steps: [
-        { text: "Expression de départ", expr: "((79/83)a⁵ - (89/97)b³c²)((-101/103)a² + (107/109)bc) + ((113/127)ab + (131/137)c⁴)((-139/149)a³b - (151/157)c)", color: "text-blue-600" },
-        { text: "💀 TROIS VARIABLES HARDCORE SOMME !", expr: "Fractions avec a, b, c et nombres premiers", color: "text-orange-600" },
-        { text: "Premier produit : 4 termes", expr: "Avec puissances a⁷, a⁵bc, b⁴c², b⁴c³", color: "text-green-600" },
-        { text: "Second produit : 4 termes", expr: "Avec puissances a⁴b², abc⁵, a³bc⁴, c⁵", color: "text-orange-600" },
-        { text: "💀 RÉSULTAT HARDCORE", expr: "8 termes fractionnaires complexes avec a, b, c", color: "text-purple-600" }
-      ]
-    },
-    {
-      id: 15,
-      question: "((163/167)x⁸ + (173/179)x⁴y² - (181/191)y⁶)((193/197)x³ - (199/211)y) + ((-223/227)x⁵ + (229/233)xy⁴)((-239/241)x² + (251/257)y³)",
-      steps: [
-        { text: "Expression de départ", expr: "((163/167)x⁸ + (173/179)x⁴y² - (181/191)y⁶)((193/197)x³ - (199/211)y) + ((-223/227)x⁵ + (229/233)xy⁴)((-239/241)x² + (251/257)y³)", color: "text-blue-600" },
-        { text: "💀 PUISSANCES 11 + FRACTIONS GÉANTES !", expr: "x¹¹ hardcore avec nombres premiers géants", color: "text-orange-600" },
-        { text: "Premier produit : 6 termes", expr: "De x¹¹ jusqu'à y⁷ avec fractions énormes", color: "text-green-600" },
-        { text: "Second produit : 4 termes", expr: "De x⁷ jusqu'à y⁷ avec fractions colossales", color: "text-orange-600" },
-        { text: "💀 RÉSULTAT HARDCORE", expr: "Expression apocalyptique avec 10 termes fractionnaires géants", color: "text-purple-600" }
-      ]
-    },
-
-    // Hardcore Niveau 16-20 : APOCALYPSE FRACTIONNAIRE !
-    {
-      id: 16,
-      question: "((17/19)x⁵ - (23/29)x²y + (31/37)y³)((41/43)x³ + (47/53)xy - (59/61)y²) × ((67/71)x - (73/79)y)",
-      steps: [
-        { text: "Expression de départ", expr: "((17/19)x⁵ - (23/29)x²y + (31/37)y³)((41/43)x³ + (47/53)xy - (59/61)y²) × ((67/71)x - (73/79)y)", color: "text-blue-600" },
-        { text: "💀 TRIPLE PRODUIT FRACTIONNAIRE !", expr: "D'abord développer (trinôme × trinôme), puis multiplier par binôme", color: "text-orange-600" },
-        { text: "Étape 1 : Trinôme × Trinôme", expr: "9 termes intermédiaires avec fractions", color: "text-green-600" },
-        { text: "Étape 2 : Résultat × Binôme", expr: "9 × 2 = 18 produits finaux", color: "text-red-600" },
-        { text: "💀 APOCALYPSE HARDCORE", expr: "18 termes fractionnaires avec puissances jusqu'à x⁹", color: "text-purple-600" }
-      ]
-    },
-    {
-      id: 17,
-      question: "((2/3)a⁴ - (5/7)b² + (8/11)c)³",
-      steps: [
-        { text: "Expression de départ", expr: "((2/3)a⁴ - (5/7)b² + (8/11)c)³", color: "text-blue-600" },
-        { text: "💀 CUBE D'UN TRINÔME FRACTIONNAIRE !", expr: "Formule : (A + B + C)³ = A³ + B³ + C³ + 3A²B + 3A²C + 3B²A + 3B²C + 3C²A + 3C²B + 6ABC", color: "text-orange-600" },
-        { text: "Cubes simples", expr: "((2/3)a⁴)³ + ((-5/7)b²)³ + ((8/11)c)³", color: "text-green-600" },
-        { text: "Doubles produits", expr: "6 termes avec coefficients 3", color: "text-red-600" },
-        { text: "Triple produit", expr: "6 × (2/3) × (-5/7) × (8/11) × a⁴b²c", color: "text-blue-600" },
-        { text: "💀 APOCALYPSE HARDCORE", expr: "10 termes fractionnaires avec puissances jusqu'à a¹²", color: "text-purple-600" }
-      ]
-    },
-    {
-      id: 18,
-      question: "((13/17)x⁷ - (19/23)x⁴y² + (29/31)xy⁵ - (37/41)y⁷)((43/47)x⁴ + (53/59)x²y - (61/67)y³ + (71/73))",
-      steps: [
-        { text: "Expression de départ", expr: "((13/17)x⁷ - (19/23)x⁴y² + (29/31)xy⁵ - (37/41)y⁷)((43/47)x⁴ + (53/59)x²y - (61/67)y³ + (71/73))", color: "text-blue-600" },
-        { text: "💀 QUADRINÔME × QUADRINÔME !", expr: "4 × 4 = 16 produits fractionnaires avec nombres premiers", color: "text-orange-600" },
-        { text: "Premier terme", expr: "(13/17) × (43/47) × x¹¹ = (559/799)x¹¹", color: "text-green-600" },
-        { text: "Terme avec puissance max y", expr: "(-37/41) × (71/73) × y⁷ = -(2627/2993)y⁷", color: "text-orange-600" },
-        { text: "Termes intermédiaires", expr: "14 autres termes avec fractions géantes", color: "text-red-600" },
-        { text: "💀 APOCALYPSE HARDCORE", expr: "16 termes avec puissances jusqu'à x¹¹ et fractions premiers", color: "text-purple-600" }
-      ]
-    },
-    {
-      id: 19,
-      question: "((83/89)a⁶b - (97/101)ab⁵ + (103/107)c³)((109/113)a³b² - (127/131)b²c + (137/139)ac²) + ((149/151)ab + (157/163)bc + (167/173)ca)²",
-      steps: [
-        { text: "Expression de départ", expr: "((83/89)a⁶b - (97/101)ab⁵ + (103/107)c³)((109/113)a³b² - (127/131)b²c + (137/139)ac²) + ((149/151)ab + (157/163)bc + (167/173)ca)²", color: "text-blue-600" },
-        { text: "💀 TRINÔME × TRINÔME + CARRÉ !", expr: "Premier produit : 9 termes + Second carré : 9 termes", color: "text-orange-600" },
-        { text: "Premier développement", expr: "9 termes avec a⁹b³, a⁷b³c, a⁶bc², etc.", color: "text-green-600" },
-        { text: "Carré du trinôme", expr: "3 carrés + 6 doubles produits = 9 termes", color: "text-orange-600" },
-        { text: "Additioner les résultats", expr: "Regrouper les termes similaires", color: "text-red-600" },
-        { text: "💀 APOCALYPSE FINALE", expr: "Expression géante avec 18 termes fractionnaires à trois variables", color: "text-purple-600" }
-      ]
-    },
-    {
-      id: 20,
-      question: "((179/181)x⁹ - (191/193)x⁶y² + (197/199)x³y⁵ - (211/223)y⁸)((227/229)x⁵ + (233/239)x²y³ - (241/251)y⁶) + ((257/263)x⁴ - (269/271)xy + (277/281)y²)³",
-      steps: [
-        { text: "Expression de départ", expr: "((179/181)x⁹ - (191/193)x⁶y² + (197/199)x³y⁵ - (211/223)y⁸)((227/229)x⁵ + (233/239)x²y³ - (241/251)y⁶) + ((257/263)x⁴ - (269/271)xy + (277/281)y²)³", color: "text-blue-600" },
-        { text: "💀 QUADRINÔME × TRINÔME + CUBE !", expr: "Premier produit : 4×3=12 termes + Cube : 10 termes", color: "text-orange-600" },
-        { text: "Premier produit : terme max", expr: "(179/181) × (227/229) × x¹⁴ = fractions colossales", color: "text-green-600" },
-        { text: "Cube : terme max", expr: "((257/263)x⁴)³ = puissance 12", color: "text-orange-600" },
-        { text: "Développement complet", expr: "12 + 10 = 22 termes avec fractions énormes", color: "text-red-600" },
-        { text: "💀 CHAMPION HARDCORE ULTIME", expr: "22 termes fractionnaires géants avec puissances jusqu'à x¹⁴ !", color: "text-purple-600" }
-      ]
-    }
+    // Liste vide - exercices hardcore supprimés
   ]
 
   // Sélectionner les exercices selon le mode
   const exercises = exerciseLevel === 'normal' ? normalExercises : exerciseLevel === 'beast' ? beastExercises : hardcoreExercises
   const currentEx = exercises[currentExercise]
   const currentAnim = distributivityAnimations[selectedAnimation]
+
+      // Pas d'animation automatique - contrôle manuel
 
   // Pas d'animation automatique - contrôle manuel
 
@@ -1328,7 +1070,7 @@ export default function DeveloppementPage() {
               </div>
 
               {/* Affichage de l'animation avec vrais mouvements */}
-              <div className="bg-gray-50 rounded-xl p-8 border border-gray-200 min-h-[400px] flex flex-col relative overflow-hidden">
+              <div className="bg-gray-50 rounded-xl p-8 border border-gray-200 min-h-[600px] flex flex-col relative overflow-visible">
                 <div className="text-center space-y-6">
                   
                   {/* Animation pour distributivité simple */}
@@ -1428,32 +1170,32 @@ export default function DeveloppementPage() {
 
                   {/* Animation pour double distributivité */}
                   {selectedAnimation === 2 && (
-                    <div className="space-y-6">
+                    <div className="space-y-8 relative" style={{ overflow: 'visible' }}>
                       {/* Expression de départ - TOUJOURS VISIBLE */}
-                      <div className="text-center p-4 bg-gray-50 rounded-lg">
+                      <div className="text-center p-8 bg-white rounded-lg border-2 border-blue-200 min-h-[400px] relative z-10" style={{ overflow: 'visible' }}>
                         {/* Expression avec overlay pour les flèches */}
-                        <div className="relative">
-                          <div className="text-3xl sm:text-4xl font-mono font-bold text-gray-800 mb-4 text-center">
+                        <div className="relative h-full">
+                          <div className="text-3xl sm:text-4xl font-mono font-bold text-gray-800 mb-4 text-center mt-8">
                             <span className="text-blue-600 font-extrabold" id="term-a">(a + 1)</span>
                             <span className="text-red-600 font-extrabold ml-2" id="term-b">(b + 2)</span>
                           </div>
                           
                           {/* Flèches SVG superposées */}
                           {animationStep >= 1 && (
-                            <div className="absolute inset-0 pointer-events-none">
-                              <svg className="w-full h-full" viewBox="0 -40 400 140" style={{ top: '10px' }}>
-                                {/* Flèche 1: a × b - du premier 'a' au 'b' - belle parabole */}
+                            <div className="absolute top-0 left-0 right-0 pointer-events-none z-50" style={{ height: '400px', zIndex: 9999, overflow: 'visible', transform: 'translateY(-120px)' }}>
+                              <svg className="w-full h-full" viewBox="0 -80 500 200" style={{ overflow: 'visible' }}>
+                                {/* Flèche 1: a × b - du premier 'a' au 'b' - belle parabole courbée */}
                                 {animationStep >= 1 && (
                                   <g>
                                     <path
-                                      d="M 30 35 Q 140 -25 260 35"
+                                      d="M 189 -27 Q 252 -67 315 -27"
                                       stroke="#8b5cf6"
-                                      strokeWidth="4"
+                                      strokeWidth="2"
                                       fill="none"
                                       markerEnd="url(#arrowhead-purple)"
                                       className="animate-pulse"
                                     />
-                                    <text x="145" y="-15" textAnchor="middle" className="text-sm fill-purple-600 font-bold">a × b = ab</text>
+                                    <text x="252" y="-57" textAnchor="middle" className="text-xs fill-purple-600 font-bold">a × b = ab</text>
                                   </g>
                                 )}
                                 
@@ -1461,14 +1203,14 @@ export default function DeveloppementPage() {
                                 {animationStep >= 2 && (
                                   <g>
                                     <path
-                                      d="M 30 35 Q 200 15 300 35"
+                                      d="M 189 5 Q 280 -10 371 5"
                                       stroke="#059669"
-                                      strokeWidth="3"
+                                      strokeWidth="2"
                                       fill="none"
                                       markerEnd="url(#arrowhead-green)"
                                       className="animate-pulse"
                                     />
-                                    <text x="165" y="30" textAnchor="middle" className="text-xs fill-green-600 font-bold">a × 2 = 2a</text>
+                                    <text x="280" y="0" textAnchor="middle" className="text-xs fill-green-600 font-bold">a × 2 = 2a</text>
                                   </g>
                                 )}
                                 
@@ -1476,14 +1218,14 @@ export default function DeveloppementPage() {
                                 {animationStep >= 3 && (
                                   <g>
                                     <path
-                                      d="M 80 45 Q 170 90 260 45"
+                                      d="M 220 15 Q 280 45 340 15"
                                       stroke="#dc2626"
-                                      strokeWidth="3"
+                                      strokeWidth="2"
                                       fill="none"
                                       markerEnd="url(#arrowhead-red)"
                                       className="animate-pulse"
                                     />
-                                    <text x="170" y="85" textAnchor="middle" className="text-xs fill-red-600 font-bold">1 × b = b</text>
+                                    <text x="280" y="40" textAnchor="middle" className="text-xs fill-red-600 font-bold">1 × b = b</text>
                                   </g>
                                 )}
                                 
@@ -1491,14 +1233,14 @@ export default function DeveloppementPage() {
                                 {animationStep >= 4 && (
                                   <g>
                                     <path
-                                      d="M 80 45 Q 190 95 300 45"
+                                      d="M 220 25 Q 295 55 371 25"
                                       stroke="#ea580c"
-                                      strokeWidth="3"
+                                      strokeWidth="2"
                                       fill="none"
                                       markerEnd="url(#arrowhead-orange)"
                                       className="animate-pulse"
                                     />
-                                    <text x="190" y="100" textAnchor="middle" className="text-xs fill-orange-600 font-bold">1 × 2 = 2</text>
+                                    <text x="295" y="50" textAnchor="middle" className="text-xs fill-orange-600 font-bold">1 × 2 = 2</text>
                                   </g>
                                 )}
                                 
@@ -1523,7 +1265,6 @@ export default function DeveloppementPage() {
                         </div>
                         
                         <p className="text-gray-600">Expression de départ</p>
-                        <div className="text-red-600 font-bold text-center mt-2">⚡ FLÈCHE VIOLETTE MISE À JOUR ⚡</div>
                       </div>
                       
                       {/* Étape 1: Flèche a × b */}
@@ -1699,21 +1440,7 @@ export default function DeveloppementPage() {
                     <span className="text-xl">🔥</span>
                     Beast: {correctAnswersBeast}/{beastExercises.length}
                   </button>
-                  <button
-                    onClick={() => {
-                      setExerciseLevel('hardcore')
-                      setCurrentExercise(0)
-                      resetExercise()
-                    }}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-lg text-base font-bold shadow-md transition-colors ${
-                      exerciseLevel === 'hardcore' 
-                        ? 'bg-purple-600 text-white' 
-                        : 'bg-purple-500 text-white hover:bg-purple-600'
-                    }`}
-                  >
-                    <span className="text-xl">💀</span>
-                    Hardcore: {correctAnswersHardcore}/{hardcoreExercises.length}
-                  </button>
+
                   {showIncrement && (
                     <div className="flex items-center gap-2 px-3 py-1 bg-green-500 text-white rounded-lg text-sm font-bold animate-pulse">
                       <span className="text-lg">✅</span>

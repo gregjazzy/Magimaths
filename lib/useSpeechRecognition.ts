@@ -20,19 +20,51 @@ interface UseSpeechRecognitionReturn {
 const convertSpeechToMath = (speech: string): string => {
   let result = speech.toLowerCase();
   
+  // 🎤 ÉTAPE 1: Corrections d'erreurs de reconnaissance vocale courantes
+  const voiceCorrections: { [key: string]: string } = {
+    // Corrections pour "moins" souvent entendu comme "moi"
+    'moi': 'moins',
+    'moi ns': 'moins', 
+    'moin': 'moins',
+    'moyen': 'moins',
+    'moin s': 'moins',
+    
+    // Autres corrections phonétiques courantes
+    'x 2': 'x carré',
+    'x deux': 'x carré',
+    'x 3': 'x cube',
+    'x trois': 'x cube',
+    'ikse': 'x',
+    'ix': 'x',
+    'time': 'fois',
+    'multiplie': 'fois',
+  };
+  
+  // Appliquer les corrections de reconnaissance vocale d'abord
+  for (const [incorrect, correct] of Object.entries(voiceCorrections)) {
+    const regex = new RegExp(`\\b${incorrect}\\b`, 'gi');
+    result = result.replace(regex, correct);
+  }
+  
+  // 🎤 ÉTAPE 2: Post-traitement intelligent pour "moi" dans un contexte mathématique
+  // Si "moi" apparaît entre des nombres/variables, c'est probablement "moins"
+  result = result.replace(/([0-9]|x|y|a|b|t|\))(\s+)moi(\s+)([0-9]|x|y|a|b|t|\()/gi, '$1$2moins$3$4');
+  
   // Remplacements pour les expressions mathématiques
   const replacements: { [key: string]: string } = {
     // Nombres
     'zéro': '0', 'un': '1', 'deux': '2', 'trois': '3', 'quatre': '4', 
     'cinq': '5', 'six': '6', 'sept': '7', 'huit': '8', 'neuf': '9', 'dix': '10',
     
-    // Opérations
+    // Opérations (avec variantes phonétiques)
     'plus': '+', 'moins': '-', 'fois': '*', 'multiplié par': '*', 
     'divisé par': '/', 'égal': '=', 'égale': '=',
+    // Variantes pour "moins"
+    'moin': '-', 'moin s': '-', 'moins s': '-',
     
     // Variables courantes
     'x': 'x', 'y': 'y', 'a': 'a', 'b': 'b', 't': 't',
-    'iksse': 'x', 'ixe': 'x', 'ics': 'x',
+    'iksse': 'x', 'ixe': 'x', 'ics': 'x', 'ix': 'x', 'ikse': 'x',
     
     // Parenthèses
     'parenthèse ouvrante': '(', 'parenthèse fermante': ')',
@@ -55,6 +87,10 @@ const convertSpeechToMath = (speech: string): string => {
     const regex = new RegExp(`\\b${speech}\\b`, 'gi');
     result = result.replace(regex, math);
   }
+  
+  // 🎤 ÉTAPE 3: Post-traitement final pour les erreurs résiduelles
+  // Si on trouve encore "moi" dans un contexte clairement mathématique, le remplacer par "-"
+  result = result.replace(/([+*/=()]|^|\s)moi([+*/=()]|$|\s)/gi, '$1-$2');
   
   // Nettoyer les espaces multiples
   result = result.replace(/\s+/g, ' ').trim();
