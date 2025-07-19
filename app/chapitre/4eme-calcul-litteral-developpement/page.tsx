@@ -1438,67 +1438,78 @@ export default function DeveloppementPage() {
                         
                         {/* Flèches visuelles progressives */}
                         {animationStep >= 1 && (
-                          <div className="relative mt-4 mb-6">
-                            <svg className="w-full h-16" viewBox="0 0 400 60">
-                              {/* Flèche 1: a × a */}
+                          <div className="relative mt-4 mb-8">
+                            <svg className="w-full h-24" viewBox="0 0 500 100">
+                              {/* Positions des termes : (a + 1) × (a + 2) */}
+                              {/* a de (a+1) = 50, 1 de (a+1) = 90, a de (a+2) = 280, 2 de (a+2) = 320 */}
+                              
+                              {/* Flèches du niveau HAUT (a × a et a × 2) */}
+                              {/* Flèche 1: a × a - niveau haut */}
                               {animationStep >= 1 && (
                                 <g>
                                   <path
-                                    d="M 80 15 Q 130 35 180 15"
+                                    d="M 50 20 Q 165 5 280 20"
                                     stroke="#8b5cf6"
                                     strokeWidth="3"
                                     fill="none"
                                     markerEnd="url(#arrowhead-purple)"
                                     className="animate-pulse"
                                   />
-                                  <text x="130" y="45" textAnchor="middle" className="text-xs fill-purple-600 font-bold">a × a</text>
+                                  <text x="165" y="15" textAnchor="middle" className="text-xs fill-purple-600 font-bold">a × a = a²</text>
                                 </g>
                               )}
                               
-                              {/* Flèche 2: a × 2 */}
+                              {/* Flèche 2: a × 2 - niveau haut */}
                               {animationStep >= 2 && (
                                 <g>
                                   <path
-                                    d="M 80 15 Q 160 40 240 15"
+                                    d="M 50 20 Q 185 10 320 20"
                                     stroke="#059669"
                                     strokeWidth="3"
                                     fill="none"
                                     markerEnd="url(#arrowhead-green)"
                                     className="animate-pulse"
                                   />
-                                  <text x="160" y="52" textAnchor="middle" className="text-xs fill-green-600 font-bold">a × 2</text>
+                                  <text x="185" y="25" textAnchor="middle" className="text-xs fill-green-600 font-bold">a × 2 = 2a</text>
                                 </g>
                               )}
                               
-                              {/* Flèche 3: 1 × a */}
+                              {/* Flèches du niveau BAS (1 × a et 1 × 2) */}
+                              {/* Flèche 3: 1 × a - niveau bas */}
                               {animationStep >= 3 && (
                                 <g>
                                   <path
-                                    d="M 120 15 Q 160 40 200 15"
+                                    d="M 90 35 Q 185 80 280 35"
                                     stroke="#dc2626"
                                     strokeWidth="3"
                                     fill="none"
                                     markerEnd="url(#arrowhead-red)"
                                     className="animate-pulse"
                                   />
-                                  <text x="160" y="45" textAnchor="middle" className="text-xs fill-red-600 font-bold">1 × a</text>
+                                  <text x="185" y="75" textAnchor="middle" className="text-xs fill-red-600 font-bold">1 × a = a</text>
                                 </g>
                               )}
                               
-                              {/* Flèche 4: 1 × 2 */}
+                              {/* Flèche 4: 1 × 2 - niveau bas */}
                               {animationStep >= 4 && (
                                 <g>
                                   <path
-                                    d="M 120 15 Q 200 35 280 15"
+                                    d="M 90 35 Q 205 85 320 35"
                                     stroke="#ea580c"
                                     strokeWidth="3"
                                     fill="none"
                                     markerEnd="url(#arrowhead-orange)"
                                     className="animate-pulse"
                                   />
-                                  <text x="200" y="45" textAnchor="middle" className="text-xs fill-orange-600 font-bold">1 × 2</text>
+                                  <text x="205" y="90" textAnchor="middle" className="text-xs fill-orange-600 font-bold">1 × 2 = 2</text>
                                 </g>
                               )}
+                              
+                              {/* Termes visuels pour référence */}
+                              <text x="50" y="30" textAnchor="middle" className="text-sm fill-blue-600 font-bold">a</text>
+                              <text x="90" y="45" textAnchor="middle" className="text-sm fill-blue-600 font-bold">1</text>
+                              <text x="280" y="30" textAnchor="middle" className="text-sm fill-red-600 font-bold">a</text>
+                              <text x="320" y="30" textAnchor="middle" className="text-sm fill-red-600 font-bold">2</text>
                               
                               {/* Définitions des pointes de flèches */}
                               <defs>
