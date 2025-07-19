@@ -3,6 +3,8 @@
 import { useState } from 'react'
 import { ArrowLeft, BookOpen, Target } from 'lucide-react'
 import Link from 'next/link'
+import MathEditor from '@/components/MathEditor'
+import { VoiceInput } from '@/components/VoiceInput'
 
 export default function SubstitutionPage() {
   const [activeTab, setActiveTab] = useState<'cours' | 'exercices'>('cours')
@@ -280,7 +282,7 @@ export default function SubstitutionPage() {
             <div className="flex gap-2">
               {[
                 { id: 'cours', label: 'Cours', icon: BookOpen },
-                { id: 'exercices', label: 'Exercices', icon: Target }
+                { id: 'exercices', label: `Exercices (${score}/${exercises.length})`, icon: Target }
               ].map(tab => (
                 <button
                   key={tab.id}
@@ -407,9 +409,14 @@ export default function SubstitutionPage() {
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-lg font-semibold text-gray-800">{currentEx.question}</h3>
                   <div className="flex items-center gap-4">
-                    <span className="text-sm text-gray-600 bg-gray-100 px-3 py-1 rounded-full">
-                      Exercice {currentExercise + 1} sur {exercises.length}
-                    </span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm text-gray-600 bg-gray-100 px-3 py-1 rounded-full">
+                        Exercice {currentExercise + 1} sur {exercises.length}
+                      </span>
+                      <span className="text-sm text-green-600 bg-green-100 px-3 py-1 rounded-full font-semibold">
+                        Score: {score}/{exercises.length}
+                      </span>
+                    </div>
                     <div className="flex items-center gap-2">
                       <button
                         onClick={prevExercise}
@@ -437,18 +444,32 @@ export default function SubstitutionPage() {
                   </div>
                 </div>
                 
-                <div className="flex gap-2 mb-4">
-                  <input
-                    type="text"
-                    value={userAnswer}
-                    onChange={(e) => setUserAnswer(e.target.value)}
-                    placeholder="Votre réponse..."
-                    className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-900"
-                  />
+                <div className="space-y-4 mb-4">
+                  {/* Éditeur mathématique */}
+                  <div className="w-full">
+                    <MathEditor
+                      value={userAnswer}
+                      onChange={setUserAnswer}
+                      placeholder="Votre réponse... (ex: 6, -3, 12)"
+                      onSubmit={checkAnswer}
+                      theme="orange"
+                      disabled={showAnswer}
+                    />
+                  </div>
+                  
+                  {/* Reconnaissance vocale */}
+                  <div className="w-full border-t border-gray-200 pt-3">
+                    <VoiceInput
+                      onTranscript={(transcript) => setUserAnswer(transcript)}
+                      placeholder="Ou dites votre réponse à voix haute (ex: 'six', 'moins trois')..."
+                      className="justify-center"
+                    />
+                  </div>
+                  
                   <button
                     onClick={checkAnswer}
                     disabled={!userAnswer.trim() || showAnswer}
-                    className="px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 disabled:bg-gray-400"
+                    className="w-full px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 disabled:bg-gray-400 font-semibold"
                   >
                     Vérifier
                   </button>

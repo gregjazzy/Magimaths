@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { ArrowLeft, BookOpen, Target, Zap, RotateCcw } from 'lucide-react'
 import Link from 'next/link'
 import { VoiceInput } from '../../../components/VoiceInput'
+import MathEditor from '@/components/MathEditor'
 
 export default function DeveloppementPage() {
   const [activeTab, setActiveTab] = useState<'cours' | 'exercices'>('cours')
@@ -1080,17 +1081,14 @@ export default function DeveloppementPage() {
                           
                           {/* Zone de saisie */}
                           <div className="space-y-3">
-                            <div className="relative">
-                              <textarea
+                            <div className="w-full">
+                              <MathEditor
                                 value={userAnswer}
-                                onChange={(e) => setUserAnswer(e.target.value)}
+                                onChange={setUserAnswer}
                                 placeholder="Saisissez votre réponse développée (ex: 3x + 6)..."
-                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 bg-white text-gray-800 placeholder-gray-500 font-mono text-lg min-h-[60px] resize-none"
-                                rows={2}
+                                theme="red"
+                                disabled={showAnswer}
                               />
-                              <div className="absolute bottom-2 right-2 text-xs text-gray-400">
-                                {userAnswer.length} caractères
-                              </div>
                             </div>
                             
                             {/* Reconnaissance vocale */}
@@ -1308,17 +1306,14 @@ export default function DeveloppementPage() {
                           
                           {/* Zone de saisie */}
                           <div className="space-y-3">
-                            <div className="relative">
-                              <textarea
+                            <div className="w-full">
+                              <MathEditor
                                 value={advancedUserAnswer}
-                                onChange={(e) => setAdvancedUserAnswer(e.target.value)}
+                                onChange={setAdvancedUserAnswer}
                                 placeholder="Saisissez votre réponse développée et simplifiée (ex: 6x² + 3x - 2)..."
-                                className="w-full px-4 py-3 border border-purple-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white text-gray-800 placeholder-gray-500 font-mono text-lg min-h-[60px] resize-none"
-                                rows={2}
+                                theme="red"
+                                disabled={showAdvancedAnswer}
                               />
-                              <div className="absolute bottom-2 right-2 text-xs text-gray-400">
-                                {advancedUserAnswer.length} caractères
-                              </div>
                             </div>
                             
                             {/* Reconnaissance vocale */}

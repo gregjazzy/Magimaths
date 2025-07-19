@@ -74,6 +74,16 @@ export default function CalculLitteral5emePage() {
                   style={{ background: `linear-gradient(90deg, ${config.color}, ${config.color}80, ${config.color}60)` }}
                 />
                 
+                {/* Badge vérifié */}
+                {chapter.verified && (
+                  <div className="absolute top-2 right-2 z-20">
+                    <div className="flex items-center gap-1 px-2 py-1 bg-green-500 text-white text-xs font-bold rounded-full shadow-lg">
+                      <span>✓</span>
+                      <span>VÉRIFIÉ</span>
+                    </div>
+                  </div>
+                )}
+                
                 {/* Particules magiques */}
                 <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
                   <div className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></div>

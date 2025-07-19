@@ -2,10 +2,12 @@ import { Chapter, ClassLevel } from '@/types';
 
 // Chapitres à exclure de l'affichage graphique (mais le contenu reste accessible)
 const hiddenChapters = [
-  '5eme-calcul-litteral-expressions-introduction',
   '5eme-calcul-litteral-substitution',
+  '5eme-calcul-litteral-developpement',
+  '5eme-calcul-litteral-expressions-introduction',
   '5eme-calcul-litteral-expressions-regles',
-  '5eme-calcul-litteral-developpement'
+  '5eme-calcul-litteral-factorisation',
+  '5eme-priorites-operations'
 ];
 
 export const chaptersData: Chapter[] = [
@@ -754,7 +756,8 @@ export const chaptersData: Chapter[] = [
     lessons: [],
     exercises: [],
     isLocked: false,
-        order: 40
+    order: 40,
+    verified: true
   },
   {
     id: '5eme-calcul-litteral-expressions-introduction',
@@ -771,7 +774,8 @@ export const chaptersData: Chapter[] = [
     exercises: [],
     isLocked: false,
     order: 40.1,
-    parentChapter: '5eme-calcul-litteral'
+    parentChapter: '5eme-calcul-litteral',
+    verified: true
   },
   {
     id: '5eme-calcul-litteral-expressions-regles',
@@ -788,7 +792,8 @@ export const chaptersData: Chapter[] = [
     exercises: [],
     isLocked: false,
     order: 40.2,
-    parentChapter: '5eme-calcul-litteral'
+    parentChapter: '5eme-calcul-litteral',
+    verified: true
   },
   {
     id: '5eme-calcul-litteral-developpement',
@@ -805,7 +810,8 @@ export const chaptersData: Chapter[] = [
     exercises: [],
     isLocked: false,
     order: 40.3,
-    parentChapter: '5eme-calcul-litteral'
+    parentChapter: '5eme-calcul-litteral',
+    verified: true
   },
   {
     id: '5eme-calcul-litteral-substitution',
@@ -822,7 +828,8 @@ export const chaptersData: Chapter[] = [
     exercises: [],
     isLocked: false,
     order: 40.4,
-    parentChapter: '5eme-calcul-litteral'
+    parentChapter: '5eme-calcul-litteral',
+    verified: true
   },
   {
     id: '5eme-calcul-litteral-factorisation',
@@ -839,7 +846,8 @@ export const chaptersData: Chapter[] = [
     exercises: [],
     isLocked: false,
     order: 40.5,
-    parentChapter: '5eme-calcul-litteral'
+    parentChapter: '5eme-calcul-litteral',
+    verified: true
   },
   {
     id: '5eme-priorites-operations',
@@ -1141,22 +1149,21 @@ export const chaptersData: Chapter[] = [
     verified: true
   },
   {
-    id: '4eme-calcul-litteral-identites-remarquables',
-    title: 'Identités remarquables',
-    description: 'Formules de développement et factorisation remarquables',
+    id: '4eme-calcul-litteral-factorisation',
+    title: 'Factorisation',
+    description: 'Factoriser des expressions littérales',
     classLevel: '4eme',
     category: 'algebra',
     difficulty: 'intermediate',
     estimatedTime: 25,
     prerequisites: ['4eme-calcul-litteral-developpement'],
     color: '#54a0ff',
-    icon: '⭐',
+    icon: '🎯',
     lessons: [],
     exercises: [],
     isLocked: false,
     order: 54.45,
-    parentChapter: '4eme-calcul-litteral',
-    verified: true
+    parentChapter: '4eme-calcul-litteral'
   },
   {
     id: '4eme-calcul-litteral-problemes',
