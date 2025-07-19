@@ -1141,6 +1141,24 @@ export const chaptersData: Chapter[] = [
     verified: true
   },
   {
+    id: '4eme-calcul-litteral-identites-remarquables',
+    title: 'Identités remarquables',
+    description: 'Formules de développement et factorisation remarquables',
+    classLevel: '4eme',
+    category: 'algebra',
+    difficulty: 'intermediate',
+    estimatedTime: 25,
+    prerequisites: ['4eme-calcul-litteral-developpement'],
+    color: '#54a0ff',
+    icon: '⭐',
+    lessons: [],
+    exercises: [],
+    isLocked: false,
+    order: 54.45,
+    parentChapter: '4eme-calcul-litteral',
+    verified: true
+  },
+  {
     id: '4eme-calcul-litteral-problemes',
     title: 'Problèmes',
     description: 'Problèmes concrets utilisant le calcul littéral',

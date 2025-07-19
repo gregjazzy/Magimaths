@@ -792,7 +792,15 @@ export default function DeveloppementPage() {
   ]
 
       // EXERCICES MODE HARDCORE - SUPPRIMÉS
-  const hardcoreExercises = [
+  const hardcoreExercises: Array<{
+    id: number;
+    question: string;
+    steps: Array<{
+      text: string;
+      expr: string;
+      color: string;
+    }>;
+  }> = [
     // Liste vide - exercices hardcore supprimés
   ]
 
