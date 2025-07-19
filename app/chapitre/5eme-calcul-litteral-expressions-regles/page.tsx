@@ -598,11 +598,11 @@ const beastExercises = [
   // Niveau 1 : Expressions longues avec plusieurs variables
   {
     id: 1,
-    question: "7x - 5y + 3x - 2y + 4x - 9y",
+    question: "7x² - 5y + 3x² - 2y + 4x² - 9y",
     steps: [
-      { text: "Expression de départ", expr: "7x - 5y + 3x - 2y + 4x - 9y", color: "text-blue-600" },
-      { text: "Séparer par variable", expr: "7x + 3x + 4x - 5y - 2y - 9y", color: "text-orange-600" },
-      { text: "Résultat final", expr: "14x - 16y", color: "text-purple-600" }
+      { text: "Expression de départ", expr: "7x² - 5y + 3x² - 2y + 4x² - 9y", color: "text-blue-600" },
+      { text: "Séparer par variable", expr: "7x² + 3x² + 4x² - 5y - 2y - 9y", color: "text-orange-600" },
+      { text: "Résultat final", expr: "14x² - 16y", color: "text-purple-600" }
     ]
   },
   {
@@ -616,11 +616,11 @@ const beastExercises = [
   },
   {
     id: 3,
-    question: "9xy - 6x + 4xy - 3x + 2xy - 5x",
+    question: "9x²y - 6x + 4x²y - 3x + 2x²y - 5x",
     steps: [
-      { text: "Expression de départ", expr: "9xy - 6x + 4xy - 3x + 2xy - 5x", color: "text-blue-600" },
-      { text: "Séparer par type", expr: "9xy + 4xy + 2xy - 6x - 3x - 5x", color: "text-orange-600" },
-      { text: "Résultat final", expr: "15xy - 14x", color: "text-purple-600" }
+      { text: "Expression de départ", expr: "9x²y - 6x + 4x²y - 3x + 2x²y - 5x", color: "text-blue-600" },
+      { text: "Séparer par type", expr: "9x²y + 4x²y + 2x²y - 6x - 3x - 5x", color: "text-orange-600" },
+      { text: "Résultat final", expr: "15x²y - 14x", color: "text-purple-600" }
     ]
   },
   
@@ -636,11 +636,11 @@ const beastExercises = [
   },
   {
     id: 5,
-    question: "8y - (6y - 2y + 4y - 3y)",
+    question: "8y³ - (6y³ - 2y³ + 4y³ - 3y³)",
     steps: [
-      { text: "Expression de départ", expr: "8y - (6y - 2y + 4y - 3y)", color: "text-blue-600" },
-      { text: "Simplifier dans la parenthèse", expr: "8y - (5y)", color: "text-orange-600" },
-      { text: "Résultat final", expr: "3y", color: "text-purple-600" }
+      { text: "Expression de départ", expr: "8y³ - (6y³ - 2y³ + 4y³ - 3y³)", color: "text-blue-600" },
+      { text: "Simplifier dans la parenthèse", expr: "8y³ - (5y³)", color: "text-orange-600" },
+      { text: "Résultat final", expr: "3y³", color: "text-purple-600" }
     ]
   },
   {
@@ -656,11 +656,11 @@ const beastExercises = [
   // Niveau 3 : Expressions avec termes négatifs
   {
     id: 7,
-    question: "-3x + 7x - 5x + 9x - 2x",
+    question: "-3x² + 7x² - 5x² + 9x² - 2x²",
     steps: [
-      { text: "Expression de départ", expr: "-3x + 7x - 5x + 9x - 2x", color: "text-blue-600" },
+      { text: "Expression de départ", expr: "-3x² + 7x² - 5x² + 9x² - 2x²", color: "text-blue-600" },
       { text: "Calcul des coefficients", expr: "-3 + 7 - 5 + 9 - 2 = 6", color: "text-orange-600" },
-      { text: "Résultat final", expr: "6x", color: "text-purple-600" }
+      { text: "Résultat final", expr: "6x²", color: "text-purple-600" }
     ]
   },
   {
@@ -695,11 +695,11 @@ const beastExercises = [
   },
   {
     id: 11,
-    question: "14y - (6y - 9y + 4y) - 3y",
+    question: "14y² - (6y² - 9y² + 4y²) - 3y²",
     steps: [
-      { text: "Expression de départ", expr: "14y - (6y - 9y + 4y) - 3y", color: "text-blue-600" },
-      { text: "Simplifier dans la parenthèse", expr: "14y - (y) - 3y", color: "text-orange-600" },
-      { text: "Résultat final", expr: "10y", color: "text-purple-600" }
+      { text: "Expression de départ", expr: "14y² - (6y² - 9y² + 4y²) - 3y²", color: "text-blue-600" },
+      { text: "Simplifier dans la parenthèse", expr: "14y² - (y²) - 3y²", color: "text-orange-600" },
+      { text: "Résultat final", expr: "10y²", color: "text-purple-600" }
     ]
   },
   {
@@ -715,11 +715,11 @@ const beastExercises = [
   // Niveau 5 : Mélange variables et nombres
   {
     id: 13,
-    question: "12x + 8 - 7x - 5 + 3x - 11",
+    question: "12x² + 8 - 7x² - 5 + 3x² - 11",
     steps: [
-      { text: "Expression de départ", expr: "12x + 8 - 7x - 5 + 3x - 11", color: "text-blue-600" },
-      { text: "Séparer variables et nombres", expr: "12x - 7x + 3x + 8 - 5 - 11", color: "text-orange-600" },
-      { text: "Résultat final", expr: "8x - 8", color: "text-purple-600" }
+      { text: "Expression de départ", expr: "12x² + 8 - 7x² - 5 + 3x² - 11", color: "text-blue-600" },
+      { text: "Séparer variables et nombres", expr: "12x² - 7x² + 3x² + 8 - 5 - 11", color: "text-orange-600" },
+      { text: "Résultat final", expr: "8x² - 8", color: "text-purple-600" }
     ]
   },
   {
@@ -744,12 +744,12 @@ const beastExercises = [
   // Niveau 6 : Expressions complexes avec parenthèses
   {
     id: 16,
-    question: "20x - (8x - 3x + 5x) - (4x - 7x)",
+    question: "20x² - (8x² - 3x² + 5x²) - (4x² - 7x²)",
     steps: [
-      { text: "Expression de départ", expr: "20x - (8x - 3x + 5x) - (4x - 7x)", color: "text-blue-600" },
-      { text: "Simplifier les parenthèses", expr: "20x - (10x) - (-3x)", color: "text-orange-600" },
-      { text: "Appliquer les signes", expr: "20x - 10x + 3x", color: "text-green-600" },
-      { text: "Résultat final", expr: "13x", color: "text-purple-600" }
+      { text: "Expression de départ", expr: "20x² - (8x² - 3x² + 5x²) - (4x² - 7x²)", color: "text-blue-600" },
+      { text: "Simplifier les parenthèses", expr: "20x² - (10x²) - (-3x²)", color: "text-orange-600" },
+      { text: "Appliquer les signes", expr: "20x² - 10x² + 3x²", color: "text-green-600" },
+      { text: "Résultat final", expr: "13x²", color: "text-purple-600" }
     ]
   },
   {
@@ -764,12 +764,12 @@ const beastExercises = [
   },
   {
     id: 18,
-    question: "25z - (12z - 6z + 3z) - (8z - 15z)",
+    question: "25z³ - (12z³ - 6z³ + 3z³) - (8z³ - 15z³)",
     steps: [
-      { text: "Expression de départ", expr: "25z - (12z - 6z + 3z) - (8z - 15z)", color: "text-blue-600" },
-      { text: "Simplifier les parenthèses", expr: "25z - (9z) - (-7z)", color: "text-orange-600" },
-      { text: "Appliquer les signes", expr: "25z - 9z + 7z", color: "text-green-600" },
-      { text: "Résultat final", expr: "23z", color: "text-purple-600" }
+      { text: "Expression de départ", expr: "25z³ - (12z³ - 6z³ + 3z³) - (8z³ - 15z³)", color: "text-blue-600" },
+      { text: "Simplifier les parenthèses", expr: "25z³ - (9z³) - (-7z³)", color: "text-orange-600" },
+      { text: "Appliquer les signes", expr: "25z³ - 9z³ + 7z³", color: "text-green-600" },
+      { text: "Résultat final", expr: "23z³", color: "text-purple-600" }
     ]
   },
   
@@ -786,12 +786,12 @@ const beastExercises = [
   },
   {
     id: 20,
-    question: "12a - 8b - (5a - 3b) + 7a - (6b - 2a)",
+    question: "12a² - 8b² - (5a² - 3b²) + 7a² - (6b² - 2a²)",
     steps: [
-      { text: "Expression de départ", expr: "12a - 8b - (5a - 3b) + 7a - (6b - 2a)", color: "text-blue-600" },
-      { text: "Distribuer les signes", expr: "12a - 8b - 5a + 3b + 7a - 6b + 2a", color: "text-orange-600" },
-      { text: "Séparer par variable", expr: "12a - 5a + 7a + 2a - 8b + 3b - 6b", color: "text-green-600" },
-      { text: "Résultat final", expr: "16a - 11b", color: "text-purple-600" }
+      { text: "Expression de départ", expr: "12a² - 8b² - (5a² - 3b²) + 7a² - (6b² - 2a²)", color: "text-blue-600" },
+      { text: "Distribuer les signes", expr: "12a² - 8b² - 5a² + 3b² + 7a² - 6b² + 2a²", color: "text-orange-600" },
+      { text: "Séparer par variable", expr: "12a² - 5a² + 7a² + 2a² - 8b² + 3b² - 6b²", color: "text-green-600" },
+      { text: "Résultat final", expr: "16a² - 11b²", color: "text-purple-600" }
     ]
   },
   
@@ -809,13 +809,13 @@ const beastExercises = [
   },
   {
     id: 22,
-    question: "45a - 20b - (18a - 12b + 7a) - (9b - 15a)",
+    question: "45a³ - 20b² - (18a³ - 12b² + 7a³) - (9b² - 15a³)",
     steps: [
-      { text: "Expression de départ", expr: "45a - 20b - (18a - 12b + 7a) - (9b - 15a)", color: "text-blue-600" },
-      { text: "Simplifier les parenthèses", expr: "45a - 20b - (25a - 12b) - (9b - 15a)", color: "text-orange-600" },
-      { text: "Distribuer les signes", expr: "45a - 20b - 25a + 12b - 9b + 15a", color: "text-green-600" },
-      { text: "Séparer par variable", expr: "45a - 25a + 15a - 20b + 12b - 9b", color: "text-red-600" },
-      { text: "Résultat final", expr: "35a - 17b", color: "text-purple-600" }
+      { text: "Expression de départ", expr: "45a³ - 20b² - (18a³ - 12b² + 7a³) - (9b² - 15a³)", color: "text-blue-600" },
+      { text: "Simplifier les parenthèses", expr: "45a³ - 20b² - (25a³ - 12b²) - (9b² - 15a³)", color: "text-orange-600" },
+      { text: "Distribuer les signes", expr: "45a³ - 20b² - 25a³ + 12b² - 9b² + 15a³", color: "text-green-600" },
+      { text: "Séparer par variable", expr: "45a³ - 25a³ + 15a³ - 20b² + 12b² - 9b²", color: "text-red-600" },
+      { text: "Résultat final", expr: "35a³ - 17b²", color: "text-purple-600" }
     ]
   },
   

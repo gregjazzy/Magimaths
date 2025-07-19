@@ -3,6 +3,8 @@
 import { useState } from 'react'
 import { ArrowLeft, BookOpen, Target, Play, RotateCcw, CheckCircle, XCircle } from 'lucide-react'
 import Link from 'next/link'
+import { VoiceInput } from '../../../components/VoiceInput'
+import MathEditor from '@/components/MathEditor'
 
 export default function SubstitutionPage() {
   const [activeTab, setActiveTab] = useState<'cours' | 'exercices'>('cours')
@@ -613,13 +615,26 @@ export default function SubstitutionPage() {
               </div>
                 
               <div className="flex flex-col items-center gap-4">
-                  <input
-                    type="text"
-                    value={userAnswer}
-                    onChange={(e) => setUserAnswer(e.target.value)}
-                    placeholder="Votre réponse..."
-                  className="w-64 px-4 py-3 border-2 border-gray-300 rounded-xl text-center text-lg font-semibold text-gray-900 bg-white focus:border-blue-500 focus:outline-none"
-                  />
+                  {/* Éditeur mathématique */}
+                  <div className="w-full max-w-md">
+                    <MathEditor
+                      value={userAnswer}
+                      onChange={setUserAnswer}
+                      placeholder="Tapez votre réponse... (ex: -3, 25, x=2)"
+                      onSubmit={checkAnswer}
+                      theme="blue"
+                      disabled={showAnswer}
+                    />
+                  </div>
+                
+                  {/* Reconnaissance vocale */}
+                  <div className="w-full max-w-md border-t border-gray-200 pt-3">
+                    <VoiceInput
+                      onTranscript={(transcript) => setUserAnswer(transcript)}
+                      placeholder="Ou dites votre réponse à voix haute (ex: 'moins trois')..."
+                      className="justify-center"
+                    />
+                  </div>
                 
                   <button
                     onClick={checkAnswer}

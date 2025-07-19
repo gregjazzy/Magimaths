@@ -48,6 +48,7 @@ export interface Chapter {
   exercises: Exercise[];
   isLocked: boolean;
   order: number;
+  verified?: boolean;
   parentChapter?: string; // Pour organiser les sous-chapitres
 }
 

@@ -52,12 +52,35 @@ export default function MathEditor({
   const mathSymbols = [
     { symbol: 'x', label: 'x' },
     { symbol: 'y', label: 'y' },
-    { symbol: '²', label: 'x²' },
+    { symbol: 'a', label: 'a' },
+    { symbol: 'b', label: 'b' },
+    { symbol: '^', label: 'Puissance (x^n)' },
+    { symbol: '²', label: 'Carré (raccourci)' },
+    { symbol: '³', label: 'Cube (raccourci)' },
+    { symbol: '→', label: 'Sortir puissance' },
     { symbol: '+', label: '+' },
     { symbol: '-', label: '-' },
     { symbol: '(', label: '(' },
     { symbol: ')', label: ')' },
   ]
+
+  // Conversion des chiffres en exposants Unicode
+  const toSuperscript = (char: string): string => {
+    const superscriptMap: { [key: string]: string } = {
+      '0': '⁰', '1': '¹', '2': '²', '3': '³', '4': '⁴',
+      '5': '⁵', '6': '⁶', '7': '⁷', '8': '⁸', '9': '⁹',
+      '+': '⁺', '-': '⁻', '(': '⁽', ')': '⁾'
+    }
+    return superscriptMap[char] || char
+  }
+
+  // Traitement intelligent de la saisie
+  const processValue = (newValue: string): string => {
+    // Convertir x^123 en x¹²³
+    return newValue.replace(/\^([0-9+\-()]+)/g, (match, exponent) => {
+      return exponent.split('').map(toSuperscript).join('')
+    })
+  }
 
   const insertSymbol = (symbol: string) => {
     if (inputRef.current) {
@@ -65,13 +88,23 @@ export default function MathEditor({
       const start = input.selectionStart || 0
       const end = input.selectionEnd || 0
       
-      const newValue = value.slice(0, start) + symbol + value.slice(end)
+      let newValue = value.slice(0, start) + symbol + value.slice(end)
+      
+      // Traitement spécial pour la flèche (sortir de puissance)
+      if (symbol === '→') {
+        // Remplacer la flèche par un espace pour continuer la saisie
+        newValue = value.slice(0, start) + ' ' + value.slice(end)
+      }
+      
+      // Appliquer le traitement des puissances
+      newValue = processValue(newValue)
       onChange(newValue)
       
       // Repositionner le curseur
       setTimeout(() => {
         input.focus()
-        input.setSelectionRange(start + symbol.length, start + symbol.length)
+        const newPos = symbol === '→' ? start + 1 : start + symbol.length
+        input.setSelectionRange(newPos, newPos)
       }, 0)
     }
   }
@@ -103,7 +136,7 @@ export default function MathEditor({
             id="math-editor-input"
             name="math-answer"
             value={value}
-            onChange={(e) => onChange(e.target.value)}
+            onChange={(e) => onChange(processValue(e.target.value))}
             placeholder={placeholder}
             disabled={disabled}
             className={`flex-1 px-3 py-2 border ${colors.border} rounded-lg focus:outline-none focus:ring-1 ${colors.focus} font-mono text-base bg-white text-gray-900 placeholder-gray-500 !text-gray-900 !bg-white`}

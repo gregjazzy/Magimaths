@@ -29,6 +29,18 @@ const convertSpeechToMath = (speech: string): string => {
     'moyen': 'moins',
     'moin s': 'moins',
     
+    // Corrections pour "deux" souvent entendu comme "de"
+    'de x': 'deux x',
+    'de y': 'deux y',
+    'de a': 'deux a',
+    'de b': 'deux b',
+    'de t': 'deux t',
+    'de fois': 'deux fois',
+    'de plus': 'deux plus',
+    'de moins': 'deux moins',
+    'de carré': 'deux carré',
+    'de cube': 'deux cube',
+    
     // Autres corrections phonétiques courantes
     'x 2': 'x carré',
     'x deux': 'x carré',
@@ -46,15 +58,24 @@ const convertSpeechToMath = (speech: string): string => {
     result = result.replace(regex, correct);
   }
   
-  // 🎤 ÉTAPE 2: Post-traitement intelligent pour "moi" dans un contexte mathématique
+  // 🎤 ÉTAPE 2: Post-traitement intelligent pour erreurs contextuelles
   // Si "moi" apparaît entre des nombres/variables, c'est probablement "moins"
   result = result.replace(/([0-9]|x|y|a|b|t|\))(\s+)moi(\s+)([0-9]|x|y|a|b|t|\()/gi, '$1$2moins$3$4');
   
+  // Si "de" apparaît au début d'une expression ou après une opération, c'est probablement "deux"
+  result = result.replace(/(^|[+\-*/=()]\s*)de(\s+)([x|y|a|b|t])/gi, '$1deux$2$3');
+  // Si "de" apparaît avant une opération mathématique, c'est probablement "deux"  
+  result = result.replace(/(\s+)de(\s+)(plus|moins|fois|carré|cube|[+\-*/])/gi, '$1deux$2$3');
+  // Si "de" est isolé entre des espaces dans un contexte mathématique
+  result = result.replace(/(\s+)de(\s+)/gi, ' deux ');
+  
   // Remplacements pour les expressions mathématiques
   const replacements: { [key: string]: string } = {
-    // Nombres
+    // Nombres (avec variantes phonétiques)
     'zéro': '0', 'un': '1', 'deux': '2', 'trois': '3', 'quatre': '4', 
     'cinq': '5', 'six': '6', 'sept': '7', 'huit': '8', 'neuf': '9', 'dix': '10',
+    // Variantes pour "deux"
+    'de': '2', 'de ': '2',
     
     // Opérations (avec variantes phonétiques)
     'plus': '+', 'moins': '-', 'fois': '*', 'multiplié par': '*', 
@@ -91,6 +112,11 @@ const convertSpeechToMath = (speech: string): string => {
   // 🎤 ÉTAPE 3: Post-traitement final pour les erreurs résiduelles
   // Si on trouve encore "moi" dans un contexte clairement mathématique, le remplacer par "-"
   result = result.replace(/([+*/=()]|^|\s)moi([+*/=()]|$|\s)/gi, '$1-$2');
+  
+  // Si on trouve encore "de" dans un contexte clairement mathématique, le remplacer par "deux"
+  result = result.replace(/(^|\s)de(\s|$)/gi, '$1deux$2');
+  // Dernière correction pour "de" suivi directement d'une variable
+  result = result.replace(/\bde([xyz])\b/gi, 'deux$1');
   
   // Nettoyer les espaces multiples
   result = result.replace(/\s+/g, ' ').trim();

@@ -8,7 +8,13 @@ import { getChaptersByClass } from '@/lib/chapters'
 export default function QuatrièmePage() {
   const [hoveredChapter, setHoveredChapter] = useState<string | null>(null)
   
-  const quatriemeChapters = getChaptersByClass('4eme')
+  const quatriemeChapters = getChaptersByClass('4eme').filter(chapter => 
+    !['4eme-calcul-litteral-expressions-regles', 
+      '4eme-calcul-litteral-developpement', 
+      '4eme-calcul-litteral-expressions-introduction', 
+      '4eme-calcul-litteral-substitution', 
+      '4eme-calcul-litteral-problemes'].includes(chapter.id)
+  )
   const config = { color: '#54a0ff', icon: '📊', name: '4ème' }
 
   return (
@@ -60,6 +66,16 @@ export default function QuatrièmePage() {
                     className="absolute top-0 left-0 right-0 h-1 transition-all duration-500 group-hover:h-2"
                     style={{ background: `linear-gradient(90deg, ${config.color}, ${config.color}80, ${config.color}60)` }}
                   />
+                  
+                  {/* Badge vérifié */}
+                  {chapter.verified && (
+                    <div className="absolute top-2 right-2 z-20">
+                      <div className="flex items-center gap-1 px-2 py-1 bg-green-500 text-white text-xs font-bold rounded-full shadow-lg">
+                        <span>✓</span>
+                        <span>VÉRIFIÉ</span>
+                      </div>
+                    </div>
+                  )}
                   
                   {/* Particules magiques */}
                   <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-500">

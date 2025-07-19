@@ -1048,7 +1048,8 @@ export const chaptersData: Chapter[] = [
     lessons: [],
     exercises: [],
     isLocked: false,
-    order: 54
+    order: 54,
+    verified: true
   },
   {
     id: '4eme-calcul-litteral-expressions-introduction',
@@ -1065,7 +1066,8 @@ export const chaptersData: Chapter[] = [
     exercises: [],
     isLocked: false,
     order: 54.1,
-    parentChapter: '4eme-calcul-litteral'
+    parentChapter: '4eme-calcul-litteral',
+    verified: true
   },
   {
     id: '4eme-calcul-litteral-expressions-regles',
@@ -1082,7 +1084,8 @@ export const chaptersData: Chapter[] = [
     exercises: [],
     isLocked: false,
     order: 54.2,
-    parentChapter: '4eme-calcul-litteral'
+    parentChapter: '4eme-calcul-litteral',
+    verified: true
   },
   {
     id: '4eme-calcul-litteral-developpement',
@@ -1099,7 +1102,8 @@ export const chaptersData: Chapter[] = [
     exercises: [],
     isLocked: false,
     order: 54.3,
-    parentChapter: '4eme-calcul-litteral'
+    parentChapter: '4eme-calcul-litteral',
+    verified: true
   },
   {
     id: '4eme-calcul-litteral-substitution',
@@ -1116,7 +1120,26 @@ export const chaptersData: Chapter[] = [
     exercises: [],
     isLocked: false,
     order: 54.4,
-    parentChapter: '4eme-calcul-litteral'
+    parentChapter: '4eme-calcul-litteral',
+    verified: true
+  },
+  {
+    id: '4eme-calcul-litteral-problemes',
+    title: 'Problèmes',
+    description: 'Problèmes concrets utilisant le calcul littéral',
+    classLevel: '4eme',
+    category: 'algebra',
+    difficulty: 'intermediate',
+    estimatedTime: 20,
+    prerequisites: ['4eme-calcul-litteral-substitution'],
+    color: '#ff6b6b',
+    icon: '🧩',
+    lessons: [],
+    exercises: [],
+    isLocked: false,
+    order: 54.5,
+    parentChapter: '4eme-calcul-litteral',
+    verified: true
   },
   {
     id: '4eme-cosinus',

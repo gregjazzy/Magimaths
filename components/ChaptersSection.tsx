@@ -210,8 +210,17 @@ export default function ChaptersSection() {
             >
                             <motion.div
                               variants={cardVariants}
-                              className="bg-white rounded-3xl p-6 shadow-xl border border-gray-100 hover:border-gray-200 hover:shadow-2xl transition-all duration-500 group cursor-pointer hover:scale-110 hover:-translate-y-3"
+                              className="bg-white rounded-3xl p-6 shadow-xl border border-gray-100 hover:border-gray-200 hover:shadow-2xl transition-all duration-500 group cursor-pointer hover:scale-110 hover:-translate-y-3 relative overflow-hidden"
                             >
+                              {/* Badge vérifié */}
+                              {chapter.verified && (
+                                <div className="absolute top-2 right-2 z-20">
+                                  <div className="flex items-center gap-1 px-2 py-1 bg-green-500 text-white text-xs font-bold rounded-full shadow-lg">
+                                    <span>✓</span>
+                                    <span>VÉRIFIÉ</span>
+                                  </div>
+                                </div>
+                              )}
                               <div className="flex items-center justify-between mb-4">
                                 <div className="flex items-center space-x-3">
                               <div className={`p-3 bg-gradient-to-r ${selectedClassInfo.color} rounded-xl text-white`}>
