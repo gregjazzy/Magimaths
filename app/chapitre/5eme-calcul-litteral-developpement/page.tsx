@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { ArrowLeft, BookOpen, Target, Zap, RotateCcw } from 'lucide-react'
 import Link from 'next/link'
+import { VoiceInput } from '../../../components/VoiceInput'
 
 export default function DeveloppementPage() {
   const [activeTab, setActiveTab] = useState<'cours' | 'exercices'>('cours')
@@ -1078,16 +1079,27 @@ export default function DeveloppementPage() {
                           </div>
                           
                           {/* Zone de saisie */}
-                          <div className="relative">
-                            <textarea
-                              value={userAnswer}
-                              onChange={(e) => setUserAnswer(e.target.value)}
-                              placeholder="Saisissez votre réponse développée (ex: 3x + 6)..."
-                              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 bg-white text-gray-800 placeholder-gray-500 font-mono text-lg min-h-[60px] resize-none"
-                              rows={2}
-                            />
-                            <div className="absolute bottom-2 right-2 text-xs text-gray-400">
-                              {userAnswer.length} caractères
+                          <div className="space-y-3">
+                            <div className="relative">
+                              <textarea
+                                value={userAnswer}
+                                onChange={(e) => setUserAnswer(e.target.value)}
+                                placeholder="Saisissez votre réponse développée (ex: 3x + 6)..."
+                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 bg-white text-gray-800 placeholder-gray-500 font-mono text-lg min-h-[60px] resize-none"
+                                rows={2}
+                              />
+                              <div className="absolute bottom-2 right-2 text-xs text-gray-400">
+                                {userAnswer.length} caractères
+                              </div>
+                            </div>
+                            
+                            {/* Reconnaissance vocale */}
+                            <div className="border-t border-gray-200 pt-3">
+                              <VoiceInput
+                                onTranscript={(transcript) => setUserAnswer(transcript)}
+                                placeholder="Ou dites votre réponse à voix haute (ex: 'trois x plus six')..."
+                                className="justify-center"
+                              />
                             </div>
                           </div>
                           
@@ -1295,16 +1307,27 @@ export default function DeveloppementPage() {
                           </div>
                           
                           {/* Zone de saisie */}
-                          <div className="relative">
-                            <textarea
-                              value={advancedUserAnswer}
-                              onChange={(e) => setAdvancedUserAnswer(e.target.value)}
-                              placeholder="Saisissez votre réponse développée et simplifiée (ex: 6x² + 3x - 2)..."
-                              className="w-full px-4 py-3 border border-purple-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white text-gray-800 placeholder-gray-500 font-mono text-lg min-h-[60px] resize-none"
-                              rows={2}
-                            />
-                            <div className="absolute bottom-2 right-2 text-xs text-gray-400">
-                              {advancedUserAnswer.length} caractères
+                          <div className="space-y-3">
+                            <div className="relative">
+                              <textarea
+                                value={advancedUserAnswer}
+                                onChange={(e) => setAdvancedUserAnswer(e.target.value)}
+                                placeholder="Saisissez votre réponse développée et simplifiée (ex: 6x² + 3x - 2)..."
+                                className="w-full px-4 py-3 border border-purple-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white text-gray-800 placeholder-gray-500 font-mono text-lg min-h-[60px] resize-none"
+                                rows={2}
+                              />
+                              <div className="absolute bottom-2 right-2 text-xs text-gray-400">
+                                {advancedUserAnswer.length} caractères
+                              </div>
+                            </div>
+                            
+                            {/* Reconnaissance vocale */}
+                            <div className="border-t border-purple-200 pt-3">
+                              <VoiceInput
+                                onTranscript={(transcript) => setAdvancedUserAnswer(transcript)}
+                                placeholder="Ou dites votre réponse à voix haute (ex: 'six x carré plus trois x moins deux')..."
+                                className="justify-center"
+                              />
                             </div>
                           </div>
                           

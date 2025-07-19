@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { ArrowLeft, Trophy, Target } from 'lucide-react';
 import Link from 'next/link';
+import { VoiceInput } from '@/components/VoiceInput';
 
 export default function FormulesComplexesPage() {
   const [userAnswers, setUserAnswers] = useState<{[key: string]: string}>({});
@@ -52,6 +53,15 @@ export default function FormulesComplexesPage() {
             placeholder={placeholder}
             value={value}
             onChange={(e) => onChange(e.target.value)}
+          />
+        </div>
+        
+        {/* Reconnaissance vocale */}
+        <div className="border-t border-gray-200 pt-3 mt-3">
+          <VoiceInput
+            onTranscript={(transcript) => onChange(transcript)}
+            placeholder="Ou dites votre dérivée à voix haute..."
+            className="justify-center"
           />
         </div>
         

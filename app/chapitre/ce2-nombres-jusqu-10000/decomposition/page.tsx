@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, CheckCircle, XCircle, RotateCcw, Shuffle } from 'lucide-react';
+import { VoiceInput } from '@/components/VoiceInput';
 
 export default function DecompositionNombresCE2Page() {
   const [selectedNumber, setSelectedNumber] = useState('2345');
@@ -422,6 +423,18 @@ export default function DecompositionNombresCE2Page() {
                     maxLength={1}
                   />
                 </div>
+              </div>
+              
+              {/* Reconnaissance vocale pour la décomposition */}
+              <div className="border-t border-gray-200 pt-4 mt-4">
+                <VoiceInput
+                  onTranscript={(transcript) => {
+                    // Traitement spécial pour les décompositions CE2
+                    console.log('Décomposition vocale CE2:', transcript);
+                  }}
+                  placeholder="Ou dites la décomposition à voix haute..."
+                  className="justify-center"
+                />
               </div>
               
               <div className="flex justify-center space-x-4 mb-6">

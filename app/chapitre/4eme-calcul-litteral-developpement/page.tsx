@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { ArrowLeft, BookOpen, Target, Zap, Play, Pause, RotateCcw } from 'lucide-react'
 import Link from 'next/link'
 import MathEditor from '@/components/MathEditor'
+import { VoiceInput } from '../../../components/VoiceInput'
 
 // Composant pour afficher les fractions avec de vraies barres
 const Fraction = ({ numerator, denominator }: { numerator: string, denominator: string }) => (
@@ -1618,7 +1619,7 @@ export default function DeveloppementPage() {
                   </div>
 
                   {/* Éditeur mathématique */}
-                  <div className="mb-4">
+                  <div className="mb-4 space-y-4">
                     <h4 className="font-semibold text-blue-800 mb-3">📝 Votre réponse :</h4>
                     <MathEditor
                     value={userAnswer}
@@ -1628,6 +1629,15 @@ export default function DeveloppementPage() {
                       theme="blue"
                     disabled={showAnswer}
                   />
+                    
+                    {/* Reconnaissance vocale */}
+                    <div className="border-t border-blue-200 pt-3">
+                      <VoiceInput
+                        onTranscript={(transcript) => setUserAnswer(transcript)}
+                        placeholder="Ou dites votre réponse à voix haute (ex: 'trois x plus six')..."
+                        className="justify-center"
+                      />
+                    </div>
                   </div>
                   
                   {/* Feedback de réponse */}
@@ -1772,7 +1782,7 @@ export default function DeveloppementPage() {
                   </div>
 
                   {/* Éditeur mathématique Beast */}
-                  <div className="mb-4">
+                  <div className="mb-4 space-y-4">
                     <h4 className="font-semibold text-red-800 mb-3">🔥 Votre réponse Beast :</h4>
                     <MathEditor
                       value={userAnswer}
@@ -1782,6 +1792,15 @@ export default function DeveloppementPage() {
                       theme="red"
                       disabled={showAnswer}
                     />
+                    
+                    {/* Reconnaissance vocale Beast */}
+                    <div className="border-t border-red-200 pt-3">
+                      <VoiceInput
+                        onTranscript={(transcript) => setUserAnswer(transcript)}
+                        placeholder="Mode Beast : dites votre réponse (ex: 'six x carré plus cinq x moins quatre')..."
+                        className="justify-center"
+                      />
+                    </div>
                   </div>
                   
                   {/* Feedback de réponse Beast */}
@@ -1925,7 +1944,7 @@ export default function DeveloppementPage() {
                   </div>
 
                   {/* Éditeur mathématique Hardcore */}
-                  <div className="mb-4">
+                  <div className="mb-4 space-y-4">
                     <h4 className="font-semibold text-purple-800 mb-3">💀 Votre réponse Hardcore :</h4>
                     <MathEditor
                       value={userAnswer}
@@ -1935,6 +1954,15 @@ export default function DeveloppementPage() {
                       theme="red"
                       disabled={showAnswer}
                     />
+                    
+                    {/* Reconnaissance vocale Hardcore */}
+                    <div className="border-t border-purple-200 pt-3">
+                      <VoiceInput
+                        onTranscript={(transcript) => setUserAnswer(transcript)}
+                        placeholder="Mode Hardcore : dites votre réponse avec fractions (ex: 'un demi x carré plus trois quarts x')..."
+                        className="justify-center"
+                      />
+                    </div>
                   </div>
                   
                   {/* Feedback de réponse Hardcore */}

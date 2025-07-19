@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Calculator, Target, AlertTriangle, CheckCircle } from 'lucide-react';
 import ChapterLayout from '../../components/ChapterLayout';
 import FormulaSection from '../../components/FormulaSection';
+import { VoiceInput } from '@/components/VoiceInput';
 
 const formulasData = [
   {
@@ -134,6 +135,15 @@ Erreur ! Vérifions : g'(4) = 1/6`
               >
                 Vérifier
               </button>
+            </div>
+            
+            {/* Reconnaissance vocale */}
+            <div className="border-t border-gray-200 pt-4 mt-4">
+              <VoiceInput
+                onTranscript={(transcript) => setUserAnswer(transcript)}
+                placeholder="Ou dites votre réponse à voix haute..."
+                className="justify-center"
+              />
             </div>
           </div>
         )}

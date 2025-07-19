@@ -1,8 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { ArrowLeft, BookOpen, Target, Trophy, CheckCircle } from 'lucide-react';
+import { ArrowLeft, Award, CheckCircle, XCircle, RefreshCw, Target, Calculator, Brain, Lightbulb, BookOpen, Zap, Trophy } from 'lucide-react';
 import Link from 'next/link';
+import { VoiceInput } from '@/components/VoiceInput';
 
 export default function FormulesBasePage() {
   const [completedFormulas, setCompletedFormulas] = useState(false);
@@ -52,6 +53,15 @@ export default function FormulesBasePage() {
             placeholder={placeholder}
             value={value}
             onChange={(e) => onChange(e.target.value)}
+          />
+        </div>
+        
+        {/* Reconnaissance vocale */}
+        <div className="border-t border-gray-200 pt-3 mt-3">
+          <VoiceInput
+            onTranscript={(transcript) => onChange(transcript)}
+            placeholder="Ou dites votre dérivée à voix haute..."
+            className="justify-center"
           />
         </div>
         

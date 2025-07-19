@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { ArrowLeft, CheckCircle, XCircle, RotateCcw, Award, Target, Lightbulb } from 'lucide-react';
 import Link from 'next/link';
+import { VoiceInput } from '@/components/VoiceInput';
 
 export default function DecomposerNombresEntiersPage() {
   const [currentExercise, setCurrentExercise] = useState(0);
@@ -482,19 +483,17 @@ export default function DecomposerNombresEntiersPage() {
                 </div>
               ))}
             </div>
-
-            <div className="text-center">
-              <button
-                onClick={checkAnswer}
-                disabled={showAnswer}
-                className={`px-8 py-3 rounded-lg font-semibold transition-all ${
-                  showAnswer
-                    ? 'bg-gray-300 text-gray-700 cursor-not-allowed'
-                    : 'bg-purple-500 hover:bg-purple-600 text-white transform hover:scale-105'
-                }`}
-              >
-                Vérifier
-              </button>
+            
+            {/* Reconnaissance vocale pour la décomposition */}
+            <div className="border-t border-gray-200 pt-4 mt-4">
+              <VoiceInput
+                onTranscript={(transcript) => {
+                  // Traitement spécial pour les décompositions de grands nombres
+                  console.log('Décomposition vocale millions:', transcript);
+                }}
+                placeholder="Ou dites la décomposition à voix haute..."
+                className="justify-center"
+              />
             </div>
           </div>
 

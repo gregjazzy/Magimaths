@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, CheckCircle, XCircle, RefreshCw, Trophy, Target, Lightbulb, Calculator, Edit } from 'lucide-react';
+import { VoiceInput } from '@/components/VoiceInput';
 
 export default function EcrireNombresDecimauxPage() {
   const [currentExercise, setCurrentExercise] = useState(0);
@@ -225,6 +226,15 @@ export default function EcrireNombresDecimauxPage() {
                   disabled={showAnswer}
                   autoComplete="off"
                 />
+                
+                {/* Reconnaissance vocale */}
+                <div className="border-t border-gray-200 pt-4 mt-4">
+                  <VoiceInput
+                    onTranscript={(transcript) => setUserAnswer(transcript)}
+                    placeholder="Ou dites le nombre à voix haute..."
+                    className="justify-center"
+                  />
+                </div>
               </div>
             </div>
 

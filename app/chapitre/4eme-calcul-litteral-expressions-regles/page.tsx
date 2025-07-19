@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { ArrowLeft, BookOpen, Target, Calculator, RotateCcw } from 'lucide-react'
 import Link from 'next/link'
 import MathEditor from '@/components/MathEditor'
+import { VoiceInput } from '@/components/VoiceInput'
 
 // Données des exercices d'addition
 const normalExercises = [
@@ -1660,6 +1661,15 @@ export default function ExpressionsReglesPage() {
                     theme="blue"
                   />
                   
+                  {/* Reconnaissance vocale */}
+                  <div className="border-t border-blue-200 pt-3 mt-3">
+                    <VoiceInput
+                      onTranscript={(transcript) => setUserAnswer(transcript)}
+                      placeholder="Ou dites votre réponse à voix haute..."
+                      className="justify-center"
+                    />
+                  </div>
+
                   {/* Feedback de réponse */}
                   {showAnswer && (
                     <div className={`p-4 rounded-lg border ${
@@ -1826,6 +1836,15 @@ export default function ExpressionsReglesPage() {
                     theme="red"
                   />
                   
+                  {/* Reconnaissance vocale Beast Mode */}
+                  <div className="border-t border-red-200 pt-3 mt-3">
+                    <VoiceInput
+                      onTranscript={(transcript) => setUserAnswer(transcript)}
+                      placeholder="Mode Beast : dites votre réponse hardcore..."
+                      className="justify-center"
+                    />
+                  </div>
+
                   {/* Feedback de réponse */}
                   {showAnswer && (
                     <div className={`p-4 rounded-lg border ${
@@ -2541,6 +2560,15 @@ export default function ExpressionsReglesPage() {
                         onSubmit={checkAnswer}
                         theme="orange"
                       />
+                      
+                      {/* Reconnaissance vocale Multiplication */}
+                      <div className="border-t border-orange-200 pt-3 mt-3">
+                        <VoiceInput
+                          onTranscript={(transcript) => setUserAnswer(transcript)}
+                          placeholder="Ou dites votre multiplication à voix haute..."
+                          className="justify-center"
+                        />
+                      </div>
                     </div>
                     
                     {/* Feedback de réponse */}
@@ -2781,6 +2809,15 @@ export default function ExpressionsReglesPage() {
                           onSubmit={checkAnswer}
                           theme="red"
                         />
+                        
+                        {/* Reconnaissance vocale Beast Mode */}
+                        <div className="border-t border-red-200 pt-3 mt-3">
+                          <VoiceInput
+                            onTranscript={(transcript) => setUserAnswer(transcript)}
+                            placeholder="Mode Beast : dites votre réponse hardcore..."
+                            className="justify-center"
+                          />
+                        </div>
                       </div>
                       
                       {/* Feedback de réponse */}

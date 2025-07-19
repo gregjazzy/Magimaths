@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, CheckCircle, XCircle, RefreshCw, Trophy, Target, Eye, Zap, Calculator, Clock, Play, Pause, RotateCcw, ArrowRight } from 'lucide-react';
+import { VoiceInput } from '@/components/VoiceInput';
 
 export default function ComplementsPage() {
   const [currentSection, setCurrentSection] = useState<'cours' | 'exercices'>('cours');
@@ -444,6 +445,15 @@ export default function ComplementsPage() {
                     }
                   }}
                 />
+                
+                {/* Reconnaissance vocale */}
+                <div className="border-t border-gray-200 pt-4 mt-4">
+                  <VoiceInput
+                    onTranscript={(transcript) => setUserAnswer(transcript)}
+                    placeholder="Ou dites votre réponse à voix haute..."
+                    className="justify-center"
+                  />
+                </div>
               </div>
               
               <div className="flex justify-center space-x-4 mb-8">

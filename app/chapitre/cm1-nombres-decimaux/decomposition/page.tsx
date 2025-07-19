@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, CheckCircle, XCircle, RefreshCw, ChevronLeft, ChevronRight, Trophy, Target, Eye, ToggleLeft, ToggleRight } from 'lucide-react';
+import { VoiceInput } from '@/components/VoiceInput';
 
 export default function DecomposerNombresDecimauxPage() {
   const [currentExercise, setCurrentExercise] = useState(0);
@@ -503,6 +504,21 @@ export default function DecomposerNombresDecimauxPage() {
                   </div>
                 ))}
               </div>
+            </div>
+            
+            {/* Reconnaissance vocale pour la décomposition */}
+            <div className="border-t border-gray-200 pt-4 mt-4">
+              <VoiceInput
+                onTranscript={(transcript) => {
+                  // Traitement spécial pour les décompositions (par exemple "deux plus trois dixièmes")
+                  setUserAnswers(prev => ({
+                    ...prev,
+                    [`${currentExercise}-${decompositionType}-voice`]: transcript
+                  }))
+                }}
+                placeholder="Ou dites la décomposition à voix haute..."
+                className="justify-center"
+              />
             </div>
 
             {!showAnswer && (

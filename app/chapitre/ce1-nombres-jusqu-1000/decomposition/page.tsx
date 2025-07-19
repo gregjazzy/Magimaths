@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, CheckCircle, XCircle, RotateCcw, Shuffle } from 'lucide-react';
+import { VoiceInput } from '@/components/VoiceInput';
 
 export default function DecompositionNombresCE1Page() {
   const [selectedNumber, setSelectedNumber] = useState('234');
@@ -588,6 +589,15 @@ export default function DecompositionNombresCE1Page() {
                       className="w-full px-4 py-4 border-2 border-green-300 rounded-lg text-center text-3xl font-bold focus:border-green-500 focus:outline-none bg-white text-gray-900"
                       maxLength={4}
                     />
+                    
+                    {/* Reconnaissance vocale */}
+                    <div className="border-t border-gray-200 pt-4 mt-4">
+                      <VoiceInput
+                        onTranscript={(transcript) => setUserNumber(transcript)}
+                        placeholder="Ou dites le nombre à voix haute..."
+                        className="justify-center"
+                      />
+                    </div>
                   </div>
                 </>
               )}
