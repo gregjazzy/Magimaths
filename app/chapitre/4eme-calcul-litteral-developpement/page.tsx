@@ -1523,6 +1523,7 @@ export default function DeveloppementPage() {
                         </div>
                         
                         <p className="text-gray-600">Expression de départ</p>
+                        <div className="text-red-600 font-bold text-center mt-2">⚡ FLÈCHE VIOLETTE MISE À JOUR ⚡</div>
                       </div>
                       
                       {/* Étape 1: Flèche a × b */}
