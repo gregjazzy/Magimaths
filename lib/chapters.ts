@@ -1027,8 +1027,6 @@ export const chaptersData: Chapter[] = [
     isLocked: false,
     order: 51
   },
-  // DIAGNOSTIC: Chapitres Pythagore temporairement commentés pour identifier erreur hydratation
-  /*
   {
     id: '4eme-theoreme-pythagore',
     title: 'Théorème de Pythagore',
@@ -1272,8 +1270,6 @@ export const chaptersData: Chapter[] = [
     parentChapter: '4eme-calcul-litteral',
     verified: true
   },
-  // DIAGNOSTIC: Chapitres Cosinus temporairement commentés pour identifier erreur hydratation  
-  /*
   {
     id: '4eme-cosinus',
     title: 'Cosinus',
