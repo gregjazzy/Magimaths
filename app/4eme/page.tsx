@@ -6,8 +6,6 @@ import Link from 'next/link'
 import { getChaptersByClass } from '@/lib/chapters'
 
 export default function QuatrièmePage() {
-  // DIAGNOSTIC : Code mis en sommeil pour identifier source erreur hydratation
-  /*
   const [hoveredChapter, setHoveredChapter] = useState<string | null>(null)
   
   const quatriemeChapters = getChaptersByClass('4eme').filter(chapter => 
@@ -27,48 +25,114 @@ export default function QuatrièmePage() {
       '4eme-pythagore-applications',
       '4eme-pythagore-reciproque'].includes(chapter.id)
   )
+  
   const config = { color: '#54a0ff', icon: '📊', name: '4ème' }
-  */
+
+  const formatTime = (minutes: number) => {
+    if (minutes < 60) return `${minutes}min`
+    const hours = Math.floor(minutes / 60)
+    const remainingMinutes = minutes % 60
+    return remainingMinutes > 0 ? `${hours}h${remainingMinutes}min` : `${hours}h`
+  }
+
+  const getDifficultyColor = (difficulty: string) => {
+    const colors = {
+      beginner: 'bg-green-100 text-green-800',
+      intermediate: 'bg-blue-100 text-blue-800',
+      advanced: 'bg-red-100 text-red-800'
+    }
+    return colors[difficulty as keyof typeof colors] || colors.intermediate
+  }
+
+  const getDifficultyText = (difficulty: string) => {
+    const texts = {
+      beginner: 'Débutant',
+      intermediate: 'Intermédiaire', 
+      advanced: 'Avancé'
+    }
+    return texts[difficulty as keyof typeof texts] || 'Intermédiaire'
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 p-8">
-      <div className="max-w-4xl mx-auto">
-        <div className="bg-white rounded-lg shadow-lg p-8">
+      <div className="max-w-6xl mx-auto">
+        <div className="bg-white rounded-lg shadow-lg p-8 mb-8">
           <Link href="/" className="inline-flex items-center text-blue-600 hover:text-blue-800 mb-6">
             <ChevronLeft className="w-5 h-5 mr-2" />
             Retour à l'accueil
           </Link>
           
-          <h1 className="text-3xl font-bold text-gray-900 mb-4">4ème - Page en diagnostic</h1>
-          
-          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
-            <h2 className="text-lg font-semibold text-yellow-800 mb-2">🔧 Mode diagnostic activé</h2>
-            <p className="text-yellow-700">
-              Le code de la page 4ème a été temporairement mis en sommeil pour identifier la source des erreurs d'hydratation.
-            </p>
+          <div className="flex items-center mb-6">
+            <div className="text-4xl mr-4">{config.icon}</div>
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">{config.name}</h1>
+              <p className="text-gray-600">Découvrez les mathématiques de 4ème</p>
+            </div>
           </div>
           
-          <div className="space-y-4">
-            <p className="text-gray-700">
-              Si cette page s'affiche sans erreur dans la console, alors le problème venait du code complexe de la page 4ème.
-            </p>
-            <p className="text-gray-700">
-              Sinon, l'erreur vient d'ailleurs dans l'application (layout, components globaux, etc.).
-            </p>
-          </div>
-          
-          <div className="mt-8 p-4 bg-gray-50 rounded-lg">
-            <h3 className="font-semibold text-gray-900 mb-2">Instructions de test :</h3>
-            <ol className="list-decimal list-inside space-y-1 text-gray-700">
-              <li>Ouvrez la console du navigateur (F12)</li>
-              <li>Rechargez cette page</li>
-              <li>Vérifiez s'il y a encore des erreurs d'hydratation</li>
-              <li>Naviguez vers d'autres pages pour localiser le problème</li>
-            </ol>
-          </div>
-          
-          <div className="mt-6 text-sm text-gray-500">
-            <p>Timestamp de diagnostic : {new Date().toLocaleString()}</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {quatriemeChapters.map((chapter) => (
+              <Link href={`/chapitre/${chapter.id}`} key={chapter.id}>
+                <div 
+                  className={`p-6 rounded-lg border transition-all duration-300 cursor-pointer ${
+                    hoveredChapter === chapter.id 
+                      ? 'shadow-lg scale-105 border-blue-300' 
+                      : 'shadow-md hover:shadow-lg border-gray-200'
+                  }`}
+                  style={{ 
+                    backgroundColor: hoveredChapter === chapter.id ? `${chapter.color}10` : 'white',
+                    borderColor: hoveredChapter === chapter.id ? chapter.color : undefined
+                  }}
+                  onMouseEnter={() => setHoveredChapter(chapter.id)}
+                  onMouseLeave={() => setHoveredChapter(null)}
+                >
+                  <div className="flex items-start justify-between mb-4">
+                    <div 
+                      className="w-12 h-12 rounded-lg flex items-center justify-center text-white font-bold text-lg"
+                      style={{ backgroundColor: chapter.color }}
+                    >
+                      {chapter.icon}
+                    </div>
+                    {chapter.verified && (
+                      <div className="bg-green-500 text-white px-2 py-1 rounded-full text-xs font-semibold">
+                        ✓ VÉRIFIÉ
+                      </div>
+                    )}
+                  </div>
+                  
+                  <h3 className="font-bold text-lg mb-2 text-gray-900">
+                    {chapter.title}
+                  </h3>
+                  
+                  <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+                    {chapter.description}
+                  </p>
+                  
+                  <div className="flex items-center justify-between text-xs text-gray-500 mb-3">
+                    <div className="flex items-center">
+                      <Clock className="w-4 h-4 mr-1" />
+                      {formatTime(chapter.estimatedTime)}
+                    </div>
+                    <div className={`px-2 py-1 rounded-full ${getDifficultyColor(chapter.difficulty)}`}>
+                      {getDifficultyText(chapter.difficulty)}
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center text-yellow-600">
+                      <Trophy className="w-4 h-4 mr-1" />
+                      <span className="text-sm font-semibold">
+                        {chapter.estimatedTime * 2} XP
+                      </span>
+                    </div>
+                    <div className="flex items-center text-blue-600">
+                      <span className="text-sm mr-2">Démarrer</span>
+                      <Play className="w-4 h-4" />
+                    </div>
+                  </div>
+                </div>
+              </Link>
+            ))}
           </div>
         </div>
       </div>
