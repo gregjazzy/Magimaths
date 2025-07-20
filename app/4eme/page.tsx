@@ -9,26 +9,12 @@ export default function QuatrièmePage() {
   const [hoveredChapter, setHoveredChapter] = useState<string | null>(null)
   
   const quatriemeChapters = getChaptersByClass('4eme').filter(chapter => 
+    !chapter.parentChapter && // Afficher seulement les chapitres principaux
     !['4eme-calcul-litteral-expressions-regles', 
       '4eme-calcul-litteral-developpement', 
       '4eme-calcul-litteral-expressions-introduction', 
       '4eme-calcul-litteral-substitution', 
-      '4eme-calcul-litteral-problemes',
-      '4eme-calcul-litteral-factorisation',
-      '4eme-cosinus-introduction',
-      '4eme-cosinus-calculs',
-      '4eme-cosinus-applications',
-      '4eme-cosinus-constructions',
-      '4eme-pythagore-introduction',
-      '4eme-pythagore-calculs-directs',
-      '4eme-pythagore-calculs-inverses',
-      '4eme-pythagore-applications',
-      '4eme-pythagore-reciproque',
-      '4eme-thales-introduction',
-      '4eme-thales-proportionnalite',
-      '4eme-thales-reciproque',
-      '4eme-thales-applications',
-      '4eme-thales-contraposee'].includes(chapter.id)
+      '4eme-calcul-litteral-problemes'].includes(chapter.id)
   )
   const config = { color: '#54a0ff', icon: '📊', name: '4ème' }
 
