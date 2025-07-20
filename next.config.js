@@ -1,31 +1,31 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'standalone', // Pour containerisation si besoin
+  output: 'export', // Pour déploiement statique sur Netlify
   images: {
-    domains: [],
-    formats: ['image/webp', 'image/avif'], // Formats optimisés
+    unoptimized: true, // Requis pour export statique
   },
   compress: true, // Compression gzip
   poweredByHeader: false, // Sécurité
   generateEtags: false, // Performance cache
-  // Optimisation bundle
+  trailingSlash: true, // Pour export statique
+  // Optimisation CSS désactivée pour éviter les erreurs de build
   experimental: {
-    // optimizeCss: true, // Désactivé temporairement pour éviter l'erreur critters sur Netlify
+    optimizeCss: false,
   },
-  // Cache headers pour CDN
-  async headers() {
-    return [
-      {
-        source: '/(.*)',
-        headers: [
-          {
-            key: 'Cache-Control',
-            value: 'public, max-age=31536000, immutable',
-          },
-        ],
-      },
-    ]
-  },
+  // Headers désactivés pour export statique (gérés par Netlify)
+  // async headers() {
+  //   return [
+  //     {
+  //       source: '/(.*)',
+  //       headers: [
+  //         {
+  //           key: 'Cache-Control',
+  //           value: 'public, max-age=31536000, immutable',
+  //         },
+  //       ],
+  //     },
+  //   ]
+  // },
 }
 
 module.exports = nextConfig 

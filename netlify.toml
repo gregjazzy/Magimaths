@@ -1,0 +1,44 @@
+[build]
+  command = "npm run build"
+  publish = "out"
+
+[build.environment]
+  NODE_VERSION = "18"
+
+# Optimisations de cache
+[[headers]]
+  for = "/_next/static/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/images/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000"
+
+[[headers]]
+  for = "/*.css"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000"
+
+[[headers]]
+  for = "/*.js"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000"
+
+# Gestion des erreurs 404
+[[redirects]]
+  from = "/*"
+  to = "/404"
+  status = 404
+
+# Règles de redirection pour les routes dynamiques
+[[redirects]]
+  from = "/chapitre/*"
+  to = "/chapitre/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/:level"
+  to = "/:level/"
+  status = 301 
