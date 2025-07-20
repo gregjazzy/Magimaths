@@ -126,6 +126,21 @@ export default function ComparerNombresDecimauxPage() {
     setIsAnimating(false);
   };
 
+  const prevExercise = () => {
+    if (currentExercise > 0) {
+      setCurrentExercise(prev => prev - 1);
+      setUserAnswer('');
+      setShowAnswer(false);
+      setIsCorrect(false);
+    }
+  };
+
+  const resetExercise = () => {
+    setUserAnswer('');
+    setShowAnswer(false);
+    setIsCorrect(false);
+  };
+
   const animateCourse = async () => {
     setCourseAnimating(true);
     setCourseStep(0);
@@ -546,23 +561,51 @@ export default function ComparerNombresDecimauxPage() {
                 ))}
               </div>
 
-              <div className="flex justify-center gap-4">
-                <button
-                  onClick={checkAnswer}
-                  disabled={!userAnswer || showAnswer}
-                  className="px-6 py-3 bg-orange-500 text-white rounded-lg hover:bg-orange-600 disabled:opacity-50 transition-colors"
-                >
-                  Vérifier
-                </button>
-                
-                {showAnswer && (
+              <div className="space-y-4">
+                {/* Boutons d'action principaux */}
+                <div className="flex justify-center gap-4">
+                  <button
+                    onClick={checkAnswer}
+                    disabled={!userAnswer || showAnswer}
+                    className="px-6 py-3 bg-orange-500 text-white rounded-lg hover:bg-orange-600 disabled:opacity-50 transition-colors"
+                  >
+                    Vérifier
+                  </button>
+                  
+                  {showAnswer && (
+                    <button
+                      onClick={resetExercise}
+                      className="px-6 py-3 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors"
+                    >
+                      Réessayer
+                    </button>
+                  )}
+                </div>
+
+                {/* Navigation entre exercices */}
+                <div className="flex justify-between items-center">
+                  <button
+                    onClick={prevExercise}
+                    disabled={currentExercise === 0}
+                    className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  >
+                    <ChevronRight className="w-4 h-4 rotate-180" />
+                    Précédent
+                  </button>
+
+                  <div className="text-sm text-gray-600 bg-gray-100 px-3 py-1 rounded-full">
+                    {currentExercise + 1} / {exercises.length}
+                  </div>
+
                   <button
                     onClick={nextExercise}
-                    className="px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
+                    disabled={currentExercise === exercises.length - 1}
+                    className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                   >
                     Suivant
+                    <ChevronRight className="w-4 h-4" />
                   </button>
-                )}
+                </div>
               </div>
 
               {showAnswer && (

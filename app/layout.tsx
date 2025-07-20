@@ -5,8 +5,13 @@ import './globals.css'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Équations du Second Degré',
-  description: 'Application d\'apprentissage des équations du second degré',
+  title: 'MagiMaths - Apprentissage des Mathématiques',
+  description: 'Application d\'apprentissage des mathématiques du CE1 à la Terminale avec cours interactifs et exercices magiques',
+  icons: {
+    icon: '/favicon.svg',
+    shortcut: '/favicon.svg',
+    apple: '/favicon.svg',
+  },
 }
 
 export default function RootLayout({

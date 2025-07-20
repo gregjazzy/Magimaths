@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { ChevronRight, Clock, Trophy, BookOpen, Play, GraduationCap, Star, Sparkles } from 'lucide-react'
 import Link from 'next/link'
 import { getAvailableClassLevels, getChaptersByClass, getChaptersGroupedByClass } from '@/lib/chapters'
@@ -26,6 +26,11 @@ const classConfig = {
 export default function HomePage() {
   const [selectedClass, setSelectedClass] = useState<ClassLevel | null>(null)
   const [hoveredChapter, setHoveredChapter] = useState<number | null>(null)
+  const [isClient, setIsClient] = useState(false)
+  
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
   
   const availableClasses = getAvailableClassLevels()
   const chaptersGrouped = getChaptersGroupedByClass()
@@ -35,7 +40,7 @@ export default function HomePage() {
       {availableClasses.map((classLevel) => {
         const config = classConfig[classLevel]
         const classChapters = chaptersGrouped[classLevel] || []
-        const totalXP = classChapters.reduce((sum, chapter) => sum + (chapter.estimatedTime * 2), 0)
+        const totalXP = isClient ? classChapters.reduce((sum, chapter) => sum + (chapter.estimatedTime * 2), 0) : 0
         
         return (
           <Link
@@ -76,7 +81,7 @@ export default function HomePage() {
                     <h3 className="text-lg sm:text-xl font-bold text-gray-900 group-hover:text-gray-700 transition-colors">{config.name}</h3>
                     <p className="text-xs sm:text-sm text-gray-500 flex items-center gap-1">
                       <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-green-400"></span>
-                      {classChapters.length} chapitres
+                      {isClient ? classChapters.length : '--'} chapitres
                     </p>
                   </div>
                 </div>
@@ -89,14 +94,14 @@ export default function HomePage() {
                     <Trophy className="w-3 h-3 sm:w-4 sm:h-4" />
                     XP Total
                   </span>
-                  <span className="font-bold text-blue-600">{totalXP}</span>
+                  <span className="font-bold text-blue-600">{isClient ? totalXP : '---'}</span>
               </div>
               <div className="flex items-center justify-between text-xs sm:text-sm">
                   <span className="text-gray-600 flex items-center gap-1">
                     <Clock className="w-3 h-3 sm:w-4 sm:h-4" />
                     Durée
                   </span>
-                  <span className="font-bold text-purple-600">{Math.floor(classChapters.reduce((sum, ch) => sum + ch.estimatedTime, 0) / 60)}h</span>
+                  <span className="font-bold text-purple-600">{isClient ? Math.round(classChapters.reduce((sum, ch) => sum + ch.estimatedTime, 0) / 60) : '--'}h</span>
                 </div>
               </div>
             </div>
