@@ -10,7 +10,7 @@ const nextConfig = {
   generateEtags: false, // Performance cache
   // Optimisation bundle
   experimental: {
-    optimizeCss: true,
+    // optimizeCss: true, // Désactivé temporairement pour éviter l'erreur critters sur Netlify
   },
   // Cache headers pour CDN
   async headers() {
