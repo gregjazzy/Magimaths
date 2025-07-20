@@ -7,11 +7,7 @@ const hiddenChapters = [
   '5eme-calcul-litteral-expressions-introduction',
   '5eme-calcul-litteral-expressions-regles',
   '5eme-calcul-litteral-factorisation',
-  '5eme-priorites-operations',
-  // Chapitres 4ème sans pages créées (évite erreurs 404)
-  '4eme-calculs-relatifs',
-  '4eme-statistiques-avancees',
-  '4eme-algorithmes-avances'
+  '5eme-priorites-operations'
 ];
 
 export const chaptersData: Chapter[] = [
@@ -1131,6 +1127,23 @@ export const chaptersData: Chapter[] = [
     isLocked: false,
     order: 52.5,
     parentChapter: '4eme-theoreme-pythagore'
+  },
+  {
+    id: '4eme-theoreme-thales',
+    title: 'Théorème de Thalès',
+    description: 'Proportionnalité dans les triangles et parallélisme 📐',
+    classLevel: '4eme',
+    category: 'geometry',
+    difficulty: 'intermediate',
+    estimatedTime: 75,
+    prerequisites: [],
+    color: '#54a0ff',
+    icon: '⫽',
+    lessons: [],
+    exercises: [],
+    isLocked: false,
+    order: 52.6,
+    verified: true
   },
   {
     id: '4eme-equations',
