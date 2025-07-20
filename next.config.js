@@ -9,9 +9,9 @@ const nextConfig = {
   compress: true, // Compression gzip
   poweredByHeader: false, // Sécurité
   generateEtags: false, // Performance cache
-  // Optimisation bundle (désactivée temporairement pour résoudre l'erreur critters)
+  // Optimisation bundle
   experimental: {
-    // optimizeCss: true,
+    // optimizeCss: true, // Désactivé pour éviter l'erreur critters
   },
   // Cache headers pour CDN (désactivés en développement)
   ...(process.env.NODE_ENV === 'production' && {
