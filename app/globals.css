@@ -133,8 +133,12 @@ body {
 }
 
 .glass-effect {
+  /* Fallback pour Safari et autres navigateurs */
+  -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   background: rgba(255, 255, 255, 0.8);
+  /* Fallback si backdrop-filter n'est pas supporté */
+  background: rgba(255, 255, 255, 0.9);
 }
 
 /* ===== COMPOSANTS RÉUTILISABLES ===== */

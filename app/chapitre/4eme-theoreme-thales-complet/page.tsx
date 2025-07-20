@@ -164,8 +164,8 @@ export default function TheoremeThalès() {
               <div className="h-8 bg-gray-300 rounded w-1/3 mb-4"></div>
               <div className="h-4 bg-gray-300 rounded w-1/2 mb-8"></div>
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                {[1,2,3,4].map(i => (
-                  <div key={i} className="h-20 bg-gray-300 rounded"></div>
+                {['intro', 'demo', 'app', 'ex'].map(id => (
+                  <div key={`loading-${id}`} className="h-20 bg-gray-300 rounded"></div>
                 ))}
               </div>
             </div>
@@ -326,27 +326,27 @@ export default function TheoremeThalès() {
                 {/* Étapes de la démonstration */}
                 <div className="space-y-3">
                   {[
-                    "Construction du triangle ABC",
-                    "Ajout du point D sur [AB]",
-                    "Construction de la parallèle à (BC)",
-                    "Identification du point E",
-                    "Vérification des rapports"
+                    { id: 'step1', text: "Construction du triangle ABC", num: 1 },
+                    { id: 'step2', text: "Ajout du point D sur [AB]", num: 2 },
+                    { id: 'step3', text: "Construction de la parallèle à (BC)", num: 3 },
+                    { id: 'step4', text: "Identification du point E", num: 4 },
+                    { id: 'step5', text: "Vérification des rapports", num: 5 }
                   ].map((step, index) => (
                     <div
-                      key={`step-${index}`}
+                      key={step.id}
                       className={`p-3 rounded-lg border-2 transition-all duration-300 ${
-                        animationState.step >= index
+                        isClient && animationState.step >= index
                           ? 'border-purple-500 bg-purple-50 text-purple-900'
                           : 'border-gray-200 bg-gray-50 text-gray-600'
                       }`}
                     >
                       <div className="flex items-center gap-3">
                         <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
-                          animationState.step >= index ? 'bg-purple-600 text-white' : 'bg-gray-400 text-white'
+                          isClient && animationState.step >= index ? 'bg-purple-600 text-white' : 'bg-gray-400 text-white'
                         }`}>
-                          {index + 1}
+                          {step.num}
                         </div>
-                        {step}
+                        {step.text}
                       </div>
                     </div>
                   ))}
@@ -358,7 +358,7 @@ export default function TheoremeThalès() {
                 <h3 className="font-bold text-lg mb-4 text-center">Construction pas à pas</h3>
                 <svg viewBox="0 0 400 300" className="w-full h-64 border-2 border-gray-200 rounded-lg bg-white">
                   {/* Triangle ABC - apparaît à l'étape 0 */}
-                  {animationState.step >= 0 && (
+                  {isClient && animationState.step >= 0 && (
                     <g className="animate-fadeIn">
                       <polygon 
                         points="80,220 320,220 200,80" 
@@ -376,7 +376,7 @@ export default function TheoremeThalès() {
                   )}
                   
                   {/* Point D - apparaît à l'étape 1 */}
-                  {animationState.step >= 1 && (
+                  {isClient && animationState.step >= 1 && (
                     <g className="animate-fadeIn">
                       <circle cx="140" cy="150" r="5" fill="#ef4444" />
                       <text x="130" y="140" className="text-sm font-semibold" fill="#ef4444">D</text>
@@ -384,7 +384,7 @@ export default function TheoremeThalès() {
                   )}
                   
                   {/* Droite parallèle - apparaît à l'étape 2 */}
-                  {animationState.step >= 2 && (
+                  {isClient && animationState.step >= 2 && (
                     <g className="animate-fadeIn">
                       <line 
                         x1="140" y1="150" 
@@ -397,7 +397,7 @@ export default function TheoremeThalès() {
                   )}
                   
                   {/* Point E - apparaît à l'étape 3 */}
-                  {animationState.step >= 3 && (
+                  {isClient && animationState.step >= 3 && (
                     <g className="animate-fadeIn">
                       <circle cx="260" cy="150" r="5" fill="#ef4444" />
                       <text x="270" y="140" className="text-sm font-semibold" fill="#ef4444">E</text>
@@ -405,7 +405,7 @@ export default function TheoremeThalès() {
                   )}
                   
                   {/* Mesures et rapports - apparaît à l'étape 4 */}
-                  {animationState.step >= 4 && (
+                  {isClient && animationState.step >= 4 && (
                     <g className="animate-fadeIn">
                       <text x="50" y="280" className="text-xs" fill="#059669">AD/AB = AE/AC = DE/BC</text>
                       <rect x="40" y="265" width="180" height="20" fill="rgba(5, 150, 105, 0.1)" stroke="#059669" rx="5" />
