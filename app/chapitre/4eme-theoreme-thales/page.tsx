@@ -67,7 +67,7 @@ export default function TheoremeThalePage() {
   }
 
   const totalTime = subChapters.reduce((sum, chapter) => sum + chapter.estimatedTime, 0)
-  const totalXP = totalTime * 2.5
+  const totalXP = totalTime * 2
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 relative overflow-hidden">
@@ -116,7 +116,7 @@ export default function TheoremeThalePage() {
               <div className="text-center">
                 <div className="flex items-center text-green-600">
                   <Trophy className="w-4 h-4 mr-1" />
-                  <span className="text-sm font-bold">{Math.round(totalXP)} XP</span>
+                  <span className="text-sm font-bold">{totalXP} XP</span>
                 </div>
                 <div className="text-xs text-gray-500">Points total</div>
               </div>
@@ -243,7 +243,7 @@ export default function TheoremeThalePage() {
                     </div>
                     <div className="flex items-center text-green-600">
                       <Trophy className="w-4 h-4 mr-1" />
-                      <span>{Math.round(chapter.estimatedTime * 2.5)} XP</span>
+                      <span>{chapter.estimatedTime * 2} XP</span>
                     </div>
                   </div>
                   

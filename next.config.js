@@ -1,13 +1,16 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'export', // Pour déploiement statique sur Netlify
+  // Export statique seulement pour la production (Netlify)
+  ...(process.env.NODE_ENV === 'production' ? { output: 'export' } : {}),
   images: {
-    unoptimized: true, // Requis pour export statique
+    // Images désoptimisées seulement pour l'export statique
+    ...(process.env.NODE_ENV === 'production' ? { unoptimized: true } : {}),
   },
   compress: true, // Compression gzip
   poweredByHeader: false, // Sécurité
   generateEtags: false, // Performance cache
-  trailingSlash: true, // Pour export statique
+  // Trailing slash seulement pour l'export statique
+  ...(process.env.NODE_ENV === 'production' ? { trailingSlash: true } : {}),
   // Optimisation CSS désactivée pour éviter les erreurs de build
   experimental: {
     optimizeCss: false,
