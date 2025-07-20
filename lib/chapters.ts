@@ -1027,6 +1027,8 @@ export const chaptersData: Chapter[] = [
     isLocked: false,
     order: 51
   },
+  // DIAGNOSTIC: Chapitres Pythagore temporairement commentés pour identifier erreur hydratation
+  /*
   {
     id: '4eme-theoreme-pythagore',
     title: 'Théorème de Pythagore',
@@ -1128,6 +1130,7 @@ export const chaptersData: Chapter[] = [
     order: 52.5,
     parentChapter: '4eme-theoreme-pythagore'
   },
+  */
   {
     id: '4eme-equations',
     title: 'Introduction aux équations',
@@ -1270,6 +1273,8 @@ export const chaptersData: Chapter[] = [
     parentChapter: '4eme-calcul-litteral',
     verified: true
   },
+  // DIAGNOSTIC: Chapitres Cosinus temporairement commentés pour identifier erreur hydratation  
+  /*
   {
     id: '4eme-cosinus',
     title: 'Cosinus',
@@ -1354,6 +1359,9 @@ export const chaptersData: Chapter[] = [
     order: 55.4,
     parentChapter: '4eme-cosinus'
   },
+  */
+  // DIAGNOSTIC: Chapitres Thalès temporairement commentés pour identifier erreur hydratation
+  /*
   {
     id: '4eme-theoreme-thales',
     title: 'Théorème de Thalès',
@@ -1461,6 +1469,7 @@ export const chaptersData: Chapter[] = [
     verified: false,
     parentChapter: '4eme-theoreme-thales'
   },
+  */
   {
     id: '4eme-statistiques-avancees',
     title: 'Statistiques avancées',
