@@ -47,34 +47,6 @@ export default function QuatrièmePage() {
       <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-6 sm:py-8 relative z-10">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {quatriemeChapters.map((chapter) => {
-            // Masquer les sous-chapitres (ne pas filtrer pour éviter erreurs d'hydratation)
-            const hiddenChapters = [
-              '4eme-calcul-litteral-expressions-regles', 
-              '4eme-calcul-litteral-developpement', 
-              '4eme-calcul-litteral-expressions-introduction', 
-              '4eme-calcul-litteral-substitution', 
-              '4eme-calcul-litteral-problemes',
-              '4eme-calcul-litteral-factorisation',
-              '4eme-cosinus-introduction',
-              '4eme-cosinus-calculs',
-              '4eme-cosinus-applications',
-              '4eme-cosinus-constructions',
-              '4eme-pythagore-introduction',
-              '4eme-pythagore-calculs-directs',
-              '4eme-pythagore-calculs-inverses',
-              '4eme-pythagore-applications',
-              '4eme-pythagore-reciproque',
-              '4eme-thales-introduction',
-              '4eme-thales-proportionnalite',
-              '4eme-thales-reciproque',
-              '4eme-thales-applications',
-              '4eme-thales-contraposee'
-            ]
-            
-            if (hiddenChapters.includes(chapter.id)) {
-              return null // Masquer visuellement sans filtrer
-            }
-            
             const totalXP = chapter.estimatedTime * 2
             return (
               <Link
