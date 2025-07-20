@@ -18,7 +18,11 @@ export default function TablesMultiplicationPage() {
   const [gameMode, setGameMode] = useState<'practice' | 'challenge'>('practice');
   const [animatedNumbers, setAnimatedNumbers] = useState<number[]>([]);
 
-  // Générer les exercices selon la table sélectionnée
+  // États pour éviter l'hydratation
+  const [exercises, setExercises] = useState<any[]>([])
+  const [isClient, setIsClient] = useState(false)
+
+  // Générer les exercices selon la table sélectionnée (côté client uniquement)
   const generateExercises = (table: number) => {
     const exercises = [];
     for (let i = 1; i <= 10; i++) {
@@ -29,11 +33,15 @@ export default function TablesMultiplicationPage() {
         factor: i
       });
     }
-    // Mélanger les exercices
-    return exercises.sort(() => Math.random() - 0.5);
+    // Mélanger les exercices uniquement côté client
+    return isClient ? exercises.sort(() => Math.random() - 0.5) : exercises;
   };
 
-  const [exercises, setExercises] = useState(generateExercises(selectedTable));
+  // Initialisation côté client uniquement
+  useEffect(() => {
+    setIsClient(true)
+    setExercises(generateExercises(selectedTable))
+  }, [selectedTable, isClient])
 
   // Timer effect
   useEffect(() => {
@@ -65,13 +73,16 @@ export default function TablesMultiplicationPage() {
 
   const handleTableChange = (table: number) => {
     setSelectedTable(table);
-    setExercises(generateExercises(table));
+    if (isClient) {
+      setExercises(generateExercises(table));
+    }
     setCurrentExercise(0);
     setUserAnswer('');
     setShowAnswer(false);
   };
 
   const checkAnswer = () => {
+    if (!isClient || exercises.length === 0) return;
     const isCorrect = parseInt(userAnswer) === exercises[currentExercise].answer;
     setShowAnswer(true);
     setAttempts(attempts + 1);
@@ -119,6 +130,25 @@ export default function TablesMultiplicationPage() {
     setUserAnswer('');
     setGameMode('practice');
   };
+
+  // Protection contre l'hydratation
+  if (!isClient || exercises.length === 0) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-red-50 to-orange-100">
+        <div className="max-w-6xl mx-auto px-4 py-8">
+          <div className="animate-pulse">
+            <div className="h-8 bg-gray-300 rounded w-1/2 mb-4"></div>
+            <div className="h-4 bg-gray-300 rounded w-1/3 mb-8"></div>
+            <div className="grid grid-cols-4 gap-4">
+              {[1,2,3,4].map(i => (
+                <div key={`loading-${i}`} className="h-20 bg-gray-300 rounded"></div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-red-50 to-orange-100">

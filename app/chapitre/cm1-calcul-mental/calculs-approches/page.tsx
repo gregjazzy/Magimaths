@@ -134,7 +134,8 @@ export default function CalculsApprochesPage() {
       });
     });
     
-    return exercises.sort(() => Math.random() - 0.5);
+    // Retourner les exercices dans un ordre stable pour éviter l'hydratation
+    return exercises;
   };
 
   const [exercises, setExercises] = useState(generateExercises());

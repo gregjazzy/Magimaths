@@ -73,7 +73,7 @@ export default function ComplementsPage() {
       });
     }
     
-    return exercises.sort(() => Math.random() - 0.5);
+    return exercises; // Ordre stable pour éviter l'hydratation
   };
 
   const [exercises, setExercises] = useState(generateExercises());

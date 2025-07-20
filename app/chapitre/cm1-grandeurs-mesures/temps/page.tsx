@@ -28,7 +28,7 @@ export default function TempsPage() {
   const [isDragging, setIsDragging] = useState<'hour' | 'minute' | null>(null);
   const [showClockHelp, setShowClockHelp] = useState(false);
   const [clockMode, setClockMode] = useState<'12h' | '24h'>('12h');
-  const [currentTime, setCurrentTime] = useState(new Date());
+  const [currentTime, setCurrentTime] = useState<Date | null>(null);
   const [currentConversionExercise, setCurrentConversionExercise] = useState(0);
   const [showConversionAnswer, setShowConversionAnswer] = useState(false);
   const [selectedConversionAnswer, setSelectedConversionAnswer] = useState('');
@@ -164,6 +164,9 @@ export default function TempsPage() {
   }, [exerciseType, currentExercise, filteredExercises.length]);
 
   useEffect(() => {
+    // Initialiser la date côté client uniquement
+    setCurrentTime(new Date());
+    
     const timer = setInterval(() => {
       setCurrentTime(new Date());
     }, 1000);
@@ -456,7 +459,7 @@ export default function TempsPage() {
                 </p>
               </div>
               <div className="ml-auto text-right">
-                <div className="text-2xl font-bold text-orange-600">{formatTime(currentTime)}</div>
+                <div className="text-2xl font-bold text-orange-600">{currentTime ? formatTime(currentTime) : '--:--'}</div>
                 <div className="text-sm text-gray-500">Heure actuelle</div>
               </div>
             </div>
