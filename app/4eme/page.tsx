@@ -72,20 +72,17 @@ export default function QuatrièmePage() {
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {quatriemeChapters.map((chapter) => (
-              <Link href={`/chapitre/${chapter.id}`} key={chapter.id}>
+              <Link href={`/chapitre/${chapter.id}`} key={chapter.id} className="group block">
                 <div 
-                  className={`p-6 rounded-lg border transition-all duration-300 cursor-pointer ${
-                    hoveredChapter === chapter.id 
-                      ? 'shadow-lg scale-105 border-blue-300' 
-                      : 'shadow-md hover:shadow-lg border-gray-200'
-                  }`}
-                  style={{ 
-                    backgroundColor: hoveredChapter === chapter.id ? `${chapter.color}10` : 'white',
-                    borderColor: hoveredChapter === chapter.id ? chapter.color : undefined
-                  }}
+                  className="group relative bg-white/90 backdrop-blur-sm rounded-3xl p-6 shadow-xl border border-white/20 hover:border-white/40 hover:shadow-2xl transition-all duration-500 hover:scale-105 hover:-translate-y-2 overflow-hidden"
                   onMouseEnter={() => setHoveredChapter(chapter.id)}
                   onMouseLeave={() => setHoveredChapter(null)}
                 >
+                  {/* Barre colorée animée */}
+                  <div 
+                    className="absolute top-0 left-0 right-0 h-1 transition-all duration-500 group-hover:h-2"
+                    style={{ background: `linear-gradient(90deg, ${chapter.color}, ${chapter.color}80, ${chapter.color}60)` }}
+                  />
                   <div className="flex items-start justify-between mb-4">
                     <div 
                       className="w-12 h-12 rounded-lg flex items-center justify-center text-white font-bold text-lg"
