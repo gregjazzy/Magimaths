@@ -7,7 +7,11 @@ const hiddenChapters = [
   '5eme-calcul-litteral-expressions-introduction',
   '5eme-calcul-litteral-expressions-regles',
   '5eme-calcul-litteral-factorisation',
-  '5eme-priorites-operations'
+  '5eme-priorites-operations',
+  // Chapitres 4ème sans pages créées (évite erreurs 404)
+  '4eme-calculs-relatifs',
+  '4eme-statistiques-avancees',
+  '4eme-algorithmes-avances'
 ];
 
 export const chaptersData: Chapter[] = [
