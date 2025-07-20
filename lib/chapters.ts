@@ -1129,23 +1129,6 @@ export const chaptersData: Chapter[] = [
     parentChapter: '4eme-theoreme-pythagore'
   },
   {
-    id: '4eme-theoreme-thales',
-    title: 'Théorème de Thalès',
-    description: 'Proportionnalité dans les triangles et parallélisme 📐',
-    classLevel: '4eme',
-    category: 'geometry',
-    difficulty: 'intermediate',
-    estimatedTime: 75,
-    prerequisites: [],
-    color: '#54a0ff',
-    icon: '⫽',
-    lessons: [],
-    exercises: [],
-    isLocked: false,
-    order: 52.6,
-    verified: true
-  },
-  {
     id: '4eme-equations',
     title: 'Introduction aux équations',
     description: 'Notion d\'équation et premières résolutions simples du premier degré',
@@ -1370,6 +1353,23 @@ export const chaptersData: Chapter[] = [
     isLocked: false,
     order: 55.4,
     parentChapter: '4eme-cosinus'
+  },
+  {
+    id: '4eme-theoreme-thales-complet',
+    title: 'Théorème de Thalès - Cours complet',
+    description: 'Cours interactif complet avec animations, exercices et applications du théorème de Thalès',
+    classLevel: '4eme',
+    category: 'geometry',
+    difficulty: 'intermediate',
+    estimatedTime: 85,
+    prerequisites: [],
+    color: '#3b82f6',
+    icon: '📐',
+    lessons: [],
+    exercises: [],
+    isLocked: false,
+    order: 55.5,
+    verified: true
   },
   {
     id: '4eme-statistiques-avancees',
