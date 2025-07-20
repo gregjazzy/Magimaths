@@ -13,7 +13,17 @@ export default function QuatrièmePage() {
       '4eme-calcul-litteral-developpement', 
       '4eme-calcul-litteral-expressions-introduction', 
       '4eme-calcul-litteral-substitution', 
-      '4eme-calcul-litteral-problemes'].includes(chapter.id)
+      '4eme-calcul-litteral-problemes',
+      '4eme-calcul-litteral-factorisation',
+      '4eme-cosinus-introduction',
+      '4eme-cosinus-calculs',
+      '4eme-cosinus-applications',
+      '4eme-cosinus-constructions',
+      '4eme-pythagore-introduction',
+      '4eme-pythagore-calculs-directs',
+      '4eme-pythagore-calculs-inverses',
+      '4eme-pythagore-applications',
+      '4eme-pythagore-reciproque'].includes(chapter.id)
   )
   const config = { color: '#54a0ff', icon: '📊', name: '4ème' }
 
