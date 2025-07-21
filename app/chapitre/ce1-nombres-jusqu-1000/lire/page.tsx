@@ -13,18 +13,21 @@ export default function LireNombresCE1Page() {
   const [exerciseResults, setExerciseResults] = useState<boolean[]>([]);
   const [showExercises, setShowExercises] = useState(false);
   const [score, setScore] = useState(0);
+  const [answeredCorrectly, setAnsweredCorrectly] = useState<Set<number>>(new Set());
+  const [showCompletionModal, setShowCompletionModal] = useState(false);
+  const [finalScore, setFinalScore] = useState(0);
 
   const numbers = [
     { value: '234', label: '234', reading: 'Deux cent trente-quatre' },
     { value: '156', label: '156', reading: 'Cent cinquante-six' },
     { value: '89', label: '89', reading: 'Quatre-vingt-neuf' },
     { value: '345', label: '345', reading: 'Trois cent quarante-cinq' },
-    { value: '567', label: '567', reading: 'Cinq cent soixante-sept' },
+    { value: '67', label: '67', reading: 'Soixante-sept' },
     { value: '123', label: '123', reading: 'Cent vingt-trois' },
     { value: '789', label: '789', reading: 'Sept cent quatre-vingt-neuf' },
-    { value: '456', label: '456', reading: 'Quatre cent cinquante-six' },
+    { value: '56', label: '56', reading: 'Cinquante-six' },
     { value: '678', label: '678', reading: 'Six cent soixante-dix-huit' },
-    { value: '890', label: '890', reading: 'Huit cent quatre-vingt-dix' },
+    { value: '75', label: '75', reading: 'Soixante-quinze' },
     { value: '1000', label: '1000', reading: 'Mille' }
   ];
 
@@ -189,19 +192,67 @@ export default function LireNombresCE1Page() {
     setIsAnimating(false);
   };
 
-  const checkAnswer = () => {
-    const correct = userAnswer.toLowerCase().trim() === exercises[currentExercise].reading.toLowerCase();
-    setIsCorrect(correct);
-    
-    if (correct) {
-      setScore(score + 1);
-      const newResults = [...exerciseResults];
-      newResults[currentExercise] = true;
-      setExerciseResults(newResults);
+  const handleNext = () => {
+    // Si aucune réponse vérifiée encore, on vérifie
+    if (isCorrect === null) {
+      const normalizeText = (text: string) => {
+        // Supprimer les espaces en début et fin, mettre en minuscules
+        let normalized = text.toLowerCase().trim();
+        // Remplacer les traits d'union par des espaces pour comparer
+        normalized = normalized.replace(/-/g, ' ');
+        // Supprimer les espaces multiples
+        normalized = normalized.replace(/\s+/g, ' ');
+        return normalized;
+      };
+
+      const userNormalized = normalizeText(userAnswer);
+      const correctNormalized = normalizeText(exercises[currentExercise].reading);
+      
+      const correct = userNormalized === correctNormalized;
+      setIsCorrect(correct);
+      
+      if (correct && !answeredCorrectly.has(currentExercise)) {
+        setScore(prevScore => prevScore + 1);
+        setAnsweredCorrectly(prev => {
+          const newSet = new Set(prev);
+          newSet.add(currentExercise);
+          return newSet;
+        });
+        const newResults = [...exerciseResults];
+        newResults[currentExercise] = true;
+        setExerciseResults(newResults);
+      } else {
+        const newResults = [...exerciseResults];
+        newResults[currentExercise] = false;
+        setExerciseResults(newResults);
+      }
+
+      // Si bonne réponse → passage automatique après 1.5s
+      if (correct) {
+        setTimeout(() => {
+          if (currentExercise + 1 < exercises.length) {
+            setCurrentExercise(Math.min(currentExercise + 1, exercises.length - 1));
+            setUserAnswer('');
+            setIsCorrect(null);
+          } else {
+            // Dernier exercice terminé, afficher la modale
+            setFinalScore(score + (!answeredCorrectly.has(currentExercise) ? 1 : 0));
+            setShowCompletionModal(true);
+          }
+        }, 1500);
+      }
+      // Si mauvaise réponse, on affiche la correction et on attend le clic suivant
     } else {
-      const newResults = [...exerciseResults];
-      newResults[currentExercise] = false;
-      setExerciseResults(newResults);
+      // Réponse déjà vérifiée, on passe au suivant
+      if (currentExercise + 1 < exercises.length) {
+        setCurrentExercise(Math.min(currentExercise + 1, exercises.length - 1));
+        setUserAnswer('');
+        setIsCorrect(null);
+      } else {
+        // Dernier exercice, afficher la modale
+        setFinalScore(score);
+        setShowCompletionModal(true);
+      }
     }
   };
 
@@ -224,6 +275,9 @@ export default function LireNombresCE1Page() {
     setIsCorrect(null);
     setExerciseResults([]);
     setScore(0);
+    setAnsweredCorrectly(new Set());
+    setShowCompletionModal(false);
+    setFinalScore(0);
   };
 
   return (
@@ -525,13 +579,6 @@ export default function LireNombresCE1Page() {
                 
                 <div className="flex justify-center space-x-4 mb-6">
                   <button
-                    onClick={checkAnswer}
-                    disabled={!userAnswer.trim()}
-                    className="bg-blue-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-blue-600 transition-colors disabled:opacity-50"
-                  >
-                    Vérifier
-                  </button>
-                  <button
                     onClick={resetExercise}
                     className="bg-gray-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-gray-600 transition-colors"
                   >
@@ -572,28 +619,60 @@ export default function LireNombresCE1Page() {
                     ← Précédent
                   </button>
                   <button
-                    onClick={nextExercise}
-                    disabled={currentExercise === exercises.length - 1}
+                    onClick={handleNext}
+                    disabled={!userAnswer.trim() && isCorrect === null}
                     className="bg-green-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-green-600 transition-colors disabled:opacity-50"
                   >
-                    Suivant →
+                    {isCorrect === null ? 'Vérifier' : 'Suivant →'}
                   </button>
                 </div>
               </div>
 
-              {/* Félicitations */}
-              {currentExercise === exercises.length - 1 && isCorrect !== null && (
-                <div className="bg-gradient-to-r from-yellow-400 to-orange-400 rounded-xl p-6 text-white text-center">
-                  <div className="text-4xl mb-3">🎉</div>
-                  <h3 className="text-2xl font-bold mb-2">Bravo !</h3>
-                  <p className="text-lg">
-                    Tu as terminé tous les exercices ! Tu sais maintenant lire les nombres jusqu'à 1000 !
-                  </p>
-                  <p className="text-xl font-bold mt-4">
-                    Score final : {score}/{exercises.length}
-                  </p>
-                </div>
-              )}
+
+            </div>
+          )}
+
+          {/* Modale de fin d'exercices */}
+          {showCompletionModal && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+              <div className="bg-white rounded-2xl p-8 max-w-md w-full text-center shadow-2xl transform transition-all">
+                {(() => {
+                  const percentage = Math.round((finalScore / exercises.length) * 100);
+                  const getMessage = () => {
+                    if (percentage >= 90) return { title: "🎉 Excellent !", message: "Tu maîtrises parfaitement la lecture des nombres jusqu'à 1000 !", emoji: "🎉" };
+                    if (percentage >= 70) return { title: "👏 Bien joué !", message: "Tu sais bien lire les nombres ! Continue comme ça !", emoji: "👏" };
+                    if (percentage >= 50) return { title: "👍 C'est un bon début !", message: "Tu progresses bien. Entraîne-toi encore un peu !", emoji: "😊" };
+                    return { title: "💪 Continue à t'entraîner !", message: "Recommence les exercices pour mieux maîtriser la lecture des nombres.", emoji: "📚" };
+                  };
+                  const result = getMessage();
+                  return (
+                    <>
+                      <div className="text-6xl mb-4">{result.emoji}</div>
+                      <h3 className="text-2xl font-bold text-gray-900 mb-3">{result.title}</h3>
+                      <p className="text-lg text-gray-700 mb-6">{result.message}</p>
+                      <div className="bg-gray-100 rounded-lg p-4 mb-6">
+                        <p className="text-xl font-bold text-gray-900">
+                          Score final : {finalScore}/{exercises.length} ({percentage}%)
+                        </p>
+                      </div>
+                      <div className="flex space-x-3">
+                        <button
+                          onClick={resetAll}
+                          className="flex-1 bg-green-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-green-600 transition-colors"
+                        >
+                          Recommencer
+                        </button>
+                        <button
+                          onClick={() => setShowCompletionModal(false)}
+                          className="flex-1 bg-gray-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-gray-600 transition-colors"
+                        >
+                          Fermer
+                        </button>
+                      </div>
+                    </>
+                  );
+                })()}
+              </div>
             </div>
           )}
         </div>

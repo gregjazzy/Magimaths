@@ -13,8 +13,11 @@ export default function DecompositionNombresCE1Page() {
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
   const [showExercises, setShowExercises] = useState(false);
   const [score, setScore] = useState(0);
+  const [answeredCorrectly, setAnsweredCorrectly] = useState<Set<string>>(new Set());
   const [isAnimating, setIsAnimating] = useState(false);
   const [exerciseType, setExerciseType] = useState<'decompose' | 'compose'>('decompose');
+  const [showCompletionModal, setShowCompletionModal] = useState(false);
+  const [finalScore, setFinalScore] = useState(0);
 
   const examples = [
     { number: '234', centaines: '2', dizaines: '3', unites: '4' },
@@ -165,25 +168,66 @@ export default function DecompositionNombresCE1Page() {
     setIsAnimating(false);
   };
 
-  const checkAnswer = () => {
-    let isCorrect = false;
-    
-    if (exerciseType === 'decompose') {
-      const correct = decomposeNumber(exercises[currentExercise].number);
-      isCorrect = 
-        userAnswers.centaines === correct.centaines &&
-        userAnswers.dizaines === correct.dizaines &&
-        userAnswers.unites === correct.unites;
+  const handleNext = () => {
+    // Si aucune réponse vérifiée encore, on vérifie
+    if (isCorrect === null) {
+      let correct = false;
+      
+      if (exerciseType === 'decompose') {
+        const correctResult = decomposeNumber(exercises[currentExercise].number);
+        correct = 
+          userAnswers.centaines === correctResult.centaines &&
+          userAnswers.dizaines === correctResult.dizaines &&
+          userAnswers.unites === correctResult.unites;
+      } else {
+        // compose exercise
+        const correctNumber = composeExercises[currentExercise].number;
+        correct = userNumber.trim() === correctNumber;
+      }
+      
+      setIsCorrect(correct);
+      
+      const exerciseKey = `${exerciseType}-${currentExercise}`;
+      
+      if (correct && !answeredCorrectly.has(exerciseKey)) {
+        setScore(prevScore => prevScore + 1);
+        setAnsweredCorrectly(prev => {
+          const newSet = new Set(prev);
+          newSet.add(exerciseKey);
+          return newSet;
+        });
+      }
+
+      // Si bonne réponse → passage automatique après 1.5s
+      if (correct) {
+        setTimeout(() => {
+          const maxExercises = exerciseType === 'decompose' ? exercises.length : composeExercises.length;
+          if (currentExercise + 1 < maxExercises) {
+            setCurrentExercise(Math.min(currentExercise + 1, maxExercises - 1));
+            setUserAnswers({ centaines: '', dizaines: '', unites: '' });
+            setUserNumber('');
+            setIsCorrect(null);
+          } else {
+            // Dernier exercice terminé, afficher la modale
+            setFinalScore(score + (!answeredCorrectly.has(exerciseKey) ? 1 : 0));
+            setShowCompletionModal(true);
+          }
+        }, 1500);
+      }
+      // Si mauvaise réponse, on affiche la correction et on attend le clic suivant
     } else {
-      // compose exercise
-      const correctNumber = composeExercises[currentExercise].number;
-      isCorrect = userNumber.trim() === correctNumber;
-    }
-    
-    setIsCorrect(isCorrect);
-    
-    if (isCorrect) {
-      setScore(score + 1);
+      // Réponse déjà vérifiée, on passe au suivant
+      const maxExercises = exerciseType === 'decompose' ? exercises.length : composeExercises.length;
+      if (currentExercise + 1 < maxExercises) {
+        setCurrentExercise(Math.min(currentExercise + 1, maxExercises - 1));
+        setUserAnswers({ centaines: '', dizaines: '', unites: '' });
+        setUserNumber('');
+        setIsCorrect(null);
+      } else {
+        // Dernier exercice, afficher la modale
+        setFinalScore(score);
+        setShowCompletionModal(true);
+      }
     }
   };
 
@@ -209,6 +253,9 @@ export default function DecompositionNombresCE1Page() {
     setUserNumber('');
     setIsCorrect(null);
     setScore(0);
+    setAnsweredCorrectly(new Set());
+    setShowCompletionModal(false);
+    setFinalScore(0);
   };
 
   const switchExerciseType = (type: 'decompose' | 'compose') => {
@@ -217,6 +264,7 @@ export default function DecompositionNombresCE1Page() {
     setUserAnswers({ centaines: '', dizaines: '', unites: '' });
     setUserNumber('');
     setIsCorrect(null);
+    setAnsweredCorrectly(new Set());
   };
 
   const updateAnswer = (type: 'centaines' | 'dizaines' | 'unites', value: string) => {
@@ -604,21 +652,6 @@ export default function DecompositionNombresCE1Page() {
               
               <div className="flex justify-center space-x-4 mb-6">
                 <button
-                  onClick={checkAnswer}
-                  disabled={
-                    exerciseType === 'decompose' 
-                      ? (!userAnswers.centaines || !userAnswers.dizaines || userAnswers.unites === '')
-                      : !userNumber.trim()
-                  }
-                  className={`text-white px-6 py-3 rounded-lg font-bold transition-colors disabled:opacity-50 ${
-                    exerciseType === 'decompose' 
-                      ? 'bg-purple-500 hover:bg-purple-600' 
-                      : 'bg-green-500 hover:bg-green-600'
-                  }`}
-                >
-                  Vérifier
-                </button>
-                <button
                   onClick={resetExercise}
                   className="bg-gray-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-gray-600 transition-colors"
                 >
@@ -665,38 +698,75 @@ export default function DecompositionNombresCE1Page() {
                   ← Précédent
                 </button>
                 <button
-                  onClick={nextExercise}
-                  disabled={currentExercise === (exerciseType === 'decompose' ? exercises.length : composeExercises.length) - 1}
+                  onClick={handleNext}
+                  disabled={
+                    isCorrect === null && (
+                      exerciseType === 'decompose' 
+                        ? (!userAnswers.centaines || !userAnswers.dizaines || userAnswers.unites === '')
+                        : !userNumber.trim()
+                    )
+                  }
                   className={`text-white px-6 py-3 rounded-lg font-bold transition-colors disabled:opacity-50 ${
                     exerciseType === 'decompose' 
                       ? 'bg-pink-500 hover:bg-pink-600' 
                       : 'bg-lime-500 hover:bg-lime-600'
                   }`}
                 >
-                  Suivant →
+                  {isCorrect === null ? 'Vérifier' : 'Suivant →'}
                 </button>
               </div>
             </div>
 
-            {/* Félicitations */}
-            {currentExercise === (exerciseType === 'decompose' ? exercises.length : composeExercises.length) - 1 && isCorrect !== null && (
-              <div className={`rounded-xl p-6 text-white text-center ${
-                exerciseType === 'decompose' 
-                  ? 'bg-gradient-to-r from-purple-400 to-pink-400' 
-                  : 'bg-gradient-to-r from-green-400 to-lime-400'
-              }`}>
-                <div className="text-4xl mb-3">🎉</div>
-                <h3 className="text-2xl font-bold mb-2">Fantastique !</h3>
-                <p className="text-lg">
-                  {exerciseType === 'decompose' 
-                    ? 'Tu sais maintenant décomposer tous les nombres jusqu\'à 1000 !' 
-                    : 'Tu sais maintenant composer tous les nombres jusqu\'à 1000 !'}
-                </p>
-                <p className="text-xl font-bold mt-4">
-                  Score final : {score}/{exerciseType === 'decompose' ? exercises.length : composeExercises.length}
-                </p>
-              </div>
-            )}
+
+          </div>
+        )}
+
+        {/* Modale de fin d'exercices */}
+        {showCompletionModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-2xl p-8 max-w-md w-full text-center shadow-2xl transform transition-all">
+              {(() => {
+                const totalExercises = exerciseType === 'decompose' ? exercises.length : composeExercises.length;
+                const percentage = Math.round((finalScore / totalExercises) * 100);
+                const getMessage = () => {
+                  if (percentage >= 90) return { title: "🎉 Excellent !", message: `Tu maîtrises parfaitement ${exerciseType === 'decompose' ? 'la décomposition' : 'la composition'} des nombres jusqu'à 1000 !`, emoji: "🎉" };
+                  if (percentage >= 70) return { title: "👏 Bien joué !", message: `Tu sais bien ${exerciseType === 'decompose' ? 'décomposer' : 'composer'} les nombres ! Continue comme ça !`, emoji: "👏" };
+                  if (percentage >= 50) return { title: "👍 C'est un bon début !", message: "Tu progresses bien. Entraîne-toi encore un peu !", emoji: "😊" };
+                  return { title: "💪 Continue à t'entraîner !", message: `Recommence les exercices pour mieux maîtriser ${exerciseType === 'decompose' ? 'la décomposition' : 'la composition'} des nombres.`, emoji: "📚" };
+                };
+                const result = getMessage();
+                return (
+                  <>
+                    <div className="text-6xl mb-4">{result.emoji}</div>
+                    <h3 className="text-2xl font-bold text-gray-900 mb-3">{result.title}</h3>
+                    <p className="text-lg text-gray-700 mb-6">{result.message}</p>
+                    <div className="bg-gray-100 rounded-lg p-4 mb-6">
+                      <p className="text-xl font-bold text-gray-900">
+                        Score final : {finalScore}/{totalExercises} ({percentage}%)
+                      </p>
+                    </div>
+                    <div className="flex space-x-3">
+                      <button
+                        onClick={resetAll}
+                        className={`flex-1 text-white px-6 py-3 rounded-lg font-bold transition-colors ${
+                          exerciseType === 'decompose' 
+                            ? 'bg-pink-500 hover:bg-pink-600' 
+                            : 'bg-lime-500 hover:bg-lime-600'
+                        }`}
+                      >
+                        Recommencer
+                      </button>
+                      <button
+                        onClick={() => setShowCompletionModal(false)}
+                        className="flex-1 bg-gray-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-gray-600 transition-colors"
+                      >
+                        Fermer
+                      </button>
+                    </div>
+                  </>
+                );
+              })()}
+            </div>
           </div>
         )}
       </div>

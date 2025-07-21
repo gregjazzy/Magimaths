@@ -12,6 +12,9 @@ export default function OrdonnerNombresCE1Page() {
   const [showExercises, setShowExercises] = useState(false);
   const [score, setScore] = useState(0);
   const [exerciseType, setExerciseType] = useState<'ranger' | 'encadrer' | 'suites' | 'comparer' | 'encadrer-unites'>('ranger');
+  const [answeredCorrectly, setAnsweredCorrectly] = useState<Set<string>>(new Set());
+  const [showCompletionModal, setShowCompletionModal] = useState(false);
+  const [finalScore, setFinalScore] = useState(0);
 
   // Exercices de rangement CE1 (nombres jusqu'à 1000) - nombres complexes
   const rangerExercises = [
@@ -147,31 +150,72 @@ export default function OrdonnerNombresCE1Page() {
     }
   };
 
-  const checkAnswer = () => {
-    const exercises = getCurrentExercises();
-    let isCorrect = false;
+  const handleNext = () => {
+    // Si aucune réponse vérifiée encore, on vérifie
+    if (isCorrect === null) {
+      const exercises = getCurrentExercises();
+      let correct = false;
 
-    if (exerciseType === 'ranger') {
-      const correctOrder = ((exercises[currentExercise] as any).answer as number[]).map((n: number) => n.toString());
-      isCorrect = JSON.stringify(userAnswers) === JSON.stringify(correctOrder);
-    } else if (exerciseType === 'encadrer') {
-      const exercise = exercises[currentExercise] as any;
-      isCorrect = userAnswers[0] === exercise.before.toString() && userAnswers[1] === exercise.after.toString();
-    } else if (exerciseType === 'suites') {
-      const exercise = exercises[currentExercise] as any;
-      isCorrect = userAnswers[0] === exercise.answers[0] && userAnswers[1] === exercise.answers[1];
-    } else if (exerciseType === 'comparer') {
-      const exercise = exercises[currentExercise] as any;
-      isCorrect = userAnswers[0] === exercise.answer;
-    } else if (exerciseType === 'encadrer-unites') {
-      const exercise = exercises[currentExercise] as any;
-      isCorrect = userAnswers[0] === exercise.before.toString() && userAnswers[1] === exercise.after.toString();
-    }
+      if (exerciseType === 'ranger') {
+        const correctOrder = ((exercises[currentExercise] as any).answer as number[]).map((n: number) => n.toString());
+        correct = JSON.stringify(userAnswers) === JSON.stringify(correctOrder);
+      } else if (exerciseType === 'encadrer') {
+        const exercise = exercises[currentExercise] as any;
+        correct = userAnswers[0] === exercise.before.toString() && userAnswers[1] === exercise.after.toString();
+      } else if (exerciseType === 'suites') {
+        const exercise = exercises[currentExercise] as any;
+        correct = userAnswers[0] === exercise.answers[0] && userAnswers[1] === exercise.answers[1];
+      } else if (exerciseType === 'comparer') {
+        const exercise = exercises[currentExercise] as any;
+        correct = userAnswers[0] === exercise.answer;
+      } else if (exerciseType === 'encadrer-unites') {
+        const exercise = exercises[currentExercise] as any;
+        correct = userAnswers[0] === exercise.before.toString() && userAnswers[1] === exercise.after.toString();
+      }
 
-    setIsCorrect(isCorrect);
-    
-    if (isCorrect) {
-      setScore(score + 1);
+      setIsCorrect(correct);
+      
+      const exerciseKey = `${exerciseType}-${currentExercise}`;
+      
+      if (correct && !answeredCorrectly.has(exerciseKey)) {
+        setScore(prevScore => prevScore + 1);
+        setAnsweredCorrectly(prev => {
+          const newSet = new Set(prev);
+          newSet.add(exerciseKey);
+          return newSet;
+        });
+      }
+
+      // Si bonne réponse → passage automatique après 1.5s
+      if (correct) {
+        setTimeout(() => {
+          const exercises = getCurrentExercises();
+          if (currentExercise + 1 < exercises.length) {
+            setCurrentExercise(Math.min(currentExercise + 1, exercises.length - 1));
+            setUserAnswer('');
+            setUserAnswers([]);
+            setIsCorrect(null);
+          } else {
+            // Dernier exercice terminé, afficher la modale
+            setFinalScore(score + (!answeredCorrectly.has(`${exerciseType}-${currentExercise}`) ? 1 : 0));
+            setShowCompletionModal(true);
+          }
+        }, 1500);
+      }
+      // Si mauvaise réponse, on affiche la correction et on attend le clic suivant
+    } else {
+      // Réponse déjà vérifiée, on passe au suivant
+      const exercises = getCurrentExercises();
+      if (currentExercise + 1 < exercises.length) {
+        setCurrentExercise(Math.min(currentExercise + 1, exercises.length - 1));
+        setUserAnswer('');
+        setUserAnswers([]);
+        setIsCorrect(null);
+      } else {
+        // Dernier exercice, afficher la modale
+        setFinalScore(score);
+        setShowCompletionModal(true);
+      }
     }
   };
 
@@ -197,6 +241,9 @@ export default function OrdonnerNombresCE1Page() {
     setUserAnswers([]);
     setIsCorrect(null);
     setScore(0);
+    setAnsweredCorrectly(new Set());
+    setShowCompletionModal(false);
+    setFinalScore(0);
   };
 
   const switchExerciseType = (type: 'ranger' | 'encadrer' | 'suites' | 'comparer' | 'encadrer-unites') => {
@@ -205,6 +252,10 @@ export default function OrdonnerNombresCE1Page() {
     setUserAnswer('');
     setUserAnswers([]);
     setIsCorrect(null);
+    setScore(0); // Remettre le score à zéro quand on change de type d'exercice
+    setAnsweredCorrectly(new Set());
+    setShowCompletionModal(false);
+    setFinalScore(0);
   };
 
   const updateOrderAnswer = (index: number, value: string) => {
@@ -623,7 +674,7 @@ export default function OrdonnerNombresCE1Page() {
               {exerciseType === 'encadrer-unites' && (
                 <>
                   <h3 className="text-xl font-bold mb-6 text-gray-900">
-                    🎯 Encadre ce nombre à la {encadrerUnitesExercises[currentExercise].type}
+                    🎯 Encadre ce nombre à l'unité
                   </h3>
                   
                   <div className="flex justify-center items-center space-x-4 mb-8">
@@ -649,10 +700,7 @@ export default function OrdonnerNombresCE1Page() {
                   </div>
                   
                   <div className="mb-8">
-                    <p className="text-gray-600 text-lg">
-                      Encadre {encadrerUnitesExercises[currentExercise].number} à la {encadrerUnitesExercises[currentExercise].type}
-                    </p>
-                    <p className="text-gray-500 text-sm mt-2">
+                    <p className="text-gray-500 text-sm">
                       {encadrerUnitesExercises[currentExercise].type === 'unité' 
                         ? 'Exemple : 455 < 456 < 457' 
                         : encadrerUnitesExercises[currentExercise].type === 'dizaine' 
@@ -664,25 +712,6 @@ export default function OrdonnerNombresCE1Page() {
               )}
               
               <div className="flex justify-center space-x-4 mb-6">
-                <button
-                  onClick={checkAnswer}
-                  disabled={
-                    (exerciseType === 'ranger' && userAnswers.length < 5) ||
-                    (exerciseType === 'encadrer' && userAnswers.length < 2) ||
-                    (exerciseType === 'suites' && userAnswers.length < 2) ||
-                    (exerciseType === 'comparer' && userAnswers.length < 1) ||
-                    (exerciseType === 'encadrer-unites' && userAnswers.length < 2)
-                  }
-                  className={`text-white px-8 py-4 rounded-xl font-bold transition-all transform hover:scale-105 shadow-lg disabled:opacity-50 ${
-                    exerciseType === 'ranger' ? 'bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700' :
-                    exerciseType === 'encadrer' ? 'bg-gradient-to-r from-green-500 to-teal-600 hover:from-green-600 hover:to-teal-700' :
-                    exerciseType === 'suites' ? 'bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700' :
-                    exerciseType === 'comparer' ? 'bg-gradient-to-r from-yellow-500 to-orange-600 hover:from-yellow-600 hover:to-orange-700' :
-                    'bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700'
-                  }`}
-                >
-                  ✨ Vérifier ✨
-                </button>
                 <button
                   onClick={resetExercise}
                   className="bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white px-8 py-4 rounded-xl font-bold transition-all transform hover:scale-105 shadow-lg"
@@ -738,8 +767,16 @@ export default function OrdonnerNombresCE1Page() {
                   ← Précédent
                 </button>
                 <button
-                  onClick={nextExercise}
-                  disabled={currentExercise === getCurrentExercises().length - 1}
+                  onClick={handleNext}
+                  disabled={
+                    isCorrect === null && (
+                      (exerciseType === 'ranger' && userAnswers.length < 5) ||
+                      (exerciseType === 'encadrer' && userAnswers.length < 2) ||
+                      (exerciseType === 'suites' && userAnswers.length < 2) ||
+                      (exerciseType === 'comparer' && userAnswers.length < 1) ||
+                      (exerciseType === 'encadrer-unites' && userAnswers.length < 2)
+                    )
+                  }
                   className={`text-white px-6 py-3 rounded-xl font-bold transition-all transform hover:scale-105 shadow-lg disabled:opacity-50 ${
                     exerciseType === 'ranger' ? 'bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700' :
                     exerciseType === 'encadrer' ? 'bg-gradient-to-r from-green-500 to-teal-600 hover:from-green-600 hover:to-teal-700' :
@@ -748,34 +785,66 @@ export default function OrdonnerNombresCE1Page() {
                     'bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700'
                   }`}
                 >
-                  Suivant →
+                  {isCorrect === null ? '✨ Vérifier ✨' : 'Suivant →'}
                 </button>
               </div>
             </div>
 
-            {/* Félicitations */}
-            {currentExercise === getCurrentExercises().length - 1 && isCorrect !== null && (
-              <div className={`rounded-xl p-6 text-white text-center ${
-                exerciseType === 'ranger' ? 'bg-gradient-to-r from-blue-400 to-purple-400' :
-                exerciseType === 'encadrer' ? 'bg-gradient-to-r from-green-400 to-teal-400' :
-                exerciseType === 'suites' ? 'bg-gradient-to-r from-red-400 to-pink-400' :
-                exerciseType === 'comparer' ? 'bg-gradient-to-r from-yellow-400 to-orange-400' :
-                'bg-gradient-to-r from-cyan-400 to-blue-400'
-              }`}>
-                <div className="text-4xl mb-3">🎉</div>
-                <h3 className="text-2xl font-bold mb-2">Fantastique !</h3>
-                <p className="text-lg">
-                  {exerciseType === 'ranger' && 'Tu sais maintenant comparer tous les nombres jusqu\'à 1000 !'}
-                  {exerciseType === 'encadrer' && 'Tu sais maintenant ordonner tous les nombres jusqu\'à 1000 !'}
-                  {exerciseType === 'suites' && 'Tu sais maintenant trouver les nombres manquants !'}
-                  {exerciseType === 'comparer' && 'Tu sais maintenant comparer avec les signes <, > et = !'}
-                  {exerciseType === 'encadrer-unites' && 'Tu sais maintenant encadrer à l\'unité, à la dizaine et à la centaine !'}
-                </p>
-                <p className="text-xl font-bold mt-4">
-                  Score final : {score}/{getCurrentExercises().length}
-                </p>
-              </div>
-            )}
+
+          </div>
+        )}
+
+        {/* Modale de fin d'exercices */}
+        {showCompletionModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-2xl p-8 max-w-md w-full text-center shadow-2xl transform transition-all">
+              {(() => {
+                const totalExercises = getCurrentExercises().length;
+                const percentage = Math.round((finalScore / totalExercises) * 100);
+                const getMessage = () => {
+                  const activities = {
+                    'ranger': 'le rangement',
+                    'encadrer': 'l\'encadrement',
+                    'suites': 'les suites numériques',
+                    'comparer': 'la comparaison',
+                    'encadrer-unites': 'l\'encadrement par unités'
+                  };
+                  const activity = activities[exerciseType];
+                  
+                  if (percentage >= 90) return { title: "🎉 Excellent !", message: `Tu maîtrises parfaitement ${activity} des nombres jusqu'à 1000 !`, emoji: "🎉" };
+                  if (percentage >= 70) return { title: "👏 Bien joué !", message: `Tu sais bien faire ${activity} ! Continue comme ça !`, emoji: "👏" };
+                  if (percentage >= 50) return { title: "👍 C'est un bon début !", message: "Tu progresses bien. Entraîne-toi encore un peu !", emoji: "😊" };
+                  return { title: "💪 Continue à t'entraîner !", message: `Recommence les exercices pour mieux maîtriser ${activity}.`, emoji: "📚" };
+                };
+                const result = getMessage();
+                return (
+                  <>
+                    <div className="text-6xl mb-4">{result.emoji}</div>
+                    <h3 className="text-2xl font-bold text-gray-900 mb-3">{result.title}</h3>
+                    <p className="text-lg text-gray-700 mb-6">{result.message}</p>
+                    <div className="bg-gray-100 rounded-lg p-4 mb-6">
+                      <p className="text-xl font-bold text-gray-900">
+                        Score final : {finalScore}/{totalExercises} ({percentage}%)
+                      </p>
+                    </div>
+                    <div className="flex space-x-3">
+                      <button
+                        onClick={resetAll}
+                        className="flex-1 bg-pink-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-pink-600 transition-colors"
+                      >
+                        Recommencer
+                      </button>
+                      <button
+                        onClick={() => setShowCompletionModal(false)}
+                        className="flex-1 bg-gray-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-gray-600 transition-colors"
+                      >
+                        Fermer
+                      </button>
+                    </div>
+                  </>
+                );
+              })()}
+            </div>
           </div>
         )}
       </div>

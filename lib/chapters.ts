@@ -7,7 +7,12 @@ const hiddenChapters = [
   '5eme-calcul-litteral-expressions-introduction',
   '5eme-calcul-litteral-expressions-regles',
   '5eme-calcul-litteral-factorisation',
-  '5eme-priorites-operations'
+  '5eme-priorites-operations',
+  '4eme-thales-introduction',
+  '4eme-thales-proportionnalite',
+  '4eme-thales-reciproque',
+  '4eme-thales-applications',
+  '4eme-thales-contraposee'
 ];
 
 export const chaptersData: Chapter[] = [
@@ -26,7 +31,8 @@ export const chaptersData: Chapter[] = [
     lessons: [],
     exercises: [],
     isLocked: false,
-    order: 1
+    order: 1,
+    verified: true
   },
   {
     id: 'ce1-fractions-simples',
@@ -62,7 +68,7 @@ export const chaptersData: Chapter[] = [
   },
   {
     id: 'ce1-calcul-mental',
-    title: 'Calcul mental et fluence',
+    title: 'Calcul mental',
     description: 'Automatisation des calculs, stratégies mentales',
     classLevel: 'CE1',
     category: 'numeracy',
@@ -1355,21 +1361,105 @@ export const chaptersData: Chapter[] = [
     parentChapter: '4eme-cosinus'
   },
   {
-    id: '4eme-theoreme-thales-complet',
-    title: 'Théorème de Thalès - Cours complet',
-    description: 'Cours interactif complet avec animations, exercices et applications du théorème de Thalès',
+    id: '4eme-theoreme-thales',
+    title: 'Théorème de Thalès',
+    description: 'Théorème de Thalès et ses applications en géométrie',
     classLevel: '4eme',
     category: 'geometry',
     difficulty: 'intermediate',
     estimatedTime: 85,
     prerequisites: [],
-    color: '#3b82f6',
+    color: '#10b981',
+    icon: '⫽',
+    lessons: [],
+    exercises: [],
+    isLocked: false,
+    order: 55.5
+  },
+  {
+    id: '4eme-thales-introduction',
+    title: 'Introduction et découverte',
+    description: 'Découvrir le théorème de Thalès avec des animations 📐',
+    classLevel: '4eme',
+    category: 'geometry',
+    difficulty: 'beginner',
+    estimatedTime: 15,
+    prerequisites: [],
+    color: '#10b981',
     icon: '📐',
     lessons: [],
     exercises: [],
     isLocked: false,
-    order: 55.5,
-    verified: true
+    order: 55.51,
+    parentChapter: '4eme-theoreme-thales'
+  },
+  {
+    id: '4eme-thales-proportionnalite',
+    title: 'Proportionnalité et calculs',
+    description: 'Calculer des longueurs avec le théorème de Thalès 📏',
+    classLevel: '4eme',
+    category: 'geometry',
+    difficulty: 'intermediate',
+    estimatedTime: 20,
+    prerequisites: ['4eme-thales-introduction'],
+    color: '#10b981',
+    icon: '📏',
+    lessons: [],
+    exercises: [],
+    isLocked: false,
+    order: 55.52,
+    parentChapter: '4eme-theoreme-thales'
+  },
+  {
+    id: '4eme-thales-reciproque',
+    title: 'Réciproque du théorème',
+    description: 'Démontrer le parallélisme avec la réciproque 🔄',
+    classLevel: '4eme',
+    category: 'geometry',
+    difficulty: 'intermediate',
+    estimatedTime: 18,
+    prerequisites: ['4eme-thales-proportionnalite'],
+    color: '#10b981',
+    icon: '🔄',
+    lessons: [],
+    exercises: [],
+    isLocked: false,
+    order: 55.53,
+    parentChapter: '4eme-theoreme-thales'
+  },
+  {
+    id: '4eme-thales-applications',
+    title: 'Applications et problèmes',
+    description: 'Résoudre des problèmes concrets avec Thalès 🏗️',
+    classLevel: '4eme',
+    category: 'geometry',
+    difficulty: 'intermediate',
+    estimatedTime: 22,
+    prerequisites: ['4eme-thales-reciproque'],
+    color: '#10b981',
+    icon: '🏗️',
+    lessons: [],
+    exercises: [],
+    isLocked: false,
+    order: 55.54,
+    parentChapter: '4eme-theoreme-thales'
+  },
+  {
+    id: '4eme-thales-contraposee',
+    title: 'Contraposée et non-parallélisme',
+    description: 'Prouver qu\'il n\'y a pas de parallélisme ❌',
+    classLevel: '4eme',
+    category: 'geometry',
+    difficulty: 'advanced',
+    estimatedTime: 15,
+    prerequisites: ['4eme-thales-applications'],
+    color: '#10b981',
+    icon: '❌',
+    lessons: [],
+    exercises: [],
+    isLocked: false,
+    order: 55.55,
+    parentChapter: '4eme-theoreme-thales'
   },
   {
     id: '4eme-statistiques-avancees',
@@ -1974,9 +2064,11 @@ export const chaptersData: Chapter[] = [
 ];
 
 export const getChaptersByClass = (classLevel: ClassLevel) => {
-  return chaptersData.filter(chapter => 
-    chapter.classLevel === classLevel && !hiddenChapters.includes(chapter.id)
-  );
+  return chaptersData
+    .filter(chapter => 
+      chapter.classLevel === classLevel && !hiddenChapters.includes(chapter.id)
+    )
+    .sort((a, b) => a.order - b.order);
 };
 
 export const getChaptersByCategory = (category: string) => {

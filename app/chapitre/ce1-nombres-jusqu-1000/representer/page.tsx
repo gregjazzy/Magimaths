@@ -42,12 +42,12 @@ export default function RepresenterNombresCE1Page() {
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
   const [showExercises, setShowExercises] = useState(false);
   const [score, setScore] = useState(0);
+  const [answeredCorrectly, setAnsweredCorrectly] = useState<Set<number>>(new Set());
+  const [showCompletionModal, setShowCompletionModal] = useState(false);
+  const [finalScore, setFinalScore] = useState(0);
   
   // États pour l'animation
-  const [animationStep, setAnimationStep] = useState(0);
-  const [isAnimating, setIsAnimating] = useState(false);
-  const [placedNumbers, setPlacedNumbers] = useState<number[]>([]);
-  const [animationStarted, setAnimationStarted] = useState(false);
+  const [selectedNumber, setSelectedNumber] = useState<number | null>(null);
 
   const ranges = {
     '0-100': { min: 0, max: 100, step: 10 },
@@ -102,7 +102,9 @@ export default function RepresenterNombresCE1Page() {
 
   const getPositionPercentage = (value: number, range: string) => {
     const { min, max } = ranges[range as keyof typeof ranges];
-    return ((value - min) / (max - min)) * 100;
+    const percentage = ((value - min) / (max - min)) * 100;
+    // Arrondir à 2 décimales pour plus de précision
+    return Math.round(percentage * 100) / 100;
   };
 
   const getValueFromPosition = (position: number, range: string) => {
@@ -118,17 +120,52 @@ export default function RepresenterNombresCE1Page() {
     setUserPosition(value);
   };
 
-  const checkAnswer = () => {
-    if (userPosition === null) return;
-    
-    const targetNumber = exercises[currentExercise].number;
-    const tolerance = exercises[currentExercise].tolerance;
-    const correct = Math.abs(userPosition - targetNumber) <= tolerance;
-    
-    setIsCorrect(correct);
-    
-    if (correct) {
-      setScore(score + 1);
+  const handleNext = () => {
+    // Si aucune réponse vérifiée encore, on vérifie
+    if (isCorrect === null) {
+      if (userPosition === null) return;
+      
+      const targetNumber = exercises[currentExercise].number;
+      const tolerance = exercises[currentExercise].tolerance;
+      const correct = Math.abs(userPosition - targetNumber) <= tolerance;
+      
+      setIsCorrect(correct);
+      
+      if (correct && !answeredCorrectly.has(currentExercise)) {
+        setScore(prevScore => prevScore + 1);
+        setAnsweredCorrectly(prev => {
+          const newSet = new Set(prev);
+          newSet.add(currentExercise);
+          return newSet;
+        });
+      }
+
+      // Si bonne réponse → passage automatique après 1.5s
+      if (correct) {
+        setTimeout(() => {
+          if (currentExercise + 1 < exercises.length) {
+            setCurrentExercise(Math.min(currentExercise + 1, exercises.length - 1));
+            setUserPosition(null);
+            setIsCorrect(null);
+          } else {
+            // Dernier exercice terminé, afficher la modale
+            setFinalScore(score + (!answeredCorrectly.has(currentExercise) ? 1 : 0));
+            setShowCompletionModal(true);
+          }
+        }, 1500);
+      }
+      // Si mauvaise réponse, on affiche la correction et on attend le clic suivant
+    } else {
+      // Réponse déjà vérifiée, on passe au suivant
+      if (currentExercise + 1 < exercises.length) {
+        setCurrentExercise(Math.min(currentExercise + 1, exercises.length - 1));
+        setUserPosition(null);
+        setIsCorrect(null);
+      } else {
+        // Dernier exercice, afficher la modale
+        setFinalScore(score);
+        setShowCompletionModal(true);
+      }
     }
   };
 
@@ -150,6 +187,9 @@ export default function RepresenterNombresCE1Page() {
     setUserPosition(null);
     setIsCorrect(null);
     setScore(0);
+    setAnsweredCorrectly(new Set());
+    setShowCompletionModal(false);
+    setFinalScore(0);
   };
 
   // Fonctions pour l'animation
@@ -157,42 +197,14 @@ export default function RepresenterNombresCE1Page() {
     return numbersToPlace[selectedRange as keyof typeof numbersToPlace] || [];
   };
 
-  const startAnimation = () => {
-    setAnimationStarted(true);
-    setAnimationStep(0);
-    setPlacedNumbers([]);
-    setIsAnimating(false);
+  const handleNumberClick = (number: number) => {
+    setSelectedNumber(number);
   };
 
-  const nextAnimationStep = () => {
-    const numbers = getCurrentNumbers();
-    
-    if (animationStep < numbers.length && !isAnimating && animationStarted) {
-      setIsAnimating(true);
-      const currentNumber = numbers[animationStep];
-      
-      // Placer immédiatement le nombre sur la droite
-      setPlacedNumbers(prev => [...prev, currentNumber]);
-      
-      // Avancer à l'étape suivante
-      setTimeout(() => {
-        setAnimationStep(animationStep + 1);
-        setIsAnimating(false);
-      }, 800);
-    }
-  };
-
-  const resetAnimation = () => {
-    setAnimationStep(0);
-    setPlacedNumbers([]);
-    setIsAnimating(false);
-    setAnimationStarted(false);
-  };
-
-  // Réinitialiser l'animation quand on change de plage
+  // Réinitialiser la sélection quand on change de plage
   const handleRangeChange = (range: string) => {
     setSelectedRange(range);
-    resetAnimation();
+    setSelectedNumber(null);
   };
 
   return (
@@ -298,76 +310,21 @@ export default function RepresenterNombresCE1Page() {
                 📏 Droite numérique de {selectedRange}
               </h3>
               
-              {/* Contrôles d'animation */}
-              <div className="flex justify-center space-x-4 mb-8">
-                {!animationStarted ? (
-                  <button
-                    onClick={startAnimation}
-                    className="bg-green-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-green-600 transition-colors"
-                  >
-                    🎬 Démarrer l'animation
-                  </button>
-                ) : (
-                  <>
-                    <button
-                      onClick={nextAnimationStep}
-                      disabled={animationStep >= getCurrentNumbers().length || isAnimating}
-                      className="bg-blue-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-blue-600 transition-colors disabled:opacity-50"
-                    >
-                      ➡️ Étape suivante
-                    </button>
-                    <button
-                      onClick={resetAnimation}
-                      className="bg-gray-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-gray-600 transition-colors"
-                    >
-                      🔄 Recommencer
-                    </button>
-                  </>
-                )}
+              {/* Message d'explication */}
+              <div className="text-center mb-6">
+                <div className="bg-yellow-100 rounded-lg p-4 inline-block">
+                  <span className="text-yellow-800 font-bold">
+                    👆 Clique sur un nombre ci-dessous pour le voir sur la droite !
+                  </span>
+                </div>
               </div>
 
-              {/* Indicateur d'étape */}
-              {animationStarted && (
+              {/* Message quand un nombre est sélectionné */}
+              {selectedNumber && getCurrentNumbers().includes(selectedNumber) && (
                 <div className="text-center mb-6">
-                  <div className="bg-blue-100 rounded-lg p-3 inline-block">
-                    <span className="text-blue-800 font-bold">
-                      Étape {animationStep} sur {getCurrentNumbers().length}
-                    </span>
-                    <div className="text-sm mt-1">
-                      Nombres placés : {placedNumbers.length > 0 ? placedNumbers.join(', ') : 'Aucun'}
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Message d'explication */}
-              {!animationStarted && (
-                <div className="text-center mb-6">
-                  <div className="bg-yellow-100 rounded-lg p-4 inline-block">
-                    <span className="text-yellow-800 font-bold">
-                      👆 Clique sur "Démarrer l'animation" pour commencer !
-                    </span>
-                  </div>
-                </div>
-              )}
-
-              {/* Message pour les étapes */}
-              {animationStarted && animationStep < getCurrentNumbers().length && !isAnimating && (
-                <div className="text-center mb-6">
-                  <div className="bg-blue-100 rounded-lg p-4 inline-block">
-                    <span className="text-blue-800 font-bold">
-                      👆 Clique sur "Étape suivante" pour placer le nombre {getCurrentNumbers()[animationStep]} !
-                    </span>
-                  </div>
-                </div>
-              )}
-
-              {/* Message pendant l'animation */}
-              {isAnimating && (
-                <div className="text-center mb-6">
-                  <div className="bg-purple-100 rounded-lg p-4 inline-block animate-pulse">
-                    <span className="text-purple-800 font-bold">
-                      ✨ Le nombre {getCurrentNumbers()[animationStep - 1]} se place sur la droite ! ✨
+                  <div className="bg-green-100 rounded-lg p-4 inline-block">
+                    <span className="text-green-800 font-bold">
+                      ✨ Le nombre {selectedNumber} est maintenant placé sur la droite ! ✨
                     </span>
                   </div>
                 </div>
@@ -385,100 +342,86 @@ export default function RepresenterNombresCE1Page() {
                         className="absolute top-0 transform -translate-x-1/2"
                         style={{ left: `${position}%` }}
                       >
-                        <div className="w-1 h-6 bg-gray-600 -mt-2"></div>
-                        <div className="text-sm font-bold text-gray-700 mt-1 text-center transform -translate-x-1/2">
+                        <div className="w-1 h-6 bg-gray-600 -mt-2 mx-auto"></div>
+                        <div className="text-sm font-bold text-gray-700 mt-1 text-center min-w-max transform -translate-x-1/2">
                           {value}
                         </div>
                       </div>
                     );
                   })}
 
-                  {/* Nombres placés sur la droite */}
-                  {placedNumbers.map((num, index) => {
-                    const isLatestPlaced = index === placedNumbers.length - 1;
-                    const position = getPositionPercentage(num, selectedRange);
-                    return (
-                      <div
-                        key={num}
-                        className={`absolute top-0 transform -translate-x-1/2 ${
-                          isLatestPlaced ? 'highlight-animation' : ''
-                        }`}
-                        style={{ left: `${position}%` }}
-                      >
-                        <div className="w-3 h-10 bg-red-500 rounded -mt-4 shadow-lg"></div>
-                        <div className="text-sm font-bold text-white mt-1 text-center transform -translate-x-1/2 bg-red-500 px-3 py-2 rounded-lg shadow-lg border-2 border-red-300">
-                          {num}
+                  {/* Nombre sélectionné sur la droite */}
+                  {selectedNumber && getCurrentNumbers().includes(selectedNumber) && (
+                    <div
+                      className="absolute top-0 transform -translate-x-1/2 highlight-animation"
+                      style={{ left: `${getPositionPercentage(selectedNumber, selectedRange)}%` }}
+                    >
+                      {/* Carré rouge exactement sur le trait de graduation */}
+                      <div className="w-3 h-6 bg-red-500 rounded -mt-2 mx-auto shadow-lg"></div>
+                      {/* Étiquette avec le nombre au-dessus */}
+                      <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-8">
+                        <div className="text-sm font-bold text-white text-center bg-red-500 px-3 py-2 rounded-lg shadow-lg border-2 border-red-300 min-w-max">
+                          {selectedNumber}
                         </div>
-                        {/* Petit effet de brillance */}
-                        {isLatestPlaced && (
-                          <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -mt-8">
-                            <div className="text-yellow-400 text-xl animate-bounce">✨</div>
-                          </div>
-                        )}
                       </div>
-                    );
-                  })}
+                      {/* Petit effet de brillance */}
+                      <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -mt-12">
+                        <div className="text-yellow-400 text-xl animate-bounce">✨</div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
 
-              {/* Nombres à placer avec animation */}
+              {/* Nombres à cliquer */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-12 relative">
-                {getCurrentNumbers().map((num, index) => {
-                  const isCurrentNumber = index === animationStep && !placedNumbers.includes(num);
-                  const isPlaced = placedNumbers.includes(num);
-                  const isWaiting = index > animationStep;
+                {getCurrentNumbers().map((num) => {
+                  const isSelected = selectedNumber === num;
                   
                   return (
                     <div key={num} className="text-center relative">
-                      <div className={`rounded-lg p-3 mb-2 transition-all duration-500 ${
-                        isCurrentNumber && isAnimating 
-                          ? 'bg-blue-200 transform scale-110 bounce-animation' 
-                          : isCurrentNumber 
-                          ? 'bg-blue-200 transform scale-110 shadow-lg' 
-                          : isPlaced 
-                          ? 'bg-green-200 opacity-70' 
-                          : 'bg-yellow-100'
-                      }`}>
+                      <button
+                        onClick={() => handleNumberClick(num)}
+                        className={`w-full rounded-lg p-3 mb-2 transition-all duration-300 hover:scale-105 ${
+                          isSelected 
+                            ? 'bg-green-200 transform scale-110 shadow-lg border-2 border-green-400' 
+                            : 'bg-yellow-100 hover:bg-yellow-200 border-2 border-transparent'
+                        }`}
+                      >
                         <div className={`text-2xl font-bold transition-colors ${
-                          isCurrentNumber 
-                            ? 'text-blue-800' 
-                            : isPlaced 
+                          isSelected 
                             ? 'text-green-800' 
                             : 'text-yellow-800'
                         }`}>
                           {num}
                         </div>
-                      </div>
+                      </button>
                       
                       <div className="text-sm text-gray-600">
-                        {isPlaced ? '✅ Placé !' : isCurrentNumber ? '👆 En cours' : isWaiting ? '⏳ En attente' : 'À placer'}
+                        {isSelected ? '✅ Sélectionné !' : '👆 Clique pour voir'}
                       </div>
                     </div>
                   );
                 })}
               </div>
 
-              {/* Message de fin */}
-              {animationStarted && placedNumbers.length === getCurrentNumbers().length && placedNumbers.length > 0 && (
-                <div className="mt-8 bg-green-100 rounded-lg p-6 text-center">
-                  <div className="text-4xl mb-3">🎉</div>
-                  <h4 className="text-xl font-bold text-green-800 mb-2">
-                    Félicitations !
-                  </h4>
-                  <p className="text-green-700">
-                    Tous les nombres ont été placés correctement sur la droite numérique !
-                  </p>
-                  <p className="text-green-600 mt-2">
-                    Clique sur "Recommencer" pour refaire l'animation.
-                  </p>
+              {/* Bouton pour effacer */}
+              {selectedNumber && getCurrentNumbers().includes(selectedNumber) && (
+                <div className="mt-8 text-center">
+                  <button
+                    onClick={() => setSelectedNumber(null)}
+                    className="bg-gray-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-gray-600 transition-colors"
+                  >
+                    🔄 Effacer
+                  </button>
                 </div>
               )}
             </div>
 
             {/* Conseils */}
-            <div className="bg-gradient-to-r from-red-400 to-orange-400 rounded-xl p-6 text-white">
-              <h3 className="text-xl font-bold mb-3">💡 Astuces pour placer un nombre</h3>
-              <ul className="space-y-2">
+            <div className="bg-gradient-to-r from-red-600 to-orange-500 rounded-xl p-6 text-white shadow-lg">
+              <h3 className="text-xl font-bold mb-3 text-white">💡 Astuces pour placer un nombre</h3>
+              <ul className="space-y-2 text-white">
                 <li>• Regarde les nombres marqués sur la droite</li>
                 <li>• Trouve entre quels nombres se place ton nombre</li>
                 <li>• S'il est au milieu, place-le au milieu !</li>
@@ -529,13 +472,45 @@ export default function RepresenterNombresCE1Page() {
                 <div className="text-4xl font-bold text-yellow-800 mb-2">
                   {exercises[currentExercise].number}
                 </div>
-                <div className="text-lg text-yellow-700">
+                <div className="text-lg text-yellow-700 mb-2">
                   Clique sur la droite pour placer ce nombre !
+                </div>
+                <div className="text-sm text-yellow-600">
+                  Puis utilise les boutons -1 et +1 pour ajuster précisément 🎯
                 </div>
               </div>
 
               {/* Droite numérique interactive */}
-              <div className="relative mb-8">
+              <div className="relative mb-8 px-16">
+                {/* Boutons d'ajustement */}
+                {userPosition !== null && (
+                  <>
+                    {/* Bouton -1 à gauche */}
+                    <button
+                      onClick={() => setUserPosition(Math.max(
+                        ranges[exercises[currentExercise].range as keyof typeof ranges].min,
+                        userPosition - 1
+                      ))}
+                      className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-orange-500 text-white px-3 py-2 rounded-lg font-bold hover:bg-orange-600 transition-colors text-lg shadow-lg z-10"
+                    >
+                      -1
+                    </button>
+                    
+                    {/* Bouton +1 à droite */}
+                    <button
+                      onClick={() => setUserPosition(Math.min(
+                        ranges[exercises[currentExercise].range as keyof typeof ranges].max,
+                        userPosition + 1
+                      ))}
+                      className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-orange-500 text-white px-3 py-2 rounded-lg font-bold hover:bg-orange-600 transition-colors text-lg shadow-lg z-10"
+                    >
+                      +1
+                    </button>
+                    
+
+                  </>
+                )}
+                
                 <div 
                   className="h-4 bg-gray-300 rounded-full relative cursor-pointer hover:bg-gray-400 transition-colors"
                   onClick={handleLineClick}
@@ -547,8 +522,8 @@ export default function RepresenterNombresCE1Page() {
                       className="absolute top-0 transform -translate-x-1/2"
                       style={{ left: `${getPositionPercentage(value, exercises[currentExercise].range)}%` }}
                     >
-                      <div className="w-1 h-8 bg-gray-600 -mt-2"></div>
-                      <div className="text-sm font-bold text-gray-700 mt-2 text-center transform -translate-x-1/2">
+                      <div className="w-1 h-8 bg-gray-600 -mt-2 mx-auto"></div>
+                      <div className="text-sm font-bold text-gray-700 mt-2 text-center min-w-max transform -translate-x-1/2">
                         {value}
                       </div>
                     </div>
@@ -560,9 +535,13 @@ export default function RepresenterNombresCE1Page() {
                       className="absolute top-0 transform -translate-x-1/2"
                       style={{ left: `${getPositionPercentage(userPosition, exercises[currentExercise].range)}%` }}
                     >
-                      <div className="w-3 h-8 bg-blue-500 rounded -mt-2"></div>
-                      <div className="text-sm font-bold text-blue-700 mt-2 text-center transform -translate-x-1/2 bg-blue-100 px-2 py-1 rounded">
-                        {userPosition}
+                      {/* Carré bleu exactement sur le trait de graduation */}
+                      <div className="w-3 h-8 bg-blue-500 rounded -mt-2 mx-auto shadow-lg"></div>
+                      {/* Étiquette avec le nombre au-dessus */}
+                      <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-8">
+                        <div className="text-sm font-bold text-blue-700 text-center bg-blue-100 px-2 py-1 rounded min-w-max">
+                          {userPosition}
+                        </div>
                       </div>
                     </div>
                   )}
@@ -573,9 +552,13 @@ export default function RepresenterNombresCE1Page() {
                       className="absolute top-0 transform -translate-x-1/2"
                       style={{ left: `${getPositionPercentage(exercises[currentExercise].number, exercises[currentExercise].range)}%` }}
                     >
-                      <div className="w-3 h-8 bg-green-500 rounded -mt-2"></div>
-                      <div className="text-sm font-bold text-green-700 mt-2 text-center transform -translate-x-1/2 bg-green-100 px-2 py-1 rounded">
-                        {exercises[currentExercise].number}
+                      {/* Carré vert exactement sur le trait de graduation */}
+                      <div className="w-3 h-8 bg-green-500 rounded -mt-2 mx-auto shadow-lg"></div>
+                      {/* Étiquette avec le nombre au-dessus */}
+                      <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-8">
+                        <div className="text-sm font-bold text-green-700 text-center bg-green-100 px-2 py-1 rounded min-w-max">
+                          {exercises[currentExercise].number}
+                        </div>
                       </div>
                     </div>
                   )}
@@ -588,19 +571,14 @@ export default function RepresenterNombresCE1Page() {
                     <div className="text-lg font-bold text-blue-800">
                       Tu as placé le nombre à la position : {userPosition}
                     </div>
+                    <div className="text-sm text-gray-600 mt-2">
+                      💡 Utilise les boutons -1/+1 aux extrémités pour ajuster !
+                    </div>
                   </div>
                 </div>
               )}
               
               <div className="flex justify-center space-x-4 mb-6">
-                <button
-                  onClick={checkAnswer}
-                  disabled={userPosition === null}
-                  className="bg-orange-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-orange-600 transition-colors disabled:opacity-50"
-                >
-                  <Target className="inline w-4 h-4 mr-2" />
-                  Vérifier
-                </button>
                 <button
                   onClick={resetExercise}
                   className="bg-gray-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-gray-600 transition-colors"
@@ -642,28 +620,61 @@ export default function RepresenterNombresCE1Page() {
                   ← Précédent
                 </button>
                 <button
-                  onClick={nextExercise}
-                  disabled={currentExercise === exercises.length - 1}
+                  onClick={handleNext}
+                  disabled={userPosition === null && isCorrect === null}
                   className="bg-red-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-red-600 transition-colors disabled:opacity-50"
                 >
-                  Suivant →
+                  <Target className="inline w-4 h-4 mr-2" />
+                  {isCorrect === null ? 'Vérifier' : 'Suivant →'}
                 </button>
               </div>
             </div>
 
-            {/* Félicitations */}
-            {currentExercise === exercises.length - 1 && isCorrect !== null && (
-              <div className="bg-gradient-to-r from-orange-400 to-red-400 rounded-xl p-6 text-white text-center">
-                <div className="text-4xl mb-3">🎉</div>
-                <h3 className="text-2xl font-bold mb-2">Magnifique !</h3>
-                <p className="text-lg">
-                  Tu sais maintenant représenter tous les nombres jusqu'à 1000 sur une droite !
-                </p>
-                <p className="text-xl font-bold mt-4">
-                  Score final : {score}/{exercises.length}
-                </p>
-              </div>
-            )}
+
+          </div>
+        )}
+
+        {/* Modale de fin d'exercices */}
+        {showCompletionModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-2xl p-8 max-w-md w-full text-center shadow-2xl transform transition-all">
+              {(() => {
+                const percentage = Math.round((finalScore / exercises.length) * 100);
+                const getMessage = () => {
+                  if (percentage >= 90) return { title: "🎉 Excellent !", message: "Tu maîtrises parfaitement la représentation des nombres sur une droite !", emoji: "🎉" };
+                  if (percentage >= 70) return { title: "👏 Bien joué !", message: "Tu sais bien placer les nombres ! Continue comme ça !", emoji: "👏" };
+                  if (percentage >= 50) return { title: "👍 C'est un bon début !", message: "Tu progresses bien. Entraîne-toi encore un peu !", emoji: "😊" };
+                  return { title: "💪 Continue à t'entraîner !", message: "Recommence les exercices pour mieux maîtriser la représentation des nombres.", emoji: "📚" };
+                };
+                const result = getMessage();
+                return (
+                  <>
+                    <div className="text-6xl mb-4">{result.emoji}</div>
+                    <h3 className="text-2xl font-bold text-gray-900 mb-3">{result.title}</h3>
+                    <p className="text-lg text-gray-700 mb-6">{result.message}</p>
+                    <div className="bg-gray-100 rounded-lg p-4 mb-6">
+                      <p className="text-xl font-bold text-gray-900">
+                        Score final : {finalScore}/{exercises.length} ({percentage}%)
+                      </p>
+                    </div>
+                    <div className="flex space-x-3">
+                      <button
+                        onClick={resetAll}
+                        className="flex-1 bg-red-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-red-600 transition-colors"
+                      >
+                        Recommencer
+                      </button>
+                      <button
+                        onClick={() => setShowCompletionModal(false)}
+                        className="flex-1 bg-gray-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-gray-600 transition-colors"
+                      >
+                        Fermer
+                      </button>
+                    </div>
+                  </>
+                );
+              })()}
+            </div>
           </div>
         )}
       </div>

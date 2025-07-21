@@ -12,6 +12,34 @@ export default function ThalesProportionnalitePage() {
   const [showAnswer, setShowAnswer] = useState(false)
   const [score, setScore] = useState(0)
   const [answerFeedback, setAnswerFeedback] = useState<'correct' | 'incorrect' | null>(null)
+  
+  // États pour l'animation de calcul
+  const [calcStep, setCalcStep] = useState(0)
+  const [searchingFor, setSearchingFor] = useState<string>('AM')
+  const [isCalculating, setIsCalculating] = useState(false)
+
+  // Fonctions pour l'animation de calcul
+  const startCalculation = (target: string) => {
+    setSearchingFor(target)
+    setIsCalculating(true)
+    setCalcStep(0)
+    
+    // Animation en étapes
+    setTimeout(() => setCalcStep(1), 500)  // Montrer les 3 égalités
+    setTimeout(() => setCalcStep(2), 1500) // Sélectionner les 2 bonnes égalités
+    setTimeout(() => setCalcStep(3), 2500) // Montrer le calcul
+    setTimeout(() => setCalcStep(4), 3500) // Montrer le résultat
+    setTimeout(() => {
+      setCalcStep(0)
+      setIsCalculating(false)
+    }, 5000) // Reset
+  }
+
+  const resetCalculation = () => {
+    setCalcStep(0)
+    setIsCalculating(false)
+    setSearchingFor('AM')
+  }
 
   const exercises = [
     // Niveau 1-5 : Calculs simples avec rapports entiers
@@ -193,138 +221,210 @@ export default function ThalesProportionnalitePage() {
         {activeTab === 'cours' ? (
           /* COURS */
           <div className="space-y-8">
-            {/* Section 1: Les calculs avec Thalès */}
+            {/* Section 1: Comment trouver la longueur manquante dans un exercice */}
             <div className="bg-white/90 backdrop-blur-sm rounded-3xl p-8 shadow-xl border border-white/20">
-              <h2 className="text-2xl font-bold text-blue-800 mb-6 flex items-center">
-                <span className="bg-blue-100 p-2 rounded-lg mr-3">🧮</span>
-                Comment calculer avec Thalès ?
+              <h2 className="text-2xl font-bold text-teal-800 mb-6 flex items-center">
+                <span className="bg-teal-100 p-2 rounded-lg mr-3">🎯</span>
+                Comment trouver la longueur manquante dans un exercice
               </h2>
-              
-              <div className="grid md:grid-cols-2 gap-8">
-                <div>
-                  <h3 className="text-xl font-bold text-blue-800 mb-4">Les trois égalités</h3>
-                  <div className="space-y-4">
-                    <div className="bg-blue-50 p-4 rounded-lg">
-                      <h4 className="font-bold text-blue-800 mb-2">Formule de base</h4>
-                      <div className="text-center text-lg font-bold text-blue-600">
-                        AM/AB = AN/AC = MN/BC
-                      </div>
-                    </div>
-                    <div className="bg-cyan-50 p-4 rounded-lg">
-                      <h4 className="font-bold text-cyan-800 mb-2">Ce qu'on peut calculer</h4>
-                      <ul className="text-cyan-700 space-y-1">
-                        <li>• Une longueur manquante</li>
-                        <li>• Un rapport de proportionnalité</li>
-                        <li>• Vérifier une configuration</li>
-                      </ul>
-                    </div>
-                    <div className="bg-teal-50 p-4 rounded-lg">
-                      <h4 className="font-bold text-teal-800 mb-2">Méthode générale</h4>
-                      <ol className="text-teal-700 space-y-1">
-                        <li>1. Identifier la configuration</li>
-                        <li>2. Écrire l'égalité utile</li>
-                        <li>3. Remplacer les valeurs</li>
-                        <li>4. Résoudre l'équation</li>
-                      </ol>
-                    </div>
+
+              {/* Étape 1: Choix de la valeur à chercher */}
+              <div className="bg-gradient-to-r from-blue-50 to-teal-50 p-6 rounded-2xl mb-6">
+                <div className="text-center mb-6">
+                  <h3 className="text-xl font-bold text-teal-800 mb-4">🎯 Quelle longueur voulez-vous calculer ?</h3>
+                  <div className="flex flex-wrap justify-center gap-3">
+                    {['AM', 'AB', 'AN', 'AC', 'MN', 'BC'].map((target) => (
+                      <button
+                        key={target}
+                        onClick={() => startCalculation(target)}
+                        disabled={isCalculating}
+                        className={`px-4 py-2 rounded-lg font-bold transition-all ${
+                          searchingFor === target && isCalculating
+                            ? 'bg-orange-500 text-white'
+                            : 'bg-white text-teal-800 hover:bg-teal-100'
+                        } border-2 border-teal-200`}
+                      >
+                        {target}
+                      </button>
+                    ))}
                   </div>
                 </div>
-                
-                <div className="flex flex-col justify-center">
-                  <div className="bg-gradient-to-br from-blue-100 to-cyan-100 p-6 rounded-2xl">
-                    <h3 className="text-lg font-bold text-blue-800 mb-4 text-center">Exemple concret</h3>
-                    <div className="space-y-3">
-                      <div className="bg-white p-3 rounded-lg">
-                        <span className="text-sm text-gray-600">Données :</span>
-                        <span className="ml-2">AM = 6, AB = 9, AN = 8</span>
-                      </div>
-                      <div className="bg-white p-3 rounded-lg">
-                        <span className="text-sm text-gray-600">Cherché :</span>
-                        <span className="ml-2">AC = ?</span>
-                      </div>
-                      <div className="bg-white p-3 rounded-lg">
-                        <span className="text-sm text-gray-600">Égalité :</span>
-                        <span className="ml-2">AM/AB = AN/AC</span>
-                      </div>
-                      <div className="bg-white p-3 rounded-lg">
-                        <span className="text-sm text-gray-600">Calcul :</span>
-                        <span className="ml-2">6/9 = 8/AC</span>
-                      </div>
-                      <div className="bg-blue-50 p-3 rounded-lg">
-                        <span className="text-sm text-gray-600">Résultat :</span>
-                        <span className="font-bold text-blue-600 ml-2">AC = 12</span>
+
+                {/* Animation des calculs */}
+                {isCalculating && (
+                  <div className="space-y-6">
+                    {/* Étape 1: Les 3 égalités */}
+                    <div className={`transition-all duration-500 ${calcStep >= 1 ? 'opacity-100' : 'opacity-30'}`}>
+                      <h4 className="text-lg font-bold text-teal-700 mb-4 text-center">
+                        📝 Étape 1 : Les 3 égalités de Thalès
+                      </h4>
+                      <div className="bg-white/80 p-4 rounded-lg">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+                          {/* Égalité 1 */}
+                          <div className={`p-4 rounded-lg transition-all duration-500 ${
+                            calcStep >= 2 && (
+                              (searchingFor === 'AM' && ['AB', 'AN', 'AC'].some(x => ['AB', 'AN', 'AC'].includes(x))) ||
+                              (searchingFor === 'AB' && ['AM', 'AN', 'AC'].some(x => ['AM', 'AN', 'AC'].includes(x))) ||
+                              (['AN', 'AC'].includes(searchingFor))
+                            ) ? 'bg-green-100 border-2 border-green-400' : 'bg-gray-100'
+                          }`}>
+                            <div className="flex flex-col items-center text-lg font-bold text-gray-800">
+                              <div className="pb-1 border-b-2 border-gray-800">AM</div>
+                              <div className="pt-1">AB</div>
+                            </div>
+                            <div className="text-2xl font-bold text-gray-800 my-2">=</div>
+                            <div className="flex flex-col items-center text-lg font-bold text-gray-800">
+                              <div className="pb-1 border-b-2 border-gray-800">AN</div>
+                              <div className="pt-1">AC</div>
+                            </div>
+                          </div>
+
+                          {/* Égalité 2 */}
+                          <div className={`p-4 rounded-lg transition-all duration-500 ${
+                            calcStep >= 2 && (
+                              (searchingFor === 'AM' && ['AB', 'MN', 'BC'].some(x => ['AB', 'MN', 'BC'].includes(x))) ||
+                              (searchingFor === 'AB' && ['AM', 'MN', 'BC'].some(x => ['AM', 'MN', 'BC'].includes(x))) ||
+                              (['MN', 'BC'].includes(searchingFor))
+                            ) ? 'bg-green-100 border-2 border-green-400' : 'bg-gray-100'
+                          }`}>
+                            <div className="flex flex-col items-center text-lg font-bold text-gray-800">
+                              <div className="pb-1 border-b-2 border-gray-800">AM</div>
+                              <div className="pt-1">AB</div>
+                            </div>
+                            <div className="text-2xl font-bold text-gray-800 my-2">=</div>
+                            <div className="flex flex-col items-center text-lg font-bold text-gray-800">
+                              <div className="pb-1 border-b-2 border-gray-800">MN</div>
+                              <div className="pt-1">BC</div>
+                            </div>
+                          </div>
+
+                          {/* Égalité 3 */}
+                          <div className={`p-4 rounded-lg transition-all duration-500 ${
+                            calcStep >= 2 && (
+                              (['AN', 'AC', 'MN', 'BC'].includes(searchingFor))
+                            ) ? 'bg-green-100 border-2 border-green-400' : 'bg-gray-100'
+                          }`}>
+                            <div className="flex flex-col items-center text-lg font-bold text-gray-800">
+                              <div className="pb-1 border-b-2 border-gray-800">AN</div>
+                              <div className="pt-1">AC</div>
+                            </div>
+                            <div className="text-2xl font-bold text-gray-800 my-2">=</div>
+                            <div className="flex flex-col items-center text-lg font-bold text-gray-800">
+                              <div className="pb-1 border-b-2 border-gray-800">MN</div>
+                              <div className="pt-1">BC</div>
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     </div>
+
+                    {/* Étape 2: Sélection des bonnes égalités */}
+                    {calcStep >= 2 && (
+                      <div className="bg-yellow-50 p-6 rounded-lg border-2 border-yellow-300">
+                        <h4 className="text-lg font-bold text-yellow-800 mb-4 text-center">
+                          ✅ Étape 2 : Je choisis les 2 égalités qui contiennent {searchingFor}
+                        </h4>
+                        <p className="text-center text-yellow-700">
+                          Les égalités surlignées en vert sont celles qui nous servent pour calculer <strong>{searchingFor}</strong>
+                        </p>
+                      </div>
+                    )}
+
+                    {/* Étape 3: Calcul */}
+                    {calcStep >= 3 && (
+                      <div className="bg-blue-50 p-6 rounded-lg border-2 border-blue-300">
+                        <h4 className="text-lg font-bold text-blue-800 mb-4 text-center">
+                          🧮 Étape 3 : Je fais le calcul
+                        </h4>
+                        <div className="text-center">
+                          <div className="bg-white p-4 rounded-lg inline-block">
+                            <div className="text-lg">
+                              {searchingFor === 'AM' && (
+                                <div>
+                                  <span className="text-orange-600 font-bold">{searchingFor}</span> = AB × AN ÷ AC<br/>
+                                  <span className="text-orange-600 font-bold">{searchingFor}</span> = 8 × 6 ÷ 12 = <span className="text-green-600 font-bold">4 cm</span>
+                                </div>
+                              )}
+                              {searchingFor === 'AB' && (
+                                <div>
+                                  <span className="text-orange-600 font-bold">{searchingFor}</span> = AM × AC ÷ AN<br/>
+                                  <span className="text-orange-600 font-bold">{searchingFor}</span> = 4 × 12 ÷ 6 = <span className="text-green-600 font-bold">8 cm</span>
+                                </div>
+                              )}
+                              {searchingFor === 'AN' && (
+                                <div>
+                                  <span className="text-orange-600 font-bold">{searchingFor}</span> = AM × AC ÷ AB<br/>
+                                  <span className="text-orange-600 font-bold">{searchingFor}</span> = 4 × 12 ÷ 8 = <span className="text-green-600 font-bold">6 cm</span>
+                                </div>
+                              )}
+                              {searchingFor === 'AC' && (
+                                <div>
+                                  <span className="text-orange-600 font-bold">{searchingFor}</span> = AB × AN ÷ AM<br/>
+                                  <span className="text-orange-600 font-bold">{searchingFor}</span> = 8 × 6 ÷ 4 = <span className="text-green-600 font-bold">12 cm</span>
+                                </div>
+                              )}
+                              {searchingFor === 'MN' && (
+                                <div>
+                                  <span className="text-orange-600 font-bold">{searchingFor}</span> = AM × BC ÷ AB<br/>
+                                  <span className="text-orange-600 font-bold">{searchingFor}</span> = 4 × 9 ÷ 8 = <span className="text-green-600 font-bold">4,5 cm</span>
+                                </div>
+                              )}
+                              {searchingFor === 'BC' && (
+                                <div>
+                                  <span className="text-orange-600 font-bold">{searchingFor}</span> = AB × MN ÷ AM<br/>
+                                  <span className="text-orange-600 font-bold">{searchingFor}</span> = 8 × 4,5 ÷ 4 = <span className="text-green-600 font-bold">9 cm</span>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Étape 4: Résultat */}
+                    {calcStep >= 4 && (
+                      <div className="bg-green-50 p-6 rounded-lg border-2 border-green-400 text-center">
+                        <h4 className="text-xl font-bold text-green-800 mb-2">
+                          🎉 Résultat final
+                        </h4>
+                        <div className="text-2xl font-bold text-green-600">
+                          {searchingFor} = {
+                            searchingFor === 'AM' ? '4 cm' :
+                            searchingFor === 'AB' ? '8 cm' :
+                            searchingFor === 'AN' ? '6 cm' :
+                            searchingFor === 'AC' ? '12 cm' :
+                            searchingFor === 'MN' ? '4,5 cm' :
+                            '9 cm'
+                          }
+                        </div>
+                      </div>
+                    )}
                   </div>
+                )}
+
+                {/* Bouton Reset */}
+                {!isCalculating && calcStep === 0 && (
+                  <div className="text-center">
+                    <p className="text-gray-600 italic">👆 Cliquez sur une longueur pour voir comment la calculer</p>
+                  </div>
+                )}
+              </div>
+
+              {/* Règle générale */}
+              <div className="bg-gradient-to-r from-purple-50 to-pink-50 p-6 rounded-2xl">
+                <h3 className="text-xl font-bold text-purple-800 mb-4 text-center">💡 Règle à retenir</h3>
+                <div className="bg-white/80 p-4 rounded-lg text-center">
+                  <p className="text-purple-700 font-medium">
+                    Pour calculer une longueur avec Thalès :<br/>
+                    <span className="font-bold">1️⃣</span> Je choisis <strong>2 égalités parmi les 3</strong> qui contiennent ma longueur inconnue<br/>
+                    <span className="font-bold">2️⃣</span> Si elle est <strong>en haut</strong> : je multiplie en croix et je divise<br/>
+                    <span className="font-bold">3️⃣</span> Si elle est <strong>en bas</strong> : je multiplie en croix et je divise
+                  </p>
                 </div>
               </div>
             </div>
 
-            {/* Section 2: Types de calculs */}
-            <div className="bg-white/90 backdrop-blur-sm rounded-3xl p-8 shadow-xl border border-white/20">
-              <h2 className="text-2xl font-bold text-cyan-800 mb-6 flex items-center">
-                <span className="bg-cyan-100 p-2 rounded-lg mr-3">📐</span>
-                Types de calculs possibles
-              </h2>
-              
-              <div className="grid md:grid-cols-3 gap-6">
-                <div className="bg-gradient-to-br from-blue-100 to-cyan-100 p-6 rounded-2xl">
-                  <h3 className="text-lg font-bold text-blue-800 mb-3">Type 1 : Longueur sur un côté</h3>
-                  <div className="space-y-2 text-sm">
-                    <div className="bg-white p-3 rounded-lg">
-                      <div className="font-bold text-blue-700">Connu :</div>
-                      <div>AM, AB, AN</div>
-                    </div>
-                    <div className="bg-blue-50 p-3 rounded-lg">
-                      <div className="font-bold text-blue-700">Cherché :</div>
-                      <div>AC</div>
-                    </div>
-                    <div className="bg-cyan-50 p-3 rounded-lg">
-                      <div className="font-bold text-cyan-700">Formule :</div>
-                      <div>AM/AB = AN/AC</div>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="bg-gradient-to-br from-cyan-100 to-teal-100 p-6 rounded-2xl">
-                  <h3 className="text-lg font-bold text-cyan-800 mb-3">Type 2 : Longueur parallèle</h3>
-                  <div className="space-y-2 text-sm">
-                    <div className="bg-white p-3 rounded-lg">
-                      <div className="font-bold text-cyan-700">Connu :</div>
-                      <div>AM, AB, BC</div>
-                    </div>
-                    <div className="bg-cyan-50 p-3 rounded-lg">
-                      <div className="font-bold text-cyan-700">Cherché :</div>
-                      <div>MN</div>
-                    </div>
-                    <div className="bg-teal-50 p-3 rounded-lg">
-                      <div className="font-bold text-teal-700">Formule :</div>
-                      <div>AM/AB = MN/BC</div>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="bg-gradient-to-br from-teal-100 to-green-100 p-6 rounded-2xl">
-                  <h3 className="text-lg font-bold text-teal-800 mb-3">Type 3 : Rapport vérifié</h3>
-                  <div className="space-y-2 text-sm">
-                    <div className="bg-white p-3 rounded-lg">
-                      <div className="font-bold text-teal-700">Connu :</div>
-                      <div>Toutes les longueurs</div>
-                    </div>
-                    <div className="bg-teal-50 p-3 rounded-lg">
-                      <div className="font-bold text-teal-700">Cherché :</div>
-                      <div>Vérification</div>
-                    </div>
-                    <div className="bg-green-50 p-3 rounded-lg">
-                      <div className="font-bold text-green-700">Test :</div>
-                      <div>AM/AB = AN/AC ?</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Section 3: Méthode pas à pas */}
+            {/* Section 2: Méthode pas à pas */}
             <div className="bg-white/90 backdrop-blur-sm rounded-3xl p-8 shadow-xl border border-white/20">
               <h2 className="text-2xl font-bold text-teal-800 mb-6 flex items-center">
                 <span className="bg-teal-100 p-2 rounded-lg mr-3">🎯</span>
@@ -400,55 +500,7 @@ export default function ThalesProportionnalitePage() {
               </div>
             </div>
 
-            {/* Section 4: Conseils et astuces */}
-            <div className="bg-white/90 backdrop-blur-sm rounded-3xl p-8 shadow-xl border border-white/20">
-              <h2 className="text-2xl font-bold text-green-800 mb-6 flex items-center">
-                <span className="bg-green-100 p-2 rounded-lg mr-3">💡</span>
-                Conseils et astuces
-              </h2>
-              
-              <div className="grid md:grid-cols-2 gap-6">
-                <div className="space-y-4">
-                  <div className="bg-green-50 p-4 rounded-lg">
-                    <h4 className="font-bold text-green-800 mb-2">✅ Bonnes pratiques</h4>
-                    <ul className="text-green-700 space-y-1 text-sm">
-                      <li>• Toujours vérifier la configuration parallèle</li>
-                      <li>• Faire un schéma avec les points nommés</li>
-                      <li>• Calculer AB = AM + MB si nécessaire</li>
-                      <li>• Vérifier le résultat par un autre rapport</li>
-                    </ul>
-                  </div>
-                  
-                  <div className="bg-amber-50 p-4 rounded-lg">
-                    <h4 className="font-bold text-amber-800 mb-2">⚠️ Pièges à éviter</h4>
-                    <ul className="text-amber-700 space-y-1 text-sm">
-                      <li>• Confondre AM et MB</li>
-                      <li>• Oublier de vérifier le parallélisme</li>
-                      <li>• Inverser les rapports</li>
-                      <li>• Ne pas simplifier les fractions</li>
-                    </ul>
-                  </div>
-                </div>
-                
-                <div className="bg-gradient-to-br from-green-100 to-emerald-100 p-6 rounded-2xl">
-                  <h3 className="text-lg font-bold text-green-800 mb-4">Raccourcis utiles</h3>
-                  <div className="space-y-3">
-                    <div className="bg-white p-3 rounded-lg">
-                      <div className="font-bold text-green-700">Rapport 1/2 :</div>
-                      <div className="text-sm text-green-600">M est le milieu de [AB]</div>
-                    </div>
-                    <div className="bg-white p-3 rounded-lg">
-                      <div className="font-bold text-green-700">Rapport 1/3 :</div>
-                      <div className="text-sm text-green-600">M est au tiers de [AB]</div>
-                    </div>
-                    <div className="bg-white p-3 rounded-lg">
-                      <div className="font-bold text-green-700">Rapport 2/3 :</div>
-                      <div className="text-sm text-green-600">M est aux 2/3 de [AB]</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+
           </div>
         ) : (
           /* EXERCICES */

@@ -4,69 +4,79 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, BookOpen, Eye, Edit, Grid, Target, Trophy, Clock, Play } from 'lucide-react';
 
-export default function CE1NombresJusqu1000Page() {
+export default function CE1FractionsSimples() {
   const [completedSections, setCompletedSections] = useState<string[]>([]);
   const [xpEarned, setXpEarned] = useState(0);
 
   const sections = [
     {
-      id: 'lire',
-      title: 'Lire un nombre',
-      description: 'Apprendre à lire les nombres jusqu\'à 1000',
-      icon: '👁️',
+      id: 'partage-partage',
+      title: 'Partage équitable',
+      description: 'Apprendre à partager en parts égales',
+      icon: '🍰',
       duration: '8 min',
       xp: 10,
-      color: 'from-green-500 to-emerald-500',
+      color: 'from-pink-500 to-rose-500',
       verified: true
     },
     {
-      id: 'ecrire',
-      title: 'Écrire un nombre',
-      description: 'Écrire les nombres en chiffres',
-      icon: '✏️',
-      duration: '10 min',
-      xp: 15,
+      id: 'vocabulaire',
+      title: 'Vocabulaire des fractions',
+      description: 'Moitié, tiers, quart...',
+      icon: '💬',
+      duration: '6 min',
+      xp: 8,
       color: 'from-blue-500 to-cyan-500',
       verified: true
     },
     {
-      id: 'decomposition',
-      title: 'Décomposer un nombre',
-      description: 'Séparer centaines, dizaines, unités',
-      icon: '🧩',
+      id: 'reconnaissance',
+      title: 'Reconnaître les fractions',
+      description: 'Identifier une fraction sur un dessin',
+      icon: '👁️',
+      duration: '10 min',
+      xp: 12,
+      color: 'from-green-500 to-emerald-500',
+      verified: true
+    },
+    {
+      id: 'ecriture',
+      title: 'Écrire les fractions',
+      description: 'Apprendre à écrire 1/2, 1/3, 1/4...',
+      icon: '✏️',
       duration: '8 min',
       xp: 10,
       color: 'from-purple-500 to-violet-500',
       verified: true
     },
     {
-      id: 'representer',
-      title: 'Représenter un nombre',
-      description: 'Placer sur une droite numérique',
-      icon: '📏',
+      id: 'comparaison',
+      title: 'Comparer les fractions',
+      description: 'Quelle fraction est plus grande ?',
+      icon: '⚖️',
       duration: '10 min',
-      xp: 15,
-      color: 'from-orange-500 to-red-500',
+      xp: 12,
+      color: 'from-yellow-500 to-orange-500',
       verified: true
     },
     {
-      id: 'ordonner',
-      title: 'Ordonner les nombres',
-      description: 'Comparer et ranger les nombres',
-      icon: '🔢',
+      id: 'addition',
+      title: 'Additionner des fractions',
+      description: 'Premières additions simples',
+      icon: '➕',
       duration: '12 min',
       xp: 15,
-      color: 'from-pink-500 to-rose-500',
+      color: 'from-red-500 to-pink-500',
       verified: true
     }
   ];
 
   const getSectionPath = (sectionId: string) => {
-    return `/chapitre/ce1-nombres-jusqu-1000/${sectionId}`;
+    return `/chapitre/ce1-fractions-simples/${sectionId}`;
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-yellow-50 to-orange-100">
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-yellow-100">
       <div className="max-w-6xl mx-auto px-4 py-8">
         {/* Header simple */}
         <div className="mb-8">
@@ -77,13 +87,13 @@ export default function CE1NombresJusqu1000Page() {
           
           <div className="bg-white rounded-xl p-6 shadow-lg text-center">
             <h1 className="text-4xl font-bold text-gray-900 mb-4">
-              🔢 Les nombres jusqu'à 1000 !
+              🍰 Premières fractions !
             </h1>
             <p className="text-lg text-gray-600 mb-6">
-              Découvre les nombres de 0 à 1000 et apprends à les maîtriser !
+              Découvre les fractions simples : moitiés, tiers, quarts...
             </p>
             <div className="text-xl mb-6">
-              <span className="bg-yellow-200 px-4 py-2 rounded-full font-bold text-gray-800">
+              <span className="bg-orange-200 px-4 py-2 rounded-full font-bold text-gray-800">
                 {xpEarned} XP gagné !
               </span>
             </div>
@@ -91,13 +101,13 @@ export default function CE1NombresJusqu1000Page() {
         </div>
 
         {/* Introduction ludique */}
-        <div className="bg-gradient-to-r from-blue-400 to-purple-500 rounded-xl p-6 mb-8 text-white">
+        <div className="bg-gradient-to-r from-orange-400 to-red-500 rounded-xl p-6 mb-8 text-white">
           <div className="flex items-center justify-center space-x-4">
             <div className="text-6xl">🎯</div>
             <div>
               <h2 className="text-2xl font-bold mb-2">Objectif du chapitre</h2>
               <p className="text-lg">
-                À la fin de ce chapitre, tu sauras lire, écrire et comprendre tous les nombres de 0 à 1000 !
+                À la fin de ce chapitre, tu sauras partager équitablement et comprendre les premières fractions !
               </p>
             </div>
           </div>
@@ -164,7 +174,7 @@ export default function CE1NombresJusqu1000Page() {
               <div className="text-sm text-gray-600">Sections au total</div>
             </div>
             <div className="text-center">
-              <div className="text-3xl font-bold text-yellow-600">{xpEarned}</div>
+              <div className="text-3xl font-bold text-orange-600">{xpEarned}</div>
               <div className="text-sm text-gray-600">Points d'expérience</div>
             </div>
           </div>
@@ -173,7 +183,7 @@ export default function CE1NombresJusqu1000Page() {
           <div className="mt-4">
             <div className="bg-gray-200 rounded-full h-3">
               <div 
-                className="bg-gradient-to-r from-green-400 to-blue-500 h-3 rounded-full transition-all duration-500"
+                className="bg-gradient-to-r from-orange-400 to-red-500 h-3 rounded-full transition-all duration-500"
                 style={{ width: `${(completedSections.length / sections.length) * 100}%` }}
               ></div>
             </div>
@@ -185,13 +195,13 @@ export default function CE1NombresJusqu1000Page() {
 
         {/* Encouragements */}
         <div className="mt-8 text-center">
-          <div className="bg-gradient-to-r from-pink-400 to-red-400 rounded-xl p-6 text-white">
+          <div className="bg-gradient-to-r from-orange-400 to-red-400 rounded-xl p-6 text-white">
             <div className="text-4xl mb-3">🌟</div>
             <h3 className="text-xl font-bold mb-2">Bravo petit mathématicien !</h3>
             <p className="text-lg">
-              {completedSections.length === 0 && "Commence ton aventure avec les nombres !"}
+              {completedSections.length === 0 && "Commence ton aventure avec les fractions !"}
               {completedSections.length > 0 && completedSections.length < sections.length && "Continue, tu fais du super travail !"}
-              {completedSections.length === sections.length && "Félicitations ! Tu maîtrises les nombres jusqu'à 1000 !"}
+              {completedSections.length === sections.length && "Félicitations ! Tu maîtrises les premières fractions !"}
             </p>
           </div>
         </div>
