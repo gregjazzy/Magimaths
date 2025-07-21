@@ -271,20 +271,20 @@ export default function ComplementsA10Page() {
         </div>
       )}
       
-      <div className="max-w-6xl mx-auto px-4 py-8">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
         {/* Header */}
-        <div className="mb-8">
-          <Link href="/chapitre/ce1-calcul-mental" className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors mb-4">
-            <ArrowLeft className="w-4 h-4" />
-            <span>Retour au calcul mental</span>
+        <div className="mb-6 sm:mb-8">
+          <Link href="/chapitre/ce1-calcul-mental" className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors mb-4 touch-manipulation">
+            <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />
+            <span className="text-sm sm:text-base">Retour au calcul mental</span>
           </Link>
           
-          <div className="bg-white rounded-xl p-6 shadow-lg text-center">
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">
-              🎯 Compléments à 10
+          <div className="bg-white rounded-xl p-4 sm:p-6 shadow-lg text-center">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-2 sm:mb-4">
+              🔟 Compléments à 10
             </h1>
-            <p className="text-lg text-gray-600">
-              Découvre ce qui manque pour arriver à 10 !
+            <p className="text-gray-600 text-base sm:text-lg">
+              Apprends les compléments pour faire 10 !
             </p>
           </div>
         </div>
@@ -545,26 +545,26 @@ export default function ComplementsA10Page() {
               
               <div className="flex justify-center space-x-4 mb-6">
                 {isCorrect === null ? (
-                  <>
+                  <div className="flex flex-col sm:flex-row gap-3 justify-center">
                     <button
                       onClick={checkAnswer}
                       disabled={!userAnswer.trim()}
-                      className="bg-blue-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-blue-600 transition-colors disabled:opacity-50"
+                      className="bg-blue-500 text-white px-6 py-4 sm:py-3 rounded-lg font-bold hover:bg-blue-600 transition-colors disabled:opacity-50 touch-manipulation min-h-[44px] w-full sm:w-auto"
                     >
                       <Target className="inline w-4 h-4 mr-2" />
                       Vérifier
                     </button>
                     <button
                       onClick={resetExercise}
-                      className="bg-gray-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-gray-600 transition-colors"
+                      className="bg-gray-500 text-white px-6 py-4 sm:py-3 rounded-lg font-bold hover:bg-gray-600 transition-colors touch-manipulation min-h-[44px] w-full sm:w-auto"
                     >
                       Effacer
                     </button>
-                  </>
+                  </div>
                 ) : !isCorrect ? (
                   <button
                     onClick={nextExercise}
-                    className="bg-teal-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-teal-600 transition-colors"
+                    className="bg-teal-500 text-white px-6 py-4 sm:py-3 rounded-lg font-bold hover:bg-teal-600 transition-colors touch-manipulation min-h-[44px] w-full sm:w-auto max-w-xs mx-auto"
                   >
                     Suivant →
                   </button>

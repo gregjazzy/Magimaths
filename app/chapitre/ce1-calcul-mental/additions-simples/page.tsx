@@ -228,47 +228,49 @@ export default function AdditionsSimplesPage() {
         </div>
       )}
       
-      <div className="max-w-6xl mx-auto px-4 py-8">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
         {/* Header */}
-        <div className="mb-8">
-          <Link href="/chapitre/ce1-calcul-mental" className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors mb-4">
-            <ArrowLeft className="w-4 h-4" />
-            <span>Retour au calcul mental</span>
+        <div className="mb-6 sm:mb-8">
+          <Link href="/chapitre/ce1-calcul-mental" className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors mb-4 touch-manipulation">
+            <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />
+            <span className="text-sm sm:text-base">Retour au calcul mental</span>
           </Link>
           
-          <div className="bg-white rounded-xl p-6 shadow-lg text-center">
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">
-              🧮 Additions simples
+          <div className="bg-white rounded-xl p-4 sm:p-6 shadow-lg text-center">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-2 sm:mb-4">
+              ➕ Additions simples
             </h1>
-            <p className="text-lg text-gray-600">
-              Calcule rapidement et deviens un as de l'addition !
+            <p className="text-gray-600 text-base sm:text-lg">
+              Maîtrise les additions rapides !
             </p>
           </div>
         </div>
 
         {/* Navigation entre cours et exercices */}
-        <div className="flex justify-center mb-8">
-          <div className="bg-white rounded-lg p-1 shadow-md">
-            <button
-              onClick={() => setShowExercises(false)}
-              className={`px-6 py-3 rounded-lg font-bold transition-all ${
-                !showExercises 
-                  ? 'bg-orange-500 text-white shadow-md' 
-                  : 'text-gray-600 hover:bg-gray-100'
-              }`}
-            >
-              📖 Cours
-            </button>
-            <button
-              onClick={() => setShowExercises(true)}
-              className={`px-6 py-3 rounded-lg font-bold transition-all ${
-                showExercises 
-                  ? 'bg-red-500 text-white shadow-md' 
-                  : 'text-gray-600 hover:bg-gray-100'
-              }`}
-            >
-              ✏️ Exercices ({score}/{exercises.length})
-            </button>
+        <div className="flex justify-center mb-6 sm:mb-8 px-4">
+          <div className="bg-white rounded-lg p-1 shadow-md w-full sm:w-auto">
+            <div className="grid grid-cols-2 sm:flex gap-1">
+              <button
+                onClick={() => setShowExercises(false)}
+                className={`px-4 py-3 sm:px-6 sm:py-3 rounded-lg font-bold transition-all touch-manipulation min-h-[44px] text-sm sm:text-base ${
+                  !showExercises 
+                    ? 'bg-orange-500 text-white shadow-md' 
+                    : 'text-gray-600 hover:bg-gray-100'
+                }`}
+              >
+                📖 Cours
+              </button>
+              <button
+                onClick={() => setShowExercises(true)}
+                className={`px-4 py-3 sm:px-6 sm:py-3 rounded-lg font-bold transition-all touch-manipulation min-h-[44px] text-sm sm:text-base ${
+                  showExercises 
+                    ? 'bg-red-500 text-white shadow-md' 
+                    : 'text-gray-600 hover:bg-gray-100'
+                }`}
+              >
+                ✏️ Exercices ({score}/{exercises.length})
+              </button>
+            </div>
           </div>
         </div>
 

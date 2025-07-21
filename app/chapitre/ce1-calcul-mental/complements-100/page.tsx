@@ -142,8 +142,8 @@ export default function Complements100Page() {
     <div className="min-h-screen bg-gradient-to-br from-teal-50 to-blue-100">
       {/* Modal de fin d'exercices */}
       {showCompletionModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-3xl p-8 max-w-md mx-4 text-center shadow-2xl transform transition-all duration-300 scale-100 hover:scale-105">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full mx-4 text-center shadow-2xl transform transition-all duration-300 scale-100 hover:scale-105">
             {(() => {
               const percentage = Math.round((finalScore / exercises.length) * 100);
               const getMessage = () => {
@@ -181,16 +181,16 @@ export default function Complements100Page() {
                   <p className={`text-xl font-bold mb-6 ${result.color}`}>
                     Score final : {finalScore}/{exercises.length} ({percentage}%)
                   </p>
-                  <div className="flex gap-3 justify-center">
+                  <div className="flex flex-col sm:flex-row gap-3 justify-center px-4">
                     <button
                       onClick={resetExercises}
-                      className="bg-teal-500 text-white px-6 py-3 rounded-xl font-bold hover:bg-teal-600 transition-colors"
+                      className="bg-teal-500 text-white px-6 py-4 sm:px-6 sm:py-3 rounded-xl font-bold hover:bg-teal-600 transition-colors touch-manipulation min-h-[44px] w-full sm:w-auto"
                     >
                       ✨ Recommencer
                     </button>
                     <button
                       onClick={() => setShowCompletionModal(false)}
-                      className="bg-gray-500 text-white px-6 py-3 rounded-xl font-bold hover:bg-gray-600 transition-colors"
+                      className="bg-gray-500 text-white px-6 py-4 sm:px-6 sm:py-3 rounded-xl font-bold hover:bg-gray-600 transition-colors touch-manipulation min-h-[44px] w-full sm:w-auto"
                     >
                       📖 Retour au cours
                     </button>
@@ -202,49 +202,51 @@ export default function Complements100Page() {
         </div>
       )}
       
-      <div className="max-w-6xl mx-auto px-4 py-8">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
         {/* Header */}
-        <div className="mb-8">
-          <Link href="/chapitre/ce1-calcul-mental" className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors mb-4">
-            <ArrowLeft className="w-4 h-4" />
-            <span>Retour au calcul mental</span>
+        <div className="mb-6 sm:mb-8">
+          <Link href="/chapitre/ce1-calcul-mental" className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors mb-4 touch-manipulation">
+            <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />
+            <span className="text-sm sm:text-base">Retour au calcul mental</span>
           </Link>
           
-          <div className="bg-white rounded-xl p-6 shadow-lg text-center">
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">
+          <div className="bg-white rounded-xl p-4 sm:p-6 shadow-lg text-center">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-2 sm:mb-4">
               💯 Compléments à 100
             </h1>
-            <p className="text-gray-600 text-lg">
+            <p className="text-gray-600 text-base sm:text-lg">
               Trouve ce qui manque pour faire 100 !
             </p>
           </div>
         </div>
 
         {/* Navigation */}
-        <div className="flex justify-center mb-8">
-          <div className="bg-white rounded-lg p-1 shadow-md">
-            <button
-              onClick={() => {
-                setShowExercises(false);
-                setSelectedComplement(null);
-              }}
-              className={`px-6 py-3 rounded-lg font-bold transition-all ${
-                !showExercises ? 'bg-teal-500 text-white shadow-md' : 'text-gray-600 hover:bg-gray-100'
-              }`}
-            >
-              📖 Cours
-            </button>
-            <button
-              onClick={() => {
-                setShowExercises(true);
-                setSelectedComplement(null);
-              }}
-              className={`px-6 py-3 rounded-lg font-bold transition-all ${
-                showExercises ? 'bg-purple-500 text-white shadow-md' : 'text-gray-600 hover:bg-gray-100'
-              }`}
-            >
-              ✏️ Exercices ({score}/{exercises.length})
-            </button>
+        <div className="flex justify-center mb-6 sm:mb-8 px-4">
+          <div className="bg-white rounded-lg p-1 shadow-md w-full sm:w-auto">
+            <div className="grid grid-cols-2 sm:flex gap-1">
+              <button
+                onClick={() => {
+                  setShowExercises(false);
+                  setSelectedComplement(null);
+                }}
+                className={`px-4 py-3 sm:px-6 sm:py-3 rounded-lg font-bold transition-all touch-manipulation min-h-[44px] text-sm sm:text-base ${
+                  !showExercises ? 'bg-teal-500 text-white shadow-md' : 'text-gray-600 hover:bg-gray-100'
+                }`}
+              >
+                📖 Cours
+              </button>
+              <button
+                onClick={() => {
+                  setShowExercises(true);
+                  setSelectedComplement(null);
+                }}
+                className={`px-4 py-3 sm:px-6 sm:py-3 rounded-lg font-bold transition-all touch-manipulation min-h-[44px] text-sm sm:text-base ${
+                  showExercises ? 'bg-purple-500 text-white shadow-md' : 'text-gray-600 hover:bg-gray-100'
+                }`}
+              >
+                ✏️ Exercices ({score}/{exercises.length})
+              </button>
+            </div>
           </div>
         </div>
 
@@ -276,7 +278,7 @@ export default function Complements100Page() {
                 🎭 Clique sur un calcul pour voir la décomposition !
               </h3>
               
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8 px-2">
                 {[
                   {base: 30, complement: 70}, {base: 23, complement: 77}, 
                   {base: 32, complement: 68}, {base: 18, complement: 82},
@@ -287,10 +289,10 @@ export default function Complements100Page() {
                     key={`${base}-${complement}`}
                     onClick={() => showComplementAnimation(base, complement)}
                     className={`
-                      p-4 rounded-lg font-bold text-lg transition-all transform hover:scale-105
+                      p-3 sm:p-4 rounded-lg font-bold text-sm sm:text-lg transition-all transform hover:scale-105 touch-manipulation min-h-[44px] flex items-center justify-center
                       ${selectedComplement && selectedComplement.base === base && selectedComplement.complement === complement 
                         ? 'bg-teal-500 text-white shadow-lg' 
-                        : 'bg-gray-100 text-gray-800 hover:bg-teal-100'
+                        : 'bg-gray-100 text-gray-800 hover:bg-teal-100 active:bg-teal-200'
                       }
                     `}
                   >
@@ -408,14 +410,14 @@ export default function Complements100Page() {
                     <button
                       onClick={checkAnswer}
                       disabled={!userAnswer.trim()}
-                      className="bg-teal-500 text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-teal-600 disabled:bg-gray-300 transition-colors"
+                      className="bg-teal-500 text-white px-6 py-4 sm:px-8 sm:py-4 rounded-xl font-bold text-lg sm:text-xl hover:bg-teal-600 disabled:bg-gray-300 transition-colors touch-manipulation min-h-[44px] w-full sm:w-auto max-w-xs mx-auto"
                     >
                       Vérifier
                     </button>
                   ) : !isCorrect ? (
                     <button
                       onClick={goToNext}
-                      className="bg-blue-500 text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-blue-600 transition-colors"
+                      className="bg-blue-500 text-white px-6 py-4 sm:px-8 sm:py-4 rounded-xl font-bold text-lg sm:text-xl hover:bg-blue-600 transition-colors touch-manipulation min-h-[44px] w-full sm:w-auto max-w-xs mx-auto"
                     >
                       Suivant →
                     </button>

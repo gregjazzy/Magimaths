@@ -201,20 +201,20 @@ export default function MultiplierPar10Page() {
         </div>
       )}
       
-      <div className="max-w-6xl mx-auto px-4 py-8">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
         {/* Header */}
-        <div className="mb-8">
-          <Link href="/chapitre/ce1-calcul-mental" className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors mb-4">
-            <ArrowLeft className="w-4 h-4" />
-            <span>Retour au calcul mental</span>
+        <div className="mb-6 sm:mb-8">
+          <Link href="/chapitre/ce1-calcul-mental" className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors mb-4 touch-manipulation">
+            <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />
+            <span className="text-sm sm:text-base">Retour au calcul mental</span>
           </Link>
           
-          <div className="bg-white rounded-xl p-6 shadow-lg text-center">
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">
-              🔟 Multiplier par 10
+          <div className="bg-white rounded-xl p-4 sm:p-6 shadow-lg text-center">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-2 sm:mb-4">
+              ✖️ Multiplier par 10
             </h1>
-            <p className="text-gray-600 text-lg">
-              Découvre la technique magique pour multiplier par 10 !
+            <p className="text-gray-600 text-base sm:text-lg">
+              Découvre la magie du x10 !
             </p>
           </div>
         </div>
