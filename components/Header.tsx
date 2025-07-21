@@ -130,7 +130,7 @@ export default function Header() {
 
           {/* Bouton menu mobile */}
           <button
-            className="md:hidden p-2 text-gray-700 hover:text-primary-600 transition-colors ml-2"
+            className="md:hidden p-3 text-gray-700 hover:text-primary-600 transition-colors ml-2 touch-manipulation min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg hover:bg-gray-100"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           >
             {isMobileMenuOpen ? (
@@ -186,7 +186,7 @@ export default function Header() {
               <a
                 key={item.name}
                 href={item.href}
-                className="block text-gray-700 hover:text-primary-600 font-medium transition-colors"
+                className="block text-gray-700 hover:text-primary-600 font-medium transition-colors py-3 px-4 rounded-lg hover:bg-gray-100 touch-manipulation min-h-[44px] flex items-center"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 {item.name}

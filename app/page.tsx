@@ -205,7 +205,7 @@ export default function HomePage() {
                         <span className="font-bold text-yellow-600">{chapter.estimatedTime * 2} XP</span>
                   </div>
                     </div>
-                    <div className="flex items-center space-x-1 text-blue-600 group-hover:text-blue-700 transform group-hover:translate-x-1 transition-all duration-300">
+                    <div className="flex items-center space-x-1 text-blue-600 group-hover:text-blue-700 transform group-hover:translate-x-1 transition-all duration-300 py-2 px-3 rounded-lg hover:bg-blue-50 touch-manipulation min-h-[40px]">
                       <Play className="w-4 h-4" />
                       <span className="text-sm font-bold">Démarrer</span>
                     </div>

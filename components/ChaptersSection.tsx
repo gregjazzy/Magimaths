@@ -146,12 +146,12 @@ export default function ChaptersSection() {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-center mb-16"
+          className="text-center mb-12 sm:mb-16 px-4"
         >
-          <h2 className="text-4xl font-bold text-gray-900 mb-4">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
             Tous les Chapitres
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          <p className="text-base sm:text-lg lg:text-xl text-gray-600 max-w-3xl mx-auto">
             Explore tous les concepts essentiels de mathématiques du CE1 à la terminale. 
             Chaque chapitre est conçu pour être interactif et amusant !
           </p>
@@ -159,15 +159,15 @@ export default function ChaptersSection() {
 
         {/* Sélecteur de classe */}
         <div className="mb-12">
-          <div className="flex flex-wrap justify-center gap-2 mb-8">
+          <div className="flex flex-wrap justify-center gap-2 sm:gap-3 mb-8 px-4">
             {availableClassLevels.map((classLevel) => (
               <button
                 key={classLevel}
                 onClick={() => setSelectedClass(classLevel)}
-                className={`px-6 py-3 rounded-full text-sm font-semibold transition-all duration-300 ${
+                className={`px-4 py-3 sm:px-6 sm:py-3 rounded-full text-sm font-semibold transition-all duration-300 touch-manipulation min-h-[44px] flex items-center justify-center min-w-[60px] ${
                   selectedClass === classLevel
                     ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg transform scale-105'
-                    : 'bg-white text-gray-700 border-2 border-gray-200 hover:border-blue-300 hover:shadow-md'
+                    : 'bg-white text-gray-700 border-2 border-gray-200 hover:border-blue-300 hover:shadow-md active:bg-gray-50'
                 }`}
               >
                 {classLevel}

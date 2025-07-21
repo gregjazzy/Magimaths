@@ -115,17 +115,17 @@ export default function Hero() {
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={handleGetStarted}
-                    className="bg-gradient-to-r from-purple-600 to-pink-600 text-white text-xl font-bold px-8 py-4 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 flex items-center justify-center group"
+                    className="bg-gradient-to-r from-purple-600 to-pink-600 text-white text-lg sm:text-xl font-bold px-6 py-4 sm:px-8 sm:py-4 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 flex items-center justify-center group touch-manipulation min-h-[44px] w-full sm:w-auto"
                   >
                     {user ? 'Voir mes chapitres' : 'Commencer l\'aventure'}
-                    <ArrowRight className="ml-3 h-6 w-6 transition-transform group-hover:translate-x-1" />
+                    <ArrowRight className="ml-3 h-5 w-5 sm:h-6 sm:w-6 transition-transform group-hover:translate-x-1" />
                   </motion.button>
                   
                   <motion.button
                     whileHover={{ scale: 1.05 }}
-                    className="flex items-center justify-center space-x-3 px-8 py-4 text-gray-700 hover:text-purple-600 font-bold text-xl transition-colors border-2 border-gray-300 hover:border-purple-300 rounded-2xl"
+                    className="flex items-center justify-center space-x-3 px-6 py-4 sm:px-8 sm:py-4 text-gray-700 hover:text-purple-600 font-bold text-lg sm:text-xl transition-colors border-2 border-gray-300 hover:border-purple-300 rounded-2xl touch-manipulation min-h-[44px] w-full sm:w-auto"
                   >
-                    <Play className="h-6 w-6" />
+                    <Play className="h-5 w-5 sm:h-6 sm:w-6" />
                     <span>Voir la magie</span>
                   </motion.button>
                 </motion.div>
