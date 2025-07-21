@@ -143,6 +143,9 @@ export default function AdditionsSimplesPage() {
       setIsCorrect(null);
       setTimeLeft(0);
       setIsTimerActive(false);
+    } else {
+      setFinalScore(score);
+      setShowCompletionModal(true);
     }
   };
 

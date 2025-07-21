@@ -95,6 +95,9 @@ export default function SoustractionsSimples() {
       setCurrentExercise(currentExercise + 1);
       setUserAnswer('');
       setIsCorrect(null);
+    } else {
+      setFinalScore(score);
+      setShowCompletionModal(true);
     }
   };
 
@@ -527,20 +530,31 @@ export default function SoustractionsSimples() {
                   </div>
                   
                   <div className="flex justify-center space-x-4 mb-6">
-                    <button
-                      onClick={checkAnswer}
-                      disabled={!userAnswer.trim()}
-                      className="bg-pink-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-pink-600 transition-colors disabled:opacity-50"
-                    >
-                      <Target className="inline w-4 h-4 mr-2" />
-                      Vérifier
-                    </button>
-                    <button
-                      onClick={() => { setUserAnswer(''); setIsCorrect(null); }}
-                      className="bg-gray-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-gray-600 transition-colors"
-                    >
-                      Effacer
-                    </button>
+                    {isCorrect === null ? (
+                      <>
+                        <button
+                          onClick={checkAnswer}
+                          disabled={!userAnswer.trim()}
+                          className="bg-pink-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-pink-600 transition-colors disabled:opacity-50"
+                        >
+                          <Target className="inline w-4 h-4 mr-2" />
+                          Vérifier
+                        </button>
+                        <button
+                          onClick={() => { setUserAnswer(''); setIsCorrect(null); }}
+                          className="bg-gray-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-gray-600 transition-colors"
+                        >
+                          Effacer
+                        </button>
+                      </>
+                    ) : !isCorrect ? (
+                      <button
+                        onClick={nextExercise}
+                        className="bg-blue-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-blue-600 transition-colors"
+                      >
+                        Suivant →
+                      </button>
+                    ) : null}
                   </div>
                   
                   {isCorrect !== null && (
