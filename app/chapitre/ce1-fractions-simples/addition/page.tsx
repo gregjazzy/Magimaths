@@ -294,22 +294,22 @@ export default function AdditionFractionsPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-red-50 to-pink-100">
-      <div className="max-w-4xl mx-auto px-4 py-8">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
         {/* Header */}
-        <div className="mb-8">
-          <Link href="/chapitre/ce1-fractions-simples" className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors mb-4">
-            <ArrowLeft className="w-4 h-4" />
-            <span>Retour aux fractions</span>
+        <div className="mb-6 sm:mb-8">
+          <Link href="/chapitre/ce1-fractions-simples" className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors mb-4 touch-manipulation">
+            <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />
+            <span className="text-sm sm:text-base">Retour aux fractions</span>
           </Link>
           
-          <div className="bg-white rounded-xl p-6 shadow-lg text-center">
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">
+          <div className="bg-white rounded-xl p-4 sm:p-6 shadow-lg text-center">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-2 sm:mb-4">
               ➕ Additionner des fractions
             </h1>
-            <p className="text-lg text-gray-600 mb-6">
-              Premières additions simples
+            <p className="text-base sm:text-lg text-gray-600 mb-4 sm:mb-6">
+              Apprends à additionner des fractions simples !
             </p>
-            <div className="flex justify-center space-x-6 mb-6">
+            <div className="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-6 mb-4 sm:mb-6">
               <div className="text-center">
                 <div className="text-2xl font-bold text-red-600">{score}</div>
                 <div className="text-sm text-gray-600">Points</div>
@@ -372,7 +372,7 @@ export default function AdditionFractionsPage() {
             <div className="text-center">
               <button
                 onClick={() => setShowExercises(true)}
-                className="bg-gradient-to-r from-red-500 to-pink-500 text-white px-8 py-4 rounded-xl font-bold text-xl hover:from-red-600 hover:to-pink-600 transition-all transform hover:scale-105 shadow-lg"
+                className="bg-gradient-to-r from-red-500 to-pink-500 text-white px-6 py-4 sm:px-8 sm:py-4 rounded-xl font-bold text-lg sm:text-xl hover:from-red-600 hover:to-pink-600 transition-all transform hover:scale-105 shadow-lg touch-manipulation min-h-[44px] w-full sm:w-auto max-w-xs sm:max-w-none mx-auto"
               >
                 🎮 Commencer les calculs !
               </button>

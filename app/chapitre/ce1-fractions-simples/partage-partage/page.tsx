@@ -218,7 +218,7 @@ export default function PartageEquitablePage() {
     }
     
     return (
-      <svg width="100" height="100" viewBox="0 0 100 100" className="mx-auto">
+              <svg width="80" height="80" viewBox="0 0 100 100" className="mx-auto w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24">
         {parts}
       </svg>
     );
@@ -235,22 +235,22 @@ export default function PartageEquitablePage() {
   const renderDivisionQCM = () => {
     return (
       <div className="text-center">
-        <div className="mb-8">
-          <div className="text-2xl font-bold text-gray-900 mb-4">
+        <div className="mb-6 sm:mb-8">
+          <div className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900 mb-4 px-2">
             {exercises[currentExercise].divisionQuestion}
           </div>
-          <div className="grid grid-cols-1 gap-4 max-w-lg mx-auto">
+          <div className="grid grid-cols-1 gap-3 sm:gap-4 max-w-lg mx-auto px-2">
             {exercises[currentExercise].divisionOptions.map((option, index) => (
               <button
                 key={index}
                 onClick={() => setDivisionAnswer(option)}
-                className={`p-4 rounded-lg border-2 font-medium text-left transition-all ${
+                className={`p-4 sm:p-5 rounded-lg border-2 font-medium text-left transition-all min-h-[60px] sm:min-h-[56px] touch-manipulation ${
                   divisionAnswer === option
                     ? 'bg-pink-500 text-white border-pink-500'
-                    : 'bg-gray-50 text-gray-700 border-gray-300 hover:border-pink-300'
+                    : 'bg-gray-50 text-gray-700 border-gray-300 hover:border-pink-300 active:bg-gray-100'
                 }`}
               >
-                {option}
+                <span className="text-sm sm:text-base">{option}</span>
               </button>
             ))}
           </div>
@@ -259,7 +259,7 @@ export default function PartageEquitablePage() {
         {divisionAnswer === exercises[currentExercise].correctDivisionAnswer && (
           <button
             onClick={() => setStep('color')}
-            className="bg-blue-500 text-white px-8 py-3 rounded-lg font-bold hover:bg-blue-600 transition-colors"
+            className="bg-blue-500 text-white px-6 py-4 sm:px-8 sm:py-3 rounded-lg font-bold hover:bg-blue-600 transition-colors touch-manipulation min-h-[44px] w-full sm:w-auto max-w-xs mx-auto"
           >
             Parfait ! Passer au coloriage →
           </button>
@@ -324,7 +324,7 @@ export default function PartageEquitablePage() {
       }
       
       return (
-        <svg width="300" height="300" viewBox="0 0 100 100" className="mx-auto border-2 border-gray-300 rounded-lg">
+        <svg viewBox="0 0 100 100" className="mx-auto border-2 border-gray-300 rounded-lg w-48 h-48 sm:w-64 sm:h-64 lg:w-72 lg:h-72 max-w-full">
           {parts}
         </svg>
       );
@@ -366,7 +366,7 @@ export default function PartageEquitablePage() {
       }
       
       return (
-        <svg width="300" height="300" viewBox="0 0 100 100" className="mx-auto border-2 border-gray-300 rounded-lg">
+        <svg viewBox="0 0 100 100" className="mx-auto border-2 border-gray-300 rounded-lg w-48 h-48 sm:w-64 sm:h-64 lg:w-72 lg:h-72 max-w-full">
           {parts}
         </svg>
       );
@@ -402,7 +402,7 @@ export default function PartageEquitablePage() {
       }
       
       return (
-        <svg width="400" height="200" viewBox="0 0 100 100" className="mx-auto border-2 border-gray-300 rounded-lg">
+        <svg viewBox="0 0 100 100" className="mx-auto border-2 border-gray-300 rounded-lg w-64 h-32 sm:w-80 sm:h-40 lg:w-96 lg:h-48 max-w-full">
           {parts}
         </svg>
       );
@@ -482,22 +482,22 @@ export default function PartageEquitablePage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-50 to-rose-100">
-      <div className="max-w-4xl mx-auto px-4 py-8">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
         {/* Header */}
-        <div className="mb-8">
-          <Link href="/chapitre/ce1-fractions-simples" className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors mb-4">
-            <ArrowLeft className="w-4 h-4" />
-            <span>Retour aux fractions</span>
+        <div className="mb-6 sm:mb-8">
+          <Link href="/chapitre/ce1-fractions-simples" className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors mb-4 touch-manipulation">
+            <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />
+            <span className="text-sm sm:text-base">Retour aux fractions</span>
           </Link>
           
-          <div className="bg-white rounded-xl p-6 shadow-lg text-center">
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">
+          <div className="bg-white rounded-xl p-4 sm:p-6 shadow-lg text-center">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-2 sm:mb-4">
               🍰 Partage équitable
             </h1>
-            <p className="text-lg text-gray-600 mb-6">
+            <p className="text-base sm:text-lg text-gray-600 mb-4 sm:mb-6">
               Apprends à partager en parts égales !
             </p>
-            <div className="flex justify-center space-x-6 mb-6">
+            <div className="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-6 mb-4 sm:mb-6">
               <div className="text-center">
                 <div className="text-2xl font-bold text-pink-600">{score}</div>
                 <div className="text-sm text-gray-600">Points</div>
@@ -550,7 +550,7 @@ export default function PartageEquitablePage() {
             <div className="text-center">
               <button
                 onClick={() => setShowExercises(true)}
-                className="bg-gradient-to-r from-pink-500 to-rose-500 text-white px-8 py-4 rounded-xl font-bold text-xl hover:from-pink-600 hover:to-rose-600 transition-all transform hover:scale-105 shadow-lg"
+                className="bg-gradient-to-r from-pink-500 to-rose-500 text-white px-6 py-4 sm:px-8 sm:py-4 rounded-xl font-bold text-lg sm:text-xl hover:from-pink-600 hover:to-rose-600 transition-all transform hover:scale-105 shadow-lg touch-manipulation min-h-[44px] w-full sm:w-auto max-w-xs sm:max-w-none mx-auto"
               >
                 🎮 Commencer les exercices !
               </button>
@@ -559,9 +559,9 @@ export default function PartageEquitablePage() {
         )}
 
         {showExercises && (
-          <div className="bg-white rounded-xl p-8 shadow-lg">
-            <div className="text-center mb-8">
-              <h2 className="text-3xl font-bold text-gray-900 mb-4">
+          <div className="bg-white rounded-xl p-4 sm:p-6 lg:p-8 shadow-lg">
+            <div className="text-center mb-6 sm:mb-8">
+              <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 mb-2 sm:mb-4">
                 Exercice {currentExercise + 1} sur {exercises.length}
               </h2>
               <p className="text-xl text-gray-700">
@@ -628,11 +628,11 @@ export default function PartageEquitablePage() {
               </div>
             )}
 
-            <div className="flex justify-center space-x-4">
+            <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 px-4">
               <button
                 onClick={() => setCurrentExercise(Math.max(0, currentExercise - 1))}
                 disabled={currentExercise === 0}
-                className="bg-gray-300 text-gray-700 px-6 py-3 rounded-lg font-bold hover:bg-gray-400 transition-colors disabled:opacity-50"
+                className="bg-gray-300 text-gray-700 px-6 py-4 sm:px-6 sm:py-3 rounded-lg font-bold hover:bg-gray-400 transition-colors disabled:opacity-50 touch-manipulation min-h-[44px] w-full sm:w-auto"
               >
                 ← Précédent
               </button>
@@ -640,7 +640,7 @@ export default function PartageEquitablePage() {
                 <button
                   onClick={handleNext}
                   disabled={selectedParts.length === 0 && isCorrect === null}
-                  className="bg-pink-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-pink-600 transition-colors disabled:opacity-50"
+                  className="bg-pink-500 text-white px-6 py-4 sm:px-6 sm:py-3 rounded-lg font-bold hover:bg-pink-600 transition-colors disabled:opacity-50 touch-manipulation min-h-[44px] w-full sm:w-auto"
                 >
                   {isCorrect === null ? 'Vérifier' : 'Suivant →'}
                 </button>
@@ -652,7 +652,7 @@ export default function PartageEquitablePage() {
         {/* Modale de fin */}
         {showCompletionModal && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-2xl p-8 max-w-md w-full text-center shadow-2xl">
+            <div className="bg-white rounded-2xl p-6 sm:p-8 max-w-md w-full text-center shadow-2xl mx-4">
               <div className="text-6xl mb-4">🎉</div>
               <h3 className="text-2xl font-bold text-gray-900 mb-3">Félicitations !</h3>
               <p className="text-lg text-gray-700 mb-6">
