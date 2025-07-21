@@ -116,7 +116,17 @@ export default function TablesMultiplicationPage() {
       }, 1500);
     }
     // Si mauvaise réponse → afficher solution + bouton "Suivant"
-    // (pas de passage automatique, l'utilisateur doit cliquer sur "Suivant")
+  };
+
+  const nextExercise = () => {
+    if (currentExercise < exercises.length - 1) {
+      setCurrentExercise(currentExercise + 1);
+      setUserAnswer('');
+      setIsCorrect(null);
+    } else {
+      setFinalScore(score);
+      setShowCompletionModal(true);
+    }
   };
 
   const resetExercises = () => {
@@ -588,13 +598,22 @@ export default function TablesMultiplicationPage() {
                     />
                   </div>
 
-                  <button
-                    onClick={checkAnswer}
-                    disabled={!userAnswer.trim()}
-                    className="bg-red-500 text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-red-600 disabled:bg-gray-300 transition-colors"
-                  >
-                    Vérifier
-                  </button>
+                  {isCorrect === null ? (
+                    <button
+                      onClick={checkAnswer}
+                      disabled={!userAnswer.trim()}
+                      className="bg-red-500 text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-red-600 disabled:bg-gray-300 transition-colors"
+                    >
+                      Vérifier
+                    </button>
+                  ) : !isCorrect ? (
+                    <button
+                      onClick={nextExercise}
+                      className="bg-blue-500 text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-blue-600 transition-colors"
+                    >
+                      Suivant →
+                    </button>
+                  ) : null}
                 </div>
 
                 {isCorrect !== null && (

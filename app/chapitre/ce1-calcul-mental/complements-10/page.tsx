@@ -117,6 +117,9 @@ export default function ComplementsA10Page() {
       setCurrentExercise(currentExercise + 1);
       setUserAnswer('');
       setIsCorrect(null);
+    } else {
+      setFinalScore(score);
+      setShowCompletionModal(true);
     }
   };
 
@@ -541,20 +544,31 @@ export default function ComplementsA10Page() {
               </div>
               
               <div className="flex justify-center space-x-4 mb-6">
-                <button
-                  onClick={checkAnswer}
-                  disabled={!userAnswer.trim()}
-                  className="bg-blue-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-blue-600 transition-colors disabled:opacity-50"
-                >
-                  <Target className="inline w-4 h-4 mr-2" />
-                  Vérifier
-                </button>
-                <button
-                  onClick={resetExercise}
-                  className="bg-gray-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-gray-600 transition-colors"
-                >
-                  Effacer
-                </button>
+                {isCorrect === null ? (
+                  <>
+                    <button
+                      onClick={checkAnswer}
+                      disabled={!userAnswer.trim()}
+                      className="bg-blue-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-blue-600 transition-colors disabled:opacity-50"
+                    >
+                      <Target className="inline w-4 h-4 mr-2" />
+                      Vérifier
+                    </button>
+                    <button
+                      onClick={resetExercise}
+                      className="bg-gray-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-gray-600 transition-colors"
+                    >
+                      Effacer
+                    </button>
+                  </>
+                ) : !isCorrect ? (
+                  <button
+                    onClick={nextExercise}
+                    className="bg-teal-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-teal-600 transition-colors"
+                  >
+                    Suivant →
+                  </button>
+                ) : null}
               </div>
               
               {/* Résultat */}
