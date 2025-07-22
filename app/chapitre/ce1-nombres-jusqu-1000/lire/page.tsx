@@ -530,26 +530,28 @@ export default function LireNombresCE1Page() {
                   <h2 className="text-2xl font-bold text-gray-900">
                     ✏️ Exercice {currentExercise + 1} sur {exercises.length}
                   </h2>
-                  <div className="flex items-center space-x-4">
-                    <div className="text-lg font-bold text-blue-600">
-                      Score : {score}/{exercises.length}
-                    </div>
-                    <button
-                      onClick={resetAll}
-                      className="bg-gray-500 text-white px-4 py-2 rounded-lg font-bold hover:bg-gray-600 transition-colors"
-                    >
-                      <RotateCcw className="inline w-4 h-4 mr-2" />
-                      Recommencer
-                    </button>
-                  </div>
+                  <button
+                    onClick={resetAll}
+                    className="bg-gray-500 text-white px-4 py-2 rounded-lg font-bold hover:bg-gray-600 transition-colors"
+                  >
+                    <RotateCcw className="inline w-4 h-4 mr-2" />
+                    Recommencer
+                  </button>
                 </div>
                 
                 {/* Barre de progression */}
-                <div className="w-full bg-gray-200 rounded-full h-3">
+                <div className="w-full bg-gray-200 rounded-full h-3 mb-3">
                   <div 
                     className="bg-blue-500 h-3 rounded-full transition-all duration-500"
                     style={{ width: `${((currentExercise + 1) / exercises.length) * 100}%` }}
                   ></div>
+                </div>
+                
+                {/* Score sous la barre */}
+                <div className="text-center">
+                  <div className="text-lg font-bold text-blue-600">
+                    Score : {score}/{exercises.length}
+                  </div>
                 </div>
               </div>
 
