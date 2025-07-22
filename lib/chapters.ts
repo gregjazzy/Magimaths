@@ -146,6 +146,23 @@ export const chaptersData: Chapter[] = [
     isLocked: false,
     order: 8
   },
+  {
+    id: 'ce1-partage-equitable',
+    title: 'Partage équitable',
+    description: 'QCM visuel sur le partage équitable avec des figures',
+    classLevel: 'CE1',
+    category: 'numeracy',
+    difficulty: 'beginner',
+    estimatedTime: 15,
+    prerequisites: [],
+    color: '#ff6b6b',
+    icon: '🎯',
+    lessons: [],
+    exercises: [],
+    isLocked: false,
+    order: 9,
+    verified: true
+  },
 
   // CE2 - Nouveau programme 2025
   {
@@ -162,7 +179,7 @@ export const chaptersData: Chapter[] = [
     lessons: [],
     exercises: [],
     isLocked: false,
-    order: 9
+    order: 10
   },
   {
     id: 'ce2-fractions-bande-unite',

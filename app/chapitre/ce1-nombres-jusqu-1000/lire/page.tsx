@@ -19,16 +19,9 @@ export default function LireNombresCE1Page() {
 
   const numbers = [
     { value: '234', label: '234', reading: 'Deux cent trente-quatre' },
-    { value: '156', label: '156', reading: 'Cent cinquante-six' },
     { value: '89', label: '89', reading: 'Quatre-vingt-neuf' },
     { value: '345', label: '345', reading: 'Trois cent quarante-cinq' },
-    { value: '67', label: '67', reading: 'Soixante-sept' },
-    { value: '123', label: '123', reading: 'Cent vingt-trois' },
-    { value: '789', label: '789', reading: 'Sept cent quatre-vingt-neuf' },
-    { value: '56', label: '56', reading: 'Cinquante-six' },
-    { value: '678', label: '678', reading: 'Six cent soixante-dix-huit' },
-    { value: '75', label: '75', reading: 'Soixante-quinze' },
-    { value: '1000', label: '1000', reading: 'Mille' }
+    { value: '37', label: '37', reading: 'Trente-sept' }
   ];
 
   const exercises = [
@@ -339,7 +332,10 @@ export default function LireNombresCE1Page() {
                     : 'text-gray-600 hover:bg-gray-100'
                 }`}
               >
-                ✏️ Exercices ({score}/{exercises.length})
+                <div className="flex flex-col items-center">
+                  <span>✏️ Exercices</span>
+                  <span className="text-sm opacity-90">({score}/{exercises.length})</span>
+                </div>
               </button>
             </div>
           </div>

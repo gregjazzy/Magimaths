@@ -46,15 +46,15 @@ export default function Factorisation4emePage() {
       ]
     },
     {
-      expression: '10a³ - 15a²',
-      terms: ['10a³', '-15a²'],
-      factor: '5a²',
-      factored: '5a²(2a - 3)',
+      expression: '3x + 3',
+      terms: ['3x', '3'],
+      factor: '3',
+      factored: '3(x + 1)',
       steps: [
         'On regarde ce qui est commun dans les deux termes',
-        'Identifie le facteur commun : 5a²',
-        'Réécris 10a³ comme 5a²×2a, et 15a² comme 5a²×3',
-        'Extrait le facteur : 5a²(2a - 3)'
+        'Identifie le facteur commun : 3',
+        'Réécris 3x comme 3×x, et 3 comme 3×1',
+        'Extrait le facteur : 3(x + 1)'
       ]
     }
   ]
@@ -541,9 +541,9 @@ export default function Factorisation4emePage() {
                         : 'bg-white border-yellow-200 text-gray-700 hover:border-blue-300'
                     }`}
                   >
-                    <div className="font-bold text-lg mb-2">Exemple 3 : 10a³ - 15a²</div>
-                    <div className="text-sm text-gray-600 mb-2">• Facteur commun : 5a²</div>
-                    <div className="text-sm text-gray-600">• Résultat : 5a²(2a - 3)</div>
+                    <div className="font-bold text-lg mb-2">Exemple 3 : 3x + 3</div>
+                    <div className="text-sm text-gray-600 mb-2">• Facteur commun : 3</div>
+                    <div className="text-sm text-gray-600">• Résultat : 3(x + 1)</div>
                   </button>
                 </div>
               </div>
@@ -626,13 +626,13 @@ export default function Factorisation4emePage() {
                             )}
                             {currentExample === 2 && (
                               <>
-                                <span className="text-gray-800">5a²</span>
-                                <span className="text-gray-600">×</span>
-                                <span className="text-gray-800">2a</span>
-                                <span className="text-gray-600 mx-2">-</span>
-                                <span className="text-gray-800">5a²</span>
-                                <span className="text-gray-600">×</span>
                                 <span className="text-gray-800">3</span>
+                                <span className="text-gray-600">×</span>
+                                <span className="text-gray-800">x</span>
+                                <span className="text-gray-600 mx-2">+</span>
+                                <span className="text-gray-800">3</span>
+                                <span className="text-gray-600">×</span>
+                                <span className="text-gray-800">1</span>
                               </>
                             )}
                           </div>
@@ -640,7 +640,7 @@ export default function Factorisation4emePage() {
                         <div className="text-sm text-purple-800 font-medium bg-purple-50 px-4 py-2 rounded-lg border border-purple-200 max-w-lg mx-auto">
                           {currentExample === 0 && "⚡ Décomposition : 2x² = 2x × x et 4x = 2x × 2"}
                           {currentExample === 1 && "⚡ Décomposition : 6y² = 3y × 2y et 9y = 3y × 3"}
-                          {currentExample === 2 && "⚡ Décomposition : 10a³ = 5a² × 2a et 15a² = 5a² × 3"}
+                          {currentExample === 2 && "⚡ Décomposition : 3x = 3 × x et 3 = 3 × 1"}
                         </div>
                       </div>
                     )}
@@ -686,19 +686,19 @@ export default function Factorisation4emePage() {
                             )}
                             {currentExample === 2 && (
                               <>
-                                <span className="bg-blue-200 px-2 py-1 rounded text-blue-800">5a²</span>
+                                <span className="bg-blue-200 px-2 py-1 rounded text-blue-800">3</span>
                                 <span className="text-gray-600">×</span>
                                 <span className={`px-2 py-1 rounded transition-all duration-1000 ${
                                   animationStep >= 4 ? 'bg-yellow-200 text-yellow-800' : 'text-gray-800'
-                                }`}>2a</span>
+                                }`}>x</span>
                                 <span className={`mx-2 transition-all duration-1000 ${
                                   animationStep >= 4 ? 'text-yellow-600 bg-yellow-100 px-1 rounded font-bold' : 'text-gray-600'
-                                }`}>-</span>
-                                <span className="bg-blue-200 px-2 py-1 rounded text-blue-800">5a²</span>
+                                }`}>+</span>
+                                <span className="bg-blue-200 px-2 py-1 rounded text-blue-800">3</span>
                                 <span className="text-gray-600">×</span>
                                 <span className={`px-2 py-1 rounded transition-all duration-1000 ${
                                   animationStep >= 4 ? 'bg-yellow-200 text-yellow-800' : 'text-gray-800'
-                                }`}>3</span>
+                                }`}>1</span>
                               </>
                             )}
                           </div>
@@ -715,7 +715,7 @@ export default function Factorisation4emePage() {
                             ✨ Colorier en jaune ce qui ira dans les parenthèses
                             {currentExample === 2 && (
                               <div className="mt-2 text-xs bg-green-100 text-green-800 px-2 py-1 rounded">
-                                💛 Les éléments "2a" et "-3" sont maintenant colorés en jaune
+                                💛 Les éléments "x" et "+1" sont maintenant colorés en jaune
                               </div>
                             )}
                           </div>
@@ -730,7 +730,7 @@ export default function Factorisation4emePage() {
                             🎯 Résultat final de la factorisation
                             {currentExample === 2 && (
                               <div className="mt-2 text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
-                                ✅ Résultat : 5a²(2a - 3)
+                                ✅ Résultat : 3(x + 1) - Important : 3 = 3 × 1 !
                               </div>
                             )}
                           </div>
@@ -782,7 +782,7 @@ export default function Factorisation4emePage() {
                             ✨ Expression factorisée niveau 4ème !
                             {currentExample === 2 && (
                               <div className="text-xs text-green-600 mt-1 bg-green-100 px-2 py-1 rounded">
-                                🎯 Le "2a" vient de : 10a³ = 5a² × 2a, on garde le "2a"
+                                🎯 Le "1" vient de : 3 = 3 × 1, on garde le "1" dans (x + 1)
                               </div>
                             )}
                           </div>
