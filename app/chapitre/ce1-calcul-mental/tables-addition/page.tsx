@@ -61,8 +61,10 @@ export default function TablesAdditionPage() {
     const correct = userAnswer.trim() === exercises[currentExercise]?.answer;
     setIsCorrect(correct);
     
+    let newScore = score;
     if (correct && !answeredCorrectly.has(currentExercise)) {
-      setScore(prevScore => prevScore + 1);
+      newScore = score + 1;
+      setScore(newScore);
       setAnsweredCorrectly(prev => {
         const newSet = new Set(prev);
         newSet.add(currentExercise);
@@ -79,7 +81,7 @@ export default function TablesAdditionPage() {
           setIsCorrect(null);
         } else {
           // Dernière question, afficher la modal
-          setFinalScore(score + (!answeredCorrectly.has(currentExercise) ? 1 : 0));
+          setFinalScore(newScore);
           setShowCompletionModal(true);
         }
       }, 1500);
@@ -333,37 +335,54 @@ export default function TablesAdditionPage() {
           /* EXERCICES */
           <div className="space-y-8">
             {/* Configuration des exercices */}
-            <div className="bg-white rounded-xl p-6 shadow-lg">
-              <h2 className="text-xl font-bold mb-4 text-gray-900">⚙️ Configuration</h2>
+            <div className="bg-white rounded-xl p-6 shadow-lg border border-gray-200">
+              <h2 className="text-xl font-bold mb-6 text-gray-800 flex items-center justify-center">
+                <span className="mr-2">⚙️</span> Configuration
+              </h2>
               
-              <div className="flex flex-wrap gap-4 mb-4">
-                <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2">
-                    Choisir une table :
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-3">
+                  <label className="block text-base font-bold text-gray-800">
+                    📊 Choisir une table :
                   </label>
                   <select
                     value={selectedTable}
                     onChange={(e) => setSelectedTable(Number(e.target.value))}
-                    className="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:border-purple-500"
+                    className="w-full border-2 border-blue-300 rounded-lg px-4 py-3 text-base font-semibold bg-blue-50 text-blue-800 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 cursor-pointer hover:bg-blue-100"
                   >
                     {[1, 2, 3, 4, 5].map(table => (
-                      <option key={table} value={table}>Table de {table}</option>
+                      <option key={table} value={table} className="bg-blue-50 text-blue-800 py-2">
+                        Table de {table}
+                      </option>
                     ))}
                   </select>
                 </div>
                 
-                <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2">
-                    Mode de jeu :
+                <div className="space-y-3">
+                  <label className="block text-base font-bold text-gray-800">
+                    🎮 Mode de jeu :
                   </label>
                   <select
                     value={gameMode}
                     onChange={(e) => setGameMode(e.target.value as 'sequential' | 'random')}
-                    className="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:border-purple-500"
+                    className="w-full border-2 border-green-300 rounded-lg px-4 py-3 text-base font-semibold bg-green-50 text-green-800 focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200 cursor-pointer hover:bg-green-100"
                   >
-                    <option value="sequential">Dans l'ordre</option>
-                    <option value="random">Mélangé</option>
+                    <option value="sequential" className="bg-green-50 text-green-800 py-2">
+                      Dans l'ordre
+                    </option>
+                    <option value="random" className="bg-green-50 text-green-800 py-2">
+                      Mélangé
+                    </option>
                   </select>
+                </div>
+              </div>
+              
+              {/* Indication visuelle des paramètres sélectionnés */}
+              <div className="mt-6 p-4 bg-purple-100 rounded-lg border border-purple-300">
+                <div className="text-center">
+                  <div className="text-base font-semibold text-purple-800">
+                    ✅ Configuration actuelle : <span className="font-bold">Table de {selectedTable}</span> • <span className="font-bold">{gameMode === 'sequential' ? 'Dans l\'ordre' : 'Mélangé'}</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -374,27 +393,28 @@ export default function TablesAdditionPage() {
                 <h2 className="text-2xl font-bold text-gray-900">
                   ✏️ Exercice {currentExercise + 1} sur {exercises.length}
                 </h2>
-                <div className="flex items-center space-x-4">
-                  <div className="text-lg font-bold text-purple-600">
-                    Score : {score}/{exercises.length}
-                  </div>
-
-                  <button
-                    onClick={resetAll}
-                    className="bg-gray-500 text-white px-4 py-2 rounded-lg font-bold hover:bg-gray-600 transition-colors"
-                  >
-                    <RotateCcw className="inline w-4 h-4 mr-2" />
-                    Recommencer
-                  </button>
-                </div>
+                <button
+                  onClick={resetAll}
+                  className="bg-gray-500 text-white px-4 py-2 rounded-lg font-bold hover:bg-gray-600 transition-colors"
+                >
+                  <RotateCcw className="inline w-4 h-4 mr-2" />
+                  Recommencer
+                </button>
               </div>
               
               {/* Barre de progression */}
-              <div className="w-full bg-gray-200 rounded-full h-3">
+              <div className="w-full bg-gray-200 rounded-full h-3 mb-3">
                 <div 
                   className="bg-purple-500 h-3 rounded-full transition-all duration-500"
                   style={{ width: `${((currentExercise + 1) / exercises.length) * 100}%` }}
                 ></div>
+              </div>
+              
+              {/* Score sous la barre */}
+              <div className="text-center">
+                <div className="text-lg font-bold text-purple-600">
+                  Score : {score}/{exercises.length}
+                </div>
               </div>
             </div>
 
@@ -406,48 +426,37 @@ export default function TablesAdditionPage() {
                     {exercises[currentExercise]?.question} = ?
                   </h3>
                   
-                  <div className="text-center mb-6">
+                  <div className="text-center mb-8">
                     <input
                       type="text"
                       value={userAnswer}
                       onChange={(e) => setUserAnswer(e.target.value)}
+                      onKeyPress={(e) => {
+                        if (e.key === 'Enter' && userAnswer.trim() && isCorrect === null) {
+                          checkAnswer();
+                        }
+                      }}
                       placeholder="?"
-                      className="w-32 h-16 text-center text-2xl font-bold border-2 border-gray-300 rounded-lg focus:border-purple-500 focus:outline-none"
+                      className="w-32 h-16 text-center text-2xl font-bold border-2 border-gray-300 rounded-lg focus:border-purple-500 focus:outline-none mb-4"
                     />
-                  </div>
-                  
-                  <div className="flex justify-center space-x-4 mb-6">
-                    {isCorrect === null ? (
-                      <>
+                    
+                    {/* Bouton Vérifier visible si pas encore vérifié */}
+                    {isCorrect === null && userAnswer.trim() && (
+                      <div className="mt-4">
                         <button
                           onClick={checkAnswer}
-                          disabled={!userAnswer.trim()}
-                          className="bg-purple-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-purple-600 transition-colors disabled:opacity-50"
+                          className="bg-purple-600 text-white px-8 py-3 rounded-lg font-bold hover:bg-purple-700 transition-colors text-lg"
                         >
-                          <Target className="inline w-4 h-4 mr-2" />
-                          Vérifier
+                          ✅ Vérifier
                         </button>
-                        <button
-                          onClick={resetExercise}
-                          className="bg-gray-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-gray-600 transition-colors"
-                        >
-                          Effacer
-                        </button>
-                      </>
-                    ) : !isCorrect ? (
-                      <button
-                        onClick={nextExercise}
-                        className="bg-blue-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-blue-600 transition-colors"
-                      >
-                        Suivant →
-                      </button>
-                    ) : null}
+                      </div>
+                    )}
                   </div>
                   
                   {/* Résultat */}
                   {isCorrect !== null && (
                     <div className={`p-4 rounded-lg mb-6 ${
-                      isCorrect ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                      isCorrect ? 'bg-green-600 text-white' : 'bg-red-600 text-white'
                     }`}>
                       <div className="flex items-center justify-center space-x-2">
                         {isCorrect ? (
@@ -468,20 +477,33 @@ export default function TablesAdditionPage() {
                   )}
                   
                   {/* Navigation */}
-                  <div className="flex justify-center space-x-4">
+                  <div className="flex flex-col md:flex-row justify-center items-center gap-2 md:gap-4">
+                    <button
+                      onClick={() => setUserAnswer('')}
+                      className="bg-gray-600 text-white px-4 py-2 md:px-6 md:py-3 rounded-lg font-bold hover:bg-gray-700 transition-colors w-full md:w-auto"
+                    >
+                      Effacer
+                    </button>
                     <button
                       onClick={() => setCurrentExercise(Math.max(0, currentExercise - 1))}
                       disabled={currentExercise === 0}
-                      className="bg-gray-300 text-gray-700 px-6 py-3 rounded-lg font-bold hover:bg-gray-400 transition-colors disabled:opacity-50"
+                      className="bg-gray-600 text-white px-4 py-2 md:px-6 md:py-3 rounded-lg font-bold hover:bg-gray-700 transition-colors disabled:opacity-50 w-full md:w-auto"
                     >
                       ← Précédent
                     </button>
                     <button
-                      onClick={nextExercise}
-                      disabled={currentExercise === exercises.length - 1}
-                      className="bg-pink-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-pink-600 transition-colors disabled:opacity-50"
+                      onClick={() => {
+                        // Si l'utilisateur a tapé une réponse mais n'a pas encore vérifié, on vérifie d'abord
+                        if (userAnswer.trim() && isCorrect === null) {
+                          checkAnswer();
+                        } else {
+                          nextExercise();
+                        }
+                      }}
+                      disabled={currentExercise === exercises.length - 1 || (!userAnswer.trim() && isCorrect === null)}
+                      className="bg-purple-600 text-white px-4 py-2 md:px-6 md:py-3 rounded-lg font-bold hover:bg-purple-700 transition-colors disabled:opacity-50 w-full md:w-auto"
                     >
-                      Suivant →
+                      {userAnswer.trim() && isCorrect === null ? '✅ Vérifier' : 'Suivant →'}
                     </button>
                   </div>
                 </div>

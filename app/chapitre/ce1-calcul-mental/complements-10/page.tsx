@@ -85,8 +85,10 @@ export default function ComplementsA10Page() {
     const correct = userAnswerStr === expectedAnswer;
     setIsCorrect(correct);
     
+    let newScore = score;
     if (correct && !answeredCorrectly.has(currentExercise)) {
-      setScore(prevScore => prevScore + 1);
+      newScore = score + 1;
+      setScore(newScore);
       setAnsweredCorrectly(prev => {
         const newSet = new Set(prev);
         newSet.add(currentExercise);
@@ -102,9 +104,13 @@ export default function ComplementsA10Page() {
           setUserAnswer('');
           setIsCorrect(null);
         } else {
-          // Dernière question, afficher la modal
-          setFinalScore(score + (!answeredCorrectly.has(currentExercise) ? 1 : 0));
+          // Dernière question, calculer le score final et sauvegarder
+          setFinalScore(newScore);
           setShowCompletionModal(true);
+          
+          // Sauvegarder les progrès
+          const maxScore = complementExercises.length;
+          saveProgress(newScore, maxScore);
         }
       }, 1500);
     }
@@ -120,12 +126,63 @@ export default function ComplementsA10Page() {
     } else {
       setFinalScore(score);
       setShowCompletionModal(true);
+      
+      // Sauvegarder les progrès
+      const maxScore = complementExercises.length;
+      saveProgress(score, maxScore);
     }
   };
 
   const resetExercise = () => {
     setUserAnswer('');
     setIsCorrect(null);
+  };
+
+  // Fonction pour sauvegarder les progrès et calculer l'XP
+  const saveProgress = (score: number, maxScore: number) => {
+    const percentage = Math.round((score / maxScore) * 100);
+    const baseXP = 15; // XP de base pour cette section
+    const xpEarned = Math.round(baseXP * (percentage / 100));
+    
+    const progress = {
+      sectionId: 'complements-10',
+      completed: true,
+      score: score,
+      maxScore: maxScore,
+      completedAt: new Date().toISOString(),
+      attempts: 1,
+      xpEarned: xpEarned
+    };
+
+    // Récupérer les progrès existants
+    const existingProgress = localStorage.getItem('ce1-calcul-mental-progress');
+    let allProgress = [];
+    
+    if (existingProgress) {
+      allProgress = JSON.parse(existingProgress);
+      const existingIndex = allProgress.findIndex((p: any) => p.sectionId === 'complements-10');
+      
+      if (existingIndex >= 0) {
+        // Si le nouveau score est meilleur, on met à jour
+        if (score > allProgress[existingIndex].score) {
+          allProgress[existingIndex] = { 
+            ...progress, 
+            attempts: allProgress[existingIndex].attempts + 1 
+          };
+        } else {
+          allProgress[existingIndex].attempts += 1;
+        }
+      } else {
+        allProgress.push(progress);
+      }
+    } else {
+      allProgress = [progress];
+    }
+
+    localStorage.setItem('ce1-calcul-mental-progress', JSON.stringify(allProgress));
+    
+    // Déclencher l'événement storage pour mettre à jour les autres onglets
+    window.dispatchEvent(new Event('storage'));
   };
 
   const resetAll = () => {
@@ -212,6 +269,9 @@ export default function ComplementsA10Page() {
           <div className="bg-white rounded-3xl p-8 max-w-md mx-4 text-center shadow-2xl transform transition-all duration-300 scale-100 hover:scale-105">
             {(() => {
               const percentage = Math.round((finalScore / complementExercises.length) * 100);
+              const baseXP = 15; // XP de base pour cette section
+              const xpEarned = Math.round(baseXP * (percentage / 100));
+              
               const getMessage = () => {
                 if (percentage >= 90) return { 
                   title: "🎯 Maître des compléments !", 
@@ -244,9 +304,15 @@ export default function ComplementsA10Page() {
                   <div className="text-6xl mb-4">{percentage >= 70 ? "🎉" : percentage >= 50 ? "😊" : "📚"}</div>
                   <h3 className={`text-2xl font-bold mb-3 ${result.color}`}>{result.title}</h3>
                   <p className={`text-lg mb-4 ${result.color}`}>{result.message}</p>
-                  <p className={`text-xl font-bold mb-6 ${result.color}`}>
-                    Score final : {finalScore}/{complementExercises.length} ({percentage}%)
-                  </p>
+                  <div className="bg-white bg-opacity-50 rounded-lg p-4 mb-4">
+                    <div className={`text-xl font-bold mb-2 ${result.color}`}>
+                      Score final : {finalScore}/{complementExercises.length} ({percentage}%)
+                    </div>
+                    <div className={`text-lg font-bold ${result.color} flex items-center justify-center`}>
+                      <Target className="w-5 h-5 mr-2" />
+                      +{xpEarned} XP gagnés !
+                    </div>
+                  </div>
                   <div className="flex gap-3 justify-center">
                     <button
                       onClick={() => setShowCompletionModal(false)}
@@ -361,17 +427,17 @@ export default function ComplementsA10Page() {
                 🎯 Clique sur un nombre pour voir son complément à 10 !
               </h3>
               
-              <div className="grid grid-cols-5 gap-4 mb-8">
+              <div className="grid grid-cols-3 sm:grid-cols-5 gap-3 sm:gap-4 mb-6 sm:mb-8">
                 {[1, 2, 3, 4, 5].map((number) => (
                   <button
                     key={number}
                     onClick={() => showComplementAnimation(number)}
                     disabled={isAnimating}
                     className={`
-                      p-4 rounded-lg font-bold text-2xl transition-all transform hover:scale-105
+                      p-3 sm:p-4 rounded-lg font-bold text-xl sm:text-2xl transition-all transform hover:scale-105 touch-manipulation min-h-[44px]
                       ${selectedNumber === number && isAnimating 
                         ? 'bg-blue-500 text-white pulse' 
-                        : 'bg-cyan-500 text-white hover:bg-cyan-600'
+                        : 'bg-cyan-500 text-white hover:bg-cyan-600 active:bg-cyan-700'
                       }
                       ${isAnimating ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}
                     `}
@@ -493,88 +559,71 @@ export default function ComplementsA10Page() {
                 <h2 className="text-2xl font-bold text-gray-900">
                   ✏️ Exercice {currentExercise + 1} sur {complementExercises.length}
                 </h2>
-                <div className="flex items-center space-x-4">
-                  <div className="text-lg font-bold text-blue-600">
-                    Score : {score}/{complementExercises.length}
-                  </div>
-                  <button
-                    onClick={resetAll}
-                    className="bg-gray-500 text-white px-4 py-2 rounded-lg font-bold hover:bg-gray-600 transition-colors"
-                  >
-                    <RotateCcw className="inline w-4 h-4 mr-2" />
-                    Recommencer
-                  </button>
-                </div>
+                <button
+                  onClick={resetAll}
+                  className="bg-gray-500 text-white px-4 py-2 rounded-lg font-bold hover:bg-gray-600 transition-colors"
+                >
+                  <RotateCcw className="inline w-4 h-4 mr-2" />
+                  Recommencer
+                </button>
               </div>
               
               {/* Barre de progression */}
-              <div className="w-full bg-gray-200 rounded-full h-3">
+              <div className="w-full bg-gray-200 rounded-full h-3 mb-3">
                 <div 
                   className="bg-blue-500 h-3 rounded-full transition-all duration-500"
                   style={{ width: `${((currentExercise + 1) / complementExercises.length) * 100}%` }}
                 ></div>
               </div>
+              
+              {/* Score sous la barre */}
+              <div className="text-center">
+                <div className="text-lg font-bold text-blue-600">
+                  Score : {score}/{complementExercises.length}
+                </div>
+              </div>
             </div>
 
             {/* Question */}
-            <div className="bg-white rounded-xl p-8 shadow-lg">
-              <h3 className="text-3xl font-bold mb-6 text-center text-gray-900">
+            <div className="bg-white rounded-xl p-4 sm:p-8 shadow-lg">
+              <h3 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6 text-center text-gray-900">
                 {complementExercises[currentExercise].question}
               </h3>
               
               {/* Aide visuelle - barre de 10 */}
-              <div className="bg-gray-50 rounded-lg p-6 mb-6">
-                <p className="text-center text-gray-600 mb-4">Aide visuelle :</p>
-                <div className="flex justify-center">
-                  {renderBar10(complementExercises[currentExercise].number, 0)}
+              <div className="bg-gray-50 rounded-lg p-3 sm:p-6 mb-4 sm:mb-6">
+                <p className="text-center text-gray-600 mb-3 sm:mb-4 text-sm sm:text-base">Aide visuelle :</p>
+                <div className="flex justify-center overflow-x-auto">
+                  <div className="min-w-max">
+                    {renderBar10(complementExercises[currentExercise].number, 0)}
+                  </div>
                 </div>
-                <p className="text-center text-gray-500 text-sm mt-2">
+                <p className="text-center text-gray-500 text-xs sm:text-sm mt-2">
                   Cases bleues : {complementExercises[currentExercise].number} • Cases à compléter : ?
                 </p>
               </div>
               
-              <div className="text-center mb-6">
+              <div className="text-center mb-6 sm:mb-8">
                 <input
                   type="text"
                   value={userAnswer}
                   onChange={(e) => setUserAnswer(e.target.value)}
+                  onKeyPress={(e) => {
+                    if (e.key === 'Enter' && userAnswer.trim() && isCorrect === null) {
+                      checkAnswer();
+                    }
+                  }}
                   placeholder="?"
-                  className="w-32 h-16 text-center text-2xl font-bold border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none"
+                  className="w-28 sm:w-32 h-12 sm:h-16 text-center text-xl sm:text-2xl font-bold border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none mb-4 touch-manipulation"
                 />
-              </div>
-              
-              <div className="flex justify-center space-x-4 mb-6">
-                {isCorrect === null ? (
-                  <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                    <button
-                      onClick={checkAnswer}
-                      disabled={!userAnswer.trim()}
-                      className="bg-blue-500 text-white px-6 py-4 sm:py-3 rounded-lg font-bold hover:bg-blue-600 transition-colors disabled:opacity-50 touch-manipulation min-h-[44px] w-full sm:w-auto"
-                    >
-                      <Target className="inline w-4 h-4 mr-2" />
-                      Vérifier
-                    </button>
-                    <button
-                      onClick={resetExercise}
-                      className="bg-gray-500 text-white px-6 py-4 sm:py-3 rounded-lg font-bold hover:bg-gray-600 transition-colors touch-manipulation min-h-[44px] w-full sm:w-auto"
-                    >
-                      Effacer
-                    </button>
-                  </div>
-                ) : !isCorrect ? (
-                  <button
-                    onClick={nextExercise}
-                    className="bg-teal-500 text-white px-6 py-4 sm:py-3 rounded-lg font-bold hover:bg-teal-600 transition-colors touch-manipulation min-h-[44px] w-full sm:w-auto max-w-xs mx-auto"
-                  >
-                    Suivant →
-                  </button>
-                ) : null}
+                
+
               </div>
               
               {/* Résultat */}
               {isCorrect !== null && (
                 <div className={`p-4 rounded-lg mb-6 ${
-                  isCorrect ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                  isCorrect ? 'bg-green-600 text-white' : 'bg-red-600 text-white'
                 }`}>
                   <div className="flex items-center justify-center space-x-2">
                     {isCorrect ? (
@@ -604,20 +653,33 @@ export default function ComplementsA10Page() {
               )}
               
               {/* Navigation */}
-              <div className="flex justify-center space-x-4">
+              <div className="flex flex-col sm:flex-row justify-center items-center gap-2 sm:gap-4">
+                <button
+                  onClick={() => setUserAnswer('')}
+                  className="bg-gray-500 text-white px-4 py-3 sm:px-6 sm:py-3 rounded-lg font-bold hover:bg-gray-600 transition-colors w-full sm:w-auto touch-manipulation min-h-[44px]"
+                >
+                  Effacer
+                </button>
                 <button
                   onClick={() => setCurrentExercise(Math.max(0, currentExercise - 1))}
                   disabled={currentExercise === 0}
-                  className="bg-gray-300 text-gray-700 px-6 py-3 rounded-lg font-bold hover:bg-gray-400 transition-colors disabled:opacity-50"
+                  className="bg-gray-600 text-white px-4 py-3 sm:px-6 sm:py-3 rounded-lg font-bold hover:bg-gray-700 transition-colors disabled:opacity-50 w-full sm:w-auto touch-manipulation min-h-[44px]"
                 >
                   ← Précédent
                 </button>
                 <button
-                  onClick={nextExercise}
-                  disabled={currentExercise === complementExercises.length - 1}
-                  className="bg-cyan-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-cyan-600 transition-colors disabled:opacity-50"
+                  onClick={() => {
+                    // Si l'utilisateur a tapé une réponse mais n'a pas encore vérifié, on vérifie d'abord
+                    if (userAnswer.trim() && isCorrect === null) {
+                      checkAnswer();
+                    } else {
+                      nextExercise();
+                    }
+                  }}
+                  disabled={currentExercise === complementExercises.length - 1 || (!userAnswer.trim() && isCorrect === null)}
+                  className="bg-cyan-500 text-white px-4 py-3 sm:px-6 sm:py-3 rounded-lg font-bold hover:bg-cyan-600 transition-colors disabled:opacity-50 w-full sm:w-auto touch-manipulation min-h-[44px]"
                 >
-                  Suivant →
+                  {userAnswer.trim() && isCorrect === null ? '✅ Vérifier' : 'Suivant →'}
                 </button>
               </div>
             </div>

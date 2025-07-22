@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, CheckCircle, XCircle, RotateCcw, Target, Brain, Star, Trophy, Play, Pause } from 'lucide-react';
+import { ArrowLeft, RotateCcw, Target } from 'lucide-react';
 
 // Styles pour les animations
 const animationStyles = `
@@ -64,12 +64,12 @@ export default function DoublesEtMoitiesPage() {
     { question: 'Double de 7', answer: '14', visual: 7 },
     { question: 'Double de 8', answer: '16', visual: 8 },
     { question: 'Double de 9', answer: '18', visual: 9 },
-    { question: 'Double de 11', answer: '22', visual: 11 },
+    { question: 'Double de 4', answer: '8', visual: 4 },
     // Doubles nombres variés (pas que multiples de 5)
     { question: 'Double de 12', answer: '24', visual: 12 },
-    { question: 'Double de 13', answer: '26', visual: 13 },
+    { question: 'Double de 4', answer: '8', visual: 4 },
     { question: 'Double de 15', answer: '30', visual: 15 },
-    { question: 'Double de 17', answer: '34', visual: 17 },
+    { question: 'Double de 4', answer: '8', visual: 4 },
     { question: 'Double de 21', answer: '42', visual: 21 },
     { question: 'Double de 24', answer: '48', visual: 24 },
     { question: 'Double de 35', answer: '70', visual: 35 },
@@ -78,9 +78,9 @@ export default function DoublesEtMoitiesPage() {
     { question: 'Moitié de 14', answer: '7', visual: 14 },
     { question: 'Moitié de 16', answer: '8', visual: 16 },
     { question: 'Moitié de 18', answer: '9', visual: 18 },
-    { question: 'Moitié de 22', answer: '11', visual: 22 },
+    { question: 'Moitié de 8', answer: '4', visual: 8 },
     // Moitiés nombres variés
-    { question: 'Moitié de 26', answer: '13', visual: 26 },
+    { question: 'Moitié de 8', answer: '4', visual: 8 },
     { question: 'Moitié de 48', answer: '24', visual: 48 },
     { question: 'Moitié de 70', answer: '35', visual: 70 }
   ];
@@ -94,8 +94,10 @@ export default function DoublesEtMoitiesPage() {
     const correct = userAnswerStr === expectedAnswer;
     setIsCorrect(correct);
     
+    let newScore = score;
     if (correct && !answeredCorrectly.has(currentExercise)) {
-      setScore(prevScore => prevScore + 1);
+      newScore = score + 1;
+      setScore(newScore);
       setAnsweredCorrectly(prev => {
         const newSet = new Set(prev);
         newSet.add(currentExercise);
@@ -111,9 +113,13 @@ export default function DoublesEtMoitiesPage() {
           setUserAnswer('');
           setIsCorrect(null);
         } else {
-          // Dernière question, afficher la modal
-          setFinalScore(score + (!answeredCorrectly.has(currentExercise) ? 1 : 0));
+          // Dernière question, calculer le score final et sauvegarder
+          setFinalScore(newScore);
           setShowCompletionModal(true);
+          
+          // Sauvegarder les progrès
+          const maxScore = allExercises.length;
+          saveProgress(newScore, maxScore);
         }
       }, 1500);
     }
@@ -129,12 +135,63 @@ export default function DoublesEtMoitiesPage() {
     } else {
       setFinalScore(score);
       setShowCompletionModal(true);
+      
+      // Sauvegarder les progrès
+      const maxScore = allExercises.length;
+      saveProgress(score, maxScore);
     }
   };
 
   const resetExercise = () => {
     setUserAnswer('');
     setIsCorrect(null);
+  };
+
+  // Fonction pour sauvegarder les progrès et calculer l'XP
+  const saveProgress = (score: number, maxScore: number) => {
+    const percentage = Math.round((score / maxScore) * 100);
+    const baseXP = 15; // XP de base pour cette section
+    const xpEarned = Math.round(baseXP * (percentage / 100));
+    
+    const progress = {
+      sectionId: 'doubles-moities',
+      completed: true,
+      score: score,
+      maxScore: maxScore,
+      completedAt: new Date().toISOString(),
+      attempts: 1,
+      xpEarned: xpEarned
+    };
+
+    // Récupérer les progrès existants
+    const existingProgress = localStorage.getItem('ce1-calcul-mental-progress');
+    let allProgress = [];
+    
+    if (existingProgress) {
+      allProgress = JSON.parse(existingProgress);
+      const existingIndex = allProgress.findIndex((p: any) => p.sectionId === 'doubles-moities');
+      
+      if (existingIndex >= 0) {
+        // Si le nouveau score est meilleur, on met à jour
+        if (score > allProgress[existingIndex].score) {
+          allProgress[existingIndex] = { 
+            ...progress, 
+            attempts: allProgress[existingIndex].attempts + 1 
+          };
+        } else {
+          allProgress[existingIndex].attempts += 1;
+        }
+      } else {
+        allProgress.push(progress);
+      }
+    } else {
+      allProgress = [progress];
+    }
+
+    localStorage.setItem('ce1-calcul-mental-progress', JSON.stringify(allProgress));
+    
+    // Déclencher l'événement storage pour mettre à jour les autres onglets
+    window.dispatchEvent(new Event('storage'));
   };
 
   const resetAll = () => {
@@ -230,6 +287,9 @@ export default function DoublesEtMoitiesPage() {
           <div className="bg-white rounded-3xl p-8 max-w-md mx-4 text-center shadow-2xl transform transition-all duration-300 scale-100 hover:scale-105">
             {(() => {
               const percentage = Math.round((finalScore / allExercises.length) * 100);
+              const baseXP = 15; // XP de base pour cette section
+              const xpEarned = Math.round(baseXP * (percentage / 100));
+              
               const getMessage = () => {
                 if (percentage >= 90) return { 
                   title: "🎉 Champion des doubles !", 
@@ -262,9 +322,15 @@ export default function DoublesEtMoitiesPage() {
                   <div className="text-6xl mb-4">{percentage >= 70 ? "🎉" : percentage >= 50 ? "😊" : "📚"}</div>
                   <h3 className={`text-2xl font-bold mb-3 ${result.color}`}>{result.title}</h3>
                   <p className={`text-lg mb-4 ${result.color}`}>{result.message}</p>
-                  <p className={`text-xl font-bold mb-6 ${result.color}`}>
-                    Score final : {finalScore}/{allExercises.length} ({percentage}%)
-                  </p>
+                  <div className="bg-white bg-opacity-50 rounded-lg p-4 mb-4">
+                    <div className={`text-xl font-bold mb-2 ${result.color}`}>
+                      Score final : {finalScore}/{allExercises.length} ({percentage}%)
+                    </div>
+                    <div className={`text-lg font-bold ${result.color} flex items-center justify-center`}>
+                      <Target className="w-5 h-5 mr-2" />
+                      +{xpEarned} XP gagnés !
+                    </div>
+                  </div>
                   <div className="flex gap-3 justify-center">
                     <button
                       onClick={() => setShowCompletionModal(false)}
@@ -371,7 +437,7 @@ export default function DoublesEtMoitiesPage() {
               </h3>
               
               <div className="grid grid-cols-5 gap-4 mb-8">
-                {[6, 8, 11, 13, 17].map((number) => (
+                {[6, 8, 4, 2, 5].map((number) => (
                   <button
                     key={number}
                     onClick={() => showDoubleAnimation(number)}
@@ -528,123 +594,126 @@ export default function DoublesEtMoitiesPage() {
                 <h2 className="text-2xl font-bold text-gray-900">
                   ✏️ Exercice {currentExercise + 1} sur {allExercises.length}
                 </h2>
-                <div className="flex items-center space-x-4">
-                  <div className="text-lg font-bold text-green-600">
-                    Score : {score}/{allExercises.length}
-                  </div>
-                  <button
-                    onClick={resetAll}
-                    className="bg-gray-500 text-white px-4 py-2 rounded-lg font-bold hover:bg-gray-600 transition-colors"
-                  >
-                    <RotateCcw className="inline w-4 h-4 mr-2" />
-                    Recommencer
-                  </button>
-                </div>
+                <button
+                  onClick={resetAll}
+                  className="bg-gray-500 text-white px-4 py-2 rounded-lg font-bold hover:bg-gray-600 transition-colors"
+                >
+                  <RotateCcw className="inline w-4 h-4 mr-2" />
+                  Recommencer
+                </button>
               </div>
               
               {/* Barre de progression */}
-              <div className="w-full bg-gray-200 rounded-full h-3">
+              <div className="w-full bg-gray-200 rounded-full h-3 mb-3">
                 <div 
                   className="bg-green-500 h-3 rounded-full transition-all duration-500"
                   style={{ width: `${((currentExercise + 1) / allExercises.length) * 100}%` }}
                 ></div>
               </div>
+              
+              {/* Score sous la barre */}
+              <div className="text-center">
+                <div className="text-lg font-bold text-green-600">
+                  Score : {score}/{allExercises.length}
+                </div>
+              </div>
             </div>
 
             {/* Question */}
             <div className="bg-white rounded-xl p-8 shadow-lg">
-              <h3 className="text-2xl font-bold mb-6 text-center text-gray-900">
-                🎯 {allExercises[currentExercise].question} ?
+              <h3 className="text-4xl sm:text-5xl font-bold mb-8 text-center text-gray-900">
+                {allExercises[currentExercise].question} ?
               </h3>
               
-              {/* Aide visuelle */}
-              <div className="bg-gray-50 rounded-lg p-6 mb-6">
-                <div className="text-center">
-                  <p className="text-gray-600 mb-4">Aide visuelle :</p>
-                  <div className="flex justify-center">
-                    <div className="flex flex-wrap max-w-[200px] justify-center">
-                      {renderVisualElements(allExercises[currentExercise].visual, 'bg-yellow-500')}
-                    </div>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="text-center mb-6">
+              <div className="text-center mb-8">
                 <input
                   type="text"
                   value={userAnswer}
                   onChange={(e) => setUserAnswer(e.target.value)}
-                  placeholder="Ta réponse"
-                  className="w-32 h-16 text-center text-2xl font-bold border-2 border-gray-300 rounded-lg focus:border-green-500 focus:outline-none"
+                  onKeyPress={(e) => {
+                    if (e.key === 'Enter' && userAnswer.trim() && isCorrect === null) {
+                      checkAnswer();
+                    }
+                  }}
+                  placeholder="?"
+                  className="w-40 h-16 text-center text-3xl font-bold border-2 border-gray-300 rounded-lg focus:border-green-500 focus:outline-none"
                 />
               </div>
               
-              <div className="flex justify-center space-x-4 mb-6">
-                {isCorrect === null ? (
-                  <>
-                    <button
-                      onClick={checkAnswer}
-                      disabled={!userAnswer.trim()}
-                      className="bg-green-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-green-600 transition-colors disabled:opacity-50"
-                    >
-                      <Target className="inline w-4 h-4 mr-2" />
-                      Vérifier
-                    </button>
-                    <button
-                      onClick={resetExercise}
-                      className="bg-gray-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-gray-600 transition-colors"
-                    >
-                      Effacer
-                    </button>
-                  </>
-                ) : !isCorrect ? (
+              {!isCorrect && isCorrect !== null && (
+                <div className="flex justify-center space-x-4 mb-6">
                   <button
                     onClick={nextExercise}
                     className="bg-blue-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-blue-600 transition-colors"
                   >
                     Suivant →
                   </button>
-                ) : null}
-              </div>
+                </div>
+              )}
               
               {/* Résultat */}
               {isCorrect !== null && (
-                <div className={`p-4 rounded-lg mb-6 ${
+                <div className={`p-6 rounded-lg mb-6 ${
                   isCorrect ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
                 }`}>
-                  <div className="flex items-center justify-center space-x-2">
+                  <div className="flex items-center justify-center space-x-2 mb-4">
                     {isCorrect ? (
                       <>
-                        <CheckCircle className="w-6 h-6" />
-                        <span className="font-bold">Excellent ! Tu as trouvé la bonne réponse ! 🎉</span>
+                        <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center text-white text-sm font-bold">✓</div>
+                        <span className="text-xl font-bold">Excellent ! Tu as trouvé la bonne réponse ! 🎉</span>
                       </>
                     ) : (
                       <>
-                        <XCircle className="w-6 h-6" />
-                        <span className="font-bold">
+                        <div className="w-6 h-6 bg-red-500 rounded-full flex items-center justify-center text-white text-sm font-bold">✗</div>
+                        <span className="text-xl font-bold">
                           Pas tout à fait... La bonne réponse est {allExercises[currentExercise].answer}.
                         </span>
                       </>
                     )}
                   </div>
+                  
+                  {/* Aide visuelle uniquement si mauvaise réponse */}
+                  {!isCorrect && (
+                    <div className="bg-white bg-opacity-50 rounded-lg p-4 mt-4">
+                      <p className="text-center text-gray-700 mb-3 font-medium">Aide visuelle :</p>
+                      <div className="flex justify-center">
+                        <div className="flex flex-wrap max-w-[200px] justify-center">
+                          {renderVisualElements(allExercises[currentExercise].visual, 'bg-yellow-500')}
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
               
               {/* Navigation */}
-              <div className="flex justify-center space-x-4">
+              <div className="flex flex-col md:flex-row justify-center items-center gap-2 md:gap-4">
+                <button
+                  onClick={() => setUserAnswer('')}
+                  className="bg-gray-500 text-white px-4 py-2 md:px-6 md:py-3 rounded-lg font-bold hover:bg-gray-600 transition-colors w-full md:w-auto"
+                >
+                  Effacer
+                </button>
                 <button
                   onClick={() => setCurrentExercise(Math.max(0, currentExercise - 1))}
                   disabled={currentExercise === 0}
-                  className="bg-gray-300 text-gray-700 px-6 py-3 rounded-lg font-bold hover:bg-gray-400 transition-colors disabled:opacity-50"
+                  className="bg-gray-300 text-gray-700 px-4 py-2 md:px-6 md:py-3 rounded-lg font-bold hover:bg-gray-400 transition-colors disabled:opacity-50 w-full md:w-auto"
                 >
                   ← Précédent
                 </button>
                 <button
-                  onClick={nextExercise}
-                  disabled={currentExercise === allExercises.length - 1}
-                  className="bg-emerald-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-emerald-600 transition-colors disabled:opacity-50"
+                  onClick={() => {
+                    // Si l'utilisateur a tapé une réponse mais n'a pas encore vérifié, on vérifie d'abord
+                    if (userAnswer.trim() && isCorrect === null) {
+                      checkAnswer();
+                    } else {
+                      nextExercise();
+                    }
+                  }}
+                  disabled={currentExercise === allExercises.length - 1 || (!userAnswer.trim() && isCorrect === null)}
+                  className="bg-green-500 text-white px-4 py-2 md:px-6 md:py-3 rounded-lg font-bold hover:bg-green-600 transition-colors disabled:opacity-50 w-full md:w-auto"
                 >
-                  Suivant →
+                  {userAnswer.trim() && isCorrect === null ? '✅ Vérifier' : 'Suivant →'}
                 </button>
               </div>
             </div>

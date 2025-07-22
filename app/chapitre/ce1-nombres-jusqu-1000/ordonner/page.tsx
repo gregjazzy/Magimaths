@@ -11,10 +11,51 @@ export default function OrdonnerNombresCE1Page() {
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
   const [showExercises, setShowExercises] = useState(false);
   const [score, setScore] = useState(0);
-  const [exerciseType, setExerciseType] = useState<'ranger' | 'encadrer' | 'suites' | 'comparer' | 'encadrer-unites'>('ranger');
+  const [exerciseType, setExerciseType] = useState<'ranger' | 'encadrer' | 'suites' | 'comparer'>('ranger');
   const [answeredCorrectly, setAnsweredCorrectly] = useState<Set<string>>(new Set());
   const [showCompletionModal, setShowCompletionModal] = useState(false);
   const [finalScore, setFinalScore] = useState(0);
+
+  // Sauvegarder les progrès dans localStorage
+  const saveProgress = (score: number, maxScore: number) => {
+    const progress = {
+      sectionId: 'ordonner',
+      completed: true,
+      score: score,
+      maxScore: maxScore,
+      completedAt: new Date().toISOString(),
+      attempts: 1
+    };
+
+    // Charger les progrès existants
+    const existingProgress = localStorage.getItem('ce1-nombres-progress');
+    let allProgress = [];
+    
+    if (existingProgress) {
+      allProgress = JSON.parse(existingProgress);
+      // Chercher si cette section existe déjà
+      const existingIndex = allProgress.findIndex((p: any) => p.sectionId === 'ordonner');
+      
+      if (existingIndex >= 0) {
+        // Mettre à jour seulement si le score est meilleur
+        if (score > allProgress[existingIndex].score) {
+          allProgress[existingIndex] = {
+            ...progress,
+            attempts: allProgress[existingIndex].attempts + 1
+          };
+        } else {
+          // Juste incrémenter les tentatives
+          allProgress[existingIndex].attempts += 1;
+        }
+      } else {
+        allProgress.push(progress);
+      }
+    } else {
+      allProgress = [progress];
+    }
+
+    localStorage.setItem('ce1-nombres-progress', JSON.stringify(allProgress));
+  };
 
   // Exercices de rangement CE1 (nombres jusqu'à 1000) - nombres complexes
   const rangerExercises = [
@@ -41,30 +82,7 @@ export default function OrdonnerNombresCE1Page() {
     { numbers: [839, 399, 897, 389, 939], answer: [939, 897, 839, 399, 389], order: 'décroissant' }
   ];
 
-  // Exercices d'encadrement CE1 (nombres jusqu'à 1000) - nombres complexes
-  const encadrerExercises = [
-    { number: 547, before: 546, after: 548 },
-    { number: 709, before: 708, after: 710 },
-    { number: 859, before: 858, after: 860 },
-    { number: 907, before: 906, after: 908 },
-    { number: 607, before: 606, after: 608 },
-    { number: 789, before: 788, after: 790 },
-    { number: 379, before: 378, after: 380 },
-    { number: 339, before: 338, after: 340 },
-    { number: 309, before: 308, after: 310 },
-    { number: 739, before: 738, after: 740 },
-    { number: 409, before: 408, after: 410 },
-    { number: 297, before: 296, after: 298 },
-    { number: 507, before: 506, after: 508 },
-    { number: 659, before: 658, after: 660 },
-    { number: 197, before: 196, after: 198 },
-    { number: 429, before: 428, after: 430 },
-    { number: 689, before: 688, after: 690 },
-    { number: 157, before: 156, after: 158 },
-    { number: 769, before: 768, after: 770 },
-    { number: 837, before: 836, after: 838 },
-    { number: 497, before: 496, after: 498 }
-  ];
+
 
   // Exercices de suites CE1 (nombres jusqu'à 1000) - nombres complexes
   const suitesExercises = [
@@ -116,7 +134,7 @@ export default function OrdonnerNombresCE1Page() {
   ];
 
   // Exercices d'encadrement par unités, dizaines, centaines CE1 (20 exercices) - nombres complexes
-  const encadrerUnitesExercises = [
+  const encadrerExercises = [
     { number: 459, type: 'unité', before: 458, after: 460, explanation: '458 < 459 < 460' },
     { number: 237, type: 'unité', before: 236, after: 238, explanation: '236 < 237 < 238' },
     { number: 569, type: 'unité', before: 568, after: 570, explanation: '568 < 569 < 570' },
@@ -145,7 +163,6 @@ export default function OrdonnerNombresCE1Page() {
       case 'encadrer': return encadrerExercises;
       case 'suites': return suitesExercises;
       case 'comparer': return comparerExercises;
-      case 'encadrer-unites': return encadrerUnitesExercises;
       default: return rangerExercises;
     }
   };
@@ -168,9 +185,6 @@ export default function OrdonnerNombresCE1Page() {
       } else if (exerciseType === 'comparer') {
         const exercise = exercises[currentExercise] as any;
         correct = userAnswers[0] === exercise.answer;
-      } else if (exerciseType === 'encadrer-unites') {
-        const exercise = exercises[currentExercise] as any;
-        correct = userAnswers[0] === exercise.before.toString() && userAnswers[1] === exercise.after.toString();
       }
 
       setIsCorrect(correct);
@@ -195,11 +209,16 @@ export default function OrdonnerNombresCE1Page() {
             setUserAnswer('');
             setUserAnswers([]);
             setIsCorrect(null);
-          } else {
-            // Dernier exercice terminé, afficher la modale
-            setFinalScore(score + (!answeredCorrectly.has(`${exerciseType}-${currentExercise}`) ? 1 : 0));
-            setShowCompletionModal(true);
-          }
+                } else {
+        // Dernier exercice terminé, afficher la modale
+        const finalScoreValue = score + (!answeredCorrectly.has(`${exerciseType}-${currentExercise}`) ? 1 : 0);
+        setFinalScore(finalScoreValue);
+        setShowCompletionModal(true);
+        
+        // Sauvegarder les progrès
+        const maxScore = getCurrentExercises().length;
+        saveProgress(finalScoreValue, maxScore);
+      }
         }, 1500);
       }
       // Si mauvaise réponse, on affiche la correction et on attend le clic suivant
@@ -215,6 +234,10 @@ export default function OrdonnerNombresCE1Page() {
         // Dernier exercice, afficher la modale
         setFinalScore(score);
         setShowCompletionModal(true);
+        
+        // Sauvegarder les progrès
+        const maxScore = getCurrentExercises().length;
+        saveProgress(score, maxScore);
       }
     }
   };
@@ -246,7 +269,7 @@ export default function OrdonnerNombresCE1Page() {
     setFinalScore(0);
   };
 
-  const switchExerciseType = (type: 'ranger' | 'encadrer' | 'suites' | 'comparer' | 'encadrer-unites') => {
+  const switchExerciseType = (type: 'ranger' | 'encadrer' | 'suites' | 'comparer') => {
     setExerciseType(type);
     setCurrentExercise(0);
     setUserAnswer('');
@@ -274,30 +297,30 @@ export default function OrdonnerNombresCE1Page() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-50 to-rose-100">
-      <div className="max-w-6xl mx-auto px-4 py-8">
+      <div className="max-w-6xl mx-auto px-4 py-4 md:py-8">
         {/* Header */}
-        <div className="mb-8">
-          <Link href="/chapitre/ce1-nombres-jusqu-1000" className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors mb-4">
+        <div className="mb-4 md:mb-8">
+          <Link href="/chapitre/ce1-nombres-jusqu-1000" className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors mb-2 md:mb-4">
             <ArrowLeft className="w-4 h-4" />
-            <span>Retour au chapitre</span>
+            <span className="text-sm md:text-base">Retour au chapitre</span>
           </Link>
           
-          <div className="bg-white rounded-xl p-6 shadow-lg text-center">
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">
+          <div className="bg-white rounded-xl p-4 md:p-6 shadow-lg text-center">
+            <h1 className="text-2xl md:text-4xl font-bold text-gray-900 mb-2 md:mb-4">
               🔢 Ordonner les nombres
             </h1>
-            <p className="text-lg text-gray-600">
+            <p className="text-sm md:text-lg text-gray-600">
               Apprends à comparer et ranger les nombres jusqu'à 1000 !
             </p>
           </div>
         </div>
 
         {/* Navigation entre cours et exercices */}
-        <div className="flex justify-center mb-8">
-          <div className="bg-white rounded-xl p-2 shadow-lg border-2 border-gray-200">
+        <div className="flex justify-center mb-4 md:mb-8">
+          <div className="bg-white rounded-xl p-1 md:p-2 shadow-lg border-2 border-gray-200">
             <button
               onClick={() => setShowExercises(false)}
-              className={`px-8 py-4 rounded-xl font-bold transition-all transform hover:scale-105 shadow-md ${
+              className={`px-4 md:px-8 py-2 md:py-4 rounded-xl font-bold transition-all transform hover:scale-105 shadow-md text-sm md:text-base ${
                 !showExercises 
                   ? 'bg-gradient-to-r from-pink-500 to-rose-600 text-white shadow-lg' 
                   : 'text-gray-700 hover:bg-gradient-to-r hover:from-pink-100 hover:to-rose-100 hover:text-pink-800'
@@ -307,7 +330,7 @@ export default function OrdonnerNombresCE1Page() {
             </button>
             <button
               onClick={() => setShowExercises(true)}
-              className={`px-8 py-4 rounded-xl font-bold transition-all transform hover:scale-105 shadow-md ml-2 ${
+              className={`px-4 md:px-8 py-2 md:py-4 rounded-xl font-bold transition-all transform hover:scale-105 shadow-md ml-1 md:ml-2 text-sm md:text-base ${
                 showExercises 
                   ? 'bg-gradient-to-r from-rose-500 to-pink-600 text-white shadow-lg' 
                   : 'text-gray-700 hover:bg-gradient-to-r hover:from-rose-100 hover:to-pink-100 hover:text-rose-800'
@@ -422,85 +445,74 @@ export default function OrdonnerNombresCE1Page() {
           </div>
         ) : (
           /* EXERCICES */
-          <div className="space-y-8">
+          <div className="space-y-4 md:space-y-8">
             {/* Header exercices */}
-            <div className="bg-white rounded-xl p-6 shadow-lg">
+            <div className="bg-white rounded-xl p-4 md:p-6 shadow-lg">
               <div className="flex justify-between items-center mb-4">
-                <h2 className="text-2xl font-bold text-gray-900">
+                <h2 className="text-xl md:text-2xl font-bold text-gray-900">
                   ✏️ Exercice {currentExercise + 1} sur {getCurrentExercises().length}
                 </h2>
-                <div className="flex items-center space-x-4">
-                  <div className="text-lg font-bold text-pink-600">
-                    Score : {score}/{getCurrentExercises().length}
-                  </div>
-                  <button
-                    onClick={resetAll}
-                    className="bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white px-4 py-2 rounded-xl font-bold transition-all transform hover:scale-105 shadow-lg"
-                  >
-                    <RotateCcw className="inline w-4 h-4 mr-2" />
-                    Recommencer
-                  </button>
-                </div>
+                <button
+                  onClick={resetAll}
+                  className="bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white px-3 md:px-4 py-2 rounded-xl font-bold transition-all transform hover:scale-105 shadow-lg text-sm md:text-base"
+                >
+                  <RotateCcw className="inline w-3 md:w-4 h-3 md:h-4 mr-1 md:mr-2" />
+                  Recommencer
+                </button>
               </div>
               
               {/* Sélecteur type d'exercice */}
-              <div className="flex justify-center mb-4">
-                <div className="bg-gray-50 rounded-xl p-3 shadow-lg border-2 border-gray-200">
-                  <button
-                    onClick={() => switchExerciseType('ranger')}
-                    className={`px-6 py-3 rounded-xl font-bold transition-all transform hover:scale-105 shadow-md ${
-                      exerciseType === 'ranger' 
-                        ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-xl border-2 border-blue-400 scale-105' 
-                        : 'bg-gradient-to-r from-blue-200 to-purple-200 text-blue-800 hover:from-blue-300 hover:to-purple-300 hover:text-blue-900 border-2 border-blue-300'
-                    }`}
-                  >
-                    📊 Ranger
-                  </button>
-                  <button
-                    onClick={() => switchExerciseType('encadrer')}
-                    className={`px-6 py-3 rounded-xl font-bold transition-all transform hover:scale-105 shadow-md ml-2 ${
-                      exerciseType === 'encadrer' 
-                        ? 'bg-gradient-to-r from-green-500 to-teal-600 text-white shadow-xl border-2 border-green-400 scale-105' 
-                        : 'bg-gradient-to-r from-green-200 to-teal-200 text-green-800 hover:from-green-300 hover:to-teal-300 hover:text-green-900 border-2 border-green-300'
-                    }`}
-                  >
-                    🎯 Encadrer
-                  </button>
-                  <button
-                    onClick={() => switchExerciseType('suites')}
-                    className={`px-6 py-3 rounded-xl font-bold transition-all transform hover:scale-105 shadow-md ml-2 ${
-                      exerciseType === 'suites' 
-                        ? 'bg-gradient-to-r from-red-500 to-pink-600 text-white shadow-xl border-2 border-red-400 scale-105' 
-                        : 'bg-gradient-to-r from-red-200 to-pink-200 text-red-800 hover:from-red-300 hover:to-pink-300 hover:text-red-900 border-2 border-red-300'
-                    }`}
-                  >
-                    🔢 Suites
-                  </button>
-                  <button
-                    onClick={() => switchExerciseType('comparer')}
-                    className={`px-6 py-3 rounded-xl font-bold transition-all transform hover:scale-105 shadow-md ml-2 ${
-                      exerciseType === 'comparer' 
-                        ? 'bg-gradient-to-r from-yellow-500 to-orange-600 text-white shadow-xl border-2 border-yellow-400 scale-105' 
-                        : 'bg-gradient-to-r from-yellow-200 to-orange-200 text-yellow-800 hover:from-yellow-300 hover:to-orange-300 hover:text-yellow-900 border-2 border-yellow-300'
-                    }`}
-                  >
-                    🔀 Comparer
-                  </button>
-                  <button
-                    onClick={() => switchExerciseType('encadrer-unites')}
-                    className={`px-6 py-3 rounded-xl font-bold transition-all transform hover:scale-105 shadow-md ml-2 ${
-                      exerciseType === 'encadrer-unites' 
-                        ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-xl border-2 border-cyan-400 scale-105' 
-                        : 'bg-gradient-to-r from-cyan-200 to-blue-200 text-cyan-800 hover:from-cyan-300 hover:to-blue-300 hover:text-cyan-900 border-2 border-cyan-300'
-                    }`}
-                  >
-                    🎯 Encadrer (U, D, C)
-                  </button>
+              <div className="flex justify-center mb-3 md:mb-4">
+                <div className="bg-gray-50 rounded-xl p-2 md:p-3 shadow-lg border-2 border-gray-200">
+                  <div className="grid grid-cols-2 gap-2">
+                    {/* Première ligne */}
+                    <button
+                      onClick={() => switchExerciseType('ranger')}
+                      className={`px-4 md:px-6 py-2 md:py-3 rounded-xl font-bold transition-all transform hover:scale-105 shadow-md text-sm md:text-base ${
+                        exerciseType === 'ranger' 
+                          ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-xl border-2 border-blue-400 scale-105' 
+                          : 'bg-gradient-to-r from-blue-200 to-purple-200 text-blue-800 hover:from-blue-300 hover:to-purple-300 hover:text-blue-900 border-2 border-blue-300'
+                      }`}
+                    >
+                      📊 Ranger
+                    </button>
+                    <button
+                      onClick={() => switchExerciseType('encadrer')}
+                      className={`px-4 md:px-6 py-2 md:py-3 rounded-xl font-bold transition-all transform hover:scale-105 shadow-md text-sm md:text-base ${
+                        exerciseType === 'encadrer' 
+                          ? 'bg-gradient-to-r from-green-500 to-teal-600 text-white shadow-xl border-2 border-green-400 scale-105' 
+                          : 'bg-gradient-to-r from-green-200 to-teal-200 text-green-800 hover:from-green-300 hover:to-teal-300 hover:text-green-900 border-2 border-green-300'
+                      }`}
+                    >
+                      🎯 Encadrer
+                    </button>
+                    {/* Deuxième ligne */}
+                    <button
+                      onClick={() => switchExerciseType('suites')}
+                      className={`px-4 md:px-6 py-2 md:py-3 rounded-xl font-bold transition-all transform hover:scale-105 shadow-md text-sm md:text-base ${
+                        exerciseType === 'suites' 
+                          ? 'bg-gradient-to-r from-red-500 to-pink-600 text-white shadow-xl border-2 border-red-400 scale-105' 
+                          : 'bg-gradient-to-r from-red-200 to-pink-200 text-red-800 hover:from-red-300 hover:to-pink-300 hover:text-red-900 border-2 border-red-300'
+                      }`}
+                    >
+                      🔢 Suites
+                    </button>
+                    <button
+                      onClick={() => switchExerciseType('comparer')}
+                      className={`px-4 md:px-6 py-2 md:py-3 rounded-xl font-bold transition-all transform hover:scale-105 shadow-md text-sm md:text-base ${
+                        exerciseType === 'comparer' 
+                          ? 'bg-gradient-to-r from-yellow-500 to-orange-600 text-white shadow-xl border-2 border-yellow-400 scale-105' 
+                          : 'bg-gradient-to-r from-yellow-200 to-orange-200 text-yellow-800 hover:from-yellow-300 hover:to-orange-300 hover:text-yellow-900 border-2 border-yellow-300'
+                      }`}
+                    >
+                      🔀 Comparer
+                    </button>
+                  </div>
                 </div>
               </div>
               
               {/* Barre de progression */}
-              <div className="w-full bg-gray-200 rounded-full h-3">
+              <div className="w-full bg-gray-200 rounded-full h-3 mb-3">
                 <div 
                   className={`h-3 rounded-full transition-all duration-500 ${
                     exerciseType === 'ranger' ? 'bg-blue-500' : 
@@ -511,30 +523,37 @@ export default function OrdonnerNombresCE1Page() {
                   style={{ width: `${((currentExercise + 1) / getCurrentExercises().length) * 100}%` }}
                 ></div>
               </div>
+              
+              {/* Score sous la barre */}
+              <div className="text-center">
+                <div className="text-lg font-bold text-pink-600">
+                  Score : {score}/{getCurrentExercises().length}
+                </div>
+              </div>
             </div>
 
             {/* Question */}
-            <div className="bg-white rounded-xl p-8 shadow-lg text-center">
+            <div className="bg-white rounded-xl p-2 md:p-8 shadow-lg text-center">
               {exerciseType === 'ranger' && (
                 <>
-                  <h3 className="text-xl font-bold mb-6 text-gray-900">
+                  <h3 className="text-base md:text-xl font-bold mb-2 md:mb-6 text-gray-900">
                     📊 Range ces nombres dans l'ordre {rangerExercises[currentExercise].order}
                   </h3>
                   
-                  <div className="mb-8">
-                    <h4 className="font-bold text-gray-700 mb-4">Nombres à ranger :</h4>
-                    <div className="flex justify-center space-x-2 mb-6 flex-wrap">
+                  <div className="mb-2 md:mb-8">
+                    <h4 className="font-bold text-gray-700 mb-1 md:mb-4 text-xs md:text-base">Nombres à ranger :</h4>
+                    <div className="flex justify-center space-x-0.5 md:space-x-2 mb-2 md:mb-6 flex-wrap">
                       {rangerExercises[currentExercise].numbers.map((num, index) => (
-                        <div key={index} className="text-2xl font-bold text-purple-600 bg-purple-100 rounded-lg p-3 mb-2">
+                        <div key={index} className="text-sm md:text-2xl font-bold text-purple-600 bg-purple-100 rounded-lg px-1 py-0.5 md:p-3 mb-1">
                           {num}
                         </div>
                       ))}
                     </div>
                   </div>
                   
-                  <div className="mb-8">
-                    <h4 className="font-bold text-gray-700 mb-4">Ta réponse :</h4>
-                    <div className="flex justify-center space-x-2 flex-wrap">
+                  <div className="mb-2 md:mb-8">
+                    <h4 className="font-bold text-gray-700 mb-1 md:mb-4 text-xs md:text-base">Ta réponse :</h4>
+                    <div className="flex justify-center space-x-0.5 md:space-x-2 flex-wrap">
                       {[0, 1, 2, 3, 4].map((index) => (
                         <input
                           key={index}
@@ -542,7 +561,7 @@ export default function OrdonnerNombresCE1Page() {
                           value={userAnswers[index] || ''}
                           onChange={(e) => updateOrderAnswer(index, e.target.value)}
                           placeholder="?"
-                          className="w-20 h-20 text-center text-lg font-bold border-2 border-gray-300 rounded-lg focus:border-rose-500 focus:outline-none bg-white text-gray-900 mb-2"
+                          className="w-10 md:w-20 h-10 md:h-20 text-center text-xs md:text-lg font-bold border-2 border-gray-300 rounded-lg focus:border-rose-500 focus:outline-none bg-white text-gray-900 mb-1"
                         />
                       ))}
                     </div>
@@ -552,43 +571,53 @@ export default function OrdonnerNombresCE1Page() {
 
               {exerciseType === 'encadrer' && (
                 <>
-                  <h3 className="text-xl font-bold mb-6 text-gray-900">
-                    🎯 Encadre ce nombre par le nombre précédent et le nombre suivant
+                  <h3 className="text-base md:text-xl font-bold mb-2 md:mb-6 text-gray-900">
+                    🎯 Encadre ce nombre à l'unité
                   </h3>
                   
-                  <div className="flex justify-center items-center space-x-4 mb-8">
+                  <div className="flex justify-center items-center space-x-0.5 md:space-x-4 mb-2 md:mb-8">
                     <input
                       type="text"
                       value={userAnswers[0] || ''}
                       onChange={(e) => updateOrderAnswer(0, e.target.value)}
                       placeholder="?"
-                      className="w-24 h-24 text-center text-2xl font-bold border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none bg-white text-gray-900"
+                      className="w-10 md:w-24 h-10 md:h-24 text-center text-xs md:text-2xl font-bold border-2 border-gray-300 rounded-lg focus:border-cyan-500 focus:outline-none bg-white text-gray-900"
                     />
-                    <div className="text-3xl font-bold text-gray-600">&lt;</div>
-                    <div className="text-4xl font-bold text-red-600 bg-red-100 rounded-lg p-4">
+                    <div className="text-base md:text-3xl font-bold text-gray-600">&lt;</div>
+                    <div className="text-sm md:text-4xl font-bold text-cyan-600 bg-cyan-100 rounded-lg px-1 py-0.5 md:p-4">
                       {encadrerExercises[currentExercise].number}
                     </div>
-                    <div className="text-3xl font-bold text-gray-600">&lt;</div>
+                    <div className="text-base md:text-3xl font-bold text-gray-600">&lt;</div>
                     <input
                       type="text"
                       value={userAnswers[1] || ''}
                       onChange={(e) => updateOrderAnswer(1, e.target.value)}
                       placeholder="?"
-                      className="w-24 h-24 text-center text-2xl font-bold border-2 border-gray-300 rounded-lg focus:border-green-500 focus:outline-none bg-white text-gray-900"
+                      className="w-10 md:w-24 h-10 md:h-24 text-center text-xs md:text-2xl font-bold border-2 border-gray-300 rounded-lg focus:border-cyan-500 focus:outline-none bg-white text-gray-900"
                     />
+                  </div>
+                  
+                  <div className="mb-2 md:mb-8">
+                    <p className="text-gray-500 text-xs md:text-sm">
+                      {encadrerExercises[currentExercise].type === 'unité' 
+                        ? 'Ex: 455 < 456 < 457' 
+                        : encadrerExercises[currentExercise].type === 'dizaine' 
+                        ? 'Ex: 450 < 456 < 460' 
+                        : 'Ex: 400 < 456 < 500'}
+                    </p>
                   </div>
                 </>
               )}
 
               {exerciseType === 'suites' && (
                 <>
-                  <h3 className="text-xl font-bold mb-6 text-gray-900">
-                    🔢 Trouve les nombres manquants dans cette suite
+                  <h3 className="text-base md:text-xl font-bold mb-2 md:mb-6 text-gray-900">
+                    🔢 Trouve les nombres manquants
                   </h3>
                   
-                  <div className="flex justify-center space-x-4 mb-8">
+                  <div className="flex justify-center space-x-0.5 md:space-x-4 mb-2 md:mb-8 overflow-x-auto">
                     {suitesExercises[currentExercise].sequence.map((item, index) => (
-                      <div key={index} className={`w-24 h-24 rounded-lg flex items-center justify-center text-2xl font-bold ${
+                      <div key={index} className={`w-12 md:w-24 h-12 md:h-24 rounded-lg flex items-center justify-center text-xs md:text-2xl font-bold ${
                         item === '?' 
                           ? 'bg-yellow-200 text-yellow-800' 
                           : 'bg-gray-200 text-gray-800'
@@ -598,25 +627,25 @@ export default function OrdonnerNombresCE1Page() {
                     ))}
                   </div>
                   
-                  <div className="flex justify-center space-x-4 mb-8">
+                  <div className="flex justify-center space-x-1 md:space-x-4 mb-2 md:mb-8">
                     <div className="text-center">
-                      <label className="block font-bold text-gray-700 mb-2">1er nombre manquant :</label>
+                      <label className="block font-bold text-gray-700 mb-0.5 md:mb-2 text-xs md:text-sm">1er :</label>
                       <input
                         type="text"
                         value={userAnswers[0] || ''}
                         onChange={(e) => updateOrderAnswer(0, e.target.value)}
                         placeholder="?"
-                        className="w-24 h-16 text-center text-xl font-bold border-2 border-gray-300 rounded-lg focus:border-yellow-500 focus:outline-none bg-white text-gray-900"
+                        className="w-12 md:w-24 h-8 md:h-16 text-center text-xs md:text-xl font-bold border-2 border-gray-300 rounded-lg focus:border-yellow-500 focus:outline-none bg-white text-gray-900"
                       />
                     </div>
                     <div className="text-center">
-                      <label className="block font-bold text-gray-700 mb-2">2ème nombre manquant :</label>
+                      <label className="block font-bold text-gray-700 mb-0.5 md:mb-2 text-xs md:text-sm">2ème :</label>
                       <input
                         type="text"
                         value={userAnswers[1] || ''}
                         onChange={(e) => updateOrderAnswer(1, e.target.value)}
                         placeholder="?"
-                        className="w-24 h-16 text-center text-xl font-bold border-2 border-gray-300 rounded-lg focus:border-yellow-500 focus:outline-none bg-white text-gray-900"
+                        className="w-12 md:w-24 h-8 md:h-16 text-center text-xs md:text-xl font-bold border-2 border-gray-300 rounded-lg focus:border-yellow-500 focus:outline-none bg-white text-gray-900"
                       />
                     </div>
                   </div>
@@ -625,12 +654,12 @@ export default function OrdonnerNombresCE1Page() {
 
               {exerciseType === 'comparer' && (
                 <>
-                  <h3 className="text-xl font-bold mb-6 text-gray-900">
-                    🔀 Compare ces nombres en utilisant &gt;, &lt; ou =
+                  <h3 className="text-base md:text-xl font-bold mb-2 md:mb-6 text-gray-900">
+                    🔀 Compare ces nombres
                   </h3>
                   
-                  <div className="flex justify-center items-center space-x-4 mb-8">
-                    <div className="text-4xl font-bold text-blue-600 bg-blue-100 rounded-lg p-4">
+                  <div className="flex justify-center items-center space-x-1 md:space-x-4 mb-2 md:mb-8">
+                    <div className="text-sm md:text-4xl font-bold text-blue-600 bg-blue-100 rounded-lg px-1 py-0.5 md:p-4">
                       {comparerExercises[currentExercise].number1}
                     </div>
                     <input
@@ -638,31 +667,31 @@ export default function OrdonnerNombresCE1Page() {
                       value={userAnswers[0] || ''}
                       onChange={(e) => updateOrderAnswer(0, e.target.value)}
                       placeholder="?"
-                      className="w-24 h-24 text-center text-4xl font-bold border-2 border-gray-300 rounded-lg focus:border-yellow-500 focus:outline-none bg-white text-gray-900"
+                      className="w-10 md:w-24 h-10 md:h-24 text-center text-lg md:text-4xl font-bold border-2 border-gray-300 rounded-lg focus:border-yellow-500 focus:outline-none bg-white text-gray-900"
                     />
-                    <div className="text-4xl font-bold text-green-600 bg-green-100 rounded-lg p-4">
+                    <div className="text-sm md:text-4xl font-bold text-green-600 bg-green-100 rounded-lg px-1 py-0.5 md:p-4">
                       {comparerExercises[currentExercise].number2}
                     </div>
                   </div>
                   
-                  <div className="mb-8">
-                    <p className="text-gray-600 text-lg mb-4">Écris le bon signe : &gt; (plus grand), &lt; (plus petit) ou = (égal)</p>
-                    <div className="flex justify-center space-x-4">
+                  <div className="mb-2 md:mb-8">
+                    <p className="text-gray-600 text-xs md:text-lg mb-1 md:mb-4">Clique sur le bon signe :</p>
+                    <div className="flex justify-center space-x-1 md:space-x-4">
                       <button
                         onClick={() => updateOrderAnswer(0, '>')}
-                        className="px-6 py-3 bg-red-200 hover:bg-red-300 text-red-800 font-bold rounded-lg text-2xl transition-all"
+                        className="px-2 md:px-6 py-1 md:py-3 bg-red-200 hover:bg-red-300 text-red-800 font-bold rounded-lg text-lg md:text-2xl transition-all"
                       >
                         &gt;
                       </button>
                       <button
                         onClick={() => updateOrderAnswer(0, '<')}
-                        className="px-6 py-3 bg-blue-200 hover:bg-blue-300 text-blue-800 font-bold rounded-lg text-2xl transition-all"
+                        className="px-2 md:px-6 py-1 md:py-3 bg-blue-200 hover:bg-blue-300 text-blue-800 font-bold rounded-lg text-lg md:text-2xl transition-all"
                       >
                         &lt;
                       </button>
                       <button
                         onClick={() => updateOrderAnswer(0, '=')}
-                        className="px-6 py-3 bg-green-200 hover:bg-green-300 text-green-800 font-bold rounded-lg text-2xl transition-all"
+                        className="px-2 md:px-6 py-1 md:py-3 bg-green-200 hover:bg-green-300 text-green-800 font-bold rounded-lg text-lg md:text-2xl transition-all"
                       >
                         =
                       </button>
@@ -671,50 +700,12 @@ export default function OrdonnerNombresCE1Page() {
                 </>
               )}
 
-              {exerciseType === 'encadrer-unites' && (
-                <>
-                  <h3 className="text-xl font-bold mb-6 text-gray-900">
-                    🎯 Encadre ce nombre à l'unité
-                  </h3>
-                  
-                  <div className="flex justify-center items-center space-x-4 mb-8">
-                    <input
-                      type="text"
-                      value={userAnswers[0] || ''}
-                      onChange={(e) => updateOrderAnswer(0, e.target.value)}
-                      placeholder="?"
-                      className="w-24 h-24 text-center text-2xl font-bold border-2 border-gray-300 rounded-lg focus:border-cyan-500 focus:outline-none bg-white text-gray-900"
-                    />
-                    <div className="text-3xl font-bold text-gray-600">&lt;</div>
-                    <div className="text-4xl font-bold text-cyan-600 bg-cyan-100 rounded-lg p-4">
-                      {encadrerUnitesExercises[currentExercise].number}
-                    </div>
-                    <div className="text-3xl font-bold text-gray-600">&lt;</div>
-                    <input
-                      type="text"
-                      value={userAnswers[1] || ''}
-                      onChange={(e) => updateOrderAnswer(1, e.target.value)}
-                      placeholder="?"
-                      className="w-24 h-24 text-center text-2xl font-bold border-2 border-gray-300 rounded-lg focus:border-cyan-500 focus:outline-none bg-white text-gray-900"
-                    />
-                  </div>
-                  
-                  <div className="mb-8">
-                    <p className="text-gray-500 text-sm">
-                      {encadrerUnitesExercises[currentExercise].type === 'unité' 
-                        ? 'Exemple : 455 < 456 < 457' 
-                        : encadrerUnitesExercises[currentExercise].type === 'dizaine' 
-                        ? 'Exemple : 450 < 456 < 460' 
-                        : 'Exemple : 400 < 456 < 500'}
-                    </p>
-                  </div>
-                </>
-              )}
+
               
-              <div className="flex justify-center space-x-4 mb-6">
+              <div className="flex justify-center space-x-4 mb-2 md:mb-6">
                 <button
                   onClick={resetExercise}
-                  className="bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white px-8 py-4 rounded-xl font-bold transition-all transform hover:scale-105 shadow-lg"
+                  className="bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white px-3 md:px-8 py-1 md:py-4 rounded-xl font-bold transition-all transform hover:scale-105 shadow-lg text-xs md:text-base"
                 >
                   🔄 Effacer
                 </button>
@@ -722,33 +713,30 @@ export default function OrdonnerNombresCE1Page() {
               
               {/* Résultat */}
               {isCorrect !== null && (
-                <div className={`p-6 rounded-xl mb-6 shadow-lg ${
+                <div className={`p-2 md:p-6 rounded-xl mb-2 md:mb-6 shadow-lg ${
                   isCorrect ? 'bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 border-2 border-green-300' : 'bg-gradient-to-r from-red-100 to-rose-100 text-red-800 border-2 border-red-300'
                 }`}>
-                  <div className="flex items-center justify-center space-x-2">
+                  <div className="flex items-center justify-center space-x-1 md:space-x-2">
                     {isCorrect ? (
                       <>
-                        <CheckCircle className="w-8 h-8" />
-                        <span className="font-bold text-xl">🎉 Excellent ! Tu as trouvé la bonne réponse ! 🎉</span>
+                        <CheckCircle className="w-4 md:w-8 h-4 md:h-8" />
+                        <span className="font-bold text-xs md:text-xl">🎉 Excellent ! 🎉</span>
                       </>
                     ) : (
                       <>
-                        <XCircle className="w-8 h-8" />
-                        <span className="font-bold text-xl">
+                        <XCircle className="w-4 md:w-8 h-4 md:h-8" />
+                        <span className="font-bold text-xs md:text-xl">
                           {exerciseType === 'ranger' && 
-                            `Pas tout à fait... La bonne réponse est : ${((getCurrentExercises()[currentExercise] as any).answer as number[]).join(', ')}`
+                            `Réponse : ${((getCurrentExercises()[currentExercise] as any).answer as number[]).join(', ')}`
                           }
                           {exerciseType === 'encadrer' && 
-                            `Pas tout à fait... La bonne réponse est : ${(getCurrentExercises()[currentExercise] as any).before} < ${(getCurrentExercises()[currentExercise] as any).number} < ${(getCurrentExercises()[currentExercise] as any).after}`
+                            `Réponse : ${(getCurrentExercises()[currentExercise] as any).before} < ${(getCurrentExercises()[currentExercise] as any).number} < ${(getCurrentExercises()[currentExercise] as any).after}`
                           }
                           {exerciseType === 'suites' && 
-                            `Pas tout à fait... La bonne réponse est : ${((getCurrentExercises()[currentExercise] as any).answers as string[]).join(', ')}`
+                            `Réponse : ${((getCurrentExercises()[currentExercise] as any).answers as string[]).join(', ')}`
                           }
                           {exerciseType === 'comparer' && 
-                            `Pas tout à fait... La bonne réponse est : ${((getCurrentExercises()[currentExercise] as any).explanation as string)}`
-                          }
-                          {exerciseType === 'encadrer-unites' && 
-                            `Pas tout à fait... La bonne réponse est : ${((getCurrentExercises()[currentExercise] as any).explanation as string)}`
+                            `Réponse : ${((getCurrentExercises()[currentExercise] as any).explanation as string)}`
                           }
                         </span>
                       </>
@@ -758,11 +746,11 @@ export default function OrdonnerNombresCE1Page() {
               )}
               
               {/* Navigation */}
-              <div className="flex justify-center space-x-4">
+              <div className="flex justify-center space-x-1 md:space-x-4">
                 <button
                   onClick={() => setCurrentExercise(Math.max(0, currentExercise - 1))}
                   disabled={currentExercise === 0}
-                  className="bg-gradient-to-r from-indigo-400 to-purple-500 hover:from-indigo-500 hover:to-purple-600 text-white px-6 py-3 rounded-xl font-bold transition-all transform hover:scale-105 shadow-lg disabled:opacity-50"
+                  className="bg-gradient-to-r from-indigo-400 to-purple-500 hover:from-indigo-500 hover:to-purple-600 text-white px-3 md:px-6 py-1 md:py-3 rounded-xl font-bold transition-all transform hover:scale-105 shadow-lg disabled:opacity-50 text-xs md:text-base"
                 >
                   ← Précédent
                 </button>
@@ -773,11 +761,10 @@ export default function OrdonnerNombresCE1Page() {
                       (exerciseType === 'ranger' && userAnswers.length < 5) ||
                       (exerciseType === 'encadrer' && userAnswers.length < 2) ||
                       (exerciseType === 'suites' && userAnswers.length < 2) ||
-                      (exerciseType === 'comparer' && userAnswers.length < 1) ||
-                      (exerciseType === 'encadrer-unites' && userAnswers.length < 2)
+                      (exerciseType === 'comparer' && userAnswers.length < 1)
                     )
                   }
-                  className={`text-white px-6 py-3 rounded-xl font-bold transition-all transform hover:scale-105 shadow-lg disabled:opacity-50 ${
+                  className={`text-white px-3 md:px-6 py-1 md:py-3 rounded-xl font-bold transition-all transform hover:scale-105 shadow-lg disabled:opacity-50 text-xs md:text-base ${
                     exerciseType === 'ranger' ? 'bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700' :
                     exerciseType === 'encadrer' ? 'bg-gradient-to-r from-green-500 to-teal-600 hover:from-green-600 hover:to-teal-700' :
                     exerciseType === 'suites' ? 'bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700' :
@@ -785,7 +772,7 @@ export default function OrdonnerNombresCE1Page() {
                     'bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700'
                   }`}
                 >
-                  {isCorrect === null ? '✨ Vérifier ✨' : 'Suivant →'}
+                  {isCorrect === null ? 'Vérifier' : 'Suivant →'}
                 </button>
               </div>
             </div>
@@ -806,8 +793,7 @@ export default function OrdonnerNombresCE1Page() {
                     'ranger': 'le rangement',
                     'encadrer': 'l\'encadrement',
                     'suites': 'les suites numériques',
-                    'comparer': 'la comparaison',
-                    'encadrer-unites': 'l\'encadrement par unités'
+                    'comparer': 'la comparaison'
                   };
                   const activity = activities[exerciseType];
                   

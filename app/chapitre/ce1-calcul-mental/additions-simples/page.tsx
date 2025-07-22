@@ -107,8 +107,10 @@ export default function AdditionsSimplesPage() {
     const correct = userAnswer.trim() === exercises[currentExercise]?.answer;
     setIsCorrect(correct);
     
+    let newScore = score;
     if (correct && !answeredCorrectly.has(currentExercise)) {
-      setScore(prevScore => prevScore + 1);
+      newScore = score + 1;
+      setScore(newScore);
       setAnsweredCorrectly(prev => {
         const newSet = new Set(prev);
         newSet.add(currentExercise);
@@ -127,7 +129,7 @@ export default function AdditionsSimplesPage() {
           setIsTimerActive(false);
         } else {
           // Dernière question, afficher la modal
-          setFinalScore(score + (!answeredCorrectly.has(currentExercise) ? 1 : 0));
+          setFinalScore(newScore);
           setShowCompletionModal(true);
         }
       }, 1500);
@@ -372,87 +374,93 @@ export default function AdditionsSimplesPage() {
                 <h2 className="text-2xl font-bold text-gray-900">
                   ✏️ Exercice {currentExercise + 1} sur {exercises.length}
                 </h2>
-                <div className="flex items-center space-x-4">
-                  <div className="text-lg font-bold text-orange-600">
-                    Score : {score}/{exercises.length}
-                  </div>
-                  <button
-                    onClick={resetAll}
-                    className="bg-gray-500 text-white px-4 py-2 rounded-lg font-bold hover:bg-gray-600 transition-colors"
-                  >
-                    <RotateCcw className="inline w-4 h-4 mr-2" />
-                    Recommencer
-                  </button>
-                </div>
+                <button
+                  onClick={resetAll}
+                  className="bg-gray-500 text-white px-4 py-2 rounded-lg font-bold hover:bg-gray-600 transition-colors"
+                >
+                  <RotateCcw className="inline w-4 h-4 mr-2" />
+                  Recommencer
+                </button>
               </div>
               
               {/* Barre de progression */}
-              <div className="w-full bg-gray-200 rounded-full h-3">
+              <div className="w-full bg-gray-200 rounded-full h-3 mb-3">
                 <div 
                   className="bg-orange-500 h-3 rounded-full transition-all duration-500"
                   style={{ width: `${((currentExercise + 1) / exercises.length) * 100}%` }}
                 ></div>
+              </div>
+              
+              {/* Score sous la barre */}
+              <div className="text-center">
+                <div className="text-lg font-bold text-orange-600">
+                  Score : {score}/{exercises.length}
+                </div>
               </div>
             </div>
 
             {exercises.length > 0 && (
               <>
                 {/* Question avec chrono */}
-                <div className="bg-white rounded-xl p-8 shadow-lg">
+                <div className="bg-white rounded-xl p-4 sm:p-8 shadow-lg">
                   {/* Chronomètre */}
-                  <div className="text-center mb-6">
-                    <div className={`inline-flex items-center space-x-2 px-4 py-2 rounded-lg font-bold text-lg ${
+                  <div className="text-center mb-4 sm:mb-6">
+                    <div className={`inline-flex items-center space-x-2 px-3 sm:px-4 py-2 rounded-lg font-bold text-base sm:text-lg ${
                       timeLeft > 3 ? 'bg-green-100 text-green-800' :
                       timeLeft > 0 ? 'bg-red-100 text-red-800' :
                       'bg-gray-100 text-gray-600'
                     }`}>
-                      <Clock className="w-5 h-5" />
+                      <Clock className="w-4 h-4 sm:w-5 sm:h-5" />
                       <span>{timeLeft}s</span>
                     </div>
                   </div>
 
-                  <h3 className="text-4xl font-bold mb-8 text-center text-gray-900">
+                  <h3 className="text-2xl sm:text-4xl font-bold mb-6 sm:mb-8 text-center text-gray-900">
                     {exercises[currentExercise]?.question} = ?
                   </h3>
                   
-                  <div className="text-center mb-6">
+                  <div className="text-center mb-6 sm:mb-8">
                     <input
                       type="text"
                       value={userAnswer}
                       onChange={(e) => setUserAnswer(e.target.value)}
+                      onKeyPress={(e) => {
+                        if (e.key === 'Enter' && userAnswer.trim() && isCorrect === null) {
+                          checkAnswer();
+                        }
+                      }}
                       placeholder="?"
-                      className="w-32 h-16 text-center text-2xl font-bold border-2 border-gray-300 rounded-lg focus:border-orange-500 focus:outline-none"
+                      className="w-28 sm:w-32 h-12 sm:h-16 text-center text-xl sm:text-2xl font-bold border-2 border-gray-300 rounded-lg focus:border-orange-500 focus:outline-none mb-4 touch-manipulation"
                       disabled={isCorrect !== null}
                     />
-                  </div>
-                  
-                  <div className="flex justify-center space-x-4 mb-6">
-                    {!isTimerActive && isCorrect === null && (
-                      <button
-                        onClick={startTimer}
-                        className="bg-green-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-green-600 transition-colors"
-                      >
-                        <Zap className="inline w-4 h-4 mr-2" />
-                        Démarrer le chrono
-                      </button>
-                    )}
                     
-                    {isTimerActive && (
-                      <button
-                        onClick={checkAnswer}
-                        disabled={!userAnswer.trim()}
-                        className="bg-orange-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-orange-600 transition-colors disabled:opacity-50"
-                      >
-                        <Target className="inline w-4 h-4 mr-2" />
-                        Vérifier
-                      </button>
+                    {/* Bouton Vérifier ou Démarrer chrono */}
+                    {isCorrect === null && (
+                      <div className="mt-4">
+                        {userAnswer.trim() ? (
+                          <button
+                            onClick={checkAnswer}
+                            className="bg-orange-600 text-white px-6 sm:px-8 py-3 rounded-lg font-bold hover:bg-orange-700 transition-colors text-base sm:text-lg touch-manipulation min-h-[44px]"
+                          >
+                            ✅ Vérifier
+                          </button>
+                        ) : !isTimerActive ? (
+                          <button
+                            onClick={startTimer}
+                            className="bg-green-500 text-white px-4 sm:px-6 py-3 rounded-lg font-bold hover:bg-green-600 transition-colors touch-manipulation min-h-[44px] text-sm sm:text-base"
+                          >
+                            <Zap className="inline w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                            Démarrer le chrono
+                          </button>
+                        ) : null}
+                      </div>
                     )}
                   </div>
                   
                   {/* Résultat */}
                   {isCorrect !== null && (
                     <div className={`p-4 rounded-lg mb-6 ${
-                      isCorrect ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                      isCorrect ? 'bg-green-600 text-white' : 'bg-red-600 text-white'
                     }`}>
                       <div className="flex items-center justify-center space-x-2">
                         {isCorrect ? (
@@ -473,20 +481,33 @@ export default function AdditionsSimplesPage() {
                   )}
                   
                   {/* Navigation */}
-                  <div className="flex justify-center space-x-4">
+                  <div className="flex flex-col sm:flex-row justify-center items-center gap-2 sm:gap-4 mt-4">
+                    <button
+                      onClick={() => setUserAnswer('')}
+                      className="bg-gray-500 text-white px-4 py-3 sm:px-6 sm:py-3 rounded-lg font-bold hover:bg-gray-600 transition-colors w-full sm:w-auto touch-manipulation min-h-[44px]"
+                    >
+                      Effacer
+                    </button>
                     <button
                       onClick={() => setCurrentExercise(Math.max(0, currentExercise - 1))}
                       disabled={currentExercise === 0}
-                      className="bg-gray-300 text-gray-700 px-6 py-3 rounded-lg font-bold hover:bg-gray-400 transition-colors disabled:opacity-50"
+                      className="bg-gray-600 text-white px-4 py-3 sm:px-6 sm:py-3 rounded-lg font-bold hover:bg-gray-700 transition-colors disabled:opacity-50 w-full sm:w-auto touch-manipulation min-h-[44px]"
                     >
                       ← Précédent
                     </button>
                     <button
-                      onClick={nextExercise}
-                      disabled={currentExercise === exercises.length - 1}
-                      className="bg-red-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-red-600 transition-colors disabled:opacity-50"
+                      onClick={() => {
+                        // Si l'utilisateur a tapé une réponse mais n'a pas encore vérifié, on vérifie d'abord
+                        if (userAnswer.trim() && isCorrect === null) {
+                          checkAnswer();
+                        } else {
+                          nextExercise();
+                        }
+                      }}
+                      disabled={currentExercise === exercises.length - 1 || (!userAnswer.trim() && isCorrect === null)}
+                      className="bg-orange-500 text-white px-4 py-3 sm:px-6 sm:py-3 rounded-lg font-bold hover:bg-orange-600 transition-colors disabled:opacity-50 w-full sm:w-auto touch-manipulation min-h-[44px]"
                     >
-                      Suivant →
+                      {userAnswer.trim() && isCorrect === null ? '✅ Vérifier' : 'Suivant →'}
                     </button>
                   </div>
                 </div>

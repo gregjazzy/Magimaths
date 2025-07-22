@@ -1,12 +1,22 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, BookOpen, Eye, Edit, Grid, Target, Trophy, Clock, Play } from 'lucide-react';
+
+interface SectionProgress {
+  sectionId: string;
+  completed: boolean;
+  score: number;
+  maxScore: number;
+  completedAt: string;
+  attempts: number;
+}
 
 export default function CE1NombresJusqu1000Page() {
   const [completedSections, setCompletedSections] = useState<string[]>([]);
   const [xpEarned, setXpEarned] = useState(0);
+  const [sectionsProgress, setSectionsProgress] = useState<SectionProgress[]>([]);
 
   const sections = [
     {
@@ -60,6 +70,70 @@ export default function CE1NombresJusqu1000Page() {
       verified: true
     }
   ];
+
+  // Charger les progrès au démarrage
+  useEffect(() => {
+    const savedProgress = localStorage.getItem('ce1-nombres-progress');
+    if (savedProgress) {
+      const progress = JSON.parse(savedProgress);
+      setSectionsProgress(progress);
+      
+      // Calculer les sections complétées et XP
+      const completed = progress.filter((p: SectionProgress) => p.completed).map((p: SectionProgress) => p.sectionId);
+      setCompletedSections(completed);
+      
+      // Calculer les XP basés sur les scores
+      const totalXP = progress.reduce((total: number, p: SectionProgress) => {
+        if (p.completed && p.maxScore > 0) {
+          const section = sections.find(s => s.id === p.sectionId);
+          if (section) {
+            // XP = XP de base * pourcentage de réussite
+            const percentage = p.score / p.maxScore;
+            return total + Math.round(section.xp * percentage);
+          }
+        }
+        return total;
+      }, 0);
+      setXpEarned(totalXP);
+    }
+  }, []);
+
+  // Écouter les changements dans localStorage (quand on revient d'un exercice)
+  useEffect(() => {
+    const handleStorageChange = () => {
+      const savedProgress = localStorage.getItem('ce1-nombres-progress');
+      if (savedProgress) {
+        const progress = JSON.parse(savedProgress);
+        setSectionsProgress(progress);
+        
+        const completed = progress.filter((p: SectionProgress) => p.completed).map((p: SectionProgress) => p.sectionId);
+        setCompletedSections(completed);
+        
+        const totalXP = progress.reduce((total: number, p: SectionProgress) => {
+          if (p.completed && p.maxScore > 0) {
+            const section = sections.find(s => s.id === p.sectionId);
+            if (section) {
+              const percentage = p.score / p.maxScore;
+              return total + Math.round(section.xp * percentage);
+            }
+          }
+          return total;
+        }, 0);
+        setXpEarned(totalXP);
+      }
+    };
+
+    // Écouter les changements de localStorage
+    window.addEventListener('storage', handleStorageChange);
+    
+    // Vérifier périodiquement les changements (pour les changements dans le même onglet)
+    const interval = setInterval(handleStorageChange, 1000);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      clearInterval(interval);
+    };
+  }, []);
 
   const getSectionPath = (sectionId: string) => {
     return `/chapitre/ce1-nombres-jusqu-1000/${sectionId}`;

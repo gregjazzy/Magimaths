@@ -19,17 +19,47 @@ export default function DecompositionNombresCE1Page() {
   const [showCompletionModal, setShowCompletionModal] = useState(false);
   const [finalScore, setFinalScore] = useState(0);
 
+  // Sauvegarder les progrès dans localStorage
+  const saveProgress = (score: number, maxScore: number) => {
+    const progress = {
+      sectionId: 'decomposition',
+      completed: true,
+      score: score,
+      maxScore: maxScore,
+      completedAt: new Date().toISOString(),
+      attempts: 1
+    };
+
+    const existingProgress = localStorage.getItem('ce1-nombres-progress');
+    let allProgress = [];
+    
+    if (existingProgress) {
+      allProgress = JSON.parse(existingProgress);
+      const existingIndex = allProgress.findIndex((p: any) => p.sectionId === 'decomposition');
+      
+      if (existingIndex >= 0) {
+        if (score > allProgress[existingIndex].score) {
+          allProgress[existingIndex] = {
+            ...progress,
+            attempts: allProgress[existingIndex].attempts + 1
+          };
+        } else {
+          allProgress[existingIndex].attempts += 1;
+        }
+      } else {
+        allProgress.push(progress);
+      }
+    } else {
+      allProgress = [progress];
+    }
+
+    localStorage.setItem('ce1-nombres-progress', JSON.stringify(allProgress));
+  };
+
   const examples = [
     { number: '234', centaines: '2', dizaines: '3', unites: '4' },
-    { number: '156', centaines: '1', dizaines: '5', unites: '6' },
-    { number: '789', centaines: '7', dizaines: '8', unites: '9' },
-    { number: '345', centaines: '3', dizaines: '4', unites: '5' },
-    { number: '567', centaines: '5', dizaines: '6', unites: '7' },
-    { number: '123', centaines: '1', dizaines: '2', unites: '3' },
-    { number: '890', centaines: '8', dizaines: '9', unites: '0' },
-    { number: '456', centaines: '4', dizaines: '5', unites: '6' },
-    { number: '678', centaines: '6', dizaines: '7', unites: '8' },
-    { number: '1000', centaines: '10', dizaines: '0', unites: '0' }
+    { number: '49', centaines: '0', dizaines: '4', unites: '9' },
+    { number: '748', centaines: '7', dizaines: '4', unites: '8' }
   ];
 
   const exercises = [
@@ -209,8 +239,13 @@ export default function DecompositionNombresCE1Page() {
             setIsCorrect(null);
           } else {
             // Dernier exercice terminé, afficher la modale
-            setFinalScore(score + (!answeredCorrectly.has(exerciseKey) ? 1 : 0));
+            const finalScoreValue = score + (!answeredCorrectly.has(exerciseKey) ? 1 : 0);
+            setFinalScore(finalScoreValue);
             setShowCompletionModal(true);
+            
+            // Sauvegarder les progrès
+            const maxExercises = exerciseType === 'decompose' ? exercises.length : composeExercises.length;
+            saveProgress(finalScoreValue, maxExercises);
           }
         }, 1500);
       }
@@ -227,6 +262,10 @@ export default function DecompositionNombresCE1Page() {
         // Dernier exercice, afficher la modale
         setFinalScore(score);
         setShowCompletionModal(true);
+        
+        // Sauvegarder les progrès
+        const maxExercises = exerciseType === 'decompose' ? exercises.length : composeExercises.length;
+        saveProgress(score, maxExercises);
       }
     }
   };
@@ -391,16 +430,16 @@ export default function DecompositionNombresCE1Page() {
               </div>
 
               {/* Flèches et décomposition */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-6">
                 {/* Centaines */}
                 <div className="text-center">
-                  <div className="text-2xl mb-2">⬇️</div>
-                  <div className="bg-red-100 rounded-lg p-4 transition-all duration-300" id="centaines-box">
-                    <div className="text-3xl font-bold text-red-600 mb-2">
+                  <div className="text-lg md:text-2xl mb-1 md:mb-2">⬇️</div>
+                  <div className="bg-red-100 rounded-lg p-1 md:p-4 transition-all duration-300" id="centaines-box">
+                    <div className="text-xl md:text-3xl font-bold text-red-600 mb-1 md:mb-2">
                       {decomposeNumber(selectedNumber).centaines}
                     </div>
-                    <div className="font-bold text-red-800">Centaines</div>
-                    <div className="text-sm text-red-700">
+                    <div className="font-bold text-red-800 text-sm md:text-base">Centaines</div>
+                    <div className="text-xs md:text-sm text-red-700">
                       {decomposeNumber(selectedNumber).centaines} × 100 = {parseInt(decomposeNumber(selectedNumber).centaines) * 100}
                     </div>
                   </div>
@@ -408,13 +447,13 @@ export default function DecompositionNombresCE1Page() {
 
                 {/* Dizaines */}
                 <div className="text-center">
-                  <div className="text-2xl mb-2">⬇️</div>
-                  <div className="bg-blue-100 rounded-lg p-4 transition-all duration-300" id="dizaines-box">
-                    <div className="text-3xl font-bold text-blue-600 mb-2">
+                  <div className="text-lg md:text-2xl mb-1 md:mb-2">⬇️</div>
+                  <div className="bg-blue-100 rounded-lg p-1 md:p-4 transition-all duration-300" id="dizaines-box">
+                    <div className="text-xl md:text-3xl font-bold text-blue-600 mb-1 md:mb-2">
                       {decomposeNumber(selectedNumber).dizaines}
                     </div>
-                    <div className="font-bold text-blue-800">Dizaines</div>
-                    <div className="text-sm text-blue-700">
+                    <div className="font-bold text-blue-800 text-sm md:text-base">Dizaines</div>
+                    <div className="text-xs md:text-sm text-blue-700">
                       {decomposeNumber(selectedNumber).dizaines} × 10 = {parseInt(decomposeNumber(selectedNumber).dizaines) * 10}
                     </div>
                   </div>
@@ -422,13 +461,13 @@ export default function DecompositionNombresCE1Page() {
 
                 {/* Unités */}
                 <div className="text-center">
-                  <div className="text-2xl mb-2">⬇️</div>
-                  <div className="bg-green-100 rounded-lg p-4 transition-all duration-300" id="unites-box">
-                    <div className="text-3xl font-bold text-green-600 mb-2">
+                  <div className="text-lg md:text-2xl mb-1 md:mb-2">⬇️</div>
+                  <div className="bg-green-100 rounded-lg p-1 md:p-4 transition-all duration-300" id="unites-box">
+                    <div className="text-xl md:text-3xl font-bold text-green-600 mb-1 md:mb-2">
                       {decomposeNumber(selectedNumber).unites}
                     </div>
-                    <div className="font-bold text-green-800">Unités</div>
-                    <div className="text-sm text-green-700">
+                    <div className="font-bold text-green-800 text-sm md:text-base">Unités</div>
+                    <div className="text-xs md:text-sm text-green-700">
                       {decomposeNumber(selectedNumber).unites} × 1 = {parseInt(decomposeNumber(selectedNumber).unites)}
                     </div>
                   </div>
@@ -477,18 +516,13 @@ export default function DecompositionNombresCE1Page() {
                 <h2 className="text-2xl font-bold text-gray-900">
                   ✏️ Exercice {currentExercise + 1} sur {exerciseType === 'decompose' ? exercises.length : composeExercises.length}
                 </h2>
-                <div className="flex items-center space-x-4">
-                  <div className="text-lg font-bold text-purple-600">
-                    Score : {score}/{(exerciseType === 'decompose' ? exercises.length : composeExercises.length)}
-                  </div>
-                  <button
-                    onClick={resetAll}
-                    className="bg-gray-500 text-white px-4 py-2 rounded-lg font-bold hover:bg-gray-600 transition-colors"
-                  >
-                    <RotateCcw className="inline w-4 h-4 mr-2" />
-                    Recommencer
-                  </button>
-                </div>
+                <button
+                  onClick={resetAll}
+                  className="bg-gray-500 text-white px-4 py-2 rounded-lg font-bold hover:bg-gray-600 transition-colors"
+                >
+                  <RotateCcw className="inline w-4 h-4 mr-2" />
+                  Recommencer
+                </button>
               </div>
               
               {/* Sélecteur type d'exercice */}
@@ -518,7 +552,7 @@ export default function DecompositionNombresCE1Page() {
               </div>
               
               {/* Barre de progression */}
-              <div className="w-full bg-gray-200 rounded-full h-3">
+              <div className="w-full bg-gray-200 rounded-full h-3 mb-3">
                 <div 
                   className={`h-3 rounded-full transition-all duration-500 ${
                     exerciseType === 'decompose' ? 'bg-purple-500' : 'bg-green-500'
@@ -526,52 +560,61 @@ export default function DecompositionNombresCE1Page() {
                   style={{ width: `${((currentExercise + 1) / (exerciseType === 'decompose' ? exercises.length : composeExercises.length)) * 100}%` }}
                 ></div>
               </div>
+              
+              {/* Score sous la barre */}
+              <div className="text-center">
+                <div className={`text-lg font-bold ${
+                  exerciseType === 'decompose' ? 'text-purple-600' : 'text-green-600'
+                }`}>
+                  Score : {score}/{(exerciseType === 'decompose' ? exercises.length : composeExercises.length)}
+                </div>
+              </div>
             </div>
 
             {/* Question */}
-            <div className="bg-white rounded-xl p-8 shadow-lg text-center">
+            <div className="bg-white rounded-xl p-4 md:p-8 shadow-lg text-center">
               {exerciseType === 'decompose' ? (
                 <>
-                  <h3 className="text-xl font-bold mb-6 text-gray-900">
+                  <h3 className="text-lg md:text-xl font-bold mb-4 md:mb-6 text-gray-900">
                     🧩 Décompose ce nombre
                   </h3>
                   
-                  <div className="text-6xl font-bold text-purple-600 mb-8">
+                  <div className="text-4xl md:text-6xl font-bold text-purple-600 mb-6 md:mb-8">
                     {exercises[currentExercise].number}
                   </div>
                   
                   {/* Champs de saisie pour décomposition */}
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-2xl mx-auto mb-8">
+                  <div className="grid grid-cols-3 gap-2 md:gap-6 max-w-2xl mx-auto mb-6 md:mb-8">
                     <div className="text-center">
-                      <label className="block font-bold text-red-600 mb-2">Centaines</label>
+                      <label className="block font-bold text-red-600 mb-1 md:mb-2 text-sm md:text-base">Centaines</label>
                       <input
                         type="text"
                         value={userAnswers.centaines}
                         onChange={(e) => updateAnswer('centaines', e.target.value)}
                         placeholder="?"
-                        className="w-20 h-20 mx-auto border-2 border-red-300 rounded-lg text-center text-2xl font-bold focus:border-red-500 focus:outline-none bg-white text-gray-900"
+                        className="w-16 h-16 md:w-20 md:h-20 mx-auto border-2 border-red-300 rounded-lg text-center text-xl md:text-2xl font-bold focus:border-red-500 focus:outline-none bg-white text-gray-900"
                         maxLength={2}
                       />
                     </div>
                     <div className="text-center">
-                      <label className="block font-bold text-blue-600 mb-2">Dizaines</label>
+                      <label className="block font-bold text-blue-600 mb-1 md:mb-2 text-sm md:text-base">Dizaines</label>
                       <input
                         type="text"
                         value={userAnswers.dizaines}
                         onChange={(e) => updateAnswer('dizaines', e.target.value)}
                         placeholder="?"
-                        className="w-20 h-20 mx-auto border-2 border-blue-300 rounded-lg text-center text-2xl font-bold focus:border-blue-500 focus:outline-none bg-white text-gray-900"
+                        className="w-16 h-16 md:w-20 md:h-20 mx-auto border-2 border-blue-300 rounded-lg text-center text-xl md:text-2xl font-bold focus:border-blue-500 focus:outline-none bg-white text-gray-900"
                         maxLength={1}
                       />
                     </div>
                     <div className="text-center">
-                      <label className="block font-bold text-green-600 mb-2">Unités</label>
+                      <label className="block font-bold text-green-600 mb-1 md:mb-2 text-sm md:text-base">Unités</label>
                       <input
                         type="text"
                         value={userAnswers.unites}
                         onChange={(e) => updateAnswer('unites', e.target.value)}
                         placeholder="?"
-                        className="w-20 h-20 mx-auto border-2 border-green-300 rounded-lg text-center text-2xl font-bold focus:border-green-500 focus:outline-none bg-white text-gray-900"
+                        className="w-16 h-16 md:w-20 md:h-20 mx-auto border-2 border-green-300 rounded-lg text-center text-xl md:text-2xl font-bold focus:border-green-500 focus:outline-none bg-white text-gray-900"
                         maxLength={1}
                       />
                     </div>
@@ -579,41 +622,41 @@ export default function DecompositionNombresCE1Page() {
                 </>
               ) : (
                 <>
-                  <h3 className="text-xl font-bold mb-6 text-gray-900">
+                  <h3 className="text-lg md:text-xl font-bold mb-4 md:mb-6 text-gray-900">
                     🔢 Trouve le nombre avec cette décomposition
                   </h3>
                   
                   {/* Affichage de la décomposition */}
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-2xl mx-auto mb-8">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-6 max-w-2xl mx-auto mb-8">
                     <div className="text-center">
-                      <div className="bg-red-100 rounded-lg p-4">
-                        <div className="text-3xl font-bold text-red-600 mb-2">
+                      <div className="bg-red-100 rounded-lg p-1 md:p-4">
+                        <div className="text-xl md:text-3xl font-bold text-red-600 mb-1 md:mb-2">
                           {composeExercises[currentExercise].centaines}
                         </div>
-                        <div className="font-bold text-red-800">Centaines</div>
-                        <div className="text-sm text-red-700">
+                        <div className="font-bold text-red-800 text-sm md:text-base">Centaines</div>
+                        <div className="text-xs md:text-sm text-red-700">
                           {composeExercises[currentExercise].centaines} × 100
                         </div>
                       </div>
                     </div>
                     <div className="text-center">
-                      <div className="bg-blue-100 rounded-lg p-4">
-                        <div className="text-3xl font-bold text-blue-600 mb-2">
+                      <div className="bg-blue-100 rounded-lg p-1 md:p-4">
+                        <div className="text-xl md:text-3xl font-bold text-blue-600 mb-1 md:mb-2">
                           {composeExercises[currentExercise].dizaines}
                         </div>
-                        <div className="font-bold text-blue-800">Dizaines</div>
-                        <div className="text-sm text-blue-700">
+                        <div className="font-bold text-blue-800 text-sm md:text-base">Dizaines</div>
+                        <div className="text-xs md:text-sm text-blue-700">
                           {composeExercises[currentExercise].dizaines} × 10
                         </div>
                       </div>
                     </div>
                     <div className="text-center">
-                      <div className="bg-green-100 rounded-lg p-4">
-                        <div className="text-3xl font-bold text-green-600 mb-2">
+                      <div className="bg-green-100 rounded-lg p-1 md:p-4">
+                        <div className="text-xl md:text-3xl font-bold text-green-600 mb-1 md:mb-2">
                           {composeExercises[currentExercise].unites}
                         </div>
-                        <div className="font-bold text-green-800">Unités</div>
-                        <div className="text-sm text-green-700">
+                        <div className="font-bold text-green-800 text-sm md:text-base">Unités</div>
+                        <div className="text-xs md:text-sm text-green-700">
                           {composeExercises[currentExercise].unites} × 1
                         </div>
                       </div>
@@ -628,13 +671,13 @@ export default function DecompositionNombresCE1Page() {
                   </div>
                   
                   {/* Champ de saisie pour le nombre */}
-                  <div className="max-w-md mx-auto mb-8">
+                  <div className="max-w-md mx-auto mb-6 md:mb-8">
                     <input
                       type="text"
                       value={userNumber}
                       onChange={(e) => setUserNumber(e.target.value)}
                       placeholder="Écris le nombre ici..."
-                      className="w-full px-4 py-4 border-2 border-green-300 rounded-lg text-center text-3xl font-bold focus:border-green-500 focus:outline-none bg-white text-gray-900"
+                      className="w-full px-3 md:px-4 py-3 md:py-4 border-2 border-green-300 rounded-lg text-center text-2xl md:text-3xl font-bold focus:border-green-500 focus:outline-none bg-white text-gray-900"
                       maxLength={4}
                     />
                     
@@ -650,10 +693,10 @@ export default function DecompositionNombresCE1Page() {
                 </>
               )}
               
-              <div className="flex justify-center space-x-4 mb-6">
+              <div className="flex justify-center space-x-4 mb-4 md:mb-6">
                 <button
                   onClick={resetExercise}
-                  className="bg-gray-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-gray-600 transition-colors"
+                  className="bg-gray-500 text-white px-4 md:px-6 py-2 md:py-3 rounded-lg font-bold hover:bg-gray-600 transition-colors text-sm md:text-base"
                 >
                   Effacer
                 </button>
@@ -689,11 +732,11 @@ export default function DecompositionNombresCE1Page() {
               )}
               
               {/* Navigation */}
-              <div className="flex justify-center space-x-4">
+              <div className="flex justify-center space-x-3 md:space-x-4">
                 <button
                   onClick={() => setCurrentExercise(Math.max(0, currentExercise - 1))}
                   disabled={currentExercise === 0}
-                  className="bg-gray-300 text-gray-700 px-6 py-3 rounded-lg font-bold hover:bg-gray-400 transition-colors disabled:opacity-50"
+                  className="bg-gray-300 text-gray-700 px-4 md:px-6 py-2 md:py-3 rounded-lg font-bold hover:bg-gray-400 transition-colors disabled:opacity-50 text-sm md:text-base"
                 >
                   ← Précédent
                 </button>
@@ -706,7 +749,7 @@ export default function DecompositionNombresCE1Page() {
                         : !userNumber.trim()
                     )
                   }
-                  className={`text-white px-6 py-3 rounded-lg font-bold transition-colors disabled:opacity-50 ${
+                  className={`text-white px-4 md:px-6 py-2 md:py-3 rounded-lg font-bold transition-colors disabled:opacity-50 text-sm md:text-base ${
                     exerciseType === 'decompose' 
                       ? 'bg-pink-500 hover:bg-pink-600' 
                       : 'bg-lime-500 hover:bg-lime-600'

@@ -73,8 +73,10 @@ export default function MultiplierPar10Page() {
     const correct = userAnswer.trim() === exercises[currentExercise]?.answer;
     setIsCorrect(correct);
     
+    let newScore = score;
     if (correct && !answeredCorrectly.has(currentExercise)) {
-      setScore(prevScore => prevScore + 1);
+      newScore = score + 1;
+      setScore(newScore);
       setAnsweredCorrectly(prev => {
         const newSet = new Set(prev);
         newSet.add(currentExercise);
@@ -90,7 +92,7 @@ export default function MultiplierPar10Page() {
           setUserAnswer('');
           setIsCorrect(null);
         } else {
-          setFinalScore(score + (!answeredCorrectly.has(currentExercise) ? 1 : 0));
+          setFinalScore(newScore);
           setShowCompletionModal(true);
         }
       }, 1500);
@@ -277,16 +279,16 @@ export default function MultiplierPar10Page() {
                 🎭 Clique sur un nombre pour voir la transformation !
               </h3>
               
-              <div className="grid grid-cols-3 md:grid-cols-6 gap-4 mb-8">
+              <div className="grid grid-cols-3 sm:grid-cols-6 gap-3 sm:gap-4 mb-6 sm:mb-8">
                 {[2, 3, 5, 7, 8, 12].map((number) => (
                   <button
                     key={number}
                     onClick={() => showMultiplication10Animation(number)}
                     className={`
-                      p-4 rounded-lg font-bold text-lg transition-all transform hover:scale-105
+                      p-3 sm:p-4 rounded-lg font-bold text-base sm:text-lg transition-all transform hover:scale-105 touch-manipulation min-h-[44px]
                       ${selectedNumber === number 
                         ? 'bg-indigo-500 text-white shadow-lg' 
-                        : 'bg-gray-100 text-gray-800 hover:bg-indigo-100'
+                        : 'bg-gray-100 text-gray-800 hover:bg-indigo-100 active:bg-indigo-200'
                       }
                     `}
                   >
@@ -387,54 +389,50 @@ export default function MultiplierPar10Page() {
                   <div className="text-sm text-gray-600 mb-2">
                     Question {currentExercise + 1} sur {exercises.length}
                   </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
+                  <div className="w-full bg-gray-200 rounded-full h-2 mb-3">
                     <div 
                       className="bg-indigo-500 h-2 rounded-full transition-all duration-300"
                       style={{ width: `${((currentExercise + 1) / exercises.length) * 100}%` }}
                     ></div>
                   </div>
+                  
+                  {/* Score sous la barre */}
+                  <div className="text-center">
+                    <div className="text-lg font-bold text-indigo-600">
+                      Score : {score}/{exercises.length}
+                    </div>
+                  </div>
                 </div>
 
-                <div className="mb-8">
-                  <h3 className="text-3xl font-bold text-gray-900 mb-6">
+                <div className="mb-6 sm:mb-8">
+                  <h3 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4 sm:mb-6">
                     {exercises[currentExercise]?.question} = ?
                   </h3>
                   
-                  <div className="mb-6">
+                  <div className="mb-6 sm:mb-8">
                     <input
                       type="text"
                       value={userAnswer}
                       onChange={(e) => setUserAnswer(e.target.value)}
-                      onKeyPress={(e) => e.key === 'Enter' && checkAnswer()}
-                      className="text-3xl font-bold text-center p-4 border-2 border-gray-300 rounded-xl w-40 focus:border-indigo-500 focus:outline-none"
+                      onKeyPress={(e) => {
+                        if (e.key === 'Enter' && userAnswer.trim() && isCorrect === null) {
+                          checkAnswer();
+                        }
+                      }}
+                      className="text-2xl sm:text-3xl font-bold text-center p-3 sm:p-4 border-2 border-gray-300 rounded-xl w-32 sm:w-40 h-12 sm:h-16 focus:border-indigo-500 focus:outline-none mb-4 touch-manipulation"
                       placeholder="?"
                       autoFocus
                     />
-                  </div>
+                    
 
-                  {isCorrect === null ? (
-                    <button
-                      onClick={checkAnswer}
-                      disabled={!userAnswer.trim()}
-                      className="bg-indigo-500 text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-indigo-600 disabled:bg-gray-300 transition-colors"
-                    >
-                      Vérifier
-                    </button>
-                  ) : !isCorrect ? (
-                    <button
-                      onClick={nextExercise}
-                      className="bg-blue-500 text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-blue-600 transition-colors"
-                    >
-                      Suivant →
-                    </button>
-                  ) : null}
+                  </div>
                 </div>
 
                 {isCorrect !== null && (
                   <div className={`p-6 rounded-xl ${
                     isCorrect 
-                      ? 'bg-green-100 text-green-800' 
-                      : 'bg-red-100 text-red-800'
+                      ? 'bg-green-600 text-white' 
+                      : 'bg-red-600 text-white'
                   }`}>
                     <div className="text-2xl font-bold mb-2">
                       {isCorrect ? '✅ Correct !' : '❌ Incorrect'}
@@ -445,9 +443,43 @@ export default function MultiplierPar10Page() {
                   </div>
                 )}
 
-                <div className="mt-6 text-gray-600">
-                  Score : {score}/{exercises.length}
+
+              
+              {/* Navigation */}
+              <div className="mt-8">
+                <div className="flex flex-col md:flex-row justify-center items-center gap-2 md:gap-4">
+                  <button
+                    onClick={() => setUserAnswer('')}
+                    className="bg-gray-500 text-white px-4 py-2 md:px-6 md:py-3 rounded-lg font-bold hover:bg-gray-600 transition-colors w-full md:w-auto"
+                  >
+                    Effacer
+                  </button>
+                  <button
+                    onClick={() => setCurrentExercise(Math.max(0, currentExercise - 1))}
+                    disabled={currentExercise === 0}
+                    className="bg-gray-600 text-white px-4 py-2 md:px-6 md:py-3 rounded-lg font-bold hover:bg-gray-700 transition-colors disabled:opacity-50 w-full md:w-auto"
+                  >
+                    ← Précédent
+                  </button>
+                  <button
+                    onClick={() => {
+                      // Si l'utilisateur a tapé une réponse mais n'a pas encore vérifié, on vérifie d'abord
+                      if (userAnswer.trim() && isCorrect === null) {
+                        checkAnswer();
+                      } else if (currentExercise < exercises.length - 1) {
+                        setCurrentExercise(currentExercise + 1);
+                        setUserAnswer('');
+                        setIsCorrect(null);
+                      }
+                    }}
+                    disabled={currentExercise === exercises.length - 1 || (!userAnswer.trim() && isCorrect === null)}
+                    className="bg-indigo-500 text-white px-4 py-2 md:px-6 md:py-3 rounded-lg font-bold hover:bg-indigo-600 transition-colors disabled:opacity-50 w-full md:w-auto"
+                  >
+                    {userAnswer.trim() && isCorrect === null ? '✅ Vérifier' : 'Suivant →'}
+                  </button>
                 </div>
+              </div>
+
               </div>
             )}
           </div>

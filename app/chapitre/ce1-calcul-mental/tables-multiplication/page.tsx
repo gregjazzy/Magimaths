@@ -2,16 +2,17 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Target } from 'lucide-react';
 
 export default function TablesMultiplicationPage() {
   const [currentExercise, setCurrentExercise] = useState(0);
   const [userAnswer, setUserAnswer] = useState('');
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
   const [showExercises, setShowExercises] = useState(false);
-  const [score, setScore] = useState(0);
+  const [score, setScore] = useState(0); // Score de la session actuelle
+  const [totalScore, setTotalScore] = useState(0); // Score total mutualisé
   const [answeredCorrectly, setAnsweredCorrectly] = useState<Set<number>>(new Set());
-  const [selectedTable, setSelectedTable] = useState<2 | 3 | 4 | 5>(2);
+  const [selectedTable, setSelectedTable] = useState<2 | 3 | 4 | 5 | 'mixed'>(2);
   const [exercises, setExercises] = useState<any[]>([]);
   const [showCompletionModal, setShowCompletionModal] = useState(false);
   const [finalScore, setFinalScore] = useState(0);
@@ -22,25 +23,65 @@ export default function TablesMultiplicationPage() {
   const [totalChallengeQuestions, setTotalChallengeQuestions] = useState(0);
   const [showChallengeResult, setShowChallengeResult] = useState(false);
 
-  const generateExercises = (table: 2 | 3 | 4 | 5) => {
-    const exercises = [];
-    
-    // Générer tous les calculs de la table
-    for (let i = 1; i <= 10; i++) {
-      exercises.push({
-        question: `${table} × ${i}`,
-        answer: (table * i).toString(),
-        explanation: `${table} × ${i} = ${table * i}`
+  // Charger le score total depuis localStorage au démarrage
+  useEffect(() => {
+    const savedTotalScore = localStorage.getItem('tables-multiplication-total-score');
+    if (savedTotalScore) {
+      setTotalScore(parseInt(savedTotalScore));
+    }
+  }, []);
+
+  // Sauvegarder le score total à chaque changement
+  useEffect(() => {
+    localStorage.setItem('tables-multiplication-total-score', totalScore.toString());
+  }, [totalScore]);
+
+  const generateExercises = (table: 2 | 3 | 4 | 5 | 'mixed') => {
+    if (table === 'mixed') {
+      // Générer des exercices mélangés de toutes les tables
+      const allTables = [2, 3, 4, 5];
+      const mixedExercises: any[] = [];
+      
+      // Créer un pool d'exercices de toutes les tables
+      allTables.forEach(tableNum => {
+        for (let i = 1; i <= 10; i++) {
+          mixedExercises.push({
+            question: `${tableNum} × ${i}`,
+            answer: (tableNum * i).toString(),
+            explanation: `${tableNum} × ${i} = ${tableNum * i}`,
+            table: tableNum
+          });
+        }
       });
+      
+      // Mélanger et prendre 15 exercices
+      const shuffled = [];
+      for (let i = 0; i < 15; i++) {
+        shuffled.push(mixedExercises[Math.floor(Math.random() * mixedExercises.length)]);
+      }
+      
+      return shuffled;
+    } else {
+      // Générer les exercices pour une table spécifique
+      const exercises = [];
+      
+      // Générer tous les calculs de la table
+      for (let i = 1; i <= 10; i++) {
+        exercises.push({
+          question: `${table} × ${i}`,
+          answer: (table * i).toString(),
+          explanation: `${table} × ${i} = ${table * i}`
+        });
+      }
+      
+      // Mélanger et prendre 15 exercices (avec répétitions possibles)
+      const shuffled = [];
+      for (let i = 0; i < 15; i++) {
+        shuffled.push(exercises[Math.floor(Math.random() * exercises.length)]);
+      }
+      
+      return shuffled;
     }
-    
-    // Mélanger et prendre 15 exercices (avec répétitions possibles)
-    const shuffled = [];
-    for (let i = 0; i < 15; i++) {
-      shuffled.push(exercises[Math.floor(Math.random() * exercises.length)]);
-    }
-    
-    return shuffled;
   };
 
   // Générer des exercices mixtes pour le défi (toutes les tables mélangées)
@@ -83,7 +124,7 @@ export default function TablesMultiplicationPage() {
     const newExercises = generateExercises(selectedTable);
     setExercises(newExercises);
     setCurrentExercise(0);
-    setScore(0);
+    setScore(0); // Reset score de session mais pas le score total
     setAnsweredCorrectly(new Set());
     setUserAnswer('');
     setIsCorrect(null);
@@ -93,8 +134,11 @@ export default function TablesMultiplicationPage() {
     const correct = userAnswer.trim() === exercises[currentExercise]?.answer;
     setIsCorrect(correct);
     
+    let newScore = score;
     if (correct && !answeredCorrectly.has(currentExercise)) {
-      setScore(prevScore => prevScore + 1);
+      newScore = score + 1;
+      setScore(newScore);
+      setTotalScore(prev => prev + 1); // Incrémenter le score total
       setAnsweredCorrectly(prev => {
         const newSet = new Set(prev);
         newSet.add(currentExercise);
@@ -110,8 +154,12 @@ export default function TablesMultiplicationPage() {
           setUserAnswer('');
           setIsCorrect(null);
         } else {
-          setFinalScore(score + (!answeredCorrectly.has(currentExercise) ? 1 : 0));
+          setFinalScore(newScore);
           setShowCompletionModal(true);
+          
+          // Sauvegarder les progrès
+          const maxScore = exercises.length;
+          saveProgress(newScore, maxScore);
         }
       }, 1500);
     }
@@ -126,19 +174,74 @@ export default function TablesMultiplicationPage() {
     } else {
       setFinalScore(score);
       setShowCompletionModal(true);
+      
+      // Sauvegarder les progrès
+      const maxScore = exercises.length;
+      saveProgress(score, maxScore);
     }
+  };
+
+  // Fonction pour sauvegarder les progrès et calculer l'XP
+  const saveProgress = (score: number, maxScore: number) => {
+    // Utiliser le score total pour le calcul de l'XP
+    const effectiveScore = Math.min(totalScore, 40); // Max 40 points (tous les exercices de toutes les tables)
+    const percentage = Math.round((effectiveScore / 40) * 100);
+    const baseXP = 25; // XP de base pour cette section
+    const xpEarned = Math.round(baseXP * (percentage / 100));
+    
+    const progress = {
+      sectionId: 'tables-multiplication',
+      completed: totalScore >= 20, // Considéré complété après 20 bonnes réponses
+      score: totalScore, // Utiliser le score total
+      maxScore: 40, // Total possible de tous les exercices
+      completedAt: new Date().toISOString(),
+      attempts: 1,
+      xpEarned: xpEarned
+    };
+
+    // Récupérer les progrès existants
+    const existingProgress = localStorage.getItem('ce1-calcul-mental-progress');
+    let allProgress = [];
+    
+    if (existingProgress) {
+      allProgress = JSON.parse(existingProgress);
+      const existingIndex = allProgress.findIndex((p: any) => p.sectionId === 'tables-multiplication');
+      
+      if (existingIndex >= 0) {
+        // Toujours mettre à jour avec le score total (car il s'accumule)
+        allProgress[existingIndex] = { 
+          ...progress, 
+          attempts: allProgress[existingIndex].attempts + 1 
+        };
+      } else {
+        allProgress.push(progress);
+      }
+    } else {
+      allProgress = [progress];
+    }
+
+    localStorage.setItem('ce1-calcul-mental-progress', JSON.stringify(allProgress));
+    
+    // Déclencher l'événement storage pour mettre à jour les autres onglets
+    window.dispatchEvent(new Event('storage'));
   };
 
   const resetExercises = () => {
     const newExercises = generateExercises(selectedTable);
     setExercises(newExercises);
     setCurrentExercise(0);
-    setScore(0);
+    setScore(0); // Reset score de session seulement
     setAnsweredCorrectly(new Set());
     setUserAnswer('');
     setIsCorrect(null);
     setShowCompletionModal(false);
     setFinalScore(0);
+  };
+
+  const resetAllScores = () => {
+    setTotalScore(0);
+    localStorage.removeItem('tables-multiplication-total-score');
+    resetExercises();
   };
 
   // Démarrer le défi
@@ -158,12 +261,16 @@ export default function TablesMultiplicationPage() {
 
   // Vérifier réponse dans le défi
   const checkChallengeAnswer = () => {
+    // Éviter de vérifier plusieurs fois la même réponse
+    if (isCorrect !== null) return;
+    
     const correct = userAnswer.trim() === exercises[currentExercise]?.answer;
     setIsCorrect(correct);
     setTotalChallengeQuestions(prev => prev + 1);
     
     if (correct) {
       setChallengeScore(prev => prev + 1);
+      setTotalScore(prev => prev + 1); // Incrémenter le score total aussi
     }
 
     // Passer à la question suivante après un délai
@@ -184,6 +291,14 @@ export default function TablesMultiplicationPage() {
     setTimeLeft(60);
   };
 
+  // Fonction pour scroller en haut de la page
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-red-50 to-pink-100">
       {/* Modal de fin d'exercices */}
@@ -192,6 +307,9 @@ export default function TablesMultiplicationPage() {
           <div className="bg-white rounded-3xl p-8 max-w-md mx-4 text-center shadow-2xl transform transition-all duration-300 scale-100 hover:scale-105">
             {(() => {
               const percentage = Math.round((finalScore / exercises.length) * 100);
+              const baseXP = 25; // XP de base pour cette section
+              const xpEarned = Math.round(baseXP * (percentage / 100));
+              
               const getMessage = () => {
                 if (percentage >= 90) return { 
                   title: "🏆 Expert de la table de " + selectedTable + " !", 
@@ -224,15 +342,27 @@ export default function TablesMultiplicationPage() {
                   <div className="text-6xl mb-4">{percentage >= 70 ? "🎉" : percentage >= 50 ? "😊" : "📚"}</div>
                   <h3 className={`text-2xl font-bold mb-3 ${result.color}`}>{result.title}</h3>
                   <p className={`text-lg mb-4 ${result.color}`}>{result.message}</p>
-                  <p className={`text-xl font-bold mb-6 ${result.color}`}>
-                    Score final : {finalScore}/{exercises.length} ({percentage}%)
-                  </p>
-                  <div className="flex gap-3 justify-center">
+                  <div className="bg-white bg-opacity-50 rounded-lg p-4 mb-4">
+                    <div className={`text-xl font-bold mb-2 ${result.color}`}>
+                      Session: {finalScore}/{exercises.length} ({percentage}%) • Total: {totalScore}
+                    </div>
+                    <div className={`text-lg font-bold ${result.color} flex items-center justify-center`}>
+                      <Target className="w-5 h-5 mr-2" />
+                      +{xpEarned} XP gagnés !
+                    </div>
+                  </div>
+                  <div className="flex gap-3 justify-center flex-wrap">
                     <button
                       onClick={resetExercises}
                       className="bg-red-500 text-white px-6 py-3 rounded-xl font-bold hover:bg-red-600 transition-colors"
                     >
                       ✨ Recommencer
+                    </button>
+                    <button
+                      onClick={resetAllScores}
+                      className="bg-orange-500 text-white px-6 py-3 rounded-xl font-bold hover:bg-orange-600 transition-colors"
+                    >
+                      🔄 Reset Total
                     </button>
                     <button
                       onClick={() => setShowCompletionModal(false)}
@@ -268,42 +398,61 @@ export default function TablesMultiplicationPage() {
 
         {/* Navigation */}
         <div className="flex justify-center mb-8">
-          <div className="bg-white rounded-lg p-1 shadow-md">
-            <button
-              onClick={() => {
-                setShowExercises(false);
-                setChallengeMode(false);
-                stopChallenge();
-              }}
-              className={`px-6 py-3 rounded-lg font-bold transition-all ${
-                !showExercises && !challengeMode ? 'bg-red-500 text-white shadow-md' : 'text-gray-600 hover:bg-gray-100'
-              }`}
-            >
-              📖 Cours
-            </button>
-            <button
-              onClick={() => {
-                setShowExercises(true);
-                setChallengeMode(false);
-                stopChallenge();
-              }}
-              className={`px-6 py-3 rounded-lg font-bold transition-all ${
-                showExercises && !challengeMode ? 'bg-purple-500 text-white shadow-md' : 'text-gray-600 hover:bg-gray-100'
-              }`}
-            >
-              ✏️ Exercices ({score}/{exercises.length})
-            </button>
-            <button
-              onClick={() => {
-                setShowExercises(false);
-                setChallengeMode(true);
-              }}
-              className={`px-6 py-3 rounded-lg font-bold transition-all ${
-                challengeMode ? 'bg-orange-500 text-white shadow-md' : 'text-gray-600 hover:bg-gray-100'
-              }`}
-            >
-              🏆 Défi Chrono
-            </button>
+          <div className="bg-white rounded-xl p-3 shadow-lg border border-gray-200">
+            {/* Layout mobile : 2 en haut, 1 en bas centré */}
+            <div className="flex flex-col gap-3 md:flex-row md:gap-2">
+              <div className="flex gap-2 justify-center">
+                <button
+                  onClick={() => {
+                    setShowExercises(false);
+                    setChallengeMode(false);
+                    stopChallenge();
+                    scrollToTop();
+                  }}
+                  className={`px-4 py-3 md:px-6 rounded-lg font-bold transition-all border-2 shadow-sm ${
+                    !showExercises && !challengeMode 
+                      ? 'bg-red-500 text-white border-red-600 shadow-md transform scale-105' 
+                      : 'bg-white text-gray-700 border-gray-300 hover:bg-red-50 hover:border-red-300 hover:shadow-md hover:scale-105'
+                  }`}
+                >
+                  📖 Cours
+                </button>
+                <button
+                  onClick={() => {
+                    setShowExercises(true);
+                    setChallengeMode(false);
+                    stopChallenge();
+                    scrollToTop();
+                  }}
+                  className={`px-4 py-3 md:px-6 rounded-lg font-bold transition-all border-2 shadow-sm ${
+                    showExercises && !challengeMode 
+                      ? 'bg-purple-500 text-white border-purple-600 shadow-md transform scale-105' 
+                      : 'bg-white text-gray-700 border-gray-300 hover:bg-purple-50 hover:border-purple-300 hover:shadow-md hover:scale-105'
+                  }`}
+                >
+                  <span className="hidden md:inline">✏️ Exercices (Total: {totalScore})</span>
+                  <span className="md:hidden">✏️ Exercices ({totalScore})</span>
+                </button>
+              </div>
+              
+              {/* Défi Chrono centré en bas sur mobile */}
+              <div className="flex justify-center">
+                <button
+                  onClick={() => {
+                    setShowExercises(false);
+                    setChallengeMode(true);
+                    scrollToTop();
+                  }}
+                  className={`px-4 py-3 md:px-6 rounded-lg font-bold transition-all border-2 shadow-sm ${
+                    challengeMode 
+                      ? 'bg-orange-500 text-white border-orange-600 shadow-md transform scale-105' 
+                      : 'bg-white text-gray-700 border-gray-300 hover:bg-orange-50 hover:border-orange-300 hover:shadow-md hover:scale-105'
+                  }`}
+                >
+                  🏆 Défi Chrono
+                </button>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -429,11 +578,15 @@ export default function TablesMultiplicationPage() {
                       </h3>
                       
                       <div className="mb-6">
-                        <input
-                          type="text"
-                          value={userAnswer}
-                          onChange={(e) => setUserAnswer(e.target.value)}
-                          onKeyPress={(e) => e.key === 'Enter' && checkChallengeAnswer()}
+                                              <input
+                        type="text"
+                        value={userAnswer}
+                        onChange={(e) => setUserAnswer(e.target.value)}
+                        onKeyPress={(e) => {
+                          if (e.key === 'Enter' && userAnswer.trim() && isCorrect === null) {
+                            checkChallengeAnswer();
+                          }
+                        }}
                           className="text-4xl font-bold text-center p-4 border-2 border-gray-300 rounded-xl w-40 focus:border-orange-500 focus:outline-none"
                           placeholder="?"
                           autoFocus
@@ -442,7 +595,7 @@ export default function TablesMultiplicationPage() {
 
                       <button
                         onClick={checkChallengeAnswer}
-                        disabled={!userAnswer.trim()}
+                        disabled={!userAnswer.trim() || isCorrect !== null}
                         className="bg-orange-500 text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-orange-600 disabled:bg-gray-300 transition-colors"
                       >
                         ✅ Valider
@@ -550,20 +703,54 @@ export default function TablesMultiplicationPage() {
               <h3 className="text-xl font-bold mb-4 text-center text-gray-900">
                 Choisis ta table :
               </h3>
-              <div className="flex justify-center gap-4">
-                {[2, 3, 4, 5].map(table => (
+              
+              {/* Version mobile : Liste déroulante */}
+              <div className="block md:hidden">
+                <select
+                  value={selectedTable}
+                  onChange={(e) => setSelectedTable(e.target.value as 2 | 3 | 4 | 5 | 'mixed')}
+                  className="w-full border-2 border-gray-300 rounded-lg px-4 py-3 text-lg font-semibold bg-white focus:outline-none focus:border-red-500 focus:ring-2 focus:ring-red-200 transition-all duration-200"
+                >
+                  <option value={2}>Table de 2</option>
+                  <option value={3}>Table de 3</option>
+                  <option value={4}>Table de 4</option>
+                  <option value={5}>Table de 5</option>
+                  <option value="mixed">🎲 Tables mélangées</option>
+                </select>
+              </div>
+              
+              {/* Version desktop : Boutons */}
+              <div className="hidden md:flex justify-center gap-4">
+                {([2, 3, 4, 5] as const).map(table => (
                   <button
                     key={table}
-                    onClick={() => setSelectedTable(table as 2 | 3 | 4 | 5)}
-                    className={`px-6 py-3 rounded-lg font-bold text-lg transition-all ${
+                    onClick={() => setSelectedTable(table)}
+                    className={`px-6 py-3 rounded-lg font-bold text-lg transition-all border-2 ${
                       selectedTable === table
-                        ? 'bg-red-500 text-white shadow-lg transform scale-105'
-                        : 'bg-gray-100 text-gray-800 hover:bg-red-100'
+                        ? 'bg-red-500 text-white border-red-600 shadow-lg transform scale-105'
+                        : 'bg-white text-gray-800 border-gray-300 hover:bg-red-50 hover:border-red-300 hover:shadow-md'
                     }`}
                   >
                     Table de {table}
                   </button>
                 ))}
+                <button
+                  onClick={() => setSelectedTable('mixed')}
+                  className={`px-6 py-3 rounded-lg font-bold text-lg transition-all border-2 ${
+                    selectedTable === 'mixed'
+                      ? 'bg-purple-500 text-white border-purple-600 shadow-lg transform scale-105'
+                      : 'bg-white text-gray-800 border-gray-300 hover:bg-purple-50 hover:border-purple-300 hover:shadow-md'
+                  }`}
+                >
+                  🎲 Tables mélangées
+                </button>
+              </div>
+              
+              {/* Indication de la sélection actuelle */}
+              <div className="mt-4 text-center">
+                <div className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800">
+                  {selectedTable === 'mixed' ? '🎲 Tables mélangées' : `Table de ${selectedTable}`}
+                </div>
               </div>
             </div>
 
@@ -573,12 +760,19 @@ export default function TablesMultiplicationPage() {
                   <div className="text-sm text-gray-600 mb-2">
                     Question {currentExercise + 1} sur {exercises.length}
                   </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
+                  <div className="w-full bg-gray-200 rounded-full h-2 mb-3">
                     <div 
                       className="bg-red-500 h-2 rounded-full transition-all duration-300"
                       style={{ width: `${((currentExercise + 1) / exercises.length) * 100}%` }}
                     ></div>
                   </div>
+                  
+                  {/* Score sous la barre */}
+                                <div className="text-center">
+                <div className="text-lg font-bold text-red-600">
+                  Session: {score}/{exercises.length} • Total: {totalScore}
+                </div>
+              </div>
                 </div>
 
                 <div className="mb-8">
@@ -591,49 +785,79 @@ export default function TablesMultiplicationPage() {
                       type="text"
                       value={userAnswer}
                       onChange={(e) => setUserAnswer(e.target.value)}
-                      onKeyPress={(e) => e.key === 'Enter' && checkAnswer()}
+                      onKeyPress={(e) => {
+                        if (e.key === 'Enter' && userAnswer.trim() && isCorrect === null) {
+                          checkAnswer();
+                        }
+                      }}
                       className="text-3xl font-bold text-center p-4 border-2 border-gray-300 rounded-xl w-32 focus:border-red-500 focus:outline-none"
                       placeholder="?"
                       autoFocus
                     />
                   </div>
 
-                  {isCorrect === null ? (
-                    <button
-                      onClick={checkAnswer}
-                      disabled={!userAnswer.trim()}
-                      className="bg-red-500 text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-red-600 disabled:bg-gray-300 transition-colors"
-                    >
-                      Vérifier
-                    </button>
-                  ) : !isCorrect ? (
+                  {!isCorrect && isCorrect !== null && (
                     <button
                       onClick={nextExercise}
                       className="bg-blue-500 text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-blue-600 transition-colors"
                     >
                       Suivant →
                     </button>
-                  ) : null}
+                  )}
                 </div>
 
                 {isCorrect !== null && (
-                  <div className={`p-6 rounded-xl ${
+                  <div className={`p-4 sm:p-6 rounded-xl ${
                     isCorrect 
-                      ? 'bg-green-100 text-green-800' 
-                      : 'bg-red-100 text-red-800'
+                      ? 'bg-green-600 text-white' 
+                      : 'bg-red-600 text-white'
                   }`}>
-                    <div className="text-2xl font-bold mb-2">
+                    <div className="text-xl sm:text-2xl font-bold mb-2">
                       {isCorrect ? '✅ Correct !' : '❌ Incorrect'}
                     </div>
-                    <div className="text-lg">
+                    <div className="text-base sm:text-lg">
                       {exercises[currentExercise]?.explanation}
                     </div>
                   </div>
                 )}
 
-                <div className="mt-6 text-gray-600">
-                  Score : {score}/{exercises.length}
+
+              
+              {/* Navigation */}
+              <div className="mt-6 sm:mt-8">
+                <div className="flex flex-col sm:flex-row justify-center items-center gap-2 sm:gap-4">
+                  <button
+                    onClick={() => setUserAnswer('')}
+                    className="bg-gray-500 text-white px-4 py-3 sm:px-6 sm:py-3 rounded-lg font-bold hover:bg-gray-600 transition-colors w-full sm:w-auto touch-manipulation min-h-[44px]"
+                  >
+                    Effacer
+                  </button>
+                  <button
+                    onClick={() => setCurrentExercise(Math.max(0, currentExercise - 1))}
+                    disabled={currentExercise === 0}
+                    className="bg-gray-600 text-white px-4 py-3 sm:px-6 sm:py-3 rounded-lg font-bold hover:bg-gray-700 transition-colors disabled:opacity-50 w-full sm:w-auto touch-manipulation min-h-[44px]"
+                  >
+                    ← Précédent
+                  </button>
+                  <button
+                    onClick={() => {
+                      // Si l'utilisateur a tapé une réponse mais n'a pas encore vérifié, on vérifie d'abord
+                      if (userAnswer.trim() && isCorrect === null) {
+                        checkAnswer();
+                      } else if (currentExercise < exercises.length - 1) {
+                        setCurrentExercise(currentExercise + 1);
+                        setUserAnswer('');
+                        setIsCorrect(null);
+                      }
+                    }}
+                    disabled={currentExercise === exercises.length - 1 || (!userAnswer.trim() && isCorrect === null)}
+                    className="bg-red-500 text-white px-4 py-3 sm:px-6 sm:py-3 rounded-lg font-bold hover:bg-red-600 transition-colors disabled:opacity-50 w-full sm:w-auto touch-manipulation min-h-[44px]"
+                  >
+                    {userAnswer.trim() && isCorrect === null ? '✅ Vérifier' : 'Suivant →'}
+                  </button>
                 </div>
+              </div>
+
               </div>
             )}
           </div>

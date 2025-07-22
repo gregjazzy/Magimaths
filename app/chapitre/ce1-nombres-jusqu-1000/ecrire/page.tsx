@@ -15,16 +15,46 @@ export default function EcrireNombresCE1Page() {
   const [showCompletionModal, setShowCompletionModal] = useState(false);
   const [finalScore, setFinalScore] = useState(0);
 
+  // Sauvegarder les progrès dans localStorage
+  const saveProgress = (score: number, maxScore: number) => {
+    const progress = {
+      sectionId: 'ecrire',
+      completed: true,
+      score: score,
+      maxScore: maxScore,
+      completedAt: new Date().toISOString(),
+      attempts: 1
+    };
+
+    const existingProgress = localStorage.getItem('ce1-nombres-progress');
+    let allProgress = [];
+    
+    if (existingProgress) {
+      allProgress = JSON.parse(existingProgress);
+      const existingIndex = allProgress.findIndex((p: any) => p.sectionId === 'ecrire');
+      
+      if (existingIndex >= 0) {
+        if (score > allProgress[existingIndex].score) {
+          allProgress[existingIndex] = {
+            ...progress,
+            attempts: allProgress[existingIndex].attempts + 1
+          };
+        } else {
+          allProgress[existingIndex].attempts += 1;
+        }
+      } else {
+        allProgress.push(progress);
+      }
+    } else {
+      allProgress = [progress];
+    }
+
+    localStorage.setItem('ce1-nombres-progress', JSON.stringify(allProgress));
+  };
+
   const examples = [
     { written: 'Cent vingt-trois', number: '123' },
-    { written: 'Deux cent quarante-cinq', number: '245' },
-    { written: 'Trois cent soixante-sept', number: '367' },
-    { written: 'Quatre cent quatre-vingt-neuf', number: '489' },
-    { written: 'Cinq cent douze', number: '512' },
-    { written: 'Six cent trente-quatre', number: '634' },
-    { written: 'Sept cent cinquante-six', number: '756' },
-    { written: 'Huit cent soixante-dix-huit', number: '878' },
-    { written: 'Neuf cent quatre-vingt-dix', number: '990' },
+    { written: 'Quatre-vingt-sept', number: '87' },
     { written: 'Mille', number: '1000' }
   ];
 
@@ -76,8 +106,12 @@ export default function EcrireNombresCE1Page() {
             setShowHint(false);
           } else {
             // Dernier exercice terminé, afficher la modale
-            setFinalScore(score + (!answeredCorrectly.has(currentExercise) ? 1 : 0));
+            const finalScoreValue = score + (!answeredCorrectly.has(currentExercise) ? 1 : 0);
+            setFinalScore(finalScoreValue);
             setShowCompletionModal(true);
+            
+            // Sauvegarder les progrès
+            saveProgress(finalScoreValue, exercises.length);
           }
         }, 1500);
       }
@@ -93,6 +127,9 @@ export default function EcrireNombresCE1Page() {
         // Dernier exercice, afficher la modale
         setFinalScore(score);
         setShowCompletionModal(true);
+        
+        // Sauvegarder les progrès
+        saveProgress(score, exercises.length);
       }
     }
   };
@@ -239,8 +276,8 @@ export default function EcrireNombresCE1Page() {
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div>
-                  <h4 className="font-bold text-green-600 mb-3">Centaines</h4>
-                  <div className="space-y-1 text-sm text-gray-800">
+                  <h4 className="font-bold text-green-600 mb-3 text-center md:text-left">Centaines</h4>
+                  <div className="grid grid-cols-2 md:grid-cols-1 gap-1 text-sm text-gray-800 text-center md:text-left">
                     <div>Cent = 100</div>
                     <div>Deux cent = 200</div>
                     <div>Trois cent = 300</div>
@@ -253,8 +290,8 @@ export default function EcrireNombresCE1Page() {
                   </div>
                 </div>
                 <div>
-                  <h4 className="font-bold text-blue-600 mb-3">Dizaines</h4>
-                  <div className="space-y-1 text-sm text-gray-800">
+                  <h4 className="font-bold text-blue-600 mb-3 text-center md:text-left">Dizaines</h4>
+                  <div className="grid grid-cols-2 md:grid-cols-1 gap-1 text-sm text-gray-800 text-center md:text-left">
                     <div>Dix = 10</div>
                     <div>Vingt = 20</div>
                     <div>Trente = 30</div>
@@ -267,8 +304,8 @@ export default function EcrireNombresCE1Page() {
                   </div>
                 </div>
                 <div>
-                  <h4 className="font-bold text-purple-600 mb-3">Unités</h4>
-                  <div className="space-y-1 text-sm text-gray-800">
+                  <h4 className="font-bold text-purple-600 mb-3 text-center md:text-left">Unités</h4>
+                  <div className="grid grid-cols-2 md:grid-cols-1 gap-1 text-sm text-gray-800 text-center md:text-left">
                     <div>Un = 1</div>
                     <div>Deux = 2</div>
                     <div>Trois = 3</div>
@@ -292,26 +329,28 @@ export default function EcrireNombresCE1Page() {
                 <h2 className="text-2xl font-bold text-gray-900">
                   ✏️ Exercice {currentExercise + 1} sur {exercises.length}
                 </h2>
-                <div className="flex items-center space-x-4">
-                  <div className="text-lg font-bold text-green-600">
-                    Score : {score}/{exercises.length}
-                  </div>
-                  <button
-                    onClick={resetAll}
-                    className="bg-gray-500 text-white px-4 py-2 rounded-lg font-bold hover:bg-gray-600 transition-colors"
-                  >
-                    <RotateCcw className="inline w-4 h-4 mr-2" />
-                    Recommencer
-                  </button>
-                </div>
+                <button
+                  onClick={resetAll}
+                  className="bg-gray-500 text-white px-4 py-2 rounded-lg font-bold hover:bg-gray-600 transition-colors"
+                >
+                  <RotateCcw className="inline w-4 h-4 mr-2" />
+                  Recommencer
+                </button>
               </div>
               
               {/* Barre de progression */}
-              <div className="w-full bg-gray-200 rounded-full h-3">
+              <div className="w-full bg-gray-200 rounded-full h-3 mb-3">
                 <div 
                   className="bg-green-500 h-3 rounded-full transition-all duration-500"
                   style={{ width: `${((currentExercise + 1) / exercises.length) * 100}%` }}
                 ></div>
+              </div>
+              
+              {/* Score sous la barre */}
+              <div className="text-center">
+                <div className="text-lg font-bold text-green-600">
+                  Score : {score}/{exercises.length}
+                </div>
               </div>
             </div>
 

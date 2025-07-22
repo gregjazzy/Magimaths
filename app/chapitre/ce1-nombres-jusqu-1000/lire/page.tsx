@@ -17,6 +17,43 @@ export default function LireNombresCE1Page() {
   const [showCompletionModal, setShowCompletionModal] = useState(false);
   const [finalScore, setFinalScore] = useState(0);
 
+  // Sauvegarder les progrès dans localStorage
+  const saveProgress = (score: number, maxScore: number) => {
+    const progress = {
+      sectionId: 'lire',
+      completed: true,
+      score: score,
+      maxScore: maxScore,
+      completedAt: new Date().toISOString(),
+      attempts: 1
+    };
+
+    const existingProgress = localStorage.getItem('ce1-nombres-progress');
+    let allProgress = [];
+    
+    if (existingProgress) {
+      allProgress = JSON.parse(existingProgress);
+      const existingIndex = allProgress.findIndex((p: any) => p.sectionId === 'lire');
+      
+      if (existingIndex >= 0) {
+        if (score > allProgress[existingIndex].score) {
+          allProgress[existingIndex] = {
+            ...progress,
+            attempts: allProgress[existingIndex].attempts + 1
+          };
+        } else {
+          allProgress[existingIndex].attempts += 1;
+        }
+      } else {
+        allProgress.push(progress);
+      }
+    } else {
+      allProgress = [progress];
+    }
+
+    localStorage.setItem('ce1-nombres-progress', JSON.stringify(allProgress));
+  };
+
   const numbers = [
     { value: '234', label: '234', reading: 'Deux cent trente-quatre' },
     { value: '89', label: '89', reading: 'Quatre-vingt-neuf' },
@@ -35,13 +72,13 @@ export default function LireNombresCE1Page() {
     { number: '946', reading: 'Neuf cent quarante-six' },
     { number: '207', reading: 'Deux cent sept' },
     { number: '350', reading: 'Trois cent cinquante' },
-    { number: '400', reading: 'Quatre cents' },
-    { number: '500', reading: 'Cinq cents' },
-    { number: '600', reading: 'Six cents' },
-    { number: '700', reading: 'Sept cents' },
-    { number: '800', reading: 'Huit cents' },
-    { number: '900', reading: 'Neuf cents' },
-    { number: '1000', reading: 'Mille' },
+    { number: '284', reading: 'Deux cent quatre-vingt-quatre' },
+    { number: '837', reading: 'Huit cent trente-sept' },
+    { number: '37', reading: 'Trente-sept' },
+    { number: '98', reading: 'Quatre-vingt-dix-huit' },
+    { number: '456', reading: 'Quatre cent cinquante-six' },
+    { number: '672', reading: 'Six cent soixante-douze' },
+    { number: '129', reading: 'Cent vingt-neuf' },
     { number: '101', reading: 'Cent un' },
     { number: '202', reading: 'Deux cent deux' },
     { number: '303', reading: 'Trois cent trois' }
@@ -229,8 +266,12 @@ export default function LireNombresCE1Page() {
             setIsCorrect(null);
           } else {
             // Dernier exercice terminé, afficher la modale
-            setFinalScore(score + (!answeredCorrectly.has(currentExercise) ? 1 : 0));
+            const finalScoreValue = score + (!answeredCorrectly.has(currentExercise) ? 1 : 0);
+            setFinalScore(finalScoreValue);
             setShowCompletionModal(true);
+            
+            // Sauvegarder les progrès
+            saveProgress(finalScoreValue, exercises.length);
           }
         }, 1500);
       }
@@ -245,6 +286,9 @@ export default function LireNombresCE1Page() {
         // Dernier exercice, afficher la modale
         setFinalScore(score);
         setShowCompletionModal(true);
+        
+        // Sauvegarder les progrès
+        saveProgress(score, exercises.length);
       }
     }
   };
@@ -558,7 +602,7 @@ export default function LireNombresCE1Page() {
               {/* Question */}
               <div className="bg-white rounded-xl p-8 shadow-lg text-center">
                 <h3 className="text-xl font-bold mb-6 text-gray-900">
-                  🤔 Comment lit-on ce nombre ?
+                  📝 Écris ce nombre en lettres
                 </h3>
                 
                 <div className="text-6xl font-bold text-blue-600 mb-8">

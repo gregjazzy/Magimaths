@@ -45,6 +45,43 @@ export default function RepresenterNombresCE1Page() {
   const [answeredCorrectly, setAnsweredCorrectly] = useState<Set<number>>(new Set());
   const [showCompletionModal, setShowCompletionModal] = useState(false);
   const [finalScore, setFinalScore] = useState(0);
+
+  // Sauvegarder les progrès dans localStorage
+  const saveProgress = (score: number, maxScore: number) => {
+    const progress = {
+      sectionId: 'representer',
+      completed: true,
+      score: score,
+      maxScore: maxScore,
+      completedAt: new Date().toISOString(),
+      attempts: 1
+    };
+
+    const existingProgress = localStorage.getItem('ce1-nombres-progress');
+    let allProgress = [];
+    
+    if (existingProgress) {
+      allProgress = JSON.parse(existingProgress);
+      const existingIndex = allProgress.findIndex((p: any) => p.sectionId === 'representer');
+      
+      if (existingIndex >= 0) {
+        if (score > allProgress[existingIndex].score) {
+          allProgress[existingIndex] = {
+            ...progress,
+            attempts: allProgress[existingIndex].attempts + 1
+          };
+        } else {
+          allProgress[existingIndex].attempts += 1;
+        }
+      } else {
+        allProgress.push(progress);
+      }
+    } else {
+      allProgress = [progress];
+    }
+
+    localStorage.setItem('ce1-nombres-progress', JSON.stringify(allProgress));
+  };
   
   // États pour l'animation
   const [selectedNumber, setSelectedNumber] = useState<number | null>(null);
@@ -149,8 +186,12 @@ export default function RepresenterNombresCE1Page() {
             setIsCorrect(null);
           } else {
             // Dernier exercice terminé, afficher la modale
-            setFinalScore(score + (!answeredCorrectly.has(currentExercise) ? 1 : 0));
+            const finalScoreValue = score + (!answeredCorrectly.has(currentExercise) ? 1 : 0);
+            setFinalScore(finalScoreValue);
             setShowCompletionModal(true);
+            
+            // Sauvegarder les progrès
+            saveProgress(finalScoreValue, exercises.length);
           }
         }, 1500);
       }
@@ -165,6 +206,9 @@ export default function RepresenterNombresCE1Page() {
         // Dernier exercice, afficher la modale
         setFinalScore(score);
         setShowCompletionModal(true);
+        
+        // Sauvegarder les progrès
+        saveProgress(score, exercises.length);
       }
     }
   };
@@ -343,7 +387,7 @@ export default function RepresenterNombresCE1Page() {
                         style={{ left: `${position}%` }}
                       >
                         <div className="w-1 h-6 bg-gray-600 -mt-2 mx-auto"></div>
-                        <div className="text-sm font-bold text-gray-700 mt-1 text-center min-w-max transform -translate-x-1/2">
+                        <div className="text-xs md:text-sm font-bold text-gray-700 mt-1 text-center min-w-max transform -translate-x-1/2">
                           {value}
                         </div>
                       </div>
@@ -360,7 +404,7 @@ export default function RepresenterNombresCE1Page() {
                       <div className="w-3 h-6 bg-red-500 rounded -mt-2 mx-auto shadow-lg"></div>
                       {/* Étiquette avec le nombre au-dessus */}
                       <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-8">
-                        <div className="text-sm font-bold text-white text-center bg-red-500 px-3 py-2 rounded-lg shadow-lg border-2 border-red-300 min-w-max">
+                        <div className="text-xs md:text-sm font-bold text-white text-center bg-red-500 px-2 md:px-3 py-1 md:py-2 rounded-lg shadow-lg border-2 border-red-300 min-w-max">
                           {selectedNumber}
                         </div>
                       </div>
@@ -439,49 +483,51 @@ export default function RepresenterNombresCE1Page() {
                 <h2 className="text-2xl font-bold text-gray-900">
                   ✏️ Exercice {currentExercise + 1} sur {exercises.length}
                 </h2>
-                <div className="flex items-center space-x-4">
-                  <div className="text-lg font-bold text-orange-600">
-                    Score : {score}/{exercises.length}
-                  </div>
-                  <button
-                    onClick={resetAll}
-                    className="bg-gray-500 text-white px-4 py-2 rounded-lg font-bold hover:bg-gray-600 transition-colors"
-                  >
-                    <RotateCcw className="inline w-4 h-4 mr-2" />
-                    Recommencer
-                  </button>
-                </div>
+                <button
+                  onClick={resetAll}
+                  className="bg-gray-500 text-white px-4 py-2 rounded-lg font-bold hover:bg-gray-600 transition-colors"
+                >
+                  <RotateCcw className="inline w-4 h-4 mr-2" />
+                  Recommencer
+                </button>
               </div>
               
               {/* Barre de progression */}
-              <div className="w-full bg-gray-200 rounded-full h-3">
+              <div className="w-full bg-gray-200 rounded-full h-3 mb-3">
                 <div 
                   className="bg-red-500 h-3 rounded-full transition-all duration-500"
                   style={{ width: `${((currentExercise + 1) / exercises.length) * 100}%` }}
                 ></div>
               </div>
+              
+              {/* Score sous la barre */}
+              <div className="text-center">
+                <div className="text-lg font-bold text-orange-600">
+                  Score : {score}/{exercises.length}
+                </div>
+              </div>
             </div>
 
             {/* Question */}
-            <div className="bg-white rounded-xl p-8 shadow-lg">
-              <h3 className="text-xl font-bold mb-6 text-center text-gray-900">
+            <div className="bg-white rounded-xl p-2 md:p-8 shadow-lg">
+              <h3 className="text-lg md:text-xl font-bold mb-4 md:mb-6 text-center text-gray-900">
                 🎯 Place le nombre {exercises[currentExercise].number} sur la droite
               </h3>
               
-              <div className="bg-yellow-50 rounded-lg p-4 mb-8 text-center">
-                <div className="text-4xl font-bold text-yellow-800 mb-2">
+              <div className="bg-yellow-50 rounded-lg p-3 md:p-4 mb-4 md:mb-8 text-center">
+                <div className="text-3xl md:text-4xl font-bold text-yellow-800 mb-2">
                   {exercises[currentExercise].number}
                 </div>
-                <div className="text-lg text-yellow-700 mb-2">
+                <div className="text-base md:text-lg text-yellow-700 mb-2">
                   Clique sur la droite pour placer ce nombre !
                 </div>
-                <div className="text-sm text-yellow-600">
+                <div className="text-xs md:text-sm text-yellow-600">
                   Puis utilise les boutons -1 et +1 pour ajuster précisément 🎯
                 </div>
               </div>
 
               {/* Droite numérique interactive */}
-              <div className="relative mb-8 px-16">
+              <div className="relative mb-6 md:mb-8 px-1 md:px-16">
                 {/* Boutons d'ajustement */}
                 {userPosition !== null && (
                   <>
@@ -491,7 +537,7 @@ export default function RepresenterNombresCE1Page() {
                         ranges[exercises[currentExercise].range as keyof typeof ranges].min,
                         userPosition - 1
                       ))}
-                      className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-orange-500 text-white px-3 py-2 rounded-lg font-bold hover:bg-orange-600 transition-colors text-lg shadow-lg z-10"
+                      className="absolute -left-2 md:left-0 top-1/2 transform -translate-y-1/2 bg-orange-500 text-white px-2 md:px-3 py-1 md:py-2 rounded-lg font-bold hover:bg-orange-600 transition-colors text-sm md:text-lg shadow-lg z-10"
                     >
                       -1
                     </button>
@@ -502,7 +548,7 @@ export default function RepresenterNombresCE1Page() {
                         ranges[exercises[currentExercise].range as keyof typeof ranges].max,
                         userPosition + 1
                       ))}
-                      className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-orange-500 text-white px-3 py-2 rounded-lg font-bold hover:bg-orange-600 transition-colors text-lg shadow-lg z-10"
+                      className="absolute -right-2 md:right-0 top-1/2 transform -translate-y-1/2 bg-orange-500 text-white px-2 md:px-3 py-1 md:py-2 rounded-lg font-bold hover:bg-orange-600 transition-colors text-sm md:text-lg shadow-lg z-10"
                     >
                       +1
                     </button>
@@ -523,7 +569,7 @@ export default function RepresenterNombresCE1Page() {
                       style={{ left: `${getPositionPercentage(value, exercises[currentExercise].range)}%` }}
                     >
                       <div className="w-1 h-8 bg-gray-600 -mt-2 mx-auto"></div>
-                      <div className="text-sm font-bold text-gray-700 mt-2 text-center min-w-max transform -translate-x-1/2">
+                      <div className="text-xs md:text-sm font-bold text-gray-700 mt-2 text-center min-w-max transform -translate-x-1/2">
                         {value}
                       </div>
                     </div>
@@ -539,7 +585,7 @@ export default function RepresenterNombresCE1Page() {
                       <div className="w-3 h-8 bg-blue-500 rounded -mt-2 mx-auto shadow-lg"></div>
                       {/* Étiquette avec le nombre au-dessus */}
                       <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-8">
-                        <div className="text-sm font-bold text-blue-700 text-center bg-blue-100 px-2 py-1 rounded min-w-max">
+                        <div className="text-xs md:text-sm font-bold text-blue-700 text-center bg-blue-100 px-1 md:px-2 py-0.5 md:py-1 rounded min-w-max">
                           {userPosition}
                         </div>
                       </div>
@@ -556,7 +602,7 @@ export default function RepresenterNombresCE1Page() {
                       <div className="w-3 h-8 bg-green-500 rounded -mt-2 mx-auto shadow-lg"></div>
                       {/* Étiquette avec le nombre au-dessus */}
                       <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-8">
-                        <div className="text-sm font-bold text-green-700 text-center bg-green-100 px-2 py-1 rounded min-w-max">
+                        <div className="text-xs md:text-sm font-bold text-green-700 text-center bg-green-100 px-1 md:px-2 py-0.5 md:py-1 rounded min-w-max">
                           {exercises[currentExercise].number}
                         </div>
                       </div>
@@ -571,17 +617,17 @@ export default function RepresenterNombresCE1Page() {
                     <div className="text-lg font-bold text-blue-800">
                       Tu as placé le nombre à la position : {userPosition}
                     </div>
-                    <div className="text-sm text-gray-600 mt-2">
+                    <div className="text-xs md:text-sm text-gray-600 mt-2">
                       💡 Utilise les boutons -1/+1 aux extrémités pour ajuster !
                     </div>
                   </div>
                 </div>
               )}
               
-              <div className="flex justify-center space-x-4 mb-6">
+              <div className="flex justify-center space-x-4 mb-4 md:mb-6">
                 <button
                   onClick={resetExercise}
-                  className="bg-gray-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-gray-600 transition-colors"
+                  className="bg-gray-500 text-white px-4 md:px-6 py-2 md:py-3 rounded-lg font-bold hover:bg-gray-600 transition-colors text-sm md:text-base"
                 >
                   Recommencer
                 </button>
@@ -596,12 +642,12 @@ export default function RepresenterNombresCE1Page() {
                     {isCorrect ? (
                       <>
                         <CheckCircle className="w-6 h-6" />
-                        <span className="font-bold">Bravo ! Tu as bien placé le nombre !</span>
+                        <span className="font-bold text-sm md:text-base">Bravo ! Tu as bien placé le nombre !</span>
                       </>
                     ) : (
                       <>
                         <XCircle className="w-6 h-6" />
-                        <span className="font-bold">
+                        <span className="font-bold text-sm md:text-base">
                           Pas tout à fait... Le nombre {exercises[currentExercise].number} se place là où tu vois le point vert.
                         </span>
                       </>
@@ -611,20 +657,20 @@ export default function RepresenterNombresCE1Page() {
               )}
               
               {/* Navigation */}
-              <div className="flex justify-center space-x-4">
+              <div className="flex justify-center space-x-3 md:space-x-4">
                 <button
                   onClick={() => setCurrentExercise(Math.max(0, currentExercise - 1))}
                   disabled={currentExercise === 0}
-                  className="bg-gray-300 text-gray-700 px-6 py-3 rounded-lg font-bold hover:bg-gray-400 transition-colors disabled:opacity-50"
+                  className="bg-gray-300 text-gray-700 px-4 md:px-6 py-2 md:py-3 rounded-lg font-bold hover:bg-gray-400 transition-colors disabled:opacity-50 text-sm md:text-base"
                 >
                   ← Précédent
                 </button>
                 <button
                   onClick={handleNext}
                   disabled={userPosition === null && isCorrect === null}
-                  className="bg-red-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-red-600 transition-colors disabled:opacity-50"
+                  className="bg-red-500 text-white px-4 md:px-6 py-2 md:py-3 rounded-lg font-bold hover:bg-red-600 transition-colors disabled:opacity-50 text-sm md:text-base"
                 >
-                  <Target className="inline w-4 h-4 mr-2" />
+                  <Target className="inline w-3 md:w-4 h-3 md:h-4 mr-1 md:mr-2" />
                   {isCorrect === null ? 'Vérifier' : 'Suivant →'}
                 </button>
               </div>

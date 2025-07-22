@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Target } from 'lucide-react';
 
 export default function Complements100Page() {
   const [currentExercise, setCurrentExercise] = useState(0);
@@ -35,35 +35,82 @@ export default function Complements100Page() {
       {base: 42, complement: 58}, {base: 36, complement: 64}, {base: 28, complement: 72}
     ];
     
-    // Mélanger et prendre 20 exercices
+    // Mélanger tous les compléments pour éviter les doublons
     const allComplements = [...easyComplements, ...hardComplements];
+    const shuffledComplements = allComplements.sort(() => Math.random() - 0.5);
     
-    for (let i = 0; i < 20; i++) {
-      const randomComplement = allComplements[Math.floor(Math.random() * allComplements.length)];
+    // Générer exactement 20 exercices uniques
+    const usedExercises = new Set();
+    let complementIndex = 0;
+    
+    while (exercises.length < 20 && complementIndex < shuffledComplements.length) {
+      const complement = shuffledComplements[complementIndex];
       
       // Varier les formulations
       const formulations = [
         {
-          question: `${randomComplement.base} + ? = 100`,
-          answer: randomComplement.complement.toString(),
-          explanation: `${randomComplement.base} + ${randomComplement.complement} = 100`
+          question: `${complement.base} + ? = 100`,
+          answer: complement.complement.toString(),
+          explanation: `${complement.base} + ${complement.complement} = 100`
         },
         {
-          question: `100 - ${randomComplement.base} = ?`,
-          answer: randomComplement.complement.toString(),
-          explanation: `100 - ${randomComplement.base} = ${randomComplement.complement}`
+          question: `100 - ${complement.base} = ?`,
+          answer: complement.complement.toString(),
+          explanation: `100 - ${complement.base} = ${complement.complement}`
         },
         {
-          question: `? + ${randomComplement.base} = 100`,
-          answer: randomComplement.complement.toString(),
-          explanation: `${randomComplement.complement} + ${randomComplement.base} = 100`
+          question: `? + ${complement.base} = 100`,
+          answer: complement.complement.toString(),
+          explanation: `${complement.complement} + ${complement.base} = 100`
         }
       ];
       
-      exercises.push(formulations[Math.floor(Math.random() * formulations.length)]);
+      // Essayer chaque formulation jusqu'à trouver une non utilisée
+      for (const formulation of formulations) {
+        const exerciseKey = `${formulation.question}-${formulation.answer}`;
+        if (!usedExercises.has(exerciseKey)) {
+          exercises.push(formulation);
+          usedExercises.add(exerciseKey);
+          break;
+        }
+      }
+      
+      complementIndex++;
     }
     
-    return exercises.sort(() => Math.random() - 0.5);
+    // Si on a besoin de plus d'exercices, recommencer avec les compléments restants
+    if (exercises.length < 20) {
+      complementIndex = 0;
+      while (exercises.length < 20 && complementIndex < shuffledComplements.length) {
+        const complement = shuffledComplements[complementIndex];
+        
+        // Essayer les formulations alternatives
+        const alternativeFormulations = [
+          {
+            question: `100 - ${complement.complement} = ?`,
+            answer: complement.base.toString(),
+            explanation: `100 - ${complement.complement} = ${complement.base}`
+          },
+          {
+            question: `${complement.complement} + ? = 100`,
+            answer: complement.base.toString(),
+            explanation: `${complement.complement} + ${complement.base} = 100`
+          }
+        ];
+        
+        for (const formulation of alternativeFormulations) {
+          const exerciseKey = `${formulation.question}-${formulation.answer}`;
+          if (!usedExercises.has(exerciseKey) && exercises.length < 20) {
+            exercises.push(formulation);
+            usedExercises.add(exerciseKey);
+          }
+        }
+        
+        complementIndex++;
+      }
+    }
+    
+    return exercises.slice(0, 20).sort(() => Math.random() - 0.5);
   };
 
   useEffect(() => {
@@ -80,8 +127,10 @@ export default function Complements100Page() {
     const correct = userAnswer.trim() === exercises[currentExercise]?.answer;
     setIsCorrect(correct);
     
+    let newScore = score;
     if (correct && !answeredCorrectly.has(currentExercise)) {
-      setScore(prevScore => prevScore + 1);
+      newScore = score + 1;
+      setScore(newScore);
       setAnsweredCorrectly(prev => {
         const newSet = new Set(prev);
         newSet.add(currentExercise);
@@ -97,8 +146,12 @@ export default function Complements100Page() {
           setUserAnswer('');
           setIsCorrect(null);
         } else {
-          setFinalScore(score + (!answeredCorrectly.has(currentExercise) ? 1 : 0));
+          setFinalScore(newScore);
           setShowCompletionModal(true);
+          
+          // Sauvegarder les progrès
+          const maxScore = exercises.length;
+          saveProgress(newScore, maxScore);
         }
       }, 1500);
     }
@@ -113,7 +166,58 @@ export default function Complements100Page() {
     } else {
       setFinalScore(score);
       setShowCompletionModal(true);
+      
+      // Sauvegarder les progrès
+      const maxScore = exercises.length;
+      saveProgress(score, maxScore);
     }
+  };
+
+  // Fonction pour sauvegarder les progrès et calculer l'XP
+  const saveProgress = (score: number, maxScore: number) => {
+    const percentage = Math.round((score / maxScore) * 100);
+    const baseXP = 18; // XP de base pour cette section
+    const xpEarned = Math.round(baseXP * (percentage / 100));
+    
+    const progress = {
+      sectionId: 'complements-100',
+      completed: true,
+      score: score,
+      maxScore: maxScore,
+      completedAt: new Date().toISOString(),
+      attempts: 1,
+      xpEarned: xpEarned
+    };
+
+    // Récupérer les progrès existants
+    const existingProgress = localStorage.getItem('ce1-calcul-mental-progress');
+    let allProgress = [];
+    
+    if (existingProgress) {
+      allProgress = JSON.parse(existingProgress);
+      const existingIndex = allProgress.findIndex((p: any) => p.sectionId === 'complements-100');
+      
+      if (existingIndex >= 0) {
+        // Si le nouveau score est meilleur, on met à jour
+        if (score > allProgress[existingIndex].score) {
+          allProgress[existingIndex] = { 
+            ...progress, 
+            attempts: allProgress[existingIndex].attempts + 1 
+          };
+        } else {
+          allProgress[existingIndex].attempts += 1;
+        }
+      } else {
+        allProgress.push(progress);
+      }
+    } else {
+      allProgress = [progress];
+    }
+
+    localStorage.setItem('ce1-calcul-mental-progress', JSON.stringify(allProgress));
+    
+    // Déclencher l'événement storage pour mettre à jour les autres onglets
+    window.dispatchEvent(new Event('storage'));
   };
 
   const resetExercises = () => {
@@ -146,6 +250,9 @@ export default function Complements100Page() {
           <div className="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full mx-4 text-center shadow-2xl transform transition-all duration-300 scale-100 hover:scale-105">
             {(() => {
               const percentage = Math.round((finalScore / exercises.length) * 100);
+              const baseXP = 18; // XP de base pour cette section
+              const xpEarned = Math.round(baseXP * (percentage / 100));
+              
               const getMessage = () => {
                 if (percentage >= 90) return { 
                   title: "🏆 Champion des compléments à 100 !", 
@@ -178,9 +285,15 @@ export default function Complements100Page() {
                   <div className="text-6xl mb-4">{percentage >= 70 ? "🎉" : percentage >= 50 ? "😊" : "📚"}</div>
                   <h3 className={`text-2xl font-bold mb-3 ${result.color}`}>{result.title}</h3>
                   <p className={`text-lg mb-4 ${result.color}`}>{result.message}</p>
-                  <p className={`text-xl font-bold mb-6 ${result.color}`}>
-                    Score final : {finalScore}/{exercises.length} ({percentage}%)
-                  </p>
+                  <div className="bg-white bg-opacity-50 rounded-lg p-4 mb-4">
+                    <div className={`text-xl font-bold mb-2 ${result.color}`}>
+                      Score final : {finalScore}/{exercises.length} ({percentage}%)
+                    </div>
+                    <div className={`text-lg font-bold ${result.color} flex items-center justify-center`}>
+                      <Target className="w-5 h-5 mr-2" />
+                      +{xpEarned} XP gagnés !
+                    </div>
+                  </div>
                   <div className="flex flex-col sm:flex-row gap-3 justify-center px-4">
                     <button
                       onClick={resetExercises}
@@ -375,63 +488,96 @@ export default function Complements100Page() {
         ) : (
           /* EXERCICES */
           <div className="space-y-8">
+            {/* Header avec progression et score */}
+            <div className="bg-white rounded-xl p-6 shadow-lg">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-2xl font-bold text-gray-900">
+                  ✏️ Exercice {currentExercise + 1} sur {exercises.length}
+                </h2>
+                <button
+                  onClick={() => {
+                    setCurrentExercise(0);
+                    setScore(0);
+                    setAnsweredCorrectly(new Set());
+                    setUserAnswer('');
+                    setIsCorrect(null);
+                  }}
+                  className="bg-gray-500 text-white px-4 py-2 rounded-lg font-bold hover:bg-gray-600 transition-colors"
+                >
+                  🔄 Recommencer
+                </button>
+              </div>
+              
+              {/* Barre de progression */}
+              <div className="w-full bg-gray-200 rounded-full h-3 mb-3">
+                <div 
+                  className="bg-teal-500 h-3 rounded-full transition-all duration-500"
+                  style={{ width: `${((currentExercise + 1) / exercises.length) * 100}%` }}
+                ></div>
+              </div>
+              
+              {/* Score sous la barre */}
+              <div className="text-center">
+                <div className="text-lg font-bold text-teal-600">
+                  Score : {score}/{exercises.length}
+                </div>
+              </div>
+            </div>
+
+            {/* Question et réponse */}
             {exercises.length > 0 && (
-              <div className="bg-white rounded-xl p-8 shadow-lg text-center">
-                <div className="mb-6">
-                  <div className="text-sm text-gray-600 mb-2">
-                    Question {currentExercise + 1} sur {exercises.length}
-                  </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div 
-                      className="bg-teal-500 h-2 rounded-full transition-all duration-300"
-                      style={{ width: `${((currentExercise + 1) / exercises.length) * 100}%` }}
-                    ></div>
-                  </div>
-                </div>
-
-                <div className="mb-8">
-                  <h3 className="text-3xl font-bold text-gray-900 mb-6">
-                    {exercises[currentExercise]?.question}
-                  </h3>
+              <div className="bg-white rounded-xl p-4 sm:p-8 shadow-lg text-center">
+                <h3 className="text-2xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-6 sm:mb-8">
+                  {exercises[currentExercise]?.question}
+                </h3>
+                
+                <div className="mb-6 sm:mb-8">
+                  <input
+                    type="text"
+                    value={userAnswer}
+                    onChange={(e) => setUserAnswer(e.target.value)}
+                    onKeyPress={(e) => {
+                      if (e.key === 'Enter' && userAnswer.trim() && isCorrect === null) {
+                        checkAnswer();
+                      }
+                    }}
+                    className="text-2xl sm:text-3xl font-bold text-center p-3 sm:p-4 border-2 border-gray-300 rounded-xl w-32 sm:w-40 h-12 sm:h-16 focus:border-teal-500 focus:outline-none mb-4 touch-manipulation"
+                    placeholder="?"
+                    autoFocus
+                  />
                   
-                  <div className="mb-6">
-                    <input
-                      type="text"
-                      value={userAnswer}
-                      onChange={(e) => setUserAnswer(e.target.value)}
-                      onKeyPress={(e) => e.key === 'Enter' && checkAnswer()}
-                      className="text-3xl font-bold text-center p-4 border-2 border-gray-300 rounded-xl w-32 focus:border-teal-500 focus:outline-none"
-                      placeholder="?"
-                      autoFocus
-                    />
-                  </div>
-
-                  {isCorrect === null ? (
-                    <button
-                      onClick={checkAnswer}
-                      disabled={!userAnswer.trim()}
-                      className="bg-teal-500 text-white px-6 py-4 sm:px-8 sm:py-4 rounded-xl font-bold text-lg sm:text-xl hover:bg-teal-600 disabled:bg-gray-300 transition-colors touch-manipulation min-h-[44px] w-full sm:w-auto max-w-xs mx-auto"
-                    >
-                      Vérifier
-                    </button>
-                  ) : !isCorrect ? (
-                    <button
-                      onClick={goToNext}
-                      className="bg-blue-500 text-white px-6 py-4 sm:px-8 sm:py-4 rounded-xl font-bold text-lg sm:text-xl hover:bg-blue-600 transition-colors touch-manipulation min-h-[44px] w-full sm:w-auto max-w-xs mx-auto"
-                    >
-                      Suivant →
-                    </button>
-                  ) : null}
+                  {/* Bouton Vérifier visible si pas encore vérifié */}
+                  {isCorrect === null && userAnswer.trim() && (
+                    <div className="mt-4">
+                      <button
+                        onClick={checkAnswer}
+                        className="bg-teal-600 text-white px-6 sm:px-8 py-3 rounded-lg font-bold hover:bg-teal-700 transition-colors text-base sm:text-lg touch-manipulation min-h-[44px]"
+                      >
+                        ✅ Vérifier
+                      </button>
+                    </div>
+                  )}
                 </div>
 
+                {/* Résultat si réponse donnée */}
                 {isCorrect !== null && (
-                  <div className={`p-6 rounded-xl ${
+                  <div className={`p-6 rounded-xl mb-6 ${
                     isCorrect 
-                      ? 'bg-green-100 text-green-800' 
-                      : 'bg-red-100 text-red-800'
+                      ? 'bg-green-600 text-white' 
+                      : 'bg-red-600 text-white'
                   }`}>
-                    <div className="text-2xl font-bold mb-2">
-                      {isCorrect ? '✅ Correct !' : '❌ Incorrect'}
+                    <div className="flex items-center justify-center space-x-2 mb-2">
+                      {isCorrect ? (
+                        <>
+                          <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center text-white text-sm font-bold">✓</div>
+                          <span className="text-xl font-bold">Correct !</span>
+                        </>
+                      ) : (
+                        <>
+                          <div className="w-6 h-6 bg-red-500 rounded-full flex items-center justify-center text-white text-sm font-bold">✗</div>
+                          <span className="text-xl font-bold">Incorrect</span>
+                        </>
+                      )}
                     </div>
                     <div className="text-lg">
                       {exercises[currentExercise]?.explanation}
@@ -439,8 +585,43 @@ export default function Complements100Page() {
                   </div>
                 )}
 
-                <div className="mt-6 text-gray-600">
-                  Score : {score}/{exercises.length}
+                {/* Navigation */}
+                <div className="flex flex-col md:flex-row justify-center items-center gap-2 md:gap-4">
+                  <button
+                    onClick={() => setUserAnswer('')}
+                    className="bg-gray-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-gray-600 transition-colors w-full md:w-auto"
+                  >
+                    Effacer
+                  </button>
+                  <button
+                    onClick={() => {
+                      if (currentExercise > 0) {
+                        setCurrentExercise(currentExercise - 1);
+                        setUserAnswer('');
+                        setIsCorrect(null);
+                      }
+                    }}
+                    disabled={currentExercise === 0}
+                    className="bg-gray-600 text-white px-6 py-3 rounded-lg font-bold hover:bg-gray-700 transition-colors disabled:opacity-50 w-full md:w-auto"
+                  >
+                    ← Précédent
+                  </button>
+                  <button
+                    onClick={() => {
+                      // Si l'utilisateur a tapé une réponse mais n'a pas encore vérifié, on vérifie d'abord
+                      if (userAnswer.trim() && isCorrect === null) {
+                        checkAnswer();
+                      } else if (currentExercise < exercises.length - 1) {
+                        setCurrentExercise(currentExercise + 1);
+                        setUserAnswer('');
+                        setIsCorrect(null);
+                      }
+                    }}
+                    disabled={currentExercise === exercises.length - 1 || (!userAnswer.trim() && isCorrect === null)}
+                    className="bg-teal-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-teal-600 transition-colors disabled:opacity-50 w-full md:w-auto"
+                  >
+                    {userAnswer.trim() && isCorrect === null ? '✅ Vérifier' : 'Suivant →'}
+                  </button>
                 </div>
               </div>
             )}
