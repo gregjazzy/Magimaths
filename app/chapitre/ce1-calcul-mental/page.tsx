@@ -26,8 +26,8 @@ export default function CE1CalculMentalPage() {
       title: 'Tables d\'addition',
       description: 'Mémoriser les faits numériques de l\'addition',
       icon: '➕',
-      duration: '15 min',
-      xp: 20,
+      duration: '10 min',
+      xp: 15,
       color: 'from-purple-500 to-violet-500'
     },
     {
@@ -35,8 +35,8 @@ export default function CE1CalculMentalPage() {
       title: 'Tables de multiplication',
       description: 'Tables de 2, 3, 4 et 5 (mémorisation)',
       icon: '✖️',
-      duration: '18 min',
-      xp: 25,
+      duration: '12 min',
+      xp: 20,
       color: 'from-red-500 to-pink-500'
     },
     {
@@ -44,8 +44,8 @@ export default function CE1CalculMentalPage() {
       title: 'Compléments à 10',
       description: 'Compléments à 10 (automatismes)',
       icon: '🎯',
-      duration: '10 min',
-      xp: 15,
+      duration: '8 min',
+      xp: 10,
       color: 'from-blue-500 to-cyan-500'
     },
     {
@@ -53,8 +53,8 @@ export default function CE1CalculMentalPage() {
       title: 'Compléments à 100',
       description: 'Compléments à 100 (calcul mental)',
       icon: '💯',
-      duration: '12 min',
-      xp: 18,
+      duration: '10 min',
+      xp: 15,
       color: 'from-teal-500 to-blue-500'
     },
     {
@@ -62,8 +62,8 @@ export default function CE1CalculMentalPage() {
       title: 'Doubles et moitiés',
       description: 'Nombres usuels jusqu\'à 70 (6, 8, 11, 13, 17...)',
       icon: '👥',
-      duration: '12 min',
-      xp: 15,
+      duration: '10 min',
+      xp: 12,
       color: 'from-green-500 to-emerald-500'
     },
     {
@@ -71,9 +71,36 @@ export default function CE1CalculMentalPage() {
       title: 'Multiplier par 10',
       description: 'Technique de multiplication par 10',
       icon: '🔟',
-      duration: '10 min',
-      xp: 15,
+      duration: '8 min',
+      xp: 12,
       color: 'from-indigo-500 to-purple-500'
+    },
+    {
+      id: 'strategies-calcul',
+      title: 'Stratégies de calcul',
+      description: 'Méthodes et astuces de calcul mental',
+      icon: '🧠',
+      duration: '8 min',
+      xp: 12,
+      color: 'from-yellow-500 to-orange-500'
+    },
+    {
+      id: 'additions-simples',
+      title: 'Additions simples',
+      description: 'Additions rapides avec chronomètre',
+      icon: '⏱️',
+      duration: '8 min',
+      xp: 12,
+      color: 'from-orange-500 to-red-500'
+    },
+    {
+      id: 'soustractions-simples',
+      title: 'Soustractions simples',
+      description: 'Soustractions jusqu\'à 20 avec animations',
+      icon: '➖',
+      duration: '8 min',
+      xp: 12,
+      color: 'from-pink-500 to-purple-500'
     }
   ];
 

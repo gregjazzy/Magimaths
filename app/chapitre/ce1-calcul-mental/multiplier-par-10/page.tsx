@@ -31,8 +31,8 @@ export default function MultiplierPar10Page() {
     
     const allNumbers = [...simpleNumbers, ...roundNumbers, ...otherNumbers];
     
-    // Générer 18 exercices avec différentes formulations
-    for (let i = 0; i < 18; i++) {
+    // Générer 15 exercices avec différentes formulations
+    for (let i = 0; i < 15; i++) {
       const number = allNumbers[Math.floor(Math.random() * allNumbers.length)];
       
       const formulations = [
@@ -472,7 +472,7 @@ export default function MultiplierPar10Page() {
                         setIsCorrect(null);
                       }
                     }}
-                    disabled={currentExercise === exercises.length - 1 || (!userAnswer.trim() && isCorrect === null)}
+                    disabled={!userAnswer.trim() && isCorrect === null}
                     className="bg-indigo-500 text-white px-4 py-2 md:px-6 md:py-3 rounded-lg font-bold hover:bg-indigo-600 transition-colors disabled:opacity-50 w-full md:w-auto"
                   >
                     {userAnswer.trim() && isCorrect === null ? '✅ Vérifier' : 'Suivant →'}

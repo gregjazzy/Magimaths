@@ -65,7 +65,7 @@ export default function StrategiesCalculPage() {
       });
     });
     
-    return exercises.sort(() => Math.random() - 0.5).slice(0, 20);
+    return exercises.sort(() => Math.random() - 0.5).slice(0, 15);
   };
 
   useEffect(() => {
@@ -542,7 +542,7 @@ export default function StrategiesCalculPage() {
                           nextExercise();
                         }
                       }}
-                      disabled={currentExercise === exercises.length - 1 || (!userAnswer.trim() && isCorrect === null)}
+                      disabled={!userAnswer.trim() && isCorrect === null}
                       className="bg-indigo-500 text-white px-4 py-2 md:px-6 md:py-3 rounded-lg font-bold hover:bg-indigo-600 transition-colors disabled:opacity-50 w-full md:w-auto"
                     >
                       {userAnswer.trim() && isCorrect === null ? '✅ Vérifier' : 'Suivant →'}

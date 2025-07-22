@@ -77,12 +77,7 @@ export default function DecompositionNombresCE1Page() {
     { number: '501', centaines: '5', dizaines: '0', unites: '1' },
     { number: '610', centaines: '6', dizaines: '1', unites: '0' },
     { number: '720', centaines: '7', dizaines: '2', unites: '0' },
-    { number: '880', centaines: '8', dizaines: '8', unites: '0' },
-    { number: '999', centaines: '9', dizaines: '9', unites: '9' },
-    { number: '102', centaines: '1', dizaines: '0', unites: '2' },
-    { number: '204', centaines: '2', dizaines: '0', unites: '4' },
-    { number: '306', centaines: '3', dizaines: '0', unites: '6' },
-    { number: '408', centaines: '4', dizaines: '0', unites: '8' }
+    { number: '880', centaines: '8', dizaines: '8', unites: '0' }
   ];
 
   const composeExercises = [
@@ -100,12 +95,7 @@ export default function DecompositionNombresCE1Page() {
     { centaines: '3', dizaines: '9', unites: '0', number: '390' },
     { centaines: '4', dizaines: '0', unites: '5', number: '405' },
     { centaines: '5', dizaines: '0', unites: '0', number: '500' },
-    { centaines: '6', dizaines: '7', unites: '0', number: '670' },
-    { centaines: '7', dizaines: '0', unites: '2', number: '702' },
-    { centaines: '8', dizaines: '0', unites: '9', number: '809' },
-    { centaines: '9', dizaines: '1', unites: '0', number: '910' },
-    { centaines: '1', dizaines: '0', unites: '6', number: '106' },
-    { centaines: '2', dizaines: '8', unites: '0', number: '280' }
+    { centaines: '6', dizaines: '7', unites: '0', number: '670' }
   ];
 
   const decomposeNumber = (num: string) => {

@@ -57,7 +57,7 @@ export default function DoublesEtMoitiesPage() {
     return shuffled;
   };
 
-  // Exercices niveau CE1 - doubles et moitiés de nombres usuels variés (20 exercices)
+  // Exercices niveau CE1 - doubles et moitiés de nombres usuels variés (15 exercices)
   const baseExercises = [
     // Doubles petits nombres (fondamentaux)
     { question: 'Double de 6', answer: '12', visual: 6 },
@@ -67,9 +67,7 @@ export default function DoublesEtMoitiesPage() {
     { question: 'Double de 4', answer: '8', visual: 4 },
     // Doubles nombres variés (pas que multiples de 5)
     { question: 'Double de 12', answer: '24', visual: 12 },
-    { question: 'Double de 4', answer: '8', visual: 4 },
     { question: 'Double de 15', answer: '30', visual: 15 },
-    { question: 'Double de 4', answer: '8', visual: 4 },
     { question: 'Double de 21', answer: '42', visual: 21 },
     { question: 'Double de 24', answer: '48', visual: 24 },
     { question: 'Double de 35', answer: '70', visual: 35 },
@@ -78,11 +76,7 @@ export default function DoublesEtMoitiesPage() {
     { question: 'Moitié de 14', answer: '7', visual: 14 },
     { question: 'Moitié de 16', answer: '8', visual: 16 },
     { question: 'Moitié de 18', answer: '9', visual: 18 },
-    { question: 'Moitié de 8', answer: '4', visual: 8 },
-    // Moitiés nombres variés
-    { question: 'Moitié de 8', answer: '4', visual: 8 },
-    { question: 'Moitié de 48', answer: '24', visual: 48 },
-    { question: 'Moitié de 70', answer: '35', visual: 70 }
+    { question: 'Moitié de 48', answer: '24', visual: 48 }
   ];
 
   // Exercices mélangés - initialisés une seule fois
@@ -710,7 +704,7 @@ export default function DoublesEtMoitiesPage() {
                       nextExercise();
                     }
                   }}
-                  disabled={currentExercise === allExercises.length - 1 || (!userAnswer.trim() && isCorrect === null)}
+                  disabled={!userAnswer.trim() && isCorrect === null}
                   className="bg-green-500 text-white px-4 py-2 md:px-6 md:py-3 rounded-lg font-bold hover:bg-green-600 transition-colors disabled:opacity-50 w-full md:w-auto"
                 >
                   {userAnswer.trim() && isCorrect === null ? '✅ Vérifier' : 'Suivant →'}

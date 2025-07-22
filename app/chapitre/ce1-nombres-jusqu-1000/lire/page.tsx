@@ -76,12 +76,7 @@ export default function LireNombresCE1Page() {
     { number: '837', reading: 'Huit cent trente-sept' },
     { number: '37', reading: 'Trente-sept' },
     { number: '98', reading: 'Quatre-vingt-dix-huit' },
-    { number: '456', reading: 'Quatre cent cinquante-six' },
-    { number: '672', reading: 'Six cent soixante-douze' },
-    { number: '129', reading: 'Cent vingt-neuf' },
-    { number: '101', reading: 'Cent un' },
-    { number: '202', reading: 'Deux cent deux' },
-    { number: '303', reading: 'Trois cent trois' }
+    { number: '456', reading: 'Quatre cent cinquante-six' }
   ];
 
   const formatNumber = (num: string) => {

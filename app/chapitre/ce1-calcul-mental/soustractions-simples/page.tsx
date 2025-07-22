@@ -46,7 +46,7 @@ export default function SoustractionsSimples() {
       }
     }
     
-    return exercises.sort(() => Math.random() - 0.5).slice(0, 17);
+    return exercises.sort(() => Math.random() - 0.5).slice(0, 15);
   };
 
   useEffect(() => {
@@ -595,7 +595,7 @@ export default function SoustractionsSimples() {
                           nextExercise();
                         }
                       }}
-                      disabled={currentExercise === exercises.length - 1 || (!userAnswer.trim() && isCorrect === null)}
+                      disabled={!userAnswer.trim() && isCorrect === null}
                       className="bg-pink-500 text-white px-4 py-2 md:px-6 md:py-3 rounded-lg font-bold hover:bg-pink-600 transition-colors disabled:opacity-50 w-full md:w-auto"
                     >
                       {userAnswer.trim() && isCorrect === null ? '✅ Vérifier' : 'Suivant →'}

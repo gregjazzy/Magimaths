@@ -73,12 +73,7 @@ export default function EcrireNombresCE1Page() {
     { written: 'Cinq cent un', number: '501', hint: 'Cinq cent = 5 centaines, zéro dizaine, un = 1 unité' },
     { written: 'Six cent dix', number: '610', hint: 'Six cent = 6 centaines, dix = 1 dizaine, zéro unité' },
     { written: 'Sept cent vingt', number: '720', hint: 'Sept cent = 7 centaines, vingt = 2 dizaines, zéro unité' },
-    { written: 'Huit cent quatre-vingts', number: '880', hint: 'Huit cent = 8 centaines, quatre-vingts = 8 dizaines' },
-    { written: 'Neuf cent quatre-vingt-dix-neuf', number: '999', hint: 'Le plus grand nombre à 3 chiffres !' },
-    { written: 'Mille', number: '1000', hint: 'Le premier nombre à 4 chiffres : 1 suivi de 3 zéros' },
-    { written: 'Quatre-vingt-dix', number: '90', hint: 'Quatre-vingts + dix = 90' },
-    { written: 'Soixante-quinze', number: '75', hint: 'Soixante + quinze = 75' },
-    { written: 'Quatre-vingt-cinq', number: '85', hint: 'Quatre-vingts + cinq = 85' }
+    { written: 'Huit cent quatre-vingts', number: '880', hint: 'Huit cent = 8 centaines, quatre-vingts = 8 dizaines' }
   ];
 
   const handleNext = () => {

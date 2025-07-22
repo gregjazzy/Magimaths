@@ -504,7 +504,7 @@ export default function AdditionsSimplesPage() {
                           nextExercise();
                         }
                       }}
-                      disabled={currentExercise === exercises.length - 1 || (!userAnswer.trim() && isCorrect === null)}
+                      disabled={!userAnswer.trim() && isCorrect === null}
                       className="bg-orange-500 text-white px-4 py-3 sm:px-6 sm:py-3 rounded-lg font-bold hover:bg-orange-600 transition-colors disabled:opacity-50 w-full sm:w-auto touch-manipulation min-h-[44px]"
                     >
                       {userAnswer.trim() && isCorrect === null ? '✅ Vérifier' : 'Suivant →'}

@@ -39,11 +39,11 @@ export default function Complements100Page() {
     const allComplements = [...easyComplements, ...hardComplements];
     const shuffledComplements = allComplements.sort(() => Math.random() - 0.5);
     
-    // Générer exactement 20 exercices uniques
+    // Générer exactement 15 exercices uniques
     const usedExercises = new Set();
     let complementIndex = 0;
     
-    while (exercises.length < 20 && complementIndex < shuffledComplements.length) {
+    while (exercises.length < 15 && complementIndex < shuffledComplements.length) {
       const complement = shuffledComplements[complementIndex];
       
       // Varier les formulations
@@ -79,9 +79,9 @@ export default function Complements100Page() {
     }
     
     // Si on a besoin de plus d'exercices, recommencer avec les compléments restants
-    if (exercises.length < 20) {
+    if (exercises.length < 15) {
       complementIndex = 0;
-      while (exercises.length < 20 && complementIndex < shuffledComplements.length) {
+      while (exercises.length < 15 && complementIndex < shuffledComplements.length) {
         const complement = shuffledComplements[complementIndex];
         
         // Essayer les formulations alternatives
@@ -100,7 +100,7 @@ export default function Complements100Page() {
         
         for (const formulation of alternativeFormulations) {
           const exerciseKey = `${formulation.question}-${formulation.answer}`;
-          if (!usedExercises.has(exerciseKey) && exercises.length < 20) {
+          if (!usedExercises.has(exerciseKey) && exercises.length < 15) {
             exercises.push(formulation);
             usedExercises.add(exerciseKey);
           }
@@ -110,7 +110,7 @@ export default function Complements100Page() {
       }
     }
     
-    return exercises.slice(0, 20).sort(() => Math.random() - 0.5);
+    return exercises.slice(0, 15).sort(() => Math.random() - 0.5);
   };
 
   useEffect(() => {
@@ -617,7 +617,7 @@ export default function Complements100Page() {
                         setIsCorrect(null);
                       }
                     }}
-                    disabled={currentExercise === exercises.length - 1 || (!userAnswer.trim() && isCorrect === null)}
+                    disabled={!userAnswer.trim() && isCorrect === null}
                     className="bg-teal-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-teal-600 transition-colors disabled:opacity-50 w-full md:w-auto"
                   >
                     {userAnswer.trim() && isCorrect === null ? '✅ Vérifier' : 'Suivant →'}

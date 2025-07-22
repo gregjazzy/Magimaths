@@ -116,16 +116,7 @@ export default function RepresenterNombresCE1Page() {
     { number: 175, range: '100-200', tolerance: 5 },
     { number: 215, range: '200-300', tolerance: 5 },
     { number: 235, range: '200-300', tolerance: 5 },
-    { number: 267, range: '200-300', tolerance: 5 },
-    { number: 285, range: '200-300', tolerance: 5 },
-    { number: 225, range: '200-300', tolerance: 5 },
-    { number: 275, range: '200-300', tolerance: 5 },
-    { number: 150, range: '0-1000', tolerance: 25 },
-    { number: 350, range: '0-1000', tolerance: 25 },
-    { number: 650, range: '0-1000', tolerance: 25 },
-    { number: 850, range: '0-1000', tolerance: 25 },
-    { number: 250, range: '0-1000', tolerance: 25 },
-    { number: 750, range: '0-1000', tolerance: 25 }
+    { number: 150, range: '0-1000', tolerance: 25 }
   ];
 
   const generateGraduations = (range: string) => {

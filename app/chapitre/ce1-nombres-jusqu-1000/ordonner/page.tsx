@@ -73,13 +73,7 @@ export default function OrdonnerNombresCE1Page() {
     { numbers: [687, 829, 269, 629, 867], answer: [867, 829, 687, 629, 269], order: 'décroissant' },
     { numbers: [399, 739, 379, 793, 937], answer: [379, 399, 739, 793, 937], order: 'croissant' },
     { numbers: [149, 847, 419, 189, 819], answer: [847, 819, 419, 189, 149], order: 'décroissant' },
-    { numbers: [259, 657, 529, 269, 629], answer: [259, 269, 529, 629, 657], order: 'croissant' },
-    { numbers: [419, 217, 129, 427, 247], answer: [129, 217, 247, 419, 427], order: 'croissant' },
-    { numbers: [967, 797, 679, 697, 979], answer: [979, 967, 797, 697, 679], order: 'décroissant' },
-    { numbers: [587, 359, 837, 389, 857], answer: [359, 389, 587, 837, 857], order: 'croissant' },
-    { numbers: [729, 927, 279, 797, 299], answer: [927, 797, 729, 299, 279], order: 'décroissant' },
-    { numbers: [167, 467, 149, 619, 647], answer: [149, 167, 467, 619, 647], order: 'croissant' },
-    { numbers: [839, 399, 897, 389, 939], answer: [939, 897, 839, 399, 389], order: 'décroissant' }
+    { numbers: [259, 657, 529, 269, 629], answer: [259, 269, 529, 629, 657], order: 'croissant' }
   ];
 
 
@@ -100,13 +94,7 @@ export default function OrdonnerNombresCE1Page() {
     { sequence: [197, 195, 193, '?', '?'], step: -2, answers: ['191', '189'] },
     { sequence: [469, 474, 479, '?', '?'], step: 5, answers: ['484', '489'] },
     { sequence: [679, 669, 659, '?', '?'], step: -10, answers: ['649', '639'] },
-    { sequence: [149, 151, 153, '?', '?'], step: 2, answers: ['155', '157'] },
-    { sequence: [269, 271, 273, '?', '?'], step: 2, answers: ['275', '277'] },
-    { sequence: [389, 394, 399, '?', '?'], step: 5, answers: ['404', '409'] },
-    { sequence: [549, 539, 529, '?', '?'], step: -10, answers: ['519', '509'] },
-    { sequence: [429, 427, 425, '?', '?'], step: -2, answers: ['423', '421'] },
-    { sequence: [619, 624, 629, '?', '?'], step: 5, answers: ['634', '639'] },
-    { sequence: [759, 749, 739, '?', '?'], step: -10, answers: ['729', '719'] }
+    { sequence: [149, 151, 153, '?', '?'], step: 2, answers: ['155', '157'] }
   ];
 
   // Exercices de comparaison CE1 (nombres jusqu'à 1000) - nombres complexes
@@ -125,15 +113,10 @@ export default function OrdonnerNombresCE1Page() {
     { number1: 459, number2: 459, answer: '=', explanation: '459 = 459' },
     { number1: 729, number2: 349, answer: '>', explanation: '729 > 349' },
     { number1: 159, number2: 237, answer: '<', explanation: '159 < 237' },
-    { number1: 679, number2: 679, answer: '=', explanation: '679 = 679' },
-    { number1: 849, number2: 237, answer: '>', explanation: '849 > 237' },
-    { number1: 237, number2: 793, answer: '<', explanation: '237 < 793' },
-    { number1: 569, number2: 569, answer: '=', explanation: '569 = 569' },
-    { number1: 917, number2: 459, answer: '>', explanation: '917 > 459' },
-    { number1: 129, number2: 459, answer: '<', explanation: '129 < 459' }
+    { number1: 679, number2: 679, answer: '=', explanation: '679 = 679' }
   ];
 
-  // Exercices d'encadrement par unités, dizaines, centaines CE1 (20 exercices) - nombres complexes
+  // Exercices d'encadrement par unités, dizaines, centaines CE1 (15 exercices) - nombres complexes
   const encadrerExercises = [
     { number: 459, type: 'unité', before: 458, after: 460, explanation: '458 < 459 < 460' },
     { number: 237, type: 'unité', before: 236, after: 238, explanation: '236 < 237 < 238' },
@@ -149,12 +132,7 @@ export default function OrdonnerNombresCE1Page() {
     { number: 127, type: 'dizaine', before: 120, after: 130, explanation: '120 < 127 < 130' },
     { number: 849, type: 'dizaine', before: 840, after: 850, explanation: '840 < 849 < 850' },
     { number: 327, type: 'dizaine', before: 320, after: 330, explanation: '320 < 327 < 330' },
-    { number: 569, type: 'centaine', before: 500, after: 600, explanation: '500 < 569 < 600' },
-    { number: 127, type: 'centaine', before: 100, after: 200, explanation: '100 < 127 < 200' },
-    { number: 349, type: 'centaine', before: 300, after: 400, explanation: '300 < 349 < 400' },
-    { number: 793, type: 'centaine', before: 700, after: 800, explanation: '700 < 793 < 800' },
-    { number: 237, type: 'centaine', before: 200, after: 300, explanation: '200 < 237 < 300' },
-    { number: 459, type: 'centaine', before: 400, after: 500, explanation: '400 < 459 < 500' }
+    { number: 569, type: 'centaine', before: 500, after: 600, explanation: '500 < 569 < 600' }
   ];
 
     const getCurrentExercises = () => {

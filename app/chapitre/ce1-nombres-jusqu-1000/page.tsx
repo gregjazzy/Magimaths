@@ -24,8 +24,8 @@ export default function CE1NombresJusqu1000Page() {
       title: 'Lire un nombre',
       description: 'Apprendre à lire les nombres jusqu\'à 1000',
       icon: '👁️',
-      duration: '8 min',
-      xp: 10,
+      duration: '6 min',
+      xp: 8,
       color: 'from-green-500 to-emerald-500',
       verified: true
     },
@@ -34,8 +34,8 @@ export default function CE1NombresJusqu1000Page() {
       title: 'Écrire un nombre',
       description: 'Écrire les nombres en chiffres',
       icon: '✏️',
-      duration: '10 min',
-      xp: 15,
+      duration: '8 min',
+      xp: 12,
       color: 'from-blue-500 to-cyan-500',
       verified: true
     },
@@ -44,8 +44,8 @@ export default function CE1NombresJusqu1000Page() {
       title: 'Décomposer un nombre',
       description: 'Séparer centaines, dizaines, unités',
       icon: '🧩',
-      duration: '8 min',
-      xp: 10,
+      duration: '6 min',
+      xp: 8,
       color: 'from-purple-500 to-violet-500',
       verified: true
     },
@@ -54,8 +54,8 @@ export default function CE1NombresJusqu1000Page() {
       title: 'Représenter un nombre',
       description: 'Placer sur une droite numérique',
       icon: '📏',
-      duration: '10 min',
-      xp: 15,
+      duration: '8 min',
+      xp: 12,
       color: 'from-orange-500 to-red-500',
       verified: true
     },
@@ -64,8 +64,8 @@ export default function CE1NombresJusqu1000Page() {
       title: 'Ordonner les nombres',
       description: 'Comparer et ranger les nombres',
       icon: '🔢',
-      duration: '12 min',
-      xp: 15,
+      duration: '10 min',
+      xp: 12,
       color: 'from-pink-500 to-rose-500',
       verified: true
     }
