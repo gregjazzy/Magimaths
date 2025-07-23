@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { ArrowLeft, CheckCircle, XCircle, RotateCcw, Volume2, ArrowUp, ArrowDown, Equal } from 'lucide-react';
 
 export default function OrdonnerComparerCP20() {
-  const [selectedComparison, setSelectedComparison] = useState('12_15');
+  const [selectedComparison, setSelectedComparison] = useState('5_8');
   const [currentExercise, setCurrentExercise] = useState(0);
   const [userAnswer, setUserAnswer] = useState('');
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
@@ -83,8 +83,6 @@ export default function OrdonnerComparerCP20() {
     { id: '12_9', num1: 12, num2: 9, symbol: '>', explanation: '12 est plus grand que 9', visual: '📦🔴🔴 > 🔴🔴🔴🔴🔴🔴🔴🔴🔴' },
     { id: '7_7', num1: 7, num2: 7, symbol: '=', explanation: '7 est égal à 7', visual: '🔴🔴🔴🔴🔴🔴🔴 = 🔴🔴🔴🔴🔴🔴🔴' },
     { id: '15_18', num1: 15, num2: 18, symbol: '<', explanation: '15 est plus petit que 18', visual: '📦🔴🔴🔴🔴🔴 < 📦🔴🔴🔴🔴🔴🔴🔴🔴' },
-    { id: '20_13', num1: 20, num2: 13, symbol: '>', explanation: '20 est plus grand que 13', visual: '📦📦 > 📦🔴🔴🔴' },
-    { id: '11_11', num1: 11, num2: 11, symbol: '=', explanation: '11 est égal à 11', visual: '📦🔴 = 📦🔴' },
     { id: '14_16', num1: 14, num2: 16, symbol: '<', explanation: '14 est plus petit que 16', visual: '📦🔴🔴🔴🔴 < 📦🔴🔴🔴🔴🔴🔴' },
     { id: '19_10', num1: 19, num2: 10, symbol: '>', explanation: '19 est plus grand que 10', visual: '📦🔴🔴🔴🔴🔴🔴🔴🔴🔴 > 📦' }
   ];
