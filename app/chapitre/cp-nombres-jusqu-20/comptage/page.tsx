@@ -449,29 +449,29 @@ export default function ComptageCP() {
             </div>
 
             {/* Question */}
-            <div className="bg-white rounded-xl p-8 shadow-lg text-center">
-              <h3 className="text-2xl font-bold mb-8 text-gray-900">
+            <div className="bg-white rounded-xl p-3 sm:p-6 md:p-8 shadow-lg text-center">
+              <h3 className="text-base sm:text-xl md:text-2xl font-bold mb-3 sm:mb-6 md:mb-8 text-gray-900">
                 {exercises[currentExercise].question}
               </h3>
               
               {/* Affichage des objets à compter */}
-              <div className="bg-green-50 rounded-lg p-8 mb-8">
-                <div className="text-5xl mb-6 tracking-wider">
+              <div className="bg-green-50 rounded-lg p-2 sm:p-4 md:p-8 mb-3 sm:mb-6 md:mb-8">
+                <div className="text-base sm:text-lg md:text-2xl lg:text-3xl mb-2 sm:mb-4 md:mb-6 tracking-wider">
                   {exercises[currentExercise].visual}
                 </div>
-                <p className="text-lg text-gray-700 font-semibold">
+                <p className="text-sm sm:text-base md:text-lg text-gray-700 font-semibold">
                   Compte bien chaque objet !
                 </p>
               </div>
               
               {/* Choix multiples */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-md mx-auto mb-8">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-2 sm:gap-3 md:gap-4 max-w-sm sm:max-w-md mx-auto mb-4 sm:mb-6 md:mb-8">
                 {shuffledChoices.map((choice) => (
                   <button
                     key={choice}
                     onClick={() => handleAnswerClick(choice)}
                     disabled={isCorrect !== null}
-                    className={`p-6 rounded-lg font-bold text-4xl transition-all ${
+                    className={`p-3 sm:p-4 md:p-6 rounded-lg font-bold text-xl sm:text-2xl md:text-3xl lg:text-4xl transition-all ${
                       userAnswer === choice
                         ? isCorrect === true
                           ? 'bg-green-500 text-white'

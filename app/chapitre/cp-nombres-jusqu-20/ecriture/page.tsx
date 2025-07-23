@@ -344,30 +344,30 @@ export default function EcritureCP() {
                     </div>
 
                     {/* Représentation visuelle */}
-                    <div className="bg-yellow-50 rounded-lg p-6">
-                      <h3 className="text-xl font-bold mb-4 text-yellow-800 text-center">
+                    <div className="bg-yellow-50 rounded-lg p-3 sm:p-4 md:p-6">
+                      <h3 className="text-base sm:text-lg md:text-xl font-bold mb-2 sm:mb-3 md:mb-4 text-yellow-800 text-center">
                         👀 Avec des objets :
                       </h3>
                       <div className="text-center">
-                        <div className="text-4xl mb-4 tracking-wide">
+                        <div className="text-lg sm:text-2xl md:text-3xl lg:text-4xl mb-2 sm:mb-3 md:mb-4 tracking-wide">
                           {selected.visual}
                         </div>
-                        <p className="text-lg font-semibold text-gray-700">
+                        <p className="text-sm sm:text-base md:text-lg font-semibold text-gray-700">
                           {selected.chiffre} = {selected.lettres}
                         </p>
                       </div>
                     </div>
 
                     {/* Prononciation */}
-                    <div className="bg-green-50 rounded-lg p-6 text-center">
-                      <h3 className="text-xl font-bold mb-4 text-green-800">
+                    <div className="bg-green-50 rounded-lg p-3 sm:p-4 md:p-6 text-center">
+                      <h3 className="text-base sm:text-lg md:text-xl font-bold mb-2 sm:mb-3 md:mb-4 text-green-800">
                         🗣️ Comment on le dit :
                       </h3>
                       <button
                         onClick={() => speakText(selected.pronunciation)}
-                        className="bg-green-500 text-white px-8 py-4 rounded-lg font-bold text-xl hover:bg-green-600 transition-colors"
+                        className="bg-green-500 text-white px-4 sm:px-6 md:px-8 py-2 sm:py-3 md:py-4 rounded-lg font-bold text-sm sm:text-base md:text-lg lg:text-xl hover:bg-green-600 transition-colors"
                       >
-                        <Volume2 className="inline w-6 h-6 mr-3" />
+                        <Volume2 className="inline w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 mr-2 sm:mr-3" />
                         {selected.pronunciation}
                       </button>
                     </div>
@@ -494,38 +494,38 @@ export default function EcritureCP() {
             </div>
 
             {/* Question */}
-            <div className="bg-white rounded-xl p-8 shadow-lg text-center">
-              <h3 className="text-2xl font-bold mb-8 text-gray-900">
+            <div className="bg-white rounded-xl p-3 sm:p-6 md:p-8 shadow-lg text-center">
+              <h3 className="text-base sm:text-xl md:text-2xl font-bold mb-3 sm:mb-6 md:mb-8 text-gray-900">
                 {exercises[currentExercise].question}
               </h3>
               
               {/* Affichage de la question */}
-              <div className={`rounded-lg p-8 mb-8 ${
+              <div className={`rounded-lg p-3 sm:p-4 md:p-8 mb-3 sm:mb-6 md:mb-8 ${
                 exercises[currentExercise].type === 'lecture' ? 'bg-blue-50' : 'bg-green-50'
               }`}>
-                <div className="flex items-center justify-center mb-4">
+                <div className="flex items-center justify-center mb-2 sm:mb-3 md:mb-4">
                   {exercises[currentExercise].type === 'lecture' ? (
-                    <Eye className="w-8 h-8 text-blue-600 mr-3" />
+                    <Eye className="w-4 h-4 sm:w-6 sm:h-6 md:w-8 md:h-8 text-blue-600 mr-2 sm:mr-3" />
                   ) : (
-                    <Edit className="w-8 h-8 text-green-600 mr-3" />
+                    <Edit className="w-4 h-4 sm:w-6 sm:h-6 md:w-8 md:h-8 text-green-600 mr-2 sm:mr-3" />
                   )}
-                  <span className="text-lg font-semibold text-gray-700">
+                  <span className="text-sm sm:text-base md:text-lg font-semibold text-gray-700">
                     {exercises[currentExercise].type === 'lecture' ? 'Je lis :' : 'J\'écris :'}
                   </span>
                 </div>
-                <div className="text-6xl font-bold text-gray-800 mb-4">
+                <div className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-gray-800 mb-2 sm:mb-3 md:mb-4">
                   {exercises[currentExercise].display}
                 </div>
               </div>
               
               {/* Choix multiples */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-md mx-auto mb-8">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-2 sm:gap-3 md:gap-4 max-w-sm sm:max-w-md mx-auto mb-4 sm:mb-6 md:mb-8">
                 {shuffledChoices.map((choice) => (
                   <button
                     key={choice}
                     onClick={() => handleAnswerClick(choice)}
                     disabled={isCorrect !== null}
-                    className={`p-6 rounded-lg font-bold text-2xl transition-all min-h-[80px] ${
+                    className={`p-3 sm:p-4 md:p-6 rounded-lg font-bold text-base sm:text-lg md:text-xl lg:text-2xl transition-all min-h-[60px] sm:min-h-[70px] md:min-h-[80px] ${
                       userAnswer === choice
                         ? isCorrect === true
                           ? 'bg-green-500 text-white'

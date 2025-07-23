@@ -415,29 +415,29 @@ export default function ComplementsDixCP() {
             </div>
 
             {/* Question */}
-            <div className="bg-white rounded-xl p-8 shadow-lg text-center">
-              <h3 className="text-2xl font-bold mb-8 text-gray-900">
+            <div className="bg-white rounded-xl p-3 sm:p-6 md:p-8 shadow-lg text-center">
+              <h3 className="text-base sm:text-xl md:text-2xl font-bold mb-3 sm:mb-6 md:mb-8 text-gray-900">
                 🎯 Trouve le nombre qui manque :
               </h3>
               
               {/* Question avec grand affichage */}
-              <div className="bg-pink-50 rounded-lg p-8 mb-8">
-                <div className="text-6xl font-bold text-pink-600 mb-6">
+              <div className="bg-pink-50 rounded-lg p-3 sm:p-4 md:p-8 mb-3 sm:mb-6 md:mb-8">
+                <div className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-pink-600 mb-3 sm:mb-4 md:mb-6">
                   {exercises[currentExercise].question}
                 </div>
-                <p className="text-lg text-gray-700 font-semibold">
+                <p className="text-sm sm:text-base md:text-lg text-gray-700 font-semibold">
                   Quel nombre complète pour faire 10 ?
                 </p>
               </div>
               
               {/* Choix multiples avec gros boutons */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-md mx-auto mb-8">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-2 sm:gap-3 md:gap-4 max-w-sm sm:max-w-md mx-auto mb-4 sm:mb-6 md:mb-8">
                 {shuffledChoices.map((choice) => (
                   <button
                     key={choice}
                     onClick={() => handleAnswerClick(choice)}
                     disabled={isCorrect !== null}
-                    className={`p-6 rounded-lg font-bold text-4xl transition-all ${
+                    className={`p-3 sm:p-4 md:p-6 rounded-lg font-bold text-xl sm:text-2xl md:text-3xl lg:text-4xl transition-all ${
                       userAnswer === choice
                         ? isCorrect === true
                           ? 'bg-green-500 text-white'

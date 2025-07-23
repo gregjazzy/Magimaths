@@ -449,42 +449,42 @@ export default function DecompositionsCP() {
             </div>
 
             {/* Question */}
-            <div className="bg-white rounded-xl p-8 shadow-lg text-center">
-              <h3 className="text-2xl font-bold mb-8 text-gray-900">
+            <div className="bg-white rounded-xl p-3 sm:p-6 md:p-8 shadow-lg text-center">
+              <h3 className="text-base sm:text-xl md:text-2xl font-bold mb-3 sm:mb-6 md:mb-8 text-gray-900">
                 🎯 Complète la décomposition :
               </h3>
               
               {/* Question avec visualisation */}
-              <div className="bg-purple-50 rounded-lg p-8 mb-8">
-                <div className="text-6xl font-bold text-purple-600 mb-6">
+              <div className="bg-purple-50 rounded-lg p-3 sm:p-4 md:p-8 mb-3 sm:mb-6 md:mb-8">
+                <div className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-purple-600 mb-3 sm:mb-4 md:mb-6">
                   {exercises[currentExercise].question}
                 </div>
                 
                 {/* Aide visuelle */}
-                <div className="flex justify-center items-center space-x-4 mt-6">
+                <div className="flex justify-center items-center space-x-2 sm:space-x-3 md:space-x-4 mt-3 sm:mt-4 md:mt-6">
                   <div className="text-center">
-                    <div className="text-3xl mb-2">
+                    <div className="text-base sm:text-xl md:text-2xl lg:text-3xl mb-1 sm:mb-2">
                       {'🔴'.repeat(exercises[currentExercise].part1)}
                     </div>
-                    <div className="font-bold text-lg text-gray-800">{exercises[currentExercise].part1}</div>
+                    <div className="font-bold text-sm sm:text-base md:text-lg text-gray-800">{exercises[currentExercise].part1}</div>
                   </div>
-                  <div className="text-3xl font-bold text-purple-600">+</div>
+                  <div className="text-base sm:text-xl md:text-2xl lg:text-3xl font-bold text-purple-600">+</div>
                   <div className="text-center">
-                    <div className="text-3xl mb-2">❓</div>
-                    <div className="font-bold text-lg text-gray-800">?</div>
+                    <div className="text-base sm:text-xl md:text-2xl lg:text-3xl mb-1 sm:mb-2">❓</div>
+                    <div className="font-bold text-sm sm:text-base md:text-lg text-gray-800">?</div>
                   </div>
-                  <div className="text-3xl font-bold text-purple-600">=</div>
+                  <div className="text-base sm:text-xl md:text-2xl lg:text-3xl font-bold text-purple-600">=</div>
                   <div className="text-center">
-                    <div className="text-3xl mb-2">
+                    <div className="text-base sm:text-xl md:text-2xl lg:text-3xl mb-1 sm:mb-2">
                       {'🔴'.repeat(exercises[currentExercise].number)}
                     </div>
-                    <div className="font-bold text-lg text-gray-800">{exercises[currentExercise].number}</div>
+                    <div className="font-bold text-sm sm:text-base md:text-lg text-gray-800">{exercises[currentExercise].number}</div>
                   </div>
                 </div>
               </div>
               
               {/* Choix multiples */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-md mx-auto mb-8">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-2 sm:gap-3 md:gap-4 max-w-sm sm:max-w-md mx-auto mb-4 sm:mb-6 md:mb-8">
                 {(shuffledChoices.length > 0 ? shuffledChoices : exercises[currentExercise].choices).map((choice) => (
                   <button
                     key={choice}
