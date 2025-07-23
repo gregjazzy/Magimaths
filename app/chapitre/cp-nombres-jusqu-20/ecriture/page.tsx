@@ -15,6 +15,7 @@ export default function EcritureCP() {
   const [showCompletionModal, setShowCompletionModal] = useState(false);
   const [finalScore, setFinalScore] = useState(0);
   const [exerciseType, setExerciseType] = useState<'chiffres' | 'lettres'>('chiffres');
+  const [shuffledChoices, setShuffledChoices] = useState<string[]>([]);
 
   // Sauvegarder les progrès
   const saveProgress = (score: number, maxScore: number) => {
@@ -66,15 +67,15 @@ export default function EcritureCP() {
     { chiffre: '8', lettres: 'huit', visual: '🔴🔴🔴🔴🔴🔴🔴🔴', pronunciation: 'huit' },
     { chiffre: '9', lettres: 'neuf', visual: '🔴🔴🔴🔴🔴🔴🔴🔴🔴', pronunciation: 'neuf' },
     { chiffre: '10', lettres: 'dix', visual: '✋✋', pronunciation: 'dix' },
-    { chiffre: '11', lettres: 'onze', visual: '✋✋👆', pronunciation: 'onze' },
-    { chiffre: '12', lettres: 'douze', visual: '✋✋✌️', pronunciation: 'douze' },
-    { chiffre: '13', lettres: 'treize', visual: '✋✋☝️✌️', pronunciation: 'treize' },
-    { chiffre: '14', lettres: 'quatorze', visual: '✋✋🤘', pronunciation: 'quatorze' },
+    { chiffre: '11', lettres: 'onze', visual: '✋✋ + 1', pronunciation: 'onze' },
+    { chiffre: '12', lettres: 'douze', visual: '✋✋ + 2', pronunciation: 'douze' },
+    { chiffre: '13', lettres: 'treize', visual: '✋✋ + 3', pronunciation: 'treize' },
+    { chiffre: '14', lettres: 'quatorze', visual: '✋✋ + 4', pronunciation: 'quatorze' },
     { chiffre: '15', lettres: 'quinze', visual: '✋✋✋', pronunciation: 'quinze' },
-    { chiffre: '16', lettres: 'seize', visual: '✋✋✋👆', pronunciation: 'seize' },
-    { chiffre: '17', lettres: 'dix-sept', visual: '✋✋✋✌️', pronunciation: 'dix-sept' },
-    { chiffre: '18', lettres: 'dix-huit', visual: '✋✋✋☝️✌️', pronunciation: 'dix-huit' },
-    { chiffre: '19', lettres: 'dix-neuf', visual: '✋✋✋🤘', pronunciation: 'dix-neuf' },
+    { chiffre: '16', lettres: 'seize', visual: '✋✋✋ + 1', pronunciation: 'seize' },
+    { chiffre: '17', lettres: 'dix-sept', visual: '✋✋✋ + 2', pronunciation: 'dix-sept' },
+    { chiffre: '18', lettres: 'dix-huit', visual: '✋✋✋ + 3', pronunciation: 'dix-huit' },
+    { chiffre: '19', lettres: 'dix-neuf', visual: '✋✋✋ + 4', pronunciation: 'dix-neuf' },
     { chiffre: '20', lettres: 'vingt', visual: '✋✋✋✋', pronunciation: 'vingt' }
   ];
 
@@ -96,8 +97,37 @@ export default function EcritureCP() {
     { type: 'ecriture', question: 'Comment écrit-on ce nombre en chiffres ?', display: 'vingt', correctAnswer: '20', choices: ['19', '20', '21'] },
     
     // Exercices de reconnaissance visuelle
-    { type: 'lecture', question: 'Combien y a-t-il de points ? Écris en lettres.', display: '🔴🔴🔴🔴🔴🔴', correctAnswer: 'six', choices: ['cinq', 'six', 'sept'] }
+    { type: 'lecture', question: 'Combien y a-t-il de points ? Écris en lettres.', display: '🔴🔴🔴🔴🔴🔴', correctAnswer: 'six', choices: ['cinq', 'six', 'sept'] },
+    
+    // Exercices supplémentaires pour arriver à 15
+    { type: 'lecture', question: 'Comment écrit-on ce nombre en lettres ?', display: '10', correctAnswer: 'dix', choices: ['neuf', 'dix', 'onze'] },
+    { type: 'ecriture', question: 'Comment écrit-on ce nombre en chiffres ?', display: 'huit', correctAnswer: '8', choices: ['7', '8', '9'] },
+    { type: 'ecriture', question: 'Comment écrit-on ce nombre en chiffres ?', display: 'seize', correctAnswer: '16', choices: ['15', '16', '17'] }
   ];
+
+  // Fonction pour mélanger un tableau
+  const shuffleArray = (array: string[]) => {
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+  };
+
+  // Initialiser les choix mélangés pour l'exercice actuel
+  const initializeShuffledChoices = () => {
+    const currentChoices = exercises[currentExercise].choices;
+    const shuffled = shuffleArray(currentChoices);
+    setShuffledChoices(shuffled);
+  };
+
+  // Effet pour mélanger les choix quand on change d'exercice
+  useEffect(() => {
+    if (exercises.length > 0) {
+      initializeShuffledChoices();
+    }
+  }, [currentExercise]);
 
   const speakText = (text: string) => {
     if ('speechSynthesis' in window) {
@@ -158,6 +188,7 @@ export default function EcritureCP() {
     setAnsweredCorrectly(new Set());
     setShowCompletionModal(false);
     setFinalScore(0);
+    // Réinitialiser les choix mélangés sera fait par useEffect quand currentExercise change
   };
 
   return (
@@ -197,14 +228,11 @@ export default function EcritureCP() {
               onClick={() => setShowExercises(true)}
               className={`px-6 py-3 rounded-lg font-bold transition-all ${
                 showExercises 
-                  ? 'bg-blue-500 text-white shadow-md' 
+                  ? 'bg-purple-500 text-white shadow-md' 
                   : 'text-gray-600 hover:bg-gray-100'
               }`}
             >
-              <div className="flex flex-col items-center">
-                <span>✏️ Exercices</span>
-                <span className="text-sm opacity-90">({score}/{exercises.length})</span>
-              </div>
+              ✏️ Exercices ({score}/{exercises.length})
             </button>
           </div>
         </div>
@@ -492,7 +520,7 @@ export default function EcritureCP() {
               
               {/* Choix multiples */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-md mx-auto mb-8">
-                {exercises[currentExercise].choices.map((choice) => (
+                {shuffledChoices.map((choice) => (
                   <button
                     key={choice}
                     onClick={() => handleAnswerClick(choice)}

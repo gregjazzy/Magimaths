@@ -14,6 +14,19 @@ export default function DecompositionsCP() {
   const [answeredCorrectly, setAnsweredCorrectly] = useState<Set<number>>(new Set());
   const [showCompletionModal, setShowCompletionModal] = useState(false);
   const [finalScore, setFinalScore] = useState(0);
+  // Fonction pour mélanger un tableau (définie ici pour pouvoir l'utiliser dans useState)
+  const shuffleArray = (array: string[]) => {
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+  };
+
+  const [shuffledChoices, setShuffledChoices] = useState<string[]>(() => 
+    exercises.length > 0 ? shuffleArray(exercises[0].choices) : []
+  );
 
   // Sauvegarder les progrès
   const saveProgress = (score: number, maxScore: number) => {
@@ -110,8 +123,34 @@ export default function DecompositionsCP() {
     { question: '6 = 2 + ?', number: 6, part1: 2, correctAnswer: '4', choices: ['3', '4', '5'] },
     { question: '5 = 3 + ?', number: 5, part1: 3, correctAnswer: '2', choices: ['1', '2', '3'] },
     { question: '7 = 2 + ?', number: 7, part1: 2, correctAnswer: '5', choices: ['4', '5', '6'] },
-    { question: '4 = 2 + ?', number: 4, part1: 2, correctAnswer: '2', choices: ['1', '2', '3'] }
+    { question: '4 = 2 + ?', number: 4, part1: 2, correctAnswer: '2', choices: ['1', '2', '3'] },
+    { question: '8 = 3 + ?', number: 8, part1: 3, correctAnswer: '5', choices: ['4', '5', '6'] },
+    { question: '6 = 4 + ?', number: 6, part1: 4, correctAnswer: '2', choices: ['1', '2', '3'] },
+    { question: '7 = 1 + ?', number: 7, part1: 1, correctAnswer: '6', choices: ['5', '6', '7'] },
+    { question: '5 = 1 + ?', number: 5, part1: 1, correctAnswer: '4', choices: ['3', '4', '5'] },
+    { question: '8 = 2 + ?', number: 8, part1: 2, correctAnswer: '6', choices: ['5', '6', '7'] }
   ];
+
+  // Initialiser les choix mélangés pour l'exercice actuel
+  const initializeShuffledChoices = () => {
+    const currentChoices = exercises[currentExercise].choices;
+    const shuffled = shuffleArray(currentChoices);
+    setShuffledChoices(shuffled);
+  };
+
+  // Effet pour mélanger les choix quand on change d'exercice
+  useEffect(() => {
+    if (exercises.length > 0) {
+      initializeShuffledChoices();
+    }
+  }, [currentExercise]);
+
+  // Effet pour initialiser les choix au premier rendu
+  useEffect(() => {
+    if (exercises.length > 0 && shuffledChoices.length === 0) {
+      initializeShuffledChoices();
+    }
+  }, []);
 
   const speakText = (text: string) => {
     if ('speechSynthesis' in window) {
@@ -172,6 +211,7 @@ export default function DecompositionsCP() {
     setAnsweredCorrectly(new Set());
     setShowCompletionModal(false);
     setFinalScore(0);
+    // Réinitialiser les choix mélangés sera fait par useEffect quand currentExercise change
   };
 
   return (
@@ -211,14 +251,11 @@ export default function DecompositionsCP() {
               onClick={() => setShowExercises(true)}
               className={`px-6 py-3 rounded-lg font-bold transition-all ${
                 showExercises 
-                  ? 'bg-blue-500 text-white shadow-md' 
+                  ? 'bg-purple-500 text-white shadow-md' 
                   : 'text-gray-600 hover:bg-gray-100'
               }`}
             >
-              <div className="flex flex-col items-center">
-                <span>✏️ Exercices</span>
-                <span className="text-sm opacity-90">({score}/{exercises.length})</span>
-              </div>
+              ✏️ Exercices ({score}/{exercises.length})
             </button>
           </div>
         </div>
@@ -250,17 +287,17 @@ export default function DecompositionsCP() {
                 <div className="flex justify-center items-center space-x-4">
                   <div className="text-center">
                     <div className="text-4xl mb-2">🍎🍎🍎🍎🍎</div>
-                    <div className="font-bold text-lg">5 pommes</div>
+                    <div className="font-bold text-lg text-gray-800">5 pommes</div>
                   </div>
                   <div className="text-3xl font-bold text-purple-600">=</div>
                   <div className="text-center">
                     <div className="text-4xl mb-2">🍎🍎</div>
-                    <div className="font-bold text-lg">2 pommes</div>
+                    <div className="font-bold text-lg text-gray-800">2 pommes</div>
                   </div>
                   <div className="text-3xl font-bold text-purple-600">+</div>
                   <div className="text-center">
                     <div className="text-4xl mb-2">🍎🍎🍎</div>
-                    <div className="font-bold text-lg">3 pommes</div>
+                    <div className="font-bold text-lg text-gray-800">3 pommes</div>
                   </div>
                 </div>
               </div>
@@ -303,7 +340,7 @@ export default function DecompositionsCP() {
                         <div className="text-2xl mb-2">
                           {decomp.visual1}
                         </div>
-                        <div className="font-bold text-lg">
+                        <div className="font-bold text-lg text-gray-800">
                           {decomp.formula.split(' = ')[1].split(' + ')[0]}
                         </div>
                       </div>
@@ -317,7 +354,7 @@ export default function DecompositionsCP() {
                         <div className="text-2xl mb-2">
                           {decomp.visual2}
                         </div>
-                        <div className="font-bold text-lg">
+                        <div className="font-bold text-lg text-gray-800">
                           {decomp.formula.split(' + ')[1]}
                         </div>
                       </div>
@@ -336,7 +373,7 @@ export default function DecompositionsCP() {
                     <div className="text-center mt-4">
                       <button
                         onClick={() => speakText(decomp.formula.replace(/[+=]/g, (match) => match === '+' ? 'plus' : 'égale'))}
-                        className="bg-purple-200 hover:bg-purple-300 px-4 py-2 rounded-lg font-bold text-lg transition-colors"
+                        className="bg-purple-200 hover:bg-purple-300 text-purple-900 px-4 py-2 rounded-lg font-bold text-lg transition-colors"
                       >
                         <Volume2 className="inline w-4 h-4 mr-2" />
                         {decomp.formula}
@@ -369,7 +406,7 @@ export default function DecompositionsCP() {
             </div>
 
             {/* Conseils */}
-            <div className="bg-gradient-to-r from-pink-400 to-purple-400 rounded-xl p-6 text-white">
+            <div className="bg-gradient-to-r from-pink-600 to-purple-600 rounded-xl p-6 text-white">
               <h3 className="text-xl font-bold mb-3">💡 Trucs pour retenir les décompositions</h3>
               <ul className="space-y-2 text-lg">
                 <li>• Utilise tes doigts pour partager</li>
@@ -431,26 +468,26 @@ export default function DecompositionsCP() {
                     <div className="text-3xl mb-2">
                       {'🔴'.repeat(exercises[currentExercise].part1)}
                     </div>
-                    <div className="font-bold text-lg">{exercises[currentExercise].part1}</div>
+                    <div className="font-bold text-lg text-gray-800">{exercises[currentExercise].part1}</div>
                   </div>
                   <div className="text-3xl font-bold text-purple-600">+</div>
                   <div className="text-center">
                     <div className="text-3xl mb-2">❓</div>
-                    <div className="font-bold text-lg">?</div>
+                    <div className="font-bold text-lg text-gray-800">?</div>
                   </div>
                   <div className="text-3xl font-bold text-purple-600">=</div>
                   <div className="text-center">
                     <div className="text-3xl mb-2">
                       {'🔴'.repeat(exercises[currentExercise].number)}
                     </div>
-                    <div className="font-bold text-lg">{exercises[currentExercise].number}</div>
+                    <div className="font-bold text-lg text-gray-800">{exercises[currentExercise].number}</div>
                   </div>
                 </div>
               </div>
               
               {/* Choix multiples */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-md mx-auto mb-8">
-                {exercises[currentExercise].choices.map((choice) => (
+                {(shuffledChoices.length > 0 ? shuffledChoices : exercises[currentExercise].choices).map((choice) => (
                   <button
                     key={choice}
                     onClick={() => handleAnswerClick(choice)}

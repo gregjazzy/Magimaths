@@ -54,26 +54,31 @@ export default function ReconnaissanceNombresCP() {
 
   // Nombres pour le cours (adaptés CP)
   const numbers = [
-    { value: '5', label: '5', reading: 'cinq', visual: '● ● ● ● ●' },
-    { value: '8', label: '8', reading: 'huit', visual: '● ● ● ● ● ● ● ●' },
-    { value: '12', label: '12', reading: 'douze', visual: '●●●●● ●●●●● ● ●' },
-    { value: '17', label: '17', reading: 'dix-sept', visual: '●●●●●●●●●● ●●●●●●●' },
-    { value: '3', label: '3', reading: 'trois', visual: '● ● ●' },
-    { value: '15', label: '15', reading: 'quinze', visual: '●●●●●●●●●● ●●●●●' }
+    { value: '5', label: '5', reading: 'cinq', visual: '🔵 🔵 🔵 🔵 🔵' },
+    { value: '8', label: '8', reading: 'huit', visual: '🔵 🔵 🔵 🔵 🔵 🔵 🔵 🔵' },
+    { value: '12', label: '12', reading: 'douze', visual: '🔵🔵🔵🔵🔵 🔵🔵🔵🔵🔵 🔵 🔵' },
+    { value: '17', label: '17', reading: 'dix-sept', visual: '🔵🔵🔵🔵🔵🔵🔵🔵🔵🔵 🔵🔵🔵🔵🔵🔵🔵' },
+    { value: '3', label: '3', reading: 'trois', visual: '🔵 🔵 🔵' },
+    { value: '15', label: '15', reading: 'quinze', visual: '🔵🔵🔵🔵🔵🔵🔵🔵🔵🔵 🔵🔵🔵🔵🔵' }
   ];
 
   // Exercices adaptés aux CP (plus simples)
   const exercises = [
-    { question: 'Combien vois-tu de points ?', visual: '● ● ● ● ●', correctAnswer: '5', choices: ['4', '5', '6'] },
-    { question: 'Quel nombre vois-tu ?', visual: '7', correctAnswer: '7', choices: ['6', '7', '8'] },
+    { question: 'Combien vois-tu de points ?', visual: '🔵 🔵 🔵 🔵 🔵', correctAnswer: '5', choices: ['4', '5', '6'] },
+    { question: 'Compte les ballons', visual: '🎈🎈🎈🎈🎈🎈🎈', correctAnswer: '7', choices: ['6', '7', '8'] },
     { question: 'Combien y a-t-il d\'objets ?', visual: '🍎🍎🍎', correctAnswer: '3', choices: ['2', '3', '4'] },
-    { question: 'Reconnais ce nombre', visual: '10', correctAnswer: '10', choices: ['9', '10', '11'] },
+    { question: 'Compte les fleurs', visual: '🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸', correctAnswer: '10', choices: ['9', '10', '11'] },
     { question: 'Compte les cœurs', visual: '❤️❤️❤️❤️❤️❤️', correctAnswer: '6', choices: ['5', '6', '7'] },
-    { question: 'Quel nombre est écrit ?', visual: '14', correctAnswer: '14', choices: ['13', '14', '15'] },
+    { question: 'Combien de bonbons ?', visual: '🍭🍭🍭🍭🍭🍭🍭🍭🍭🍭🍭🍭🍭🍭', correctAnswer: '14', choices: ['13', '14', '15'] },
     { question: 'Combien de doigts ?', visual: '✋✋', correctAnswer: '10', choices: ['8', '10', '12'] },
     { question: 'Compte les étoiles', visual: '⭐⭐⭐⭐⭐⭐⭐⭐⭐', correctAnswer: '9', choices: ['8', '9', '10'] },
-    { question: 'Quel nombre vois-tu ?', visual: '18', correctAnswer: '18', choices: ['17', '18', '19'] },
-    { question: 'Compte les points', visual: '● ● ● ● ● ● ● ● ● ● ● ●', correctAnswer: '12', choices: ['11', '12', '13'] }
+    { question: 'Compte les voitures', visual: '🚗🚗🚗🚗🚗🚗🚗🚗🚗🚗🚗🚗🚗🚗🚗🚗🚗🚗', correctAnswer: '18', choices: ['17', '18', '19'] },
+    { question: 'Compte les points', visual: '🔵 🔵 🔵 🔵 🔵 🔵 🔵 🔵 🔵 🔵 🔵 🔵', correctAnswer: '12', choices: ['11', '12', '13'] },
+    { question: 'Combien de papillons ?', visual: '🦋🦋🦋🦋🦋🦋🦋🦋', correctAnswer: '8', choices: ['7', '8', '9'] },
+    { question: 'Compte les soleils', visual: '☀️☀️☀️☀️☀️☀️☀️☀️☀️☀️☀️☀️☀️☀️☀️☀️', correctAnswer: '16', choices: ['15', '16', '17'] },
+    { question: 'Combien de fruits ?', visual: '🍓🍓🍓🍓', correctAnswer: '4', choices: ['3', '4', '5'] },
+    { question: 'Compte les diamants', visual: '💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎', correctAnswer: '20', choices: ['19', '20', '21'] },
+    { question: 'Combien de chats ?', visual: '🐱🐱🐱🐱🐱🐱🐱🐱🐱🐱🐱', correctAnswer: '11', choices: ['10', '11', '12'] }
   ];
 
   const speakNumber = (text: string) => {
@@ -176,14 +181,11 @@ export default function ReconnaissanceNombresCP() {
               onClick={() => setShowExercises(true)}
               className={`px-6 py-3 rounded-lg font-bold transition-all ${
                 showExercises 
-                  ? 'bg-blue-500 text-white shadow-md' 
+                  ? 'bg-orange-500 text-white shadow-md' 
                   : 'text-gray-600 hover:bg-gray-100'
               }`}
             >
-              <div className="flex flex-col items-center">
-                <span>✏️ Exercices</span>
-                <span className="text-sm opacity-90">({score}/{exercises.length})</span>
-              </div>
+              ✏️ Exercices ({score}/{exercises.length})
             </button>
           </div>
         </div>
@@ -261,7 +263,7 @@ export default function ReconnaissanceNombresCP() {
                 <p className="text-lg text-blue-700 mb-4">
                   Lève {selectedNumber} doigt{parseInt(selectedNumber) > 1 ? 's' : ''} et regarde si c'est pareil !
                 </p>
-                <div className="text-6xl">
+                <div className="text-6xl text-blue-800">
                   {parseInt(selectedNumber) <= 10 ? '✋'.repeat(Math.floor(parseInt(selectedNumber) / 5)) + '🤚'.slice(0, parseInt(selectedNumber) % 5) : '✋✋ + ' + (parseInt(selectedNumber) - 10) + ' doigts'}
                 </div>
               </div>
@@ -319,8 +321,8 @@ export default function ReconnaissanceNombresCP() {
               </h3>
               
               {/* Affichage de la question (nombre ou objets) */}
-              <div className="bg-orange-50 rounded-lg p-8 mb-8">
-                <div className="text-6xl mb-6">
+              <div className="bg-white border-2 border-orange-200 rounded-lg p-8 mb-8">
+                <div className="text-6xl mb-6 text-gray-800">
                   {exercises[currentExercise].visual}
                 </div>
               </div>

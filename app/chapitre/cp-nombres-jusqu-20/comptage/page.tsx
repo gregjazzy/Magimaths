@@ -68,7 +68,10 @@ export default function ComptageCP() {
     { question: 'Compte les bonbons', visual: '🍭🍭🍭🍭🍭🍭🍭🍭🍭🍭🍭🍭', correctAnswer: '12', choices: ['11', '12', '13'] },
     { question: 'Combien de doigts ?', visual: '✋✋👍', correctAnswer: '11', choices: ['10', '11', '12'] },
     { question: 'Compte les diamants', visual: '💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎', correctAnswer: '15', choices: ['14', '15', '16'] },
-    { question: 'Combien de points ?', visual: '●●●●●●●●●●●●●●●●●●', correctAnswer: '18', choices: ['17', '18', '19'] }
+    { question: 'Combien de points ?', visual: '🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴', correctAnswer: '18', choices: ['17', '18', '19'] },
+    { question: 'Compte les soleils', visual: '☀️☀️☀️☀️☀️☀️☀️☀️☀️☀️☀️☀️☀️', correctAnswer: '13', choices: ['12', '13', '14'] },
+    { question: 'Combien de papillons ?', visual: '🦋🦋🦋🦋🦋🦋🦋🦋🦋🦋🦋🦋🦋🦋🦋🦋🦋', correctAnswer: '17', choices: ['16', '17', '18'] },
+    { question: 'Compte les cadeaux', visual: '🎁🎁🎁🎁🎁🎁🎁🎁🎁🎁🎁🎁🎁🎁🎁🎁🎁🎁🎁🎁', correctAnswer: '20', choices: ['19', '20', '21'] }
   ];
 
   // Fonction pour mélanger un tableau
@@ -208,14 +211,11 @@ export default function ComptageCP() {
               onClick={() => setShowExercises(true)}
               className={`px-6 py-3 rounded-lg font-bold transition-all ${
                 showExercises 
-                  ? 'bg-blue-500 text-white shadow-md' 
+                  ? 'bg-green-500 text-white shadow-md' 
                   : 'text-gray-600 hover:bg-gray-100'
               }`}
             >
-              <div className="flex flex-col items-center">
-                <span>✏️ Exercices</span>
-                <span className="text-sm opacity-90">({score}/{exercises.length})</span>
-              </div>
+              ✏️ Exercices ({score}/{exercises.length})
             </button>
           </div>
         </div>

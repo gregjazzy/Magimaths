@@ -141,23 +141,23 @@ export default function CPNombresJusqu20Page() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-yellow-100">
-      <div className="max-w-6xl mx-auto px-4 py-8">
+      <div className="max-w-6xl mx-auto px-3 sm:px-4 py-4 sm:py-8">
         {/* Header simple */}
-        <div className="mb-8">
-          <Link href="/cp" className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors mb-4">
+        <div className="mb-6 sm:mb-8">
+          <Link href="/cp" className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors mb-3 sm:mb-4">
             <ArrowLeft className="w-4 h-4" />
-            <span>Retour au CP</span>
+            <span className="text-sm sm:text-base">Retour au CP</span>
           </Link>
           
-          <div className="bg-white rounded-xl p-6 shadow-lg text-center">
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">
+          <div className="bg-white rounded-xl p-4 sm:p-6 shadow-lg text-center">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
               🔢 Nombres jusqu'à 20 (1ère partie année)
             </h1>
-            <p className="text-lg text-gray-600 mb-6">
+            <p className="text-base sm:text-lg text-gray-600 mb-4 sm:mb-6 px-2">
               Découvre tes premiers nombres de 0 à 20 et apprends les compléments à 10 !
             </p>
-            <div className="text-xl mb-6">
-              <span className="bg-orange-200 px-4 py-2 rounded-full font-bold text-gray-800">
+            <div className="text-lg sm:text-xl mb-4 sm:mb-6">
+              <span className="bg-orange-200 px-3 sm:px-4 py-2 rounded-full font-bold text-gray-800 text-sm sm:text-base">
                 {xpEarned} XP gagné !
               </span>
             </div>
@@ -165,12 +165,12 @@ export default function CPNombresJusqu20Page() {
         </div>
 
         {/* Introduction ludique */}
-        <div className="bg-gradient-to-r from-orange-400 to-red-500 rounded-xl p-6 mb-8 text-white">
-          <div className="flex items-center justify-center space-x-4">
-            <div className="text-6xl">🎯</div>
+        <div className="bg-gradient-to-r from-orange-400 to-red-500 rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 text-white">
+          <div className="flex flex-col sm:flex-row items-center justify-center text-center sm:text-left space-y-3 sm:space-y-0 sm:space-x-4">
+            <div className="text-4xl sm:text-6xl">🎯</div>
             <div>
-              <h2 className="text-2xl font-bold mb-2">Programme français CP - 1ère partie</h2>
-              <p className="text-lg">
+              <h2 className="text-lg sm:text-2xl font-bold mb-2">Programme français CP - 1ère partie</h2>
+              <p className="text-sm sm:text-lg">
                 Dénombrer, lire, écrire les premiers nombres. Connaître les décompositions et compléments à 10 !
               </p>
             </div>
@@ -178,15 +178,15 @@ export default function CPNombresJusqu20Page() {
         </div>
 
         {/* Ce qu'il faut retenir selon le programme */}
-        <div className="bg-white rounded-xl p-8 shadow-lg mb-8">
-          <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
-            <span className="text-3xl mr-3">💡</span>
-            Ce qu'il faut retenir (Programme officiel)
+        <div className="bg-white rounded-xl p-4 sm:p-6 lg:p-8 shadow-lg mb-6 sm:mb-8">
+          <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-800 mb-4 sm:mb-6 flex flex-col sm:flex-row items-start sm:items-center">
+            <span className="text-2xl sm:text-3xl mr-0 sm:mr-3 mb-2 sm:mb-0">💡</span>
+            <span className="text-center sm:text-left">Ce qu'il faut retenir (Programme officiel)</span>
           </h2>
-          <div className="grid md:grid-cols-2 gap-6">
-            <div className="bg-orange-50 p-6 rounded-lg border border-orange-200">
-              <h3 className="font-bold text-orange-800 mb-3">🔢 Dénombrer et connaître</h3>
-              <ul className="space-y-2 text-gray-700">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+            <div className="bg-orange-50 p-4 sm:p-6 rounded-lg border border-orange-200">
+              <h3 className="font-bold text-orange-800 mb-3 text-sm sm:text-base">🔢 Dénombrer et connaître</h3>
+              <ul className="space-y-2 text-gray-700 text-sm sm:text-base">
                 <li className="flex items-start">
                   <span className="text-orange-500 mr-2">•</span>
                   Dénombrer jusqu'à 20 (avec objets, doigts)
@@ -201,9 +201,9 @@ export default function CPNombresJusqu20Page() {
                 </li>
               </ul>
             </div>
-            <div className="bg-blue-50 p-6 rounded-lg border border-blue-200">
-              <h3 className="font-bold text-blue-800 mb-3">🧩 Décomposer et calculer</h3>
-              <ul className="space-y-2 text-gray-700">
+            <div className="bg-blue-50 p-4 sm:p-6 rounded-lg border border-blue-200">
+              <h3 className="font-bold text-blue-800 mb-3 text-sm sm:text-base">🧩 Décomposer et calculer</h3>
+              <ul className="space-y-2 text-gray-700 text-sm sm:text-base">
                 <li className="flex items-start">
                   <span className="text-blue-500 mr-2">•</span>
                   Décompositions : 5 = 2+3 = 1+4 = 0+5
@@ -222,30 +222,30 @@ export default function CPNombresJusqu20Page() {
         </div>
 
         {/* Exercices - grille simple style CE1 */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
           {sections.map((section) => (
-            <div key={section.id} className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all transform hover:scale-105 relative">
+            <div key={section.id} className="bg-white rounded-xl p-4 sm:p-6 shadow-lg hover:shadow-xl transition-all transform hover:scale-105 relative">
               {/* Badge de statut vérifié */}
               {section.verified && (
-                <div className="absolute top-3 right-3 bg-green-500 text-white px-2 py-1 rounded-full text-xs font-bold flex items-center">
+                <div className="absolute top-2 sm:top-3 right-2 sm:right-3 bg-green-500 text-white px-2 py-1 rounded-full text-xs font-bold flex items-center">
                   ✓ Vérifié
                 </div>
               )}
               
-              <div className="text-center mb-4">
-                <div className="text-5xl mb-3">{section.icon}</div>
-                <h3 className="text-2xl font-bold text-gray-900">{section.title}</h3>
+              <div className="text-center mb-3 sm:mb-4">
+                <div className="text-4xl sm:text-5xl mb-2 sm:mb-3">{section.icon}</div>
+                <h3 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900 px-2">{section.title}</h3>
               </div>
               
-              <div className="text-center mb-6">
-                <p className="text-gray-600 text-lg">{section.description}</p>
-                <div className="flex justify-center items-center space-x-4 mt-3 text-sm text-gray-500">
+              <div className="text-center mb-4 sm:mb-6">
+                <p className="text-gray-600 text-sm sm:text-base lg:text-lg px-2">{section.description}</p>
+                <div className="flex flex-wrap justify-center items-center gap-2 sm:gap-4 mt-3 text-xs sm:text-sm text-gray-500">
                   <div className="flex items-center space-x-1">
-                    <Clock className="w-4 h-4" />
+                    <Clock className="w-3 h-3 sm:w-4 sm:h-4" />
                     <span>{section.duration}</span>
                   </div>
                   <div className="flex items-center space-x-1">
-                    <Trophy className="w-4 h-4" />
+                    <Trophy className="w-3 h-3 sm:w-4 sm:h-4" />
                     <span>{section.xp} XP</span>
                   </div>
                   {section.verified && (
@@ -258,9 +258,9 @@ export default function CPNombresJusqu20Page() {
               
               <Link 
                 href={getSectionPath(section.id)}
-                className={`block w-full bg-gradient-to-r ${section.color} text-white text-center py-3 px-6 rounded-lg font-bold text-lg hover:opacity-90 transition-opacity`}
+                className={`block w-full bg-gradient-to-r ${section.color} text-white text-center py-3 px-4 sm:px-6 rounded-lg font-bold text-base sm:text-lg hover:opacity-90 transition-opacity`}
               >
-                <Play className="inline w-5 h-5 mr-2" />
+                <Play className="inline w-4 h-4 sm:w-5 sm:h-5 mr-2" />
                 Commencer !
               </Link>
             </div>
@@ -268,22 +268,22 @@ export default function CPNombresJusqu20Page() {
         </div>
 
         {/* Progression */}
-        <div className="mt-8 bg-white rounded-xl p-6 shadow-lg">
-          <h3 className="text-xl font-bold text-gray-900 mb-4 text-center">
+        <div className="mt-6 sm:mt-8 bg-white rounded-xl p-4 sm:p-6 shadow-lg">
+          <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-4 text-center">
             📊 Ta progression
           </h3>
-          <div className="flex justify-center space-x-8">
+          <div className="flex justify-center gap-4 sm:gap-8">
             <div className="text-center">
-              <div className="text-3xl font-bold text-green-600">{completedSections.length}</div>
-              <div className="text-sm text-gray-600">Sections terminées</div>
+              <div className="text-2xl sm:text-3xl font-bold text-green-600">{completedSections.length}</div>
+              <div className="text-xs sm:text-sm text-gray-600">Sections<br className="sm:hidden" /> terminées</div>
             </div>
             <div className="text-center">
-              <div className="text-3xl font-bold text-blue-600">{sections.length}</div>
-              <div className="text-sm text-gray-600">Sections au total</div>
+              <div className="text-2xl sm:text-3xl font-bold text-blue-600">{sections.length}</div>
+              <div className="text-xs sm:text-sm text-gray-600">Sections<br className="sm:hidden" /> au total</div>
             </div>
             <div className="text-center">
-              <div className="text-3xl font-bold text-yellow-600">{xpEarned}</div>
-              <div className="text-sm text-gray-600">Points d'expérience</div>
+              <div className="text-2xl sm:text-3xl font-bold text-yellow-600">{xpEarned}</div>
+              <div className="text-xs sm:text-sm text-gray-600">Points<br className="sm:hidden" /> d'expérience</div>
             </div>
           </div>
           
@@ -302,11 +302,11 @@ export default function CPNombresJusqu20Page() {
         </div>
 
         {/* Encouragements */}
-        <div className="mt-8 text-center">
-          <div className="bg-gradient-to-r from-pink-400 to-orange-400 rounded-xl p-6 text-white">
-            <div className="text-4xl mb-3">🌟</div>
-            <h3 className="text-xl font-bold mb-2">Bravo petit CP !</h3>
-            <p className="text-lg">
+        <div className="mt-6 sm:mt-8 text-center">
+          <div className="bg-gradient-to-r from-pink-400 to-orange-400 rounded-xl p-4 sm:p-6 text-white">
+            <div className="text-3xl sm:text-4xl mb-3">🌟</div>
+            <h3 className="text-lg sm:text-xl font-bold mb-2">Bravo petit CP !</h3>
+            <p className="text-sm sm:text-base lg:text-lg px-2">
               {completedSections.length === 0 && "Découvre tes premiers nombres !"}
               {completedSections.length > 0 && completedSections.length < sections.length && "Continue, tu apprends super bien !"}
               {completedSections.length === sections.length && "Félicitations ! Tu maîtrises les nombres jusqu'à 20 !"}

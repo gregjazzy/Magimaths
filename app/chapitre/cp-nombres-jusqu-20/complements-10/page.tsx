@@ -14,6 +14,7 @@ export default function ComplementsDixCP() {
   const [answeredCorrectly, setAnsweredCorrectly] = useState<Set<number>>(new Set());
   const [showCompletionModal, setShowCompletionModal] = useState(false);
   const [finalScore, setFinalScore] = useState(0);
+  const [shuffledChoices, setShuffledChoices] = useState<string[]>([]);
 
   // Sauvegarder les progrès dans localStorage
   const saveProgress = (score: number, maxScore: number) => {
@@ -70,18 +71,50 @@ export default function ComplementsDixCP() {
   // Exercices sur les compléments à 10
   const exercises = [
     { question: '7 + ? = 10', missing: '3', choices: ['2', '3', '4'] },
-    { question: '4 + ? = 10', missing: '6', choices: ['5', '6', '7'] },
-    { question: '? + 2 = 10', missing: '8', choices: ['7', '8', '9'] },
-    { question: '9 + ? = 10', missing: '1', choices: ['0', '1', '2'] },
-    { question: '5 + ? = 10', missing: '5', choices: ['4', '5', '6'] },
-    { question: '? + 6 = 10', missing: '4', choices: ['3', '4', '5'] },
-    { question: '3 + ? = 10', missing: '7', choices: ['6', '7', '8'] },
-    { question: '? + 8 = 10', missing: '2', choices: ['1', '2', '3'] },
-    { question: '1 + ? = 10', missing: '9', choices: ['8', '9', '10'] },
-    { question: '? + 5 = 10', missing: '5', choices: ['4', '5', '6'] },
-    { question: '6 + ? = 10', missing: '4', choices: ['3', '4', '5'] },
-    { question: '? + 7 = 10', missing: '3', choices: ['2', '3', '4'] }
+    { question: '4 + ? = 10', missing: '6', choices: ['7', '5', '6'] },
+    { question: '? + 2 = 10', missing: '8', choices: ['8', '7', '9'] },
+    { question: '9 + ? = 10', missing: '1', choices: ['2', '0', '1'] },
+    { question: '5 + ? = 10', missing: '5', choices: ['6', '4', '5'] },
+    { question: '? + 6 = 10', missing: '4', choices: ['4', '3', '5'] },
+    { question: '3 + ? = 10', missing: '7', choices: ['8', '6', '7'] },
+    { question: '? + 8 = 10', missing: '2', choices: ['3', '2', '1'] },
+    { question: '1 + ? = 10', missing: '9', choices: ['9', '10', '8'] },
+    { question: '? + 5 = 10', missing: '5', choices: ['4', '6', '5'] },
+    { question: '6 + ? = 10', missing: '4', choices: ['5', '4', '3'] },
+    { question: '? + 7 = 10', missing: '3', choices: ['4', '3', '2'] },
+    { question: '2 + ? = 10', missing: '8', choices: ['9', '8', '7'] },
+    { question: '? + 9 = 10', missing: '1', choices: ['1', '2', '0'] },
+    { question: '8 + ? = 10', missing: '2', choices: ['3', '1', '2'] }
   ];
+
+  // Fonction pour mélanger un tableau
+  const shuffleArray = (array: string[]) => {
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+  };
+
+  // Initialiser les choix mélangés pour l'exercice actuel
+  const initializeShuffledChoices = () => {
+    if (exercises.length > 0 && currentExercise < exercises.length) {
+      const currentChoices = exercises[currentExercise].choices;
+      const shuffled = shuffleArray(currentChoices);
+      setShuffledChoices(shuffled);
+    }
+  };
+
+  // Effet pour mélanger les choix quand on change d'exercice
+  useEffect(() => {
+    initializeShuffledChoices();
+  }, [currentExercise]);
+
+  // Effet pour initialiser les choix au premier rendu
+  useEffect(() => {
+    initializeShuffledChoices();
+  }, []);
 
   const speakText = (text: string) => {
     if ('speechSynthesis' in window) {
@@ -144,6 +177,7 @@ export default function ComplementsDixCP() {
     setAnsweredCorrectly(new Set());
     setShowCompletionModal(false);
     setFinalScore(0);
+    // Réinitialiser les choix mélangés sera fait par useEffect quand currentExercise change
   };
 
   return (
@@ -183,14 +217,11 @@ export default function ComplementsDixCP() {
               onClick={() => setShowExercises(true)}
               className={`px-6 py-3 rounded-lg font-bold transition-all ${
                 showExercises 
-                  ? 'bg-blue-500 text-white shadow-md' 
+                  ? 'bg-pink-500 text-white shadow-md' 
                   : 'text-gray-600 hover:bg-gray-100'
               }`}
             >
-              <div className="flex flex-col items-center">
-                <span>✏️ Exercices</span>
-                <span className="text-sm opacity-90">({score}/{exercises.length})</span>
-              </div>
+              ✏️ Exercices ({score}/{exercises.length})
             </button>
           </div>
         </div>
@@ -226,7 +257,7 @@ export default function ComplementsDixCP() {
                   </div>
                   <div className="text-4xl font-bold text-pink-600">+</div>
                   <div className="text-center">
-                    <div className="text-6xl mb-2">☝️✌️👆</div>
+                    <div className="text-6xl mb-2">🤟</div>
                     <div className="font-bold text-xl text-gray-800">3 doigts</div>
                   </div>
                   <div className="text-4xl font-bold text-pink-600">=</div>
@@ -279,14 +310,14 @@ export default function ComplementsDixCP() {
                             <div className="text-2xl text-blue-600 mb-2 font-mono tracking-wider">
                               {selected.visual1}
                             </div>
-                            <div className="font-bold text-lg">{selected.pair.split('+')[0]}</div>
+                            <div className="font-bold text-lg text-gray-800">{selected.pair.split('+')[0]}</div>
                           </div>
                           <div className="text-3xl font-bold text-pink-600">+</div>
                           <div className="text-center">
                             <div className="text-2xl text-green-600 mb-2 font-mono tracking-wider">
                               {selected.visual2}
                             </div>
-                            <div className="font-bold text-lg">{selected.pair.split('+')[1]}</div>
+                            <div className="font-bold text-lg text-gray-800">{selected.pair.split('+')[1]}</div>
                           </div>
                           <div className="text-3xl font-bold text-pink-600">=</div>
                           <div className="text-center">
@@ -326,7 +357,7 @@ export default function ComplementsDixCP() {
                     <button
                       key={comp.pair}
                       onClick={() => speakText(`${comp.pair.replace('+', ' plus ')} égale dix`)}
-                      className="bg-white p-4 rounded-lg font-bold text-lg hover:bg-blue-100 transition-colors border-2 border-blue-200"
+                      className="bg-white p-4 rounded-lg font-bold text-lg text-gray-800 hover:bg-blue-100 transition-colors border-2 border-blue-200"
                     >
                       {comp.pair} = 10
                     </button>
@@ -339,7 +370,7 @@ export default function ComplementsDixCP() {
             </div>
 
             {/* Conseils pour mémoriser */}
-            <div className="bg-gradient-to-r from-purple-400 to-pink-400 rounded-xl p-6 text-white">
+            <div className="bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl p-6 text-white">
               <h3 className="text-xl font-bold mb-3">💡 Trucs pour apprendre par cœur</h3>
               <ul className="space-y-2 text-lg">
                 <li>• Utilise tes doigts : 10 doigts en tout !</li>
@@ -401,7 +432,7 @@ export default function ComplementsDixCP() {
               
               {/* Choix multiples avec gros boutons */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-md mx-auto mb-8">
-                {exercises[currentExercise].choices.map((choice) => (
+                {shuffledChoices.map((choice) => (
                   <button
                     key={choice}
                     onClick={() => handleAnswerClick(choice)}
