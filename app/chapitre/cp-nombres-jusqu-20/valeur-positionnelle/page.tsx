@@ -103,7 +103,7 @@ export default function ValeurPositionnelleCP20() {
     { number: '20', dizaines: 2, unites: 0, visual: '🔟🔟 • ', explanation: '2 dizaines + 0 unité' }
   ];
 
-  // Exercices sur la valeur positionnelle - positions des bonnes réponses variées
+  // Exercices sur les dizaines et unités - positions des bonnes réponses variées
   const exercises = [
     { question: 'Dans 13, combien y a-t-il de dizaines ?', number: '13', type: 'dizaines', correctAnswer: '1', choices: ['1', '3', '0'] },
     { question: 'Dans 17, combien y a-t-il d\'unités ?', number: '17', type: 'unites', correctAnswer: '7', choices: ['1', '7', '17'] },
@@ -200,7 +200,7 @@ export default function ValeurPositionnelleCP20() {
           
           <div className="bg-white rounded-xl p-4 sm:p-6 shadow-lg text-center">
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-2 sm:mb-4">
-              🔢 Valeur positionnelle des chiffres
+              🔢 Dizaines et unités
             </h1>
             <p className="text-base sm:text-lg text-gray-600 px-2">
               Comprends la différence entre unités et dizaines dans les nombres de 10 à 20 !
@@ -274,7 +274,7 @@ export default function ValeurPositionnelleCP20() {
                 {/* Tableau de valeur positionnelle animé */}
                 <div className="bg-white rounded-lg p-3 sm:p-6 mb-3 sm:mb-6 shadow-inner">
                   <h4 className="text-base sm:text-lg font-bold mb-4 sm:mb-6 text-gray-800">
-                    📊 Tableau de valeur positionnelle
+                    📊 Tableau des dizaines et unités
                   </h4>
                   
                   {/* Tableau avec animation */}
@@ -491,9 +491,9 @@ export default function ValeurPositionnelleCP20() {
               {(() => {
                 const percentage = Math.round((finalScore / exercises.length) * 100);
                 const getMessage = () => {
-                  if (percentage >= 90) return { title: "🎉 Excellent petit CP !", message: "Tu maîtrises parfaitement la valeur positionnelle !", emoji: "🎉" };
+                  if (percentage >= 90) return { title: "🎉 Excellent petit CP !", message: "Tu maîtrises parfaitement les dizaines et unités !", emoji: "🎉" };
                   if (percentage >= 70) return { title: "👏 Très bien !", message: "Tu comprends bien les unités et dizaines !", emoji: "👏" };
-                  if (percentage >= 50) return { title: "👍 C'est bien !", message: "Continue à t'entraîner sur les positions !", emoji: "😊" };
+                                      if (percentage >= 50) return { title: "👍 C'est bien !", message: "Continue à t'entraîner avec les dizaines et unités !", emoji: "😊" };
                   return { title: "💪 Continue !", message: "Refais les exercices pour mieux comprendre !", emoji: "📚" };
                 };
                 const result = getMessage();
