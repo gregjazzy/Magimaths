@@ -10,6 +10,7 @@ import { ClassLevel } from '@/types'
 
 // Configuration des classes avec couleurs et icônes
 const classConfig = {
+  'CP': { color: '#ff8c00', icon: '🎒', name: 'CP' },
   'CE1': { color: '#ff6b6b', icon: '📚', name: 'CE1' },
   'CE2': { color: '#4ecdc4', icon: '📖', name: 'CE2' },
   'CM1': { color: '#45b7d1', icon: '📝', name: 'CM1' },

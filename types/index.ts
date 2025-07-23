@@ -30,7 +30,7 @@ export interface UserXP {
 }
 
 // Types pour les niveaux de classe
-export type ClassLevel = 'CE1' | 'CE2' | 'CM1' | 'CM2' | '6eme' | '5eme' | '4eme' | '3eme' | '2nde' | '1ere' | 'terminale';
+export type ClassLevel = 'CP' | 'CE1' | 'CE2' | 'CM1' | 'CM2' | '6eme' | '5eme' | '4eme' | '3eme' | '2nde' | '1ere' | 'terminale';
 
 // Types pour les chapitres et cours
 export interface Chapter {

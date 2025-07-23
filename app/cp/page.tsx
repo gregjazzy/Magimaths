@@ -6,27 +6,27 @@ import Link from 'next/link'
 const chapters = [
   {
     id: 'cp-nombres-jusqu-20',
-    title: 'Nombres jusqu\'à 20',
-    description: 'Découvrir, compter et écrire les nombres de 0 à 20',
+    title: 'Nombres jusqu\'à 20 (1ère partie année)',
+    description: 'Dénombrer, lire, écrire 0-20. Décompositions et compléments à 10',
     sections: [
       { id: 'reconnaissance', title: 'Reconnaître les nombres', completed: false },
-      { id: 'ecriture', title: 'Écrire les nombres', completed: false },
       { id: 'comptage', title: 'Compter jusqu\'à 20', completed: false },
-      { id: 'ordre', title: 'Ranger les nombres', completed: false },
-      { id: 'decomposition', title: 'Décomposer les nombres', completed: false }
+      { id: 'ecriture', title: 'Lire et écrire', completed: false },
+      { id: 'decompositions', title: 'Décompositions additives', completed: false },
+      { id: 'complements-10', title: 'Compléments à 10', completed: false }
     ],
     color: 'blue'
   },
   {
     id: 'cp-nombres-jusqu-100',
-    title: 'Nombres jusqu\'à 100',
-    description: 'Étendre la connaissance des nombres jusqu\'à 100',
+    title: 'Nombres jusqu\'à 100 (2nde partie année)',
+    description: 'Extension 21-100. Unités/dizaines, comparer, doubles/moitiés',
     sections: [
       { id: 'dizaines', title: 'Les dizaines', completed: false },
-      { id: 'lecture', title: 'Lire les nombres', completed: false },
-      { id: 'ecriture', title: 'Écrire les nombres', completed: false },
-      { id: 'comparaison', title: 'Comparer les nombres', completed: false },
-      { id: 'suite-numerique', title: 'La suite numérique', completed: false }
+      { id: 'unites-dizaines', title: 'Unités et dizaines', completed: false },
+      { id: 'lecture-ecriture', title: 'Lire et écrire jusqu\'à 100', completed: false },
+      { id: 'ordonner-comparer', title: 'Ordonner et comparer', completed: false },
+      { id: 'doubles-moities', title: 'Doubles et moitiés', completed: false }
     ],
     color: 'green' 
   },

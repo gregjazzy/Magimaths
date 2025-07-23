@@ -15,29 +15,29 @@ interface SectionProgress {
 
 const sections = [
   {
-    id: 'reconnaissance',
-    title: 'Reconnaître les nombres',
-    description: 'Identifier et nommer les nombres de 0 à 20',
-    icon: '👁️',
-    duration: '8 min',
-    xp: 10,
-    color: 'from-blue-500 to-cyan-500',
-    verified: true
-  },
-  {
-    id: 'comptage',
-    title: 'Compter jusqu\'à 20',
-    description: 'Dénombrer des collections et réciter la suite numérique',
-    icon: '🔢',
+    id: 'dizaines',
+    title: 'Les dizaines',
+    description: 'Comprendre les groupes de 10 : 10, 20, 30... Valeur positionnelle',
+    icon: '📦',
     duration: '10 min',
     xp: 12,
     color: 'from-green-500 to-emerald-500',
     verified: true
   },
   {
-    id: 'ecriture',
-    title: 'Lire et écrire',
-    description: 'Écrire les nombres en chiffres et en lettres',
+    id: 'unites-dizaines',
+    title: 'Unités et dizaines',
+    description: 'Connaître la valeur des chiffres selon leur position',
+    icon: '🔢',
+    duration: '12 min',
+    xp: 15,
+    color: 'from-blue-500 to-cyan-500',
+    verified: true
+  },
+  {
+    id: 'lecture-ecriture',
+    title: 'Lire et écrire jusqu\'à 100',
+    description: 'Lire et écrire tous les nombres jusqu\'à 100',
     icon: '✏️',
     duration: '12 min',
     xp: 15,
@@ -45,19 +45,19 @@ const sections = [
     verified: true
   },
   {
-    id: 'decompositions',
-    title: 'Décompositions additives',
-    description: 'Savoir que 5 = 2+3 = 1+4... Toutes les façons de faire un nombre',
-    icon: '🧩',
+    id: 'ordonner-comparer',
+    title: 'Ordonner et comparer',
+    description: 'Ranger dans l\'ordre et comparer avec < > =',
+    icon: '📊',
     duration: '10 min',
     xp: 12,
     color: 'from-orange-500 to-red-500',
     verified: true
   },
   {
-    id: 'complements-10',
-    title: 'Compléments à 10',
-    description: 'Connaître par cœur les compléments à 10 (7+3=10, 6+4=10...)',
+    id: 'doubles-moities',
+    title: 'Doubles et moitiés',
+    description: 'Connaître les doubles < 10 et moitiés des pairs < 20',
     icon: '🎯',
     duration: '8 min',
     xp: 10,
@@ -66,14 +66,14 @@ const sections = [
   }
 ]
 
-export default function CPNombresJusqu20Page() {
+export default function CPNombresJusqu100Page() {
   const [completedSections, setCompletedSections] = useState<string[]>([]);
   const [xpEarned, setXpEarned] = useState(0);
   const [sectionsProgress, setSectionsProgress] = useState<SectionProgress[]>([]);
 
   // Charger les progrès au démarrage
   useEffect(() => {
-    const savedProgress = localStorage.getItem('cp-nombres-20-progress');
+    const savedProgress = localStorage.getItem('cp-nombres-100-progress');
     if (savedProgress) {
       const progress = JSON.parse(savedProgress);
       setSectionsProgress(progress);
@@ -101,7 +101,7 @@ export default function CPNombresJusqu20Page() {
   // Écouter les changements dans localStorage (quand on revient d'un exercice)
   useEffect(() => {
     const handleStorageChange = () => {
-      const savedProgress = localStorage.getItem('cp-nombres-20-progress');
+      const savedProgress = localStorage.getItem('cp-nombres-100-progress');
       if (savedProgress) {
         const progress = JSON.parse(savedProgress);
         setSectionsProgress(progress);
@@ -136,11 +136,11 @@ export default function CPNombresJusqu20Page() {
   }, []);
 
   const getSectionPath = (sectionId: string) => {
-    return `/chapitre/cp-nombres-jusqu-20/${sectionId}`;
+    return `/chapitre/cp-nombres-jusqu-100/${sectionId}`;
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-yellow-100">
+    <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-100">
       <div className="max-w-6xl mx-auto px-4 py-8">
         {/* Header simple */}
         <div className="mb-8">
@@ -151,13 +151,13 @@ export default function CPNombresJusqu20Page() {
           
           <div className="bg-white rounded-xl p-6 shadow-lg text-center">
             <h1 className="text-4xl font-bold text-gray-900 mb-4">
-              🔢 Nombres jusqu'à 20 (1ère partie année)
+              💯 Nombres jusqu'à 100 (2nde partie année)
             </h1>
             <p className="text-lg text-gray-600 mb-6">
-              Découvre tes premiers nombres de 0 à 20 et apprends les compléments à 10 !
+              Extension jusqu'à 100 ! Découvre les dizaines, unités et les doubles/moitiés.
             </p>
             <div className="text-xl mb-6">
-              <span className="bg-orange-200 px-4 py-2 rounded-full font-bold text-gray-800">
+              <span className="bg-green-200 px-4 py-2 rounded-full font-bold text-gray-800">
                 {xpEarned} XP gagné !
               </span>
             </div>
@@ -165,13 +165,13 @@ export default function CPNombresJusqu20Page() {
         </div>
 
         {/* Introduction ludique */}
-        <div className="bg-gradient-to-r from-orange-400 to-red-500 rounded-xl p-6 mb-8 text-white">
+        <div className="bg-gradient-to-r from-green-400 to-blue-500 rounded-xl p-6 mb-8 text-white">
           <div className="flex items-center justify-center space-x-4">
             <div className="text-6xl">🎯</div>
             <div>
-              <h2 className="text-2xl font-bold mb-2">Programme français CP - 1ère partie</h2>
+              <h2 className="text-2xl font-bold mb-2">Programme français CP - 2nde partie</h2>
               <p className="text-lg">
-                Dénombrer, lire, écrire les premiers nombres. Connaître les décompositions et compléments à 10 !
+                Extension vers 100 ! Unités/dizaines, comparer, ordonner. Doubles et moitiés.
               </p>
             </div>
           </div>
@@ -184,40 +184,65 @@ export default function CPNombresJusqu20Page() {
             Ce qu'il faut retenir (Programme officiel)
           </h2>
           <div className="grid md:grid-cols-2 gap-6">
-            <div className="bg-orange-50 p-6 rounded-lg border border-orange-200">
-              <h3 className="font-bold text-orange-800 mb-3">🔢 Dénombrer et connaître</h3>
+            <div className="bg-green-50 p-6 rounded-lg border border-green-200">
+              <h3 className="font-bold text-green-800 mb-3">📦 Valeur positionnelle</h3>
               <ul className="space-y-2 text-gray-700">
                 <li className="flex items-start">
-                  <span className="text-orange-500 mr-2">•</span>
-                  Dénombrer jusqu'à 20 (avec objets, doigts)
+                  <span className="text-green-500 mr-2">•</span>
+                  Connaître la valeur des chiffres (unités, dizaines)
                 </li>
                 <li className="flex items-start">
-                  <span className="text-orange-500 mr-2">•</span>
-                  Lire et écrire les nombres 0-20
+                  <span className="text-green-500 mr-2">•</span>
+                  34 = 3 dizaines + 4 unités
                 </li>
                 <li className="flex items-start">
-                  <span className="text-orange-500 mr-2">•</span>
-                  Représenter les nombres (dessins, schémas)
+                  <span className="text-green-500 mr-2">•</span>
+                  Dénombrer généralement jusqu'à 100
                 </li>
               </ul>
             </div>
             <div className="bg-blue-50 p-6 rounded-lg border border-blue-200">
-              <h3 className="font-bold text-blue-800 mb-3">🧩 Décomposer et calculer</h3>
+              <h3 className="font-bold text-blue-800 mb-3">🎯 Comparer et calculer</h3>
               <ul className="space-y-2 text-gray-700">
                 <li className="flex items-start">
                   <span className="text-blue-500 mr-2">•</span>
-                  Décompositions : 5 = 2+3 = 1+4 = 0+5
+                  Ordonner et comparer les nombres
                 </li>
                 <li className="flex items-start">
                   <span className="text-blue-500 mr-2">•</span>
-                  Compléments à 10 par cœur (7+3, 6+4...)
+                  Doubles &lt; 10 : 2*3=6, 2*4=8...
                 </li>
                 <li className="flex items-start">
                   <span className="text-blue-500 mr-2">•</span>
-                  Comparer les nombres (plus grand, plus petit)
+                  Moitiés pairs &lt; 20 : 16/2=8, 12/2=6...
                 </li>
               </ul>
             </div>
+          </div>
+        </div>
+
+        {/* Mini-game des dizaines */}
+        <div className="bg-white rounded-xl p-8 shadow-lg mb-8">
+          <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+            <span className="text-3xl mr-3">🎮</span>
+            Mini-jeu : Les dizaines !
+          </h2>
+          <div className="bg-gradient-to-r from-green-100 to-blue-100 p-6 rounded-lg text-center">
+            <p className="text-lg font-medium text-gray-700 mb-6">
+              Combien y a-t-il de dizaines dans <strong className="text-green-600">40</strong> ?
+            </p>
+            <div className="flex justify-center gap-4 mb-4">
+              <button className="w-16 h-16 bg-white rounded-lg shadow-md hover:bg-green-50 transition-colors font-bold text-xl">
+                3
+              </button>
+              <button className="w-16 h-16 bg-white rounded-lg shadow-md hover:bg-green-50 transition-colors font-bold text-xl">
+                4
+              </button>
+              <button className="w-16 h-16 bg-white rounded-lg shadow-md hover:bg-green-50 transition-colors font-bold text-xl">
+                40
+              </button>
+            </div>
+            <p className="text-sm text-gray-600">40 = 4 dizaines + 0 unités</p>
           </div>
         </div>
 
@@ -291,7 +316,7 @@ export default function CPNombresJusqu20Page() {
           <div className="mt-4">
             <div className="bg-gray-200 rounded-full h-3">
               <div 
-                className="bg-gradient-to-r from-orange-400 to-red-500 h-3 rounded-full transition-all duration-500"
+                className="bg-gradient-to-r from-green-400 to-blue-500 h-3 rounded-full transition-all duration-500"
                 style={{ width: `${(completedSections.length / sections.length) * 100}%` }}
               ></div>
             </div>
@@ -303,13 +328,13 @@ export default function CPNombresJusqu20Page() {
 
         {/* Encouragements */}
         <div className="mt-8 text-center">
-          <div className="bg-gradient-to-r from-pink-400 to-orange-400 rounded-xl p-6 text-white">
+          <div className="bg-gradient-to-r from-blue-400 to-green-400 rounded-xl p-6 text-white">
             <div className="text-4xl mb-3">🌟</div>
-            <h3 className="text-xl font-bold mb-2">Bravo petit CP !</h3>
+            <h3 className="text-xl font-bold mb-2">Super travail petit CP !</h3>
             <p className="text-lg">
-              {completedSections.length === 0 && "Découvre tes premiers nombres !"}
-              {completedSections.length > 0 && completedSections.length < sections.length && "Continue, tu apprends super bien !"}
-              {completedSections.length === sections.length && "Félicitations ! Tu maîtrises les nombres jusqu'à 20 !"}
+              {completedSections.length === 0 && "Prêt pour les grands nombres ?"}
+              {completedSections.length > 0 && completedSections.length < sections.length && "Tu maîtrises de mieux en mieux !"}
+              {completedSections.length === sections.length && "Bravo ! Tu connais tous les nombres jusqu'à 100 !"}
             </p>
           </div>
         </div>
