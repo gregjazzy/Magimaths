@@ -1,242 +1,319 @@
 'use client'
 
-import React from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import { ArrowLeft, BookOpen, Eye, Edit, Grid, Target, Trophy, Clock, Play } from 'lucide-react'
+
+interface SectionProgress {
+  sectionId: string;
+  completed: boolean;
+  score: number;
+  maxScore: number;
+  completedAt: string;
+  attempts: number;
+}
 
 const sections = [
   {
     id: 'reperage-espace',
     title: 'Se repérer dans l\'espace',
-    description: 'Apprendre les mots : dessus, dessous, devant, derrière...',
-    color: 'indigo',
-    completed: false
+    description: 'Apprendre les mots : dessus, dessous, devant, derrière, à côté...',
+    icon: '🧭',
+    duration: '12 min',
+    xp: 15,
+    color: 'from-indigo-500 to-purple-500',
+    verified: true
   },
   {
     id: 'formes-geometriques',
     title: 'Les formes géométriques',
     description: 'Reconnaître les carrés, cercles, triangles et rectangles',
-    color: 'blue',
-    completed: false
+    icon: '🔺',
+    duration: '10 min',
+    xp: 12,
+    color: 'from-blue-500 to-cyan-500',
+    verified: true
   },
   {
     id: 'lignes-traits',
     title: 'Lignes et traits',
-    description: 'Tracer des lignes droites et courbes',
-    color: 'green',
-    completed: false
+    description: 'Tracer des lignes droites et courbes avec précision',
+    icon: '📏',
+    duration: '8 min',
+    xp: 10,
+    color: 'from-green-500 to-emerald-500',
+    verified: true
   },
   {
     id: 'reproductions',
     title: 'Reproduire des figures',
-    description: 'Copier des dessins simples et des motifs',
-    color: 'purple',
-    completed: false
+    description: 'Copier des dessins simples et des motifs géométriques',
+    icon: '🎨',
+    duration: '12 min',
+    xp: 15,
+    color: 'from-purple-500 to-violet-500',
+    verified: true
   },
   {
     id: 'quadrillages',
     title: 'Se repérer sur quadrillage',
-    description: 'Utiliser un quadrillage pour dessiner et se repérer',
-    color: 'red',
-    completed: false
+    description: 'Utiliser un quadrillage pour dessiner et se repérer dans l\'espace',
+    icon: '⬜',
+    duration: '10 min',
+    xp: 12,
+    color: 'from-red-500 to-pink-500',
+    verified: true
   }
 ]
 
 export default function CPGeometrieEspacePage() {
+  const [completedSections, setCompletedSections] = useState<string[]>([]);
+  const [xpEarned, setXpEarned] = useState(0);
+  const [sectionsProgress, setSectionsProgress] = useState<SectionProgress[]>([]);
+
+  // Charger les progrès au démarrage
+  useEffect(() => {
+    const savedProgress = localStorage.getItem('cp-geometrie-progress');
+    if (savedProgress) {
+      const progress = JSON.parse(savedProgress);
+      setSectionsProgress(progress);
+      
+      // Calculer les sections complétées et XP
+      const completed = progress.filter((p: SectionProgress) => p.completed).map((p: SectionProgress) => p.sectionId);
+      setCompletedSections(completed);
+      
+      // Calculer les XP basés sur les scores
+      const totalXP = progress.reduce((total: number, p: SectionProgress) => {
+        if (p.completed && p.maxScore > 0) {
+          const section = sections.find(s => s.id === p.sectionId);
+          if (section) {
+            // XP = XP de base * pourcentage de réussite
+            const percentage = p.score / p.maxScore;
+            return total + Math.round(section.xp * percentage);
+          }
+        }
+        return total;
+      }, 0);
+      setXpEarned(totalXP);
+    }
+  }, []);
+
+  // Écouter les changements dans localStorage (quand on revient d'un exercice)
+  useEffect(() => {
+    const handleStorageChange = () => {
+      const savedProgress = localStorage.getItem('cp-geometrie-progress');
+      if (savedProgress) {
+        const progress = JSON.parse(savedProgress);
+        setSectionsProgress(progress);
+        
+        const completed = progress.filter((p: SectionProgress) => p.completed).map((p: SectionProgress) => p.sectionId);
+        setCompletedSections(completed);
+        
+        const totalXP = progress.reduce((total: number, p: SectionProgress) => {
+          if (p.completed && p.maxScore > 0) {
+            const section = sections.find(s => s.id === p.sectionId);
+            if (section) {
+              const percentage = p.score / p.maxScore;
+              return total + Math.round(section.xp * percentage);
+            }
+          }
+          return total;
+        }, 0);
+        setXpEarned(totalXP);
+      }
+    };
+
+    // Écouter les changements de localStorage
+    window.addEventListener('storage', handleStorageChange);
+    
+    // Vérifier périodiquement les changements (pour les changements dans le même onglet)
+    const interval = setInterval(handleStorageChange, 1000);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      clearInterval(interval);
+    };
+  }, []);
+
+  const getSectionPath = (sectionId: string) => {
+    return `/chapitre/cp-geometrie-espace/${sectionId}`;
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-blue-50">
-      <div className="container mx-auto px-4 py-8">
-        {/* En-tête */}
-        <div className="text-center mb-12">
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-indigo-100 rounded-full mb-6">
-            <span className="text-3xl">📐</span>
-          </div>
-          <h1 className="text-4xl font-bold text-gray-800 mb-4">
-            Géométrie et espace
-          </h1>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            Découvre les formes qui t'entourent et apprends à te repérer dans l'espace !
-          </p>
+      <div className="max-w-6xl mx-auto px-3 sm:px-4 py-4 sm:py-8">
+        {/* Header simple */}
+        <div className="mb-6 sm:mb-8">
+          <Link href="/cp" className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors mb-3 sm:mb-4">
+            <ArrowLeft className="w-4 h-4" />
+            <span className="text-sm sm:text-base">Retour au CP</span>
+          </Link>
           
-          {/* Navigation */}
-          <div className="flex flex-wrap justify-center gap-3 mt-8">
-            <Link 
-              href="/cp" 
-              className="px-4 py-2 bg-white border-2 border-indigo-200 text-indigo-700 rounded-lg hover:bg-indigo-50 transition-colors text-sm font-medium"
-            >
-              ← Retour CP
-            </Link>
-          </div>
-        </div>
-
-        {/* Progression globale */}
-        <div className="bg-white rounded-xl p-6 shadow-lg border border-indigo-100 mb-8">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-bold text-gray-800">Progression du chapitre</h2>
-            <div className="text-sm text-gray-600">
-              <span className="font-medium">0</span> / {sections.length} sections complétées
+          <div className="bg-white rounded-xl p-4 sm:p-6 shadow-lg text-center">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
+              📐 Géométrie et espace
+            </h1>
+            <p className="text-base sm:text-lg text-gray-600 mb-4 sm:mb-6 px-2">
+              Découvre les formes, apprends à te repérer dans l\'espace et trace tes premiers dessins !
+            </p>
+            <div className="text-lg sm:text-xl mb-4 sm:mb-6">
+              <span className="bg-indigo-200 px-3 sm:px-4 py-2 rounded-full font-bold text-gray-800 text-sm sm:text-base">
+                {xpEarned} XP gagné !
+              </span>
             </div>
           </div>
-          <div className="w-full bg-gray-200 rounded-full h-3">
-            <div 
-              className="bg-gradient-to-r from-indigo-500 to-indigo-600 h-3 rounded-full transition-all duration-500"
-              style={{ width: '0%' }}
-            ></div>
+        </div>
+
+        {/* Introduction ludique */}
+        <div className="bg-gradient-to-r from-indigo-400 to-blue-500 rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 text-white">
+          <div className="flex flex-col sm:flex-row items-center justify-center text-center sm:text-left space-y-3 sm:space-y-0 sm:space-x-4">
+            <div className="text-4xl sm:text-6xl">🎯</div>
+            <div>
+              <h2 className="text-lg sm:text-2xl font-bold mb-2">Programme français CP - Géométrie</h2>
+              <p className="text-sm sm:text-lg">
+                Se repérer dans l\'espace, reconnaître les formes, reproduire des figures !
+              </p>
+            </div>
           </div>
         </div>
 
-        {/* Ce qu'il faut retenir */}
-        <div className="bg-white rounded-xl p-8 shadow-lg border border-indigo-100 mb-8">
-          <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
-            <span className="text-3xl mr-3">💡</span>
-            Ce qu'il faut retenir
+        {/* Ce qu'il faut retenir selon le programme */}
+        <div className="bg-white rounded-xl p-4 sm:p-6 lg:p-8 shadow-lg mb-6 sm:mb-8">
+          <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-800 mb-4 sm:mb-6 flex flex-col sm:flex-row items-start sm:items-center">
+            <span className="text-2xl sm:text-3xl mr-0 sm:mr-3 mb-2 sm:mb-0">💡</span>
+            <span className="text-center sm:text-left">Ce qu'il faut retenir (Programme officiel)</span>
           </h2>
-          <div className="grid md:grid-cols-2 gap-6">
-            <div className="bg-indigo-50 p-6 rounded-lg border border-indigo-200">
-              <h3 className="font-bold text-indigo-800 mb-3">📐 Les formes</h3>
-              <ul className="space-y-2 text-gray-700">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+            <div className="bg-indigo-50 p-4 sm:p-6 rounded-lg border border-indigo-200">
+              <h3 className="font-bold text-indigo-800 mb-3 text-sm sm:text-base">🧭 Se repérer dans l\'espace</h3>
+              <ul className="space-y-2 text-gray-700 text-sm sm:text-base">
                 <li className="flex items-start">
                   <span className="text-indigo-500 mr-2">•</span>
-                  Le <strong>carré</strong> a 4 côtés égaux
+                  Vocabulaire spatial (dessus, dessous, devant...)
                 </li>
                 <li className="flex items-start">
                   <span className="text-indigo-500 mr-2">•</span>
-                  Le <strong>cercle</strong> est tout rond
+                  Se déplacer sur un quadrillage
                 </li>
                 <li className="flex items-start">
                   <span className="text-indigo-500 mr-2">•</span>
-                  Le <strong>triangle</strong> a 3 côtés
-                </li>
-                <li className="flex items-start">
-                  <span className="text-indigo-500 mr-2">•</span>
-                  Le <strong>rectangle</strong> a 4 côtés, 2 longs et 2 courts
+                  Décrire une position relative
                 </li>
               </ul>
             </div>
-            <div className="bg-blue-50 p-6 rounded-lg border border-blue-200">
-              <h3 className="font-bold text-blue-800 mb-3">🧭 Se repérer</h3>
-              <ul className="space-y-2 text-gray-700">
+            <div className="bg-blue-50 p-4 sm:p-6 rounded-lg border border-blue-200">
+              <h3 className="font-bold text-blue-800 mb-3 text-sm sm:text-base">🔺 Formes et figures</h3>
+              <ul className="space-y-2 text-gray-700 text-sm sm:text-base">
                 <li className="flex items-start">
                   <span className="text-blue-500 mr-2">•</span>
-                  <strong>Dessus</strong> / <strong>Dessous</strong>
+                  Reconnaître carré, rectangle, triangle, cercle
                 </li>
                 <li className="flex items-start">
                   <span className="text-blue-500 mr-2">•</span>
-                  <strong>Devant</strong> / <strong>Derrière</strong>
+                  Tracer à la règle et au compas
                 </li>
                 <li className="flex items-start">
                   <span className="text-blue-500 mr-2">•</span>
-                  <strong>À droite</strong> / <strong>À gauche</strong>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-blue-500 mr-2">•</span>
-                  <strong>Près</strong> / <strong>Loin</strong>
+                  Reproduire des figures simples
                 </li>
               </ul>
             </div>
           </div>
         </div>
 
-        {/* Mini-jeu des formes */}
-        <div className="bg-white rounded-xl p-8 shadow-lg border border-indigo-100 mb-8">
-          <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
-            <span className="text-3xl mr-3">🎮</span>
-            Mini-jeu : Trouve les formes !
-          </h2>
-          <div className="bg-gradient-to-r from-indigo-100 to-blue-100 p-6 rounded-lg">
-            <p className="text-center text-lg font-medium text-gray-700 mb-6">
-              Clique sur tous les <strong className="text-indigo-600">cercles</strong> !
-            </p>
-            <div className="grid grid-cols-4 gap-4 max-w-md mx-auto">
-              {/* Formes géométriques */}
-              <div className="aspect-square bg-white rounded-lg shadow-md flex items-center justify-center cursor-pointer hover:bg-indigo-50 transition-colors">
-                <div className="w-12 h-12 bg-red-400 rounded-full"></div>
-              </div>
-              <div className="aspect-square bg-white rounded-lg shadow-md flex items-center justify-center cursor-pointer hover:bg-gray-50 transition-colors">
-                <div className="w-12 h-12 bg-blue-400"></div>
-              </div>
-              <div className="aspect-square bg-white rounded-lg shadow-md flex items-center justify-center cursor-pointer hover:bg-gray-50 transition-colors">
-                <div 
-                  className="w-0 h-0 border-l-6 border-r-6 border-b-10 border-transparent border-b-green-400"
-                  style={{
-                    borderLeftWidth: '24px',
-                    borderRightWidth: '24px',
-                    borderBottomWidth: '40px'
-                  }}
-                ></div>
-              </div>
-              <div className="aspect-square bg-white rounded-lg shadow-md flex items-center justify-center cursor-pointer hover:bg-indigo-50 transition-colors">
-                <div className="w-12 h-12 bg-yellow-400 rounded-full"></div>
-              </div>
-            </div>
-            <p className="text-center text-sm text-gray-600 mt-4">
-              Score : 0 / 2 cercles trouvés
-            </p>
-          </div>
-        </div>
-
-        {/* Sections du chapitre */}
-        <div className="bg-white rounded-xl p-8 shadow-lg border border-indigo-100">
-          <h2 className="text-2xl font-bold text-gray-800 mb-8 flex items-center">
-            <span className="text-3xl mr-3">📚</span>
-            Sections du chapitre
-          </h2>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {sections.map((section, index) => (
-              <Link 
-                key={section.id}
-                href={`/chapitre/cp-geometrie-espace/${section.id}`}
-                className="block group"
-              >
-                <div className={`
-                  bg-gradient-to-br p-6 rounded-xl shadow-lg border-2 
-                  transition-all duration-300 hover:shadow-2xl hover:scale-105
-                  ${section.color === 'indigo' ? 'from-indigo-50 to-indigo-100 border-indigo-200 hover:border-indigo-400' : ''}
-                  ${section.color === 'blue' ? 'from-blue-50 to-blue-100 border-blue-200 hover:border-blue-400' : ''}
-                  ${section.color === 'green' ? 'from-green-50 to-green-100 border-green-200 hover:border-green-400' : ''}
-                  ${section.color === 'purple' ? 'from-purple-50 to-purple-100 border-purple-200 hover:border-purple-400' : ''}
-                  ${section.color === 'red' ? 'from-red-50 to-red-100 border-red-200 hover:border-red-400' : ''}
-                `}>
-                  <div className="flex items-center justify-between mb-4">
-                    <div className={`
-                      w-12 h-12 rounded-lg flex items-center justify-center text-2xl text-white
-                      ${section.color === 'indigo' ? 'bg-indigo-500' : ''}
-                      ${section.color === 'blue' ? 'bg-blue-500' : ''}
-                      ${section.color === 'green' ? 'bg-green-500' : ''}
-                      ${section.color === 'purple' ? 'bg-purple-500' : ''}
-                      ${section.color === 'red' ? 'bg-red-500' : ''}
-                    `}>
-                      {index + 1}
-                    </div>
-                    <span className="text-sm font-medium text-gray-500">
-                      {section.completed ? '✅' : '⭕'}
-                    </span>
-                  </div>
-                  
-                  <h3 className="font-bold text-lg text-gray-800 mb-2 group-hover:text-indigo-600 transition-colors">
-                    {section.title}
-                  </h3>
-                  
-                  <p className="text-gray-600 text-sm mb-4">
-                    {section.description}
-                  </p>
-                  
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center text-sm text-gray-500">
-                      <span className="text-orange-500 mr-1">⭐</span>
-                      <span>40 XP</span>
-                    </div>
-                    <div className="flex items-center text-indigo-600 group-hover:translate-x-1 transition-transform">
-                      <span className="text-sm font-medium mr-1">Commencer</span>
-                      <span className="text-lg">→</span>
-                    </div>
-                  </div>
+        {/* Exercices - grille simple style CE1 */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+          {sections.map((section) => (
+            <div key={section.id} className="bg-white rounded-xl p-4 sm:p-6 shadow-lg hover:shadow-xl transition-all transform hover:scale-105 relative">
+              {/* Badge de statut vérifié */}
+              {section.verified && (
+                <div className="absolute top-2 sm:top-3 right-2 sm:right-3 bg-green-500 text-white px-2 py-1 rounded-full text-xs font-bold flex items-center">
+                  ✓ Vérifié
                 </div>
+              )}
+              
+              <div className="text-center mb-3 sm:mb-4">
+                <div className="text-4xl sm:text-5xl mb-2 sm:mb-3">{section.icon}</div>
+                <h3 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900 px-2">{section.title}</h3>
+              </div>
+              
+              <div className="text-center mb-4 sm:mb-6">
+                <p className="text-gray-600 text-sm sm:text-base lg:text-lg px-2">{section.description}</p>
+                <div className="flex flex-wrap justify-center items-center gap-2 sm:gap-4 mt-3 text-xs sm:text-sm text-gray-500">
+                  <div className="flex items-center space-x-1">
+                    <Clock className="w-3 h-3 sm:w-4 sm:h-4" />
+                    <span>{section.duration}</span>
+                  </div>
+                  <div className="flex items-center space-x-1">
+                    <Trophy className="w-3 h-3 sm:w-4 sm:h-4" />
+                    <span>{section.xp} XP</span>
+                  </div>
+                  {section.verified && (
+                    <div className="flex items-center space-x-1 text-green-600">
+                      <span className="text-xs font-medium">Vérifié</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+              
+              <Link 
+                href={getSectionPath(section.id)}
+                className={`block w-full bg-gradient-to-r ${section.color} text-white text-center py-3 px-4 sm:px-6 rounded-lg font-bold text-base sm:text-lg hover:opacity-90 transition-opacity`}
+              >
+                <Play className="inline w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+                Commencer !
               </Link>
-            ))}
+            </div>
+          ))}
+        </div>
+
+        {/* Progression */}
+        <div className="mt-6 sm:mt-8 bg-white rounded-xl p-4 sm:p-6 shadow-lg">
+          <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-4 text-center">
+            📊 Ta progression
+          </h3>
+          <div className="flex justify-center gap-4 sm:gap-8">
+            <div className="text-center">
+              <div className="text-2xl sm:text-3xl font-bold text-green-600">{completedSections.length}</div>
+              <div className="text-xs sm:text-sm text-gray-600">Sections<br className="sm:hidden" /> terminées</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl sm:text-3xl font-bold text-blue-600">{sections.length}</div>
+              <div className="text-xs sm:text-sm text-gray-600">Sections<br className="sm:hidden" /> au total</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl sm:text-3xl font-bold text-yellow-600">{xpEarned}</div>
+              <div className="text-xs sm:text-sm text-gray-600">Points<br className="sm:hidden" /> d'expérience</div>
+            </div>
+          </div>
+          
+          {/* Barre de progression */}
+          <div className="mt-4">
+            <div className="bg-gray-200 rounded-full h-3">
+              <div 
+                className="bg-gradient-to-r from-indigo-400 to-blue-500 h-3 rounded-full transition-all duration-500"
+                style={{ width: `${(completedSections.length / sections.length) * 100}%` }}
+              ></div>
+            </div>
+            <p className="text-center text-sm text-gray-600 mt-2">
+              {Math.round((completedSections.length / sections.length) * 100)}% terminé
+            </p>
+          </div>
+        </div>
+
+        {/* Encouragements */}
+        <div className="mt-6 sm:mt-8 text-center">
+          <div className="bg-gradient-to-r from-indigo-400 to-blue-400 rounded-xl p-4 sm:p-6 text-white">
+            <div className="text-3xl sm:text-4xl mb-3">🌟</div>
+            <h3 className="text-lg sm:text-xl font-bold mb-2">Bravo petit architecte !</h3>
+            <p className="text-sm sm:text-base lg:text-lg px-2">
+              {completedSections.length === 0 && "Prêt à explorer les formes et l'espace ?"}
+              {completedSections.length > 0 && completedSections.length < sections.length && "Continue, tu deviens un expert des formes !"}
+              {completedSections.length === sections.length && "Félicitations ! Tu maîtrises la géométrie !"}
+            </p>
           </div>
         </div>
       </div>
     </div>
-  )
+  );
 } 

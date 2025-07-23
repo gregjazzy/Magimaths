@@ -15,65 +15,65 @@ interface SectionProgress {
 
 const sections = [
   {
-    id: 'sens-addition',
-    title: 'Le sens de l\'addition',
-    description: 'Comprendre ce que veut dire "ajouter" avec des objets concrets',
-    icon: '🧮',
+    id: 'sens-soustraction',
+    title: 'Le sens de la soustraction',
+    description: 'Comprendre ce que veut dire "retirer", "enlever" avec des objets',
+    icon: '🪣',
     duration: '10 min',
     xp: 12,
-    color: 'from-purple-500 to-violet-500',
+    color: 'from-red-500 to-rose-500',
     verified: true
   },
   {
-    id: 'additions-10',
-    title: 'Additions jusqu\'à 10',
-    description: 'Mes premières additions avec des petits nombres',
+    id: 'soustractions-10',
+    title: 'Soustractions jusqu\'à 10',
+    description: 'Mes premières soustractions avec des petits nombres',
     icon: '🔢',
     duration: '12 min',
     xp: 15,
-    color: 'from-blue-500 to-cyan-500',
+    color: 'from-orange-500 to-red-500',
     verified: true
   },
   {
-    id: 'additions-20',
-    title: 'Additions jusqu\'à 20',
-    description: 'Additions plus grandes en comptant sur mes doigts',
-    icon: '🤲',
+    id: 'soustractions-20',
+    title: 'Soustractions jusqu\'à 20',
+    description: 'Soustractions plus grandes en comptant à rebours',
+    icon: '⬇️',
     duration: '15 min',
     xp: 18,
-    color: 'from-green-500 to-emerald-500',
+    color: 'from-yellow-500 to-orange-500',
     verified: true
   },
   {
     id: 'techniques',
     title: 'Techniques de calcul',
-    description: 'Apprendre des astuces pour calculer plus facilement',
+    description: 'Apprendre des astuces pour soustraire plus facilement',
     icon: '🎯',
     duration: '12 min',
     xp: 15,
-    color: 'from-indigo-500 to-purple-500',
+    color: 'from-purple-500 to-pink-500',
     verified: true
   },
   {
     id: 'problemes',
-    title: 'Problèmes d\'addition',
+    title: 'Problèmes de soustraction',
     description: 'Résoudre des petits problèmes de la vie quotidienne',
     icon: '🧩',
     duration: '10 min',
     xp: 12,
-    color: 'from-red-500 to-pink-500',
+    color: 'from-blue-500 to-purple-500',
     verified: true
   }
 ]
 
-export default function CPAdditionsSimplesPage() {
+export default function CPSoustractionsSimplesPage() {
   const [completedSections, setCompletedSections] = useState<string[]>([]);
   const [xpEarned, setXpEarned] = useState(0);
   const [sectionsProgress, setSectionsProgress] = useState<SectionProgress[]>([]);
 
   // Charger les progrès au démarrage
   useEffect(() => {
-    const savedProgress = localStorage.getItem('cp-additions-progress');
+    const savedProgress = localStorage.getItem('cp-soustractions-progress');
     if (savedProgress) {
       const progress = JSON.parse(savedProgress);
       setSectionsProgress(progress);
@@ -101,7 +101,7 @@ export default function CPAdditionsSimplesPage() {
   // Écouter les changements dans localStorage (quand on revient d'un exercice)
   useEffect(() => {
     const handleStorageChange = () => {
-      const savedProgress = localStorage.getItem('cp-additions-progress');
+      const savedProgress = localStorage.getItem('cp-soustractions-progress');
       if (savedProgress) {
         const progress = JSON.parse(savedProgress);
         setSectionsProgress(progress);
@@ -136,11 +136,11 @@ export default function CPAdditionsSimplesPage() {
   }, []);
 
   const getSectionPath = (sectionId: string) => {
-    return `/chapitre/cp-additions-simples/${sectionId}`;
+    return `/chapitre/cp-soustractions-simples/${sectionId}`;
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50">
+    <div className="min-h-screen bg-gradient-to-br from-red-50 to-orange-50">
       <div className="max-w-6xl mx-auto px-3 sm:px-4 py-4 sm:py-8">
         {/* Header simple */}
         <div className="mb-6 sm:mb-8">
@@ -151,13 +151,13 @@ export default function CPAdditionsSimplesPage() {
           
           <div className="bg-white rounded-xl p-4 sm:p-6 shadow-lg text-center">
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
-              ➕ Additions simples
+              ➖ Soustractions simples
             </h1>
             <p className="text-base sm:text-lg text-gray-600 mb-4 sm:mb-6 px-2">
-              Apprends à additionner ! Découvre comment ajouter des nombres pour en faire de plus grands.
+              Apprends à soustraire ! Découvre comment retirer des nombres pour en faire de plus petits.
             </p>
             <div className="text-lg sm:text-xl mb-4 sm:mb-6">
-              <span className="bg-purple-200 px-3 sm:px-4 py-2 rounded-full font-bold text-gray-800 text-sm sm:text-base">
+              <span className="bg-red-200 px-3 sm:px-4 py-2 rounded-full font-bold text-gray-800 text-sm sm:text-base">
                 {xpEarned} XP gagné !
               </span>
             </div>
@@ -165,13 +165,13 @@ export default function CPAdditionsSimplesPage() {
         </div>
 
         {/* Introduction ludique */}
-        <div className="bg-gradient-to-r from-purple-400 to-pink-500 rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 text-white">
+        <div className="bg-gradient-to-r from-red-400 to-orange-500 rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 text-white">
           <div className="flex flex-col sm:flex-row items-center justify-center text-center sm:text-left space-y-3 sm:space-y-0 sm:space-x-4">
             <div className="text-4xl sm:text-6xl">🎯</div>
             <div>
-              <h2 className="text-lg sm:text-2xl font-bold mb-2">Programme français CP - Additions</h2>
+              <h2 className="text-lg sm:text-2xl font-bold mb-2">Programme français CP - Soustractions</h2>
               <p className="text-sm sm:text-lg">
-                Comprendre l'addition, calculer dans la limite de 20, résoudre des problèmes !
+                Comprendre la soustraction, calculer dans la limite de 20, résoudre des problèmes !
               </p>
             </div>
           </div>
@@ -184,36 +184,36 @@ export default function CPAdditionsSimplesPage() {
             <span className="text-center sm:text-left">Ce qu'il faut retenir (Programme officiel)</span>
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-            <div className="bg-purple-50 p-4 sm:p-6 rounded-lg border border-purple-200">
-              <h3 className="font-bold text-purple-800 mb-3 text-sm sm:text-base">➕ Comprendre l'addition</h3>
+            <div className="bg-red-50 p-4 sm:p-6 rounded-lg border border-red-200">
+              <h3 className="font-bold text-red-800 mb-3 text-sm sm:text-base">➖ Comprendre la soustraction</h3>
               <ul className="space-y-2 text-gray-700 text-sm sm:text-base">
                 <li className="flex items-start">
-                  <span className="text-purple-500 mr-2">•</span>
-                  Additionner = ajouter, mettre ensemble
+                  <span className="text-red-500 mr-2">•</span>
+                  Soustraire = retirer, enlever
                 </li>
                 <li className="flex items-start">
-                  <span className="text-purple-500 mr-2">•</span>
-                  Comprendre le symbole +
+                  <span className="text-red-500 mr-2">•</span>
+                  Comprendre le symbole -
                 </li>
                 <li className="flex items-start">
-                  <span className="text-purple-500 mr-2">•</span>
-                  Utiliser ses doigts, objets concrets
+                  <span className="text-red-500 mr-2">•</span>
+                  Compter à rebours sur ses doigts
                 </li>
               </ul>
             </div>
-            <div className="bg-pink-50 p-4 sm:p-6 rounded-lg border border-pink-200">
-              <h3 className="font-bold text-pink-800 mb-3 text-sm sm:text-base">🎯 Calculer et résoudre</h3>
+            <div className="bg-orange-50 p-4 sm:p-6 rounded-lg border border-orange-200">
+              <h3 className="font-bold text-orange-800 mb-3 text-sm sm:text-base">🎯 Calculer et résoudre</h3>
               <ul className="space-y-2 text-gray-700 text-sm sm:text-base">
                 <li className="flex items-start">
-                  <span className="text-pink-500 mr-2">•</span>
-                  Additions jusqu'à 20
+                  <span className="text-orange-500 mr-2">•</span>
+                  Soustractions jusqu'à 20
                 </li>
                 <li className="flex items-start">
-                  <span className="text-pink-500 mr-2">•</span>
+                  <span className="text-orange-500 mr-2">•</span>
                   Techniques de calcul mental
                 </li>
                 <li className="flex items-start">
-                  <span className="text-pink-500 mr-2">•</span>
+                  <span className="text-orange-500 mr-2">•</span>
                   Résoudre des problèmes simples
                 </li>
               </ul>
@@ -291,7 +291,7 @@ export default function CPAdditionsSimplesPage() {
           <div className="mt-4">
             <div className="bg-gray-200 rounded-full h-3">
               <div 
-                className="bg-gradient-to-r from-purple-400 to-pink-500 h-3 rounded-full transition-all duration-500"
+                className="bg-gradient-to-r from-red-400 to-orange-500 h-3 rounded-full transition-all duration-500"
                 style={{ width: `${(completedSections.length / sections.length) * 100}%` }}
               ></div>
             </div>
@@ -303,13 +303,13 @@ export default function CPAdditionsSimplesPage() {
 
         {/* Encouragements */}
         <div className="mt-6 sm:mt-8 text-center">
-          <div className="bg-gradient-to-r from-purple-400 to-pink-400 rounded-xl p-4 sm:p-6 text-white">
+          <div className="bg-gradient-to-r from-red-400 to-orange-400 rounded-xl p-4 sm:p-6 text-white">
             <div className="text-3xl sm:text-4xl mb-3">🌟</div>
-            <h3 className="text-lg sm:text-xl font-bold mb-2">Bravo petit mathématicien !</h3>
+            <h3 className="text-lg sm:text-xl font-bold mb-2">Bravo petit calculateur !</h3>
             <p className="text-sm sm:text-base lg:text-lg px-2">
-              {completedSections.length === 0 && "Prêt à découvrir l'addition ?"}
-              {completedSections.length > 0 && completedSections.length < sections.length && "Continue, tu deviens un as du calcul !"}
-              {completedSections.length === sections.length && "Félicitations ! Tu maîtrises l'addition !"}
+              {completedSections.length === 0 && "Prêt à découvrir la soustraction ?"}
+              {completedSections.length > 0 && completedSections.length < sections.length && "Continue, tu deviens fort en calcul !"}
+              {completedSections.length === sections.length && "Félicitations ! Tu maîtrises la soustraction !"}
             </p>
           </div>
         </div>

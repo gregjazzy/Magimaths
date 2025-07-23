@@ -15,65 +15,65 @@ interface SectionProgress {
 
 const sections = [
   {
-    id: 'sens-addition',
-    title: 'Le sens de l\'addition',
-    description: 'Comprendre ce que veut dire "ajouter" avec des objets concrets',
-    icon: '🧮',
+    id: 'longueurs',
+    title: 'Comparer des longueurs',
+    description: 'Plus long, plus court, même longueur... Utiliser la règle',
+    icon: '📏',
     duration: '10 min',
     xp: 12,
-    color: 'from-purple-500 to-violet-500',
-    verified: true
-  },
-  {
-    id: 'additions-10',
-    title: 'Additions jusqu\'à 10',
-    description: 'Mes premières additions avec des petits nombres',
-    icon: '🔢',
-    duration: '12 min',
-    xp: 15,
-    color: 'from-blue-500 to-cyan-500',
-    verified: true
-  },
-  {
-    id: 'additions-20',
-    title: 'Additions jusqu\'à 20',
-    description: 'Additions plus grandes en comptant sur mes doigts',
-    icon: '🤲',
-    duration: '15 min',
-    xp: 18,
     color: 'from-green-500 to-emerald-500',
     verified: true
   },
   {
-    id: 'techniques',
-    title: 'Techniques de calcul',
-    description: 'Apprendre des astuces pour calculer plus facilement',
-    icon: '🎯',
-    duration: '12 min',
-    xp: 15,
-    color: 'from-indigo-500 to-purple-500',
+    id: 'masses',
+    title: 'Comparer des masses',
+    description: 'Plus lourd, plus léger... Découvrir kilogramme et gramme',
+    icon: '⚖️',
+    duration: '8 min',
+    xp: 10,
+    color: 'from-blue-500 to-cyan-500',
     verified: true
   },
   {
-    id: 'problemes',
-    title: 'Problèmes d\'addition',
-    description: 'Résoudre des petits problèmes de la vie quotidienne',
-    icon: '🧩',
+    id: 'contenances',
+    title: 'Comparer des contenances',
+    description: 'Plus, moins, autant... Découvrir le litre',
+    icon: '🥤',
+    duration: '8 min',
+    xp: 10,
+    color: 'from-purple-500 to-violet-500',
+    verified: true
+  },
+  {
+    id: 'temps',
+    title: 'Se repérer dans le temps',
+    description: 'Hier, aujourd\'hui, demain. L\'heure, les jours, mois',
+    icon: '🕐',
+    duration: '12 min',
+    xp: 15,
+    color: 'from-orange-500 to-red-500',
+    verified: true
+  },
+  {
+    id: 'monnaie',
+    title: 'La monnaie',
+    description: 'Reconnaître les pièces et billets. Rendre la monnaie',
+    icon: '💰',
     duration: '10 min',
     xp: 12,
-    color: 'from-red-500 to-pink-500',
+    color: 'from-yellow-500 to-amber-500',
     verified: true
   }
 ]
 
-export default function CPAdditionsSimplesPage() {
+export default function CPGrandeursMesuresPage() {
   const [completedSections, setCompletedSections] = useState<string[]>([]);
   const [xpEarned, setXpEarned] = useState(0);
   const [sectionsProgress, setSectionsProgress] = useState<SectionProgress[]>([]);
 
   // Charger les progrès au démarrage
   useEffect(() => {
-    const savedProgress = localStorage.getItem('cp-additions-progress');
+    const savedProgress = localStorage.getItem('cp-grandeurs-progress');
     if (savedProgress) {
       const progress = JSON.parse(savedProgress);
       setSectionsProgress(progress);
@@ -101,7 +101,7 @@ export default function CPAdditionsSimplesPage() {
   // Écouter les changements dans localStorage (quand on revient d'un exercice)
   useEffect(() => {
     const handleStorageChange = () => {
-      const savedProgress = localStorage.getItem('cp-additions-progress');
+      const savedProgress = localStorage.getItem('cp-grandeurs-progress');
       if (savedProgress) {
         const progress = JSON.parse(savedProgress);
         setSectionsProgress(progress);
@@ -136,11 +136,11 @@ export default function CPAdditionsSimplesPage() {
   }, []);
 
   const getSectionPath = (sectionId: string) => {
-    return `/chapitre/cp-additions-simples/${sectionId}`;
+    return `/chapitre/cp-grandeurs-mesures/${sectionId}`;
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50">
+    <div className="min-h-screen bg-gradient-to-br from-yellow-50 to-green-50">
       <div className="max-w-6xl mx-auto px-3 sm:px-4 py-4 sm:py-8">
         {/* Header simple */}
         <div className="mb-6 sm:mb-8">
@@ -151,13 +151,13 @@ export default function CPAdditionsSimplesPage() {
           
           <div className="bg-white rounded-xl p-4 sm:p-6 shadow-lg text-center">
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
-              ➕ Additions simples
+              📏 Grandeurs et mesures
             </h1>
             <p className="text-base sm:text-lg text-gray-600 mb-4 sm:mb-6 px-2">
-              Apprends à additionner ! Découvre comment ajouter des nombres pour en faire de plus grands.
+              Découvre comment mesurer, comparer et ordonner tout ce qui t'entoure !
             </p>
             <div className="text-lg sm:text-xl mb-4 sm:mb-6">
-              <span className="bg-purple-200 px-3 sm:px-4 py-2 rounded-full font-bold text-gray-800 text-sm sm:text-base">
+              <span className="bg-yellow-200 px-3 sm:px-4 py-2 rounded-full font-bold text-gray-800 text-sm sm:text-base">
                 {xpEarned} XP gagné !
               </span>
             </div>
@@ -165,13 +165,13 @@ export default function CPAdditionsSimplesPage() {
         </div>
 
         {/* Introduction ludique */}
-        <div className="bg-gradient-to-r from-purple-400 to-pink-500 rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 text-white">
+        <div className="bg-gradient-to-r from-green-400 to-blue-500 rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 text-white">
           <div className="flex flex-col sm:flex-row items-center justify-center text-center sm:text-left space-y-3 sm:space-y-0 sm:space-x-4">
             <div className="text-4xl sm:text-6xl">🎯</div>
             <div>
-              <h2 className="text-lg sm:text-2xl font-bold mb-2">Programme français CP - Additions</h2>
+              <h2 className="text-lg sm:text-2xl font-bold mb-2">Programme français CP - Grandeurs</h2>
               <p className="text-sm sm:text-lg">
-                Comprendre l'addition, calculer dans la limite de 20, résoudre des problèmes !
+                Comparer, mesurer, ordonner. Longueurs, masses, temps, monnaie !
               </p>
             </div>
           </div>
@@ -184,37 +184,37 @@ export default function CPAdditionsSimplesPage() {
             <span className="text-center sm:text-left">Ce qu'il faut retenir (Programme officiel)</span>
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-            <div className="bg-purple-50 p-4 sm:p-6 rounded-lg border border-purple-200">
-              <h3 className="font-bold text-purple-800 mb-3 text-sm sm:text-base">➕ Comprendre l'addition</h3>
+            <div className="bg-green-50 p-4 sm:p-6 rounded-lg border border-green-200">
+              <h3 className="font-bold text-green-800 mb-3 text-sm sm:text-base">📏 Comparer et mesurer</h3>
               <ul className="space-y-2 text-gray-700 text-sm sm:text-base">
                 <li className="flex items-start">
-                  <span className="text-purple-500 mr-2">•</span>
-                  Additionner = ajouter, mettre ensemble
+                  <span className="text-green-500 mr-2">•</span>
+                  Plus grand, plus petit, égal
                 </li>
                 <li className="flex items-start">
-                  <span className="text-purple-500 mr-2">•</span>
-                  Comprendre le symbole +
+                  <span className="text-green-500 mr-2">•</span>
+                  Utiliser la règle, la balance
                 </li>
                 <li className="flex items-start">
-                  <span className="text-purple-500 mr-2">•</span>
-                  Utiliser ses doigts, objets concrets
+                  <span className="text-green-500 mr-2">•</span>
+                  Vocabulaire : lourd/léger, long/court
                 </li>
               </ul>
             </div>
-            <div className="bg-pink-50 p-4 sm:p-6 rounded-lg border border-pink-200">
-              <h3 className="font-bold text-pink-800 mb-3 text-sm sm:text-base">🎯 Calculer et résoudre</h3>
+            <div className="bg-blue-50 p-4 sm:p-6 rounded-lg border border-blue-200">
+              <h3 className="font-bold text-blue-800 mb-3 text-sm sm:text-base">🕐 Temps et monnaie</h3>
               <ul className="space-y-2 text-gray-700 text-sm sm:text-base">
                 <li className="flex items-start">
-                  <span className="text-pink-500 mr-2">•</span>
-                  Additions jusqu'à 20
+                  <span className="text-blue-500 mr-2">•</span>
+                  Se repérer dans le temps (hier, demain)
                 </li>
                 <li className="flex items-start">
-                  <span className="text-pink-500 mr-2">•</span>
-                  Techniques de calcul mental
+                  <span className="text-blue-500 mr-2">•</span>
+                  Reconnaître l'heure simple
                 </li>
                 <li className="flex items-start">
-                  <span className="text-pink-500 mr-2">•</span>
-                  Résoudre des problèmes simples
+                  <span className="text-blue-500 mr-2">•</span>
+                  Connaître les pièces et billets
                 </li>
               </ul>
             </div>
@@ -291,7 +291,7 @@ export default function CPAdditionsSimplesPage() {
           <div className="mt-4">
             <div className="bg-gray-200 rounded-full h-3">
               <div 
-                className="bg-gradient-to-r from-purple-400 to-pink-500 h-3 rounded-full transition-all duration-500"
+                className="bg-gradient-to-r from-green-400 to-blue-500 h-3 rounded-full transition-all duration-500"
                 style={{ width: `${(completedSections.length / sections.length) * 100}%` }}
               ></div>
             </div>
@@ -303,13 +303,13 @@ export default function CPAdditionsSimplesPage() {
 
         {/* Encouragements */}
         <div className="mt-6 sm:mt-8 text-center">
-          <div className="bg-gradient-to-r from-purple-400 to-pink-400 rounded-xl p-4 sm:p-6 text-white">
+          <div className="bg-gradient-to-r from-green-400 to-blue-400 rounded-xl p-4 sm:p-6 text-white">
             <div className="text-3xl sm:text-4xl mb-3">🌟</div>
-            <h3 className="text-lg sm:text-xl font-bold mb-2">Bravo petit mathématicien !</h3>
+            <h3 className="text-lg sm:text-xl font-bold mb-2">Bravo petit explorateur !</h3>
             <p className="text-sm sm:text-base lg:text-lg px-2">
-              {completedSections.length === 0 && "Prêt à découvrir l'addition ?"}
-              {completedSections.length > 0 && completedSections.length < sections.length && "Continue, tu deviens un as du calcul !"}
-              {completedSections.length === sections.length && "Félicitations ! Tu maîtrises l'addition !"}
+              {completedSections.length === 0 && "Prêt à explorer le monde des mesures ?"}
+              {completedSections.length > 0 && completedSections.length < sections.length && "Continue, tu deviens un expert des mesures !"}
+              {completedSections.length === sections.length && "Félicitations ! Tu maîtrises les grandeurs et mesures !"}
             </p>
           </div>
         </div>
