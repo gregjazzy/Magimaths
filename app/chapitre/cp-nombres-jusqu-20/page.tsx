@@ -83,6 +83,16 @@ const sections = [
     xp: 15,
     color: 'from-green-500 to-teal-500',
     verified: true
+  },
+  {
+    id: 'doubles-moities',
+    title: 'Doubles et moitiés',
+    description: 'Connaître les doubles < 10 et moitiés des pairs < 20',
+    icon: '🎯',
+    duration: '10 min',
+    xp: 12,
+    color: 'from-yellow-500 to-amber-500',
+    verified: true
   }
 ]
 
