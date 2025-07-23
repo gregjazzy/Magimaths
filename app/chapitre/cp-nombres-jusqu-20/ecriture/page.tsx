@@ -81,28 +81,24 @@ export default function EcritureCP() {
 
   // Exercices mixtes (lecture et écriture)
   const exercises = [
-    // Exercices de lecture (chiffres → lettres)
-    { type: 'lecture', question: 'Comment écrit-on ce nombre en lettres ?', display: '3', correctAnswer: 'trois', choices: ['deux', 'trois', 'quatre'] },
-    { type: 'lecture', question: 'Comment écrit-on ce nombre en lettres ?', display: '7', correctAnswer: 'sept', choices: ['six', 'sept', 'huit'] },
-    { type: 'lecture', question: 'Comment écrit-on ce nombre en lettres ?', display: '12', correctAnswer: 'douze', choices: ['onze', 'douze', 'treize'] },
-    { type: 'lecture', question: 'Comment écrit-on ce nombre en lettres ?', display: '15', correctAnswer: 'quinze', choices: ['quatorze', 'quinze', 'seize'] },
-    { type: 'lecture', question: 'Comment écrit-on ce nombre en lettres ?', display: '18', correctAnswer: 'dix-huit', choices: ['dix-sept', 'dix-huit', 'dix-neuf'] },
-    
-    // Exercices d'écriture (lettres → chiffres)
-    { type: 'ecriture', question: 'Comment écrit-on ce nombre en chiffres ?', display: 'cinq', correctAnswer: '5', choices: ['4', '5', '6'] },
-    { type: 'ecriture', question: 'Comment écrit-on ce nombre en chiffres ?', display: 'neuf', correctAnswer: '9', choices: ['8', '9', '10'] },
-    { type: 'ecriture', question: 'Comment écrit-on ce nombre en chiffres ?', display: 'onze', correctAnswer: '11', choices: ['10', '11', '12'] },
-    { type: 'ecriture', question: 'Comment écrit-on ce nombre en chiffres ?', display: 'quatorze', correctAnswer: '14', choices: ['13', '14', '15'] },
-    { type: 'ecriture', question: 'Comment écrit-on ce nombre en chiffres ?', display: 'dix-sept', correctAnswer: '17', choices: ['16', '17', '18'] },
-    { type: 'ecriture', question: 'Comment écrit-on ce nombre en chiffres ?', display: 'vingt', correctAnswer: '20', choices: ['19', '20', '21'] },
-    
-    // Exercices de reconnaissance visuelle
-    { type: 'lecture', question: 'Combien y a-t-il de points ? Écris en lettres.', display: '🔴🔴🔴🔴🔴🔴', correctAnswer: 'six', choices: ['cinq', 'six', 'sept'] },
+    { type: 'lecture', question: 'Comment dit-on ce nombre ?', display: '3', correctAnswer: 'trois', choices: ['trois', 'deux', 'quatre'] },
+    { type: 'ecriture', question: 'Comment écrit-on ce nombre en chiffres ?', display: 'sept', correctAnswer: '7', choices: ['8', '6', '7'] },
+    { type: 'lecture', question: 'Comment dit-on ce nombre ?', display: '15', correctAnswer: 'quinze', choices: ['quatorze', 'quinze', 'seize'] },
+    { type: 'ecriture', question: 'Comment écrit-on ce nombre en chiffres ?', display: 'onze', correctAnswer: '11', choices: ['11', '10', '12'] },
+    { type: 'lecture', question: 'Comment dit-on ce nombre ?', display: '9', correctAnswer: 'neuf', choices: ['dix', 'huit', 'neuf'] },
+    { type: 'ecriture', question: 'Comment écrit-on ce nombre en chiffres ?', display: 'quatre', correctAnswer: '4', choices: ['3', '5', '4'] },
+    { type: 'lecture', question: 'Comment dit-on ce nombre ?', display: '18', correctAnswer: 'dix-huit', choices: ['dix-huit', 'dix-sept', 'dix-neuf'] },
+    { type: 'ecriture', question: 'Comment écrit-on ce nombre en chiffres ?', display: 'treize', correctAnswer: '13', choices: ['14', '13', '12'] },
+    { type: 'lecture', question: 'Comment dit-on ce nombre ?', display: '2', correctAnswer: 'deux', choices: ['un', 'trois', 'deux'] },
+    { type: 'ecriture', question: 'Comment écrit-on ce nombre en chiffres ?', display: 'vingt', correctAnswer: '20', choices: ['20', '19', '21'] },
+    { type: 'lecture', question: 'Comment dit-on ce nombre ?', display: '12', correctAnswer: 'douze', choices: ['onze', 'douze', 'treize'] },
+    { type: 'ecriture', question: 'Comment écrit-on ce nombre en chiffres ?', display: 'six', correctAnswer: '6', choices: ['7', '5', '6'] },
+    { type: 'lecture', question: 'Combien y a-t-il de points ? Écris en lettres.', display: '🔴🔴🔴🔴🔴🔴', correctAnswer: 'six', choices: ['six', 'cinq', 'sept'] },
     
     // Exercices supplémentaires pour arriver à 15
-    { type: 'lecture', question: 'Comment écrit-on ce nombre en lettres ?', display: '10', correctAnswer: 'dix', choices: ['neuf', 'dix', 'onze'] },
-    { type: 'ecriture', question: 'Comment écrit-on ce nombre en chiffres ?', display: 'huit', correctAnswer: '8', choices: ['7', '8', '9'] },
-    { type: 'ecriture', question: 'Comment écrit-on ce nombre en chiffres ?', display: 'seize', correctAnswer: '16', choices: ['15', '16', '17'] }
+    { type: 'lecture', question: 'Comment écrit-on ce nombre en lettres ?', display: '10', correctAnswer: 'dix', choices: ['onze', 'neuf', 'dix'] },
+    { type: 'ecriture', question: 'Comment écrit-on ce nombre en chiffres ?', display: 'huit', correctAnswer: '8', choices: ['8', '7', '9'] },
+    { type: 'ecriture', question: 'Comment écrit-on ce nombre en chiffres ?', display: 'seize', correctAnswer: '16', choices: ['17', '15', '16'] }
   ];
 
   // Fonction pour mélanger un tableau

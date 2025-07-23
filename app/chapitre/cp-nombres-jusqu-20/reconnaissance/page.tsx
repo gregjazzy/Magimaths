@@ -14,6 +14,31 @@ export default function ReconnaissanceNombresCP() {
   const [answeredCorrectly, setAnsweredCorrectly] = useState<Set<number>>(new Set());
   const [showCompletionModal, setShowCompletionModal] = useState(false);
   const [finalScore, setFinalScore] = useState(0);
+  const [shuffledChoices, setShuffledChoices] = useState<string[]>([]);
+
+  // Fonction pour mélanger un tableau
+  const shuffleArray = (array: string[]) => {
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+  };
+
+  // Initialiser les choix mélangés pour l'exercice actuel
+  const initializeShuffledChoices = () => {
+    const currentChoices = exercises[currentExercise].choices;
+    const shuffled = shuffleArray(currentChoices);
+    setShuffledChoices(shuffled);
+  };
+
+  // Effet pour mélanger les choix quand on change d'exercice
+  useEffect(() => {
+    if (exercises.length > 0) {
+      initializeShuffledChoices();
+    }
+  }, [currentExercise]);
 
   // Fonction pour créer l'affichage des boules responsive
   const renderVisualDots = (visual: string, isCourse = false) => {
@@ -90,23 +115,23 @@ export default function ReconnaissanceNombresCP() {
     { value: '17', label: '17', reading: 'dix-sept', visual: '🔵🔵🔵🔵🔵🔵🔵🔵🔵🔵🔵🔵🔵🔵🔵🔵🔵' }
   ];
 
-  // Exercices adaptés aux CP (plus simples)
+  // Exercices adaptés aux CP (plus simples) - positions des bonnes réponses variées
   const exercises = [
-    { question: 'Combien vois-tu de points ?', visual: '🔵 🔵 🔵 🔵 🔵', correctAnswer: '5', choices: ['4', '5', '6'] },
-    { question: 'Compte les ballons', visual: '🎈🎈🎈🎈🎈🎈🎈', correctAnswer: '7', choices: ['6', '7', '8'] },
+    { question: 'Combien vois-tu de points ?', visual: '🔵 🔵 🔵 🔵 🔵', correctAnswer: '5', choices: ['5', '4', '6'] },
+    { question: 'Compte les ballons', visual: '🎈🎈🎈🎈🎈🎈🎈', correctAnswer: '7', choices: ['8', '6', '7'] },
     { question: 'Combien y a-t-il d\'objets ?', visual: '🍎🍎🍎', correctAnswer: '3', choices: ['2', '3', '4'] },
-    { question: 'Compte les fleurs', visual: '🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸', correctAnswer: '10', choices: ['9', '10', '11'] },
-    { question: 'Compte les cœurs', visual: '❤️❤️❤️❤️❤️❤️', correctAnswer: '6', choices: ['5', '6', '7'] },
-    { question: 'Combien de bonbons ?', visual: '🍭🍭🍭🍭🍭🍭🍭🍭🍭🍭🍭🍭🍭🍭', correctAnswer: '14', choices: ['13', '14', '15'] },
-    { question: 'Combien de doigts ?', visual: '✋✋', correctAnswer: '10', choices: ['8', '10', '12'] },
-    { question: 'Compte les étoiles', visual: '⭐⭐⭐⭐⭐⭐⭐⭐⭐', correctAnswer: '9', choices: ['8', '9', '10'] },
-    { question: 'Compte les voitures', visual: '🚗🚗🚗🚗🚗🚗🚗🚗🚗🚗🚗🚗🚗🚗🚗🚗🚗🚗', correctAnswer: '18', choices: ['17', '18', '19'] },
-    { question: 'Compte les points', visual: '🔵 🔵 🔵 🔵 🔵 🔵 🔵 🔵 🔵 🔵 🔵 🔵', correctAnswer: '12', choices: ['11', '12', '13'] },
-    { question: 'Combien de papillons ?', visual: '🦋🦋🦋🦋🦋🦋🦋🦋', correctAnswer: '8', choices: ['7', '8', '9'] },
-    { question: 'Compte les soleils', visual: '☀️☀️☀️☀️☀️☀️☀️☀️☀️☀️☀️☀️☀️☀️☀️☀️', correctAnswer: '16', choices: ['15', '16', '17'] },
-    { question: 'Combien de fruits ?', visual: '🍓🍓🍓🍓', correctAnswer: '4', choices: ['3', '4', '5'] },
-    { question: 'Compte les diamants', visual: '💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎', correctAnswer: '20', choices: ['19', '20', '21'] },
-    { question: 'Combien de chats ?', visual: '🐱🐱🐱🐱🐱🐱🐱🐱🐱🐱🐱', correctAnswer: '11', choices: ['10', '11', '12'] }
+    { question: 'Compte les fleurs', visual: '🌸🌸🌸🌸🌸🌸🌸🌸🌸🌸', correctAnswer: '10', choices: ['10', '11', '9'] },
+    { question: 'Compte les cœurs', visual: '❤️❤️❤️❤️❤️❤️', correctAnswer: '6', choices: ['7', '5', '6'] },
+    { question: 'Combien de bonbons ?', visual: '🍭🍭🍭🍭🍭🍭🍭🍭🍭🍭🍭🍭🍭🍭', correctAnswer: '14', choices: ['13', '15', '14'] },
+    { question: 'Combien de doigts ?', visual: '✋✋', correctAnswer: '10', choices: ['10', '8', '12'] },
+    { question: 'Compte les étoiles', visual: '⭐⭐⭐⭐⭐⭐⭐⭐⭐', correctAnswer: '9', choices: ['10', '9', '8'] },
+    { question: 'Compte les voitures', visual: '🚗🚗🚗🚗🚗🚗🚗🚗🚗🚗🚗🚗🚗🚗🚗🚗🚗🚗', correctAnswer: '18', choices: ['19', '17', '18'] },
+    { question: 'Compte les points', visual: '🔵 🔵 🔵 🔵 🔵 🔵 🔵 🔵 🔵 🔵 🔵 🔵', correctAnswer: '12', choices: ['12', '13', '11'] },
+    { question: 'Combien de papillons ?', visual: '🦋🦋🦋🦋🦋🦋🦋🦋', correctAnswer: '8', choices: ['9', '7', '8'] },
+    { question: 'Compte les soleils', visual: '☀️☀️☀️☀️☀️☀️☀️☀️☀️☀️☀️☀️☀️☀️☀️☀️', correctAnswer: '16', choices: ['16', '15', '17'] },
+    { question: 'Combien de fruits ?', visual: '🍓🍓🍓🍓', correctAnswer: '4', choices: ['5', '4', '3'] },
+    { question: 'Compte les diamants', visual: '💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎', correctAnswer: '20', choices: ['21', '19', '20'] },
+    { question: 'Combien de chats ?', visual: '🐱🐱🐱🐱🐱🐱🐱🐱🐱🐱🐱', correctAnswer: '11', choices: ['11', '10', '12'] }
   ];
 
   const speakNumber = (text: string) => {
@@ -362,7 +387,7 @@ export default function ReconnaissanceNombresCP() {
               
               {/* Choix multiples avec gros boutons */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-2 sm:gap-3 max-w-sm sm:max-w-md mx-auto mb-4 sm:mb-8">
-                {exercises[currentExercise].choices.map((choice) => (
+                {shuffledChoices.map((choice) => (
                   <button
                     key={choice}
                     onClick={() => handleAnswerClick(choice)}

@@ -57,21 +57,24 @@ export default function ComptageCP() {
 
   // Exercices de comptage
   const exercises = [
-    { question: 'Compte les pommes', visual: '🍎🍎🍎🍎🍎', correctAnswer: '5', choices: ['4', '5', '6'] },
-    { question: 'Combien de cœurs ?', visual: '❤️❤️❤️', correctAnswer: '3', choices: ['2', '3', '4'] },
-    { question: 'Compte les étoiles', visual: '⭐⭐⭐⭐⭐⭐⭐', correctAnswer: '7', choices: ['6', '7', '8'] },
-    { question: 'Combien de ballons ?', visual: '🎈🎈🎈🎈🎈🎈🎈🎈🎈🎈', correctAnswer: '10', choices: ['9', '10', '11'] },
-    { question: 'Compte les fleurs', visual: '🌸🌸🌸🌸🌸🌸', correctAnswer: '6', choices: ['5', '6', '7'] },
-    { question: 'Combien de voitures ?', visual: '🚗🚗🚗🚗🚗🚗🚗🚗', correctAnswer: '8', choices: ['7', '8', '9'] },
-    { question: 'Compte les livres', visual: '📚📚📚📚', correctAnswer: '4', choices: ['3', '4', '5'] },
-    { question: 'Combien de chats ?', visual: '🐱🐱🐱🐱🐱🐱🐱🐱🐱', correctAnswer: '9', choices: ['8', '9', '10'] },
-    { question: 'Compte les bonbons', visual: '🍭🍭🍭🍭🍭🍭🍭🍭🍭🍭🍭🍭', correctAnswer: '12', choices: ['11', '12', '13'] },
-    { question: 'Combien de doigts ?', visual: '✋✋👍', correctAnswer: '11', choices: ['10', '11', '12'] },
-    { question: 'Compte les diamants', visual: '💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎', correctAnswer: '15', choices: ['14', '15', '16'] },
-    { question: 'Combien de points ?', visual: '🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴', correctAnswer: '18', choices: ['17', '18', '19'] },
-    { question: 'Compte les soleils', visual: '☀️☀️☀️☀️☀️☀️☀️☀️☀️☀️☀️☀️☀️', correctAnswer: '13', choices: ['12', '13', '14'] },
-    { question: 'Combien de papillons ?', visual: '🦋🦋🦋🦋🦋🦋🦋🦋🦋🦋🦋🦋🦋🦋🦋🦋🦋', correctAnswer: '17', choices: ['16', '17', '18'] },
-    { question: 'Compte les cadeaux', visual: '🎁🎁🎁🎁🎁🎁🎁🎁🎁🎁🎁🎁🎁🎁🎁🎁🎁🎁🎁🎁', correctAnswer: '20', choices: ['19', '20', '21'] }
+    { question: 'Compte les ballons', visual: '🎈🎈🎈🎈🎈', correctAnswer: '5', choices: ['5', '4', '6'] }, 
+    { question: 'Combien de fleurs ?', visual: '🌸🌸🌸🌸🌸🌸🌸🌸', correctAnswer: '8', choices: ['9', '7', '8'] },
+    { question: 'Compte les cœurs', visual: '❤️❤️❤️❤️❤️❤️❤️', correctAnswer: '7', choices: ['6', '8', '7'] },
+    { question: 'Combien d\'étoiles ?', visual: '⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐', correctAnswer: '11', choices: ['11', '10', '12'] },
+    { question: 'Compte les animaux', visual: '🐱🐱🐱🐱🐱🐱', correctAnswer: '6', choices: ['7', '5', '6'] },
+    { question: 'Combien de fruits ?', visual: '🍎🍎🍎🍎🍎🍎🍎🍎🍎', correctAnswer: '9', choices: ['8', '10', '9'] },
+    { question: 'Compte les voitures', visual: '🚗🚗🚗🚗🚗🚗🚗🚗🚗🚗🚗🚗', correctAnswer: '12', choices: ['12', '11', '13'] },
+    { question: 'Combien de bonbons ?', visual: '🍭🍭🍭🍭', correctAnswer: '4', choices: ['5', '4', '3'] },
+    { question: 'Compte les objets', visual: '🎁🎁🎁🎁🎁🎁🎁🎁🎁🎁🎁🎁🎁🎁🎁🎁', correctAnswer: '16', choices: ['17', '15', '16'] },
+    { question: 'Combien de jouets ?', visual: '🧸🧸🧸🧸🧸🧸🧸🧸🧸🧸', correctAnswer: '10', choices: ['10', '9', '11'] },
+    { question: 'Compte les biscuits', visual: '🍪🍪🍪', correctAnswer: '3', choices: ['4', '2', '3'] },
+    { question: 'Combien de ballons ?', visual: '🎈🎈🎈🎈🎈🎈🎈🎈🎈🎈🎈🎈🎈🎈', correctAnswer: '14', choices: ['13', '15', '14'] },
+    { question: 'Compte les livres', visual: '📚📚📚📚📚📚📚📚📚📚📚📚📚📚📚📚📚📚📚', correctAnswer: '19', choices: ['19', '18', '20'] },
+    { question: 'Compte les diamants', visual: '💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎', correctAnswer: '15', choices: ['16', '14', '15'] },
+    { question: 'Combien de points ?', visual: '🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴', correctAnswer: '18', choices: ['18', '17', '19'] },
+    { question: 'Compte les soleils', visual: '☀️☀️☀️☀️☀️☀️☀️☀️☀️☀️☀️☀️☀️', correctAnswer: '13', choices: ['14', '13', '12'] },
+    { question: 'Combien de papillons ?', visual: '🦋🦋🦋🦋🦋🦋🦋🦋🦋🦋🦋🦋🦋🦋🦋🦋🦋', correctAnswer: '17', choices: ['16', '18', '17'] },
+    { question: 'Compte les cadeaux', visual: '🎁🎁🎁🎁🎁🎁🎁🎁🎁🎁🎁🎁🎁🎁🎁🎁🎁🎁🎁🎁', correctAnswer: '20', choices: ['20', '19', '21'] }
   ];
 
   // Fonction pour mélanger un tableau

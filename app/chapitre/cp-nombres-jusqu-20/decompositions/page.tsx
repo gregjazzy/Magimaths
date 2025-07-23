@@ -112,21 +112,21 @@ export default function DecompositionsCP() {
 
   // Exercices sur les décompositions
   const exercises = [
-    { question: '5 = 2 + ?', number: 5, part1: 2, correctAnswer: '3', choices: ['2', '3', '4'] },
-    { question: '4 = 1 + ?', number: 4, part1: 1, correctAnswer: '3', choices: ['2', '3', '4'] },
+    { question: '5 = 2 + ?', number: 5, part1: 2, correctAnswer: '3', choices: ['3', '2', '4'] },
+    { question: '4 = 1 + ?', number: 4, part1: 1, correctAnswer: '3', choices: ['4', '2', '3'] },
     { question: '6 = 3 + ?', number: 6, part1: 3, correctAnswer: '3', choices: ['2', '3', '4'] },
-    { question: '7 = 4 + ?', number: 7, part1: 4, correctAnswer: '3', choices: ['2', '3', '4'] },
-    { question: '3 = 1 + ?', number: 3, part1: 1, correctAnswer: '2', choices: ['1', '2', '3'] },
-    { question: '8 = 5 + ?', number: 8, part1: 5, correctAnswer: '3', choices: ['2', '3', '4'] },
-    { question: '6 = 2 + ?', number: 6, part1: 2, correctAnswer: '4', choices: ['3', '4', '5'] },
-    { question: '5 = 3 + ?', number: 5, part1: 3, correctAnswer: '2', choices: ['1', '2', '3'] },
-    { question: '7 = 2 + ?', number: 7, part1: 2, correctAnswer: '5', choices: ['4', '5', '6'] },
-    { question: '4 = 2 + ?', number: 4, part1: 2, correctAnswer: '2', choices: ['1', '2', '3'] },
-    { question: '8 = 3 + ?', number: 8, part1: 3, correctAnswer: '5', choices: ['4', '5', '6'] },
-    { question: '6 = 4 + ?', number: 6, part1: 4, correctAnswer: '2', choices: ['1', '2', '3'] },
-    { question: '7 = 1 + ?', number: 7, part1: 1, correctAnswer: '6', choices: ['5', '6', '7'] },
-    { question: '5 = 1 + ?', number: 5, part1: 1, correctAnswer: '4', choices: ['3', '4', '5'] },
-    { question: '8 = 2 + ?', number: 8, part1: 2, correctAnswer: '6', choices: ['5', '6', '7'] }
+    { question: '7 = 4 + ?', number: 7, part1: 4, correctAnswer: '3', choices: ['3', '2', '4'] },
+    { question: '3 = 1 + ?', number: 3, part1: 1, correctAnswer: '2', choices: ['3', '1', '2'] },
+    { question: '8 = 5 + ?', number: 8, part1: 5, correctAnswer: '3', choices: ['2', '4', '3'] },
+    { question: '6 = 2 + ?', number: 6, part1: 2, correctAnswer: '4', choices: ['4', '3', '5'] },
+    { question: '5 = 3 + ?', number: 5, part1: 3, correctAnswer: '2', choices: ['3', '2', '1'] },
+    { question: '7 = 2 + ?', number: 7, part1: 2, correctAnswer: '5', choices: ['6', '4', '5'] },
+    { question: '4 = 2 + ?', number: 4, part1: 2, correctAnswer: '2', choices: ['2', '1', '3'] },
+    { question: '8 = 3 + ?', number: 8, part1: 3, correctAnswer: '5', choices: ['6', '5', '4'] },
+    { question: '6 = 4 + ?', number: 6, part1: 4, correctAnswer: '2', choices: ['3', '1', '2'] },
+    { question: '7 = 1 + ?', number: 7, part1: 1, correctAnswer: '6', choices: ['6', '5', '7'] },
+    { question: '5 = 1 + ?', number: 5, part1: 1, correctAnswer: '4', choices: ['5', '3', '4'] },
+    { question: '8 = 2 + ?', number: 8, part1: 2, correctAnswer: '6', choices: ['7', '6', '5'] }
   ];
 
   // Initialiser les choix mélangés pour l'exercice actuel
