@@ -4,6 +4,99 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, CheckCircle, XCircle, RotateCcw, Volume2, Package, Dot } from 'lucide-react';
 
+// Styles CSS pour les animations personnalisées
+const styles = `
+  @keyframes slideInLeft {
+    from { 
+      opacity: 0; 
+      transform: translateX(-100px) scale(0.8); 
+    }
+    to { 
+      opacity: 1; 
+      transform: translateX(0) scale(1); 
+    }
+  }
+  
+  @keyframes slideInRight {
+    from { 
+      opacity: 0; 
+      transform: translateX(100px) scale(0.8); 
+    }
+    to { 
+      opacity: 1; 
+      transform: translateX(0) scale(1); 
+    }
+  }
+  
+  @keyframes bounceIn {
+    0% { 
+      opacity: 0; 
+      transform: scale(0.3) translateY(-50px); 
+    }
+    50% { 
+      opacity: 1; 
+      transform: scale(1.1) translateY(-10px); 
+    }
+    100% { 
+      opacity: 1; 
+      transform: scale(1) translateY(0); 
+    }
+  }
+  
+  @keyframes glow {
+    0%, 100% { 
+      box-shadow: 0 0 5px rgba(59, 130, 246, 0.5); 
+    }
+    50% { 
+      box-shadow: 0 0 20px rgba(59, 130, 246, 0.8), 0 0 30px rgba(59, 130, 246, 0.6); 
+    }
+  }
+  
+  @keyframes wiggle {
+    0%, 7%, 14%, 21%, 28%, 35%, 42%, 49%, 56%, 63%, 70%, 77%, 84%, 91%, 98%, 100% {
+      transform: translateX(0);
+    }
+    3.5%, 10.5%, 17.5%, 24.5%, 31.5%, 38.5%, 45.5%, 52.5%, 59.5%, 66.5%, 73.5%, 80.5%, 87.5%, 94.5% {
+      transform: translateX(-3px);
+    }
+  }
+  
+  .animate-slide-in-left {
+    animation: slideInLeft 1s ease-out;
+  }
+  
+  .animate-slide-in-right {
+    animation: slideInRight 1s ease-out 0.3s both;
+  }
+  
+  .animate-bounce-in {
+    animation: bounceIn 1.2s ease-out 0.6s both;
+  }
+  
+  .animate-glow {
+    animation: glow 2s ease-in-out infinite;
+  }
+  
+  .animate-wiggle {
+    animation: wiggle 0.8s ease-in-out;
+  }
+  
+  .animate-fade-in-up {
+    animation: fadeInUp 0.8s ease-out 0.9s both;
+  }
+  
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+`;
+
 export default function UnitesDizainesCP() {
   const [selectedNumber, setSelectedNumber] = useState('34');
   const [currentExercise, setCurrentExercise] = useState(0);
@@ -173,6 +266,7 @@ export default function UnitesDizainesCP() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-green-100">
+      <style dangerouslySetInnerHTML={{ __html: styles }} />
       <div className="max-w-6xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8">
@@ -237,44 +331,91 @@ export default function UnitesDizainesCP() {
                 <div className="grid md:grid-cols-2 gap-8 items-center">
                   {/* Visualisation */}
                   <div className="text-center">
-                    <div className="text-8xl font-bold text-blue-600 mb-4">34</div>
-                    <div className="text-4xl mb-4">📦📦📦 🔴🔴🔴🔴</div>
-                    <p className="text-lg text-gray-700 font-semibold">
+                    <div className="text-8xl font-bold text-blue-600 mb-4 animate-bounce-in transform hover:scale-110 transition-transform duration-500 cursor-pointer">
+                      34
+                    </div>
+                    <div className="text-4xl mb-4 animate-slide-in-left">
+                      🔟🔟🔟 🔴🔴🔴🔴
+                    </div>
+                    <p className="text-lg text-gray-700 font-semibold animate-fade-in-up">
                       3 paquets de 10 + 4 objets seuls
                     </p>
                   </div>
 
                   {/* Tableau des positions */}
-                  <div className="bg-white rounded-lg p-6 shadow-md">
-                    <table className="w-full border-collapse border-2 border-blue-600">
+                  <div className="bg-white rounded-lg p-6 shadow-md animate-glow">
+                    <div className="text-center mb-4">
+                      <h4 className="text-xl font-bold text-gray-800 animate-bounce-in">
+                        🎯 Tableau magique des positions !
+                      </h4>
+                    </div>
+                    
+                    <table className="w-full border-collapse border-2 border-blue-600 overflow-hidden rounded-lg">
                       <thead>
-                        <tr className="bg-blue-200">
-                          <th className="border-2 border-blue-600 p-4 text-blue-800 font-bold">
-                            <Package className="inline w-6 h-6 mr-2" />
-                            Dizaines
+                        <tr className="bg-gradient-to-r from-blue-400 to-purple-500 text-white">
+                          <th className="border-2 border-blue-600 p-4 font-bold animate-slide-in-left">
+                            <Package className="inline w-6 h-6 mr-2 animate-wiggle" />
+                            🔟 Dizaines
                           </th>
-                          <th className="border-2 border-blue-600 p-4 text-blue-800 font-bold">
-                            <Dot className="inline w-6 h-6 mr-2" />
-                            Unités
+                          <th className="border-2 border-blue-600 p-4 font-bold animate-slide-in-right">
+                            <Dot className="inline w-6 h-6 mr-2 animate-wiggle" />
+                            🔴 Unités
                           </th>
                         </tr>
                       </thead>
                       <tbody>
                         <tr>
-                          <td className="border-2 border-blue-600 p-6 text-center bg-blue-100">
-                            <div className="text-6xl font-bold text-blue-600">3</div>
-                            <div className="text-sm text-blue-700 mt-2">3 × 10 = 30</div>
+                          <td className="border-2 border-blue-600 p-6 text-center bg-gradient-to-br from-blue-100 to-blue-200 animate-slide-in-left">
+                            <div className="text-8xl font-bold text-blue-600 animate-bounce-in transform hover:scale-110 transition-transform duration-300">
+                              3
+                            </div>
+                            <div className="text-lg font-semibold text-blue-800 mt-3 animate-fade-in-up">
+                              3 × 10 = 30
+                            </div>
+                            <div className="text-3xl mt-2 animate-pulse">
+                              🔟🔟🔟
+                            </div>
                           </td>
-                          <td className="border-2 border-blue-600 p-6 text-center bg-green-100">
-                            <div className="text-6xl font-bold text-green-600">4</div>
-                            <div className="text-sm text-green-700 mt-2">4 × 1 = 4</div>
+                          <td className="border-2 border-blue-600 p-6 text-center bg-gradient-to-br from-green-100 to-green-200 animate-slide-in-right">
+                            <div className="text-8xl font-bold text-green-600 animate-bounce-in transform hover:scale-110 transition-transform duration-300" style={{animationDelay: '0.2s'}}>
+                              4
+                            </div>
+                            <div className="text-lg font-semibold text-green-800 mt-3 animate-fade-in-up" style={{animationDelay: '0.1s'}}>
+                              4 × 1 = 4
+                            </div>
+                            <div className="text-3xl mt-2 animate-pulse" style={{animationDelay: '0.5s'}}>
+                              🔴🔴🔴🔴
+                            </div>
                           </td>
                         </tr>
                       </tbody>
                     </table>
-                    <div className="text-center mt-4">
-                      <div className="text-2xl font-bold text-gray-800">
-                        30 + 4 = 34
+                    
+                    {/* Animation de la somme finale */}
+                    <div className="text-center mt-6 bg-gradient-to-r from-yellow-100 to-orange-100 rounded-lg p-4 animate-bounce-in" style={{animationDelay: '1.2s'}}>
+                      <div className="text-3xl font-bold text-gray-800 animate-pulse">
+                        ✨ 30 + 4 = 34 ✨
+                      </div>
+                      <div className="text-lg text-gray-600 mt-2 animate-fade-in-up" style={{animationDelay: '1.5s'}}>
+                        La magie des positions !
+                      </div>
+                    </div>
+                    
+                    {/* Flèches animées pour montrer le mouvement */}
+                    <div className="flex justify-center items-center mt-4 space-x-4 animate-fade-in-up" style={{animationDelay: '1.8s'}}>
+                      <div className="text-center">
+                        <div className="text-2xl animate-bounce">⬇️</div>
+                        <div className="text-sm font-semibold text-blue-600">Dizaines</div>
+                      </div>
+                      <div className="text-4xl font-bold text-purple-600 animate-pulse">+</div>
+                      <div className="text-center">
+                        <div className="text-2xl animate-bounce" style={{animationDelay: '0.3s'}}>⬇️</div>
+                        <div className="text-sm font-semibold text-green-600">Unités</div>
+                      </div>
+                      <div className="text-4xl font-bold text-purple-600 animate-pulse" style={{animationDelay: '0.6s'}}>=</div>
+                      <div className="text-center">
+                        <div className="text-2xl animate-bounce" style={{animationDelay: '0.9s'}}>🎉</div>
+                        <div className="text-sm font-semibold text-purple-600">Résultat</div>
                       </div>
                     </div>
                   </div>
