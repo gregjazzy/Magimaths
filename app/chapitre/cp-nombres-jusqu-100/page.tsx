@@ -15,13 +15,13 @@ interface SectionProgress {
 
 const sections = [
   {
-    id: 'dizaines',
-    title: 'Les dizaines',
-    description: 'Comprendre les groupes de 10 : 10, 20, 30... Valeur positionnelle',
-    icon: '📦',
-    duration: '10 min',
-    xp: 12,
-    color: 'from-green-500 to-emerald-500',
+    id: 'lecture-ecriture',
+    title: 'Lire et écrire jusqu\'à 100',
+    description: 'Lire et écrire tous les nombres jusqu\'à 100',
+    icon: '✏️',
+    duration: '12 min',
+    xp: 15,
+    color: 'from-purple-500 to-violet-500',
     verified: true
   },
   {
@@ -35,13 +35,13 @@ const sections = [
     verified: true
   },
   {
-    id: 'lecture-ecriture',
-    title: 'Lire et écrire jusqu\'à 100',
-    description: 'Lire et écrire tous les nombres jusqu\'à 100',
-    icon: '✏️',
-    duration: '12 min',
-    xp: 15,
-    color: 'from-purple-500 to-violet-500',
+    id: 'dizaines',
+    title: 'Les dizaines',
+    description: 'Comprendre les groupes de 10 : 10, 20, 30... Valeur positionnelle',
+    icon: '📦',
+    duration: '10 min',
+    xp: 12,
+    color: 'from-green-500 to-emerald-500',
     verified: true
   },
   {
