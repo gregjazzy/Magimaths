@@ -4,6 +4,17 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, CheckCircle, XCircle, RotateCcw, Volume2, Package, Dot } from 'lucide-react';
 
+// Styles CSS pour les animations personnalisées
+const styles = `
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .animate-fade-in {
+    animation: fadeIn 0.8s ease-out;
+  }
+`;
+
 export default function ValeurPositionnelleCP20() {
   const [selectedNumber, setSelectedNumber] = useState('17');
   const [currentExercise, setCurrentExercise] = useState(0);
@@ -79,17 +90,17 @@ export default function ValeurPositionnelleCP20() {
 
   // Nombres avec décomposition unités/dizaines pour CP (10-20)
   const numbersDecomposition = [
-    { number: '10', dizaines: 1, unites: 0, visual: '📦 • ', explanation: '1 dizaine + 0 unité' },
-    { number: '11', dizaines: 1, unites: 1, visual: '📦 🔴', explanation: '1 dizaine + 1 unité' },
-    { number: '12', dizaines: 1, unites: 2, visual: '📦 🔴🔴', explanation: '1 dizaine + 2 unités' },
-    { number: '13', dizaines: 1, unites: 3, visual: '📦 🔴🔴🔴', explanation: '1 dizaine + 3 unités' },
-    { number: '14', dizaines: 1, unites: 4, visual: '📦 🔴🔴🔴🔴', explanation: '1 dizaine + 4 unités' },
-    { number: '15', dizaines: 1, unites: 5, visual: '📦 🔴🔴🔴🔴🔴', explanation: '1 dizaine + 5 unités' },
-    { number: '16', dizaines: 1, unites: 6, visual: '📦 🔴🔴🔴🔴🔴🔴', explanation: '1 dizaine + 6 unités' },
-    { number: '17', dizaines: 1, unites: 7, visual: '📦 🔴🔴🔴🔴🔴🔴🔴', explanation: '1 dizaine + 7 unités' },
-    { number: '18', dizaines: 1, unites: 8, visual: '📦 🔴🔴🔴🔴🔴🔴🔴🔴', explanation: '1 dizaine + 8 unités' },
-    { number: '19', dizaines: 1, unites: 9, visual: '📦 🔴🔴🔴🔴🔴🔴🔴🔴🔴', explanation: '1 dizaine + 9 unités' },
-    { number: '20', dizaines: 2, unites: 0, visual: '📦📦 • ', explanation: '2 dizaines + 0 unité' }
+    { number: '10', dizaines: 1, unites: 0, visual: '🔟 • ', explanation: '1 dizaine + 0 unité' },
+    { number: '11', dizaines: 1, unites: 1, visual: '🔟 🔴', explanation: '1 dizaine + 1 unité' },
+    { number: '12', dizaines: 1, unites: 2, visual: '🔟 🔴🔴', explanation: '1 dizaine + 2 unités' },
+    { number: '13', dizaines: 1, unites: 3, visual: '🔟 🔴🔴🔴', explanation: '1 dizaine + 3 unités' },
+    { number: '14', dizaines: 1, unites: 4, visual: '🔟 🔴🔴🔴🔴', explanation: '1 dizaine + 4 unités' },
+    { number: '15', dizaines: 1, unites: 5, visual: '🔟 🔴🔴🔴🔴🔴', explanation: '1 dizaine + 5 unités' },
+    { number: '16', dizaines: 1, unites: 6, visual: '🔟 🔴🔴🔴🔴🔴🔴', explanation: '1 dizaine + 6 unités' },
+    { number: '17', dizaines: 1, unites: 7, visual: '🔟 🔴🔴🔴🔴🔴🔴🔴', explanation: '1 dizaine + 7 unités' },
+    { number: '18', dizaines: 1, unites: 8, visual: '🔟 🔴🔴🔴🔴🔴🔴🔴🔴', explanation: '1 dizaine + 8 unités' },
+    { number: '19', dizaines: 1, unites: 9, visual: '🔟 🔴🔴🔴🔴🔴🔴🔴🔴🔴', explanation: '1 dizaine + 9 unités' },
+    { number: '20', dizaines: 2, unites: 0, visual: '🔟🔟 • ', explanation: '2 dizaines + 0 unité' }
   ];
 
   // Exercices sur la valeur positionnelle - positions des bonnes réponses variées
@@ -178,6 +189,7 @@ export default function ValeurPositionnelleCP20() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+      <style dangerouslySetInnerHTML={{ __html: styles }} />
       <div className="max-w-6xl mx-auto px-3 sm:px-4 py-4 sm:py-8">
         {/* Header */}
         <div className="mb-6 sm:mb-8">
@@ -255,30 +267,67 @@ export default function ValeurPositionnelleCP20() {
               
               {/* Grande visualisation du nombre */}
               <div className="bg-blue-50 rounded-lg p-3 sm:p-8 mb-4 sm:mb-8">
-                <div className="text-4xl sm:text-6xl lg:text-8xl font-bold text-blue-600 mb-3 sm:mb-6">
+                <div className="text-4xl sm:text-6xl lg:text-8xl font-bold text-blue-600 mb-3 sm:mb-6 animate-pulse">
                   {selectedNumber}
                 </div>
                 
+                {/* Tableau de valeur positionnelle animé */}
+                <div className="bg-white rounded-lg p-3 sm:p-6 mb-3 sm:mb-6 shadow-inner">
+                  <h4 className="text-base sm:text-lg font-bold mb-4 sm:mb-6 text-gray-800">
+                    📊 Tableau de valeur positionnelle
+                  </h4>
+                  
+                  {/* Tableau avec animation */}
+                  <div className="overflow-hidden rounded-lg border-2 border-gray-300 mb-4">
+                    <table className="w-full">
+                      <thead>
+                        <tr className="bg-gradient-to-r from-blue-500 to-purple-500 text-white">
+                          <th className="p-3 sm:p-4 text-base sm:text-lg font-bold border-r border-white">
+                            🔟 Dizaines
+                          </th>
+                          <th className="p-3 sm:p-4 text-base sm:text-lg font-bold">
+                            🔴 Unités
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr className="bg-white">
+                          <td className="p-4 sm:p-6 text-3xl sm:text-5xl font-bold text-green-600 border-r border-gray-300 animate-bounce">
+                            {numbersDecomposition.find(n => n.number === selectedNumber)?.dizaines}
+                          </td>
+                          <td className="p-4 sm:p-6 text-3xl sm:text-5xl font-bold text-orange-600 animate-bounce" style={{animationDelay: '0.2s'}}>
+                            {numbersDecomposition.find(n => n.number === selectedNumber)?.unites}
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                  
+                  {/* Explication avec animation */}
+                  <div className="bg-yellow-50 rounded-lg p-3 sm:p-4 animate-fade-in">
+                    <p className="text-sm sm:text-base font-semibold text-gray-800">
+                      {numbersDecomposition.find(n => n.number === selectedNumber)?.explanation}
+                    </p>
+                  </div>
+                </div>
+
                 {/* Représentation visuelle avec paquets */}
                 <div className="bg-white rounded-lg p-3 sm:p-6 mb-3 sm:mb-6">
                   <h4 className="text-base sm:text-lg font-bold mb-2 sm:mb-4 text-gray-800">
-                    📦 Regarde avec des paquets de 10 :
+                    🔟 Regarde avec des paquets de 10 :
                   </h4>
-                  <div className="text-2xl sm:text-4xl py-2 sm:py-4">
+                  <div className="text-2xl sm:text-4xl py-2 sm:py-4 animate-pulse">
                     {numbersDecomposition.find(n => n.number === selectedNumber)?.visual}
                   </div>
-                  <p className="text-sm sm:text-base text-gray-700">
-                    {numbersDecomposition.find(n => n.number === selectedNumber)?.explanation}
-                  </p>
                 </div>
 
-                {/* Décomposition détaillée */}
+                {/* Décomposition détaillée avec animation */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-6">
-                  <div className="bg-green-50 rounded-lg p-3 sm:p-6">
+                  <div className="bg-green-50 rounded-lg p-3 sm:p-6 transform hover:scale-105 transition-transform duration-300">
                     <h4 className="text-base sm:text-lg font-bold mb-2 sm:mb-3 text-green-800">
-                      📦 Dizaines
+                      🔟 Dizaines
                     </h4>
-                    <div className="text-3xl sm:text-5xl font-bold text-green-900 mb-2">
+                    <div className="text-3xl sm:text-5xl font-bold text-green-900 mb-2 animate-bounce">
                       {numbersDecomposition.find(n => n.number === selectedNumber)?.dizaines}
                     </div>
                     <p className="text-sm sm:text-base text-green-700">
@@ -286,11 +335,11 @@ export default function ValeurPositionnelleCP20() {
                     </p>
                   </div>
                   
-                  <div className="bg-orange-50 rounded-lg p-3 sm:p-6">
+                  <div className="bg-orange-50 rounded-lg p-3 sm:p-6 transform hover:scale-105 transition-transform duration-300">
                     <h4 className="text-base sm:text-lg font-bold mb-2 sm:mb-3 text-orange-800">
                       🔴 Unités
                     </h4>
-                    <div className="text-3xl sm:text-5xl font-bold text-orange-900 mb-2">
+                    <div className="text-3xl sm:text-5xl font-bold text-orange-900 mb-2 animate-bounce" style={{animationDelay: '0.3s'}}>
                       {numbersDecomposition.find(n => n.number === selectedNumber)?.unites}
                     </div>
                     <p className="text-sm sm:text-base text-orange-700">
@@ -305,10 +354,11 @@ export default function ValeurPositionnelleCP20() {
             <div className="bg-gradient-to-r from-purple-400 to-blue-400 rounded-xl p-4 sm:p-6 text-white">
               <h3 className="text-lg sm:text-xl font-bold mb-2 sm:mb-3">💡 Trucs pour retenir</h3>
               <ul className="space-y-1 sm:space-y-2 text-sm sm:text-lg">
-                <li>• GAUCHE = dizaines (paquets de 10) 📦</li>
+                <li>• GAUCHE = dizaines (paquets de 10) 🔟</li>
                 <li>• DROITE = unités (objets seuls) 🔴</li>
                 <li>• Dans 17 : 1 paquet de 10 + 7 objets seuls</li>
                 <li>• Plus tu vas à gauche, plus c'est "gros" !</li>
+                <li>• Le tableau t'aide à bien voir chaque position !</li>
               </ul>
             </div>
           </div>
