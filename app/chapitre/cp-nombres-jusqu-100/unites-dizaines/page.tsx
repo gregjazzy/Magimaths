@@ -14,6 +14,31 @@ export default function UnitesDizainesCP() {
   const [answeredCorrectly, setAnsweredCorrectly] = useState<Set<number>>(new Set());
   const [showCompletionModal, setShowCompletionModal] = useState(false);
   const [finalScore, setFinalScore] = useState(0);
+  const [shuffledChoices, setShuffledChoices] = useState<string[]>([]);
+
+  // Fonction pour mélanger un tableau
+  const shuffleArray = (array: string[]) => {
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+  };
+
+  // Initialiser les choix mélangés pour l'exercice actuel
+  const initializeShuffledChoices = () => {
+    const currentChoices = exercises[currentExercise].choices;
+    const shuffled = shuffleArray(currentChoices);
+    setShuffledChoices(shuffled);
+  };
+
+  // Effet pour mélanger les choix quand on change d'exercice
+  useEffect(() => {
+    if (exercises.length > 0) {
+      initializeShuffledChoices();
+    }
+  }, [currentExercise]);
 
   // Sauvegarder les progrès
   const saveProgress = (score: number, maxScore: number) => {
@@ -64,22 +89,25 @@ export default function UnitesDizainesCP() {
     { number: '91', dizaines: 9, unites: 1, visual: '📦📦📦📦📦📦📦📦📦 🔴', explanation: '9 paquets de 10 + 1 unité' }
   ];
 
-  // Exercices sur la valeur positionnelle
+  // Exercices sur la valeur positionnelle - positions des bonnes réponses variées
   const exercises = [
-    { question: 'Dans 34, combien y a-t-il de dizaines ?', number: '34', type: 'dizaines', correctAnswer: '3', choices: ['2', '3', '4'] },
-    { question: 'Dans 47, combien y a-t-il d\'unités ?', number: '47', type: 'unites', correctAnswer: '7', choices: ['4', '6', '7'] },
-    { question: 'Dans 56, combien y a-t-il de dizaines ?', number: '56', type: 'dizaines', correctAnswer: '5', choices: ['5', '6', '7'] },
-    { question: 'Dans 23, combien y a-t-il d\'unités ?', number: '23', type: 'unites', correctAnswer: '3', choices: ['2', '3', '4'] },
-    { question: 'Combien de dizaines dans 72 ?', number: '72', type: 'dizaines', correctAnswer: '7', choices: ['6', '7', '8'] },
-    { question: 'Combien d\'unités dans 89 ?', number: '89', type: 'unites', correctAnswer: '9', choices: ['8', '9', '10'] },
-    { question: 'Dans 65, le chiffre des dizaines est ?', number: '65', type: 'dizaines', correctAnswer: '6', choices: ['5', '6', '7'] },
-    { question: 'Dans 91, le chiffre des unités est ?', number: '91', type: 'unites', correctAnswer: '1', choices: ['1', '9', '0'] },
+    { question: 'Dans 34, combien y a-t-il de dizaines ?', number: '34', type: 'dizaines', correctAnswer: '3', choices: ['3', '2', '4'] },
+    { question: 'Dans 47, combien y a-t-il d\'unités ?', number: '47', type: 'unites', correctAnswer: '7', choices: ['6', '4', '7'] },
+    { question: 'Dans 56, combien y a-t-il de dizaines ?', number: '56', type: 'dizaines', correctAnswer: '5', choices: ['6', '5', '7'] },
+    { question: 'Dans 23, combien y a-t-il d\'unités ?', number: '23', type: 'unites', correctAnswer: '3', choices: ['3', '2', '4'] },
+    { question: 'Combien de dizaines dans 72 ?', number: '72', type: 'dizaines', correctAnswer: '7', choices: ['8', '6', '7'] },
+    { question: 'Combien d\'unités dans 89 ?', number: '89', type: 'unites', correctAnswer: '9', choices: ['8', '10', '9'] },
+    { question: 'Dans 65, le chiffre des dizaines est ?', number: '65', type: 'dizaines', correctAnswer: '6', choices: ['6', '5', '7'] },
+    { question: 'Dans 91, le chiffre des unités est ?', number: '91', type: 'unites', correctAnswer: '1', choices: ['9', '1', '0'] },
     
     // Exercices de composition
-    { question: '4 dizaines + 7 unités = ?', display: '4 📦 + 7 🔴', correctAnswer: '47', choices: ['37', '47', '74'] },
-    { question: '6 dizaines + 2 unités = ?', display: '6 📦 + 2 🔴', correctAnswer: '62', choices: ['26', '62', '68'] },
-    { question: '3 dizaines + 8 unités = ?', display: '3 📦 + 8 🔴', correctAnswer: '38', choices: ['38', '83', '48'] },
-    { question: '7 dizaines + 5 unités = ?', display: '7 📦 + 5 🔴', correctAnswer: '75', choices: ['57', '75', '72'] }
+    { question: '4 dizaines + 7 unités = ?', display: '4 📦 + 7 🔴', correctAnswer: '47', choices: ['47', '37', '74'] },
+    { question: '6 dizaines + 2 unités = ?', display: '6 📦 + 2 🔴', correctAnswer: '62', choices: ['68', '26', '62'] },
+    { question: '3 dizaines + 8 unités = ?', display: '3 📦 + 8 🔴', correctAnswer: '38', choices: ['83', '38', '28'] },
+    { question: '7 dizaines + 5 unités = ?', display: '7 📦 + 5 🔴', correctAnswer: '75', choices: ['75', '57', '85'] },
+    { question: '2 dizaines + 9 unités = ?', display: '2 📦 + 9 🔴', correctAnswer: '29', choices: ['39', '29', '92'] },
+    { question: '8 dizaines + 1 unité = ?', display: '8 📦 + 1 🔴', correctAnswer: '81', choices: ['18', '91', '81'] },
+    { question: '5 dizaines + 4 unités = ?', display: '5 📦 + 4 🔴', correctAnswer: '54', choices: ['54', '45', '64'] }
   ];
 
   const speakText = (text: string) => {
@@ -474,31 +502,37 @@ export default function UnitesDizainesCP() {
             </div>
 
             {/* Question */}
-            <div className="bg-white rounded-xl p-8 shadow-lg text-center">
-              <h3 className="text-2xl font-bold mb-8 text-gray-900">
+            <div className="bg-white rounded-xl p-3 sm:p-6 md:p-8 shadow-lg text-center">
+              <h3 className="text-base sm:text-xl md:text-2xl font-bold mb-3 sm:mb-6 md:mb-8 text-gray-900">
                 {exercises[currentExercise].question}
               </h3>
               
-              {/* Affichage de la question */}
-              <div className="bg-gradient-to-r from-blue-50 to-green-50 rounded-lg p-8 mb-8">
-                <div className="text-8xl font-bold text-gray-800 mb-4">
-                  {exercises[currentExercise].number || exercises[currentExercise].display}
-                </div>
-                {exercises[currentExercise].number && (
-                  <div className="text-lg text-gray-600 font-semibold">
-                    Regarde bien la position des chiffres !
+              {/* Affichage du nombre ou de l'expression */}
+              <div className="bg-blue-50 rounded-lg p-3 sm:p-4 md:p-8 mb-3 sm:mb-6 md:mb-8">
+                {exercises[currentExercise].display ? (
+                  <div className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-blue-600 mb-2 sm:mb-3 md:mb-4">
+                    {exercises[currentExercise].display}
                   </div>
+                ) : (
+                  <>
+                    <div className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold text-blue-600 mb-2 sm:mb-3 md:mb-6">
+                      {exercises[currentExercise].number}
+                    </div>
+                    <div className="text-sm sm:text-base md:text-lg text-gray-700">
+                      {exercises[currentExercise].type === 'dizaines' ? 'Cherche les dizaines' : 'Cherche les unités'}
+                    </div>
+                  </>
                 )}
               </div>
               
               {/* Choix multiples */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-md mx-auto mb-8">
-                {exercises[currentExercise].choices.map((choice) => (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-2 sm:gap-3 md:gap-4 max-w-sm sm:max-w-md mx-auto mb-4 sm:mb-6 md:mb-8">
+                {shuffledChoices.map((choice) => (
                   <button
                     key={choice}
                     onClick={() => handleAnswerClick(choice)}
                     disabled={isCorrect !== null}
-                    className={`p-6 rounded-lg font-bold text-4xl transition-all ${
+                    className={`p-3 sm:p-4 md:p-6 rounded-lg font-bold text-xl sm:text-2xl md:text-3xl lg:text-4xl transition-all ${
                       userAnswer === choice
                         ? isCorrect === true
                           ? 'bg-green-500 text-white'

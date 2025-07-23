@@ -14,6 +14,33 @@ export default function DoublesCP() {
   const [answeredCorrectly, setAnsweredCorrectly] = useState<Set<number>>(new Set());
   const [showCompletionModal, setShowCompletionModal] = useState(false);
   const [finalScore, setFinalScore] = useState(0);
+  const [shuffledChoices, setShuffledChoices] = useState<string[]>([]);
+
+  // Fonction pour mélanger un tableau
+  const shuffleArray = (array: string[]) => {
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+  };
+
+  // Initialiser les choix mélangés pour l'exercice actuel
+  const initializeShuffledChoices = () => {
+    if (exercises.length > 0) {
+      const currentChoices = exercises[currentExercise].choices;
+      const shuffled = shuffleArray(currentChoices);
+      setShuffledChoices(shuffled);
+    }
+  };
+
+  // Effet pour mélanger les choix quand on change d'exercice
+  useEffect(() => {
+    if (exercises.length > 0) {
+      initializeShuffledChoices();
+    }
+  }, [currentExercise]);
 
   // Sauvegarder les progrès
   const saveProgress = (score: number, maxScore: number) => {
@@ -78,27 +105,27 @@ export default function DoublesCP() {
     { number: 18, moitie: 9, visual: '🔴🔴🔴🔴🔴🔴🔴🔴🔴 × 2 ÷ 2', formula: '18 ÷ 2 = 9' }
   ];
 
-  // Exercices mixtes doubles et moitiés
+  // Exercices mélangés - positions des bonnes réponses variées
   const exercises = [
-    // Exercices sur les doubles
-    { type: 'double', question: 'Quel est le double de 3 ?', number: 3, correctAnswer: '6', choices: ['5', '6', '7'] },
-    { type: 'double', question: 'Quel est le double de 5 ?', number: 5, correctAnswer: '10', choices: ['9', '10', '11'] },
-    { type: 'double', question: 'Quel est le double de 2 ?', number: 2, correctAnswer: '4', choices: ['3', '4', '5'] },
-    { type: 'double', question: 'Quel est le double de 7 ?', number: 7, correctAnswer: '14', choices: ['13', '14', '15'] },
-    { type: 'double', question: 'Quel est le double de 4 ?', number: 4, correctAnswer: '8', choices: ['7', '8', '9'] },
-    { type: 'double', question: 'Quel est le double de 6 ?', number: 6, correctAnswer: '12', choices: ['11', '12', '13'] },
+    // Doubles
+    { question: 'Double de 2 = ?', type: 'double', visual: '🔴🔴 + 🔴🔴', correctAnswer: '4', choices: ['4', '3', '5'] },
+    { question: 'Double de 4 = ?', type: 'double', visual: '🔴🔴🔴🔴 × 2', correctAnswer: '8', choices: ['9', '7', '8'] },
+    { question: '3 + 3 = ?', type: 'double', visual: '🔴🔴🔴 + 🔴🔴🔴', correctAnswer: '6', choices: ['5', '6', '7'] },
+    { question: 'Double de 5 = ?', type: 'double', visual: '✋ + ✋', correctAnswer: '10', choices: ['10', '9', '11'] },
+    { question: '6 + 6 = ?', type: 'double', visual: '👐 + 👐', correctAnswer: '12', choices: ['13', '11', '12'] },
+    { question: 'Double de 7 = ?', type: 'double', visual: '🔴🔴🔴🔴🔴🔴🔴 × 2', correctAnswer: '14', choices: ['15', '14', '13'] },
+    { question: '8 + 8 = ?', type: 'double', visual: '🔴 × 16', correctAnswer: '16', choices: ['16', '15', '17'] },
+    { question: 'Double de 9 = ?', type: 'double', visual: '🔴 × 18', correctAnswer: '18', choices: ['19', '17', '18'] },
     
-    // Exercices sur les moitiés
-    { type: 'moitie', question: 'Quelle est la moitié de 8 ?', number: 8, correctAnswer: '4', choices: ['3', '4', '5'] },
-    { type: 'moitie', question: 'Quelle est la moitié de 12 ?', number: 12, correctAnswer: '6', choices: ['5', '6', '7'] },
-    { type: 'moitie', question: 'Quelle est la moitié de 6 ?', number: 6, correctAnswer: '3', choices: ['2', '3', '4'] },
-    { type: 'moitie', question: 'Quelle est la moitié de 16 ?', number: 16, correctAnswer: '8', choices: ['7', '8', '9'] },
-    { type: 'moitie', question: 'Quelle est la moitié de 10 ?', number: 10, correctAnswer: '5', choices: ['4', '5', '6'] },
-    { type: 'moitie', question: 'Quelle est la moitié de 18 ?', number: 18, correctAnswer: '9', choices: ['8', '9', '10'] },
-    
-    // Exercices mixtes de reconnaissance
-    { type: 'double', question: '4 + 4 = ?', number: 4, correctAnswer: '8', choices: ['7', '8', '9'] },
-    { type: 'moitie', question: '14 ÷ 2 = ?', number: 14, correctAnswer: '7', choices: ['6', '7', '8'] }
+    // Moitiés
+    { question: 'Moitié de 4 = ?', type: 'moitie', visual: '🔴🔴🔴🔴 ÷ 2', correctAnswer: '2', choices: ['3', '2', '1'] },
+    { question: 'Moitié de 6 = ?', type: 'moitie', visual: '🔴🔴🔴🔴🔴🔴 ÷ 2', correctAnswer: '3', choices: ['3', '2', '4'] },
+    { question: '8 ÷ 2 = ?', type: 'moitie', visual: '🔴🔴🔴🔴🔴🔴🔴🔴 ÷ 2', correctAnswer: '4', choices: ['5', '3', '4'] },
+    { question: 'Moitié de 10 = ?', type: 'moitie', visual: '🙌 ÷ 2', correctAnswer: '5', choices: ['5', '4', '6'] },
+    { question: '12 ÷ 2 = ?', type: 'moitie', visual: '👏👏 ÷ 2', correctAnswer: '6', choices: ['7', '6', '5'] },
+    { question: 'Moitié de 14 = ?', type: 'moitie', visual: '🔴 × 14 ÷ 2', correctAnswer: '7', choices: ['6', '8', '7'] },
+    { question: '16 ÷ 2 = ?', type: 'moitie', visual: '🔴 × 16 ÷ 2', correctAnswer: '8', choices: ['8', '7', '9'] },
+    { question: 'Moitié de 18 = ?', type: 'moitie', visual: '🔴 × 18 ÷ 2', correctAnswer: '9', choices: ['10', '8', '9'] }
   ];
 
   const speakText = (text: string) => {
@@ -481,38 +508,42 @@ export default function DoublesCP() {
             </div>
 
             {/* Question */}
-            <div className="bg-white rounded-xl p-8 shadow-lg text-center">
-              <h3 className="text-2xl font-bold mb-8 text-gray-900">
+            <div className="bg-white rounded-xl p-3 sm:p-6 md:p-8 shadow-lg text-center">
+              <h3 className="text-base sm:text-xl md:text-2xl font-bold mb-3 sm:mb-6 md:mb-8 text-gray-900">
                 {exercises[currentExercise].question}
               </h3>
               
               {/* Affichage de la question avec icône */}
-              <div className={`rounded-lg p-8 mb-8 ${
+              <div className={`rounded-lg p-3 sm:p-4 md:p-8 mb-3 sm:mb-6 md:mb-8 ${
                 exercises[currentExercise].type === 'double' ? 'bg-blue-50' : 'bg-green-50'
               }`}>
-                <div className="flex items-center justify-center mb-4">
+                <div className="flex items-center justify-center mb-2 sm:mb-3 md:mb-4">
                   {exercises[currentExercise].type === 'double' ? (
-                    <Copy className="w-8 h-8 text-blue-600 mr-3" />
+                    <Copy className="w-4 h-4 sm:w-6 sm:h-6 md:w-8 md:h-8 text-blue-600 mr-2 sm:mr-3" />
                   ) : (
-                    <Split className="w-8 h-8 text-green-600 mr-3" />
+                    <Split className="w-4 h-4 sm:w-6 sm:h-6 md:w-8 md:h-8 text-green-600 mr-2 sm:mr-3" />
                   )}
-                  <span className="text-lg font-semibold text-gray-700">
+                  <span className={`text-sm sm:text-base md:text-lg font-semibold ${
+                    exercises[currentExercise].type === 'double' ? 'text-blue-600' : 'text-green-600'
+                  }`}>
                     {exercises[currentExercise].type === 'double' ? 'Double' : 'Moitié'}
                   </span>
                 </div>
-                <div className="text-6xl font-bold text-gray-800">
-                  {exercises[currentExercise].number}
+                
+                {/* Visualisation */}
+                <div className="text-lg sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl mb-2 sm:mb-3 md:mb-4">
+                  {exercises[currentExercise].visual}
                 </div>
               </div>
               
               {/* Choix multiples */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-md mx-auto mb-8">
-                {exercises[currentExercise].choices.map((choice) => (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-2 sm:gap-3 md:gap-4 max-w-sm sm:max-w-md mx-auto mb-4 sm:mb-6 md:mb-8">
+                {shuffledChoices.map((choice) => (
                   <button
                     key={choice}
                     onClick={() => handleAnswerClick(choice)}
                     disabled={isCorrect !== null}
-                    className={`p-6 rounded-lg font-bold text-4xl transition-all ${
+                    className={`p-3 sm:p-4 md:p-6 rounded-lg font-bold text-xl sm:text-2xl md:text-3xl lg:text-4xl transition-all ${
                       userAnswer === choice
                         ? isCorrect === true
                           ? 'bg-green-500 text-white'

@@ -14,6 +14,31 @@ export default function DizainesCP() {
   const [answeredCorrectly, setAnsweredCorrectly] = useState<Set<number>>(new Set());
   const [showCompletionModal, setShowCompletionModal] = useState(false);
   const [finalScore, setFinalScore] = useState(0);
+  const [shuffledChoices, setShuffledChoices] = useState<string[]>([]);
+
+  // Fonction pour mélanger un tableau
+  const shuffleArray = (array: string[]) => {
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+  };
+
+  // Initialiser les choix mélangés pour l'exercice actuel
+  const initializeShuffledChoices = () => {
+    const currentChoices = exercises[currentExercise].choices;
+    const shuffled = shuffleArray(currentChoices);
+    setShuffledChoices(shuffled);
+  };
+
+  // Effet pour mélanger les choix quand on change d'exercice
+  useEffect(() => {
+    if (exercises.length > 0) {
+      initializeShuffledChoices();
+    }
+  }, [currentExercise]);
 
   // Sauvegarder les progrès dans localStorage
   const saveProgress = (score: number, maxScore: number) => {
@@ -66,18 +91,18 @@ export default function DizainesCP() {
     { value: '100', label: '100', reading: 'cent', visual: '🏠', groups: 10 }
   ];
 
-  // Exercices sur les dizaines
+  // Exercices sur les dizaines - positions des bonnes réponses variées
   const exercises = [
-    { question: 'Combien de groupes de 10 dans 40 ?', visual: '📦📦📦📦', correctAnswer: '4', choices: ['3', '4', '5'] },
-    { question: 'Que vaut 3 groupes de 10 ?', visual: '📦📦📦', correctAnswer: '30', choices: ['20', '30', '40'] },
-    { question: 'Combien de dizaines dans 70 ?', visual: '📦📦📦📦📦📦📦', correctAnswer: '7', choices: ['6', '7', '8'] },
-    { question: '6 dizaines = ?', visual: '📦📦📦📦📦📦', correctAnswer: '60', choices: ['50', '60', '70'] },
-    { question: 'Combien de boîtes de 10 pour faire 50 ?', visual: '📦📦📦📦📦', correctAnswer: '5', choices: ['4', '5', '6'] },
-    { question: '2 dizaines = ?', visual: '📦📦', correctAnswer: '20', choices: ['10', '20', '30'] },
-    { question: 'Dans 80, il y a combien de dizaines ?', visual: '📦📦📦📦📦📦📦📦', correctAnswer: '8', choices: ['7', '8', '9'] },
-    { question: '9 groupes de 10 = ?', visual: '📦📦📦📦📦📦📦📦📦', correctAnswer: '90', choices: ['80', '90', '100'] },
-    { question: 'Combien de dizaines dans 100 ?', visual: '🏠', correctAnswer: '10', choices: ['9', '10', '11'] },
-    { question: '1 dizaine = ?', visual: '📦', correctAnswer: '10', choices: ['5', '10', '15'] }
+    { question: 'Combien de groupes de 10 dans 40 ?', visual: '📦📦📦📦', correctAnswer: '4', choices: ['4', '3', '5'] },
+    { question: 'Que vaut 3 groupes de 10 ?', visual: '📦📦📦', correctAnswer: '30', choices: ['40', '20', '30'] },
+    { question: 'Combien de dizaines dans 70 ?', visual: '📦📦📦📦📦📦📦', correctAnswer: '7', choices: ['6', '8', '7'] },
+    { question: '6 dizaines = ?', visual: '📦📦📦📦📦📦', correctAnswer: '60', choices: ['60', '50', '70'] },
+    { question: 'Combien de boîtes de 10 pour faire 50 ?', visual: '📦📦📦📦📦', correctAnswer: '5', choices: ['6', '4', '5'] },
+    { question: '2 dizaines = ?', visual: '📦📦', correctAnswer: '20', choices: ['10', '30', '20'] },
+    { question: 'Dans 80, il y a combien de dizaines ?', visual: '📦📦📦📦📦📦📦📦', correctAnswer: '8', choices: ['8', '7', '9'] },
+    { question: '9 groupes de 10 = ?', visual: '📦📦📦📦📦📦📦📦📦', correctAnswer: '90', choices: ['100', '90', '80'] },
+    { question: 'Combien de dizaines dans 100 ?', visual: '🏠', correctAnswer: '10', choices: ['11', '9', '10'] },
+    { question: '1 dizaine = ?', visual: '📦', correctAnswer: '10', choices: ['10', '5', '15'] }
   ];
 
   const speakText = (text: string) => {
@@ -415,26 +440,26 @@ export default function DizainesCP() {
             </div>
 
             {/* Question */}
-            <div className="bg-white rounded-xl p-8 shadow-lg text-center">
-              <h3 className="text-2xl font-bold mb-8 text-gray-900">
+            <div className="bg-white rounded-xl p-3 sm:p-6 md:p-8 shadow-lg text-center">
+              <h3 className="text-base sm:text-xl md:text-2xl font-bold mb-3 sm:mb-6 md:mb-8 text-gray-900">
                 {exercises[currentExercise].question}
               </h3>
               
               {/* Affichage visuel de la question */}
-              <div className="bg-green-50 rounded-lg p-8 mb-8">
-                <div className="text-8xl mb-6">
+              <div className="bg-green-50 rounded-lg p-2 sm:p-4 md:p-8 mb-3 sm:mb-6 md:mb-8">
+                <div className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl mb-3 sm:mb-4 md:mb-6">
                   {exercises[currentExercise].visual}
                 </div>
               </div>
               
               {/* Choix multiples avec gros boutons */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-md mx-auto mb-8">
-                {exercises[currentExercise].choices.map((choice) => (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-2 sm:gap-3 md:gap-4 max-w-sm sm:max-w-md mx-auto mb-4 sm:mb-6 md:mb-8">
+                {shuffledChoices.map((choice) => (
                   <button
                     key={choice}
                     onClick={() => handleAnswerClick(choice)}
                     disabled={isCorrect !== null}
-                    className={`p-6 rounded-lg font-bold text-4xl transition-all ${
+                    className={`p-3 sm:p-4 md:p-6 rounded-lg font-bold text-xl sm:text-2xl md:text-3xl lg:text-4xl transition-all ${
                       userAnswer === choice
                         ? isCorrect === true
                           ? 'bg-green-500 text-white'
