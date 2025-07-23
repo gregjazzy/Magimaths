@@ -16,6 +16,7 @@ export default function ComptageCP() {
   const [finalScore, setFinalScore] = useState(0);
   const [isCountingAnimation, setIsCountingAnimation] = useState(false);
   const [currentCountingNumber, setCurrentCountingNumber] = useState(0);
+  const [shuffledChoices, setShuffledChoices] = useState<string[]>([]);
 
   // Sauvegarder les progrès
   const saveProgress = (score: number, maxScore: number) => {
@@ -69,6 +70,30 @@ export default function ComptageCP() {
     { question: 'Compte les diamants', visual: '💎💎💎💎💎💎💎💎💎💎💎💎💎💎💎', correctAnswer: '15', choices: ['14', '15', '16'] },
     { question: 'Combien de points ?', visual: '●●●●●●●●●●●●●●●●●●', correctAnswer: '18', choices: ['17', '18', '19'] }
   ];
+
+  // Fonction pour mélanger un tableau
+  const shuffleArray = (array: string[]) => {
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+  };
+
+  // Initialiser les choix mélangés pour l'exercice actuel
+  const initializeShuffledChoices = () => {
+    const currentChoices = exercises[currentExercise].choices;
+    const shuffled = shuffleArray(currentChoices);
+    setShuffledChoices(shuffled);
+  };
+
+  // Effet pour mélanger les choix quand on change d'exercice
+  useEffect(() => {
+    if (exercises.length > 0) {
+      initializeShuffledChoices();
+    }
+  }, [currentExercise]);
 
   const speakNumber = (num: number) => {
     if ('speechSynthesis' in window) {
@@ -143,6 +168,7 @@ export default function ComptageCP() {
     setAnsweredCorrectly(new Set());
     setShowCompletionModal(false);
     setFinalScore(0);
+    // Réinitialiser les choix mélangés sera fait par useEffect quand currentExercise change
   };
 
   return (
@@ -440,7 +466,7 @@ export default function ComptageCP() {
               
               {/* Choix multiples */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-md mx-auto mb-8">
-                {exercises[currentExercise].choices.map((choice) => (
+                {shuffledChoices.map((choice) => (
                   <button
                     key={choice}
                     onClick={() => handleAnswerClick(choice)}
