@@ -1569,7 +1569,7 @@ function ExerciceTrouverFractionIndividuel() {
     return answer.trim() === currentExercise.correctFraction;
   };
 
-  const renderShape = (exercise) => {
+  const renderShape = (exercise: {shape: string, [key: string]: any}) => {
     switch (exercise.shape) {
       case 'triangle':
         return (
@@ -1837,7 +1837,7 @@ function ExerciceTrouverFractionIndividuel() {
 export default function VocabulaireFractionsPage() {
   const [currentExercise, setCurrentExercise] = useState(0);
   const [userAnswer, setUserAnswer] = useState('');
-  const [isCorrect, setIsCorrect] = useState(null);
+  const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
   const [showExercises, setShowExercises] = useState(false);
   const [score, setScore] = useState(0);
   const [answeredCorrectly, setAnsweredCorrectly] = useState(new Set());
@@ -1847,7 +1847,7 @@ export default function VocabulaireFractionsPage() {
   const [selectedExerciseType, setSelectedExerciseType] = useState('coloriage');
 
   // Fonction pour sauvegarder le progrès et calculer les XP
-  const saveProgress = (finalScore) => {
+  const saveProgress = (finalScore: number) => {
     const sectionId = 'vocabulaire';
     const maxScore = exercises.length;
     const percentage = finalScore / maxScore;
