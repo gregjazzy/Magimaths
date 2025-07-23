@@ -15,6 +15,36 @@ export default function ReconnaissanceNombresCP() {
   const [showCompletionModal, setShowCompletionModal] = useState(false);
   const [finalScore, setFinalScore] = useState(0);
 
+  // Fonction pour créer l'affichage des boules responsive
+  const renderVisualDots = (visual: string, isCourse = false) => {
+    // Compter le nombre de boules bleues
+    const dotCount = (visual.match(/🔵/g) || []).length;
+    const dots = Array(dotCount).fill('🔵');
+    
+    // Diviser en groupes de 5 maximum
+    const groups = [];
+    for (let i = 0; i < dots.length; i += 5) {
+      groups.push(dots.slice(i, i + 5));
+    }
+    
+    return (
+      <div className="flex flex-col items-center space-y-1 sm:space-y-2">
+        {groups.map((group, groupIndex) => (
+          <div key={groupIndex} className="flex justify-center space-x-1 sm:space-x-2">
+            {group.map((dot, dotIndex) => (
+              <span 
+                key={dotIndex} 
+                className={`${isCourse ? 'text-2xl sm:text-3xl' : 'text-xl sm:text-3xl md:text-4xl lg:text-5xl'} text-blue-600`}
+              >
+                {dot}
+              </span>
+            ))}
+          </div>
+        ))}
+      </div>
+    );
+  };
+
   // Sauvegarder les progrès dans localStorage
   const saveProgress = (score: number, maxScore: number) => {
     const progress = {
@@ -54,12 +84,10 @@ export default function ReconnaissanceNombresCP() {
 
   // Nombres pour le cours (adaptés CP)
   const numbers = [
-    { value: '5', label: '5', reading: 'cinq', visual: '🔵 🔵 🔵 🔵 🔵' },
-    { value: '8', label: '8', reading: 'huit', visual: '🔵 🔵 🔵 🔵 🔵 🔵 🔵 🔵' },
-    { value: '12', label: '12', reading: 'douze', visual: '🔵🔵🔵🔵🔵 🔵🔵🔵🔵🔵 🔵 🔵' },
-    { value: '17', label: '17', reading: 'dix-sept', visual: '🔵🔵🔵🔵🔵🔵🔵🔵🔵🔵 🔵🔵🔵🔵🔵🔵🔵' },
-    { value: '3', label: '3', reading: 'trois', visual: '🔵 🔵 🔵' },
-    { value: '15', label: '15', reading: 'quinze', visual: '🔵🔵🔵🔵🔵🔵🔵🔵🔵🔵 🔵🔵🔵🔵🔵' }
+    { value: '5', label: '5', reading: 'cinq', visual: '🔵🔵🔵🔵🔵' },
+    { value: '8', label: '8', reading: 'huit', visual: '🔵🔵🔵🔵🔵🔵🔵🔵' },
+    { value: '12', label: '12', reading: 'douze', visual: '🔵🔵🔵🔵🔵🔵🔵🔵🔵🔵🔵🔵' },
+    { value: '17', label: '17', reading: 'dix-sept', visual: '🔵🔵🔵🔵🔵🔵🔵🔵🔵🔵🔵🔵🔵🔵🔵🔵🔵' }
   ];
 
   // Exercices adaptés aux CP (plus simples)
@@ -216,63 +244,63 @@ export default function ReconnaissanceNombresCP() {
             </div>
 
             {/* Affichage du nombre sélectionné */}
-            <div className="bg-white rounded-xl p-8 shadow-lg text-center">
-              <h3 className="text-2xl font-bold mb-6 text-gray-900">
+            <div className="bg-white rounded-xl p-4 sm:p-8 shadow-lg text-center">
+              <h3 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-6 text-gray-900">
                 🔍 Découvrons le nombre {selectedNumber}
               </h3>
               
               {/* Grande visualisation du nombre */}
-              <div className="bg-orange-50 rounded-lg p-8 mb-8">
-                <div className="text-8xl font-bold text-orange-600 mb-6">
+              <div className="bg-orange-50 rounded-lg p-3 sm:p-8 mb-4 sm:mb-8">
+                <div className="text-5xl sm:text-8xl font-bold text-orange-600 mb-3 sm:mb-6">
                   {selectedNumber}
                 </div>
                 
                 {/* Représentation visuelle avec points */}
-                <div className="bg-white rounded-lg p-6 mb-6">
-                  <h4 className="text-lg font-bold mb-4 text-gray-800">
+                <div className="bg-white rounded-lg p-3 sm:p-6 mb-3 sm:mb-6">
+                  <h4 className="text-base sm:text-lg font-bold mb-2 sm:mb-4 text-gray-800">
                     📊 Regarde avec des points :
                   </h4>
-                  <div className="text-4xl text-blue-600 tracking-wider font-mono">
-                    {numbers.find(n => n.value === selectedNumber)?.visual}
+                  <div className="py-2 sm:py-4">
+                    {renderVisualDots(numbers.find(n => n.value === selectedNumber)?.visual || '', true)}
                   </div>
                 </div>
 
                 {/* Lecture du nombre */}
-                <div className="bg-yellow-50 rounded-lg p-6">
-                  <h4 className="text-lg font-bold mb-3 text-yellow-800">
+                <div className="bg-yellow-50 rounded-lg p-3 sm:p-6">
+                  <h4 className="text-base sm:text-lg font-bold mb-2 sm:mb-3 text-yellow-800">
                     🗣️ Comment on le dit :
                   </h4>
-                  <p className="text-3xl font-bold text-yellow-900 mb-4">
+                  <p className="text-2xl sm:text-3xl font-bold text-yellow-900 mb-3 sm:mb-4">
                     {numbers.find(n => n.value === selectedNumber)?.reading}
                   </p>
                   <button
                     onClick={() => speakNumber(numbers.find(n => n.value === selectedNumber)?.reading || '')}
-                    className="bg-yellow-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-yellow-600 transition-colors text-lg"
+                    className="bg-yellow-500 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-bold hover:bg-yellow-600 transition-colors text-base sm:text-lg"
                   >
-                    <Volume2 className="inline w-5 h-5 mr-2" />
+                    <Volume2 className="inline w-4 h-4 sm:w-5 sm:h-5 mr-2" />
                     Écouter
                   </button>
                 </div>
               </div>
 
               {/* Jeu de comparaison rapide */}
-              <div className="bg-blue-50 rounded-lg p-6">
-                <h4 className="text-lg font-bold mb-4 text-blue-800">
+              <div className="bg-blue-50 rounded-lg p-3 sm:p-6">
+                <h4 className="text-base sm:text-lg font-bold mb-2 sm:mb-4 text-blue-800">
                   🎮 Mini-jeu : Compare avec tes doigts !
                 </h4>
-                <p className="text-lg text-blue-700 mb-4">
+                <p className="text-sm sm:text-lg text-blue-700 mb-2 sm:mb-4">
                   Lève {selectedNumber} doigt{parseInt(selectedNumber) > 1 ? 's' : ''} et regarde si c'est pareil !
                 </p>
-                <div className="text-6xl text-blue-800">
+                <div className="text-3xl sm:text-6xl text-blue-800">
                   {parseInt(selectedNumber) <= 10 ? '✋'.repeat(Math.floor(parseInt(selectedNumber) / 5)) + '🤚'.slice(0, parseInt(selectedNumber) % 5) : '✋✋ + ' + (parseInt(selectedNumber) - 10) + ' doigts'}
                 </div>
               </div>
             </div>
 
             {/* Conseils pour les petits */}
-            <div className="bg-gradient-to-r from-pink-400 to-orange-400 rounded-xl p-6 text-white">
-              <h3 className="text-xl font-bold mb-3">💡 Trucs pour bien reconnaître les nombres</h3>
-              <ul className="space-y-2 text-lg">
+            <div className="bg-gradient-to-r from-pink-400 to-orange-400 rounded-xl p-4 sm:p-6 text-white">
+              <h3 className="text-lg sm:text-xl font-bold mb-2 sm:mb-3">💡 Trucs pour bien reconnaître les nombres</h3>
+              <ul className="space-y-1 sm:space-y-2 text-sm sm:text-lg">
                 <li>• Utilise tes doigts pour compter jusqu'à 10</li>
                 <li>• Les nombres jusqu'à 20, c'est 10 + encore un peu</li>
                 <li>• Regarde bien la forme du chiffre</li>
@@ -282,59 +310,68 @@ export default function ReconnaissanceNombresCP() {
           </div>
         ) : (
           /* EXERCICES */
-          <div className="space-y-8">
+          <div className="space-y-4 sm:space-y-8">
             {/* Header exercices */}
-            <div className="bg-white rounded-xl p-6 shadow-lg">
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-2xl font-bold text-gray-900">
+            <div className="bg-white rounded-xl p-4 sm:p-6 shadow-lg">
+              <div className="flex justify-between items-center mb-3 sm:mb-4">
+                <h2 className="text-xl sm:text-2xl font-bold text-gray-900">
                   ✏️ Exercice {currentExercise + 1} sur {exercises.length}
                 </h2>
                 <button
                   onClick={resetAll}
-                  className="bg-gray-500 text-white px-4 py-2 rounded-lg font-bold hover:bg-gray-600 transition-colors"
+                  className="bg-gray-500 text-white px-3 sm:px-4 py-1 sm:py-2 rounded-lg font-bold hover:bg-gray-600 transition-colors text-sm sm:text-base"
                 >
-                  <RotateCcw className="inline w-4 h-4 mr-2" />
+                  <RotateCcw className="inline w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                   Recommencer
                 </button>
               </div>
               
               {/* Barre de progression */}
-              <div className="w-full bg-gray-200 rounded-full h-4 mb-3">
+              <div className="w-full bg-gray-200 rounded-full h-3 sm:h-4 mb-2 sm:mb-3">
                 <div 
-                  className="bg-orange-500 h-4 rounded-full transition-all duration-500"
+                  className="bg-orange-500 h-3 sm:h-4 rounded-full transition-all duration-500"
                   style={{ width: `${((currentExercise + 1) / exercises.length) * 100}%` }}
                 ></div>
               </div>
               
               {/* Score sous la barre */}
               <div className="text-center">
-                <div className="text-xl font-bold text-orange-600">
+                <div className="text-lg sm:text-xl font-bold text-orange-600">
                   Score : {score}/{exercises.length}
                 </div>
               </div>
             </div>
 
             {/* Question */}
-            <div className="bg-white rounded-xl p-8 shadow-lg text-center">
-              <h3 className="text-2xl font-bold mb-8 text-gray-900">
+            <div className="bg-white rounded-xl p-4 sm:p-8 shadow-lg text-center">
+              <h3 className="text-lg sm:text-2xl font-bold mb-4 sm:mb-8 text-gray-900">
                 {exercises[currentExercise].question}
               </h3>
               
               {/* Affichage de la question (nombre ou objets) */}
-              <div className="bg-white border-2 border-orange-200 rounded-lg p-8 mb-8">
-                <div className="text-6xl mb-6 text-gray-800">
-                  {exercises[currentExercise].visual}
+              <div className="bg-white border-2 border-orange-200 rounded-lg p-2 sm:p-4 md:p-8 mb-4 sm:mb-8">
+                <div className="py-2 sm:py-4">
+                  {exercises[currentExercise].visual.includes('🔵') ? 
+                    renderVisualDots(exercises[currentExercise].visual, false) :
+                    <div className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-gray-800 flex flex-wrap justify-center gap-1 sm:gap-2 max-w-xs sm:max-w-md mx-auto leading-tight">
+                      {exercises[currentExercise].visual.split('').map((char, index) => (
+                        <span key={index} className="inline-block">
+                          {char}
+                        </span>
+                      ))}
+                    </div>
+                  }
                 </div>
               </div>
               
               {/* Choix multiples avec gros boutons */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-md mx-auto mb-8">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4 max-w-md mx-auto mb-4 sm:mb-8">
                 {exercises[currentExercise].choices.map((choice) => (
                   <button
                     key={choice}
                     onClick={() => handleAnswerClick(choice)}
                     disabled={isCorrect !== null}
-                    className={`p-6 rounded-lg font-bold text-3xl transition-all ${
+                    className={`p-4 sm:p-6 rounded-lg font-bold text-2xl sm:text-3xl transition-all ${
                       userAnswer === choice
                         ? isCorrect === true
                           ? 'bg-green-500 text-white'
