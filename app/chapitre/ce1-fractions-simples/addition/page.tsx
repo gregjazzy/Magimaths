@@ -183,12 +183,12 @@ export default function AdditionFractionsPage() {
     const centerY = 50;
     
     const svgParts = [];
-    const anglePerPart = 360 / denominator;
-    
-    for (let i = 0; i < denominator; i++) {
-      const startAngle = i * anglePerPart - 90; // Commence en haut (-90°)
-      const endAngle = (i + 1) * anglePerPart - 90;
+      const anglePerPart = 360 / denominator;
       
+      for (let i = 0; i < denominator; i++) {
+      const startAngle = i * anglePerPart - 90; // Commence en haut (-90°)
+        const endAngle = (i + 1) * anglePerPart - 90;
+        
       const startAngleRad = (startAngle * Math.PI) / 180;
       const endAngleRad = (endAngle * Math.PI) / 180;
       
@@ -196,8 +196,8 @@ export default function AdditionFractionsPage() {
       const y1 = centerY + radius * Math.sin(startAngleRad);
       const x2 = centerX + radius * Math.cos(endAngleRad);
       const y2 = centerY + radius * Math.sin(endAngleRad);
-      
-      const largeArcFlag = anglePerPart > 180 ? 1 : 0;
+        
+        const largeArcFlag = anglePerPart > 180 ? 1 : 0;
       
       const pathData = [
         `M ${centerX} ${centerY}`, // Move to center
@@ -208,20 +208,20 @@ export default function AdditionFractionsPage() {
       
       const fillColor = i < numerator ? color : '#f3f4f6';
       const strokeColor = '#6b7280';
-      
-      svgParts.push(
-        <path
-          key={i}
-          d={pathData}
+        
+        svgParts.push(
+          <path
+            key={i}
+            d={pathData}
           fill={fillColor}
           stroke={strokeColor}
           strokeWidth="2"
-        />
-      );
-    }
-    
-    return svgParts;
-  };
+          />
+        );
+      }
+      
+      return svgParts;
+    };
 
   const renderFractionVisualExample = (fraction1: string, fraction2: string, result?: string) => {
     return (
@@ -262,19 +262,19 @@ export default function AdditionFractionsPage() {
 
   const checkAnswer = () => {
     const userAnswer = `${numerator}/${denominator}`;
-    const correct = userAnswer === exercises[currentExercise].correctAnswer;
-    setIsCorrect(correct);
-    
-    if (correct && !answeredCorrectly.has(currentExercise)) {
-      setScore(prevScore => prevScore + 1);
-      setAnsweredCorrectly(prev => {
-        const newSet = new Set(prev);
-        newSet.add(currentExercise);
-        return newSet;
-      });
-    }
+      const correct = userAnswer === exercises[currentExercise].correctAnswer;
+      setIsCorrect(correct);
+      
+      if (correct && !answeredCorrectly.has(currentExercise)) {
+        setScore(prevScore => prevScore + 1);
+        setAnsweredCorrectly(prev => {
+          const newSet = new Set(prev);
+          newSet.add(currentExercise);
+          return newSet;
+        });
+      }
 
-          if (correct) {
+      if (correct) {
         setTimeout(() => {
           if (currentExercise + 1 < exercises.length) {
             setCurrentExercise(Math.min(currentExercise + 1, exercises.length - 1));
@@ -344,8 +344,8 @@ export default function AdditionFractionsPage() {
             <p className="text-base sm:text-lg text-gray-600">
               Apprends à additionner des fractions qui ont le même dénominateur !
             </p>
-          </div>
-        </div>
+              </div>
+            </div>
 
         {/* Onglets Cours/Exercices */}
         <div className="flex justify-center mb-6 sm:mb-8">
@@ -382,7 +382,7 @@ export default function AdditionFractionsPage() {
                 🎯 Règle d'or pour additionner des fractions
               </h2>
               <div className="bg-blue-50 rounded-xl p-6 border-2 border-blue-200">
-                <div className="text-center">
+              <div className="text-center">
                   <div className="text-xl font-bold text-blue-800 mb-4">
                     Pour additionner deux fractions avec le même dénominateur :
                   </div>
@@ -422,7 +422,7 @@ export default function AdditionFractionsPage() {
                   </div>
                 ))}
               </div>
-            </div>
+                </div>
 
             {/* Conseils pratiques */}
             <div className="bg-gradient-to-r from-yellow-400 to-orange-400 rounded-xl p-6 text-white">
@@ -483,12 +483,12 @@ export default function AdditionFractionsPage() {
                   <div className="text-2xl mb-2">2️⃣</div>
                   <h3 className="font-bold text-blue-800 mb-2">Additionner</h3>
                   <p className="text-blue-700 text-sm">Additionne les numérateurs</p>
-                </div>
+            </div>
                 <div className="bg-green-50 rounded-lg p-4 text-center">
                   <div className="text-2xl mb-2">3️⃣</div>
                   <h3 className="font-bold text-green-800 mb-2">Conserver</h3>
                   <p className="text-green-700 text-sm">Garde le même dénominateur</p>
-                </div>
+                  </div>
                 <div className="bg-purple-50 rounded-lg p-4 text-center">
                   <div className="text-2xl mb-2">4️⃣</div>
                   <h3 className="font-bold text-purple-800 mb-2">Vérifier</h3>
@@ -640,20 +640,20 @@ export default function AdditionFractionsPage() {
                  <div className="flex flex-col sm:flex-row justify-center items-center gap-2 sm:gap-4 mt-4">
                    {/* Bouton indice */}
                    {!showHint && isCorrect === null && (
-                     <button
+              <button
                        onClick={() => setShowHint(true)}
                        className="bg-yellow-500 text-white px-4 py-3 sm:px-6 sm:py-3 rounded-lg font-bold hover:bg-yellow-600 transition-colors w-full sm:w-auto touch-manipulation min-h-[44px]"
-                     >
-                       <Lightbulb className="inline w-4 h-4 mr-2" />
+              >
+                <Lightbulb className="inline w-4 h-4 mr-2" />
                        Aide
-                     </button>
+              </button>
                    )}
-                   <button
-                     onClick={resetExercise}
+              <button
+                onClick={resetExercise}
                      className="bg-gray-500 text-white px-4 py-3 sm:px-6 sm:py-3 rounded-lg font-bold hover:bg-gray-600 transition-colors w-full sm:w-auto touch-manipulation min-h-[44px]"
-                   >
-                     Effacer
-                   </button>
+              >
+                Effacer
+              </button>
                    <button
                      onClick={() => setCurrentExercise(Math.max(0, currentExercise - 1))}
                      disabled={currentExercise === 0}
@@ -679,31 +679,31 @@ export default function AdditionFractionsPage() {
                          ? 'Suivant →' 
                          : 'Terminer ✨'}
                    </button>
-                 </div>
+                </div>
               </div>
 
               {/* Résultat */}
-              {isCorrect !== null && (
+            {isCorrect !== null && (
                 <div className={`p-4 rounded-lg ${
                   isCorrect ? 'bg-green-600 text-white' : 'bg-red-600 text-white'
-                }`}>
-                  <div className="flex items-center justify-center space-x-2">
-                    {isCorrect ? (
-                      <>
-                        <CheckCircle className="w-5 h-5" />
-                        <span className="font-bold">Fantastique ! Tu maîtrises l'addition !</span>
-                      </>
-                    ) : (
-                      <>
-                        <XCircle className="w-5 h-5" />
-                        <span className="font-bold">
-                          Pas tout à fait ! La bonne réponse est : {exercises[currentExercise].correctAnswer}
-                        </span>
-                      </>
-                    )}
-                  </div>
+              }`}>
+                <div className="flex items-center justify-center space-x-2">
+                  {isCorrect ? (
+                    <>
+                      <CheckCircle className="w-5 h-5" />
+                      <span className="font-bold">Fantastique ! Tu maîtrises l'addition !</span>
+                    </>
+                  ) : (
+                    <>
+                      <XCircle className="w-5 h-5" />
+                      <span className="font-bold">
+                        Pas tout à fait ! La bonne réponse est : {exercises[currentExercise].correctAnswer}
+                      </span>
+                    </>
+                  )}
                 </div>
-              )}
+              </div>
+            )}
             </div>
 
 
@@ -754,15 +754,15 @@ export default function AdditionFractionsPage() {
                      <div className="bg-yellow-100 rounded-lg p-4 mb-6">
                        <p className="text-lg font-bold text-yellow-800">
                          🌟 {Math.round(15 * (finalScore / exercises.length))} XP gagnés !
-                       </p>
-                     </div>
+                </p>
+              </div>
                     <div className="flex flex-col sm:flex-row gap-3 sm:gap-3 justify-center">
-                      <button
-                        onClick={() => setShowCompletionModal(false)}
+                <button
+                  onClick={() => setShowCompletionModal(false)}
                         className="bg-gray-500 text-white px-4 py-3 sm:px-6 sm:py-3 rounded-xl font-bold hover:bg-gray-600 transition-colors touch-manipulation min-h-[44px] w-full sm:w-auto"
-                      >
-                        Fermer
-                      </button>
+                >
+                  Fermer
+                </button>
                       <button
                         onClick={() => {
                           setShowCompletionModal(false);
@@ -773,7 +773,7 @@ export default function AdditionFractionsPage() {
                         Recommencer
                       </button>
                     </div>
-                  </div>
+              </div>
                 );
               })()}
             </div>

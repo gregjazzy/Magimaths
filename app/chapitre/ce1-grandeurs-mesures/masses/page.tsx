@@ -4,11 +4,11 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, CheckCircle, XCircle, RotateCcw, Target, Scale, Eye, Play, Trophy } from 'lucide-react';
 
-// Composant Balance Interactive CSS
+// Composant Balance Interactive
 const InteractiveScale = () => {
   const [leftPlatform, setLeftPlatform] = useState<Array<{id: string, name: string, mass: number, color: string, type: 'object' | 'weight'}>>([]);
   const [rightPlatform, setRightPlatform] = useState<Array<{id: string, name: string, mass: number, color: string, type: 'object' | 'weight'}>>([]);
-  const [selectedItem, setSelectedItem] = useState<{id: string, name: string, mass: number, color: string, type: 'object' | 'weight'} | null>(null);
+  const [draggedItem, setDraggedItem] = useState<{id: string, name: string, mass: number, color: string, type: 'object' | 'weight'} | null>(null);
   const [isBalanced, setIsBalanced] = useState(false);
   const [balanceAngle, setBalanceAngle] = useState(0);
 
@@ -22,13 +22,11 @@ const InteractiveScale = () => {
 
   // Poids de balance réalistes
   const availableWeights = [
-    { id: 'weight-10g', name: '10g', mass: 10, color: 'bg-gradient-to-b from-gray-200 to-gray-400 border-gray-500', type: 'weight' as const },
     { id: 'weight-20g', name: '20g', mass: 20, color: 'bg-gradient-to-b from-gray-300 to-gray-500 border-gray-600', type: 'weight' as const },
     { id: 'weight-50g', name: '50g', mass: 50, color: 'bg-gradient-to-b from-yellow-200 to-yellow-400 border-yellow-600', type: 'weight' as const },
     { id: 'weight-100g', name: '100g', mass: 100, color: 'bg-gradient-to-b from-orange-300 to-orange-500 border-orange-600', type: 'weight' as const },
     { id: 'weight-200g', name: '200g', mass: 200, color: 'bg-gradient-to-b from-red-300 to-red-500 border-red-600', type: 'weight' as const },
-    { id: 'weight-500g', name: '500g', mass: 500, color: 'bg-gradient-to-b from-purple-300 to-purple-500 border-purple-600', type: 'weight' as const },
-    { id: 'weight-1000g', name: '1kg', mass: 1000, color: 'bg-gradient-to-b from-indigo-400 to-indigo-600 border-indigo-700', type: 'weight' as const }
+    { id: 'weight-500g', name: '500g', mass: 500, color: 'bg-gradient-to-b from-purple-300 to-purple-500 border-purple-600', type: 'weight' as const }
   ];
 
   // Calculer les masses totales
@@ -38,26 +36,37 @@ const InteractiveScale = () => {
   // Mettre à jour l'équilibre et l'angle
   useEffect(() => {
     const difference = leftMass - rightMass;
-    const maxAngle = 20;
-    // CORRECTION : Inverser la logique pour que le côté lourd descende
-    const angle = Math.max(-maxAngle, Math.min(maxAngle, -difference / 100));
+    const maxAngle = 12;
+    const angle = Math.max(-maxAngle, Math.min(maxAngle, difference / 80));
     setBalanceAngle(angle);
     setIsBalanced(Math.abs(difference) <= 10);
   }, [leftMass, rightMass]);
 
-  const addToLeft = () => {
-    if (selectedItem) {
-      const newItem = { ...selectedItem, id: `${selectedItem.id}-${Date.now()}` };
+  const handleDragStart = (e: React.DragEvent, item: any) => {
+    setDraggedItem(item);
+    e.dataTransfer.effectAllowed = 'move';
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+  };
+
+  const handleDropOnLeft = (e: React.DragEvent) => {
+    e.preventDefault();
+    if (draggedItem) {
+      const newItem = { ...draggedItem, id: `${draggedItem.id}-${Date.now()}` };
       setLeftPlatform(prev => [...prev, newItem]);
-      setSelectedItem(null);
+      setDraggedItem(null);
     }
   };
 
-  const addToRight = () => {
-    if (selectedItem) {
-      const newItem = { ...selectedItem, id: `${selectedItem.id}-${Date.now()}` };
+  const handleDropOnRight = (e: React.DragEvent) => {
+    e.preventDefault();
+    if (draggedItem) {
+      const newItem = { ...draggedItem, id: `${draggedItem.id}-${Date.now()}` };
       setRightPlatform(prev => [...prev, newItem]);
-      setSelectedItem(null);
+      setDraggedItem(null);
     }
   };
 
@@ -72,360 +81,259 @@ const InteractiveScale = () => {
   const resetBalance = () => {
     setLeftPlatform([]);
     setRightPlatform([]);
-    setSelectedItem(null);
     setIsBalanced(false);
     setBalanceAngle(0);
   };
 
-  // Fonction pour formater les masses
-  const formatMass = (mass: number) => {
-    if (mass >= 1000) {
-      const kg = mass / 1000;
-      if (kg % 1 === 0) {
-        return `${kg}kg`;
-      } else {
-        return `${kg}kg`;
-      }
-    }
-    return `${mass}g`;
-  };
-
-  // Rendu d'un poids 3D CSS - Version mobile optimisée et plus petite
-  const renderWeight3D = (weight: any, isOnPlatform = false) => {
-    const baseSize = isOnPlatform ? 'w-4 h-6 sm:w-5 sm:h-8' : 'w-6 h-8 sm:w-8 sm:h-12';
-    return (
-      <div className={`flex flex-col items-center ${isOnPlatform ? 'scale-75 sm:scale-75' : ''}`}>
-        {/* Poignée */}
-        <div className="w-1.5 h-1 sm:w-2 sm:h-1 bg-gray-400 rounded-full border border-gray-600 mb-0.5"></div>
-        {/* Corps principal du poids */}
-        <div className={`${weight.color} ${baseSize} rounded-lg border-2 shadow-lg relative overflow-hidden`}>
-          {/* Effet de relief */}
-          <div className="absolute inset-1 bg-gradient-to-br from-white to-transparent opacity-30 rounded"></div>
-          <div className="absolute bottom-0 left-0 right-0 h-1 bg-black opacity-20"></div>
-        </div>
-        {/* Base */}
-        <div className={`${weight.color} w-6 h-1 sm:w-8 sm:h-1 rounded-b-lg border-2 border-t-0 shadow-md ${isOnPlatform ? 'w-4 sm:w-5' : ''}`}></div>
-        {isOnPlatform && (
-          <div className="text-xs font-bold text-gray-700 mt-0.5">{weight.name}</div>
-        )}
+  // Rendu d'un poids réaliste
+  const renderWeight = (weight: any) => (
+    <div className="flex flex-col items-center">
+      <div className={`${weight.color} w-6 h-4 rounded-t-sm border-2 shadow-lg relative`}>
+        <div className="w-2 h-1 bg-gray-400 rounded-full absolute -top-0.5 left-1/2 transform -translate-x-1/2"></div>
       </div>
-    );
-  };
+      <div className={`${weight.color} w-7 h-6 border-2 shadow-md`}></div>
+      <div className={`${weight.color} w-8 h-2 rounded-b border-2 shadow-sm`}></div>
+    </div>
+  );
 
-  // Rendu d'un objet 3D CSS - Version mobile optimisée
-  const renderObject3D = (item: any, isOnPlatform = false) => {
-    const scale = isOnPlatform ? 'scale-75 sm:scale-75' : '';
-    
-    switch (item.id.split('-')[0]) {
-      case 'apple':
-        return (
-          <div className={`flex flex-col items-center ${scale}`}>
-            <div className="w-6 h-8 sm:w-8 sm:h-10 bg-gradient-to-br from-red-300 to-red-600 rounded-full border-2 border-red-700 shadow-lg relative">
-              <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1 w-1 h-2 sm:w-2 sm:h-3 bg-green-500 rounded-full"></div>
-              <div className="absolute inset-1 bg-gradient-to-br from-red-200 to-transparent opacity-50 rounded-full"></div>
-            </div>
-            {isOnPlatform && <div className="text-xs font-bold text-gray-700 mt-1">🍎</div>}
-          </div>
-        );
-      case 'book':
-        return (
-          <div className={`flex flex-col items-center ${scale}`}>
-            <div className="w-8 h-6 sm:w-12 sm:h-8 bg-gradient-to-br from-blue-300 to-blue-600 border-2 border-blue-700 shadow-lg relative">
-              <div className="absolute inset-1 bg-gradient-to-br from-blue-200 to-transparent opacity-50"></div>
-              <div className="absolute left-1 top-1 bottom-1 w-0.5 bg-blue-800"></div>
-            </div>
-            {isOnPlatform && <div className="text-xs font-bold text-gray-700 mt-1">📚</div>}
-          </div>
-        );
-      case 'pen':
-        return (
-          <div className={`flex flex-col items-center ${scale}`}>
-            <div className="w-1 h-8 sm:w-1 sm:h-12 bg-gradient-to-b from-gray-300 to-gray-600 rounded-full border border-gray-700 shadow-lg relative">
-              <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-1 h-1 sm:w-2 sm:h-2 bg-black rounded-full"></div>
-              <div className="absolute bottom-1 left-1/2 transform -translate-x-1/2 w-2 h-2 sm:w-3 sm:h-4 bg-blue-500 rounded"></div>
-            </div>
-            {isOnPlatform && <div className="text-xs font-bold text-gray-700 mt-1">✏️</div>}
-          </div>
-        );
-      case 'phone':
-        return (
-          <div className={`flex flex-col items-center ${scale}`}>
-            <div className="w-4 h-8 sm:w-6 sm:h-12 bg-gradient-to-br from-green-300 to-green-600 rounded-lg border-2 border-green-700 shadow-lg relative">
-              <div className="absolute inset-1 bg-gradient-to-br from-green-200 to-transparent opacity-50 rounded"></div>
-              <div className="absolute top-1 left-1/2 transform -translate-x-1/2 w-2 h-0.5 sm:w-3 sm:h-1 bg-black rounded-full"></div>
-              <div className="absolute bottom-1 left-1/2 transform -translate-x-1/2 w-2 h-2 sm:w-3 sm:h-3 bg-gray-800 rounded"></div>
-            </div>
-            {isOnPlatform && <div className="text-xs font-bold text-gray-700 mt-1">📱</div>}
-          </div>
-        );
-      default:
-        return <div className="w-6 h-6 sm:w-8 sm:h-8 bg-purple-400 rounded"></div>;
-    }
-  };
+  // Rendu d'un objet
+  const renderObject = (item: any) => (
+    <div className="text-base">
+      {item.name.split(' ')[0]}
+    </div>
+  );
 
   return (
-    <div className="bg-gradient-to-br from-green-50 to-emerald-100 rounded-xl p-3 sm:p-6 shadow-lg relative">
-      <h3 className="text-lg sm:text-2xl font-bold text-center mb-4 sm:mb-6 text-gray-900">
-        ⚖️ Balance Interactive Réaliste
+    <div className="bg-gradient-to-br from-green-50 to-emerald-100 rounded-xl p-6 shadow-lg relative">
+      <h3 className="text-2xl font-bold text-center mb-6 text-gray-900">
+        ⚖️ Balance Interactive
       </h3>
       
-      {/* Sélection d'objets et poids - Mobile First */}
-      <div className="mb-6 sm:mb-8">
-        <div className="space-y-6 lg:space-y-0 lg:grid lg:grid-cols-2 lg:gap-8">
+      {/* Objets et poids disponibles */}
+      <div className="mb-12">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <div>
-            <h4 className="font-bold text-green-800 mb-3 sm:mb-4 text-center text-sm sm:text-base">🎯 Objets à peser</h4>
-            <div className="grid grid-cols-2 gap-2 sm:gap-3">
+            <h4 className="font-bold text-green-800 mb-4 text-center">🎯 Objets à peser</h4>
+            <div className="grid grid-cols-2 gap-3">
               {availableObjects.map((item) => (
-                <button
+                <div
                   key={item.id}
-                  onClick={() => setSelectedItem(item)}
-                  className={`${item.color} p-2 sm:p-4 rounded-lg border-2 cursor-pointer hover:scale-105 active:scale-95 transition-transform text-center font-medium shadow-md min-h-[60px] sm:min-h-[80px] touch-manipulation ${
-                    selectedItem?.id === item.id ? 'ring-2 ring-green-400' : ''
-                  }`}
+                  draggable
+                  onDragStart={(e) => handleDragStart(e, item)}
+                  className={`${item.color} p-4 rounded-lg border-2 cursor-grab hover:scale-105 transition-transform text-center font-medium shadow-md`}
                 >
-                  <div className="mb-1 sm:mb-2 flex justify-center">
-                    {renderObject3D(item)}
-                  </div>
-                  <div className="text-xs sm:text-sm text-gray-700">{item.name.split(' ').slice(1).join(' ')}</div>
-                  <div className="text-xs text-gray-600 font-bold">{formatMass(item.mass)}</div>
-                </button>
+                  <div className="text-2xl mb-1">{item.name.split(' ')[0]}</div>
+                  <div className="text-sm text-gray-700">{item.name.split(' ').slice(1).join(' ')}</div>
+                  <div className="text-xs text-gray-600 font-bold">{item.mass}g</div>
+                </div>
               ))}
             </div>
           </div>
           
           <div>
-            <h4 className="font-bold text-green-800 mb-3 sm:mb-4 text-center text-sm sm:text-base">⚖️ Poids de balance</h4>
-            <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 sm:gap-3">
+            <h4 className="font-bold text-green-800 mb-4 text-center">⚖️ Poids de balance</h4>
+            <div className="grid grid-cols-2 gap-3">
               {availableWeights.map((weight) => (
-                <button
+                <div
                   key={weight.id}
-                  onClick={() => setSelectedItem(weight)}
-                  className={`cursor-pointer hover:scale-105 active:scale-95 transition-transform text-center p-2 sm:p-3 bg-white rounded-lg shadow-md border border-gray-200 min-h-[60px] sm:min-h-[80px] touch-manipulation ${
-                    selectedItem?.id === weight.id ? 'ring-2 ring-green-400' : ''
-                  }`}
+                  draggable
+                  onDragStart={(e) => handleDragStart(e, weight)}
+                  className="cursor-grab hover:scale-105 transition-transform text-center p-3 bg-white rounded-lg shadow-md border border-gray-200"
                 >
-                  <div className="mb-1 sm:mb-2 flex justify-center">
-                    {renderWeight3D(weight)}
-                  </div>
-                  <div className="text-xs sm:text-sm font-bold text-gray-800">{weight.name}</div>
-                </button>
+                  {renderWeight(weight)}
+                  <div className="text-sm font-bold text-gray-800 mt-2">{weight.name}</div>
+                </div>
               ))}
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Balance vue de face */}
+      <div className="relative mb-12 bg-gradient-to-b from-blue-50 to-blue-100 rounded-xl p-8">
         
-        {/* Boutons d'ajout - Mobile optimisés */}
-        {selectedItem && (
-          <div className="mt-4 sm:mt-6 text-center">
-            <div className="bg-white rounded-lg p-3 sm:p-4 mb-4 border-2 border-green-400">
-              <p className="font-bold text-green-800 mb-2 text-sm sm:text-base">Objet sélectionné : {selectedItem.name}</p>
-              <div className="flex flex-col sm:flex-row justify-center gap-2 sm:gap-4">
-                <button
-                  onClick={addToLeft}
-                  className="bg-blue-500 text-white px-4 py-3 sm:px-6 sm:py-3 rounded-lg font-bold hover:bg-blue-600 active:scale-95 transition-all min-h-[44px] touch-manipulation text-sm sm:text-base"
-                >
-                  ➕ Ajouter à gauche
-                </button>
-                <button
-                  onClick={addToRight}
-                  className="bg-purple-500 text-white px-4 py-3 sm:px-6 sm:py-3 rounded-lg font-bold hover:bg-purple-600 active:scale-95 transition-all min-h-[44px] touch-manipulation text-sm sm:text-base"
-                >
-                  ➕ Ajouter à droite
-                </button>
+        {/* Support vertical central */}
+        <div className="flex justify-center">
+          <div className="relative">
+            {/* Base de la balance */}
+            <div className="w-24 h-6 bg-gradient-to-b from-gray-600 to-gray-800 rounded-lg shadow-lg mb-2 mx-auto"></div>
+            
+            {/* Pied vertical */}
+            <div className="w-3 h-32 bg-gradient-to-r from-gray-500 to-gray-700 rounded-full shadow-lg mx-auto relative">
+              {/* Point d'appui */}
+              <div className="absolute top-24 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-red-500 rounded-full border border-red-700"></div>
+            </div>
+            
+            {/* Fléau horizontal qui pivote */}
+            <div 
+              className="absolute top-24 left-1/2 transform -translate-x-1/2 -translate-y-1/2 origin-center transition-transform duration-700"
+              style={{ transform: `translate(-50%, -50%) rotate(${balanceAngle}deg)` }}
+            >
+              <div className="w-80 h-2 bg-gradient-to-r from-gray-400 via-gray-500 to-gray-400 rounded-full shadow-lg relative">
+                {/* Graduations sur le fléau */}
+                <div className="absolute top-0 left-1/4 w-0.5 h-1 bg-gray-700"></div>
+                <div className="absolute top-0 left-1/2 w-0.5 h-2 bg-red-600"></div>
+                <div className="absolute top-0 right-1/4 w-0.5 h-1 bg-gray-700"></div>
               </div>
             </div>
+            
+            {/* Chaînes de suspension gauche */}
+            <div 
+              className="absolute top-24 left-12 origin-top transition-transform duration-700"
+              style={{ transform: `rotate(${balanceAngle}deg)` }}
+            >
+              <div className="w-0.5 h-16 bg-gray-600 shadow-sm"></div>
+              <div className="w-0.5 h-16 bg-gray-600 shadow-sm ml-1"></div>
+              <div className="w-0.5 h-16 bg-gray-600 shadow-sm ml-1"></div>
+            </div>
+            
+            {/* Chaînes de suspension droite */}
+            <div 
+              className="absolute top-24 right-12 origin-top transition-transform duration-700"
+              style={{ transform: `rotate(${-balanceAngle}deg)` }}
+            >
+              <div className="w-0.5 h-16 bg-gray-600 shadow-sm"></div>
+              <div className="w-0.5 h-16 bg-gray-600 shadow-sm ml-1"></div>
+              <div className="w-0.5 h-16 bg-gray-600 shadow-sm ml-1"></div>
+            </div>
+            
+            {/* Plateau gauche */}
+            <div 
+              className="absolute top-40 left-8 transition-transform duration-700"
+              style={{ transform: `translateY(${balanceAngle * 4}px)` }}
+            >
+              <div
+                onDragOver={handleDragOver}
+                onDrop={handleDropOnLeft}
+                className="w-24 h-24 bg-gradient-to-br from-gray-100 to-gray-300 border-3 border-gray-400 rounded-full flex flex-wrap items-center justify-center p-2 shadow-lg relative overflow-hidden"
+              >
+                {/* Effet de profondeur du plateau */}
+                <div className="absolute inset-1 border border-gray-300 rounded-full"></div>
+                <div className="absolute inset-2 bg-gradient-to-br from-white to-gray-100 rounded-full opacity-50"></div>
+                
+                {leftPlatform.map((item) => (
+                  <div
+                    key={item.id}
+                    onClick={() => removeFromLeft(item.id)}
+                    className={`${item.color} text-xs p-1 m-0.5 rounded cursor-pointer hover:opacity-75 border shadow-sm transition-opacity z-10`}
+                    title="Cliquer pour enlever"
+                  >
+                    {item.type === 'weight' ? (
+                      <div className="scale-50">
+                        {renderWeight(item)}
+                      </div>
+                    ) : (
+                      <div className="text-sm">{item.name.split(' ')[0]}</div>
+                    )}
+                  </div>
+                ))}
+              </div>
+              
+              {/* Support du plateau gauche */}
+              <div className="flex justify-center mt-1">
+                <div className="w-1 h-2 bg-gray-600"></div>
+                <div className="w-1 h-2 bg-gray-600 mx-1"></div>
+                <div className="w-1 h-2 bg-gray-600"></div>
+              </div>
+            </div>
+            
+            {/* Plateau droit */}
+            <div 
+              className="absolute top-40 right-8 transition-transform duration-700"
+              style={{ transform: `translateY(${-balanceAngle * 4}px)` }}
+            >
+              <div
+                onDragOver={handleDragOver}
+                onDrop={handleDropOnRight}
+                className="w-24 h-24 bg-gradient-to-br from-gray-100 to-gray-300 border-3 border-gray-400 rounded-full flex flex-wrap items-center justify-center p-2 shadow-lg relative overflow-hidden"
+              >
+                {/* Effet de profondeur du plateau */}
+                <div className="absolute inset-1 border border-gray-300 rounded-full"></div>
+                <div className="absolute inset-2 bg-gradient-to-br from-white to-gray-100 rounded-full opacity-50"></div>
+                
+                {rightPlatform.map((item) => (
+                  <div
+                    key={item.id}
+                    onClick={() => removeFromRight(item.id)}
+                    className={`${item.color} text-xs p-1 m-0.5 rounded cursor-pointer hover:opacity-75 border shadow-sm transition-opacity z-10`}
+                    title="Cliquer pour enlever"
+                  >
+                    {item.type === 'weight' ? (
+                      <div className="scale-50">
+                        {renderWeight(item)}
+                      </div>
+                    ) : (
+                      <div className="text-sm">{item.name.split(' ')[0]}</div>
+                    )}
+                  </div>
+                ))}
+              </div>
+              
+              {/* Support du plateau droit */}
+              <div className="flex justify-center mt-1">
+                <div className="w-1 h-2 bg-gray-600"></div>
+                <div className="w-1 h-2 bg-gray-600 mx-1"></div>
+                <div className="w-1 h-2 bg-gray-600"></div>
+              </div>
+            </div>
+            
           </div>
-        )}
-      </div>
-
-      {/* Balance Perspective 3D CSS - Mobile Adaptée */}
-      <div className="relative mb-8 sm:mb-12 bg-gradient-to-b from-sky-50 to-sky-150 rounded-xl p-4 sm:p-8 overflow-hidden" style={{ perspective: '800px' }}>
-        
-        {/* Base de la balance */}
-        <div className="flex justify-center mb-1">
-          <div className="w-20 h-4 sm:w-32 sm:h-8 bg-gradient-to-b from-gray-600 to-gray-800 rounded-lg shadow-xl" style={{ transform: 'rotateX(45deg)' }}></div>
         </div>
         
-        {/* Support vertical - Collé à la base */}
-        <div className="flex justify-center mb-2 sm:mb-4">
-          <div className="w-3 h-16 sm:w-6 sm:h-24 bg-gradient-to-r from-gray-500 to-gray-700 rounded-full shadow-lg relative">
-            {/* Point d'appui central - Plus haut sur le support */}
-            <div className="absolute top-12 sm:top-18 left-1/2 transform -translate-x-1/2 w-2 h-2 sm:w-4 sm:h-4 bg-red-500 rounded-full border border-red-700 sm:border-2 shadow-md"></div>
-          </div>
-        </div>
-        
-        {/* Fléau principal qui pivote - Collé au support */}
-        <div className="flex justify-center relative -mt-1" style={{ transformStyle: 'preserve-3d' }}>
-          <div 
-            className="w-72 h-2 sm:w-96 sm:h-4 bg-gradient-to-r from-gray-400 via-gray-500 to-gray-400 rounded-full shadow-lg origin-center transition-transform duration-700 relative"
-            style={{ 
-              transform: `rotateZ(${balanceAngle}deg) rotateX(10deg)`,
-              transformStyle: 'preserve-3d' 
-            }}
-          >
-            {/* Graduations */}
-            <div className="absolute top-0 left-1/4 w-0.5 h-1 sm:w-1 sm:h-2 bg-gray-700 rounded"></div>
-            <div className="absolute top-0 left-1/2 w-0.5 h-1.5 sm:w-1 sm:h-3 bg-red-600 rounded"></div>
-            <div className="absolute top-0 right-1/4 w-0.5 h-1 sm:w-1 sm:h-2 bg-gray-700 rounded"></div>
-          </div>
-        </div>
-        
-        {/* Chaînes de suspension - Attachées directement au fléau */}
-        <div className="flex justify-between absolute top-14 sm:top-20 left-1/2 transform -translate-x-1/2 w-72 sm:w-96">
-          {/* Chaînes gauche */}
-          <div 
-            className="flex gap-0.5 sm:gap-1 origin-top transition-transform duration-700"
-            style={{ transform: `translateX(-140px) sm:translateX(-180px) rotate(${balanceAngle}deg)` }}
-          >
-            <div className="w-0.5 h-10 sm:h-16 bg-gray-600 shadow-sm"></div>
-            <div className="w-0.5 h-10 sm:h-16 bg-gray-600 shadow-sm"></div>
-            <div className="w-0.5 h-10 sm:h-16 bg-gray-600 shadow-sm"></div>
+        {/* Affichage des masses sous la balance */}
+        <div className="flex justify-between items-center mt-20 px-8">
+          <div className="text-center">
+            <div className="font-bold text-green-700 text-lg">Plateau gauche</div>
+            <div className="text-2xl font-bold text-green-800 bg-white px-4 py-2 rounded-lg shadow-md border-2 border-green-300">{leftMass}g</div>
           </div>
           
-          {/* Chaînes droite */}
-          <div 
-            className="flex gap-0.5 sm:gap-1 origin-top transition-transform duration-700"
-            style={{ transform: `translateX(140px) sm:translateX(180px) rotate(${-balanceAngle}deg)` }}
-          >
-            <div className="w-0.5 h-10 sm:h-16 bg-gray-600 shadow-sm"></div>
-            <div className="w-0.5 h-10 sm:h-16 bg-gray-600 shadow-sm"></div>
-            <div className="w-0.5 h-10 sm:h-16 bg-gray-600 shadow-sm"></div>
+          <div className="text-center">
+            <div className="font-bold text-green-700 text-lg">Plateau droit</div>
+            <div className="text-2xl font-bold text-green-800 bg-white px-4 py-2 rounded-lg shadow-md border-2 border-green-300">{rightMass}g</div>
           </div>
-        </div>
-        
-        {/* Plateaux avec perspective - Collés aux chaînes */}
-        <div className="flex justify-between absolute top-24 sm:top-36 left-1/2 transform -translate-x-1/2 w-72 sm:w-96">
-          {/* Plateau gauche */}
-          <div 
-            className="transition-transform duration-700"
-            style={{ 
-              transform: `translateX(-140px) sm:translateX(-180px) translateY(${balanceAngle * 2}px) sm:translateY(${balanceAngle * 3}px) rotateX(60deg)`,
-              transformStyle: 'preserve-3d'
-            }}
-          >
-            <div className="w-16 h-16 sm:w-24 sm:h-24 bg-gradient-to-br from-gray-100 to-gray-300 border-2 sm:border-4 border-gray-400 rounded-full shadow-xl relative overflow-visible flex flex-wrap items-center justify-center p-1 sm:p-2">
-              {/* Effet de profondeur */}
-              <div className="absolute inset-0.5 sm:inset-1 border border-gray-300 sm:border-2 rounded-full"></div>
-              <div className="absolute inset-1 sm:inset-2 bg-gradient-to-br from-white to-gray-100 rounded-full opacity-60"></div>
-              
-              {/* Attaches des chaînes au plateau */}
-              <div className="absolute -top-1 left-1/2 transform -translate-x-1/2 w-1 h-2 bg-gray-600"></div>
-              <div className="absolute -top-1 left-1/3 w-1 h-2 bg-gray-600"></div>
-              <div className="absolute -top-1 right-1/3 w-1 h-2 bg-gray-600"></div>
-              
-              {/* Objets sur le plateau */}
-              {leftPlatform.map((item, index) => (
-                <div
-                  key={item.id}
-                  onClick={() => removeFromLeft(item.id)}
-                  className="cursor-pointer hover:scale-110 active:scale-95 transition-transform m-0.5 sm:m-1 z-10 touch-manipulation"
-                  title="Cliquer pour enlever"
-                  style={{ transform: 'rotateX(-60deg)' }}
-                >
-                  {item.type === 'weight' ? 
-                    renderWeight3D(item, true) : 
-                    renderObject3D(item, true)
-                  }
-                </div>
-              ))}
-            </div>
-          </div>
-          
-          {/* Plateau droit */}
-          <div 
-            className="transition-transform duration-700"
-            style={{ 
-              transform: `translateX(140px) sm:translateX(180px) translateY(${-balanceAngle * 2}px) sm:translateY(${-balanceAngle * 3}px) rotateX(60deg)`,
-              transformStyle: 'preserve-3d'
-            }}
-          >
-            <div className="w-16 h-16 sm:w-24 sm:h-24 bg-gradient-to-br from-gray-100 to-gray-300 border-2 sm:border-4 border-gray-400 rounded-full shadow-xl relative overflow-visible flex flex-wrap items-center justify-center p-1 sm:p-2">
-              {/* Effet de profondeur */}
-              <div className="absolute inset-0.5 sm:inset-1 border border-gray-300 sm:border-2 rounded-full"></div>
-              <div className="absolute inset-1 sm:inset-2 bg-gradient-to-br from-white to-gray-100 rounded-full opacity-60"></div>
-              
-              {/* Attaches des chaînes au plateau */}
-              <div className="absolute -top-1 left-1/2 transform -translate-x-1/2 w-1 h-2 bg-gray-600"></div>
-              <div className="absolute -top-1 left-1/3 w-1 h-2 bg-gray-600"></div>
-              <div className="absolute -top-1 right-1/3 w-1 h-2 bg-gray-600"></div>
-              
-              {/* Objets sur le plateau */}
-              {rightPlatform.map((item, index) => (
-                <div
-                  key={item.id}
-                  onClick={() => removeFromRight(item.id)}
-                  className="cursor-pointer hover:scale-110 active:scale-95 transition-transform m-0.5 sm:m-1 z-10 touch-manipulation"
-                  title="Cliquer pour enlever"
-                  style={{ transform: 'rotateX(-60deg)' }}
-                >
-                  {item.type === 'weight' ? 
-                    renderWeight3D(item, true) : 
-                    renderObject3D(item, true)
-                  }
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-        
-        {/* Ombre de la balance */}
-        <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 w-40 sm:w-60 h-2 bg-black opacity-10 rounded-full blur-sm"></div>
-      </div>
-      
-      {/* Affichage des masses - Mobile optimisé */}
-      <div className="flex flex-col sm:flex-row justify-between items-center gap-4 sm:gap-0 mb-6 sm:mb-8 px-2 sm:px-8">
-        <div className="text-center">
-          <div className="font-bold text-green-700 text-base sm:text-lg">Plateau gauche</div>
-          <div className="text-xl sm:text-2xl font-bold text-green-800 bg-white px-3 py-2 sm:px-4 sm:py-2 rounded-lg shadow-md border-2 border-green-300">{formatMass(leftMass)}</div>
-        </div>
-        
-        <div className="text-center">
-          <div className="font-bold text-green-700 text-base sm:text-lg">Plateau droit</div>
-          <div className="text-xl sm:text-2xl font-bold text-green-800 bg-white px-3 py-2 sm:px-4 sm:py-2 rounded-lg shadow-md border-2 border-green-300">{formatMass(rightMass)}</div>
         </div>
       </div>
 
-      {/* État de la balance - Mobile optimisé */}
-      <div className="text-center mb-6 sm:mb-8 px-2">
+      {/* État de la balance */}
+      <div className="text-center mb-8">
         {isBalanced ? (
-          <div className="bg-green-100 border-2 border-green-400 rounded-xl p-4 sm:p-6 relative">
-            <div className="text-3xl sm:text-4xl mb-2 sm:mb-3">🎉</div>
-            <div className="font-bold text-green-800 text-lg sm:text-xl">ÉQUILIBRE PARFAIT !</div>
-            <div className="text-green-700 text-sm sm:text-lg">Les deux plateaux ont la même masse !</div>
-            <div className="absolute top-1 right-2 sm:top-2 sm:right-4 text-lg sm:text-2xl animate-bounce">🎊</div>
-            <div className="absolute top-2 left-2 sm:top-4 sm:left-4 text-lg sm:text-2xl animate-pulse">✨</div>
+          <div className="bg-green-100 border-2 border-green-400 rounded-xl p-6 relative">
+            <div className="text-4xl mb-3">🎉</div>
+            <div className="font-bold text-green-800 text-xl">ÉQUILIBRE PARFAIT !</div>
+            <div className="text-green-700 text-lg">Les deux plateaux ont la même masse !</div>
+            {/* Confettis fixés */}
+            <div className="absolute top-2 right-4 text-2xl animate-bounce">🎊</div>
+            <div className="absolute top-4 left-4 text-2xl animate-pulse">✨</div>
           </div>
         ) : (
-          <div className="bg-blue-100 border-2 border-blue-400 rounded-xl p-4 sm:p-6">
-            <div className="text-3xl sm:text-4xl mb-2 sm:mb-3">⚖️</div>
-            <div className="font-bold text-blue-800 text-base sm:text-xl">
+          <div className="bg-blue-100 border-2 border-blue-400 rounded-xl p-6">
+            <div className="text-4xl mb-3">⚖️</div>
+            <div className="font-bold text-blue-800 text-xl">
               {leftMass > rightMass ? 'Le plateau gauche est plus lourd' : 
                rightMass > leftMass ? 'Le plateau droit est plus lourd' : 
                'Balance vide - Commence à peser !'}
             </div>
-            <div className="text-blue-700 text-sm sm:text-lg">
-              {leftMass !== rightMass && `Différence : ${formatMass(Math.abs(leftMass - rightMass))}`}
+            <div className="text-blue-700 text-lg">
+              {leftMass !== rightMass && `Différence : ${Math.abs(leftMass - rightMass)}g`}
             </div>
           </div>
         )}
       </div>
 
-      {/* Instructions et bouton reset - Mobile optimisé */}
-      <div className="text-center px-2">
-        <div className="bg-white rounded-xl p-4 sm:p-6 mb-4 sm:mb-6 shadow-md">
-          <h4 className="font-bold text-gray-800 mb-2 sm:mb-3 text-base sm:text-lg">📋 Instructions :</h4>
-          <div className="text-xs sm:text-sm text-gray-700 space-y-1 sm:space-y-2">
-            <p>• 🖱️ Clique sur un objet ou poids pour le sélectionner</p>
-            <p>• ➕ Utilise les boutons pour l'ajouter à un plateau</p>
-            <p>• 👆 Clique sur un élément sur la balance pour l'enlever</p>
-            <p>• ⚖️ Observe la balance bouger en temps réel !</p>
-            <p>• 🎯 Trouve l'équilibre parfait !</p>
+      {/* Instructions et bouton reset */}
+      <div className="text-center">
+        <div className="bg-white rounded-xl p-6 mb-6 shadow-md">
+          <h4 className="font-bold text-gray-800 mb-3 text-lg">📋 Instructions :</h4>
+          <div className="text-sm text-gray-700 space-y-2">
+            <p>• 🖱️ Glisse les objets et poids sur les plateaux</p>
+            <p>• 👆 Clique sur un élément pour l'enlever</p>
+            <p>• ⚖️ Trouve l'équilibre parfait (différence ≤ 10g) !</p>
           </div>
         </div>
         
         <button
           onClick={resetBalance}
-          className="bg-green-500 text-white px-6 py-3 sm:px-8 sm:py-3 rounded-xl font-bold hover:bg-green-600 active:scale-95 transition-all shadow-lg min-h-[44px] touch-manipulation text-sm sm:text-base"
+          className="bg-green-500 text-white px-8 py-3 rounded-xl font-bold hover:bg-green-600 transition-colors shadow-lg"
         >
           🔄 Recommencer
         </button>
@@ -436,11 +344,13 @@ const InteractiveScale = () => {
 
 export default function MassesPage() {
   const [currentExercise, setCurrentExercise] = useState(0);
+  const [userAnswer, setUserAnswer] = useState('');
   const [selectedAnswer, setSelectedAnswer] = useState('');
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
   const [showExercises, setShowExercises] = useState(false);
   const [score, setScore] = useState(0);
   const [answeredCorrectly, setAnsweredCorrectly] = useState<Set<number>>(new Set());
+  const [showResult, setShowResult] = useState(false);
   const [showCompletionModal, setShowCompletionModal] = useState(false);
   const [finalScore, setFinalScore] = useState(0);
 

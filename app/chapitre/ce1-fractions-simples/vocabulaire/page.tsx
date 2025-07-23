@@ -1125,7 +1125,7 @@ function ExerciceIdentificationIndividuel() {
   };
 
   const exercises = [
-         {
+    { 
        id: 1,
        instruction: 'Entoure les fractions dont le numérateur est 3',
        checkCondition: (frac: any) => frac.numerator === 3,
@@ -1634,9 +1634,9 @@ function ExerciceTrouverFractionIndividuel() {
               const pathData = `M 80 80 L ${x1} ${y1} A 50 50 0 0 1 ${x2} ${y2} Z`;
               
               return (
-                <path
-                  key={i}
-                  d={pathData}
+        <path
+          key={i}
+          d={pathData}
                   fill={i < 3 ? '#fbbf24' : '#f3f4f6'}
                   stroke="#6b7280"
                   strokeWidth="2"
@@ -1647,7 +1647,7 @@ function ExerciceTrouverFractionIndividuel() {
         );
       
       case 'rectangleBlocks':
-        return (
+    return (
           <svg width="160" height="160" viewBox="0 0 160 160" className="mx-auto">
             {Array.from({ length: 4 }, (_, i) => (
               <rect
@@ -1661,8 +1661,8 @@ function ExerciceTrouverFractionIndividuel() {
                 strokeWidth="2"
               />
             ))}
-          </svg>
-        );
+      </svg>
+    );
       
       default:
         return <div></div>;
@@ -1988,8 +1988,8 @@ export default function VocabulaireFractionsPage() {
             <p className="text-base sm:text-lg text-gray-600">
               Apprends les mots importants : moitié, tiers, quart...
             </p>
-          </div>
-        </div>
+              </div>
+              </div>
 
         {/* Onglets Cours/Exercices */}
         <div className="bg-white rounded-xl shadow-lg overflow-hidden mb-6 sm:mb-8">
@@ -2039,13 +2039,13 @@ export default function VocabulaireFractionsPage() {
               <h3 className="text-2xl font-bold text-center text-gray-900 mb-6">
                 🔍 Les parties d'une fraction
               </h3>
-
+              
               <div className="grid md:grid-cols-2 gap-8 items-center mb-8">
                 <div className="text-center">
                   <div className="text-6xl mb-4">
                     <FractionMath a="3" b="5" size="text-6xl" />
-                  </div>
-                </div>
+                    </div>
+                    </div>
                 
                 <div className="space-y-4">
                   <div className="bg-red-100 p-4 rounded-lg border-2 border-red-300">
@@ -2061,13 +2061,13 @@ export default function VocabulaireFractionsPage() {
                     </h4>
                     <p className="text-blue-600">Le nombre du bas indique en combien de parts on divise</p>
                   </div>
-                </div>
               </div>
+            </div>
 
               <div className="bg-yellow-50 rounded-lg p-4 border-2 border-yellow-300">
                 <h4 className="text-lg font-bold text-gray-800 mb-2">💡 Astuce pour retenir :</h4>
                 <div className="grid md:grid-cols-2 gap-4">
-                  <div className="text-center">
+            <div className="text-center">
                     <div className="text-2xl font-bold text-red-700">HAUT comme une montagne ⛰️</div>
                     <div className="text-gray-700">Le numérateur est en HAUT</div>
                   </div>
@@ -2148,7 +2148,7 @@ export default function VocabulaireFractionsPage() {
             {/* Sous-menu des types d'exercices */}
             <div className="bg-white rounded-xl shadow-lg overflow-hidden">
               <div className="grid grid-cols-2 md:grid-cols-5 gap-0">
-                <button
+              <button
                   onClick={() => setSelectedExerciseType('coloriage')}
                   className={`py-3 px-4 font-bold text-sm transition-colors ${
                     selectedExerciseType === 'coloriage'
@@ -2197,9 +2197,9 @@ export default function VocabulaireFractionsPage() {
                   }`}
                 >
                   📝 Quiz
-                </button>
-              </div>
+              </button>
             </div>
+          </div>
 
             {/* Exercices selon le type sélectionné */}
             {selectedExerciseType === 'coloriage' && <ExerciceColorageIndividuel />}
@@ -2212,7 +2212,7 @@ export default function VocabulaireFractionsPage() {
                   <div className="flex justify-between items-center mb-4">
                     <h2 className="text-2xl font-bold text-gray-900">
                       ✏️ Quiz - Question {currentExercise + 1} sur {exercises.length}
-                    </h2>
+              </h2>
                     <button
                       onClick={resetAll}
                       className="bg-gray-500 text-white px-4 py-2 rounded-lg font-bold hover:bg-gray-600 transition-colors"
@@ -2220,8 +2220,8 @@ export default function VocabulaireFractionsPage() {
                       <RotateCcw className="inline w-4 h-4 mr-2" />
                       Recommencer
                     </button>
-                  </div>
-                  
+            </div>
+
                   <div className="w-full bg-gray-200 rounded-full h-3 mb-3">
                     <div 
                       className="bg-blue-500 h-3 rounded-full transition-all duration-500"
@@ -2243,13 +2243,13 @@ export default function VocabulaireFractionsPage() {
                     </h3>
                     
                     <div className="grid grid-cols-1 gap-3">
-                      {exercises[currentExercise].options.map((option, index) => (
-                        <button
-                          key={index}
-                          onClick={() => setUserAnswer(option)}
+              {exercises[currentExercise].options.map((option, index) => (
+                <button
+                  key={index}
+                  onClick={() => setUserAnswer(option)}
                           disabled={isCorrect !== null}
                           className={`p-4 rounded-lg border-2 text-left font-semibold transition-all ${
-                            userAnswer === option
+                    userAnswer === option
                               ? isCorrect === null
                                 ? 'border-blue-500 bg-blue-50 text-blue-700'
                                 : isCorrect
@@ -2263,7 +2263,7 @@ export default function VocabulaireFractionsPage() {
                           } disabled:cursor-not-allowed`}
                         >
                           <span className="flex items-center justify-between">
-                            {option}
+                  {option}
                             {userAnswer === option && isCorrect !== null && (
                               isCorrect ? 
                               <CheckCircle className="w-6 h-6 text-green-600" /> :
@@ -2273,25 +2273,25 @@ export default function VocabulaireFractionsPage() {
                               <CheckCircle className="w-6 h-6 text-green-600" />
                             )}
                           </span>
-                        </button>
-                      ))}
+                </button>
+              ))}
                     </div>
-                  </div>
+            </div>
 
                   <div className="flex justify-between items-center">
                     <div className="flex space-x-3">
-                      <button
-                        onClick={() => setShowHint(!showHint)}
+              <button
+                onClick={() => setShowHint(!showHint)}
                         className="flex items-center space-x-2 bg-yellow-500 text-white px-4 py-2 rounded-lg font-bold hover:bg-yellow-600 transition-colors"
-                      >
+              >
                         <Lightbulb className="w-4 h-4" />
                         <span>Aide</span>
-                      </button>
-                      <button
-                        onClick={resetExercise}
+              </button>
+              <button
+                onClick={resetExercise}
                         className="bg-gray-500 text-white px-4 py-2 rounded-lg font-bold hover:bg-gray-600 transition-colors"
-                      >
-                        Effacer
+              >
+                Effacer
                       </button>
                     </div>
                     
@@ -2301,15 +2301,15 @@ export default function VocabulaireFractionsPage() {
                       className="bg-blue-500 text-white px-6 py-2 rounded-lg font-bold hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {isCorrect === null ? 'Valider' : currentExercise + 1 < exercises.length ? 'Suivant' : 'Terminer'}
-                    </button>
-                  </div>
+              </button>
+            </div>
 
-                  {showHint && (
+            {showHint && (
                     <div className="mt-4 p-4 bg-yellow-50 border-2 border-yellow-200 rounded-lg">
                       <p className="text-yellow-800 font-semibold">
                         💡 {exercises[currentExercise].hint}
                       </p>
-                    </div>
+              </div>
                   )}
                 </div>
               </div>
