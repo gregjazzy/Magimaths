@@ -34,7 +34,7 @@ export default function ReconnaissanceNombresCP() {
             {group.map((dot, dotIndex) => (
               <span 
                 key={dotIndex} 
-                className={`${isCourse ? 'text-2xl sm:text-3xl' : 'text-xl sm:text-3xl md:text-4xl lg:text-5xl'} text-blue-600`}
+                className={`${isCourse ? 'text-2xl sm:text-3xl' : 'text-lg sm:text-2xl md:text-3xl lg:text-4xl'} text-blue-600`}
               >
                 {dot}
               </span>
@@ -182,22 +182,22 @@ export default function ReconnaissanceNombresCP() {
             <span>Retour au chapitre</span>
           </Link>
           
-          <div className="bg-white rounded-xl p-6 shadow-lg text-center">
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">
+          <div className="bg-white rounded-xl p-4 sm:p-6 shadow-lg text-center">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-2 sm:mb-4">
               👁️ Reconnaître les nombres de 0 à 20
             </h1>
-            <p className="text-lg text-gray-600">
+            <p className="text-base sm:text-lg text-gray-600">
               Apprends à identifier et nommer les nombres jusqu'à 20 !
             </p>
           </div>
         </div>
 
         {/* Navigation entre cours et exercices */}
-        <div className="flex justify-center mb-8">
+        <div className="flex justify-center mb-4 sm:mb-8">
           <div className="bg-white rounded-lg p-1 shadow-md">
             <button
               onClick={() => setShowExercises(false)}
-              className={`px-6 py-3 rounded-lg font-bold transition-all ${
+              className={`px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-bold transition-all text-sm sm:text-base ${
                 !showExercises 
                   ? 'bg-orange-500 text-white shadow-md' 
                   : 'text-gray-600 hover:bg-gray-100'
@@ -207,7 +207,7 @@ export default function ReconnaissanceNombresCP() {
             </button>
             <button
               onClick={() => setShowExercises(true)}
-              className={`px-6 py-3 rounded-lg font-bold transition-all ${
+              className={`px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-bold transition-all text-sm sm:text-base ${
                 showExercises 
                   ? 'bg-orange-500 text-white shadow-md' 
                   : 'text-gray-600 hover:bg-gray-100'
@@ -220,18 +220,18 @@ export default function ReconnaissanceNombresCP() {
 
         {!showExercises ? (
           /* COURS */
-          <div className="space-y-8">
+          <div className="space-y-4 sm:space-y-8">
             {/* Sélecteur de nombre */}
-            <div className="bg-white rounded-xl p-6 shadow-lg">
-              <h2 className="text-2xl font-bold text-center mb-6 text-gray-900">
+            <div className="bg-white rounded-xl p-3 sm:p-6 shadow-lg">
+              <h2 className="text-lg sm:text-2xl font-bold text-center mb-3 sm:mb-6 text-gray-900">
                 🎯 Choisis un nombre à découvrir
               </h2>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-2 sm:gap-4 mb-3 sm:mb-6">
                 {numbers.map((num) => (
                   <button
                     key={num.value}
                     onClick={() => setSelectedNumber(num.value)}
-                    className={`p-6 rounded-lg font-bold text-2xl transition-all ${
+                    className={`p-3 sm:p-6 rounded-lg font-bold text-lg sm:text-2xl transition-all ${
                       selectedNumber === num.value
                         ? 'bg-orange-500 text-white shadow-lg scale-105'
                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200 hover:scale-102'
@@ -343,35 +343,31 @@ export default function ReconnaissanceNombresCP() {
             </div>
 
             {/* Question */}
-            <div className="bg-white rounded-xl p-4 sm:p-8 shadow-lg text-center">
-              <h3 className="text-lg sm:text-2xl font-bold mb-4 sm:mb-8 text-gray-900">
+            <div className="bg-white rounded-xl p-3 sm:p-6 md:p-8 shadow-lg text-center">
+              <h3 className="text-base sm:text-xl md:text-2xl font-bold mb-3 sm:mb-6 md:mb-8 text-gray-900">
                 {exercises[currentExercise].question}
               </h3>
               
               {/* Affichage de la question (nombre ou objets) */}
-              <div className="bg-white border-2 border-orange-200 rounded-lg p-2 sm:p-4 md:p-8 mb-4 sm:mb-8">
-                <div className="py-2 sm:py-4">
+              <div className="bg-white border-2 border-orange-200 rounded-lg p-2 sm:p-3 md:p-6 mb-3 sm:mb-6">
+                <div className="py-1 sm:py-2 md:py-4">
                   {exercises[currentExercise].visual.includes('🔵') ? 
                     renderVisualDots(exercises[currentExercise].visual, false) :
-                    <div className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-gray-800 flex flex-wrap justify-center gap-1 sm:gap-2 max-w-xs sm:max-w-md mx-auto leading-tight">
-                      {exercises[currentExercise].visual.split('').map((char, index) => (
-                        <span key={index} className="inline-block">
-                          {char}
-                        </span>
-                      ))}
+                    <div className="text-base sm:text-lg md:text-2xl lg:text-3xl text-gray-800 tracking-wider leading-relaxed">
+                      {exercises[currentExercise].visual}
                     </div>
                   }
                 </div>
               </div>
               
               {/* Choix multiples avec gros boutons */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4 max-w-md mx-auto mb-4 sm:mb-8">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-2 sm:gap-3 max-w-sm sm:max-w-md mx-auto mb-4 sm:mb-8">
                 {exercises[currentExercise].choices.map((choice) => (
                   <button
                     key={choice}
                     onClick={() => handleAnswerClick(choice)}
                     disabled={isCorrect !== null}
-                    className={`p-4 sm:p-6 rounded-lg font-bold text-2xl sm:text-3xl transition-all ${
+                    className={`p-3 sm:p-4 md:p-6 rounded-lg font-bold text-xl sm:text-2xl md:text-3xl transition-all ${
                       userAnswer === choice
                         ? isCorrect === true
                           ? 'bg-green-500 text-white'
