@@ -63,6 +63,26 @@ const sections = [
     xp: 10,
     color: 'from-pink-500 to-rose-500',
     verified: true
+  },
+  {
+    id: 'valeur-positionnelle',
+    title: 'Valeur positionnelle',
+    description: 'Comprendre la différence entre unités et dizaines',
+    icon: '🔢',
+    duration: '10 min',
+    xp: 12,
+    color: 'from-blue-500 to-indigo-500',
+    verified: true
+  },
+  {
+    id: 'ordonner-comparer',
+    title: 'Ordonner et comparer',
+    description: 'Utiliser les signes <, > et = pour comparer les nombres',
+    icon: '📊',
+    duration: '12 min',
+    xp: 15,
+    color: 'from-green-500 to-teal-500',
+    verified: true
   }
 ]
 
