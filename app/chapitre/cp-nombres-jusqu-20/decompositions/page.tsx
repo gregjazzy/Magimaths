@@ -24,9 +24,7 @@ export default function DecompositionsCP() {
     return shuffled;
   };
 
-  const [shuffledChoices, setShuffledChoices] = useState<string[]>(() => 
-    exercises.length > 0 ? shuffleArray(exercises[0].choices) : []
-  );
+  const [shuffledChoices, setShuffledChoices] = useState<string[]>([]);
 
   // Sauvegarder les progrès
   const saveProgress = (score: number, maxScore: number) => {

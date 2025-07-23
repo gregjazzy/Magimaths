@@ -428,7 +428,7 @@ export default function UnitesDizainesCP() {
             </div>
 
             {/* Conseils */}
-            <div className="bg-gradient-to-r from-blue-400 to-green-400 rounded-xl p-6 text-white">
+            <div className="bg-gradient-to-r from-blue-600 to-green-600 rounded-xl p-6 text-white">
               <h3 className="text-xl font-bold mb-3">💡 Trucs pour retenir</h3>
               <ul className="space-y-2 text-lg">
                 <li>• DROITE = unités (objets seuls)</li>

@@ -370,7 +370,7 @@ export default function DizainesCP() {
             </div>
 
             {/* Conseils */}
-            <div className="bg-gradient-to-r from-blue-400 to-green-400 rounded-xl p-6 text-white">
+            <div className="bg-gradient-to-r from-blue-600 to-green-600 rounded-xl p-6 text-white">
               <h3 className="text-xl font-bold mb-3">💡 Trucs pour retenir les dizaines</h3>
               <ul className="space-y-2 text-lg">
                 <li>• Une dizaine = 10 objets dans une boîte</li>

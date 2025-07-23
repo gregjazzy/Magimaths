@@ -29,6 +29,13 @@ export default function ChaptersSection() {
 
   const getClassInfo = (classLevel: ClassLevel) => {
     const classInfo = {
+      CP: {
+        title: 'CP - Cours Préparatoire',
+        description: 'Découverte des mathématiques',
+        color: 'from-pink-400 to-red-500',
+        bgColor: 'bg-pink-50',
+        borderColor: 'border-pink-200'
+      },
       CE1: {
         title: 'CE1 - Cours Élémentaire 1ère année',
         description: 'Premiers apprentissages en mathématiques',

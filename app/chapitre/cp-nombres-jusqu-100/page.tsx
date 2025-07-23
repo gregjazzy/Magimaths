@@ -177,49 +177,7 @@ export default function CPNombresJusqu100Page() {
           </div>
         </div>
 
-        {/* Ce qu'il faut retenir selon le programme */}
-        <div className="bg-white rounded-xl p-8 shadow-lg mb-8">
-          <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
-            <span className="text-3xl mr-3">💡</span>
-            Ce qu'il faut retenir (Programme officiel)
-          </h2>
-          <div className="grid md:grid-cols-2 gap-6">
-            <div className="bg-green-50 p-6 rounded-lg border border-green-200">
-              <h3 className="font-bold text-green-800 mb-3">📦 Valeur positionnelle</h3>
-              <ul className="space-y-2 text-gray-700">
-                <li className="flex items-start">
-                  <span className="text-green-500 mr-2">•</span>
-                  Connaître la valeur des chiffres (unités, dizaines)
-                </li>
-                <li className="flex items-start">
-                  <span className="text-green-500 mr-2">•</span>
-                  34 = 3 dizaines + 4 unités
-                </li>
-                <li className="flex items-start">
-                  <span className="text-green-500 mr-2">•</span>
-                  Dénombrer généralement jusqu'à 100
-                </li>
-              </ul>
-            </div>
-            <div className="bg-blue-50 p-6 rounded-lg border border-blue-200">
-              <h3 className="font-bold text-blue-800 mb-3">🎯 Comparer et calculer</h3>
-              <ul className="space-y-2 text-gray-700">
-                <li className="flex items-start">
-                  <span className="text-blue-500 mr-2">•</span>
-                  Ordonner et comparer les nombres
-                </li>
-                <li className="flex items-start">
-                  <span className="text-blue-500 mr-2">•</span>
-                  Doubles &lt; 10 : 2*3=6, 2*4=8...
-                </li>
-                <li className="flex items-start">
-                  <span className="text-blue-500 mr-2">•</span>
-                  Moitiés pairs &lt; 20 : 16/2=8, 12/2=6...
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
+
 
         {/* Mini-game des dizaines */}
         <div className="bg-white rounded-xl p-8 shadow-lg mb-8">
@@ -328,7 +286,7 @@ export default function CPNombresJusqu100Page() {
 
         {/* Encouragements */}
         <div className="mt-8 text-center">
-          <div className="bg-gradient-to-r from-blue-400 to-green-400 rounded-xl p-6 text-white">
+          <div className="bg-gradient-to-r from-blue-600 to-green-600 rounded-xl p-6 text-white">
             <div className="text-4xl mb-3">🌟</div>
             <h3 className="text-xl font-bold mb-2">Super travail petit CP !</h3>
             <p className="text-lg">
