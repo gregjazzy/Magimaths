@@ -190,13 +190,13 @@ export default function CPNombresJusqu100Page() {
               Combien y a-t-il de dizaines dans <strong className="text-green-600">40</strong> ?
             </p>
             <div className="flex justify-center gap-4 mb-4">
-              <button className="w-16 h-16 bg-white rounded-lg shadow-md hover:bg-green-50 transition-colors font-bold text-xl">
+              <button className="w-16 h-16 bg-white rounded-lg shadow-md hover:bg-green-50 transition-colors font-bold text-xl text-gray-800 hover:text-green-800">
                 3
               </button>
-              <button className="w-16 h-16 bg-white rounded-lg shadow-md hover:bg-green-50 transition-colors font-bold text-xl">
+              <button className="w-16 h-16 bg-white rounded-lg shadow-md hover:bg-green-50 transition-colors font-bold text-xl text-gray-800 hover:text-green-800">
                 4
               </button>
-              <button className="w-16 h-16 bg-white rounded-lg shadow-md hover:bg-green-50 transition-colors font-bold text-xl">
+              <button className="w-16 h-16 bg-white rounded-lg shadow-md hover:bg-green-50 transition-colors font-bold text-xl text-gray-800 hover:text-green-800">
                 40
               </button>
             </div>
