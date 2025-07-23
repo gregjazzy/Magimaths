@@ -80,11 +80,11 @@ export default function OrdonnerComparerCP20() {
   // Comparaisons pour le cours
   const comparisons = [
     { id: '5_8', num1: 5, num2: 8, symbol: '<', explanation: '5 est plus petit que 8', visual: '🔴🔴🔴🔴🔴 < 🔴🔴🔴🔴🔴🔴🔴🔴' },
-    { id: '12_9', num1: 12, num2: 9, symbol: '>', explanation: '12 est plus grand que 9', visual: '📦🔴🔴 > 🔴🔴🔴🔴🔴🔴🔴🔴🔴' },
+    { id: '12_9', num1: 12, num2: 9, symbol: '>', explanation: '12 est plus grand que 9', visual: '🔟🔴🔴 > 🔴🔴🔴🔴🔴🔴🔴🔴🔴' },
     { id: '7_7', num1: 7, num2: 7, symbol: '=', explanation: '7 est égal à 7', visual: '🔴🔴🔴🔴🔴🔴🔴 = 🔴🔴🔴🔴🔴🔴🔴' },
-    { id: '15_18', num1: 15, num2: 18, symbol: '<', explanation: '15 est plus petit que 18', visual: '📦🔴🔴🔴🔴🔴 < 📦🔴🔴🔴🔴🔴🔴🔴🔴' },
-    { id: '14_16', num1: 14, num2: 16, symbol: '<', explanation: '14 est plus petit que 16', visual: '📦🔴🔴🔴🔴 < 📦🔴🔴🔴🔴🔴🔴' },
-    { id: '19_10', num1: 19, num2: 10, symbol: '>', explanation: '19 est plus grand que 10', visual: '📦🔴🔴🔴🔴🔴🔴🔴🔴🔴 > 📦' }
+    { id: '15_18', num1: 15, num2: 18, symbol: '<', explanation: '15 est plus petit que 18', visual: '🔟🔴🔴🔴🔴🔴 < 🔟🔴🔴🔴🔴🔴🔴🔴🔴' },
+    { id: '14_16', num1: 14, num2: 16, symbol: '<', explanation: '14 est plus petit que 16', visual: '🔟🔴🔴🔴🔴 < 🔟🔴🔴🔴🔴🔴🔴' },
+    { id: '19_10', num1: 19, num2: 10, symbol: '>', explanation: '19 est plus grand que 10', visual: '🔟🔴🔴🔴🔴🔴🔴🔴🔴🔴 > 🔟' }
   ];
 
   // Exercices de comparaison - positions des bonnes réponses variées
@@ -325,6 +325,7 @@ export default function OrdonnerComparerCP20() {
               <h3 className="text-lg sm:text-xl font-bold mb-2 sm:mb-3">💡 Trucs pour retenir</h3>
               <ul className="space-y-1 sm:space-y-2 text-sm sm:text-lg">
                 <li>• Le signe "&gt;" ressemble à un bec qui "mange" le plus petit</li>
+                <li>• 🔟 = un paquet de 10, 🔴 = 1 objet seul</li>
                 <li>• Plus le nombre est grand, plus il y a d'objets</li>
                 <li>• Pour ranger : commence par le plus petit</li>
                 <li>• Les nombres avec 2 chiffres sont plus grands que ceux avec 1 chiffre</li>
