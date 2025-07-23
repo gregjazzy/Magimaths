@@ -418,9 +418,6 @@ export default function ValeurPositionnelleCP20() {
                     <div className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold text-blue-600 mb-2 sm:mb-3 md:mb-6">
                       {exercises[currentExercise].number}
                     </div>
-                    <div className="text-sm sm:text-base md:text-lg text-gray-700">
-                      {exercises[currentExercise].type === 'dizaines' ? 'Cherche les dizaines (GAUCHE)' : 'Cherche les unités (DROITE)'}
-                    </div>
                   </>
                 )}
               </div>
