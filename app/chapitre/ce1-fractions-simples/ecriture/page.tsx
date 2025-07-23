@@ -295,17 +295,17 @@ export default function EcritureFractionsPage() {
               ))}
             </div>
 
-            <div className="flex justify-center space-x-4 mb-6">
+            <div className="flex flex-col sm:flex-row justify-center gap-2 sm:gap-4 mb-6">
               <button
                 onClick={() => setShowHint(!showHint)}
-                className="bg-yellow-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-yellow-600 transition-colors"
+                className="bg-yellow-500 text-white px-4 py-3 sm:px-6 sm:py-3 rounded-lg font-bold hover:bg-yellow-600 transition-colors w-full sm:w-auto touch-manipulation min-h-[44px]"
               >
                 <Lightbulb className="inline w-4 h-4 mr-2" />
                 Indice
               </button>
               <button
                 onClick={resetExercise}
-                className="bg-gray-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-gray-600 transition-colors"
+                className="bg-gray-500 text-white px-4 py-3 sm:px-6 sm:py-3 rounded-lg font-bold hover:bg-gray-600 transition-colors w-full sm:w-auto touch-manipulation min-h-[44px]"
               >
                 Effacer
               </button>
@@ -342,18 +342,18 @@ export default function EcritureFractionsPage() {
               </div>
             )}
 
-            <div className="flex justify-center space-x-4">
+            <div className="flex flex-col sm:flex-row justify-center gap-2 sm:gap-4">
               <button
                 onClick={() => setCurrentExercise(Math.max(0, currentExercise - 1))}
                 disabled={currentExercise === 0}
-                className="bg-gray-300 text-gray-700 px-6 py-3 rounded-lg font-bold hover:bg-gray-400 transition-colors disabled:opacity-50"
+                className="bg-gray-300 text-gray-700 px-4 py-3 sm:px-6 sm:py-3 rounded-lg font-bold hover:bg-gray-400 transition-colors disabled:opacity-50 w-full sm:w-auto touch-manipulation min-h-[44px]"
               >
                 ← Précédent
               </button>
               <button
                 onClick={handleNext}
                 disabled={!userAnswer && isCorrect === null}
-                className="bg-purple-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-purple-600 transition-colors disabled:opacity-50"
+                className="bg-purple-500 text-white px-4 py-3 sm:px-6 sm:py-3 rounded-lg font-bold hover:bg-purple-600 transition-colors disabled:opacity-50 w-full sm:w-auto touch-manipulation min-h-[44px]"
               >
                 {isCorrect === null ? 'Vérifier' : 'Suivant →'}
               </button>
@@ -376,16 +376,16 @@ export default function EcritureFractionsPage() {
                   ({Math.round((finalScore / exercises.length) * 100)}%)
                 </p>
               </div>
-              <div className="flex space-x-3">
+              <div className="flex flex-col sm:flex-row gap-3">
                 <button
                   onClick={resetAll}
-                  className="flex-1 bg-purple-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-purple-600 transition-colors"
+                  className="flex-1 bg-purple-500 text-white px-4 py-3 sm:px-6 sm:py-3 rounded-lg font-bold hover:bg-purple-600 transition-colors w-full sm:w-auto touch-manipulation min-h-[44px]"
                 >
                   Recommencer
                 </button>
                 <button
                   onClick={() => setShowCompletionModal(false)}
-                  className="flex-1 bg-gray-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-gray-600 transition-colors"
+                  className="flex-1 bg-gray-500 text-white px-4 py-3 sm:px-6 sm:py-3 rounded-lg font-bold hover:bg-gray-600 transition-colors w-full sm:w-auto touch-manipulation min-h-[44px]"
                 >
                   Fermer
                 </button>

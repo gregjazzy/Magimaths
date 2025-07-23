@@ -1,24 +1,25 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, BookOpen, Eye, Edit, Grid, Target, Trophy, Clock, Play } from 'lucide-react';
+
+interface SectionProgress {
+  sectionId: string;
+  score: number;
+  maxScore: number;
+  attempts: number;
+  completed: boolean;
+  completionDate: string;
+  xpEarned: number;
+}
 
 export default function CE1FractionsSimples() {
   const [completedSections, setCompletedSections] = useState<string[]>([]);
   const [xpEarned, setXpEarned] = useState(0);
+  const [sectionsProgress, setSectionsProgress] = useState<SectionProgress[]>([]);
 
   const sections = [
-    {
-      id: 'partage-partage',
-      title: 'Partage équitable',
-      description: 'Apprendre à partager en parts égales',
-      icon: '🍰',
-      duration: '8 min',
-      xp: 10,
-      color: 'from-pink-500 to-rose-500',
-      verified: true
-    },
     {
       id: 'vocabulaire',
       title: 'Vocabulaire des fractions',
@@ -27,26 +28,6 @@ export default function CE1FractionsSimples() {
       duration: '6 min',
       xp: 8,
       color: 'from-blue-500 to-cyan-500',
-      verified: true
-    },
-    {
-      id: 'reconnaissance',
-      title: 'Reconnaître les fractions',
-      description: 'Identifier une fraction sur un dessin',
-      icon: '👁️',
-      duration: '10 min',
-      xp: 12,
-      color: 'from-green-500 to-emerald-500',
-      verified: true
-    },
-    {
-      id: 'ecriture',
-      title: 'Écrire les fractions',
-      description: 'Apprendre à écrire 1/2, 1/3, 1/4...',
-      icon: '✏️',
-      duration: '8 min',
-      xp: 10,
-      color: 'from-purple-500 to-violet-500',
       verified: true
     },
     {
@@ -70,6 +51,55 @@ export default function CE1FractionsSimples() {
       verified: true
     }
   ];
+
+  // Charger les progrès au démarrage
+  useEffect(() => {
+    const savedProgress = localStorage.getItem('ce1-fractions-simples-progress');
+    if (savedProgress) {
+      const progress = JSON.parse(savedProgress);
+      setSectionsProgress(progress);
+      
+      // Calculer les sections complétées et XP
+      const completed = progress.filter((p: SectionProgress) => p.completed).map((p: SectionProgress) => p.sectionId);
+      setCompletedSections(completed);
+      
+      // Calculer les XP totaux
+      const totalXP = progress.reduce((total: number, p: SectionProgress) => {
+        return total + (p.xpEarned || 0);
+      }, 0);
+      setXpEarned(totalXP);
+    }
+  }, []);
+
+  // Écouter les changements dans localStorage (quand on revient d'un exercice)
+  useEffect(() => {
+    const handleStorageChange = () => {
+      const savedProgress = localStorage.getItem('ce1-fractions-simples-progress');
+      if (savedProgress) {
+        const progress = JSON.parse(savedProgress);
+        setSectionsProgress(progress);
+        
+        const completed = progress.filter((p: SectionProgress) => p.completed).map((p: SectionProgress) => p.sectionId);
+        setCompletedSections(completed);
+        
+        const totalXP = progress.reduce((total: number, p: SectionProgress) => {
+          return total + (p.xpEarned || 0);
+        }, 0);
+        setXpEarned(totalXP);
+      }
+    };
+
+    // Écouter les changements de localStorage
+    window.addEventListener('storage', handleStorageChange);
+    
+    // Vérifier périodiquement les changements (pour les changements dans le même onglet)
+    const interval = setInterval(handleStorageChange, 1000);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      clearInterval(interval);
+    };
+  }, []);
 
   const getSectionPath = (sectionId: string) => {
     return `/chapitre/ce1-fractions-simples/${sectionId}`;
