@@ -294,7 +294,7 @@ export default function ComptageCP() {
                     <button
                       key={num}
                       onClick={() => speakNumber(num)}
-                      className="bg-white p-4 rounded-lg font-bold text-2xl hover:bg-yellow-100 transition-colors border-2 border-yellow-200 hover:border-yellow-400"
+                      className="bg-white p-4 rounded-lg font-bold text-2xl text-gray-800 hover:bg-yellow-100 hover:text-yellow-900 transition-colors border-2 border-yellow-200 hover:border-yellow-400"
                     >
                       {num}
                     </button>
