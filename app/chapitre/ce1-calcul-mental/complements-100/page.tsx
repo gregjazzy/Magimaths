@@ -611,16 +611,24 @@ export default function Complements100Page() {
                       // Si l'utilisateur a tapé une réponse mais n'a pas encore vérifié, on vérifie d'abord
                       if (userAnswer.trim() && isCorrect === null) {
                         checkAnswer();
-                      } else if (currentExercise < exercises.length - 1) {
-                        setCurrentExercise(currentExercise + 1);
-                        setUserAnswer('');
-                        setIsCorrect(null);
+                      } else {
+                        // Si on a déjà vérifié ou pas de réponse, passer au suivant
+                        goToNext();
                       }
                     }}
                     disabled={!userAnswer.trim() && isCorrect === null}
-                    className="bg-teal-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-teal-600 transition-colors disabled:opacity-50 w-full md:w-auto"
+                    className={`px-6 py-3 rounded-lg font-bold transition-colors w-full md:w-auto ${
+                      (!userAnswer.trim() && isCorrect === null)
+                        ? 'bg-gray-400 text-gray-600 cursor-not-allowed'
+                        : 'bg-teal-500 text-white hover:bg-teal-600'
+                    }`}
                   >
-                    {userAnswer.trim() && isCorrect === null ? '✅ Vérifier' : 'Suivant →'}
+                    {userAnswer.trim() && isCorrect === null 
+                      ? '✅ Vérifier' 
+                      : currentExercise === exercises.length - 1 
+                        ? 'Terminer' 
+                        : 'Suivant →'
+                    }
                   </button>
                 </div>
               </div>
