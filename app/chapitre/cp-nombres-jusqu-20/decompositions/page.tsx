@@ -435,33 +435,33 @@ export default function DecompositionsCP() {
           </div>
         ) : (
           /* EXERCICES */
-          <div className="space-y-8">
+          <div className="space-y-6 sm:space-y-8">
             {/* Header exercices */}
-            <div className="bg-white rounded-xl p-6 shadow-lg">
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-2xl font-bold text-gray-900">
+            <div className="bg-white rounded-xl p-4 sm:p-6 shadow-lg">
+              <div className="flex flex-col sm:flex-row justify-between items-center mb-3 sm:mb-4 space-y-2 sm:space-y-0">
+                <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900">
                   ✏️ Exercice {currentExercise + 1} sur {exercises.length}
                 </h2>
                 <button
                   onClick={resetAll}
-                  className="bg-gray-500 text-white px-4 py-2 rounded-lg font-bold hover:bg-gray-600 transition-colors"
+                  className="bg-gray-500 text-white px-3 sm:px-4 py-2 rounded-lg font-bold hover:bg-gray-600 transition-colors text-sm sm:text-base"
                 >
-                  <RotateCcw className="inline w-4 h-4 mr-2" />
+                  <RotateCcw className="inline w-3 h-3 sm:w-4 sm:h-4 mr-2" />
                   Recommencer
                 </button>
               </div>
               
               {/* Barre de progression */}
-              <div className="w-full bg-gray-200 rounded-full h-4 mb-3">
+              <div className="w-full bg-gray-200 rounded-full h-3 sm:h-4 mb-2 sm:mb-3">
                 <div 
-                  className="bg-purple-500 h-4 rounded-full transition-all duration-500"
+                  className="bg-purple-500 h-3 sm:h-4 rounded-full transition-all duration-500"
                   style={{ width: `${((currentExercise + 1) / exercises.length) * 100}%` }}
                 ></div>
               </div>
               
               {/* Score */}
               <div className="text-center">
-                <div className="text-xl font-bold text-purple-600">
+                <div className="text-lg sm:text-xl font-bold text-purple-600">
                   Score : {score}/{exercises.length}
                 </div>
               </div>
@@ -475,41 +475,41 @@ export default function DecompositionsCP() {
               
               {/* Question avec visualisation */}
               <div className="bg-purple-50 rounded-lg p-3 sm:p-4 md:p-8 mb-3 sm:mb-6 md:mb-8">
-                <div className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-purple-600 mb-3 sm:mb-4 md:mb-6">
+                <div className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-purple-600 mb-3 sm:mb-4 md:mb-6">
                   {exercises[currentExercise].question}
                 </div>
                 
                 {/* Aide visuelle */}
-                <div className="flex justify-center items-center space-x-2 sm:space-x-3 md:space-x-4 mt-3 sm:mt-4 md:mt-6">
+                <div className="flex flex-col sm:flex-row justify-center items-center space-y-2 sm:space-y-0 sm:space-x-2 md:space-x-4 mt-3 sm:mt-4 md:mt-6">
                   <div className="text-center">
-                    <div className="text-base sm:text-xl md:text-2xl lg:text-3xl mb-1 sm:mb-2">
+                    <div className="text-sm sm:text-base md:text-lg lg:text-xl mb-1 sm:mb-2 break-all">
                       {'🔴'.repeat(exercises[currentExercise].number)}
                     </div>
-                    <div className="font-bold text-sm sm:text-base md:text-lg text-gray-800">{exercises[currentExercise].number}</div>
+                    <div className="font-bold text-xs sm:text-sm md:text-base text-gray-800">{exercises[currentExercise].number}</div>
                   </div>
-                  <div className="text-base sm:text-xl md:text-2xl lg:text-3xl font-bold text-purple-600">=</div>
+                  <div className="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-purple-600">=</div>
                   <div className="text-center">
-                    <div className="text-base sm:text-xl md:text-2xl lg:text-3xl mb-1 sm:mb-2">
+                    <div className="text-sm sm:text-base md:text-lg lg:text-xl mb-1 sm:mb-2 break-all">
                       {'🔴'.repeat(exercises[currentExercise].part1)}
                     </div>
-                    <div className="font-bold text-sm sm:text-base md:text-lg text-gray-800">{exercises[currentExercise].part1}</div>
+                    <div className="font-bold text-xs sm:text-sm md:text-base text-gray-800">{exercises[currentExercise].part1}</div>
                   </div>
-                  <div className="text-base sm:text-xl md:text-2xl lg:text-3xl font-bold text-purple-600">+</div>
+                  <div className="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-purple-600">+</div>
                   <div className="text-center">
-                    <div className="text-base sm:text-xl md:text-2xl lg:text-3xl mb-1 sm:mb-2">❓</div>
-                    <div className="font-bold text-sm sm:text-base md:text-lg text-gray-800">?</div>
+                    <div className="text-sm sm:text-base md:text-lg lg:text-xl mb-1 sm:mb-2">❓</div>
+                    <div className="font-bold text-xs sm:text-sm md:text-base text-gray-800">?</div>
                   </div>
                 </div>
               </div>
               
               {/* Choix multiples */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-2 sm:gap-3 md:gap-4 max-w-sm sm:max-w-md mx-auto mb-4 sm:mb-6 md:mb-8">
+              <div className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-3 gap-2 sm:gap-3 md:gap-4 max-w-xs sm:max-w-sm md:max-w-md mx-auto mb-4 sm:mb-6 md:mb-8">
                 {(shuffledChoices.length > 0 ? shuffledChoices : exercises[currentExercise].choices).map((choice) => (
                   <button
                     key={choice}
                     onClick={() => handleAnswerClick(choice)}
                     disabled={isCorrect !== null}
-                    className={`p-6 rounded-lg font-bold text-4xl transition-all ${
+                    className={`p-3 sm:p-4 md:p-6 rounded-lg font-bold text-xl sm:text-2xl md:text-3xl lg:text-4xl transition-all flex items-center justify-center min-h-[60px] sm:min-h-[70px] md:min-h-[80px] ${
                       userAnswer === choice
                         ? isCorrect === true
                           ? 'bg-green-500 text-white'
@@ -528,21 +528,21 @@ export default function DecompositionsCP() {
               
               {/* Résultat */}
               {isCorrect !== null && (
-                <div className={`p-6 rounded-lg mb-6 ${
+                <div className={`p-4 sm:p-6 rounded-lg mb-4 sm:mb-6 ${
                   isCorrect ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
                 }`}>
-                  <div className="flex items-center justify-center space-x-3">
+                  <div className="flex flex-col sm:flex-row items-center justify-center space-y-2 sm:space-y-0 sm:space-x-3">
                     {isCorrect ? (
                       <>
-                        <CheckCircle className="w-8 h-8" />
-                        <span className="font-bold text-xl">
+                        <CheckCircle className="w-6 h-6 sm:w-8 sm:h-8" />
+                        <span className="font-bold text-sm sm:text-base lg:text-xl text-center">
                           Parfait ! {exercises[currentExercise].number} = {exercises[currentExercise].part1} + {exercises[currentExercise].correctAnswer} !
                         </span>
                       </>
                     ) : (
                       <>
-                        <XCircle className="w-8 h-8" />
-                        <span className="font-bold text-xl">
+                        <XCircle className="w-6 h-6 sm:w-8 sm:h-8" />
+                        <span className="font-bold text-sm sm:text-base lg:text-xl text-center">
                           Pas tout à fait... C'était {exercises[currentExercise].correctAnswer} !
                         </span>
                       </>
@@ -553,38 +553,38 @@ export default function DecompositionsCP() {
 
               {/* Feedback détaillé pour les réponses incorrectes */}
               {!isCorrect && isCorrect !== null && (
-                <div className="bg-white rounded-lg p-6 border-2 border-blue-300 mb-6">
-                  <h4 className="text-lg font-bold mb-4 text-blue-800 text-center">
+                <div className="bg-white rounded-lg p-4 sm:p-6 border-2 border-blue-300 mb-4 sm:mb-6">
+                  <h4 className="text-base sm:text-lg font-bold mb-3 sm:mb-4 text-blue-800 text-center">
                     🎯 Regarde la bonne réponse !
                   </h4>
-                  <div className="space-y-4">
-                    <div className="bg-blue-50 rounded-lg p-4">
+                  <div className="space-y-3 sm:space-y-4">
+                    <div className="bg-blue-50 rounded-lg p-3 sm:p-4">
                       <div className="text-center">
-                        <div className="text-2xl font-bold text-blue-600 mb-4">
+                        <div className="text-lg sm:text-xl lg:text-2xl font-bold text-blue-600 mb-3 sm:mb-4">
                           {exercises[currentExercise].number} = {exercises[currentExercise].part1} + {exercises[currentExercise].correctAnswer}
                         </div>
                         
                         {/* Illustration dans le bon ordre */}
-                        <div className="flex justify-center items-center space-x-4 mb-4">
+                        <div className="flex flex-col sm:flex-row justify-center items-center space-y-2 sm:space-y-0 sm:space-x-3 lg:space-x-4 mb-3 sm:mb-4">
                           <div className="text-center">
-                            <div className="text-2xl mb-2">
+                            <div className="text-sm sm:text-base lg:text-xl mb-1 sm:mb-2 break-all">
                               {'🔴'.repeat(exercises[currentExercise].number)}
                             </div>
-                            <div className="font-bold text-lg text-gray-800">{exercises[currentExercise].number}</div>
+                            <div className="font-bold text-xs sm:text-sm lg:text-base text-gray-800">{exercises[currentExercise].number}</div>
                           </div>
-                          <div className="text-2xl font-bold text-blue-600">=</div>
+                          <div className="text-sm sm:text-base lg:text-xl font-bold text-blue-600">=</div>
                           <div className="text-center">
-                            <div className="text-2xl mb-2">
+                            <div className="text-sm sm:text-base lg:text-xl mb-1 sm:mb-2 break-all">
                               {'🔴'.repeat(exercises[currentExercise].part1)}
                             </div>
-                            <div className="font-bold text-lg text-gray-800">{exercises[currentExercise].part1}</div>
+                            <div className="font-bold text-xs sm:text-sm lg:text-base text-gray-800">{exercises[currentExercise].part1}</div>
                           </div>
-                          <div className="text-2xl font-bold text-blue-600">+</div>
+                          <div className="text-sm sm:text-base lg:text-xl font-bold text-blue-600">+</div>
                           <div className="text-center">
-                            <div className="text-2xl mb-2">
+                            <div className="text-sm sm:text-base lg:text-xl mb-1 sm:mb-2 break-all">
                               {'🔴'.repeat(parseInt(exercises[currentExercise].correctAnswer))}
                             </div>
-                            <div className="font-bold text-lg text-gray-800">{exercises[currentExercise].correctAnswer}</div>
+                            <div className="font-bold text-xs sm:text-sm lg:text-base text-gray-800">{exercises[currentExercise].correctAnswer}</div>
                           </div>
                         </div>
                       </div>
@@ -597,15 +597,15 @@ export default function DecompositionsCP() {
                           exercises[currentExercise].part1, 
                           exercises[currentExercise].correctAnswer
                         )}
-                        className="bg-blue-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-blue-600 transition-colors inline-flex items-center space-x-2"
+                        className="bg-blue-500 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-bold hover:bg-blue-600 transition-colors inline-flex items-center space-x-2 text-sm sm:text-base"
                       >
-                        <Volume2 className="w-4 h-4" />
+                        <Volume2 className="w-3 h-3 sm:w-4 sm:h-4" />
                         <span>Écouter la bonne réponse</span>
                       </button>
                     </div>
                     
                     <div className="bg-gradient-to-r from-purple-100 to-pink-100 rounded-lg p-3 text-center">
-                      <p className="text-sm font-semibold text-purple-800">
+                      <p className="text-xs sm:text-sm font-semibold text-purple-800">
                         Maintenant tu sais ! {exercises[currentExercise].number} objets = {exercises[currentExercise].part1} objets + {exercises[currentExercise].correctAnswer} objets !
                       </p>
                     </div>
@@ -618,7 +618,7 @@ export default function DecompositionsCP() {
                 <div className="flex justify-center">
                   <button
                     onClick={nextExercise}
-                    className="bg-purple-500 text-white px-8 py-4 rounded-lg font-bold text-lg hover:bg-purple-600 transition-colors"
+                    className="bg-purple-500 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-lg font-bold text-base sm:text-lg hover:bg-purple-600 transition-colors"
                   >
                     Suivant →
                   </button>
