@@ -232,30 +232,30 @@ export default function DecompositionsCP() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-100">
-      <div className="max-w-6xl mx-auto px-4 py-8">
+      <div className="max-w-6xl mx-auto px-3 sm:px-4 lg:px-6 py-4 sm:py-6 lg:py-8">
         {/* Header */}
-        <div className="mb-8">
-          <Link href="/chapitre/cp-nombres-jusqu-20" className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors mb-4">
+        <div className="mb-6 sm:mb-8">
+          <Link href="/chapitre/cp-nombres-jusqu-20" className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors mb-3 sm:mb-4">
             <ArrowLeft className="w-4 h-4" />
-            <span>Retour au chapitre</span>
+            <span className="text-sm sm:text-base">Retour au chapitre</span>
           </Link>
           
-          <div className="bg-white rounded-xl p-6 shadow-lg text-center">
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">
+          <div className="bg-white rounded-xl p-4 sm:p-6 shadow-lg text-center">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-3 sm:mb-4">
               🧩 Les décompositions additives
             </h1>
-            <p className="text-lg text-gray-600">
+            <p className="text-sm sm:text-base lg:text-lg text-gray-600">
               Découvre toutes les façons de faire un nombre avec des additions !
             </p>
           </div>
         </div>
 
         {/* Navigation entre cours et exercices */}
-        <div className="flex justify-center mb-8">
-          <div className="bg-white rounded-lg p-1 shadow-md">
+        <div className="flex justify-center mb-6 sm:mb-8">
+          <div className="bg-white rounded-lg p-1 shadow-md flex h-auto">
             <button
               onClick={() => setShowExercises(false)}
-              className={`px-6 py-3 rounded-lg font-bold transition-all ${
+              className={`px-4 sm:px-6 py-3 sm:py-4 rounded-lg font-bold transition-all text-sm sm:text-base h-full flex items-center justify-center ${
                 !showExercises 
                   ? 'bg-purple-500 text-white shadow-md' 
                   : 'text-gray-600 hover:bg-gray-100'
@@ -265,71 +265,72 @@ export default function DecompositionsCP() {
             </button>
             <button
               onClick={() => setShowExercises(true)}
-              className={`px-6 py-3 rounded-lg font-bold transition-all ${
+              className={`px-4 sm:px-6 py-3 sm:py-4 rounded-lg font-bold transition-all text-sm sm:text-base h-full flex flex-col items-center justify-center ${
                 showExercises 
                   ? 'bg-purple-500 text-white shadow-md' 
                   : 'text-gray-600 hover:bg-gray-100'
               }`}
             >
-              ✏️ Exercices ({score}/{exercises.length})
+              <span>✏️ Exercices</span>
+              <span className="text-xs">({score}/{exercises.length})</span>
             </button>
           </div>
         </div>
 
         {!showExercises ? (
           /* COURS */
-          <div className="space-y-8">
+          <div className="space-y-6 sm:space-y-8">
             {/* Explication des décompositions */}
-            <div className="bg-white rounded-xl p-8 shadow-lg">
-              <h2 className="text-2xl font-bold text-center mb-6 text-gray-900">
+            <div className="bg-white rounded-xl p-4 sm:p-6 lg:p-8 shadow-lg">
+              <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-center mb-4 sm:mb-6 text-gray-900">
                 🧠 Qu'est-ce qu'une décomposition additive ?
               </h2>
               
-              <div className="bg-purple-50 rounded-lg p-6 mb-6">
-                <p className="text-xl text-center text-gray-800 mb-4">
+              <div className="bg-purple-50 rounded-lg p-4 sm:p-6 mb-4 sm:mb-6">
+                <p className="text-base sm:text-lg lg:text-xl text-center text-gray-800 mb-3 sm:mb-4">
                   Une décomposition, c'est <strong>couper un nombre en plusieurs morceaux</strong> !
                 </p>
                 <div className="text-center">
-                  <div className="text-4xl font-bold text-purple-600 mb-4">5 = 2 + 3</div>
-                  <p className="text-lg text-gray-700">On peut faire 5 avec 2 et 3 !</p>
+                  <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-purple-600 mb-3 sm:mb-4">5 = 2 + 3</div>
+                  <p className="text-sm sm:text-base lg:text-lg text-gray-700">On peut faire 5 avec 2 et 3 !</p>
                 </div>
               </div>
 
               {/* Exemple visuel avec des objets */}
-              <div className="bg-yellow-50 rounded-lg p-6">
-                <h3 className="text-xl font-bold mb-4 text-yellow-800 text-center">
+              <div className="bg-yellow-50 rounded-lg p-4 sm:p-6">
+                <h3 className="text-base sm:text-lg lg:text-xl font-bold mb-3 sm:mb-4 text-yellow-800 text-center">
                   🍎 Exemple : 5 pommes = 2 pommes + 3 pommes
                 </h3>
-                <div className="flex justify-center items-center space-x-4">
+                <div className="flex flex-col sm:flex-row justify-center items-center space-y-3 sm:space-y-0 sm:space-x-4">
                   <div className="text-center">
-                    <div className="text-4xl mb-2">🍎🍎🍎🍎🍎</div>
-                    <div className="font-bold text-lg text-gray-800">5 pommes</div>
+                    <div className="text-xl sm:text-2xl lg:text-4xl mb-2">🍎🍎🍎🍎🍎</div>
+                    <div className="font-bold text-sm sm:text-base lg:text-lg text-gray-800">5 pommes</div>
                   </div>
-                  <div className="text-3xl font-bold text-purple-600">=</div>
+                  <div className="text-lg sm:text-2xl lg:text-3xl font-bold text-purple-600">=</div>
                   <div className="text-center">
-                    <div className="text-4xl mb-2">🍎🍎</div>
-                    <div className="font-bold text-lg text-gray-800">2 pommes</div>
+                    <div className="text-xl sm:text-2xl lg:text-4xl mb-2">🍎🍎</div>
+                    <div className="font-bold text-sm sm:text-base lg:text-lg text-gray-800">2 pommes</div>
                   </div>
-                  <div className="text-3xl font-bold text-purple-600">+</div>
+                  <div className="text-lg sm:text-2xl lg:text-3xl font-bold text-purple-600">+</div>
                   <div className="text-center">
-                    <div className="text-4xl mb-2">🍎🍎🍎</div>
-                    <div className="font-bold text-lg text-gray-800">3 pommes</div>
+                    <div className="text-xl sm:text-2xl lg:text-4xl mb-2">🍎🍎🍎</div>
+                    <div className="font-bold text-sm sm:text-base lg:text-lg text-gray-800">3 pommes</div>
                   </div>
                 </div>
               </div>
             </div>
 
             {/* Sélecteur de nombre */}
-            <div className="bg-white rounded-xl p-8 shadow-lg">
-              <h2 className="text-2xl font-bold text-center mb-6 text-gray-900">
+            <div className="bg-white rounded-xl p-4 sm:p-6 lg:p-8 shadow-lg">
+              <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-center mb-4 sm:mb-6 text-gray-900">
                 🎯 Choisis un nombre à décomposer
               </h2>
-              <div className="grid grid-cols-3 md:grid-cols-6 gap-4 mb-6">
+              <div className="grid grid-cols-3 sm:grid-cols-6 gap-3 sm:gap-4 mb-4 sm:mb-6">
                 {['3', '4', '5', '6', '7', '8'].map((num) => (
                   <button
                     key={num}
                     onClick={() => setSelectedNumber(num)}
-                    className={`p-6 rounded-lg font-bold text-3xl transition-all ${
+                    className={`p-3 sm:p-4 lg:p-6 rounded-lg font-bold text-xl sm:text-2xl lg:text-3xl transition-all ${
                       selectedNumber === num
                         ? 'bg-purple-500 text-white shadow-lg scale-105'
                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -342,56 +343,56 @@ export default function DecompositionsCP() {
             </div>
 
             {/* Affichage des décompositions */}
-            <div className="bg-white rounded-xl p-8 shadow-lg">
-              <h2 className="text-2xl font-bold text-center mb-6 text-gray-900">
+            <div className="bg-white rounded-xl p-4 sm:p-6 lg:p-8 shadow-lg">
+              <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-center mb-4 sm:mb-6 text-gray-900">
                 📊 Toutes les façons de faire {selectedNumber}
               </h2>
               
-              <div className="space-y-4">
+              <div className="space-y-3 sm:space-y-4">
                 {numbersDecompositions[selectedNumber as keyof typeof numbersDecompositions]?.map((decomp, index) => (
-                  <div key={index} className="bg-purple-50 rounded-lg p-6">
-                    <div className="flex justify-center items-center space-x-6">
+                  <div key={index} className="bg-purple-50 rounded-lg p-3 sm:p-4 lg:p-6">
+                    <div className="flex flex-col sm:flex-row justify-center items-center space-y-3 sm:space-y-0 sm:space-x-4 lg:space-x-6">
                       {/* Première partie */}
-                      <div className="text-center min-w-[100px]">
-                        <div className="text-2xl mb-2">
+                      <div className="text-center min-w-[80px] sm:min-w-[100px]">
+                        <div className="text-base sm:text-lg lg:text-2xl mb-1 sm:mb-2 break-all">
                           {decomp.visual1}
                         </div>
-                        <div className="font-bold text-lg text-gray-800">
+                        <div className="font-bold text-sm sm:text-base lg:text-lg text-gray-800">
                           {decomp.formula.split(' = ')[1].split(' + ')[0]}
                         </div>
                       </div>
                       
-                      <div className="text-3xl font-bold text-purple-600">
-                        <Plus className="w-8 h-8" />
+                      <div className="text-lg sm:text-2xl lg:text-3xl font-bold text-purple-600">
+                        <Plus className="w-4 h-4 sm:w-6 sm:h-6 lg:w-8 lg:h-8" />
                       </div>
                       
                       {/* Deuxième partie */}
-                      <div className="text-center min-w-[100px]">
-                        <div className="text-2xl mb-2">
+                      <div className="text-center min-w-[80px] sm:min-w-[100px]">
+                        <div className="text-base sm:text-lg lg:text-2xl mb-1 sm:mb-2 break-all">
                           {decomp.visual2}
                         </div>
-                        <div className="font-bold text-lg text-gray-800">
+                        <div className="font-bold text-sm sm:text-base lg:text-lg text-gray-800">
                           {decomp.formula.split(' + ')[1]}
                         </div>
                       </div>
                       
-                      <div className="text-3xl font-bold text-purple-600">=</div>
+                      <div className="text-lg sm:text-2xl lg:text-3xl font-bold text-purple-600">=</div>
                       
                       {/* Résultat */}
                       <div className="text-center">
-                        <div className="text-4xl font-bold text-purple-600">
+                        <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-purple-600">
                           {selectedNumber}
                         </div>
                       </div>
                     </div>
                     
                     {/* Formule complète */}
-                    <div className="text-center mt-4">
+                    <div className="text-center mt-3 sm:mt-4">
                       <button
                         onClick={() => speakText(decomp.formula.replace(/[+=]/g, (match) => match === '+' ? 'plus' : 'égale'))}
-                        className="bg-purple-200 hover:bg-purple-300 text-purple-900 px-4 py-2 rounded-lg font-bold text-lg transition-colors"
+                        className="bg-purple-200 hover:bg-purple-300 text-purple-900 px-3 sm:px-4 py-2 rounded-lg font-bold text-sm sm:text-base lg:text-lg transition-colors"
                       >
-                        <Volume2 className="inline w-4 h-4 mr-2" />
+                        <Volume2 className="inline w-3 h-3 sm:w-4 sm:h-4 mr-2" />
                         {decomp.formula}
                       </button>
                     </div>
