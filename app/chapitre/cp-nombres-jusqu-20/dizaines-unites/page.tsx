@@ -253,19 +253,19 @@ export default function ValeurPositionnelleCP20() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
       <style dangerouslySetInnerHTML={{ __html: styles }} />
-      <div className="max-w-6xl mx-auto px-3 sm:px-4 py-4 sm:py-8">
+      <div className="max-w-6xl mx-auto px-3 sm:px-4 lg:px-6 py-4 sm:py-6 lg:py-8">
         {/* Header */}
-        <div className="mb-6 sm:mb-8">
+        <div className="mb-4 sm:mb-8">
           <Link href="/chapitre/cp-nombres-jusqu-20" className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors mb-3 sm:mb-4">
             <ArrowLeft className="w-4 h-4" />
             <span className="text-sm sm:text-base">Retour au chapitre</span>
           </Link>
           
           <div className="bg-white rounded-xl p-4 sm:p-6 shadow-lg text-center">
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-2 sm:mb-4">
+            <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 mb-2 sm:mb-4">
               🔢 Dizaines et unités
             </h1>
-            <p className="text-base sm:text-lg text-gray-600 px-2">
+            <p className="text-sm sm:text-base lg:text-lg text-gray-600 px-2">
               Comprends la différence entre unités et dizaines dans les nombres de 10 à 20 !
             </p>
           </div>
@@ -273,10 +273,10 @@ export default function ValeurPositionnelleCP20() {
 
         {/* Navigation entre cours et exercices */}
         <div className="flex justify-center mb-4 sm:mb-8">
-          <div className="bg-white rounded-lg p-1 shadow-md">
+          <div className="bg-white rounded-lg p-1 shadow-md flex h-auto">
             <button
               onClick={() => setShowExercises(false)}
-              className={`px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-bold transition-all text-sm sm:text-base ${
+              className={`px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-bold transition-all text-sm sm:text-base h-full flex items-center justify-center ${
                 !showExercises 
                   ? 'bg-blue-500 text-white shadow-md' 
                   : 'text-gray-600 hover:bg-gray-100'
@@ -286,13 +286,14 @@ export default function ValeurPositionnelleCP20() {
             </button>
             <button
               onClick={() => setShowExercises(true)}
-              className={`px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-bold transition-all text-sm sm:text-base ${
+              className={`px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-bold transition-all text-sm sm:text-base h-full flex flex-col items-center justify-center ${
                 showExercises 
                   ? 'bg-blue-500 text-white shadow-md' 
                   : 'text-gray-600 hover:bg-gray-100'
               }`}
             >
-              ✏️ Exercices ({score}/{exercises.length})
+              <span>✏️ Exercices</span>
+              <span className="text-xs">({score}/{exercises.length})</span>
             </button>
           </div>
         </div>
@@ -302,11 +303,11 @@ export default function ValeurPositionnelleCP20() {
           <div className="space-y-4 sm:space-y-8">
             {/* Sélecteur de nombre */}
             <div className="bg-white rounded-xl p-3 sm:p-6 shadow-lg">
-              <h2 className="text-lg sm:text-2xl font-bold text-center mb-3 sm:mb-6 text-gray-900">
+              <h2 className="text-base sm:text-lg lg:text-2xl font-bold text-center mb-3 sm:mb-6 text-gray-900">
                 🎯 Choisis un nombre à analyser
               </h2>
               <div className="flex justify-center">
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 max-w-lg">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 lg:gap-4 max-w-lg">
                   {numbersDecomposition.map((num) => (
                     <button
                       key={num.number}
@@ -314,7 +315,7 @@ export default function ValeurPositionnelleCP20() {
                         setSelectedNumber(num.number);
                         setAnimationTriggered(false);
                       }}
-                      className={`p-3 sm:p-4 rounded-lg font-bold text-lg sm:text-xl transition-all min-w-[60px] sm:min-w-[80px] ${
+                      className={`p-2 sm:p-3 lg:p-4 rounded-lg font-bold text-base sm:text-lg lg:text-xl transition-all min-w-[50px] sm:min-w-[60px] lg:min-w-[80px] ${
                         selectedNumber === num.number
                           ? 'bg-blue-500 text-white shadow-lg scale-105'
                           : 'bg-gray-100 text-gray-700 hover:bg-gray-200 hover:scale-102'
@@ -328,32 +329,32 @@ export default function ValeurPositionnelleCP20() {
             </div>
 
             {/* Affichage du nombre sélectionné */}
-            <div className="bg-white rounded-xl p-4 sm:p-8 shadow-lg text-center">
-              <h3 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-6 text-gray-900">
+            <div className="bg-white rounded-xl p-3 sm:p-6 lg:p-8 shadow-lg text-center">
+              <h3 className="text-base sm:text-lg lg:text-2xl font-bold mb-3 sm:mb-6 text-gray-900">
                 🔍 Analysons le nombre {selectedNumber}
               </h3>
               
               {/* Grande visualisation du nombre */}
-              <div className="bg-blue-50 rounded-lg p-3 sm:p-8 mb-4 sm:mb-8">
-                <div className="text-4xl sm:text-6xl lg:text-8xl font-bold text-blue-600 mb-3 sm:mb-6 animate-pulse">
+              <div className="bg-blue-50 rounded-lg p-3 sm:p-6 lg:p-8 mb-3 sm:mb-6 lg:mb-8">
+                <div className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-blue-600 mb-3 sm:mb-6 animate-pulse">
                   {selectedNumber}
                 </div>
                 
                 {/* Animation simple de décomposition */}
                 <div className="bg-white rounded-lg p-3 sm:p-6 mb-3 sm:mb-6">
-                  <h4 className="text-base sm:text-lg font-bold mb-4 text-gray-800 text-center">
+                  <h4 className="text-sm sm:text-base lg:text-lg font-bold mb-3 sm:mb-4 text-gray-800 text-center">
                     Décomposition de {selectedNumber}
                   </h4>
                   
                   {/* Tableau magique des positions avec animation */}
-                  <div className="space-y-4">
+                  <div className="space-y-3 sm:space-y-4">
                     <div className="text-center">
-                      <h5 className="text-lg font-bold text-gray-800 mb-6">
+                      <h5 className="text-base sm:text-lg font-bold text-gray-800 mb-4 sm:mb-6">
                         🎯 Tableau magique des positions
                       </h5>
                       
                       {/* Boutons de contrôle en haut */}
-                      <div className="flex justify-center mb-6">
+                      <div className="flex justify-center mb-4 sm:mb-6">
                         <button
                           onClick={() => {
                             // Toujours lancer l'animation complète
@@ -364,7 +365,7 @@ export default function ValeurPositionnelleCP20() {
                               setTimeout(() => setAnimationTriggered(false), 4500);
                             }, 500);
                           }}
-                          className="bg-purple-500 hover:bg-purple-600 text-white px-8 py-3 rounded-lg font-bold transition-colors flex items-center space-x-2"
+                          className="bg-purple-500 hover:bg-purple-600 text-white px-4 sm:px-6 lg:px-8 py-2 sm:py-3 rounded-lg font-bold transition-colors flex items-center space-x-2 text-sm sm:text-base"
                         >
                           <span>🎬</span>
                           <span>Voir l'animation</span>
@@ -373,15 +374,15 @@ export default function ValeurPositionnelleCP20() {
                       
                       <div className="relative flex flex-col items-center">
                         {/* Nombre original qui reste visible */}
-                        <div className="mb-8 relative z-10">
-                          <div className="bg-blue-100 rounded-lg px-6 py-3 border-2 border-blue-300">
-                            <div className="text-6xl font-bold text-blue-600 relative">
+                        <div className="mb-6 sm:mb-8 relative z-10">
+                          <div className="bg-blue-100 rounded-lg px-4 sm:px-6 py-2 sm:py-3 border-2 border-blue-300">
+                            <div className="text-3xl sm:text-4xl lg:text-6xl font-bold text-blue-600 relative">
                               <span className="relative">{selectedNumber}</span>
                               {/* Chiffres animés par-dessus */}
                               <span 
                                 className="absolute top-0 left-0 transition-all duration-[4000ms] ease-in-out"
                                 style={{
-                                  transform: animationTriggered ? 'translateX(-180px) translateY(240px) scale(0.83)' : 'translateX(0) translateY(0) scale(1)',
+                                  transform: animationTriggered ? 'translateX(-120px) translateY(160px) scale(0.83)' : 'translateX(0) translateY(0) scale(1)',
                                   color: animationTriggered ? '#059669' : '#2563eb',
                                   zIndex: 50,
                                   opacity: animationTriggered ? 0 : 1,
@@ -393,8 +394,8 @@ export default function ValeurPositionnelleCP20() {
                               <span 
                                 className="absolute top-0 transition-all duration-[4000ms] ease-in-out"
                                 style={{
-                                  left: '0.6em',
-                                  transform: animationTriggered ? 'translateX(180px) translateY(240px) scale(0.83)' : 'translateX(0) translateY(0) scale(1)',
+                                  left: '0.5em',
+                                  transform: animationTriggered ? 'translateX(120px) translateY(160px) scale(0.83)' : 'translateX(0) translateY(0) scale(1)',
                                   color: animationTriggered ? '#ea580c' : '#2563eb',
                                   zIndex: 50,
                                   opacity: animationTriggered ? 0 : 1,
@@ -408,27 +409,27 @@ export default function ValeurPositionnelleCP20() {
                         </div>
                         
                         {/* Vrai tableau dizaines/unités */}
-                        <div className="bg-white rounded-xl shadow-xl border-4 border-gray-400 overflow-hidden">
-                          <table className="border-collapse">
+                        <div className="bg-white rounded-lg sm:rounded-xl shadow-lg sm:shadow-xl border-2 sm:border-4 border-gray-400 overflow-hidden">
+                          <table className="border-collapse w-full">
                             <thead>
                               <tr>
-                                <th className="bg-green-100 border-2 border-gray-400 px-12 py-4 text-lg font-bold text-green-700">
+                                <th className="bg-green-100 border-1 sm:border-2 border-gray-400 px-4 sm:px-8 lg:px-12 py-2 sm:py-3 lg:py-4 text-xs sm:text-sm lg:text-lg font-bold text-green-700">
                                   DIZAINES
                                 </th>
-                                <th className="bg-orange-100 border-2 border-gray-400 px-12 py-4 text-lg font-bold text-orange-700">
+                                <th className="bg-orange-100 border-1 sm:border-2 border-gray-400 px-4 sm:px-8 lg:px-12 py-2 sm:py-3 lg:py-4 text-xs sm:text-sm lg:text-lg font-bold text-orange-700">
                                   UNITÉS
                                 </th>
                               </tr>
                             </thead>
                             <tbody>
                               <tr>
-                                <td className="bg-green-50 border-2 border-gray-400 px-12 py-10 text-center w-40">
-                                  <div className="text-5xl font-bold text-green-600 h-16 flex items-center justify-center">
+                                <td className="bg-green-50 border-1 sm:border-2 border-gray-400 px-4 sm:px-8 lg:px-12 py-6 sm:py-8 lg:py-10 text-center w-1/2">
+                                  <div className="text-3xl sm:text-4xl lg:text-5xl font-bold text-green-600 h-12 sm:h-14 lg:h-16 flex items-center justify-center">
                                     {selectedNumber.charAt(0)}
                                   </div>
                                 </td>
-                                <td className="bg-orange-50 border-2 border-gray-400 px-12 py-10 text-center w-40">
-                                  <div className="text-5xl font-bold text-orange-600 h-16 flex items-center justify-center">
+                                <td className="bg-orange-50 border-1 sm:border-2 border-gray-400 px-4 sm:px-8 lg:px-12 py-6 sm:py-8 lg:py-10 text-center w-1/2">
+                                  <div className="text-3xl sm:text-4xl lg:text-5xl font-bold text-orange-600 h-12 sm:h-14 lg:h-16 flex items-center justify-center">
                                     {selectedNumber.charAt(1)}
                                   </div>
                                 </td>
@@ -450,9 +451,9 @@ export default function ValeurPositionnelleCP20() {
                           speakText(fullExplanation);
                         }
                       }}
-                      className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-bold transition-colors"
+                      className="bg-blue-500 hover:bg-blue-600 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-bold transition-colors text-sm sm:text-base"
                     >
-                      <Volume2 className="w-4 h-4 mr-2 inline" />
+                      <Volume2 className="w-3 h-3 sm:w-4 sm:h-4 mr-2 inline" />
                       Écouter le résultat
                     </button>
                   </div>
@@ -460,36 +461,36 @@ export default function ValeurPositionnelleCP20() {
 
                 {/* Représentation visuelle avec paquets */}
                 <div className="bg-white rounded-lg p-3 sm:p-6 mb-3 sm:mb-6">
-                  <h4 className="text-base sm:text-lg font-bold mb-2 sm:mb-4 text-gray-800">
+                  <h4 className="text-sm sm:text-base lg:text-lg font-bold mb-2 sm:mb-4 text-gray-800">
                     🔟 Regarde avec des paquets de 10 :
                   </h4>
-                  <div className="text-2xl sm:text-4xl py-2 sm:py-4 animate-pulse">
+                  <div className="text-lg sm:text-xl lg:text-2xl py-2 sm:py-4 animate-pulse break-all">
                     {numbersDecomposition.find(n => n.number === selectedNumber)?.visual}
                   </div>
                 </div>
 
                 {/* Décomposition détaillée avec animation */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-6">
                   <div className="bg-green-50 rounded-lg p-3 sm:p-6 transform hover:scale-105 transition-transform duration-300">
-                    <h4 className="text-base sm:text-lg font-bold mb-2 sm:mb-3 text-green-800">
+                    <h4 className="text-sm sm:text-base lg:text-lg font-bold mb-2 sm:mb-3 text-green-800">
                       🔟 Dizaines
                     </h4>
-                    <div className="text-3xl sm:text-5xl font-bold text-green-900 mb-2 animate-bounce">
+                    <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-green-900 mb-2 animate-bounce">
                       {numbersDecomposition.find(n => n.number === selectedNumber)?.dizaines}
                     </div>
-                    <p className="text-sm sm:text-base text-green-700">
+                    <p className="text-xs sm:text-sm lg:text-base text-green-700">
                       Le chiffre de GAUCHE
                     </p>
                   </div>
                   
                   <div className="bg-orange-50 rounded-lg p-3 sm:p-6 transform hover:scale-105 transition-transform duration-300">
-                    <h4 className="text-base sm:text-lg font-bold mb-2 sm:mb-3 text-orange-800">
+                    <h4 className="text-sm sm:text-base lg:text-lg font-bold mb-2 sm:mb-3 text-orange-800">
                       🔴 Unités
                     </h4>
-                    <div className="text-3xl sm:text-5xl font-bold text-orange-900 mb-2 animate-bounce" style={{animationDelay: '0.3s'}}>
+                    <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-orange-900 mb-2 animate-bounce" style={{animationDelay: '0.3s'}}>
                       {numbersDecomposition.find(n => n.number === selectedNumber)?.unites}
                     </div>
-                    <p className="text-sm sm:text-base text-orange-700">
+                    <p className="text-xs sm:text-sm lg:text-base text-orange-700">
                       Le chiffre de DROITE
                     </p>
                   </div>
@@ -498,9 +499,9 @@ export default function ValeurPositionnelleCP20() {
             </div>
 
             {/* Conseils pratiques */}
-            <div className="bg-gradient-to-r from-purple-400 to-blue-400 rounded-xl p-4 sm:p-6 text-white">
-              <h3 className="text-lg sm:text-xl font-bold mb-2 sm:mb-3">💡 Trucs pour retenir</h3>
-              <ul className="space-y-1 sm:space-y-2 text-sm sm:text-lg">
+            <div className="bg-gradient-to-r from-purple-400 to-blue-400 rounded-xl p-3 sm:p-4 lg:p-6 text-white">
+              <h3 className="text-base sm:text-lg lg:text-xl font-bold mb-2 sm:mb-3">💡 Trucs pour retenir</h3>
+              <ul className="space-y-1 sm:space-y-2 text-xs sm:text-sm lg:text-lg">
                 <li>• GAUCHE = dizaines (paquets de 10) 🔟</li>
                 <li>• DROITE = unités (objets seuls) 🔴</li>
                 <li>• Dans 17 : 1 paquet de 10 + 7 objets seuls</li>
@@ -514,8 +515,8 @@ export default function ValeurPositionnelleCP20() {
           <div className="space-y-4 sm:space-y-8">
             {/* Header exercices */}
             <div className="bg-white rounded-xl p-4 sm:p-6 shadow-lg">
-              <div className="flex justify-between items-center mb-3 sm:mb-4">
-                <h2 className="text-xl sm:text-2xl font-bold text-gray-900">
+              <div className="flex flex-col sm:flex-row justify-between items-center mb-3 sm:mb-4 space-y-2 sm:space-y-0">
+                <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900">
                   ✏️ Exercice {currentExercise + 1} sur {exercises.length}
                 </h2>
                 <button
@@ -537,7 +538,7 @@ export default function ValeurPositionnelleCP20() {
               
               {/* Score sous la barre */}
               <div className="text-center">
-                <div className="text-lg sm:text-xl font-bold text-blue-600">
+                <div className="text-base sm:text-lg lg:text-xl font-bold text-blue-600">
                   Score : {score}/{exercises.length}
                 </div>
               </div>
@@ -553,16 +554,16 @@ export default function ValeurPositionnelleCP20() {
               <div className="bg-blue-50 rounded-lg p-3 sm:p-4 md:p-8 mb-3 sm:mb-6 md:mb-8">
                 {exercises[currentExercise].display ? (
                   <>
-                    <div className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-blue-600 mb-2 sm:mb-3 md:mb-4">
+                    <div className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-blue-600 mb-2 sm:mb-3 md:mb-4">
                       {exercises[currentExercise].display}
                     </div>
-                    <p className="text-sm sm:text-base md:text-lg text-gray-700">
+                    <p className="text-xs sm:text-sm md:text-base text-gray-700">
                       Calcule le résultat !
                     </p>
                   </>
                 ) : (
                   <>
-                    <div className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold text-blue-600 mb-2 sm:mb-3 md:mb-6">
+                    <div className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-blue-600 mb-2 sm:mb-3 md:mb-6">
                       {exercises[currentExercise].number}
                     </div>
                   </>
@@ -570,13 +571,13 @@ export default function ValeurPositionnelleCP20() {
               </div>
               
               {/* Choix multiples */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-2 sm:gap-3 md:gap-4 max-w-sm sm:max-w-md mx-auto mb-4 sm:mb-6 md:mb-8">
+              <div className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-3 gap-2 sm:gap-3 md:gap-4 max-w-xs sm:max-w-sm md:max-w-md mx-auto mb-4 sm:mb-6 md:mb-8">
                 {shuffledChoices.map((choice) => (
                   <button
                     key={choice}
                     onClick={() => handleAnswerClick(choice)}
                     disabled={isCorrect !== null}
-                    className={`p-3 sm:p-4 md:p-6 rounded-lg font-bold text-xl sm:text-2xl md:text-3xl lg:text-4xl transition-all ${
+                    className={`p-3 sm:p-4 md:p-6 rounded-lg font-bold text-lg sm:text-xl md:text-2xl lg:text-3xl transition-all flex items-center justify-center min-h-[60px] sm:min-h-[70px] md:min-h-[80px] ${
                       userAnswer === choice
                         ? isCorrect === true
                           ? 'bg-green-500 text-white'
@@ -595,19 +596,19 @@ export default function ValeurPositionnelleCP20() {
               
               {/* Résultat */}
               {isCorrect !== null && (
-                <div className={`p-4 sm:p-6 rounded-lg mb-4 sm:mb-6 ${
+                <div className={`p-3 sm:p-4 lg:p-6 rounded-lg mb-4 sm:mb-6 ${
                   isCorrect ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
                 }`}>
-                  <div className="flex items-center justify-center space-x-3">
+                  <div className="flex flex-col sm:flex-row items-center justify-center space-y-2 sm:space-y-0 sm:space-x-3">
                     {isCorrect ? (
                       <>
-                        <CheckCircle className="w-6 h-6 sm:w-8 sm:h-8" />
-                        <span className="font-bold text-lg sm:text-xl">Bravo ! C'est bien {exercises[currentExercise].correctAnswer} !</span>
+                        <CheckCircle className="w-5 h-5 sm:w-6 sm:h-6 lg:w-8 lg:h-8" />
+                        <span className="font-bold text-sm sm:text-base lg:text-lg text-center">Bravo ! C'est bien {exercises[currentExercise].correctAnswer} !</span>
                       </>
                     ) : (
                       <>
-                        <XCircle className="w-6 h-6 sm:w-8 sm:h-8" />
-                        <span className="font-bold text-lg sm:text-xl">
+                        <XCircle className="w-5 h-5 sm:w-6 sm:h-6 lg:w-8 lg:h-8" />
+                        <span className="font-bold text-sm sm:text-base lg:text-lg text-center">
                           Pas tout à fait... C'était {exercises[currentExercise].correctAnswer} !
                         </span>
                       </>
@@ -626,7 +627,7 @@ export default function ValeurPositionnelleCP20() {
                 <div className="flex justify-center">
                   <button
                     onClick={nextExercise}
-                    className="bg-blue-500 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-lg font-bold text-base sm:text-lg hover:bg-blue-600 transition-colors"
+                    className="bg-blue-500 text-white px-4 sm:px-6 lg:px-8 py-2 sm:py-3 lg:py-4 rounded-lg font-bold text-sm sm:text-base lg:text-lg hover:bg-blue-600 transition-colors"
                   >
                     Suivant →
                   </button>
@@ -638,31 +639,31 @@ export default function ValeurPositionnelleCP20() {
 
         {/* Modale de fin d'exercices */}
         {showCompletionModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-2xl p-6 sm:p-8 max-w-md w-full text-center shadow-2xl">
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-3 sm:p-4">
+            <div className="bg-white rounded-2xl p-4 sm:p-6 lg:p-8 max-w-sm sm:max-w-md w-full text-center shadow-2xl">
               {(() => {
                 const percentage = Math.round((finalScore / exercises.length) * 100);
                 const getMessage = () => {
                   if (percentage >= 90) return { title: "🎉 Excellent petit CP !", message: "Tu maîtrises parfaitement les dizaines et unités !", emoji: "🎉" };
                   if (percentage >= 70) return { title: "👏 Très bien !", message: "Tu comprends bien les unités et dizaines !", emoji: "👏" };
-                                      if (percentage >= 50) return { title: "👍 C'est bien !", message: "Continue à t'entraîner avec les dizaines et unités !", emoji: "😊" };
+                  if (percentage >= 50) return { title: "👍 C'est bien !", message: "Continue à t'entraîner avec les dizaines et unités !", emoji: "😊" };
                   return { title: "💪 Continue !", message: "Refais les exercices pour mieux comprendre !", emoji: "📚" };
                 };
                 const result = getMessage();
                 return (
                   <>
-                    <div className="text-4xl sm:text-6xl mb-4">{result.emoji}</div>
-                    <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3">{result.title}</h3>
-                    <p className="text-base sm:text-lg text-gray-700 mb-6">{result.message}</p>
-                    <div className="bg-blue-100 rounded-lg p-4 mb-6">
-                      <p className="text-lg sm:text-xl font-bold text-gray-900">
+                    <div className="text-3xl sm:text-4xl lg:text-5xl mb-3 sm:mb-4">{result.emoji}</div>
+                    <h3 className="text-base sm:text-lg lg:text-xl font-bold text-gray-900 mb-2 sm:mb-3">{result.title}</h3>
+                    <p className="text-sm sm:text-base lg:text-lg text-gray-700 mb-4 sm:mb-6">{result.message}</p>
+                    <div className="bg-blue-100 rounded-lg p-3 sm:p-4 mb-4 sm:mb-6">
+                      <p className="text-base sm:text-lg lg:text-xl font-bold text-gray-900">
                         Tu as trouvé {finalScore} bonnes réponses sur {exercises.length} !
                       </p>
-                      <div className="text-2xl sm:text-4xl mt-2">
+                      <div className="text-xl sm:text-2xl lg:text-3xl mt-2">
                         {finalScore >= 12 ? '⭐⭐⭐' : finalScore >= 8 ? '⭐⭐' : '⭐'}
                       </div>
                     </div>
-                    <div className="flex space-x-3">
+                    <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3">
                       <button
                         onClick={resetAll}
                         className="flex-1 bg-blue-500 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-bold hover:bg-blue-600 transition-colors text-sm sm:text-base"
