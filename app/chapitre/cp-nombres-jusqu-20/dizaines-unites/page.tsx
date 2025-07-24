@@ -346,32 +346,32 @@ export default function ValeurPositionnelleCP20() {
             </div>
 
             {/* Affichage du nombre sélectionné */}
-            <div className="bg-white rounded-xl p-3 sm:p-6 lg:p-8 shadow-lg text-center">
-              <h3 className="text-base sm:text-lg lg:text-2xl font-bold mb-3 sm:mb-6 text-gray-900">
+            <div className="bg-white rounded-xl p-2 sm:p-4 lg:p-6 shadow-lg text-center">
+              <h3 className="text-sm sm:text-base lg:text-lg font-bold mb-2 sm:mb-4 text-gray-900">
                 🔍 Analysons le nombre {selectedNumber}
               </h3>
               
               {/* Grande visualisation du nombre */}
-              <div className="bg-blue-50 rounded-lg p-3 sm:p-6 lg:p-8 mb-3 sm:mb-6 lg:mb-8">
-                <div className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-blue-600 mb-3 sm:mb-6 animate-pulse">
+              <div className="bg-blue-50 rounded-lg p-2 sm:p-4 lg:p-6 mb-2 sm:mb-4 lg:mb-6">
+                <div className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-blue-600 mb-2 sm:mb-4 animate-pulse">
                   {selectedNumber}
                 </div>
                 
                 {/* Animation simple de décomposition */}
-                <div className="bg-white rounded-lg p-3 sm:p-6 mb-3 sm:mb-6">
-                  <h4 className="text-sm sm:text-base lg:text-lg font-bold mb-3 sm:mb-4 text-gray-800 text-center">
+                <div className="bg-white rounded-lg p-2 sm:p-4 mb-2 sm:mb-4">
+                  <h4 className="text-xs sm:text-sm lg:text-base font-bold mb-2 sm:mb-3 text-gray-800 text-center">
                     Décomposition de {selectedNumber}
                   </h4>
                   
                   {/* Tableau magique des positions avec animation */}
-                  <div className="space-y-3 sm:space-y-4">
+                  <div className="space-y-2 sm:space-y-3">
                     <div className="text-center">
-                      <h5 className="text-base sm:text-lg font-bold text-gray-800 mb-4 sm:mb-6">
+                      <h5 className="text-sm sm:text-base font-bold text-gray-800 mb-3 sm:mb-4">
                         🎯 Tableau magique des positions
                       </h5>
                       
                       {/* Boutons de contrôle en haut */}
-                      <div className="flex justify-center mb-4 sm:mb-6">
+                      <div className="flex justify-center mb-3 sm:mb-4">
                         <button
                           onClick={() => {
                             // Toujours lancer l'animation complète
@@ -382,7 +382,7 @@ export default function ValeurPositionnelleCP20() {
                               setTimeout(() => setAnimationTriggered(false), 4500);
                             }, 500);
                           }}
-                          className="bg-purple-500 hover:bg-purple-600 text-white px-4 sm:px-6 lg:px-8 py-2 sm:py-3 rounded-lg font-bold transition-colors flex items-center space-x-2 text-sm sm:text-base"
+                          className="bg-purple-500 hover:bg-purple-600 text-white px-3 sm:px-4 lg:px-6 py-1 sm:py-2 rounded-lg font-bold transition-colors flex items-center space-x-1 sm:space-x-2 text-xs sm:text-sm"
                         >
                           <span>🎬</span>
                           <span>Voir l'animation</span>
@@ -391,9 +391,9 @@ export default function ValeurPositionnelleCP20() {
                       
                       <div className="relative flex flex-col items-center">
                         {/* Nombre original qui reste visible */}
-                        <div className="mb-4 sm:mb-6 lg:mb-8 relative z-10">
-                          <div className="bg-blue-100 rounded-lg px-3 sm:px-4 lg:px-6 py-2 sm:py-3 border-2 border-blue-300">
-                            <div className="text-2xl sm:text-3xl md:text-4xl lg:text-6xl font-bold text-blue-600 relative font-mono tracking-tight leading-none">
+                        <div className="mb-3 sm:mb-4 lg:mb-6 relative z-10">
+                          <div className="bg-blue-100 rounded-lg px-2 sm:px-3 lg:px-4 py-1 sm:py-2 border-2 border-blue-300">
+                            <div className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-blue-600 relative font-mono tracking-tight leading-none">
                               <span className="relative inline-block">{selectedNumber}</span>
                               {/* Premier chiffre animé */}
                               <span 
@@ -401,10 +401,10 @@ export default function ValeurPositionnelleCP20() {
                                 style={{
                                   transform: animationTriggered 
                                     ? windowSize.width >= 1024 
-                                      ? 'translateX(-110px) translateY(170px) scale(0.75)' // Desktop plus précis
+                                      ? 'translateX(-70px) translateY(110px) scale(0.8)' // Desktop réduit
                                       : windowSize.width >= 640 
-                                        ? 'translateX(-80px) translateY(130px) scale(0.8)' // Tablet plus précis
-                                        : 'translateX(-50px) translateY(90px) scale(0.85)' // Mobile plus précis
+                                        ? 'translateX(-55px) translateY(90px) scale(0.85)' // Tablet réduit
+                                        : 'translateX(-35px) translateY(65px) scale(0.9)' // Mobile réduit
                                     : 'translateX(0) translateY(0) scale(1)',
                                   color: animationTriggered ? '#059669' : '#2563eb',
                                   zIndex: 50,
@@ -421,10 +421,10 @@ export default function ValeurPositionnelleCP20() {
                                   left: windowSize.width >= 1024 ? '1.1ch' : windowSize.width >= 640 ? '1.15ch' : '1.2ch',
                                   transform: animationTriggered 
                                     ? windowSize.width >= 1024 
-                                      ? 'translateX(110px) translateY(170px) scale(0.75)' // Desktop plus précis
+                                      ? 'translateX(70px) translateY(110px) scale(0.8)' // Desktop réduit
                                       : windowSize.width >= 640 
-                                        ? 'translateX(80px) translateY(130px) scale(0.8)' // Tablet plus précis
-                                        : 'translateX(50px) translateY(90px) scale(0.85)' // Mobile plus précis
+                                        ? 'translateX(55px) translateY(90px) scale(0.85)' // Tablet réduit
+                                        : 'translateX(35px) translateY(65px) scale(0.9)' // Mobile réduit
                                     : 'translateX(0) translateY(0) scale(1)',
                                   color: animationTriggered ? '#ea580c' : '#2563eb',
                                   zIndex: 50,
@@ -438,28 +438,28 @@ export default function ValeurPositionnelleCP20() {
                           </div>
                         </div>
                         
-                        {/* Vrai tableau dizaines/unités - version mobile optimisée */}
-                        <div className="bg-white rounded-lg shadow-lg border-2 border-gray-400 overflow-hidden w-full max-w-xs sm:max-w-sm lg:max-w-md">
+                        {/* Vrai tableau dizaines/unités - version mobile compacte */}
+                        <div className="bg-white rounded-lg shadow-lg border-2 border-gray-400 overflow-hidden w-full max-w-[250px] sm:max-w-xs lg:max-w-sm">
                           <table className="border-collapse w-full">
                             <thead>
                               <tr>
-                                <th className="bg-green-100 border border-gray-400 px-3 sm:px-4 lg:px-6 py-2 sm:py-3 text-xs sm:text-sm lg:text-base font-bold text-green-700 w-1/2">
+                                <th className="bg-green-100 border border-gray-400 px-2 sm:px-3 lg:px-4 py-1 sm:py-2 text-xs sm:text-sm font-bold text-green-700 w-1/2">
                                   DIZAINES
                                 </th>
-                                <th className="bg-orange-100 border border-gray-400 px-3 sm:px-4 lg:px-6 py-2 sm:py-3 text-xs sm:text-sm lg:text-base font-bold text-orange-700 w-1/2">
+                                <th className="bg-orange-100 border border-gray-400 px-2 sm:px-3 lg:px-4 py-1 sm:py-2 text-xs sm:text-sm font-bold text-orange-700 w-1/2">
                                   UNITÉS
                                 </th>
                               </tr>
                             </thead>
                             <tbody>
                               <tr>
-                                <td className="bg-green-50 border border-gray-400 px-3 sm:px-4 lg:px-6 py-4 sm:py-6 lg:py-8 text-center w-1/2">
-                                  <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-green-600 h-10 sm:h-12 lg:h-16 flex items-center justify-center font-mono">
+                                <td className="bg-green-50 border border-gray-400 px-2 sm:px-3 lg:px-4 py-3 sm:py-4 lg:py-6 text-center w-1/2">
+                                  <div className="text-lg sm:text-xl lg:text-2xl font-bold text-green-600 h-8 sm:h-10 lg:h-12 flex items-center justify-center font-mono">
                                     {selectedNumber.charAt(0)}
                                   </div>
                                 </td>
-                                <td className="bg-orange-50 border border-gray-400 px-3 sm:px-4 lg:px-6 py-4 sm:py-6 lg:py-8 text-center w-1/2">
-                                  <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-orange-600 h-10 sm:h-12 lg:h-16 flex items-center justify-center font-mono">
+                                <td className="bg-orange-50 border border-gray-400 px-2 sm:px-3 lg:px-4 py-3 sm:py-4 lg:py-6 text-center w-1/2">
+                                  <div className="text-lg sm:text-xl lg:text-2xl font-bold text-orange-600 h-8 sm:h-10 lg:h-12 flex items-center justify-center font-mono">
                                     {selectedNumber.charAt(1)}
                                   </div>
                                 </td>
@@ -472,7 +472,7 @@ export default function ValeurPositionnelleCP20() {
                   </div>
                   
                   {/* Un seul bouton d'écoute pour le résultat complet */}
-                  <div className="text-center">
+                  <div className="text-center mt-2 sm:mt-3">
                     <button
                       onClick={() => {
                         const selected = numbersDecomposition.find(n => n.number === selectedNumber);
@@ -481,64 +481,64 @@ export default function ValeurPositionnelleCP20() {
                           speakText(fullExplanation);
                         }
                       }}
-                      className="bg-blue-500 hover:bg-blue-600 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-bold transition-colors text-sm sm:text-base"
+                      className="bg-blue-500 hover:bg-blue-600 text-white px-3 sm:px-4 py-1 sm:py-2 rounded-lg font-bold transition-colors text-xs sm:text-sm"
                     >
-                      <Volume2 className="w-3 h-3 sm:w-4 sm:h-4 mr-2 inline" />
+                      <Volume2 className="w-3 h-3 mr-1 inline" />
                       Écouter le résultat
                     </button>
                   </div>
                 </div>
 
-                {/* Représentation visuelle avec paquets - optimisée mobile */}
-                <div className="bg-white rounded-lg p-3 sm:p-6 mb-3 sm:mb-6">
-                  <h4 className="text-sm sm:text-base lg:text-lg font-bold mb-3 sm:mb-4 text-gray-800 text-center">
+                {/* Représentation visuelle avec paquets - compacte mobile */}
+                <div className="bg-white rounded-lg p-2 sm:p-4 mb-2 sm:mb-4">
+                  <h4 className="text-xs sm:text-sm lg:text-base font-bold mb-2 sm:mb-3 text-gray-800 text-center">
                     🔟 Regarde avec des paquets de 10 :
                   </h4>
-                  <div className="bg-yellow-50 rounded-lg p-3 sm:p-4 text-center">
-                    <div className="text-base sm:text-lg lg:text-xl py-2 sm:py-3 font-mono break-all leading-relaxed">
+                  <div className="bg-yellow-50 rounded-lg p-2 sm:p-3 text-center">
+                    <div className="text-sm sm:text-base lg:text-lg py-1 sm:py-2 font-mono break-all leading-relaxed">
                       {numbersDecomposition.find(n => n.number === selectedNumber)?.visual}
                     </div>
-                    <p className="text-xs sm:text-sm text-gray-600 mt-2">
+                    <p className="text-xs text-gray-600 mt-1">
                       📦 = paquet de 10 | 🔴 = 1 unité
                     </p>
                   </div>
                 </div>
 
-                {/* Décomposition détaillée avec animation - version mobile */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 lg:gap-6">
-                  <div className="bg-green-50 rounded-lg p-3 sm:p-4 lg:p-6 transform hover:scale-105 transition-transform duration-300 border-2 border-green-200">
+                {/* Décomposition détaillée - version mobile compacte */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 lg:gap-4">
+                  <div className="bg-green-50 rounded-lg p-2 sm:p-3 lg:p-4 transform hover:scale-105 transition-transform duration-300 border border-green-200">
                     <div className="text-center">
-                      <h4 className="text-sm sm:text-base lg:text-lg font-bold mb-2 sm:mb-3 text-green-800">
+                      <h4 className="text-xs sm:text-sm lg:text-base font-bold mb-1 sm:mb-2 text-green-800">
                         🔟 Dizaines
                       </h4>
-                      <div className="bg-white rounded-lg p-2 sm:p-3 mb-2 sm:mb-3 border border-green-300">
-                        <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-green-600 font-mono">
+                      <div className="bg-white rounded-lg p-1 sm:p-2 mb-1 sm:mb-2 border border-green-300">
+                        <div className="text-lg sm:text-xl lg:text-2xl font-bold text-green-600 font-mono">
                           {numbersDecomposition.find(n => n.number === selectedNumber)?.dizaines}
                         </div>
                       </div>
-                      <p className="text-xs sm:text-sm lg:text-base text-green-700 font-semibold">
+                      <p className="text-xs sm:text-sm text-green-700 font-semibold">
                         Le chiffre de GAUCHE
                       </p>
-                      <p className="text-xs sm:text-sm text-green-600 mt-1">
+                      <p className="text-xs text-green-600 mt-1">
                         Position des dizaines
                       </p>
                     </div>
                   </div>
                   
-                  <div className="bg-orange-50 rounded-lg p-3 sm:p-4 lg:p-6 transform hover:scale-105 transition-transform duration-300 border-2 border-orange-200">
+                  <div className="bg-orange-50 rounded-lg p-2 sm:p-3 lg:p-4 transform hover:scale-105 transition-transform duration-300 border border-orange-200">
                     <div className="text-center">
-                      <h4 className="text-sm sm:text-base lg:text-lg font-bold mb-2 sm:mb-3 text-orange-800">
+                      <h4 className="text-xs sm:text-sm lg:text-base font-bold mb-1 sm:mb-2 text-orange-800">
                         🔴 Unités
                       </h4>
-                      <div className="bg-white rounded-lg p-2 sm:p-3 mb-2 sm:mb-3 border border-orange-300">
-                        <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-orange-600 font-mono">
+                      <div className="bg-white rounded-lg p-1 sm:p-2 mb-1 sm:mb-2 border border-orange-300">
+                        <div className="text-lg sm:text-xl lg:text-2xl font-bold text-orange-600 font-mono">
                           {numbersDecomposition.find(n => n.number === selectedNumber)?.unites}
                         </div>
                       </div>
-                      <p className="text-xs sm:text-sm lg:text-base text-orange-700 font-semibold">
+                      <p className="text-xs sm:text-sm text-orange-700 font-semibold">
                         Le chiffre de DROITE
                       </p>
-                      <p className="text-xs sm:text-sm text-orange-600 mt-1">
+                      <p className="text-xs text-orange-600 mt-1">
                         Position des unités
                       </p>
                     </div>
@@ -547,10 +547,10 @@ export default function ValeurPositionnelleCP20() {
               </div>
             </div>
 
-            {/* Conseils pratiques */}
-            <div className="bg-gradient-to-r from-purple-400 to-blue-400 rounded-xl p-3 sm:p-4 lg:p-6 text-white">
-              <h3 className="text-base sm:text-lg lg:text-xl font-bold mb-2 sm:mb-3">💡 Trucs pour retenir</h3>
-              <ul className="space-y-1 sm:space-y-2 text-xs sm:text-sm lg:text-lg">
+            {/* Conseils pratiques - version compacte */}
+            <div className="bg-gradient-to-r from-purple-400 to-blue-400 rounded-xl p-2 sm:p-3 lg:p-4 text-white">
+              <h3 className="text-sm sm:text-base lg:text-lg font-bold mb-1 sm:mb-2">💡 Trucs pour retenir</h3>
+              <ul className="space-y-1 text-xs sm:text-sm">
                 <li>• GAUCHE = dizaines (paquets de 10) 🔟</li>
                 <li>• DROITE = unités (objets seuls) 🔴</li>
                 <li>• Dans 17 : 1 paquet de 10 + 7 objets seuls</li>
@@ -561,33 +561,33 @@ export default function ValeurPositionnelleCP20() {
           </div>
         ) : (
           /* EXERCICES */
-          <div className="space-y-4 sm:space-y-8">
-            {/* Header exercices */}
-            <div className="bg-white rounded-xl p-4 sm:p-6 shadow-lg">
-              <div className="flex flex-col sm:flex-row justify-between items-center mb-3 sm:mb-4 space-y-2 sm:space-y-0">
-                <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900">
+          <div className="space-y-3 sm:space-y-6">
+            {/* Header exercices - version compacte */}
+            <div className="bg-white rounded-xl p-3 sm:p-4 shadow-lg">
+              <div className="flex flex-col sm:flex-row justify-between items-center mb-2 sm:mb-3 space-y-1 sm:space-y-0">
+                <h2 className="text-base sm:text-lg lg:text-xl font-bold text-gray-900">
                   ✏️ Exercice {currentExercise + 1} sur {exercises.length}
                 </h2>
                 <button
                   onClick={resetAll}
-                  className="bg-gray-500 text-white px-3 sm:px-4 py-1 sm:py-2 rounded-lg font-bold hover:bg-gray-600 transition-colors text-sm sm:text-base"
+                  className="bg-gray-500 text-white px-2 sm:px-3 py-1 rounded-lg font-bold hover:bg-gray-600 transition-colors text-xs sm:text-sm"
                 >
-                  <RotateCcw className="inline w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                  <RotateCcw className="inline w-3 h-3 mr-1" />
                   Recommencer
                 </button>
               </div>
               
               {/* Barre de progression */}
-              <div className="w-full bg-gray-200 rounded-full h-3 sm:h-4 mb-2 sm:mb-3">
+              <div className="w-full bg-gray-200 rounded-full h-2 sm:h-3 mb-1 sm:mb-2">
                 <div 
-                  className="bg-blue-500 h-3 sm:h-4 rounded-full transition-all duration-500"
+                  className="bg-blue-500 h-2 sm:h-3 rounded-full transition-all duration-500"
                   style={{ width: `${((currentExercise + 1) / exercises.length) * 100}%` }}
                 ></div>
               </div>
               
               {/* Score sous la barre */}
               <div className="text-center">
-                <div className="text-base sm:text-lg lg:text-xl font-bold text-blue-600">
+                <div className="text-sm sm:text-base lg:text-lg font-bold text-blue-600">
                   Score : {score}/{exercises.length}
                 </div>
               </div>
