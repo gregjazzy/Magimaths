@@ -211,31 +211,31 @@ export default function ComplementsDixCP() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-50 to-orange-100">
-      <div className="max-w-6xl mx-auto px-4 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-pink-50 to-purple-100">
+      <div className="max-w-6xl mx-auto px-3 sm:px-4 lg:px-6 py-4 sm:py-6 lg:py-8">
         {/* Header */}
-        <div className="mb-8">
-          <Link href="/chapitre/cp-nombres-jusqu-20" className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors mb-4">
+        <div className="mb-6 sm:mb-8">
+          <Link href="/chapitre/cp-nombres-jusqu-20" className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors mb-3 sm:mb-4">
             <ArrowLeft className="w-4 h-4" />
-            <span>Retour au chapitre</span>
+            <span className="text-sm sm:text-base">Retour au chapitre</span>
           </Link>
           
-          <div className="bg-white rounded-xl p-6 shadow-lg text-center">
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">
+          <div className="bg-white rounded-xl p-4 sm:p-6 shadow-lg text-center">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-3 sm:mb-4">
               🎯 Les compléments à 10
             </h1>
-            <p className="text-lg text-gray-600">
+            <p className="text-sm sm:text-base lg:text-lg text-gray-600">
               Apprends par cœur toutes les façons de faire 10 ! C'est très important en CP.
             </p>
           </div>
         </div>
 
         {/* Navigation entre cours et exercices */}
-        <div className="flex justify-center mb-8">
-          <div className="bg-white rounded-lg p-1 shadow-md">
+        <div className="flex justify-center mb-6 sm:mb-8">
+          <div className="bg-white rounded-lg p-1 shadow-md flex h-auto">
             <button
               onClick={() => setShowExercises(false)}
-              className={`px-6 py-3 rounded-lg font-bold transition-all ${
+              className={`px-4 sm:px-6 py-3 sm:py-4 rounded-lg font-bold transition-all text-sm sm:text-base h-full flex items-center justify-center ${
                 !showExercises 
                   ? 'bg-pink-500 text-white shadow-md' 
                   : 'text-gray-600 hover:bg-gray-100'
@@ -245,72 +245,73 @@ export default function ComplementsDixCP() {
             </button>
             <button
               onClick={() => setShowExercises(true)}
-              className={`px-6 py-3 rounded-lg font-bold transition-all ${
+              className={`px-4 sm:px-6 py-3 sm:py-4 rounded-lg font-bold transition-all text-sm sm:text-base h-full flex flex-col items-center justify-center ${
                 showExercises 
                   ? 'bg-pink-500 text-white shadow-md' 
                   : 'text-gray-600 hover:bg-gray-100'
               }`}
             >
-              ✏️ Exercices ({score}/{exercises.length})
+              <span>✏️ Exercices</span>
+              <span className="text-xs">({score}/{exercises.length})</span>
             </button>
           </div>
         </div>
 
         {!showExercises ? (
           /* COURS */
-          <div className="space-y-8">
+          <div className="space-y-6 sm:space-y-8">
             {/* Explication des compléments à 10 */}
-            <div className="bg-white rounded-xl p-8 shadow-lg">
-              <h2 className="text-2xl font-bold text-center mb-6 text-gray-900">
+            <div className="bg-white rounded-xl p-4 sm:p-6 lg:p-8 shadow-lg">
+              <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-center mb-4 sm:mb-6 text-gray-900">
                 🧠 Qu'est-ce qu'un complément à 10 ?
               </h2>
               
-              <div className="bg-pink-50 rounded-lg p-6 mb-6">
-                <p className="text-xl text-center text-gray-800 mb-4">
+              <div className="bg-pink-50 rounded-lg p-4 sm:p-6 mb-4 sm:mb-6">
+                <p className="text-base sm:text-lg lg:text-xl text-center text-gray-800 mb-3 sm:mb-4">
                   Un complément à 10, c'est <strong>deux nombres qui ensemble font 10</strong> !
                 </p>
                 <div className="text-center">
-                  <div className="text-4xl font-bold text-pink-600 mb-2">7 + 3 = 10</div>
-                  <p className="text-lg text-gray-700">7 et 3 sont des compléments à 10 !</p>
+                  <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-pink-600 mb-2">7 + 3 = 10</div>
+                  <p className="text-sm sm:text-base lg:text-lg text-gray-700">7 et 3 sont des compléments à 10 !</p>
                 </div>
               </div>
 
               {/* Visualisation avec les mains */}
-              <div className="bg-yellow-50 rounded-lg p-6">
-                <h3 className="text-xl font-bold mb-4 text-yellow-800 text-center">
+              <div className="bg-yellow-50 rounded-lg p-4 sm:p-6">
+                <h3 className="text-base sm:text-lg lg:text-xl font-bold mb-3 sm:mb-4 text-yellow-800 text-center">
                   ✋ Avec tes doigts : 7 + 3 = 10
                 </h3>
-                <div className="flex justify-center items-center space-x-8">
+                <div className="flex flex-col sm:flex-row justify-center items-center space-y-3 sm:space-y-0 sm:space-x-4 lg:space-x-8">
                   <div className="text-center">
-                    <div className="text-6xl mb-2">✋✌️</div>
-                    <div className="font-bold text-xl text-gray-800">7 doigts</div>
+                    <div className="text-3xl sm:text-4xl lg:text-6xl mb-2">✋✌️</div>
+                    <div className="font-bold text-sm sm:text-base lg:text-xl text-gray-800">7 doigts</div>
                   </div>
-                  <div className="text-4xl font-bold text-pink-600">+</div>
+                  <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-pink-600">+</div>
                   <div className="text-center">
-                    <div className="text-6xl mb-2">🤟</div>
-                    <div className="font-bold text-xl text-gray-800">3 doigts</div>
+                    <div className="text-3xl sm:text-4xl lg:text-6xl mb-2">🤟</div>
+                    <div className="font-bold text-sm sm:text-base lg:text-xl text-gray-800">3 doigts</div>
                   </div>
-                  <div className="text-4xl font-bold text-pink-600">=</div>
+                  <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-pink-600">=</div>
                   <div className="text-center">
-                    <div className="text-6xl mb-2">🙌</div>
-                    <div className="font-bold text-xl text-gray-800">10 doigts !</div>
+                    <div className="text-3xl sm:text-4xl lg:text-6xl mb-2">🙌</div>
+                    <div className="font-bold text-sm sm:text-base lg:text-xl text-gray-800">10 doigts !</div>
                   </div>
                 </div>
               </div>
             </div>
 
             {/* Tableau de tous les compléments à 10 */}
-            <div className="bg-white rounded-xl p-8 shadow-lg">
-              <h2 className="text-2xl font-bold text-center mb-6 text-gray-900">
+            <div className="bg-white rounded-xl p-4 sm:p-6 lg:p-8 shadow-lg">
+              <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-center mb-4 sm:mb-6 text-gray-900">
                 📊 Toutes les paires qui font 10
               </h2>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-4 sm:mb-6">
                 {complementPairs.map((comp) => (
                   <button
                     key={comp.pair}
                     onClick={() => setSelectedPair(comp.pair)}
-                    className={`p-4 rounded-lg font-bold text-xl transition-all ${
+                    className={`p-3 sm:p-4 rounded-lg font-bold text-base sm:text-lg lg:text-xl transition-all ${
                       selectedPair === comp.pair
                         ? 'bg-pink-500 text-white shadow-lg scale-105'
                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -322,8 +323,8 @@ export default function ComplementsDixCP() {
               </div>
 
               {/* Affichage détaillé de la paire sélectionnée */}
-              <div className="bg-pink-50 rounded-lg p-8">
-                <h3 className="text-xl font-bold mb-6 text-center text-pink-800">
+              <div className="bg-pink-50 rounded-lg p-4 sm:p-6 lg:p-8">
+                <h3 className="text-base sm:text-lg lg:text-xl font-bold mb-4 sm:mb-6 text-center text-pink-800">
                   🔍 Regardons {selectedPair} = 10
                 </h3>
                 
@@ -332,26 +333,26 @@ export default function ComplementsDixCP() {
                   if (!selected) return null;
                   
                   return (
-                    <div className="space-y-6">
+                    <div className="space-y-4 sm:space-y-6">
                       {/* Visualisation avec points */}
-                      <div className="bg-white rounded-lg p-6">
-                        <div className="flex justify-center items-center space-x-4">
+                      <div className="bg-white rounded-lg p-4 sm:p-6">
+                        <div className="flex flex-col sm:flex-row justify-center items-center space-y-3 sm:space-y-0 sm:space-x-3 lg:space-x-4">
                           <div className="text-center">
-                            <div className="text-2xl text-blue-600 mb-2 font-mono tracking-wider">
+                            <div className="text-lg sm:text-xl lg:text-2xl text-blue-600 mb-2 font-mono tracking-wider break-all">
                               {selected.visual1}
                             </div>
-                            <div className="font-bold text-lg text-gray-800">{selected.pair.split('+')[0]}</div>
+                            <div className="font-bold text-sm sm:text-base lg:text-lg text-gray-800">{selected.pair.split('+')[0]}</div>
                           </div>
-                          <div className="text-3xl font-bold text-pink-600">+</div>
+                          <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-pink-600">+</div>
                           <div className="text-center">
-                            <div className="text-2xl text-green-600 mb-2 font-mono tracking-wider">
+                            <div className="text-lg sm:text-xl lg:text-2xl text-green-600 mb-2 font-mono tracking-wider break-all">
                               {selected.visual2}
                             </div>
-                            <div className="font-bold text-lg text-gray-800">{selected.pair.split('+')[1]}</div>
+                            <div className="font-bold text-sm sm:text-base lg:text-lg text-gray-800">{selected.pair.split('+')[1]}</div>
                           </div>
-                          <div className="text-3xl font-bold text-pink-600">=</div>
+                          <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-pink-600">=</div>
                           <div className="text-center">
-                            <div className="text-4xl font-bold text-pink-600">10</div>
+                            <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-pink-600">10</div>
                           </div>
                         </div>
                       </div>
@@ -360,9 +361,9 @@ export default function ComplementsDixCP() {
                       <div className="text-center">
                         <button
                           onClick={() => speakOperation(selected.pair)}
-                          className="bg-pink-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-pink-600 transition-colors text-lg"
+                          className="bg-pink-500 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-bold hover:bg-pink-600 transition-colors text-sm sm:text-base lg:text-lg"
                         >
-                          <Volume2 className="inline w-5 h-5 mr-2" />
+                          <Volume2 className="inline w-4 h-4 sm:w-5 sm:h-5 mr-2" />
                           Écouter
                         </button>
                       </div>
@@ -373,36 +374,36 @@ export default function ComplementsDixCP() {
             </div>
 
             {/* Jeu de mémorisation */}
-            <div className="bg-white rounded-xl p-8 shadow-lg">
-              <h2 className="text-2xl font-bold text-center mb-6 text-gray-900">
+            <div className="bg-white rounded-xl p-4 sm:p-6 lg:p-8 shadow-lg">
+              <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-center mb-4 sm:mb-6 text-gray-900">
                 🎯 Jeu de mémorisation
               </h2>
               
-              <div className="bg-blue-50 rounded-lg p-6">
-                <h3 className="text-xl font-bold mb-4 text-blue-800 text-center">
+              <div className="bg-blue-50 rounded-lg p-4 sm:p-6">
+                <h3 className="text-base sm:text-lg lg:text-xl font-bold mb-3 sm:mb-4 text-blue-800 text-center">
                   🧠 Répète après moi !
                 </h3>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3">
                   {complementPairs.slice(1, -1).map((comp) => (
                     <button
                       key={comp.pair}
                       onClick={() => speakOperation(comp.pair)}
-                      className="bg-white p-4 rounded-lg font-bold text-lg text-gray-800 hover:bg-blue-100 transition-colors border-2 border-blue-200"
+                      className="bg-white p-3 sm:p-4 rounded-lg font-bold text-sm sm:text-base lg:text-lg text-gray-800 hover:bg-blue-100 transition-colors border-2 border-blue-200"
                     >
                       {comp.pair} = 10
                     </button>
                   ))}
                 </div>
-                <p className="text-center text-blue-700 mt-4 font-semibold">
+                <p className="text-center text-blue-700 mt-3 sm:mt-4 font-semibold text-sm sm:text-base">
                   💡 Clique sur chaque complément et répète à voix haute !
                 </p>
               </div>
             </div>
 
             {/* Conseils pour mémoriser */}
-            <div className="bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl p-6 text-white">
-              <h3 className="text-xl font-bold mb-3">💡 Trucs pour apprendre par cœur</h3>
-              <ul className="space-y-2 text-lg">
+            <div className="bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl p-4 sm:p-6 text-white">
+              <h3 className="text-base sm:text-lg lg:text-xl font-bold mb-2 sm:mb-3">💡 Trucs pour apprendre par cœur</h3>
+              <ul className="space-y-1 sm:space-y-2 text-sm sm:text-base lg:text-lg">
                 <li>• Utilise tes doigts : 10 doigts en tout !</li>
                 <li>• Commence par 5+5 = 10 (c'est le plus facile)</li>
                 <li>• Récite-les dans l'ordre tous les jours</li>
@@ -412,33 +413,33 @@ export default function ComplementsDixCP() {
           </div>
         ) : (
           /* EXERCICES */
-          <div className="space-y-8">
+          <div className="space-y-6 sm:space-y-8">
             {/* Header exercices */}
-            <div className="bg-white rounded-xl p-6 shadow-lg">
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-2xl font-bold text-gray-900">
+            <div className="bg-white rounded-xl p-4 sm:p-6 shadow-lg">
+              <div className="flex flex-col sm:flex-row justify-between items-center mb-3 sm:mb-4 space-y-2 sm:space-y-0">
+                <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900">
                   ✏️ Exercice {currentExercise + 1} sur {exercises.length}
                 </h2>
                 <button
                   onClick={resetAll}
-                  className="bg-gray-500 text-white px-4 py-2 rounded-lg font-bold hover:bg-gray-600 transition-colors"
+                  className="bg-gray-500 text-white px-3 sm:px-4 py-2 rounded-lg font-bold hover:bg-gray-600 transition-colors text-sm sm:text-base"
                 >
-                  <RotateCcw className="inline w-4 h-4 mr-2" />
+                  <RotateCcw className="inline w-3 h-3 sm:w-4 sm:h-4 mr-2" />
                   Recommencer
                 </button>
               </div>
               
               {/* Barre de progression */}
-              <div className="w-full bg-gray-200 rounded-full h-4 mb-3">
+              <div className="w-full bg-gray-200 rounded-full h-3 sm:h-4 mb-2 sm:mb-3">
                 <div 
-                  className="bg-pink-500 h-4 rounded-full transition-all duration-500"
+                  className="bg-pink-500 h-3 sm:h-4 rounded-full transition-all duration-500"
                   style={{ width: `${((currentExercise + 1) / exercises.length) * 100}%` }}
                 ></div>
               </div>
               
               {/* Score sous la barre */}
               <div className="text-center">
-                <div className="text-xl font-bold text-pink-600">
+                <div className="text-lg sm:text-xl font-bold text-pink-600">
                   Score : {score}/{exercises.length}
                 </div>
               </div>
@@ -452,22 +453,22 @@ export default function ComplementsDixCP() {
               
               {/* Question avec grand affichage */}
               <div className="bg-pink-50 rounded-lg p-3 sm:p-4 md:p-8 mb-3 sm:mb-6 md:mb-8">
-                <div className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-pink-600 mb-3 sm:mb-4 md:mb-6">
+                <div className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-pink-600 mb-3 sm:mb-4 md:mb-6">
                   {exercises[currentExercise].question}
                 </div>
-                <p className="text-sm sm:text-base md:text-lg text-gray-700 font-semibold">
+                <p className="text-xs sm:text-sm md:text-base text-gray-700 font-semibold">
                   Quel nombre complète pour faire 10 ?
                 </p>
               </div>
               
               {/* Choix multiples avec gros boutons */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-2 sm:gap-3 md:gap-4 max-w-sm sm:max-w-md mx-auto mb-4 sm:mb-6 md:mb-8">
+              <div className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-3 gap-2 sm:gap-3 md:gap-4 max-w-xs sm:max-w-sm md:max-w-md mx-auto mb-4 sm:mb-6 md:mb-8">
                 {shuffledChoices.map((choice) => (
                   <button
                     key={choice}
                     onClick={() => handleAnswerClick(choice)}
                     disabled={isCorrect !== null}
-                    className={`p-3 sm:p-4 md:p-6 rounded-lg font-bold text-xl sm:text-2xl md:text-3xl lg:text-4xl transition-all ${
+                    className={`p-3 sm:p-4 md:p-6 rounded-lg font-bold text-xl sm:text-2xl md:text-3xl lg:text-4xl transition-all flex items-center justify-center min-h-[60px] sm:min-h-[70px] md:min-h-[80px] ${
                       userAnswer === choice
                         ? isCorrect === true
                           ? 'bg-green-500 text-white'
@@ -486,21 +487,21 @@ export default function ComplementsDixCP() {
               
               {/* Résultat */}
               {isCorrect !== null && (
-                <div className={`p-6 rounded-lg mb-6 ${
+                <div className={`p-4 sm:p-6 rounded-lg mb-4 sm:mb-6 ${
                   isCorrect ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
                 }`}>
-                  <div className="flex items-center justify-center space-x-3 mb-4">
+                  <div className="flex flex-col sm:flex-row items-center justify-center space-y-2 sm:space-y-0 sm:space-x-3 mb-3 sm:mb-4">
                     {isCorrect ? (
                       <>
-                        <CheckCircle className="w-8 h-8" />
-                        <span className="font-bold text-xl">
+                        <CheckCircle className="w-6 h-6 sm:w-8 sm:h-8" />
+                        <span className="font-bold text-sm sm:text-base lg:text-xl text-center">
                           Parfait ! {exercises[currentExercise].question.replace('?', exercises[currentExercise].missing)} !
                         </span>
                       </>
                     ) : (
                       <>
-                        <XCircle className="w-8 h-8" />
-                        <span className="font-bold text-xl">
+                        <XCircle className="w-6 h-6 sm:w-8 sm:h-8" />
+                        <span className="font-bold text-sm sm:text-base lg:text-xl text-center">
                           Pas tout à fait... C'était {exercises[currentExercise].missing} !
                         </span>
                       </>
@@ -509,8 +510,8 @@ export default function ComplementsDixCP() {
                   
                   {/* Illustration et audio pour les mauvaises réponses */}
                   {!isCorrect && (
-                    <div className="bg-white rounded-lg p-6 border-2 border-blue-300">
-                      <h4 className="text-lg font-bold mb-4 text-blue-800 text-center">
+                    <div className="bg-white rounded-lg p-4 sm:p-6 border-2 border-blue-300">
+                      <h4 className="text-base sm:text-lg font-bold mb-3 sm:mb-4 text-blue-800 text-center">
                         🎯 Regarde la bonne réponse !
                       </h4>
                       
@@ -548,23 +549,23 @@ export default function ComplementsDixCP() {
                               </div>
                               
                               {complement && (
-                                <div className="flex justify-center items-center space-x-4">
+                                <div className="flex flex-col sm:flex-row justify-center items-center space-y-3 sm:space-y-0 sm:space-x-3 lg:space-x-4">
                                   <div className="text-center">
-                                    <div className="text-xl text-blue-600 mb-2 font-mono tracking-wider">
+                                    <div className="text-base sm:text-lg lg:text-xl text-blue-600 mb-2 font-mono tracking-wider break-all">
                                       {complement.visual1}
                                     </div>
-                                    <div className="font-bold text-lg text-gray-800">{num1}</div>
+                                    <div className="font-bold text-sm sm:text-base lg:text-lg text-gray-800">{num1}</div>
                                   </div>
-                                  <div className="text-2xl font-bold text-pink-600">+</div>
+                                  <div className="text-lg sm:text-xl lg:text-2xl font-bold text-pink-600">+</div>
                                   <div className="text-center">
-                                    <div className="text-xl text-green-600 mb-2 font-mono tracking-wider">
+                                    <div className="text-base sm:text-lg lg:text-xl text-green-600 mb-2 font-mono tracking-wider break-all">
                                       {complement.visual2}
                                     </div>
-                                    <div className="font-bold text-lg text-gray-800">{num2}</div>
+                                    <div className="font-bold text-sm sm:text-base lg:text-lg text-gray-800">{num2}</div>
                                   </div>
-                                  <div className="text-2xl font-bold text-pink-600">=</div>
+                                  <div className="text-lg sm:text-xl lg:text-2xl font-bold text-pink-600">=</div>
                                   <div className="text-center">
-                                    <div className="text-3xl font-bold text-pink-600">10</div>
+                                    <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-pink-600">10</div>
                                   </div>
                                 </div>
                               )}
@@ -574,17 +575,17 @@ export default function ComplementsDixCP() {
                             <div className="text-center">
                               <button
                                 onClick={() => speakOperation(operation)}
-                                className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-bold transition-colors flex items-center space-x-2 mx-auto"
+                                className="bg-blue-500 hover:bg-blue-600 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-bold transition-colors flex items-center space-x-2 mx-auto text-sm sm:text-base"
                               >
-                                <Volume2 className="w-4 h-4" />
+                                <Volume2 className="w-3 h-3 sm:w-4 sm:h-4" />
                                 <span>Écouter la bonne réponse</span>
                               </button>
                             </div>
                             
                             {/* Message d'encouragement */}
                             <div className="bg-gradient-to-r from-purple-100 to-pink-100 rounded-lg p-3 text-center">
-                              <div className="text-lg">🌟</div>
-                              <p className="text-sm font-semibold text-purple-800">
+                              <div className="text-base sm:text-lg">🌟</div>
+                              <p className="text-xs sm:text-sm font-semibold text-purple-800">
                                 Maintenant tu sais ! {numberToWords(num1)} plus {numberToWords(num2)} égale dix !
                               </p>
                             </div>
@@ -601,7 +602,7 @@ export default function ComplementsDixCP() {
                 <div className="flex justify-center">
                   <button
                     onClick={nextExercise}
-                    className="bg-pink-500 text-white px-8 py-4 rounded-lg font-bold text-lg hover:bg-pink-600 transition-colors"
+                    className="bg-pink-500 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-lg font-bold text-base sm:text-lg hover:bg-pink-600 transition-colors"
                   >
                     Suivant →
                   </button>
@@ -613,8 +614,8 @@ export default function ComplementsDixCP() {
 
         {/* Modale de fin d'exercices */}
         {showCompletionModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-2xl p-8 max-w-md w-full text-center shadow-2xl">
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-3 sm:p-4">
+            <div className="bg-white rounded-2xl p-4 sm:p-6 lg:p-8 max-w-sm sm:max-w-md w-full text-center shadow-2xl">
               {(() => {
                 const percentage = Math.round((finalScore / exercises.length) * 100);
                 const getMessage = () => {
@@ -626,24 +627,24 @@ export default function ComplementsDixCP() {
                 const result = getMessage();
                 return (
                   <>
-                    <div className="text-6xl mb-4">{result.emoji}</div>
-                    <h3 className="text-2xl font-bold text-gray-900 mb-3">{result.title}</h3>
-                    <p className="text-lg text-gray-700 mb-6">{result.message}</p>
-                    <div className="bg-pink-100 rounded-lg p-4 mb-6">
-                      <p className="text-xl font-bold text-gray-900">
+                    <div className="text-4xl sm:text-5xl lg:text-6xl mb-3 sm:mb-4">{result.emoji}</div>
+                    <h3 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900 mb-2 sm:mb-3">{result.title}</h3>
+                    <p className="text-sm sm:text-base lg:text-lg text-gray-700 mb-4 sm:mb-6">{result.message}</p>
+                    <div className="bg-pink-100 rounded-lg p-3 sm:p-4 mb-4 sm:mb-6">
+                      <p className="text-base sm:text-lg lg:text-xl font-bold text-gray-900">
                         Score : {finalScore}/{exercises.length}
                       </p>
-                      <div className="text-4xl mt-2">
+                      <div className="text-2xl sm:text-3xl lg:text-4xl mt-2">
                         {finalScore >= 10 ? '⭐⭐⭐' : finalScore >= 8 ? '⭐⭐' : '⭐'}
                       </div>
-                      <p className="text-sm text-gray-600 mt-2">
+                      <p className="text-xs sm:text-sm text-gray-600 mt-2">
                         Les compléments à 10 sont essentiels pour bien calculer !
                       </p>
                     </div>
-                    <div className="flex space-x-3">
+                    <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3">
                       <button
                         onClick={resetAll}
-                        className="flex-1 bg-pink-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-pink-600 transition-colors"
+                        className="flex-1 bg-pink-500 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-bold hover:bg-pink-600 transition-colors text-sm sm:text-base"
                       >
                         Recommencer
                       </button>
