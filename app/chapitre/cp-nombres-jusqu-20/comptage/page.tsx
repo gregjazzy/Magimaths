@@ -321,50 +321,50 @@ export default function ComptageCP() {
             </div>
 
             {/* La suite numérique jusqu'à 20 */}
-            <div className="bg-white rounded-xl p-8 shadow-lg">
-              <h2 className="text-2xl font-bold text-center mb-6 text-gray-900">
+            <div className="bg-white rounded-xl p-4 sm:p-6 lg:p-8 shadow-lg">
+              <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-center mb-4 sm:mb-6 text-gray-900">
                 📝 La suite des nombres jusqu'à 20
               </h2>
               
-              <div className="bg-yellow-50 rounded-lg p-6">
-                <h3 className="text-xl font-bold mb-4 text-yellow-800 text-center">
+              <div className="bg-yellow-50 rounded-lg p-4 sm:p-6">
+                <h3 className="text-base sm:text-lg lg:text-xl font-bold mb-3 sm:mb-4 text-yellow-800 text-center">
                   🗣️ Récite avec moi :
                 </h3>
                 
-                {/* Grille des nombres */}
-                <div className="grid grid-cols-5 md:grid-cols-10 gap-3 mb-6">
+                {/* Grille des nombres - optimisée pour mobile/Android */}
+                <div className="grid grid-cols-5 sm:grid-cols-5 md:grid-cols-10 gap-2 sm:gap-3 mb-4 sm:mb-6 max-w-full overflow-hidden">
                   {Array.from({length: 20}, (_, i) => i + 1).map((num) => (
                     <button
                       key={num}
                       onClick={() => speakNumber(num)}
-                      className="bg-white p-4 rounded-lg font-bold text-2xl text-gray-800 hover:bg-yellow-100 hover:text-yellow-900 transition-colors border-2 border-yellow-200 hover:border-yellow-400"
+                      className="bg-white p-2 sm:p-3 lg:p-4 rounded-lg font-bold text-lg sm:text-xl lg:text-2xl text-gray-800 hover:bg-yellow-100 hover:text-yellow-900 transition-colors border-2 border-yellow-200 hover:border-yellow-400 flex items-center justify-center min-h-[48px] sm:min-h-[56px] lg:min-h-[64px] aspect-square"
                     >
-                      {num}
+                      <span className="select-none">{num}</span>
                     </button>
                   ))}
                 </div>
 
-                <p className="text-center text-yellow-700 font-semibold text-lg">
+                <p className="text-center text-yellow-700 font-semibold text-sm sm:text-base lg:text-lg">
                   💡 Clique sur chaque nombre pour l'entendre !
                 </p>
               </div>
             </div>
 
             {/* Techniques de comptage */}
-            <div className="bg-white rounded-xl p-8 shadow-lg">
-              <h2 className="text-2xl font-bold text-center mb-6 text-gray-900">
+            <div className="bg-white rounded-xl p-4 sm:p-6 lg:p-8 shadow-lg">
+              <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-center mb-4 sm:mb-6 text-gray-900">
                 ✋ Différentes façons de compter
               </h2>
               
-              <div className="grid md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                 {/* Avec les doigts */}
-                <div className="bg-pink-50 rounded-lg p-6">
-                  <h3 className="text-lg font-bold mb-4 text-pink-800">
+                <div className="bg-pink-50 rounded-lg p-4 sm:p-6">
+                  <h3 className="text-base sm:text-lg font-bold mb-3 sm:mb-4 text-pink-800 text-center">
                     🖐️ Avec tes doigts (jusqu'à 10)
                   </h3>
-                  <div className="text-center space-y-3">
-                    <div className="text-6xl">✋</div>
-                    <p className="text-lg text-pink-700 font-semibold">
+                  <div className="text-center space-y-2 sm:space-y-3">
+                    <div className="text-4xl sm:text-5xl lg:text-6xl">✋</div>
+                    <p className="text-sm sm:text-base lg:text-lg text-pink-700 font-semibold">
                       1 main = 5 doigts<br/>
                       2 mains = 10 doigts
                     </p>
@@ -372,15 +372,19 @@ export default function ComptageCP() {
                 </div>
 
                 {/* Avec des groupes */}
-                <div className="bg-purple-50 rounded-lg p-6">
-                  <h3 className="text-lg font-bold mb-4 text-purple-800">
+                <div className="bg-purple-50 rounded-lg p-4 sm:p-6">
+                  <h3 className="text-base sm:text-lg font-bold mb-3 sm:mb-4 text-purple-800 text-center">
                     📦 Avec des groupes de 5
                   </h3>
-                  <div className="text-center space-y-3">
-                    <div className="text-2xl">
-                      🔴🔴🔴🔴🔴 | 🔴🔴🔴🔴🔴 | 🔴🔴
+                  <div className="text-center space-y-2 sm:space-y-3">
+                    <div className="text-lg sm:text-xl lg:text-2xl flex justify-center items-center flex-wrap">
+                      <span>🔴🔴🔴🔴🔴</span>
+                      <span className="mx-1 sm:mx-2">|</span>
+                      <span>🔴🔴🔴🔴🔴</span>
+                      <span className="mx-1 sm:mx-2">|</span>
+                      <span>🔴🔴</span>
                     </div>
-                    <p className="text-lg text-purple-700 font-semibold">
+                    <p className="text-sm sm:text-base lg:text-lg text-purple-700 font-semibold">
                       5 + 5 + 2 = 12
                     </p>
                   </div>
@@ -389,28 +393,28 @@ export default function ComptageCP() {
             </div>
 
             {/* Jeu des nombres cachés */}
-            <div className="bg-white rounded-xl p-8 shadow-lg">
-              <h2 className="text-2xl font-bold text-center mb-6 text-gray-900">
+            <div className="bg-white rounded-xl p-4 sm:p-6 lg:p-8 shadow-lg">
+              <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-center mb-4 sm:mb-6 text-gray-900">
                 🎮 Jeu : Continue la suite !
               </h2>
               
-              <div className="bg-indigo-50 rounded-lg p-6">
-                <h3 className="text-xl font-bold mb-4 text-indigo-800 text-center">
+              <div className="bg-indigo-50 rounded-lg p-4 sm:p-6">
+                <h3 className="text-base sm:text-lg lg:text-xl font-bold mb-3 sm:mb-4 text-indigo-800 text-center">
                   Quel nombre vient après ?
                 </h3>
                 
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
                   {[
                     { sequence: '5, 6, 7, ?', answer: '8' },
                     { sequence: '12, 13, 14, ?', answer: '15' },
                     { sequence: '17, 18, 19, ?', answer: '20' },
                     { sequence: '8, 9, 10, ?', answer: '11' }
                   ].map((item, index) => (
-                    <div key={index} className="bg-white p-4 rounded-lg text-center border-2 border-indigo-200">
-                      <div className="text-lg font-bold text-indigo-600 mb-2">
+                    <div key={index} className="bg-white p-3 sm:p-4 rounded-lg text-center border-2 border-indigo-200 flex flex-col justify-center items-center min-h-[100px]">
+                      <div className="text-sm sm:text-base lg:text-lg font-bold text-indigo-600 mb-2">
                         {item.sequence}
                       </div>
-                      <div className="text-2xl font-bold text-green-600">
+                      <div className="text-xl sm:text-2xl font-bold text-green-600">
                         {item.answer}
                       </div>
                     </div>
