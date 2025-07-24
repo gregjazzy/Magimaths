@@ -143,6 +143,41 @@ export default function ReconnaissanceNombresCP() {
     }
   };
 
+  // Fonction pour convertir les nombres en mots français
+  const numberToWords = (num: string) => {
+    const numbers: { [key: string]: string } = {
+      '0': 'zéro',
+      '1': 'un',
+      '2': 'deux', 
+      '3': 'trois',
+      '4': 'quatre',
+      '5': 'cinq',
+      '6': 'six',
+      '7': 'sept',
+      '8': 'huit',
+      '9': 'neuf',
+      '10': 'dix',
+      '11': 'onze',
+      '12': 'douze',
+      '13': 'treize',
+      '14': 'quatorze',
+      '15': 'quinze',
+      '16': 'seize',
+      '17': 'dix-sept',
+      '18': 'dix-huit',
+      '19': 'dix-neuf',
+      '20': 'vingt'
+    };
+    return numbers[num] || num;
+  };
+
+  // Fonction pour dire le résultat en français
+  const speakResult = (number: string) => {
+    const numberWord = numberToWords(number);
+    const text = `La bonne réponse est ${numberWord}`;
+    speakNumber(text);
+  };
+
   const handleAnswerClick = (answer: string) => {
     setUserAnswer(answer);
     const correct = answer === exercises[currentExercise].correctAnswer;
@@ -414,7 +449,7 @@ export default function ReconnaissanceNombresCP() {
                 <div className={`p-6 rounded-lg mb-6 ${
                   isCorrect ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
                 }`}>
-                  <div className="flex items-center justify-center space-x-3">
+                  <div className="flex items-center justify-center space-x-3 mb-4">
                     {isCorrect ? (
                       <>
                         <CheckCircle className="w-8 h-8" />
@@ -429,6 +464,43 @@ export default function ReconnaissanceNombresCP() {
                       </>
                     )}
                   </div>
+                  
+                  {/* Bouton d'écoute pour les mauvaises réponses */}
+                  {!isCorrect && (
+                    <div className="bg-white rounded-lg p-4 border-2 border-blue-300">
+                      <h4 className="text-lg font-bold mb-3 text-blue-800 text-center">
+                        🎯 Écoute la bonne réponse !
+                      </h4>
+                      
+                      <div className="text-center space-y-3">
+                        {/* Affichage du nombre correct */}
+                        <div className="text-4xl font-bold text-blue-600">
+                          {exercises[currentExercise].correctAnswer}
+                        </div>
+                        
+                        <div className="text-lg text-gray-700">
+                          Cela se dit : <span className="font-bold text-blue-600">{numberToWords(exercises[currentExercise].correctAnswer)}</span>
+                        </div>
+                        
+                        {/* Bouton d'écoute */}
+                        <button
+                          onClick={() => speakResult(exercises[currentExercise].correctAnswer)}
+                          className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-bold transition-colors flex items-center space-x-2 mx-auto"
+                        >
+                          <Volume2 className="w-4 h-4" />
+                          <span>Écouter la bonne réponse</span>
+                        </button>
+                        
+                        {/* Message d'encouragement */}
+                        <div className="bg-gradient-to-r from-purple-100 to-pink-100 rounded-lg p-3 mt-4">
+                          <div className="text-lg">🌟</div>
+                          <p className="text-sm font-semibold text-purple-800">
+                            Maintenant tu sais ! C'est {numberToWords(exercises[currentExercise].correctAnswer)} !
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
               

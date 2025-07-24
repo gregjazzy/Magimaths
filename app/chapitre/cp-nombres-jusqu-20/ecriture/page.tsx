@@ -125,6 +125,34 @@ export default function EcritureCP() {
     }
   }, [currentExercise]);
 
+  // Fonction pour convertir les nombres en mots français
+  const numberToWords = (num: string): string => {
+    const numbers: { [key: string]: string } = {
+      '0': 'zéro', '1': 'un', '2': 'deux', '3': 'trois', '4': 'quatre',
+      '5': 'cinq', '6': 'six', '7': 'sept', '8': 'huit', '9': 'neuf',
+      '10': 'dix', '11': 'onze', '12': 'douze', '13': 'treize', '14': 'quatorze',
+      '15': 'quinze', '16': 'seize', '17': 'dix-sept', '18': 'dix-huit', 
+      '19': 'dix-neuf', '20': 'vingt'
+    };
+    return numbers[num] || num;
+  };
+
+  // Fonction pour énoncer la bonne réponse
+  const speakResult = (answer: string) => {
+    const currentEx = exercises[currentExercise];
+    let text = '';
+    
+    if (currentEx.type === 'lecture') {
+      // Pour les exercices de lecture (chiffre vers lettres)
+      text = `La bonne réponse est ${answer}`;
+    } else {
+      // Pour les exercices d'écriture (lettres vers chiffre)
+      text = `La bonne réponse est ${answer}`;
+    }
+    
+    speakText(text);
+  };
+
   const speakText = (text: string) => {
     if ('speechSynthesis' in window) {
       const utterance = new SpeechSynthesisUtterance(text);
@@ -348,7 +376,7 @@ export default function EcritureCP() {
                         <div className="text-lg sm:text-2xl md:text-3xl lg:text-4xl mb-2 sm:mb-3 md:mb-4 tracking-wide">
                           {selected.visual}
                         </div>
-                        <p className="text-sm sm:text-base md:text-lg font-semibold text-gray-700">
+                        <p className="text-sm sm:text-base md:text-lg font-semibold text-gray-900">
                           {selected.chiffre} = {selected.lettres}
                         </p>
                       </div>
@@ -559,6 +587,121 @@ export default function EcritureCP() {
                         </span>
                       </>
                     )}
+                  </div>
+                </div>
+              )}
+
+              {/* Feedback détaillé pour les réponses incorrectes */}
+              {!isCorrect && isCorrect !== null && (
+                <div className="bg-white rounded-lg p-6 border-2 border-blue-300 mb-6">
+                  <h4 className="text-lg font-bold mb-4 text-blue-800 text-center">
+                    🎯 Écoute la bonne réponse !
+                  </h4>
+                  <div className="space-y-4">
+                    <div className="bg-blue-50 rounded-lg p-4">
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-blue-600 mb-2">
+                          {exercises[currentExercise].type === 'lecture' 
+                            ? `${exercises[currentExercise].display} = ${exercises[currentExercise].correctAnswer}`
+                            : `${exercises[currentExercise].display} = ${exercises[currentExercise].correctAnswer}`
+                          }
+                        </div>
+                        <div className="text-lg text-gray-700">
+                          {exercises[currentExercise].type === 'lecture' 
+                            ? `Le nombre "${exercises[currentExercise].display}" se dit : `
+                            : `Le mot "${exercises[currentExercise].display}" s'écrit : `
+                          }
+                          <span className="font-bold text-blue-600">
+                            {exercises[currentExercise].correctAnswer}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* Animation explicative */}
+                    <div className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg p-4">
+                      <h5 className="text-md font-bold mb-3 text-indigo-800 text-center">
+                        ✨ Regarde l'explication :
+                      </h5>
+                      <div className="flex items-center justify-center space-x-4">
+                        {/* Côté gauche - ce qu'on voit */}
+                        <div className="bg-white rounded-lg p-4 shadow-sm border-2 border-indigo-200 animate-pulse">
+                          <div className="text-center">
+                            <div className="text-lg font-semibold text-indigo-700 mb-2">
+                              {exercises[currentExercise].type === 'lecture' ? 'Je vois :' : 'Je lis :'}
+                            </div>
+                            <div className="text-3xl font-bold text-indigo-600">
+                              {exercises[currentExercise].display}
+                            </div>
+                          </div>
+                        </div>
+                        
+                        {/* Flèche animée */}
+                        <div className="flex flex-col items-center">
+                          <div className="text-2xl animate-bounce">➡️</div>
+                          <div className="text-xs text-gray-600 mt-1">devient</div>
+                        </div>
+                        
+                        {/* Côté droit - la réponse */}
+                        <div className="bg-white rounded-lg p-4 shadow-sm border-2 border-green-200 animate-pulse animation-delay-500">
+                          <div className="text-center">
+                            <div className="text-lg font-semibold text-green-700 mb-2">
+                              {exercises[currentExercise].type === 'lecture' ? 'Je dis :' : 'J\'écris :'}
+                            </div>
+                            <div className="text-3xl font-bold text-green-600">
+                              {exercises[currentExercise].correctAnswer}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      {/* Représentation visuelle avec objets */}
+                      {(() => {
+                        const currentEx = exercises[currentExercise];
+                        const numberData = numbersWriting.find(n => 
+                          n.chiffre === currentEx.display || n.lettres === currentEx.display ||
+                          n.chiffre === currentEx.correctAnswer || n.lettres === currentEx.correctAnswer
+                        );
+                        
+                        if (numberData && numberData.visual) {
+                          return (
+                            <div className="mt-4 bg-yellow-50 rounded-lg p-3">
+                              <div className="text-center">
+                                <div className="text-sm font-semibold text-yellow-800 mb-2">
+                                  👀 Avec des objets, ça donne :
+                                </div>
+                                <div className="text-2xl mb-2 animate-pulse animation-delay-1000">
+                                  {numberData.visual}
+                                </div>
+                                <div className="text-sm text-gray-700">
+                                  = {numberData.chiffre} = {numberData.lettres}
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        }
+                        return null;
+                      })()}
+                    </div>
+                    
+                    <div className="text-center">
+                      <button 
+                        onClick={() => speakResult(exercises[currentExercise].correctAnswer)}
+                        className="bg-blue-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-blue-600 transition-colors inline-flex items-center space-x-2"
+                      >
+                        <Volume2 className="w-4 h-4" />
+                        <span>Écouter la bonne réponse</span>
+                      </button>
+                    </div>
+                    
+                    <div className="bg-gradient-to-r from-purple-100 to-pink-100 rounded-lg p-3 text-center">
+                      <p className="text-sm font-semibold text-purple-800">
+                        Maintenant tu sais ! {exercises[currentExercise].type === 'lecture' 
+                          ? `"${exercises[currentExercise].display}" se dit "${exercises[currentExercise].correctAnswer}" !`
+                          : `"${exercises[currentExercise].display}" s'écrit "${exercises[currentExercise].correctAnswer}" !`
+                        }
+                      </p>
+                    </div>
                   </div>
                 </div>
               )}

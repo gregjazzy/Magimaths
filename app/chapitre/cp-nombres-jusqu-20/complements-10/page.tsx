@@ -125,6 +125,36 @@ export default function ComplementsDixCP() {
     }
   };
 
+  // Fonction pour convertir les chiffres en mots français
+  const numberToWords = (num: string) => {
+    const numbers: { [key: string]: string } = {
+      '0': 'zéro',
+      '1': 'un',
+      '2': 'deux', 
+      '3': 'trois',
+      '4': 'quatre',
+      '5': 'cinq',
+      '6': 'six',
+      '7': 'sept',
+      '8': 'huit',
+      '9': 'neuf',
+      '10': 'dix'
+    };
+    return numbers[num] || num;
+  };
+
+  // Fonction pour dire une opération en français
+  const speakOperation = (operation: string) => {
+    // Exemple: "9+1" devient "neuf plus un égale dix"
+    const parts = operation.split('+');
+    if (parts.length === 2) {
+      const num1 = numberToWords(parts[0].trim());
+      const num2 = numberToWords(parts[1].trim());
+      const text = `${num1} plus ${num2} égale dix`;
+      speakText(text);
+    }
+  };
+
   const handleAnswerClick = (answer: string) => {
     setUserAnswer(answer);
     const correct = answer === exercises[currentExercise].missing;
@@ -329,7 +359,7 @@ export default function ComplementsDixCP() {
                       {/* Bouton audio */}
                       <div className="text-center">
                         <button
-                          onClick={() => speakText(`${selected.pair.replace('+', ' plus ')} égale dix`)}
+                          onClick={() => speakOperation(selected.pair)}
                           className="bg-pink-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-pink-600 transition-colors text-lg"
                         >
                           <Volume2 className="inline w-5 h-5 mr-2" />
@@ -356,7 +386,7 @@ export default function ComplementsDixCP() {
                   {complementPairs.slice(1, -1).map((comp) => (
                     <button
                       key={comp.pair}
-                      onClick={() => speakText(`${comp.pair.replace('+', ' plus ')} égale dix`)}
+                      onClick={() => speakOperation(comp.pair)}
                       className="bg-white p-4 rounded-lg font-bold text-lg text-gray-800 hover:bg-blue-100 transition-colors border-2 border-blue-200"
                     >
                       {comp.pair} = 10
@@ -459,7 +489,7 @@ export default function ComplementsDixCP() {
                 <div className={`p-6 rounded-lg mb-6 ${
                   isCorrect ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
                 }`}>
-                  <div className="flex items-center justify-center space-x-3">
+                  <div className="flex items-center justify-center space-x-3 mb-4">
                     {isCorrect ? (
                       <>
                         <CheckCircle className="w-8 h-8" />
@@ -476,6 +506,93 @@ export default function ComplementsDixCP() {
                       </>
                     )}
                   </div>
+                  
+                  {/* Illustration et audio pour les mauvaises réponses */}
+                  {!isCorrect && (
+                    <div className="bg-white rounded-lg p-6 border-2 border-blue-300">
+                      <h4 className="text-lg font-bold mb-4 text-blue-800 text-center">
+                        🎯 Regarde la bonne réponse !
+                      </h4>
+                      
+                      {(() => {
+                        // Reconstituer l'opération complète
+                        const question = exercises[currentExercise].question;
+                        const missing = exercises[currentExercise].missing;
+                        let operation = '';
+                        let num1 = '';
+                        let num2 = '';
+                        
+                        if (question.includes('? +')) {
+                          // Format: "? + 2 = 10"
+                          num1 = missing;
+                          num2 = question.split('? + ')[1].split(' = ')[0];
+                          operation = `${num1}+${num2}`;
+                        } else {
+                          // Format: "7 + ? = 10"
+                          num1 = question.split(' + ?')[0];
+                          num2 = missing;
+                          operation = `${num1}+${num2}`;
+                        }
+                        
+                        // Trouver la visualisation correspondante
+                        const complement = complementPairs.find(c => c.pair === operation);
+                        
+                        return (
+                          <div className="space-y-4">
+                            {/* Visualisation avec points */}
+                            <div className="bg-blue-50 rounded-lg p-4">
+                              <div className="text-center mb-3">
+                                <div className="text-2xl font-bold text-blue-600">
+                                  {operation.replace('+', ' + ')} = 10
+                                </div>
+                              </div>
+                              
+                              {complement && (
+                                <div className="flex justify-center items-center space-x-4">
+                                  <div className="text-center">
+                                    <div className="text-xl text-blue-600 mb-2 font-mono tracking-wider">
+                                      {complement.visual1}
+                                    </div>
+                                    <div className="font-bold text-lg text-gray-800">{num1}</div>
+                                  </div>
+                                  <div className="text-2xl font-bold text-pink-600">+</div>
+                                  <div className="text-center">
+                                    <div className="text-xl text-green-600 mb-2 font-mono tracking-wider">
+                                      {complement.visual2}
+                                    </div>
+                                    <div className="font-bold text-lg text-gray-800">{num2}</div>
+                                  </div>
+                                  <div className="text-2xl font-bold text-pink-600">=</div>
+                                  <div className="text-center">
+                                    <div className="text-3xl font-bold text-pink-600">10</div>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                            
+                            {/* Bouton d'écoute */}
+                            <div className="text-center">
+                              <button
+                                onClick={() => speakOperation(operation)}
+                                className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-bold transition-colors flex items-center space-x-2 mx-auto"
+                              >
+                                <Volume2 className="w-4 h-4" />
+                                <span>Écouter la bonne réponse</span>
+                              </button>
+                            </div>
+                            
+                            {/* Message d'encouragement */}
+                            <div className="bg-gradient-to-r from-purple-100 to-pink-100 rounded-lg p-3 text-center">
+                              <div className="text-lg">🌟</div>
+                              <p className="text-sm font-semibold text-purple-800">
+                                Maintenant tu sais ! {numberToWords(num1)} plus {numberToWords(num2)} égale dix !
+                              </p>
+                            </div>
+                          </div>
+                        );
+                      })()}
+                    </div>
+                  )}
                 </div>
               )}
               

@@ -15,6 +15,10 @@ export default function LectureEcritureCP100() {
   const [showCompletionModal, setShowCompletionModal] = useState(false);
   const [finalScore, setFinalScore] = useState(0);
   const [shuffledChoices, setShuffledChoices] = useState<string[]>([]);
+  
+  // États pour l'animation progressive
+  const [animationStep, setAnimationStep] = useState(0);
+  const [isAnimating, setIsAnimating] = useState(false);
 
   // Fonction pour mélanger un tableau
   const shuffleArray = (array: string[]) => {
@@ -80,34 +84,23 @@ export default function LectureEcritureCP100() {
   // Nombres avec leurs écritures pour le cours CP-100
   const numbersWithWriting = [
     { chiffre: '25', lettres: 'vingt-cinq', pronunciation: 'vingt-cinq', visual: '📦📦🔴🔴🔴🔴🔴' },
-    { chiffre: '34', lettres: 'trente-quatre', pronunciation: 'trente-quatre', visual: '📦📦📦🔴🔴🔴🔴' },
     { chiffre: '45', lettres: 'quarante-cinq', pronunciation: 'quarante-cinq', visual: '📦📦📦📦🔴🔴🔴🔴🔴' },
-    { chiffre: '56', lettres: 'cinquante-six', pronunciation: 'cinquante-six', visual: '📦📦📦📦📦🔴🔴🔴🔴🔴🔴' },
-    { chiffre: '67', lettres: 'soixante-sept', pronunciation: 'soixante-sept', visual: '📦📦📦📦📦📦🔴🔴🔴🔴🔴🔴🔴' },
     { chiffre: '78', lettres: 'soixante-dix-huit', pronunciation: 'soixante-dix-huit', visual: '📦📦📦📦📦📦📦🔴🔴🔴🔴🔴🔴🔴🔴' },
-    { chiffre: '89', lettres: 'quatre-vingt-neuf', pronunciation: 'quatre-vingt-neuf', visual: '📦📦📦📦📦📦📦📦🔴🔴🔴🔴🔴🔴🔴🔴🔴' },
     { chiffre: '100', lettres: 'cent', pronunciation: 'cent', visual: '🏠' }
   ];
 
   // Exercices mixtes lecture/écriture - positions des bonnes réponses variées
   const exercises = [
-    { type: 'lecture', question: 'Comment dit-on ce nombre ?', display: '23', correctAnswer: 'vingt-trois', choices: ['vingt-trois', 'treize', 'trente-deux'] },
-    { type: 'ecriture', question: 'Comment écrit-on ce nombre en chiffres ?', display: 'trente-sept', correctAnswer: '37', choices: ['73', '37', '27'] },
     { type: 'lecture', question: 'Comment dit-on ce nombre ?', display: '42', correctAnswer: 'quarante-deux', choices: ['cinquante-deux', 'quarante-deux', 'trente-deux'] },
     { type: 'ecriture', question: 'Comment écrit-on ce nombre en chiffres ?', display: 'cinquante-huit', correctAnswer: '58', choices: ['58', '48', '85'] },
-    { type: 'lecture', question: 'Comment dit-on ce nombre ?', display: '61', correctAnswer: 'soixante et un', choices: ['soixante et un', 'soixante-onze', 'seize'] },
-    { type: 'ecriture', question: 'Comment écrit-on ce nombre en chiffres ?', display: 'soixante-quinze', correctAnswer: '75', choices: ['65', '57', '75'] },
-    { type: 'lecture', question: 'Comment dit-on ce nombre ?', display: '84', correctAnswer: 'quatre-vingt-quatre', choices: ['quatre-vingt-quatre', 'quatre-vingts', 'soixante-quatorze'] },
-    { type: 'ecriture', question: 'Comment écrit-on ce nombre en chiffres ?', display: 'quatre-vingt-douze', correctAnswer: '92', choices: ['92', '82', '29'] },
-    { type: 'lecture', question: 'Comment dit-on ce nombre ?', display: '100', correctAnswer: 'cent', choices: ['mille', 'cent', 'dix'] },
-    { type: 'ecriture', question: 'Comment écrit-on ce nombre en chiffres ?', display: 'cent', correctAnswer: '100', choices: ['100', '10', '1000'] },
-    
-    // Exercices spéciaux avec 70, 80, 90
     { type: 'lecture', question: 'Comment dit-on ce nombre ?', display: '70', correctAnswer: 'soixante-dix', choices: ['soixante-dix', 'septante', 'soixante'] },
-    { type: 'lecture', question: 'Comment dit-on ce nombre ?', display: '80', correctAnswer: 'quatre-vingts', choices: ['huitante', 'quatre-vingts', 'octante'] },
-    { type: 'lecture', question: 'Comment dit-on ce nombre ?', display: '90', correctAnswer: 'quatre-vingt-dix', choices: ['quatre-vingt-dix', 'nonante', 'neuf-dix'] },
-    { type: 'ecriture', question: 'Comment écrit-on ce nombre en chiffres ?', display: 'soixante-dix', correctAnswer: '70', choices: ['60', '70', '17'] },
-    { type: 'ecriture', question: 'Comment écrit-on ce nombre en chiffres ?', display: 'quatre-vingts', correctAnswer: '80', choices: ['80', '40', '8'] }
+    { type: 'ecriture', question: 'Comment écrit-on ce nombre en chiffres ?', display: 'quatre-vingts', correctAnswer: '80', choices: ['80', '40', '8'] },
+    { type: 'lecture', question: 'Comment dit-on ce nombre ?', display: '34', correctAnswer: 'trente-quatre', choices: ['vingt-quatre', 'trente-quatre', 'quarante-trois'] },
+    { type: 'ecriture', question: 'Comment écrit-on ce nombre en chiffres ?', display: 'soixante-quinze', correctAnswer: '75', choices: ['65', '75', '57'] },
+    { type: 'lecture', question: 'Comment dit-on ce nombre ?', display: '96', correctAnswer: 'quatre-vingt-seize', choices: ['quatre-vingt-seize', 'quatre-vingt-six', 'quatre-vingt-dix-six'] },
+    { type: 'ecriture', question: 'Comment écrit-on ce nombre en chiffres ?', display: 'trente-sept', correctAnswer: '37', choices: ['37', '73', '27'] },
+    { type: 'lecture', question: 'Comment dit-on ce nombre ?', display: '63', correctAnswer: 'soixante-trois', choices: ['soixante-treize', 'soixante-trois', 'cinquante-trois'] },
+    { type: 'ecriture', question: 'Comment écrit-on ce nombre en chiffres ?', display: 'quatre-vingt-douze', correctAnswer: '92', choices: ['92', '82', '29'] }
   ];
 
   const speakText = (text: string) => {
@@ -117,6 +110,94 @@ export default function LectureEcritureCP100() {
       utterance.rate = 0.7;
       speechSynthesis.speak(utterance);
     }
+  };
+
+  // Fonction pour convertir les nombres en mots français
+  const numberToWords = (num: string): string => {
+    const numbers: { [key: string]: string } = {
+      '21': 'vingt et un', '22': 'vingt-deux', '23': 'vingt-trois', '24': 'vingt-quatre', '25': 'vingt-cinq',
+      '26': 'vingt-six', '27': 'vingt-sept', '28': 'vingt-huit', '29': 'vingt-neuf', '30': 'trente',
+      '31': 'trente et un', '32': 'trente-deux', '33': 'trente-trois', '34': 'trente-quatre', '35': 'trente-cinq',
+      '36': 'trente-six', '37': 'trente-sept', '38': 'trente-huit', '39': 'trente-neuf', '40': 'quarante',
+      '41': 'quarante et un', '42': 'quarante-deux', '43': 'quarante-trois', '44': 'quarante-quatre', '45': 'quarante-cinq',
+      '46': 'quarante-six', '47': 'quarante-sept', '48': 'quarante-huit', '49': 'quarante-neuf', '50': 'cinquante',
+      '51': 'cinquante et un', '52': 'cinquante-deux', '53': 'cinquante-trois', '54': 'cinquante-quatre', '55': 'cinquante-cinq',
+      '56': 'cinquante-six', '57': 'cinquante-sept', '58': 'cinquante-huit', '59': 'cinquante-neuf', '60': 'soixante',
+      '61': 'soixante et un', '62': 'soixante-deux', '63': 'soixante-trois', '64': 'soixante-quatre', '65': 'soixante-cinq',
+      '66': 'soixante-six', '67': 'soixante-sept', '68': 'soixante-huit', '69': 'soixante-neuf', '70': 'soixante-dix',
+      '71': 'soixante et onze', '72': 'soixante-douze', '73': 'soixante-treize', '74': 'soixante-quatorze', '75': 'soixante-quinze',
+      '76': 'soixante-seize', '77': 'soixante-dix-sept', '78': 'soixante-dix-huit', '79': 'soixante-dix-neuf', '80': 'quatre-vingts',
+      '81': 'quatre-vingt-un', '82': 'quatre-vingt-deux', '83': 'quatre-vingt-trois', '84': 'quatre-vingt-quatre', '85': 'quatre-vingt-cinq',
+      '86': 'quatre-vingt-six', '87': 'quatre-vingt-sept', '88': 'quatre-vingt-huit', '89': 'quatre-vingt-neuf', '90': 'quatre-vingt-dix',
+      '91': 'quatre-vingt-onze', '92': 'quatre-vingt-douze', '93': 'quatre-vingt-treize', '94': 'quatre-vingt-quatorze', '95': 'quatre-vingt-quinze',
+      '96': 'quatre-vingt-seize', '97': 'quatre-vingt-dix-sept', '98': 'quatre-vingt-dix-huit', '99': 'quatre-vingt-dix-neuf', '100': 'cent'
+    };
+    return numbers[num] || num;
+  };
+
+  // Fonction pour créer la visualisation d'un nombre
+  const createNumberVisualization = (num: string) => {
+    const number = parseInt(num);
+    const dizaines = Math.floor(number / 10);
+    const unites = number % 10;
+    
+    const dizainesBoxes = '📦'.repeat(dizaines);
+    const unitesCircles = '🔴'.repeat(unites);
+    
+    return {
+      dizaines,
+      unites,
+      dizainesBoxes,
+      unitesCircles,
+      full: `${dizainesBoxes}${unitesCircles}`
+    };
+  };
+
+  // Fonction pour énoncer l'explication d'un nombre avec animation
+  const speakNumberExplanation = (num: string) => {
+    const number = parseInt(num);
+    const dizaines = Math.floor(number / 10);
+    const unites = number % 10;
+    
+    setIsAnimating(true);
+    setAnimationStep(0);
+    
+    // Étape 0 -> 1 : Montrer les dizaines + audio
+    setTimeout(() => {
+      setAnimationStep(1);
+      if (dizaines > 0) {
+        speakText(`${dizaines} dizaine${dizaines > 1 ? 's' : ''}`);
+      }
+    }, 500);
+    
+    // Étape 1 -> 2 : Montrer les unités + audio
+    setTimeout(() => {
+      setAnimationStep(2);
+      if (unites > 0) {
+        speakText(`${unites} unité${unites > 1 ? 's' : ''}`);
+      }
+    }, 2500);
+    
+    // Étape 2 -> 3 : Explication complète + audio
+    setTimeout(() => {
+      setAnimationStep(3);
+      const wordForm = numberToWords(num);
+      let explanation = '';
+      if (dizaines > 0 && unites > 0) {
+        explanation = `${dizaines} et ${unites} se dit ${wordForm}`;
+      } else if (dizaines > 0) {
+        explanation = `${dizaines} et 0 se dit ${wordForm}`;
+      } else {
+        explanation = `0 et ${unites} se dit ${wordForm}`;
+      }
+      speakText(explanation);
+    }, 4500);
+    
+    // Fin de l'animation
+    setTimeout(() => {
+      setIsAnimating(false);
+      setAnimationStep(0);
+    }, 7500);
   };
 
   const handleAnswerClick = (answer: string) => {
@@ -271,19 +352,106 @@ export default function LectureEcritureCP100() {
                       </div>
                     </div>
 
-                    {/* Représentation visuelle */}
+                    {/* Représentation visuelle animée */}
                     <div className="bg-yellow-50 rounded-lg p-3 sm:p-4 md:p-6">
-                      <h3 className="text-base sm:text-lg md:text-xl font-bold mb-2 sm:mb-3 md:mb-4 text-yellow-800 text-center">
-                        👀 Avec des paquets :
+                      <h3 className="text-base sm:text-lg md:text-xl font-bold mb-4 text-yellow-800 text-center">
+                        👀 Avec des paquets et des objets :
                       </h3>
-                      <div className="text-center">
-                        <div className="text-lg sm:text-2xl md:text-3xl lg:text-4xl mb-2 sm:mb-3 md:mb-4 tracking-wide">
-                          {selected.visual}
-                        </div>
-                        <p className="text-sm sm:text-base md:text-lg font-semibold text-gray-700">
-                          {selected.chiffre} = {selected.lettres}
-                        </p>
-                      </div>
+                      
+                      {(() => {
+                        const visualization = createNumberVisualization(selected.chiffre);
+                        
+                        return (
+                          <div className="space-y-4">
+                            {/* Zone d'animation */}
+                            <div className="bg-white rounded-lg p-4 sm:p-6 shadow-md">
+                              <div className="grid md:grid-cols-3 gap-4 items-center min-h-[100px]">
+                                {/* Dizaines */}
+                                {visualization.dizaines > 0 && (
+                                  <div className={`text-center transition-all duration-1000 ${
+                                    !isAnimating || animationStep >= 1 
+                                      ? 'opacity-100 transform scale-100' 
+                                      : 'opacity-0 transform scale-50'
+                                  }`}>
+                                    <div className="text-2xl sm:text-3xl md:text-4xl mb-2">
+                                      {(!isAnimating || animationStep >= 1) ? visualization.dizainesBoxes : ''}
+                                    </div>
+                                    <div className={`text-sm sm:text-base font-semibold text-blue-600 transition-all duration-500 ${
+                                      !isAnimating || animationStep >= 1 ? 'opacity-100' : 'opacity-0'
+                                    }`}>
+                                      {visualization.dizaines} dizaine{visualization.dizaines > 1 ? 's' : ''}
+                                    </div>
+                                    <div className={`text-xs sm:text-sm text-gray-600 transition-all duration-500 ${
+                                      !isAnimating || animationStep >= 1 ? 'opacity-100' : 'opacity-0'
+                                    }`}>
+                                      = {visualization.dizaines * 10}
+                                    </div>
+                                  </div>
+                                )}
+                                
+                                {/* Plus */}
+                                {visualization.dizaines > 0 && visualization.unites > 0 && (
+                                  <div className={`text-center transition-all duration-500 ${
+                                    !isAnimating || animationStep >= 2 
+                                      ? 'opacity-100' 
+                                      : 'opacity-0'
+                                  }`}>
+                                    <div className="text-2xl sm:text-3xl font-bold text-purple-600">+</div>
+                                  </div>
+                                )}
+                                
+                                {/* Unités */}
+                                {visualization.unites > 0 && (
+                                  <div className={`text-center transition-all duration-1000 ${
+                                    !isAnimating || animationStep >= 2 
+                                      ? 'opacity-100 transform scale-100' 
+                                      : 'opacity-0 transform scale-50'
+                                  }`}>
+                                    <div className="text-2xl sm:text-3xl md:text-4xl mb-2">
+                                      {(!isAnimating || animationStep >= 2) ? visualization.unitesCircles : ''}
+                                    </div>
+                                    <div className={`text-sm sm:text-base font-semibold text-red-600 transition-all duration-500 ${
+                                      !isAnimating || animationStep >= 2 ? 'opacity-100' : 'opacity-0'
+                                    }`}>
+                                      {visualization.unites} unité{visualization.unites > 1 ? 's' : ''}
+                                    </div>
+                                    <div className={`text-xs sm:text-sm text-gray-600 transition-all duration-500 ${
+                                      !isAnimating || animationStep >= 2 ? 'opacity-100' : 'opacity-0'
+                                    }`}>
+                                      = {visualization.unites}
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+
+                              {/* Résultat final */}
+                              <div className={`text-center mt-4 pt-4 border-t-2 border-gray-200 transition-all duration-1000 ${
+                                !isAnimating || animationStep >= 3 
+                                  ? 'opacity-100 transform translate-y-0' 
+                                  : 'opacity-0 transform translate-y-4'
+                              }`}>
+                                <div className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800">
+                                  = {selected.chiffre} = {selected.lettres}
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Bouton pour déclencher l'animation */}
+                            <div className="text-center">
+                              <button 
+                                onClick={() => speakNumberExplanation(selected.chiffre)}
+                                disabled={isAnimating}
+                                className={`bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-bold text-sm sm:text-base md:text-lg hover:from-yellow-600 hover:to-orange-600 transition-all shadow-lg transform hover:scale-105 inline-flex items-center space-x-2 sm:space-x-3 ${
+                                  isAnimating ? 'opacity-50 cursor-not-allowed' : ''
+                                }`}
+                              >
+                                <Volume2 className="w-4 h-4 sm:w-5 sm:h-5" />
+                                <span>{isAnimating ? 'Animation en cours...' : 'Voir l\'animation'}</span>
+                              </button>
+                            </div>
+                          </div>
+                        );
+                      })()}
                     </div>
 
                     {/* Prononciation */}
@@ -397,51 +565,189 @@ export default function LectureEcritureCP100() {
                 </div>
               </div>
               
-              {/* Choix multiples */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-2 sm:gap-3 md:gap-4 max-w-sm sm:max-w-md mx-auto mb-4 sm:mb-6 md:mb-8">
+              {/* Choix multiples avec design amélioré */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4 md:gap-6 max-w-2xl mx-auto mb-6 sm:mb-8">
                 {shuffledChoices.map((choice) => (
                   <button
                     key={choice}
                     onClick={() => handleAnswerClick(choice)}
                     disabled={isCorrect !== null}
-                    className={`p-3 sm:p-4 md:p-6 rounded-lg font-bold text-base sm:text-lg md:text-xl lg:text-2xl transition-all min-h-[60px] sm:min-h-[70px] md:min-h-[80px] ${
+                    className={`group relative p-4 sm:p-6 md:p-8 rounded-2xl font-bold text-lg sm:text-xl md:text-2xl transition-all duration-300 min-h-[80px] sm:min-h-[90px] md:min-h-[100px] border-3 transform hover:scale-105 ${
                       userAnswer === choice
                         ? isCorrect === true
-                          ? 'bg-green-500 text-white'
+                          ? 'bg-gradient-to-br from-green-400 to-green-600 text-white shadow-2xl scale-105 border-green-300'
                           : isCorrect === false
-                            ? 'bg-red-500 text-white'
-                            : 'bg-blue-500 text-white'
+                            ? 'bg-gradient-to-br from-red-400 to-red-600 text-white shadow-2xl scale-105 border-red-300'
+                            : 'bg-gradient-to-br from-blue-400 to-blue-600 text-white shadow-2xl scale-105 border-blue-300'
                         : exercises[currentExercise].correctAnswer === choice && isCorrect === false
-                          ? 'bg-green-200 text-green-800 border-2 border-green-500'
-                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200 disabled:opacity-50'
-                    } disabled:cursor-not-allowed`}
+                          ? 'bg-gradient-to-br from-green-100 to-green-200 text-green-800 border-4 border-green-500 shadow-xl animate-pulse'
+                          : 'bg-gradient-to-br from-gray-50 to-gray-100 text-gray-800 border-2 border-gray-200 hover:border-purple-300 hover:shadow-lg hover:bg-gradient-to-br hover:from-purple-50 hover:to-purple-100 disabled:opacity-50 disabled:transform-none'
+                    } disabled:cursor-not-allowed flex items-center justify-center shadow-lg`}
                   >
-                    {choice}
+                    <span className="text-center leading-tight">{choice}</span>
+                    {userAnswer === choice && isCorrect === true && (
+                      <div className="absolute -top-2 -right-2 text-2xl">✨</div>
+                    )}
+                    {userAnswer === choice && isCorrect === false && (
+                      <div className="absolute -top-2 -right-2 text-2xl">❌</div>
+                    )}
+                    {exercises[currentExercise].correctAnswer === choice && isCorrect === false && (
+                      <div className="absolute -top-2 -right-2 text-2xl">✅</div>
+                    )}
                   </button>
                 ))}
               </div>
               
               {/* Résultat */}
               {isCorrect !== null && (
-                <div className={`p-4 sm:p-6 rounded-lg mb-4 sm:mb-6 ${
-                  isCorrect ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                <div className={`p-4 sm:p-6 rounded-xl mb-6 shadow-lg ${
+                  isCorrect ? 'bg-gradient-to-r from-green-100 to-green-200 text-green-800 border-2 border-green-300' : 'bg-gradient-to-r from-red-100 to-red-200 text-red-800 border-2 border-red-300'
                 }`}>
                   <div className="flex items-center justify-center space-x-3">
                     {isCorrect ? (
                       <>
-                        <CheckCircle className="w-6 h-6 sm:w-8 sm:h-8" />
-                        <span className="font-bold text-lg sm:text-xl">
+                        <CheckCircle className="w-8 h-8" />
+                        <span className="font-bold text-xl">
                           Parfait ! C'est bien "{exercises[currentExercise].correctAnswer}" !
                         </span>
                       </>
                     ) : (
                       <>
-                        <XCircle className="w-6 h-6 sm:w-8 sm:h-8" />
-                        <span className="font-bold text-lg sm:text-xl">
+                        <XCircle className="w-8 h-8" />
+                        <span className="font-bold text-xl">
                           Pas tout à fait... C'était "{exercises[currentExercise].correctAnswer}" !
                         </span>
                       </>
                     )}
+                  </div>
+                </div>
+              )}
+
+              {/* Feedback détaillé pour les réponses incorrectes */}
+              {!isCorrect && isCorrect !== null && (
+                <div className="bg-white rounded-xl p-6 border-3 border-blue-400 mb-6 shadow-2xl">
+                  <h4 className="text-xl font-bold mb-6 text-blue-800 text-center">
+                    🎯 Regarde la bonne réponse !
+                  </h4>
+                  <div className="space-y-6">
+                    {(() => {
+                      const exercise = exercises[currentExercise];
+                      const numberToExplain = exercise.type === 'lecture' ? exercise.display : exercise.correctAnswer;
+                      const visualization = createNumberVisualization(numberToExplain);
+                      const correctWord = exercise.type === 'lecture' ? exercise.correctAnswer : numberToWords(exercise.correctAnswer);
+                      
+                      return (
+                        <div className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl p-6">
+                          {/* Nombre à expliquer */}
+                          <div className="text-center mb-6">
+                            <div className="text-6xl font-bold text-gray-800 mb-4">
+                              {numberToExplain}
+                            </div>
+                            <div className="text-2xl font-bold text-blue-600 mb-4">
+                              se dit : <span className="text-purple-600">{correctWord}</span>
+                            </div>
+                          </div>
+
+                          {/* Illustration avec boîtes et unités animée */}
+                          <div className="bg-white rounded-lg p-6 shadow-md mb-6">
+                            <h5 className="text-lg font-bold mb-4 text-center text-gray-800">
+                              👀 Avec des paquets et des objets :
+                            </h5>
+                            
+                            <div className="grid md:grid-cols-3 gap-4 items-center min-h-[120px]">
+                              {/* Dizaines */}
+                              {visualization.dizaines > 0 && (
+                                <div className={`text-center transition-all duration-1000 ${
+                                  !isAnimating || animationStep >= 1 
+                                    ? 'opacity-100 transform scale-100' 
+                                    : 'opacity-0 transform scale-50'
+                                }`}>
+                                  <div className="text-4xl mb-2 transition-all duration-500">
+                                    {(!isAnimating || animationStep >= 1) ? visualization.dizainesBoxes : ''}
+                                  </div>
+                                  <div className={`text-lg font-semibold text-blue-600 transition-all duration-500 ${
+                                    !isAnimating || animationStep >= 1 ? 'opacity-100' : 'opacity-0'
+                                  }`}>
+                                    {visualization.dizaines} dizaine{visualization.dizaines > 1 ? 's' : ''}
+                                  </div>
+                                  <div className={`text-sm text-gray-600 transition-all duration-500 ${
+                                    !isAnimating || animationStep >= 1 ? 'opacity-100' : 'opacity-0'
+                                  }`}>
+                                    = {visualization.dizaines * 10}
+                                  </div>
+                                </div>
+                              )}
+                              
+                              {/* Plus */}
+                              {visualization.dizaines > 0 && visualization.unites > 0 && (
+                                <div className={`text-center transition-all duration-500 ${
+                                  !isAnimating || animationStep >= 2 
+                                    ? 'opacity-100' 
+                                    : 'opacity-0'
+                                }`}>
+                                  <div className="text-3xl font-bold text-purple-600">+</div>
+                                </div>
+                              )}
+                              
+                              {/* Unités */}
+                              {visualization.unites > 0 && (
+                                <div className={`text-center transition-all duration-1000 ${
+                                  !isAnimating || animationStep >= 2 
+                                    ? 'opacity-100 transform scale-100' 
+                                    : 'opacity-0 transform scale-50'
+                                }`}>
+                                  <div className="text-4xl mb-2 transition-all duration-500">
+                                    {(!isAnimating || animationStep >= 2) ? visualization.unitesCircles : ''}
+                                  </div>
+                                  <div className={`text-lg font-semibold text-red-600 transition-all duration-500 ${
+                                    !isAnimating || animationStep >= 2 ? 'opacity-100' : 'opacity-0'
+                                  }`}>
+                                    {visualization.unites} unité{visualization.unites > 1 ? 's' : ''}
+                                  </div>
+                                  <div className={`text-sm text-gray-600 transition-all duration-500 ${
+                                    !isAnimating || animationStep >= 2 ? 'opacity-100' : 'opacity-0'
+                                  }`}>
+                                    = {visualization.unites}
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+
+                            {/* Égal */}
+                            <div className={`text-center mt-4 pt-4 border-t-2 border-gray-200 transition-all duration-1000 ${
+                              !isAnimating || animationStep >= 3 
+                                ? 'opacity-100 transform translate-y-0' 
+                                : 'opacity-0 transform translate-y-4'
+                            }`}>
+                              <div className="text-2xl font-bold text-gray-800">
+                                = {numberToExplain} = {correctWord}
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Bouton audio */}
+                          <div className="text-center">
+                            <button 
+                              onClick={() => speakNumberExplanation(numberToExplain)}
+                              disabled={isAnimating}
+                              className={`bg-gradient-to-r from-blue-500 to-purple-500 text-white px-8 py-4 rounded-xl font-bold text-lg hover:from-blue-600 hover:to-purple-600 transition-all shadow-lg transform hover:scale-105 inline-flex items-center space-x-3 ${
+                                isAnimating ? 'opacity-50 cursor-not-allowed' : ''
+                              }`}
+                            >
+                              <Volume2 className="w-5 h-5" />
+                              <span>{isAnimating ? 'Animation en cours...' : 'Voir l\'animation'}</span>
+                            </button>
+                          </div>
+
+                          {/* Message d'encouragement */}
+                          <div className="bg-gradient-to-r from-purple-100 to-pink-100 rounded-lg p-4 text-center mt-4">
+                            <p className="text-lg font-semibold text-purple-800">
+                              🌟 Maintenant tu sais ! {numberToExplain} se dit "{correctWord}" ! 🌟
+                            </p>
+                          </div>
+                        </div>
+                      );
+                    })()}
                   </div>
                 </div>
               )}

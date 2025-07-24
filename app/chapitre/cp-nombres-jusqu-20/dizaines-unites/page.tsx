@@ -13,10 +13,35 @@ const styles = `
   .animate-fade-in {
     animation: fadeIn 0.8s ease-out;
   }
+  
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+  }
+  .animate-pulse-custom {
+    animation: pulse 1s ease-in-out infinite;
+  }
+  
+  @keyframes slideInRight {
+    from { transform: translateX(100px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+  }
+  .animate-slide-in-right {
+    animation: slideInRight 0.8s ease-out;
+  }
+  
+  @keyframes bounce {
+    0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+    40% { transform: translateY(-10px); }
+    60% { transform: translateY(-5px); }
+  }
+  .animate-bounce-custom {
+    animation: bounce 1s ease-in-out;
+  }
 `;
 
 export default function ValeurPositionnelleCP20() {
-  const [selectedNumber, setSelectedNumber] = useState('17');
+  const [selectedNumber, setSelectedNumber] = useState('15');
   const [currentExercise, setCurrentExercise] = useState(0);
   const [userAnswer, setUserAnswer] = useState('');
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
@@ -26,6 +51,8 @@ export default function ValeurPositionnelleCP20() {
   const [showCompletionModal, setShowCompletionModal] = useState(false);
   const [finalScore, setFinalScore] = useState(0);
   const [shuffledChoices, setShuffledChoices] = useState<string[]>([]);
+  const [animatedExplanation, setAnimatedExplanation] = useState<string>('');
+  const [animationTriggered, setAnimationTriggered] = useState(false);
 
   // Fonction pour mélanger un tableau
   const shuffleArray = (array: string[]) => {
@@ -51,10 +78,12 @@ export default function ValeurPositionnelleCP20() {
     }
   }, [currentExercise]);
 
+  // L'animation ne se déclenche plus automatiquement - uniquement sur clic
+
   // Sauvegarder les progrès dans localStorage
   const saveProgress = (score: number, maxScore: number) => {
     const progress = {
-      sectionId: 'valeur-positionnelle',
+      sectionId: 'dizaines-unites',
       completed: true,
       score: score,
       maxScore: maxScore,
@@ -67,7 +96,7 @@ export default function ValeurPositionnelleCP20() {
     
     if (existingProgress) {
       allProgress = JSON.parse(existingProgress);
-      const existingIndex = allProgress.findIndex((p: any) => p.sectionId === 'valeur-positionnelle');
+      const existingIndex = allProgress.findIndex((p: any) => p.sectionId === 'dizaines-unites');
       
       if (existingIndex >= 0) {
         if (score > allProgress[existingIndex].score) {
@@ -88,40 +117,26 @@ export default function ValeurPositionnelleCP20() {
     localStorage.setItem('cp-nombres-20-progress', JSON.stringify(allProgress));
   };
 
-  // Nombres avec décomposition unités/dizaines pour CP (10-20)
+  // Nombres avec décomposition unités/dizaines pour CP - 4 exemples essentiels
   const numbersDecomposition = [
-    { number: '10', dizaines: 1, unites: 0, visual: '🔟 • ', explanation: '1 dizaine + 0 unité' },
-    { number: '11', dizaines: 1, unites: 1, visual: '🔟 🔴', explanation: '1 dizaine + 1 unité' },
     { number: '12', dizaines: 1, unites: 2, visual: '🔟 🔴🔴', explanation: '1 dizaine + 2 unités' },
-    { number: '13', dizaines: 1, unites: 3, visual: '🔟 🔴🔴🔴', explanation: '1 dizaine + 3 unités' },
-    { number: '14', dizaines: 1, unites: 4, visual: '🔟 🔴🔴🔴🔴', explanation: '1 dizaine + 4 unités' },
     { number: '15', dizaines: 1, unites: 5, visual: '🔟 🔴🔴🔴🔴🔴', explanation: '1 dizaine + 5 unités' },
-    { number: '16', dizaines: 1, unites: 6, visual: '🔟 🔴🔴🔴🔴🔴🔴', explanation: '1 dizaine + 6 unités' },
-    { number: '17', dizaines: 1, unites: 7, visual: '🔟 🔴🔴🔴🔴🔴🔴🔴', explanation: '1 dizaine + 7 unités' },
     { number: '18', dizaines: 1, unites: 8, visual: '🔟 🔴🔴🔴🔴🔴🔴🔴🔴', explanation: '1 dizaine + 8 unités' },
-    { number: '19', dizaines: 1, unites: 9, visual: '🔟 🔴🔴🔴🔴🔴🔴🔴🔴🔴', explanation: '1 dizaine + 9 unités' },
     { number: '20', dizaines: 2, unites: 0, visual: '🔟🔟 • ', explanation: '2 dizaines + 0 unité' }
   ];
 
-  // Exercices sur les dizaines et unités - positions des bonnes réponses variées
+  // Exercices sur les dizaines et unités - 8 exercices basés sur les 4 nombres choisis
   const exercises = [
-    { question: 'Dans 13, combien y a-t-il de dizaines ?', number: '13', type: 'dizaines', correctAnswer: '1', choices: ['1', '3', '0'] },
-    { question: 'Dans 17, combien y a-t-il d\'unités ?', number: '17', type: 'unites', correctAnswer: '7', choices: ['1', '7', '17'] },
-    { question: 'Dans 15, le chiffre des unités est ?', number: '15', type: 'unites', correctAnswer: '5', choices: ['5', '1', '15'] },
-    { question: 'Dans 19, combien de dizaines ?', number: '19', type: 'dizaines', correctAnswer: '1', choices: ['9', '1', '19'] },
-    { question: 'Dans 11, combien d\'unités ?', number: '11', type: 'unites', correctAnswer: '1', choices: ['1', '11', '2'] },
-    { question: 'Dans 14, le chiffre des dizaines est ?', number: '14', type: 'dizaines', correctAnswer: '1', choices: ['1', '4', '14'] },
-    { question: 'Dans 18, combien y a-t-il d\'unités ?', number: '18', type: 'unites', correctAnswer: '8', choices: ['18', '8', '1'] },
-    { question: 'Dans 16, combien de dizaines ?', number: '16', type: 'dizaines', correctAnswer: '1', choices: ['6', '16', '1'] },
-    { question: 'Dans 12, le chiffre des unités est ?', number: '12', type: 'unites', correctAnswer: '2', choices: ['2', '1', '12'] },
+    { question: 'Dans 12, combien y a-t-il de dizaines ?', number: '12', type: 'dizaines', correctAnswer: '1', choices: ['1', '2', '12'] },
+    { question: 'Dans 15, combien y a-t-il d\'unités ?', number: '15', type: 'unites', correctAnswer: '5', choices: ['5', '1', '15'] },
+    { question: 'Dans 18, le chiffre des unités est ?', number: '18', type: 'unites', correctAnswer: '8', choices: ['8', '1', '18'] },
     { question: 'Dans 20, combien de dizaines ?', number: '20', type: 'dizaines', correctAnswer: '2', choices: ['2', '0', '20'] },
     
     // Exercices de composition
-    { question: '1 dizaine + 3 unités = ?', display: '📦 + 🔴🔴🔴', correctAnswer: '13', choices: ['13', '4', '31'] },
-    { question: '1 dizaine + 7 unités = ?', display: '📦 + 🔴🔴🔴🔴🔴🔴🔴', correctAnswer: '17', choices: ['8', '17', '71'] },
+    { question: '1 dizaine + 2 unités = ?', display: '📦 + 🔴🔴', correctAnswer: '12', choices: ['12', '3', '21'] },
     { question: '1 dizaine + 5 unités = ?', display: '📦 + 🔴🔴🔴🔴🔴', correctAnswer: '15', choices: ['15', '6', '51'] },
-    { question: '2 dizaines + 0 unité = ?', display: '📦📦 + •', correctAnswer: '20', choices: ['2', '20', '02'] },
-    { question: '1 dizaine + 9 unités = ?', display: '📦 + 🔴🔴🔴🔴🔴🔴🔴🔴🔴', correctAnswer: '19', choices: ['19', '10', '91'] }
+    { question: '1 dizaine + 8 unités = ?', display: '📦 + 🔴🔴🔴🔴🔴🔴🔴🔴', correctAnswer: '18', choices: ['9', '18', '81'] },
+    { question: '2 dizaines + 0 unité = ?', display: '📦📦 + •', correctAnswer: '20', choices: ['2', '20', '02'] }
   ];
 
   const speakText = (text: string) => {
@@ -130,6 +145,45 @@ export default function ValeurPositionnelleCP20() {
       utterance.lang = 'fr-FR';
       utterance.rate = 0.7;
       speechSynthesis.speak(utterance);
+    }
+  };
+
+  // Fonction pour générer une explication simple quand c'est faux
+  const generateAnimatedExplanation = (exercise: any) => {
+    const correctAnswer = exercise.correctAnswer;
+    
+    // Rendre la fonction speakText disponible globalement pour les boutons HTML
+    (window as any).speakTextGlobal = speakText;
+    
+    if (exercise.type === 'dizaines') {
+      return `
+        <div class="bg-blue-50 rounded-lg p-4 mb-4 text-center">
+          <h4 class="font-bold text-blue-800 mb-4">La bonne réponse est ${correctAnswer}</h4>
+          <button onclick="window.speakTextGlobal('${correctAnswer}')" class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-bold">
+            🔊 Écouter la réponse
+          </button>
+        </div>
+      `;
+    } else if (exercise.type === 'unites') {
+      return `
+        <div class="bg-red-50 rounded-lg p-4 mb-4 text-center">
+          <h4 class="font-bold text-red-800 mb-4">La bonne réponse est ${correctAnswer}</h4>
+          <button onclick="window.speakTextGlobal('${correctAnswer}')" class="bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-lg font-bold">
+            🔊 Écouter la réponse
+          </button>
+        </div>
+      `;
+    } else {
+      // Pour les exercices de composition
+      const answer = exercise.correctAnswer;
+      return `
+        <div class="bg-green-50 rounded-lg p-4 mb-4 text-center">
+          <h4 class="font-bold text-green-800 mb-4">La bonne réponse est ${answer}</h4>
+          <button onclick="window.speakTextGlobal('${answer}')" class="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg font-bold">
+            🔊 Écouter la réponse
+          </button>
+        </div>
+      `;
     }
   };
 
@@ -145,6 +199,12 @@ export default function ValeurPositionnelleCP20() {
         newSet.add(currentExercise);
         return newSet;
       });
+      // Effacer l'explication si c'est correct
+      setAnimatedExplanation('');
+    } else if (!correct) {
+      // Générer l'explication animée si c'est faux
+      const explanation = generateAnimatedExplanation(exercises[currentExercise]);
+      setAnimatedExplanation(explanation);
     }
 
     // Si bonne réponse → passage automatique après 1.5s
@@ -154,6 +214,7 @@ export default function ValeurPositionnelleCP20() {
           setCurrentExercise(currentExercise + 1);
           setUserAnswer('');
           setIsCorrect(null);
+          setAnimatedExplanation('');
         } else {
           // Dernier exercice terminé
           const finalScoreValue = score + (!answeredCorrectly.has(currentExercise) ? 1 : 0);
@@ -170,6 +231,7 @@ export default function ValeurPositionnelleCP20() {
       setCurrentExercise(currentExercise + 1);
       setUserAnswer('');
       setIsCorrect(null);
+      setAnimatedExplanation('');
     } else {
       setFinalScore(score);
       setShowCompletionModal(true);
@@ -185,6 +247,7 @@ export default function ValeurPositionnelleCP20() {
     setAnsweredCorrectly(new Set());
     setShowCompletionModal(false);
     setFinalScore(0);
+    setAnimatedExplanation('');
   };
 
   return (
@@ -242,20 +305,25 @@ export default function ValeurPositionnelleCP20() {
               <h2 className="text-lg sm:text-2xl font-bold text-center mb-3 sm:mb-6 text-gray-900">
                 🎯 Choisis un nombre à analyser
               </h2>
-              <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2 sm:gap-3 mb-3 sm:mb-6">
-                {numbersDecomposition.map((num) => (
-                  <button
-                    key={num.number}
-                    onClick={() => setSelectedNumber(num.number)}
-                    className={`p-2 sm:p-3 rounded-lg font-bold text-base sm:text-lg transition-all ${
-                      selectedNumber === num.number
-                        ? 'bg-blue-500 text-white shadow-lg scale-105'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200 hover:scale-102'
-                    }`}
-                  >
-                    {num.number}
-                  </button>
-                ))}
+              <div className="flex justify-center">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 max-w-lg">
+                  {numbersDecomposition.map((num) => (
+                    <button
+                      key={num.number}
+                      onClick={() => {
+                        setSelectedNumber(num.number);
+                        setAnimationTriggered(false);
+                      }}
+                      className={`p-3 sm:p-4 rounded-lg font-bold text-lg sm:text-xl transition-all min-w-[60px] sm:min-w-[80px] ${
+                        selectedNumber === num.number
+                          ? 'bg-blue-500 text-white shadow-lg scale-105'
+                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200 hover:scale-102'
+                      }`}
+                    >
+                      {num.number}
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
 
@@ -271,43 +339,122 @@ export default function ValeurPositionnelleCP20() {
                   {selectedNumber}
                 </div>
                 
-                {/* Tableau de valeur positionnelle animé */}
-                <div className="bg-white rounded-lg p-3 sm:p-6 mb-3 sm:mb-6 shadow-inner">
-                  <h4 className="text-base sm:text-lg font-bold mb-4 sm:mb-6 text-gray-800">
-                    📊 Tableau des dizaines et unités
+                {/* Animation simple de décomposition */}
+                <div className="bg-white rounded-lg p-3 sm:p-6 mb-3 sm:mb-6">
+                  <h4 className="text-base sm:text-lg font-bold mb-4 text-gray-800 text-center">
+                    Décomposition de {selectedNumber}
                   </h4>
                   
-                  {/* Tableau avec animation */}
-                  <div className="overflow-hidden rounded-lg border-2 border-gray-300 mb-4">
-                    <table className="w-full">
-                      <thead>
-                        <tr className="bg-gradient-to-r from-blue-500 to-purple-500 text-white">
-                          <th className="p-3 sm:p-4 text-base sm:text-lg font-bold border-r border-white">
-                            🔟 Dizaines
-                          </th>
-                          <th className="p-3 sm:p-4 text-base sm:text-lg font-bold">
-                            🔴 Unités
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr className="bg-white">
-                          <td className="p-4 sm:p-6 text-3xl sm:text-5xl font-bold text-green-600 border-r border-gray-300 animate-bounce">
-                            {numbersDecomposition.find(n => n.number === selectedNumber)?.dizaines}
-                          </td>
-                          <td className="p-4 sm:p-6 text-3xl sm:text-5xl font-bold text-orange-600 animate-bounce" style={{animationDelay: '0.2s'}}>
-                            {numbersDecomposition.find(n => n.number === selectedNumber)?.unites}
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
+                  {/* Tableau magique des positions avec animation */}
+                  <div className="space-y-4">
+                    <div className="text-center">
+                      <h5 className="text-lg font-bold text-gray-800 mb-6">
+                        🎯 Tableau magique des positions
+                      </h5>
+                      
+                      {/* Boutons de contrôle en haut */}
+                      <div className="flex justify-center mb-6">
+                        <button
+                          onClick={() => {
+                            // Toujours lancer l'animation complète
+                            setAnimationTriggered(false);
+                            setTimeout(() => {
+                              setAnimationTriggered(true);
+                              // Remettre automatiquement à zéro après l'animation
+                              setTimeout(() => setAnimationTriggered(false), 4500);
+                            }, 500);
+                          }}
+                          className="bg-purple-500 hover:bg-purple-600 text-white px-8 py-3 rounded-lg font-bold transition-colors flex items-center space-x-2"
+                        >
+                          <span>🎬</span>
+                          <span>Voir l'animation</span>
+                        </button>
+                      </div>
+                      
+                      <div className="relative flex flex-col items-center">
+                        {/* Nombre original qui reste visible */}
+                        <div className="mb-8 relative z-10">
+                          <div className="bg-blue-100 rounded-lg px-6 py-3 border-2 border-blue-300">
+                            <div className="text-6xl font-bold text-blue-600 relative">
+                              <span className="relative">{selectedNumber}</span>
+                              {/* Chiffres animés par-dessus */}
+                              <span 
+                                className="absolute top-0 left-0 transition-all duration-[4000ms] ease-in-out"
+                                style={{
+                                  transform: animationTriggered ? 'translateX(-180px) translateY(240px) scale(0.83)' : 'translateX(0) translateY(0) scale(1)',
+                                  color: animationTriggered ? '#059669' : '#2563eb',
+                                  zIndex: 50,
+                                  opacity: animationTriggered ? 0 : 1,
+                                  transitionDelay: animationTriggered ? '3.5s' : '0s'
+                                }}
+                              >
+                                {selectedNumber.charAt(0)}
+                              </span>
+                              <span 
+                                className="absolute top-0 transition-all duration-[4000ms] ease-in-out"
+                                style={{
+                                  left: '0.6em',
+                                  transform: animationTriggered ? 'translateX(180px) translateY(240px) scale(0.83)' : 'translateX(0) translateY(0) scale(1)',
+                                  color: animationTriggered ? '#ea580c' : '#2563eb',
+                                  zIndex: 50,
+                                  opacity: animationTriggered ? 0 : 1,
+                                  transitionDelay: animationTriggered ? '3.5s' : '0s'
+                                }}
+                              >
+                                {selectedNumber.charAt(1)}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        {/* Vrai tableau dizaines/unités */}
+                        <div className="bg-white rounded-xl shadow-xl border-4 border-gray-400 overflow-hidden">
+                          <table className="border-collapse">
+                            <thead>
+                              <tr>
+                                <th className="bg-green-100 border-2 border-gray-400 px-12 py-4 text-lg font-bold text-green-700">
+                                  DIZAINES
+                                </th>
+                                <th className="bg-orange-100 border-2 border-gray-400 px-12 py-4 text-lg font-bold text-orange-700">
+                                  UNITÉS
+                                </th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr>
+                                <td className="bg-green-50 border-2 border-gray-400 px-12 py-10 text-center w-40">
+                                  <div className="text-5xl font-bold text-green-600 h-16 flex items-center justify-center">
+                                    {selectedNumber.charAt(0)}
+                                  </div>
+                                </td>
+                                <td className="bg-orange-50 border-2 border-gray-400 px-12 py-10 text-center w-40">
+                                  <div className="text-5xl font-bold text-orange-600 h-16 flex items-center justify-center">
+                                    {selectedNumber.charAt(1)}
+                                  </div>
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                   
-                  {/* Explication avec animation */}
-                  <div className="bg-yellow-50 rounded-lg p-3 sm:p-4 animate-fade-in">
-                    <p className="text-sm sm:text-base font-semibold text-gray-800">
-                      {numbersDecomposition.find(n => n.number === selectedNumber)?.explanation}
-                    </p>
+                  {/* Un seul bouton d'écoute pour le résultat complet */}
+                  <div className="text-center">
+                    <button
+                      onClick={() => {
+                        const selected = numbersDecomposition.find(n => n.number === selectedNumber);
+                        if (selected) {
+                          const fullExplanation = `${selected.dizaines} dizaine${selected.dizaines > 1 ? 's' : ''} et ${selected.unites} unité${selected.unites > 1 ? 's' : ''} égale ${selectedNumber}`;
+                          speakText(fullExplanation);
+                        }
+                      }}
+                      className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-bold transition-colors"
+                    >
+                      <Volume2 className="w-4 h-4 mr-2 inline" />
+                      Écouter le résultat
+                    </button>
                   </div>
                 </div>
 
@@ -467,6 +614,11 @@ export default function ValeurPositionnelleCP20() {
                     )}
                   </div>
                 </div>
+              )}
+
+              {/* Explication animée quand c'est faux */}
+              {animatedExplanation && (
+                <div dangerouslySetInnerHTML={{ __html: animatedExplanation }} />
               )}
               
               {/* Navigation */}

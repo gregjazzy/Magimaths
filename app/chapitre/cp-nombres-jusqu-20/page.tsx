@@ -65,7 +65,7 @@ const sections = [
     verified: true
   },
   {
-    id: 'valeur-positionnelle',
+    id: 'dizaines-unites',
     title: 'Dizaines et unités',
     description: 'Comprendre la différence entre unités et dizaines',
     icon: '🔢',

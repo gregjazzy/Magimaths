@@ -111,6 +111,20 @@ export default function ComptageCP() {
     }
   };
 
+  // Fonction pour dire le résultat en français
+  const speakResult = (count: string) => {
+    const num = parseInt(count);
+    const numbers = ['zéro', 'un', 'deux', 'trois', 'quatre', 'cinq', 'six', 'sept', 'huit', 'neuf', 'dix', 'onze', 'douze', 'treize', 'quatorze', 'quinze', 'seize', 'dix-sept', 'dix-huit', 'dix-neuf', 'vingt'];
+    const text = `Il y a ${numbers[num] || count} objets`;
+    
+    if ('speechSynthesis' in window) {
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'fr-FR';
+      utterance.rate = 0.7;
+      speechSynthesis.speak(utterance);
+    }
+  };
+
   const startCountingAnimation = async () => {
     setIsCountingAnimation(true);
     setCurrentCountingNumber(0);
@@ -496,7 +510,7 @@ export default function ComptageCP() {
                 <div className={`p-6 rounded-lg mb-6 ${
                   isCorrect ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
                 }`}>
-                  <div className="flex items-center justify-center space-x-3">
+                  <div className="flex items-center justify-center space-x-3 mb-4">
                     {isCorrect ? (
                       <>
                         <CheckCircle className="w-8 h-8" />
@@ -513,6 +527,67 @@ export default function ComptageCP() {
                       </>
                     )}
                   </div>
+                  
+                  {/* Illustration et audio pour les mauvaises réponses */}
+                  {!isCorrect && (
+                    <div className="bg-white rounded-lg p-6 border-2 border-blue-300">
+                      <h4 className="text-lg font-bold mb-4 text-blue-800 text-center">
+                        🎯 Comptons ensemble la bonne réponse !
+                      </h4>
+                      
+                      <div className="space-y-4">
+                        {/* Illustration avec comptage visuel */}
+                        <div className="bg-blue-50 rounded-lg p-4">
+                          <div className="text-center mb-3">
+                            <div className="text-xl font-bold text-blue-600 mb-3">
+                              {exercises[currentExercise].question}
+                            </div>
+                          </div>
+                          
+                          {/* Objets avec numérotation */}
+                          <div className="flex flex-wrap justify-center gap-2 mb-4">
+                            {Array.from(exercises[currentExercise].visual).map((emoji, index) => (
+                              <div key={index} className="relative">
+                                <div className="text-3xl">{emoji}</div>
+                                <div className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
+                                  {index + 1}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                          
+                          {/* Résultat final */}
+                          <div className="text-center">
+                            <div className="text-3xl font-bold text-green-600 mb-2">
+                              = {exercises[currentExercise].correctAnswer}
+                            </div>
+                            <div className="text-lg text-gray-700">
+                              Il y a {exercises[currentExercise].correctAnswer} objets en tout !
+                            </div>
+                          </div>
+                        </div>
+                        
+                        {/* Bouton d'écoute */}
+                        <div className="text-center">
+                          <button
+                            onClick={() => speakResult(exercises[currentExercise].correctAnswer)}
+                            className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-bold transition-colors flex items-center space-x-2 mx-auto"
+                          >
+                            <Volume2 className="w-4 h-4" />
+                            <span>Écouter la bonne réponse</span>
+                          </button>
+                        </div>
+                        
+                        {/* Message d'encouragement */}
+                        <div className="bg-gradient-to-r from-purple-100 to-pink-100 rounded-lg p-3 text-center">
+                          <div className="text-lg">🌟</div>
+                          <p className="text-sm font-semibold text-purple-800">
+                            Maintenant tu sais ! En comptant bien, on trouve {exercises[currentExercise].correctAnswer} objets !
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
               

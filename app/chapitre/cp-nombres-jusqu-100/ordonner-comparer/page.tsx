@@ -2,10 +2,10 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, CheckCircle, XCircle, RotateCcw, Volume2, ArrowUp, ArrowDown, Equal } from 'lucide-react';
+import { ArrowLeft, CheckCircle, XCircle, RotateCcw, Volume2 } from 'lucide-react';
 
 export default function OrdonnerComparerCP100() {
-  const [selectedComparison, setSelectedComparison] = useState('45_67');
+  const [selectedComparison, setSelectedComparison] = useState('67_34');
   const [currentExercise, setCurrentExercise] = useState(0);
   const [userAnswer, setUserAnswer] = useState('');
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
@@ -25,6 +25,53 @@ export default function OrdonnerComparerCP100() {
     }
     return shuffled;
   };
+
+  // Comparaisons pour le cours
+  const comparisons = [
+    { id: '23_45', num1: 23, num2: 45, symbol: '<', explanation: '23 est plus petit que 45', visual: '📦📦🔴🔴🔴 < 📦📦📦📦🔴🔴🔴🔴🔴' },
+    { id: '67_34', num1: 67, num2: 34, symbol: '>', explanation: '67 est plus grand que 34', visual: '📦📦📦📦📦📦🔴🔴🔴🔴🔴🔴🔴 > 📦📦📦🔴🔴🔴🔴' },
+    { id: '56_56', num1: 56, num2: 56, symbol: '=', explanation: '56 est égal à 56', visual: '📦📦📦📦📦🔴🔴🔴🔴🔴🔴 = 📦📦📦📦📦🔴🔴🔴🔴🔴🔴' },
+    { id: '89_72', num1: 89, num2: 72, symbol: '>', explanation: '89 est plus grand que 72', visual: '📦📦📦📦📦📦📦📦🔴🔴🔴🔴🔴🔴🔴🔴🔴 > 📦📦📦📦📦📦📦🔴🔴' },
+    { id: '38_91', num1: 38, num2: 91, symbol: '<', explanation: '38 est plus petit que 91', visual: '📦📦📦🔴🔴🔴🔴🔴🔴🔴🔴 < 📦📦📦📦📦📦📦📦📦🔴' },
+    { id: '75_75', num1: 75, num2: 75, symbol: '=', explanation: '75 est égal à 75', visual: '📦📦📦📦📦📦📦🔴🔴🔴🔴🔴 = 📦📦📦📦📦📦📦🔴🔴🔴🔴🔴' },
+    { id: '42_19', num1: 42, num2: 19, symbol: '>', explanation: '42 est plus grand que 19', visual: '📦📦📦📦🔴🔴 > 📦🔴🔴🔴🔴🔴🔴🔴🔴🔴' },
+    { id: '28_63', num1: 28, num2: 63, symbol: '<', explanation: '28 est plus petit que 63', visual: '📦📦🔴🔴🔴🔴🔴🔴🔴🔴 < 📦📦📦📦📦📦🔴🔴🔴' }
+  ];
+
+  // Exercices de comparaison et rangement - 25 exercices au total (20 + 5 nouveaux)
+  const exercises = [
+    { question: 'Compare 34 et 27', num1: 34, num2: 27, correctAnswer: '>', choices: ['>', '<', '='] },
+    { question: 'Compare 19 et 58', num1: 19, num2: 58, correctAnswer: '<', choices: ['=', '<', '>'] },
+    { question: 'Compare 46 et 46', num1: 46, num2: 46, correctAnswer: '=', choices: ['<', '=', '>'] },
+    { question: 'Compare 73 et 29', num1: 73, num2: 29, correctAnswer: '>', choices: ['>', '<', '='] },
+    { question: 'Compare 25 et 84', num1: 25, num2: 84, correctAnswer: '<', choices: ['=', '>', '<'] },
+    { question: 'Compare 92 et 92', num1: 92, num2: 92, correctAnswer: '=', choices: ['>', '=', '<'] },
+    { question: 'Compare 67 et 41', num1: 67, num2: 41, correctAnswer: '>', choices: ['>', '<', '='] },
+    { question: 'Compare 38 et 95', num1: 38, num2: 95, correctAnswer: '<', choices: ['<', '>', '='] },
+    { question: 'Compare 100 et 76', num1: 100, num2: 76, correctAnswer: '>', choices: ['=', '<', '>'] },
+    { question: 'Compare 55 et 55', num1: 55, num2: 55, correctAnswer: '=', choices: ['=', '>', '<'] },
+    
+    // Exercices de rangement (plus petit au plus grand)
+    { question: 'Range du plus petit au plus grand : 47, 23, 61', type: 'ordre', correctAnswer: '23, 47, 61', choices: ['23, 47, 61', '61, 47, 23', '47, 23, 61'] },
+    { question: 'Range du plus petit au plus grand : 88, 35, 52', type: 'ordre', correctAnswer: '35, 52, 88', choices: ['88, 52, 35', '35, 52, 88', '52, 35, 88'] },
+    { question: 'Range du plus petit au plus grand : 94, 29, 73', type: 'ordre', correctAnswer: '29, 73, 94', choices: ['29, 73, 94', '94, 73, 29', '73, 29, 94'] },
+    { question: 'Range du plus petit au plus grand : 16, 82, 45', type: 'ordre', correctAnswer: '16, 45, 82', choices: ['16, 45, 82', '82, 45, 16', '45, 16, 82'] },
+    { question: 'Range du plus petit au plus grand : 100, 37, 69', type: 'ordre', correctAnswer: '37, 69, 100', choices: ['100, 69, 37', '37, 69, 100', '69, 37, 100'] },
+    
+    // Exercices avec dizaines proches
+    { question: 'Compare 64 et 68', num1: 64, num2: 68, correctAnswer: '<', choices: ['<', '>', '='] },
+    { question: 'Compare 87 et 83', num1: 87, num2: 83, correctAnswer: '>', choices: ['>', '=', '<'] },
+    { question: 'Compare 72 et 79', num1: 72, num2: 79, correctAnswer: '<', choices: ['=', '<', '>'] },
+    { question: 'Compare 91 et 95', num1: 91, num2: 95, correctAnswer: '<', choices: ['<', '>', '='] },
+    { question: 'Compare 48 et 42', num1: 48, num2: 42, correctAnswer: '>', choices: ['>', '<', '='] },
+    
+    // 5 nouveaux exercices
+    { question: 'Compare 56 et 89', num1: 56, num2: 89, correctAnswer: '<', choices: ['<', '>', '='] },
+    { question: 'Compare 74 et 74', num1: 74, num2: 74, correctAnswer: '=', choices: ['>', '=', '<'] },
+    { question: 'Compare 93 et 51', num1: 93, num2: 51, correctAnswer: '>', choices: ['>', '<', '='] },
+    { question: 'Range du plus petit au plus grand : 85, 12, 60', type: 'ordre', correctAnswer: '12, 60, 85', choices: ['12, 60, 85', '85, 60, 12', '60, 12, 85'] },
+    { question: 'Compare 39 et 43', num1: 39, num2: 43, correctAnswer: '<', choices: ['=', '<', '>'] }
+  ];
 
   // Initialiser les choix mélangés pour l'exercice actuel
   const initializeShuffledChoices = () => {
@@ -76,46 +123,6 @@ export default function OrdonnerComparerCP100() {
 
     localStorage.setItem('cp-nombres-100-progress', JSON.stringify(allProgress));
   };
-
-  // Comparaisons pour le cours
-  const comparisons = [
-    { id: '23_45', num1: 23, num2: 45, symbol: '<', explanation: '23 est plus petit que 45', visual: '📦📦🔴🔴🔴 < 📦📦📦📦🔴🔴🔴🔴🔴' },
-    { id: '67_34', num1: 67, num2: 34, symbol: '>', explanation: '67 est plus grand que 34', visual: '📦📦📦📦📦📦🔴🔴🔴🔴🔴🔴🔴 > 📦📦📦🔴🔴🔴🔴' },
-    { id: '56_56', num1: 56, num2: 56, symbol: '=', explanation: '56 est égal à 56', visual: '📦📦📦📦📦🔴🔴🔴🔴🔴🔴 = 📦📦📦📦📦🔴🔴🔴🔴🔴🔴' },
-    { id: '89_72', num1: 89, num2: 72, symbol: '>', explanation: '89 est plus grand que 72', visual: '📦📦📦📦📦📦📦📦🔴🔴🔴🔴🔴🔴🔴🔴🔴 > 📦📦📦📦📦📦📦🔴🔴' },
-    { id: '38_91', num1: 38, num2: 91, symbol: '<', explanation: '38 est plus petit que 91', visual: '📦📦📦🔴🔴🔴🔴🔴🔴🔴🔴 < 📦📦📦📦📦📦📦📦📦🔴' },
-    { id: '75_75', num1: 75, num2: 75, symbol: '=', explanation: '75 est égal à 75', visual: '📦📦📦📦📦📦📦🔴🔴🔴🔴🔴 = 📦📦📦📦📦📦📦🔴🔴🔴🔴🔴' },
-    { id: '42_19', num1: 42, num2: 19, symbol: '>', explanation: '42 est plus grand que 19', visual: '📦📦📦📦🔴🔴 > 📦🔴🔴🔴🔴🔴🔴🔴🔴🔴' },
-    { id: '28_63', num1: 28, num2: 63, symbol: '<', explanation: '28 est plus petit que 63', visual: '📦📦🔴🔴🔴🔴🔴🔴🔴🔴 < 📦📦📦📦📦📦🔴🔴🔴' }
-  ];
-
-  // Exercices de comparaison - positions des bonnes réponses variées
-  const exercises = [
-    { question: 'Compare 34 et 27', num1: 34, num2: 27, correctAnswer: '>', choices: ['>', '<', '='] },
-    { question: 'Compare 19 et 58', num1: 19, num2: 58, correctAnswer: '<', choices: ['=', '<', '>'] },
-    { question: 'Compare 46 et 46', num1: 46, num2: 46, correctAnswer: '=', choices: ['<', '=', '>'] },
-    { question: 'Compare 73 et 29', num1: 73, num2: 29, correctAnswer: '>', choices: ['>', '<', '='] },
-    { question: 'Compare 25 et 84', num1: 25, num2: 84, correctAnswer: '<', choices: ['=', '>', '<'] },
-    { question: 'Compare 92 et 92', num1: 92, num2: 92, correctAnswer: '=', choices: ['>', '=', '<'] },
-    { question: 'Compare 67 et 41', num1: 67, num2: 41, correctAnswer: '>', choices: ['>', '<', '='] },
-    { question: 'Compare 38 et 95', num1: 38, num2: 95, correctAnswer: '<', choices: ['<', '>', '='] },
-    { question: 'Compare 100 et 76', num1: 100, num2: 76, correctAnswer: '>', choices: ['=', '<', '>'] },
-    { question: 'Compare 55 et 55', num1: 55, num2: 55, correctAnswer: '=', choices: ['=', '>', '<'] },
-    
-    // Exercices de rangement (plus petit au plus grand)
-    { question: 'Range du plus petit au plus grand : 47, 23, 61', type: 'ordre', correctAnswer: '23, 47, 61', choices: ['23, 47, 61', '61, 47, 23', '47, 23, 61'] },
-    { question: 'Range du plus petit au plus grand : 88, 35, 52', type: 'ordre', correctAnswer: '35, 52, 88', choices: ['88, 52, 35', '35, 52, 88', '52, 35, 88'] },
-    { question: 'Range du plus petit au plus grand : 94, 29, 73', type: 'ordre', correctAnswer: '29, 73, 94', choices: ['29, 73, 94', '94, 73, 29', '73, 29, 94'] },
-    { question: 'Range du plus petit au plus grand : 16, 82, 45', type: 'ordre', correctAnswer: '16, 45, 82', choices: ['16, 45, 82', '82, 45, 16', '45, 16, 82'] },
-    { question: 'Range du plus petit au plus grand : 100, 37, 69', type: 'ordre', correctAnswer: '37, 69, 100', choices: ['100, 69, 37', '37, 69, 100', '69, 37, 100'] },
-    
-    // Exercices avec dizaines proches
-    { question: 'Compare 64 et 68', num1: 64, num2: 68, correctAnswer: '<', choices: ['<', '>', '='] },
-    { question: 'Compare 87 et 83', num1: 87, num2: 83, correctAnswer: '>', choices: ['>', '=', '<'] },
-    { question: 'Compare 72 et 79', num1: 72, num2: 79, correctAnswer: '<', choices: ['=', '<', '>'] },
-    { question: 'Compare 91 et 95', num1: 91, num2: 95, correctAnswer: '<', choices: ['<', '>', '='] },
-    { question: 'Compare 48 et 42', num1: 48, num2: 42, correctAnswer: '>', choices: ['>', '<', '='] }
-  ];
 
   const speakText = (text: string) => {
     if ('speechSynthesis' in window) {
@@ -202,10 +209,10 @@ export default function OrdonnerComparerCP100() {
 
         {/* Navigation entre cours et exercices */}
         <div className="flex justify-center mb-4 sm:mb-8">
-          <div className="bg-white rounded-lg p-1 shadow-md">
+          <div className="bg-white rounded-lg p-1 shadow-md flex h-auto">
             <button
               onClick={() => setShowExercises(false)}
-              className={`px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-bold transition-all text-sm sm:text-base ${
+              className={`px-4 sm:px-6 py-3 sm:py-4 rounded-lg font-bold transition-all text-sm sm:text-base h-full flex items-center justify-center ${
                 !showExercises 
                   ? 'bg-orange-500 text-white shadow-md' 
                   : 'text-gray-600 hover:bg-gray-100'
@@ -215,13 +222,14 @@ export default function OrdonnerComparerCP100() {
             </button>
             <button
               onClick={() => setShowExercises(true)}
-              className={`px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-bold transition-all text-sm sm:text-base ${
+              className={`px-4 sm:px-6 py-3 sm:py-4 rounded-lg font-bold transition-all text-sm sm:text-base h-full flex flex-col items-center justify-center ${
                 showExercises 
                   ? 'bg-orange-500 text-white shadow-md' 
                   : 'text-gray-600 hover:bg-gray-100'
               }`}
             >
-              ✏️ Exercices ({score}/{exercises.length})
+              <span>✏️ Exercices</span>
+              <span className="text-xs">({score}/{exercises.length})</span>
             </button>
           </div>
         </div>
@@ -350,10 +358,10 @@ export default function OrdonnerComparerCP100() {
               <h3 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4 text-center text-gray-900">🎯 Méthode pour comparer</h3>
               <div className="space-y-2 sm:space-y-3 text-sm sm:text-base">
                 <div className="bg-blue-50 rounded-lg p-3 sm:p-4">
-                  <strong>1️⃣ Compare d'abord les dizaines :</strong> 67 vs 34 → 6 > 3, donc 67 > 34
+                  <strong>1️⃣ Compare d'abord les dizaines :</strong> 67 vs 34 → 6 &gt; 3, donc 67 &gt; 34
                 </div>
                 <div className="bg-green-50 rounded-lg p-3 sm:p-4">
-                  <strong>2️⃣ Si les dizaines sont égales, compare les unités :</strong> 64 vs 68 → 4 < 8, donc 64 < 68
+                  <strong>2️⃣ Si les dizaines sont égales, compare les unités :</strong> 64 vs 68 → 4 &lt; 8, donc 64 &lt; 68
                 </div>
                 <div className="bg-purple-50 rounded-lg p-3 sm:p-4">
                   <strong>3️⃣ Si tout est égal :</strong> 56 vs 56 → 56 = 56
@@ -366,7 +374,7 @@ export default function OrdonnerComparerCP100() {
               <h3 className="text-lg sm:text-xl font-bold mb-2 sm:mb-3">💡 Trucs pour les grands nombres</h3>
               <ul className="space-y-1 sm:space-y-2 text-sm sm:text-lg">
                 <li>• Plus il y a de dizaines, plus le nombre est grand</li>
-                <li>• 70 > 69 (même si 9 > 0, regarde les dizaines !)</li>
+                <li>• 70 &gt; 69 (même si 9 &gt; 0, regarde les dizaines !)</li>
                 <li>• Pour ranger : commence toujours par le plus petit</li>
                 <li>• 100 est le plus grand nombre qu'on connaît !</li>
               </ul>
@@ -520,7 +528,7 @@ export default function OrdonnerComparerCP100() {
                         Tu as trouvé {finalScore} bonnes réponses sur {exercises.length} !
                       </p>
                       <div className="text-2xl sm:text-4xl mt-2">
-                        {finalScore >= 16 ? '⭐⭐⭐' : finalScore >= 12 ? '⭐⭐' : '⭐'}
+                        {finalScore >= 20 ? '⭐⭐⭐' : finalScore >= 15 ? '⭐⭐' : '⭐'}
                       </div>
                     </div>
                     <div className="flex space-x-3">

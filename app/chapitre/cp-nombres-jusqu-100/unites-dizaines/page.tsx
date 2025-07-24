@@ -95,6 +95,19 @@ const styles = `
       transform: translateY(0);
     }
   }
+  
+  @keyframes highlightCell {
+    0%, 100% { 
+      background-color: rgba(252, 211, 77, 0.3); 
+    }
+    50% { 
+      background-color: rgba(252, 211, 77, 0.8); 
+    }
+  }
+  
+  .animate-highlight {
+    animation: highlightCell 1.5s ease-in-out infinite;
+  }
 `;
 
 export default function UnitesDizainesCP() {
@@ -174,12 +187,8 @@ export default function UnitesDizainesCP() {
   const numbersDecomposition = [
     { number: '23', dizaines: 2, unites: 3, visual: '📦📦 🔴🔴🔴', explanation: '2 paquets de 10 + 3 unités' },
     { number: '34', dizaines: 3, unites: 4, visual: '📦📦📦 🔴🔴🔴🔴', explanation: '3 paquets de 10 + 4 unités' },
-    { number: '47', dizaines: 4, unites: 7, visual: '📦📦📦📦 🔴🔴🔴🔴🔴🔴🔴', explanation: '4 paquets de 10 + 7 unités' },
     { number: '56', dizaines: 5, unites: 6, visual: '📦📦📦📦📦 🔴🔴🔴🔴🔴🔴', explanation: '5 paquets de 10 + 6 unités' },
-    { number: '72', dizaines: 7, unites: 2, visual: '📦📦📦📦📦📦📦 🔴🔴', explanation: '7 paquets de 10 + 2 unités' },
-    { number: '89', dizaines: 8, unites: 9, visual: '📦📦📦📦📦📦📦📦 🔴🔴🔴🔴🔴🔴🔴🔴🔴', explanation: '8 paquets de 10 + 9 unités' },
-    { number: '65', dizaines: 6, unites: 5, visual: '📦📦📦📦📦📦 🔴🔴🔴🔴🔴', explanation: '6 paquets de 10 + 5 unités' },
-    { number: '91', dizaines: 9, unites: 1, visual: '📦📦📦📦📦📦📦📦📦 🔴', explanation: '9 paquets de 10 + 1 unité' }
+    { number: '89', dizaines: 8, unites: 9, visual: '📦📦📦📦📦📦📦📦 🔴🔴🔴🔴🔴🔴🔴🔴🔴', explanation: '8 paquets de 10 + 9 unités' }
   ];
 
   // Exercices sur la valeur positionnelle - positions des bonnes réponses variées
@@ -209,6 +218,38 @@ export default function UnitesDizainesCP() {
       utterance.lang = 'fr-FR';
       utterance.rate = 0.7;
       speechSynthesis.speak(utterance);
+    }
+  };
+
+  // Fonction pour convertir les nombres en mots français
+  const numberToWords = (num: string): string => {
+    const numbers: { [key: string]: string } = {
+      '1': 'un', '2': 'deux', '3': 'trois', '4': 'quatre', '5': 'cinq',
+      '6': 'six', '7': 'sept', '8': 'huit', '9': 'neuf', '10': 'dix',
+      '20': 'vingt', '30': 'trente', '40': 'quarante', '50': 'cinquante',
+      '60': 'soixante', '70': 'soixante-dix', '80': 'quatre-vingts', '90': 'quatre-vingt-dix'
+    };
+    return numbers[num] || num;
+  };
+
+  // Fonction pour énoncer l'explication selon le type d'exercice
+  const speakExplanation = (exercise: any) => {
+    const number = exercise.number || exercise.display?.replace(/[^0-9]/g, '');
+    if (!number) return;
+    
+    const dizaines = Math.floor(parseInt(number) / 10);
+    const unites = parseInt(number) % 10;
+    
+    if (exercise.type === 'dizaines') {
+      const text = `Dans ${number}, la dizaine est ${dizaines}. ${numberToWords(dizaines.toString())} dizaines égale ${dizaines * 10}`;
+      speakText(text);
+    } else if (exercise.type === 'unites') {
+      const text = `Dans ${number}, l'unité est ${unites}. ${numberToWords(unites.toString())} unités égale ${unites}`;
+      speakText(text);
+    } else if (exercise.display) {
+      // Pour les exercices de composition
+      const text = `${numberToWords(dizaines.toString())} dizaines plus ${numberToWords(unites.toString())} unités égale ${number}`;
+      speakText(text);
     }
   };
 
@@ -287,10 +328,10 @@ export default function UnitesDizainesCP() {
 
         {/* Navigation entre cours et exercices */}
         <div className="flex justify-center mb-8">
-          <div className="bg-white rounded-lg p-1 shadow-md">
+          <div className="bg-white rounded-lg p-1 shadow-md flex">
             <button
               onClick={() => setShowExercises(false)}
-              className={`px-6 py-3 rounded-lg font-bold transition-all ${
+              className={`px-6 py-3 rounded-lg font-bold transition-all min-h-[68px] flex items-center justify-center ${
                 !showExercises 
                   ? 'bg-blue-500 text-white shadow-md' 
                   : 'text-gray-600 hover:bg-gray-100'
@@ -300,16 +341,14 @@ export default function UnitesDizainesCP() {
             </button>
             <button
               onClick={() => setShowExercises(true)}
-              className={`px-6 py-3 rounded-lg font-bold transition-all ${
+              className={`px-6 py-3 rounded-lg font-bold transition-all min-h-[68px] flex flex-col items-center justify-center ${
                 showExercises 
                   ? 'bg-green-500 text-white shadow-md' 
                   : 'text-gray-600 hover:bg-gray-100'
               }`}
             >
-              <div className="flex flex-col items-center">
-                <span>✏️ Exercices</span>
-                <span className="text-sm opacity-90">({score}/{exercises.length})</span>
-              </div>
+              <span>✏️ Exercices</span>
+              <span className="text-sm opacity-90">({score}/{exercises.length})</span>
             </button>
           </div>
         </div>
@@ -582,15 +621,15 @@ export default function UnitesDizainesCP() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
                   <div className="bg-white rounded-lg p-4">
                     <div className="text-3xl mb-2">4️⃣5️⃣</div>
-                    <div className="text-lg font-semibold">En chiffres</div>
+                    <div className="text-lg font-semibold text-gray-800">En chiffres</div>
                   </div>
                   <div className="bg-white rounded-lg p-4">
                     <div className="text-3xl mb-2">📦📦📦📦 🔴🔴🔴🔴🔴</div>
-                    <div className="text-lg font-semibold">En objets</div>
+                    <div className="text-lg font-semibold text-gray-800">En objets</div>
                   </div>
                   <div className="bg-white rounded-lg p-4">
                     <div className="text-3xl mb-2">40 + 5</div>
-                    <div className="text-lg font-semibold">En addition</div>
+                    <div className="text-lg font-semibold text-gray-800">En addition</div>
                   </div>
                 </div>
               </div>
@@ -711,6 +750,126 @@ export default function UnitesDizainesCP() {
                         </span>
                       </>
                     )}
+                  </div>
+                </div>
+              )}
+              
+              {/* Animation explicative pour les réponses incorrectes */}
+              {!isCorrect && isCorrect !== null && (
+                <div className="bg-white rounded-lg p-6 border-2 border-blue-300 mb-6">
+                  <h4 className="text-lg font-bold mb-4 text-blue-800 text-center">
+                    🎯 Regarde l'explication !
+                  </h4>
+                  <div className="space-y-4">
+                    {/* Animation selon le type d'exercice */}
+                    {(() => {
+                      const exercise = exercises[currentExercise];
+                      const number = exercise.number || exercise.display?.replace(/[^0-9]/g, '');
+                      if (!number) return null;
+                      
+                      const dizaines = Math.floor(parseInt(number) / 10);
+                      const unites = parseInt(number) % 10;
+                      
+                      return (
+                        <div className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg p-6">
+                          {/* Affichage du nombre avec décomposition animée */}
+                          <div className="text-center mb-6">
+                            <div className="text-6xl font-bold text-gray-800 mb-4 animate-pulse">
+                              {number}
+                            </div>
+                            
+                            {/* Tableau de décomposition animé */}
+                            <div className="bg-white rounded-lg p-4 shadow-md">
+                              <table className="w-full border-collapse border-2 border-blue-500">
+                                <thead>
+                                  <tr className="bg-blue-200">
+                                    <th className="border-2 border-blue-500 p-3 font-bold text-blue-800">
+                                      📦 Dizaines
+                                    </th>
+                                    <th className="border-2 border-blue-500 p-3 font-bold text-blue-800">
+                                      🔴 Unités
+                                    </th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  <tr>
+                                    <td className={`border-2 border-blue-500 p-4 text-center ${
+                                      exercise.type === 'dizaines' ? 'bg-yellow-100 animate-pulse' : 'bg-blue-50'
+                                    }`}>
+                                      <div className="text-4xl font-bold text-blue-600 mb-2">
+                                        {dizaines}
+                                      </div>
+                                      <div className="text-sm text-gray-700">
+                                        {numberToWords(dizaines.toString())} dizaines
+                                      </div>
+                                      <div className="text-xs text-gray-600">
+                                        = {dizaines * 10}
+                                      </div>
+                                    </td>
+                                    <td className={`border-2 border-blue-500 p-4 text-center ${
+                                      exercise.type === 'unites' ? 'bg-yellow-100 animate-pulse' : 'bg-green-50'
+                                    }`}>
+                                      <div className="text-4xl font-bold text-green-600 mb-2">
+                                        {unites}
+                                      </div>
+                                      <div className="text-sm text-gray-700">
+                                        {numberToWords(unites.toString())} unités
+                                      </div>
+                                      <div className="text-xs text-gray-600">
+                                        = {unites}
+                                      </div>
+                                    </td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                            </div>
+                            
+                            {/* Explication textuelle */}
+                            <div className="mt-4 text-lg font-semibold text-gray-800">
+                              {exercise.type === 'dizaines' && (
+                                <div className="bg-yellow-50 rounded-lg p-3">
+                                  <span className="text-yellow-800">
+                                    ➡️ Dans {number}, le chiffre des <strong>dizaines</strong> est <strong>{dizaines}</strong>
+                                  </span>
+                                </div>
+                              )}
+                              {exercise.type === 'unites' && (
+                                <div className="bg-green-50 rounded-lg p-3">
+                                  <span className="text-green-800">
+                                    ➡️ Dans {number}, le chiffre des <strong>unités</strong> est <strong>{unites}</strong>
+                                  </span>
+                                </div>
+                              )}
+                              {exercise.display && (
+                                <div className="bg-purple-50 rounded-lg p-3">
+                                  <span className="text-purple-800">
+                                    ➡️ {numberToWords(dizaines.toString())} dizaines + {numberToWords(unites.toString())} unités = <strong>{number}</strong>
+                                  </span>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })()}
+                    
+                    {/* Bouton audio */}
+                    <div className="text-center">
+                      <button 
+                        onClick={() => speakExplanation(exercises[currentExercise])}
+                        className="bg-blue-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-blue-600 transition-colors inline-flex items-center space-x-2"
+                      >
+                        <Volume2 className="w-4 h-4" />
+                        <span>Écouter l'explication</span>
+                      </button>
+                    </div>
+                    
+                    {/* Message d'encouragement */}
+                    <div className="bg-gradient-to-r from-purple-100 to-pink-100 rounded-lg p-3 text-center">
+                      <p className="text-sm font-semibold text-purple-800">
+                        Maintenant tu comprends ! La position des chiffres est très importante ! 🎯
+                      </p>
+                    </div>
                   </div>
                 </div>
               )}

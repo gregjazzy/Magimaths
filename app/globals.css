@@ -285,3 +285,34 @@ a:focus-visible {
   animation: fade-in-up 1s ease-out forwards 0.5s;
   opacity: 0;
 }
+
+/* ===== ANIMATIONS PERSONNALISÉES ===== */
+
+/* Délais d'animation pour les feedbacks */
+.animation-delay-500 {
+  animation-delay: 0.5s;
+}
+
+.animation-delay-1000 {
+  animation-delay: 1s;
+}
+
+.animation-delay-1500 {
+  animation-delay: 1.5s;
+}
+
+/* Animation de pulsation personnalisée pour les feedbacks */
+@keyframes feedback-pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.05);
+  }
+}
+
+.animate-feedback-pulse {
+  animation: feedback-pulse 2s ease-in-out infinite;
+}

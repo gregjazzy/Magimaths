@@ -150,6 +150,24 @@ export default function DecompositionsCP() {
     }
   }, []);
 
+  // Fonction pour convertir les nombres en mots français
+  const numberToWords = (num: string): string => {
+    const numbers: { [key: string]: string } = {
+      '0': 'zéro', '1': 'un', '2': 'deux', '3': 'trois', '4': 'quatre',
+      '5': 'cinq', '6': 'six', '7': 'sept', '8': 'huit', '9': 'neuf',
+      '10': 'dix', '11': 'onze', '12': 'douze', '13': 'treize', '14': 'quatorze',
+      '15': 'quinze', '16': 'seize', '17': 'dix-sept', '18': 'dix-huit', 
+      '19': 'dix-neuf', '20': 'vingt'
+    };
+    return numbers[num] || num;
+  };
+
+  // Fonction pour énoncer le résultat de la décomposition
+  const speakResult = (number: number, part1: number, part2: string) => {
+    const text = `${numberToWords(number.toString())} égale ${numberToWords(part1.toString())} plus ${numberToWords(part2)}`;
+    speakText(text);
+  };
+
   const speakText = (text: string) => {
     if ('speechSynthesis' in window) {
       const utterance = new SpeechSynthesisUtterance(text);
@@ -464,6 +482,13 @@ export default function DecompositionsCP() {
                 <div className="flex justify-center items-center space-x-2 sm:space-x-3 md:space-x-4 mt-3 sm:mt-4 md:mt-6">
                   <div className="text-center">
                     <div className="text-base sm:text-xl md:text-2xl lg:text-3xl mb-1 sm:mb-2">
+                      {'🔴'.repeat(exercises[currentExercise].number)}
+                    </div>
+                    <div className="font-bold text-sm sm:text-base md:text-lg text-gray-800">{exercises[currentExercise].number}</div>
+                  </div>
+                  <div className="text-base sm:text-xl md:text-2xl lg:text-3xl font-bold text-purple-600">=</div>
+                  <div className="text-center">
+                    <div className="text-base sm:text-xl md:text-2xl lg:text-3xl mb-1 sm:mb-2">
                       {'🔴'.repeat(exercises[currentExercise].part1)}
                     </div>
                     <div className="font-bold text-sm sm:text-base md:text-lg text-gray-800">{exercises[currentExercise].part1}</div>
@@ -472,13 +497,6 @@ export default function DecompositionsCP() {
                   <div className="text-center">
                     <div className="text-base sm:text-xl md:text-2xl lg:text-3xl mb-1 sm:mb-2">❓</div>
                     <div className="font-bold text-sm sm:text-base md:text-lg text-gray-800">?</div>
-                  </div>
-                  <div className="text-base sm:text-xl md:text-2xl lg:text-3xl font-bold text-purple-600">=</div>
-                  <div className="text-center">
-                    <div className="text-base sm:text-xl md:text-2xl lg:text-3xl mb-1 sm:mb-2">
-                      {'🔴'.repeat(exercises[currentExercise].number)}
-                    </div>
-                    <div className="font-bold text-sm sm:text-base md:text-lg text-gray-800">{exercises[currentExercise].number}</div>
                   </div>
                 </div>
               </div>
@@ -528,6 +546,68 @@ export default function DecompositionsCP() {
                         </span>
                       </>
                     )}
+                  </div>
+                </div>
+              )}
+
+              {/* Feedback détaillé pour les réponses incorrectes */}
+              {!isCorrect && isCorrect !== null && (
+                <div className="bg-white rounded-lg p-6 border-2 border-blue-300 mb-6">
+                  <h4 className="text-lg font-bold mb-4 text-blue-800 text-center">
+                    🎯 Regarde la bonne réponse !
+                  </h4>
+                  <div className="space-y-4">
+                    <div className="bg-blue-50 rounded-lg p-4">
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-blue-600 mb-4">
+                          {exercises[currentExercise].number} = {exercises[currentExercise].part1} + {exercises[currentExercise].correctAnswer}
+                        </div>
+                        
+                        {/* Illustration dans le bon ordre */}
+                        <div className="flex justify-center items-center space-x-4 mb-4">
+                          <div className="text-center">
+                            <div className="text-2xl mb-2">
+                              {'🔴'.repeat(exercises[currentExercise].number)}
+                            </div>
+                            <div className="font-bold text-lg text-gray-800">{exercises[currentExercise].number}</div>
+                          </div>
+                          <div className="text-2xl font-bold text-blue-600">=</div>
+                          <div className="text-center">
+                            <div className="text-2xl mb-2">
+                              {'🔴'.repeat(exercises[currentExercise].part1)}
+                            </div>
+                            <div className="font-bold text-lg text-gray-800">{exercises[currentExercise].part1}</div>
+                          </div>
+                          <div className="text-2xl font-bold text-blue-600">+</div>
+                          <div className="text-center">
+                            <div className="text-2xl mb-2">
+                              {'🔴'.repeat(parseInt(exercises[currentExercise].correctAnswer))}
+                            </div>
+                            <div className="font-bold text-lg text-gray-800">{exercises[currentExercise].correctAnswer}</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="text-center">
+                      <button 
+                        onClick={() => speakResult(
+                          exercises[currentExercise].number, 
+                          exercises[currentExercise].part1, 
+                          exercises[currentExercise].correctAnswer
+                        )}
+                        className="bg-blue-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-blue-600 transition-colors inline-flex items-center space-x-2"
+                      >
+                        <Volume2 className="w-4 h-4" />
+                        <span>Écouter la bonne réponse</span>
+                      </button>
+                    </div>
+                    
+                    <div className="bg-gradient-to-r from-purple-100 to-pink-100 rounded-lg p-3 text-center">
+                      <p className="text-sm font-semibold text-purple-800">
+                        Maintenant tu sais ! {exercises[currentExercise].number} objets = {exercises[currentExercise].part1} objets + {exercises[currentExercise].correctAnswer} objets !
+                      </p>
+                    </div>
                   </div>
                 </div>
               )}

@@ -86,7 +86,7 @@ export default function DoublesCP() {
     { number: 3, double: 6, visual: '🔴🔴🔴 + 🔴🔴🔴 = 🔴🔴🔴🔴🔴🔴', formula: '3 + 3 = 6' },
     { number: 4, double: 8, visual: '🔴🔴🔴🔴 + 🔴🔴🔴🔴 = 🔴🔴🔴🔴🔴🔴🔴🔴', formula: '4 + 4 = 8' },
     { number: 5, double: 10, visual: '✋ + ✋ = 🙌', formula: '5 + 5 = 10' },
-    { number: 6, double: 12, visual: '👐 + 👐 = 👏👏', formula: '6 + 6 = 12' },
+    { number: 6, double: 12, visual: '🔴🔴🔴🔴🔴🔴 + 🔴🔴🔴🔴🔴🔴 = 🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴', formula: '6 + 6 = 12' },
     { number: 7, double: 14, visual: '🔴🔴🔴🔴🔴🔴🔴 × 2', formula: '7 + 7 = 14' },
     { number: 8, double: 16, visual: '🔴🔴🔴🔴🔴🔴🔴🔴 × 2', formula: '8 + 8 = 16' },
     { number: 9, double: 18, visual: '🔴🔴🔴🔴🔴🔴🔴🔴🔴 × 2', formula: '9 + 9 = 18' }
@@ -99,7 +99,7 @@ export default function DoublesCP() {
     { number: 6, moitie: 3, visual: '🔴🔴🔴🔴🔴🔴 ÷ 2 = 🔴🔴🔴', formula: '6 ÷ 2 = 3' },
     { number: 8, moitie: 4, visual: '🔴🔴🔴🔴🔴🔴🔴🔴 ÷ 2 = 🔴🔴🔴🔴', formula: '8 ÷ 2 = 4' },
     { number: 10, moitie: 5, visual: '🙌 ÷ 2 = ✋', formula: '10 ÷ 2 = 5' },
-    { number: 12, moitie: 6, visual: '👏👏 ÷ 2 = 👐', formula: '12 ÷ 2 = 6' },
+    { number: 12, moitie: 6, visual: '🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴 ÷ 2 = 🔴🔴🔴🔴🔴🔴', formula: '12 ÷ 2 = 6' },
     { number: 14, moitie: 7, visual: '🔴🔴🔴🔴🔴🔴🔴 × 2 ÷ 2', formula: '14 ÷ 2 = 7' },
     { number: 16, moitie: 8, visual: '🔴🔴🔴🔴🔴🔴🔴🔴 × 2 ÷ 2', formula: '16 ÷ 2 = 8' },
     { number: 18, moitie: 9, visual: '🔴🔴🔴🔴🔴🔴🔴🔴🔴 × 2 ÷ 2', formula: '18 ÷ 2 = 9' }
@@ -112,7 +112,7 @@ export default function DoublesCP() {
     { question: 'Double de 4 = ?', type: 'double', visual: '🔴🔴🔴🔴 × 2', correctAnswer: '8', choices: ['9', '7', '8'] },
     { question: '3 + 3 = ?', type: 'double', visual: '🔴🔴🔴 + 🔴🔴🔴', correctAnswer: '6', choices: ['5', '6', '7'] },
     { question: 'Double de 5 = ?', type: 'double', visual: '✋ + ✋', correctAnswer: '10', choices: ['10', '9', '11'] },
-    { question: '6 + 6 = ?', type: 'double', visual: '👐 + 👐', correctAnswer: '12', choices: ['13', '11', '12'] },
+    { question: '6 + 6 = ?', type: 'double', visual: '🔴🔴🔴🔴🔴🔴 + 🔴🔴🔴🔴🔴🔴', correctAnswer: '12', choices: ['13', '11', '12'] },
     { question: 'Double de 7 = ?', type: 'double', visual: '🔴🔴🔴🔴🔴🔴🔴 × 2', correctAnswer: '14', choices: ['15', '14', '13'] },
     { question: '8 + 8 = ?', type: 'double', visual: '🔴 × 16', correctAnswer: '16', choices: ['16', '15', '17'] },
     { question: 'Double de 9 = ?', type: 'double', visual: '🔴 × 18', correctAnswer: '18', choices: ['19', '17', '18'] },
@@ -122,7 +122,7 @@ export default function DoublesCP() {
     { question: 'Moitié de 6 = ?', type: 'moitie', visual: '🔴🔴🔴🔴🔴🔴 ÷ 2', correctAnswer: '3', choices: ['3', '2', '4'] },
     { question: '8 ÷ 2 = ?', type: 'moitie', visual: '🔴🔴🔴🔴🔴🔴🔴🔴 ÷ 2', correctAnswer: '4', choices: ['5', '3', '4'] },
     { question: 'Moitié de 10 = ?', type: 'moitie', visual: '🙌 ÷ 2', correctAnswer: '5', choices: ['5', '4', '6'] },
-    { question: '12 ÷ 2 = ?', type: 'moitie', visual: '👏👏 ÷ 2', correctAnswer: '6', choices: ['7', '6', '5'] },
+    { question: '12 ÷ 2 = ?', type: 'moitie', visual: '🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴 ÷ 2', correctAnswer: '6', choices: ['7', '6', '5'] },
     { question: 'Moitié de 14 = ?', type: 'moitie', visual: '🔴 × 14 ÷ 2', correctAnswer: '7', choices: ['6', '8', '7'] },
     { question: '16 ÷ 2 = ?', type: 'moitie', visual: '🔴 × 16 ÷ 2', correctAnswer: '8', choices: ['8', '7', '9'] },
     { question: 'Moitié de 18 = ?', type: 'moitie', visual: '🔴 × 18 ÷ 2', correctAnswer: '9', choices: ['10', '8', '9'] }
@@ -211,10 +211,10 @@ export default function DoublesCP() {
 
         {/* Navigation entre cours et exercices */}
         <div className="flex justify-center mb-8">
-          <div className="bg-white rounded-lg p-1 shadow-md">
+          <div className="bg-white rounded-lg p-1 shadow-md flex h-auto">
             <button
               onClick={() => setShowExercises(false)}
-              className={`px-6 py-3 rounded-lg font-bold transition-all ${
+              className={`px-6 py-3 rounded-lg font-bold transition-all h-full flex items-center justify-center ${
                 !showExercises 
                   ? 'bg-pink-500 text-white shadow-md' 
                   : 'text-gray-600 hover:bg-gray-100'
@@ -224,16 +224,14 @@ export default function DoublesCP() {
             </button>
             <button
               onClick={() => setShowExercises(true)}
-              className={`px-6 py-3 rounded-lg font-bold transition-all ${
+              className={`px-6 py-3 rounded-lg font-bold transition-all h-full flex flex-col items-center justify-center ${
                 showExercises 
                   ? 'bg-blue-500 text-white shadow-md' 
                   : 'text-gray-600 hover:bg-gray-100'
               }`}
             >
-              <div className="flex flex-col items-center">
-                <span>✏️ Exercices</span>
-                <span className="text-sm opacity-90">({score}/{exercises.length})</span>
-              </div>
+              <span>✏️ Exercices</span>
+              <span className="text-sm opacity-90">({score}/{exercises.length})</span>
             </button>
           </div>
         </div>
@@ -552,7 +550,7 @@ export default function DoublesCP() {
                             : 'bg-blue-500 text-white'
                         : exercises[currentExercise].correctAnswer === choice && isCorrect === false
                           ? 'bg-green-200 text-green-800 border-2 border-green-500'
-                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200 disabled:opacity-50'
+                          : 'bg-gray-100 text-gray-900 hover:bg-gray-200 disabled:opacity-50'
                     } disabled:cursor-not-allowed`}
                   >
                     {choice}

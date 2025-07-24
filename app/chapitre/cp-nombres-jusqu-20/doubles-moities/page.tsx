@@ -471,7 +471,7 @@ export default function DoublesMotiesCP20() {
                             : 'bg-blue-500 text-white'
                         : exercises[currentExercise].correctAnswer === choice && isCorrect === false
                           ? 'bg-green-200 text-green-800 border-2 border-green-500'
-                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200 disabled:opacity-50'
+                          : 'bg-gray-100 text-gray-800 hover:bg-gray-200 hover:text-gray-900 disabled:opacity-50'
                     } disabled:cursor-not-allowed`}
                   >
                     {choice}
@@ -484,7 +484,7 @@ export default function DoublesMotiesCP20() {
                 <div className={`p-4 sm:p-6 rounded-lg mb-4 sm:mb-6 ${
                   isCorrect ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
                 }`}>
-                  <div className="flex items-center justify-center space-x-3">
+                  <div className="flex items-center justify-center space-x-3 mb-4">
                     {isCorrect ? (
                       <>
                         <CheckCircle className="w-6 h-6 sm:w-8 sm:h-8" />
@@ -499,6 +499,174 @@ export default function DoublesMotiesCP20() {
                       </>
                     )}
                   </div>
+                  
+                  {/* Illustration de la solution quand c'est faux */}
+                  {!isCorrect && !exercises[currentExercise].display && (
+                    <div className="bg-white rounded-lg p-4 sm:p-6 border-2 border-blue-300">
+                      <h4 className="text-base sm:text-lg font-bold mb-3 text-blue-800 text-center">
+                        🎯 Regarde la solution avec des objets !
+                      </h4>
+                      
+                      {exercises[currentExercise].type === 'double' ? (
+                        <div className="space-y-4">
+                          {/* Explication du double */}
+                          <div className="text-center">
+                            <p className="text-sm sm:text-base font-semibold text-gray-700 mb-3">
+                              Pour trouver le double de {exercises[currentExercise].number}, on fait :
+                            </p>
+                            <div className="text-2xl sm:text-3xl font-bold text-blue-600 mb-4">
+                              {exercises[currentExercise].number} + {exercises[currentExercise].number} = {exercises[currentExercise].correctAnswer}
+                            </div>
+                          </div>
+                          
+                          {/* Représentation visuelle avec animation */}
+                          <div className="bg-blue-50 rounded-lg p-4 space-y-3">
+                            <div className="text-center text-sm sm:text-base font-semibold text-gray-700">
+                              Avec des objets colorés :
+                            </div>
+                            
+                            <div className="flex items-center justify-center space-x-4 text-2xl sm:text-3xl">
+                              {/* Premier groupe */}
+                              <div className="animate-pulse">
+                                {'🔴'.repeat(Math.min(exercises[currentExercise].number, 5))}
+                                {exercises[currentExercise].number > 5 && (
+                                  <div>{'🔴'.repeat(exercises[currentExercise].number - 5)}</div>
+                                )}
+                              </div>
+                              
+                              <span className="text-blue-600 font-bold text-xl sm:text-2xl">+</span>
+                              
+                              {/* Deuxième groupe */}
+                              <div className="animate-pulse" style={{ animationDelay: '0.5s' }}>
+                                {'🔵'.repeat(Math.min(exercises[currentExercise].number, 5))}
+                                {exercises[currentExercise].number > 5 && (
+                                  <div>{'🔵'.repeat(exercises[currentExercise].number - 5)}</div>
+                                )}
+                              </div>
+                              
+                              <span className="text-gray-500 font-bold text-xl sm:text-2xl">=</span>
+                              
+                              {/* Résultat */}
+                              <div className="animate-bounce" style={{ animationDelay: '1s' }}>
+                                <span className="bg-green-200 px-3 py-1 rounded-full font-bold text-green-800 text-xl sm:text-2xl">
+                                  {exercises[currentExercise].correctAnswer}
+                                </span>
+                              </div>
+                            </div>
+                            
+                            <div className="text-center text-xs sm:text-sm text-gray-600 mt-2">
+                              {exercises[currentExercise].number} objets rouges + {exercises[currentExercise].number} objets bleus = {exercises[currentExercise].correctAnswer} objets en tout !
+                            </div>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="space-y-4">
+                          {/* Explication de la moitié */}
+                          <div className="text-center">
+                            <p className="text-sm sm:text-base font-semibold text-gray-700 mb-3">
+                              Pour trouver la moitié de {exercises[currentExercise].number}, on partage en 2 :
+                            </p>
+                            <div className="text-2xl sm:text-3xl font-bold text-red-600 mb-4">
+                              {exercises[currentExercise].number} ÷ 2 = {exercises[currentExercise].correctAnswer}
+                            </div>
+                          </div>
+                          
+                          {/* Représentation visuelle avec animation */}
+                          <div className="bg-red-50 rounded-lg p-4 space-y-3">
+                            <div className="text-center text-sm sm:text-base font-semibold text-gray-700">
+                              Partage en 2 groupes égaux :
+                            </div>
+                            
+                            <div className="space-y-3">
+                              {/* Nombre initial */}
+                              <div className="text-center">
+                                <div className="text-sm text-gray-600 mb-2">Au départ : {exercises[currentExercise].number} objets</div>
+                                <div className="text-2xl animate-pulse">
+                                  {'🟡'.repeat(Math.min(exercises[currentExercise].number, 10))}
+                                  {exercises[currentExercise].number > 10 && (
+                                    <div>{'🟡'.repeat(exercises[currentExercise].number - 10)}</div>
+                                  )}
+                                </div>
+                              </div>
+                              
+                              {/* Flèche de séparation */}
+                              <div className="text-center">
+                                <div className="text-2xl animate-bounce">⬇️</div>
+                                <div className="text-sm text-gray-600">On partage en 2</div>
+                              </div>
+                              
+                              {/* Deux groupes */}
+                              <div className="flex justify-center items-center space-x-8">
+                                <div className="text-center">
+                                  <div className="text-sm text-gray-600 mb-2">Groupe 1</div>
+                                  <div className="bg-green-100 rounded-lg p-3 animate-pulse" style={{ animationDelay: '0.5s' }}>
+                                    <div className="text-xl">
+                                      {'🔴'.repeat(parseInt(exercises[currentExercise].correctAnswer))}
+                                    </div>
+                                    <div className="text-sm font-bold text-green-800 mt-1">
+                                      {exercises[currentExercise].correctAnswer}
+                                    </div>
+                                  </div>
+                                </div>
+                                
+                                <div className="text-center">
+                                  <div className="text-sm text-gray-600 mb-2">Groupe 2</div>
+                                  <div className="bg-blue-100 rounded-lg p-3 animate-pulse" style={{ animationDelay: '1s' }}>
+                                    <div className="text-xl">
+                                      {'🔵'.repeat(parseInt(exercises[currentExercise].correctAnswer))}
+                                    </div>
+                                    <div className="text-sm font-bold text-blue-800 mt-1">
+                                      {exercises[currentExercise].correctAnswer}
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                              
+                              <div className="text-center">
+                                <div className="bg-yellow-200 px-4 py-2 rounded-full inline-block animate-bounce" style={{ animationDelay: '1.5s' }}>
+                                  <span className="font-bold text-yellow-800">
+                                    Chaque groupe a {exercises[currentExercise].correctAnswer} objets !
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                      
+                      {/* Bouton pour écouter le résultat */}
+                      <div className="text-center mt-4 mb-4">
+                        <button
+                          onClick={() => {
+                            const currentEx = exercises[currentExercise];
+                            let explanation = `La bonne réponse était ${currentEx.correctAnswer || 'inconnue'}`;
+                            
+                            if (currentEx.number !== undefined && currentEx.correctAnswer) {
+                              if (currentEx.type === 'double') {
+                                explanation = `Le double de ${currentEx.number} est ${currentEx.correctAnswer}. ${currentEx.number} plus ${currentEx.number} égale ${currentEx.correctAnswer}.`;
+                              } else if (currentEx.type === 'moitie') {
+                                explanation = `La moitié de ${currentEx.number} est ${currentEx.correctAnswer}. ${currentEx.number} divisé par 2 égale ${currentEx.correctAnswer}.`;
+                              }
+                            }
+                            
+                            speakText(explanation);
+                          }}
+                          className="bg-blue-500 text-white px-4 py-2 rounded-lg font-bold hover:bg-blue-600 transition-colors text-sm sm:text-base mr-3"
+                        >
+                          <Volume2 className="inline w-4 h-4 mr-2" />
+                          Écouter le résultat
+                        </button>
+                      </div>
+                      
+                      {/* Message d'encouragement */}
+                      <div className="bg-gradient-to-r from-purple-100 to-pink-100 rounded-lg p-3 text-center">
+                        <div className="text-lg">🌟</div>
+                        <p className="text-sm font-semibold text-purple-800">
+                          Maintenant tu comprends ! La prochaine fois sera plus facile !
+                        </p>
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
               
