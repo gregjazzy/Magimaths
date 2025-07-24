@@ -53,6 +53,23 @@ export default function ValeurPositionnelleCP20() {
   const [shuffledChoices, setShuffledChoices] = useState<string[]>([]);
   const [animatedExplanation, setAnimatedExplanation] = useState<string>('');
   const [animationTriggered, setAnimationTriggered] = useState(false);
+  const [windowSize, setWindowSize] = useState({ width: 0, height: 0 });
+
+  // Hook pour détecter la taille de l'écran
+  useEffect(() => {
+    function handleResize() {
+      setWindowSize({
+        width: window.innerWidth,
+        height: window.innerHeight,
+      });
+    }
+    
+    // Définir la taille initiale
+    handleResize();
+    
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // Fonction pour mélanger un tableau
   const shuffleArray = (array: string[]) => {
@@ -374,15 +391,21 @@ export default function ValeurPositionnelleCP20() {
                       
                       <div className="relative flex flex-col items-center">
                         {/* Nombre original qui reste visible */}
-                        <div className="mb-6 sm:mb-8 relative z-10">
-                          <div className="bg-blue-100 rounded-lg px-4 sm:px-6 py-2 sm:py-3 border-2 border-blue-300">
-                            <div className="text-3xl sm:text-4xl lg:text-6xl font-bold text-blue-600 relative">
-                              <span className="relative">{selectedNumber}</span>
-                              {/* Chiffres animés par-dessus */}
+                        <div className="mb-4 sm:mb-6 lg:mb-8 relative z-10">
+                          <div className="bg-blue-100 rounded-lg px-3 sm:px-4 lg:px-6 py-2 sm:py-3 border-2 border-blue-300">
+                            <div className="text-2xl sm:text-3xl md:text-4xl lg:text-6xl font-bold text-blue-600 relative font-mono tracking-tight leading-none">
+                              <span className="relative inline-block">{selectedNumber}</span>
+                              {/* Premier chiffre animé */}
                               <span 
-                                className="absolute top-0 left-0 transition-all duration-[4000ms] ease-in-out"
+                                className="absolute top-0 left-0 transition-all duration-[4000ms] ease-in-out font-mono"
                                 style={{
-                                  transform: animationTriggered ? 'translateX(-120px) translateY(160px) scale(0.83)' : 'translateX(0) translateY(0) scale(1)',
+                                  transform: animationTriggered 
+                                    ? windowSize.width >= 1024 
+                                      ? 'translateX(-110px) translateY(170px) scale(0.75)' // Desktop plus précis
+                                      : windowSize.width >= 640 
+                                        ? 'translateX(-80px) translateY(130px) scale(0.8)' // Tablet plus précis
+                                        : 'translateX(-50px) translateY(90px) scale(0.85)' // Mobile plus précis
+                                    : 'translateX(0) translateY(0) scale(1)',
                                   color: animationTriggered ? '#059669' : '#2563eb',
                                   zIndex: 50,
                                   opacity: animationTriggered ? 0 : 1,
@@ -391,11 +414,18 @@ export default function ValeurPositionnelleCP20() {
                               >
                                 {selectedNumber.charAt(0)}
                               </span>
+                              {/* Deuxième chiffre animé */}
                               <span 
-                                className="absolute top-0 transition-all duration-[4000ms] ease-in-out"
+                                className="absolute top-0 transition-all duration-[4000ms] ease-in-out font-mono"
                                 style={{
-                                  left: '0.5em',
-                                  transform: animationTriggered ? 'translateX(120px) translateY(160px) scale(0.83)' : 'translateX(0) translateY(0) scale(1)',
+                                  left: windowSize.width >= 1024 ? '1.1ch' : windowSize.width >= 640 ? '1.15ch' : '1.2ch',
+                                  transform: animationTriggered 
+                                    ? windowSize.width >= 1024 
+                                      ? 'translateX(110px) translateY(170px) scale(0.75)' // Desktop plus précis
+                                      : windowSize.width >= 640 
+                                        ? 'translateX(80px) translateY(130px) scale(0.8)' // Tablet plus précis
+                                        : 'translateX(50px) translateY(90px) scale(0.85)' // Mobile plus précis
+                                    : 'translateX(0) translateY(0) scale(1)',
                                   color: animationTriggered ? '#ea580c' : '#2563eb',
                                   zIndex: 50,
                                   opacity: animationTriggered ? 0 : 1,
@@ -408,28 +438,28 @@ export default function ValeurPositionnelleCP20() {
                           </div>
                         </div>
                         
-                        {/* Vrai tableau dizaines/unités */}
-                        <div className="bg-white rounded-lg sm:rounded-xl shadow-lg sm:shadow-xl border-2 sm:border-4 border-gray-400 overflow-hidden">
+                        {/* Vrai tableau dizaines/unités - version mobile optimisée */}
+                        <div className="bg-white rounded-lg shadow-lg border-2 border-gray-400 overflow-hidden w-full max-w-xs sm:max-w-sm lg:max-w-md">
                           <table className="border-collapse w-full">
                             <thead>
                               <tr>
-                                <th className="bg-green-100 border-1 sm:border-2 border-gray-400 px-4 sm:px-8 lg:px-12 py-2 sm:py-3 lg:py-4 text-xs sm:text-sm lg:text-lg font-bold text-green-700">
+                                <th className="bg-green-100 border border-gray-400 px-3 sm:px-4 lg:px-6 py-2 sm:py-3 text-xs sm:text-sm lg:text-base font-bold text-green-700 w-1/2">
                                   DIZAINES
                                 </th>
-                                <th className="bg-orange-100 border-1 sm:border-2 border-gray-400 px-4 sm:px-8 lg:px-12 py-2 sm:py-3 lg:py-4 text-xs sm:text-sm lg:text-lg font-bold text-orange-700">
+                                <th className="bg-orange-100 border border-gray-400 px-3 sm:px-4 lg:px-6 py-2 sm:py-3 text-xs sm:text-sm lg:text-base font-bold text-orange-700 w-1/2">
                                   UNITÉS
                                 </th>
                               </tr>
                             </thead>
                             <tbody>
                               <tr>
-                                <td className="bg-green-50 border-1 sm:border-2 border-gray-400 px-4 sm:px-8 lg:px-12 py-6 sm:py-8 lg:py-10 text-center w-1/2">
-                                  <div className="text-3xl sm:text-4xl lg:text-5xl font-bold text-green-600 h-12 sm:h-14 lg:h-16 flex items-center justify-center">
+                                <td className="bg-green-50 border border-gray-400 px-3 sm:px-4 lg:px-6 py-4 sm:py-6 lg:py-8 text-center w-1/2">
+                                  <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-green-600 h-10 sm:h-12 lg:h-16 flex items-center justify-center font-mono">
                                     {selectedNumber.charAt(0)}
                                   </div>
                                 </td>
-                                <td className="bg-orange-50 border-1 sm:border-2 border-gray-400 px-4 sm:px-8 lg:px-12 py-6 sm:py-8 lg:py-10 text-center w-1/2">
-                                  <div className="text-3xl sm:text-4xl lg:text-5xl font-bold text-orange-600 h-12 sm:h-14 lg:h-16 flex items-center justify-center">
+                                <td className="bg-orange-50 border border-gray-400 px-3 sm:px-4 lg:px-6 py-4 sm:py-6 lg:py-8 text-center w-1/2">
+                                  <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-orange-600 h-10 sm:h-12 lg:h-16 flex items-center justify-center font-mono">
                                     {selectedNumber.charAt(1)}
                                   </div>
                                 </td>
@@ -459,40 +489,59 @@ export default function ValeurPositionnelleCP20() {
                   </div>
                 </div>
 
-                {/* Représentation visuelle avec paquets */}
+                {/* Représentation visuelle avec paquets - optimisée mobile */}
                 <div className="bg-white rounded-lg p-3 sm:p-6 mb-3 sm:mb-6">
-                  <h4 className="text-sm sm:text-base lg:text-lg font-bold mb-2 sm:mb-4 text-gray-800">
+                  <h4 className="text-sm sm:text-base lg:text-lg font-bold mb-3 sm:mb-4 text-gray-800 text-center">
                     🔟 Regarde avec des paquets de 10 :
                   </h4>
-                  <div className="text-lg sm:text-xl lg:text-2xl py-2 sm:py-4 animate-pulse break-all">
-                    {numbersDecomposition.find(n => n.number === selectedNumber)?.visual}
+                  <div className="bg-yellow-50 rounded-lg p-3 sm:p-4 text-center">
+                    <div className="text-base sm:text-lg lg:text-xl py-2 sm:py-3 font-mono break-all leading-relaxed">
+                      {numbersDecomposition.find(n => n.number === selectedNumber)?.visual}
+                    </div>
+                    <p className="text-xs sm:text-sm text-gray-600 mt-2">
+                      📦 = paquet de 10 | 🔴 = 1 unité
+                    </p>
                   </div>
                 </div>
 
-                {/* Décomposition détaillée avec animation */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-6">
-                  <div className="bg-green-50 rounded-lg p-3 sm:p-6 transform hover:scale-105 transition-transform duration-300">
-                    <h4 className="text-sm sm:text-base lg:text-lg font-bold mb-2 sm:mb-3 text-green-800">
-                      🔟 Dizaines
-                    </h4>
-                    <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-green-900 mb-2 animate-bounce">
-                      {numbersDecomposition.find(n => n.number === selectedNumber)?.dizaines}
+                {/* Décomposition détaillée avec animation - version mobile */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 lg:gap-6">
+                  <div className="bg-green-50 rounded-lg p-3 sm:p-4 lg:p-6 transform hover:scale-105 transition-transform duration-300 border-2 border-green-200">
+                    <div className="text-center">
+                      <h4 className="text-sm sm:text-base lg:text-lg font-bold mb-2 sm:mb-3 text-green-800">
+                        🔟 Dizaines
+                      </h4>
+                      <div className="bg-white rounded-lg p-2 sm:p-3 mb-2 sm:mb-3 border border-green-300">
+                        <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-green-600 font-mono">
+                          {numbersDecomposition.find(n => n.number === selectedNumber)?.dizaines}
+                        </div>
+                      </div>
+                      <p className="text-xs sm:text-sm lg:text-base text-green-700 font-semibold">
+                        Le chiffre de GAUCHE
+                      </p>
+                      <p className="text-xs sm:text-sm text-green-600 mt-1">
+                        Position des dizaines
+                      </p>
                     </div>
-                    <p className="text-xs sm:text-sm lg:text-base text-green-700">
-                      Le chiffre de GAUCHE
-                    </p>
                   </div>
                   
-                  <div className="bg-orange-50 rounded-lg p-3 sm:p-6 transform hover:scale-105 transition-transform duration-300">
-                    <h4 className="text-sm sm:text-base lg:text-lg font-bold mb-2 sm:mb-3 text-orange-800">
-                      🔴 Unités
-                    </h4>
-                    <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-orange-900 mb-2 animate-bounce" style={{animationDelay: '0.3s'}}>
-                      {numbersDecomposition.find(n => n.number === selectedNumber)?.unites}
+                  <div className="bg-orange-50 rounded-lg p-3 sm:p-4 lg:p-6 transform hover:scale-105 transition-transform duration-300 border-2 border-orange-200">
+                    <div className="text-center">
+                      <h4 className="text-sm sm:text-base lg:text-lg font-bold mb-2 sm:mb-3 text-orange-800">
+                        🔴 Unités
+                      </h4>
+                      <div className="bg-white rounded-lg p-2 sm:p-3 mb-2 sm:mb-3 border border-orange-300">
+                        <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-orange-600 font-mono">
+                          {numbersDecomposition.find(n => n.number === selectedNumber)?.unites}
+                        </div>
+                      </div>
+                      <p className="text-xs sm:text-sm lg:text-base text-orange-700 font-semibold">
+                        Le chiffre de DROITE
+                      </p>
+                      <p className="text-xs sm:text-sm text-orange-600 mt-1">
+                        Position des unités
+                      </p>
                     </div>
-                    <p className="text-xs sm:text-sm lg:text-base text-orange-700">
-                      Le chiffre de DROITE
-                    </p>
                   </div>
                 </div>
               </div>
