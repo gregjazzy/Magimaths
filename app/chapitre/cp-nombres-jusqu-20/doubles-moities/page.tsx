@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, CheckCircle, XCircle, RotateCcw, Volume2, ArrowUpDown, Calculator } from 'lucide-react';
+import { ArrowLeft, CheckCircle, XCircle, RotateCcw, Volume2, ArrowUpDown, Calculator, Copy, Split } from 'lucide-react';
 
 export default function DoublesMotiesCP20() {
   const [selectedConcept, setSelectedConcept] = useState('double_5');
@@ -28,9 +28,11 @@ export default function DoublesMotiesCP20() {
 
   // Initialiser les choix mélangés pour l'exercice actuel
   const initializeShuffledChoices = () => {
-    const currentChoices = exercises[currentExercise].choices;
-    const shuffled = shuffleArray(currentChoices);
-    setShuffledChoices(shuffled);
+    const currentChoices = exercises[currentExercise]?.choices;
+    if (currentChoices) {
+      const shuffled = shuffleArray(currentChoices);
+      setShuffledChoices(shuffled);
+    }
   };
 
   // Effet pour mélanger les choix quand on change d'exercice
@@ -82,7 +84,7 @@ export default function DoublesMotiesCP20() {
     // Doubles des nombres < 10
     { id: 'double_1', type: 'double', number: 1, result: 2, visual: '🔴 + 🔴 = 🔴🔴', explanation: 'Le double de 1, c\'est 1 + 1 = 2' },
     { id: 'double_2', type: 'double', number: 2, result: 4, visual: '🔴🔴 + 🔴🔴 = 🔴🔴🔴🔴', explanation: 'Le double de 2, c\'est 2 + 2 = 4' },
-    { id: 'double_3', type: 'double', number: 3, result: 6, visual: '🔴🔴🔴 + 🔴🔴🔴 = 🔴🔴🔴🔴🔴🔴', explanation: 'Le double de 3, c\'est 3 + 3 = 6' },
+    { id: 'double_3', type: 'double', number: 3, result: 6, visual: '🔴🔴🔴 + 🔴🔴🔴 = 🔴🔴🔴��🔴', explanation: 'Le double de 3, c\'est 3 + 3 = 6' },
     { id: 'double_4', type: 'double', number: 4, result: 8, visual: '🔴🔴🔴🔴 + 🔴🔴🔴🔴 = 🔴🔴🔴🔴🔴🔴🔴🔴', explanation: 'Le double de 4, c\'est 4 + 4 = 8' },
     { id: 'double_5', type: 'double', number: 5, result: 10, visual: '🔴🔴🔴🔴🔴 + 🔴🔴🔴🔴🔴 = 📦', explanation: 'Le double de 5, c\'est 5 + 5 = 10' },
     { id: 'double_6', type: 'double', number: 6, result: 12, visual: '🔴🔴🔴🔴🔴🔴 + 🔴🔴🔴🔴🔴🔴 = 📦🔴🔴', explanation: 'Le double de 6, c\'est 6 + 6 = 12' },
@@ -142,7 +144,7 @@ export default function DoublesMotiesCP20() {
 
   const handleAnswerClick = (answer: string) => {
     setUserAnswer(answer);
-    const correct = answer === exercises[currentExercise].correctAnswer;
+    const correct = answer === exercises[currentExercise]?.correctAnswer;
     setIsCorrect(correct);
     
     if (correct && !answeredCorrectly.has(currentExercise)) {
@@ -409,202 +411,192 @@ export default function DoublesMotiesCP20() {
 
             {/* Question */}
             <div className="bg-white rounded-xl p-3 sm:p-6 md:p-8 shadow-lg text-center">
-              <h3 className="text-base sm:text-xl md:text-2xl font-bold mb-3 sm:mb-6 md:mb-8 text-gray-900">
-                {exercises[currentExercise].question}
-              </h3>
-              
-              {/* Affichage de la question */}
-              <div className="bg-yellow-50 rounded-lg p-3 sm:p-4 md:p-8 mb-3 sm:mb-6 md:mb-8">
-                {exercises[currentExercise].display ? (
+              {(() => {
+                const currentEx = exercises[currentExercise];
+                if (!currentEx) return null;
+                
+                return (
                   <>
-                    <div className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-yellow-600 mb-2 sm:mb-3 md:mb-4">
-                      {exercises[currentExercise].display}
-                    </div>
-                    <p className="text-sm sm:text-base md:text-lg text-gray-700">
-                      Dis-moi quel type de calcul c'est !
-                    </p>
-                  </>
-                ) : (
-                  <>
-                    <div className="flex items-center justify-center mb-2 sm:mb-3 md:mb-4">
-                      {exercises[currentExercise].type === 'double' ? (
-                        <Calculator className="w-4 h-4 sm:w-6 sm:h-6 md:w-8 md:h-8 text-blue-600 mr-2 sm:mr-3" />
-                      ) : (
-                        <ArrowUpDown className="w-4 h-4 sm:w-6 sm:h-6 md:w-8 md:h-8 text-red-600 mr-2 sm:mr-3" />
-                      )}
-                      <span className="text-sm sm:text-base md:text-lg font-semibold text-gray-700">
-                        {exercises[currentExercise].type === 'double' ? 'Calcul de double' : 'Calcul de moitié'}
-                      </span>
-                    </div>
-                    <div className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-yellow-600 mb-2 sm:mb-3 md:mb-4">
-                      {exercises[currentExercise].type === 'double' ? (
-                        <>{exercises[currentExercise].number} + {exercises[currentExercise].number} = ?</>
-                      ) : (
-                        <>{exercises[currentExercise].number} ÷ 2 = ?</>
-                      )}
-                    </div>
-                  </>
-                )}
-              </div>
-              
-              {/* Choix multiples */}
-              <div className={`grid gap-2 sm:gap-3 md:gap-4 mx-auto mb-4 sm:mb-6 md:mb-8 ${
-                exercises[currentExercise].display 
-                  ? 'grid-cols-1 max-w-sm sm:max-w-md' 
-                  : 'grid-cols-1 md:grid-cols-3 max-w-sm sm:max-w-md'
-              }`}>
-                {shuffledChoices.map((choice) => (
-                  <button
-                    key={choice}
-                    onClick={() => handleAnswerClick(choice)}
-                    disabled={isCorrect !== null}
-                    className={`p-3 sm:p-4 md:p-6 rounded-lg font-bold transition-all ${
-                      exercises[currentExercise].display 
-                        ? 'text-base sm:text-lg md:text-xl min-h-[60px] sm:min-h-[70px]'
-                        : 'text-xl sm:text-2xl md:text-3xl lg:text-4xl'
-                    } ${
-                      userAnswer === choice
-                        ? isCorrect === true
-                          ? 'bg-green-500 text-white'
-                          : isCorrect === false
-                            ? 'bg-red-500 text-white'
-                            : 'bg-blue-500 text-white'
-                        : exercises[currentExercise].correctAnswer === choice && isCorrect === false
-                          ? 'bg-green-200 text-green-800 border-2 border-green-500'
-                          : 'bg-gray-100 text-gray-800 hover:bg-gray-200 hover:text-gray-900 disabled:opacity-50'
-                    } disabled:cursor-not-allowed`}
-                  >
-                    {choice}
-                  </button>
-                ))}
-              </div>
-              
-              {/* Résultat */}
-              {isCorrect !== null && (
-                <div className={`p-4 sm:p-6 rounded-lg mb-4 sm:mb-6 ${
-                  isCorrect ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                }`}>
-                  <div className="flex items-center justify-center space-x-3 mb-4">
-                    {isCorrect ? (
-                      <>
-                        <CheckCircle className="w-6 h-6 sm:w-8 sm:h-8" />
-                        <span className="font-bold text-lg sm:text-xl">Parfait ! C'est bien {exercises[currentExercise].correctAnswer} !</span>
-                      </>
+                    <h3 className="text-base sm:text-xl md:text-2xl font-bold mb-3 sm:mb-6 md:mb-8 text-gray-900">
+                      {currentEx.question}
+                    </h3>
+                    
+                    {/* Affichage spécial si défini */}
+                    {currentEx.display ? (
+                      <div className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl mb-6 sm:mb-8">
+                        {currentEx.display}
+                      </div>
                     ) : (
                       <>
-                        <XCircle className="w-6 h-6 sm:w-8 sm:h-8" />
-                        <span className="font-bold text-lg sm:text-xl">
-                          Pas tout à fait... C'était {exercises[currentExercise].correctAnswer} !
-                        </span>
-                      </>
-                    )}
-                  </div>
-                  
-                  {/* Illustration de la solution quand c'est faux */}
-                  {!isCorrect && !exercises[currentExercise].display && (
-                    <div className="bg-white rounded-lg p-4 sm:p-6 border-2 border-blue-300">
-                      <h4 className="text-base sm:text-lg font-bold mb-3 text-blue-800 text-center">
-                        🎯 Regarde la solution avec des objets !
-                      </h4>
-                      
-                      {exercises[currentExercise].type === 'double' ? (
-                        <div className="space-y-4">
-                          {/* Explication du double */}
-                          <div className="text-center">
-                            <p className="text-sm sm:text-base font-semibold text-gray-700 mb-3">
-                              Pour trouver le double de {exercises[currentExercise].number}, on fait :
-                            </p>
-                            <div className="text-2xl sm:text-3xl font-bold text-blue-600 mb-4">
-                              {exercises[currentExercise].number} + {exercises[currentExercise].number} = {exercises[currentExercise].correctAnswer}
-                            </div>
+                        {/* Affichage de la question avec icône */}
+                        <div className={`rounded-lg p-3 sm:p-4 md:p-8 mb-3 sm:mb-6 md:mb-8 ${
+                          currentEx.type === 'double' ? 'bg-yellow-50' : 'bg-green-50'
+                        }`}>
+                          <div className="flex items-center justify-center mb-2 sm:mb-3 md:mb-4">
+                            {currentEx.type === 'double' ? (
+                              <Copy className="w-4 h-4 sm:w-6 sm:h-6 md:w-8 md:h-8 text-yellow-600 mr-2 sm:mr-3" />
+                            ) : (
+                              <Split className="w-4 h-4 sm:w-6 sm:h-6 md:w-8 md:h-8 text-green-600 mr-2 sm:mr-3" />
+                            )}
+                            <span className={`text-sm sm:text-base md:text-lg font-semibold ${
+                              currentEx.type === 'double' ? 'text-yellow-600' : 'text-green-600'
+                            }`}>
+                              {currentEx.type === 'double' ? 'Calcul de double' : 'Calcul de moitié'}
+                            </span>
                           </div>
-                          
-                          {/* Représentation visuelle avec animation */}
-                          <div className="bg-blue-50 rounded-lg p-4 space-y-3">
-                            <div className="text-center text-sm sm:text-base font-semibold text-gray-700">
-                              Avec des objets colorés :
-                            </div>
-                            
-                            <div className="flex items-center justify-center space-x-4 text-2xl sm:text-3xl">
-                              {/* Premier groupe */}
-                              <div className="animate-pulse">
-                                {'🔴'.repeat(Math.min(exercises[currentExercise].number, 5))}
-                                {exercises[currentExercise].number > 5 && (
-                                  <div>{'🔴'.repeat(exercises[currentExercise].number - 5)}</div>
-                                )}
-                              </div>
-                              
-                              <span className="text-blue-600 font-bold text-xl sm:text-2xl">+</span>
-                              
-                              {/* Deuxième groupe */}
-                              <div className="animate-pulse" style={{ animationDelay: '0.5s' }}>
-                                {'🔵'.repeat(Math.min(exercises[currentExercise].number, 5))}
-                                {exercises[currentExercise].number > 5 && (
-                                  <div>{'🔵'.repeat(exercises[currentExercise].number - 5)}</div>
-                                )}
-                              </div>
-                              
-                              <span className="text-gray-500 font-bold text-xl sm:text-2xl">=</span>
-                              
-                              {/* Résultat */}
-                              <div className="animate-bounce" style={{ animationDelay: '1s' }}>
-                                <span className="bg-green-200 px-3 py-1 rounded-full font-bold text-green-800 text-xl sm:text-2xl">
-                                  {exercises[currentExercise].correctAnswer}
-                                </span>
-                              </div>
-                            </div>
-                            
-                            <div className="text-center text-xs sm:text-sm text-gray-600 mt-2">
-                              {exercises[currentExercise].number} objets rouges + {exercises[currentExercise].number} objets bleus = {exercises[currentExercise].correctAnswer} objets en tout !
-                            </div>
+                          <div className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-yellow-600 mb-2 sm:mb-3 md:mb-4">
+                            {currentEx.type === 'double' ? (
+                              <>{currentEx.number} + {currentEx.number} = ?</>
+                            ) : (
+                              <>{currentEx.number} ÷ 2 = ?</>
+                            )}
                           </div>
                         </div>
-                      ) : (
-                        <div className="space-y-4">
-                          {/* Explication de la moitié */}
-                          <div className="text-center">
-                            <p className="text-sm sm:text-base font-semibold text-gray-700 mb-3">
-                              Pour trouver la moitié de {exercises[currentExercise].number}, on partage en 2 :
-                            </p>
-                            <div className="text-2xl sm:text-3xl font-bold text-red-600 mb-4">
-                              {exercises[currentExercise].number} ÷ 2 = {exercises[currentExercise].correctAnswer}
+                      </>
+                    )}
+                    
+                    {/* Choix multiples */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-2 sm:gap-3 md:gap-4 max-w-sm sm:max-w-md mx-auto mb-4 sm:mb-6 md:mb-8">
+                      {shuffledChoices.map((choice) => (
+                        <button
+                          key={choice}
+                          onClick={() => handleAnswerClick(choice)}
+                          disabled={isCorrect !== null}
+                          className={`p-3 sm:p-4 md:p-6 rounded-lg font-bold text-xl sm:text-2xl md:text-3xl lg:text-4xl transition-all ${
+                            userAnswer === choice
+                              ? isCorrect === true
+                                ? 'bg-green-500 text-white'
+                                : isCorrect === false
+                                  ? 'bg-red-500 text-white'
+                                  : 'bg-blue-500 text-white'
+                              : currentEx.correctAnswer === choice && isCorrect === false
+                                ? 'bg-green-200 text-green-800 border-2 border-green-500'
+                                : 'bg-gray-100 text-gray-900 hover:bg-gray-200 disabled:opacity-50'
+                          } disabled:cursor-not-allowed`}
+                        >
+                          {choice}
+                        </button>
+                      ))}
+                    </div>
+                    
+                    {/* Résultat */}
+                    {isCorrect !== null && (
+                      <div className={`p-4 sm:p-6 rounded-lg mb-4 sm:mb-6 ${
+                        isCorrect ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                      }`}>
+                        <div className="flex items-center justify-center space-x-3">
+                          {isCorrect ? (
+                            <>
+                              <CheckCircle className="w-6 h-6 sm:w-8 sm:h-8" />
+                              <span className="font-bold text-lg sm:text-xl">Parfait ! C'est bien {currentEx.correctAnswer} !</span>
+                            </>
+                          ) : (
+                            <>
+                              <XCircle className="w-6 h-6 sm:w-8 sm:h-8" />
+                              <span className="font-bold text-lg sm:text-xl">
+                                Pas tout à fait... C'était {currentEx.correctAnswer} !
+                              </span>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                    
+                    {/* Explication détaillée pour les erreurs (seulement si pas d'affichage spécial) */}
+                    {!isCorrect && !currentEx.display && (
+                      <div className="bg-white rounded-lg p-4 sm:p-6 border-2 border-blue-300">
+                        <h4 className="text-base sm:text-lg font-bold mb-3 text-blue-800 text-center">
+                          🎯 Regarde la solution avec des objets !
+                        </h4>
+                        
+                        {currentEx.type === 'double' ? (
+                          <div className="space-y-4">
+                            {/* Explication du double */}
+                            <div className="text-center">
+                              <p className="text-sm sm:text-base font-semibold text-gray-700 mb-3">
+                                Pour trouver le double de {currentEx.number}, on fait :
+                              </p>
+                              <div className="text-lg sm:text-xl md:text-2xl font-bold text-blue-600 mb-3 sm:mb-4 md:mb-6">
+                                {currentEx.number} + {currentEx.number} = {currentEx.correctAnswer}
+                              </div>
+                            </div>
+                            
+                            <div className="bg-yellow-50 rounded-lg p-4">
+                              <div className="text-sm sm:text-base font-semibold mb-3 text-center text-gray-700">
+                                Avec des objets colorés :
+                              </div>
+                              
+                              <div className="flex items-center justify-center space-x-4 text-2xl sm:text-3xl">
+                                {/* Premier groupe */}
+                                <div className="animate-pulse">
+                                  {'🔴'.repeat(Math.min(currentEx.number || 0, 5))}
+                                  {(currentEx.number || 0) > 5 && (
+                                    <div>{'🔴'.repeat((currentEx.number || 0) - 5)}</div>
+                                  )}
+                                </div>
+                                
+                                <span className="text-blue-600 font-bold text-xl sm:text-2xl">+</span>
+                                
+                                {/* Deuxième groupe */}
+                                <div className="animate-pulse" style={{ animationDelay: '0.5s' }}>
+                                  {'🔵'.repeat(Math.min(currentEx.number || 0, 5))}
+                                  {(currentEx.number || 0) > 5 && (
+                                    <div>{'🔵'.repeat((currentEx.number || 0) - 5)}</div>
+                                  )}
+                                </div>
+                                
+                                <span className="text-green-600 font-bold text-xl sm:text-2xl">=</span>
+                                
+                                {/* Résultat */}
+                                <div className="animate-bounce" style={{ animationDelay: '1s' }}>
+                                  <span className="bg-green-200 px-3 py-1 rounded-full font-bold text-green-800 text-xl sm:text-2xl">
+                                    {currentEx.correctAnswer}
+                                  </span>
+                                </div>
+                              </div>
+                              
+                              <div className="text-center text-xs sm:text-sm text-gray-600 mt-2">
+                                {currentEx.number} objets rouges + {currentEx.number} objets bleus = {currentEx.correctAnswer} objets en tout !
+                              </div>
                             </div>
                           </div>
-                          
-                          {/* Représentation visuelle avec animation */}
-                          <div className="bg-red-50 rounded-lg p-4 space-y-3">
-                            <div className="text-center text-sm sm:text-base font-semibold text-gray-700">
-                              Partage en 2 groupes égaux :
+                        ) : (
+                          <div className="space-y-3">
+                            {/* Explication de la moitié */}
+                            <div className="text-center">
+                              <p className="text-sm sm:text-base font-semibold text-gray-700 mb-3">
+                                Pour trouver la moitié de {currentEx.number}, on partage en 2 :
+                              </p>
+                              <div className="text-lg sm:text-xl md:text-2xl font-bold text-green-600 mb-4 sm:mb-6">
+                                {currentEx.number} ÷ 2 = {currentEx.correctAnswer}
+                              </div>
                             </div>
                             
                             <div className="space-y-3">
                               {/* Nombre initial */}
                               <div className="text-center">
-                                <div className="text-sm text-gray-600 mb-2">Au départ : {exercises[currentExercise].number} objets</div>
+                                <div className="text-sm text-gray-600 mb-2">Au départ : {currentEx.number} objets</div>
                                 <div className="text-2xl animate-pulse">
-                                  {'🟡'.repeat(Math.min(exercises[currentExercise].number, 10))}
-                                  {exercises[currentExercise].number > 10 && (
-                                    <div>{'🟡'.repeat(exercises[currentExercise].number - 10)}</div>
+                                  {'🟡'.repeat(Math.min(currentEx.number || 0, 10))}
+                                  {(currentEx.number || 0) > 10 && (
+                                    <div>{'🟡'.repeat((currentEx.number || 0) - 10)}</div>
                                   )}
                                 </div>
                               </div>
                               
-                              {/* Flèche de séparation */}
-                              <div className="text-center">
-                                <div className="text-2xl animate-bounce">⬇️</div>
-                                <div className="text-sm text-gray-600">On partage en 2</div>
-                              </div>
+                              {/* Flèche de partage */}
+                              <div className="text-center text-2xl animate-bounce">⬇️</div>
                               
-                              {/* Deux groupes */}
-                              <div className="flex justify-center items-center space-x-8">
+                              {/* Résultat du partage */}
+                              <div className="grid grid-cols-2 gap-4 max-w-xs mx-auto">
                                 <div className="text-center">
                                   <div className="text-sm text-gray-600 mb-2">Groupe 1</div>
                                   <div className="bg-green-100 rounded-lg p-3 animate-pulse" style={{ animationDelay: '0.5s' }}>
                                     <div className="text-xl">
-                                      {'🔴'.repeat(parseInt(exercises[currentExercise].correctAnswer))}
+                                      {'🔴'.repeat(parseInt(currentEx.correctAnswer || '0'))}
                                     </div>
                                     <div className="text-sm font-bold text-green-800 mt-1">
-                                      {exercises[currentExercise].correctAnswer}
+                                      {currentEx.correctAnswer}
                                     </div>
                                   </div>
                                 </div>
@@ -613,10 +605,10 @@ export default function DoublesMotiesCP20() {
                                   <div className="text-sm text-gray-600 mb-2">Groupe 2</div>
                                   <div className="bg-blue-100 rounded-lg p-3 animate-pulse" style={{ animationDelay: '1s' }}>
                                     <div className="text-xl">
-                                      {'🔵'.repeat(parseInt(exercises[currentExercise].correctAnswer))}
+                                      {'🔵'.repeat(parseInt(currentEx.correctAnswer || '0'))}
                                     </div>
                                     <div className="text-sm font-bold text-blue-800 mt-1">
-                                      {exercises[currentExercise].correctAnswer}
+                                      {currentEx.correctAnswer}
                                     </div>
                                   </div>
                                 </div>
@@ -625,62 +617,36 @@ export default function DoublesMotiesCP20() {
                               <div className="text-center">
                                 <div className="bg-yellow-200 px-4 py-2 rounded-full inline-block animate-bounce" style={{ animationDelay: '1.5s' }}>
                                   <span className="font-bold text-yellow-800">
-                                    Chaque groupe a {exercises[currentExercise].correctAnswer} objets !
+                                    Chaque groupe a {currentEx.correctAnswer} objets !
                                   </span>
                                 </div>
                               </div>
                             </div>
                           </div>
+                        )}
+                        
+                        <div className="mt-4 p-3 bg-blue-50 rounded-lg">
+                          <p className="text-sm text-blue-700 text-center font-medium">
+                            Maintenant tu comprends ! La prochaine fois sera plus facile !
+                          </p>
                         </div>
-                      )}
-                      
-                      {/* Bouton pour écouter le résultat */}
-                      <div className="text-center mt-4 mb-4">
+                      </div>
+                    )}
+                    
+                    {/* Navigation */}
+                    {isCorrect !== null && (
+                      <div className="flex justify-center mt-4">
                         <button
-                          onClick={() => {
-                            const currentEx = exercises[currentExercise];
-                            let explanation = `La bonne réponse était ${currentEx.correctAnswer || 'inconnue'}`;
-                            
-                            if (currentEx.number !== undefined && currentEx.correctAnswer) {
-                              if (currentEx.type === 'double') {
-                                explanation = `Le double de ${currentEx.number} est ${currentEx.correctAnswer}. ${currentEx.number} plus ${currentEx.number} égale ${currentEx.correctAnswer}.`;
-                              } else if (currentEx.type === 'moitie') {
-                                explanation = `La moitié de ${currentEx.number} est ${currentEx.correctAnswer}. ${currentEx.number} divisé par 2 égale ${currentEx.correctAnswer}.`;
-                              }
-                            }
-                            
-                            speakText(explanation);
-                          }}
-                          className="bg-blue-500 text-white px-4 py-2 rounded-lg font-bold hover:bg-blue-600 transition-colors text-sm sm:text-base mr-3"
+                          onClick={nextExercise}
+                          className="bg-yellow-500 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-lg font-bold text-base sm:text-lg hover:bg-yellow-600 transition-colors"
                         >
-                          <Volume2 className="inline w-4 h-4 mr-2" />
-                          Écouter le résultat
+                          {currentExercise < exercises.length - 1 ? 'Suivant →' : 'Terminer !'}
                         </button>
                       </div>
-                      
-                      {/* Message d'encouragement */}
-                      <div className="bg-gradient-to-r from-purple-100 to-pink-100 rounded-lg p-3 text-center">
-                        <div className="text-lg">🌟</div>
-                        <p className="text-sm font-semibold text-purple-800">
-                          Maintenant tu comprends ! La prochaine fois sera plus facile !
-                        </p>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
-              
-              {/* Navigation */}
-              {isCorrect === false && (
-                <div className="flex justify-center">
-                  <button
-                    onClick={nextExercise}
-                    className="bg-yellow-500 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-lg font-bold text-base sm:text-lg hover:bg-yellow-600 transition-colors"
-                  >
-                    Suivant →
-                  </button>
-                </div>
-              )}
+                    )}
+                  </>
+                );
+              })()}
             </div>
           </div>
         )}
