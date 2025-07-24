@@ -286,12 +286,12 @@ export default function CE1PartageEquitablePage() {
             </div>
             
             <div className="flex justify-center items-center space-x-4">
-              <span className="text-lg font-semibold">À partager entre</span>
+              <span className="text-lg font-semibold text-gray-700">À partager entre</span>
               <div className="flex space-x-2">
                 {Array.from({length: currentQ.situation.recipients}, (_, i) => (
                   <div key={i} className="w-8 h-8 bg-blue-300 rounded-full flex items-center justify-center">
                     {currentQ.situation.recipientName === "enfants" && <Users className="w-4 h-4 text-blue-700" />}
-                    {currentQ.situation.recipientName === "sacs" && <Gift className="w-4 h-4 text-brown-700" />}
+                    {currentQ.situation.recipientName === "sacs" && <Gift className="w-4 h-4 text-gray-700" />}
                     {currentQ.situation.recipientName === "assiettes" && "🍽️"}
                     {currentQ.situation.recipientName === "boîtes" && "📦"}
                   </div>
