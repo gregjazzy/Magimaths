@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, CheckCircle, XCircle, RotateCcw, Volume2, ArrowUp, ArrowDown, Equal } from 'lucide-react';
 
@@ -19,6 +19,18 @@ export default function OrdonnerComparerCP20() {
   // États pour l'animation de comparaison
   const [animationStep, setAnimationStep] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
+  
+  // États vocaux
+  const [isPlayingVocal, setIsPlayingVocal] = useState(false);
+  const [hasStarted, setHasStarted] = useState(false);
+  const [highlightedElement, setHighlightedElement] = useState<string | null>(null);
+  const [exerciseInstructionGiven, setExerciseInstructionGiven] = useState(false);
+  
+  // Refs pour les timers
+  const welcomeTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const reminderTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const exerciseInstructionGivenRef = useRef(false);
+  const hasStartedRef = useRef(false);
 
   // Fonction pour mélanger un tableau
   const shuffleArray = (array: string[]) => {
@@ -129,8 +141,31 @@ export default function OrdonnerComparerCP20() {
     localStorage.setItem('cp-nombres-20-progress', JSON.stringify(allProgress));
   };
 
+  // === FONCTIONS VOCALES ÉLABORÉES ===
+  
+  const playAudioSequence = (text: string): Promise<void> => {
+    return new Promise((resolve) => {
+      // Arrêter les vocaux précédents
+      if ('speechSynthesis' in window) {
+        speechSynthesis.cancel();
+      }
+      
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'fr-FR';
+      utterance.rate = 0.8;
+      utterance.onend = () => resolve();
+      speechSynthesis.speak(utterance);
+    });
+  };
+
+  const wait = (ms: number): Promise<void> => {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  };
+
   const speakText = (text: string) => {
     if ('speechSynthesis' in window) {
+      speechSynthesis.cancel();
+      
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = 'fr-FR';
       utterance.rate = 0.7;
@@ -138,7 +173,338 @@ export default function OrdonnerComparerCP20() {
     }
   };
 
+  // Fonction pour arrêter le vocal
+  const stopVocal = () => {
+    if ('speechSynthesis' in window) {
+      speechSynthesis.cancel();
+    }
+    setIsPlayingVocal(false);
+  };
+
+  const explainChapterGoal = async () => {
+    setHasStarted(true);
+    hasStartedRef.current = true;
+    
+    if (welcomeTimerRef.current) {
+      clearTimeout(welcomeTimerRef.current);
+      welcomeTimerRef.current = null;
+    }
+    if (reminderTimerRef.current) {
+      clearTimeout(reminderTimerRef.current);
+      reminderTimerRef.current = null;
+    }
+    
+    // Arrêter les vocaux précédents
+    if ('speechSynthesis' in window) {
+      speechSynthesis.cancel();
+    }
+    
+    setIsPlayingVocal(true);
+
+    try {
+      // S'assurer que 5_8 est sélectionné pour l'exemple
+      setSelectedComparison('5_8');
+      setAnimationStep(0);
+      setIsAnimating(true);
+
+      await playAudioSequence("Super ! Tu vas apprendre à ordonner et comparer les nombres !");
+      await wait(500);
+      
+      await playAudioSequence("Je vais te montrer étape par étape avec l'exemple de 5 et 8 !");
+      setHighlightedElement('comparison-5_8');
+      await wait(2000);
+      setHighlightedElement(null);
+      await wait(200);
+      
+      await playAudioSequence("Regarde bien cette comparaison qui va s'animer :");
+      await wait(800);
+
+      // Animation étape 1 : Affichage des nombres séparés
+      setAnimationStep(1);
+      await playAudioSequence("Première étape : voici nos deux nombres à comparer !");
+      await wait(1200);
+      
+      await playAudioSequence("D'un côté nous avons le nombre 5");
+      setHighlightedElement('number-left');
+      await wait(1500);
+      setHighlightedElement(null);
+      
+      await playAudioSequence("De l'autre côté nous avons le nombre 8");
+      setHighlightedElement('number-right');
+      await wait(1500);
+      setHighlightedElement(null);
+      await wait(500);
+
+      // Animation étape 2 : Comptage des objets
+      setAnimationStep(2);
+      await playAudioSequence("Deuxième étape : comptons les objets pour voir lequel en a plus !");
+      await wait(1000);
+      
+      await playAudioSequence("À gauche, je compte 5 objets rouges : 1, 2, 3, 4, 5 !");
+      setHighlightedElement('objects-left');
+      await wait(3000);
+      setHighlightedElement(null);
+      
+      await playAudioSequence("À droite, je compte 8 objets bleus : 1, 2, 3, 4, 5, 6, 7, 8 !");
+      setHighlightedElement('objects-right');
+      await wait(4000);
+      setHighlightedElement(null);
+      
+      await playAudioSequence("8 objets bleus, c'est plus que 5 objets rouges !");
+      await wait(2000);
+      
+      await playAudioSequence("Donc 5 est plus petit que 8 !");
+      await wait(1500);
+
+      // Animation étape 3 : Résultat final
+      setAnimationStep(3);
+      await playAudioSequence("Troisième étape : voici notre conclusion finale !");
+      setHighlightedElement('comparison-result');
+      await wait(2000);
+      setHighlightedElement(null);
+      
+      await playAudioSequence("On écrit cette comparaison comme ceci :");
+      setHighlightedElement('comparison-symbol');
+      await wait(1800);
+      setHighlightedElement(null);
+      
+      await playAudioSequence("5 est plus petit que 8, alors on écrit 5 plus petit que 8 !");
+      setHighlightedElement('final-comparison');
+      await wait(3500);
+      setHighlightedElement(null);
+      await wait(300);
+
+      // Explication du symbole
+      await playAudioSequence("Le symbole plus petit que ressemble à un bec qui mange le plus gros nombre !");
+      setHighlightedElement('symbol-explanation');
+      await wait(3500);
+      setHighlightedElement(null);
+      await wait(500);
+
+      // Suggestion d'autres exemples
+      setIsAnimating(false);
+      await playAudioSequence("Maintenant que tu comprends, voici d'autres exemples à découvrir !");
+      await wait(1500);
+      
+      await playAudioSequence("Tu peux essayer avec 12 et 9 !");
+      setHighlightedElement('comparison-12_9');
+      await wait(2000);
+      setHighlightedElement(null);
+      
+      await playAudioSequence("Ou encore avec 7 et 7 !");
+      setHighlightedElement('comparison-7_7');
+      await wait(2000);
+      setHighlightedElement(null);
+      
+      await playAudioSequence("Et pourquoi pas 14 et 16 !");
+      setHighlightedElement('comparison-14_16');
+      await wait(2000);
+      setHighlightedElement(null);
+      await wait(500);
+      
+      await playAudioSequence("Clique sur un de ces exemples pour voir une explication complète avec animations !");
+      await wait(3000);
+      
+    } catch (error) {
+      console.error('Erreur dans explainChapterGoal:', error);
+    } finally {
+      setIsPlayingVocal(false);
+    }
+  };
+
+  // Fonction pour expliquer une comparaison choisie (exemple cliqué)
+  const explainSelectedComparison = async (comparisonId: string) => {
+    const comparison = comparisons.find(c => c.id === comparisonId);
+    if (!comparison) return;
+    
+    try {
+      speechSynthesis.cancel();
+      setIsPlayingVocal(true);
+      setIsAnimating(true);
+      setAnimationStep(0);
+      
+      // Démarrer l'animation
+      setAnimationStep(1);
+      await wait(200);
+      
+      await playAudioSequence(`Très bien ! Tu as choisi de découvrir ${comparison.num1} ${comparison.symbol} ${comparison.num2} !`);
+      await wait(800);
+      
+      await playAudioSequence("Je vais t'expliquer cette comparaison étape par étape !");
+      await wait(1200);
+
+      // Étape 1 : Présentation des nombres
+      setAnimationStep(1);
+      await playAudioSequence(`D'abord, voici nos deux nombres : ${comparison.num1} et ${comparison.num2}`);
+      setHighlightedElement('numbers-display');
+      await wait(2500);
+      setHighlightedElement(null);
+      await wait(300);
+
+      // Étape 2 : Comptage
+      setAnimationStep(2);
+      await playAudioSequence("Maintenant, comptons les objets pour voir lequel a plus d'éléments !");
+      setHighlightedElement('objects-count');
+      await wait(2000);
+      setHighlightedElement(null);
+      await wait(500);
+      
+      // Comparaison et conclusion
+      if (comparison.num1 < comparison.num2) {
+        await playAudioSequence(`${comparison.num1} objets, c'est moins que ${comparison.num2} objets !`);
+        await wait(2000);
+        await playAudioSequence(`Donc ${comparison.num1} est plus petit que ${comparison.num2} !`);
+      } else if (comparison.num1 > comparison.num2) {
+        await playAudioSequence(`${comparison.num1} objets, c'est plus que ${comparison.num2} objets !`);
+        await wait(2000);
+        await playAudioSequence(`Donc ${comparison.num1} est plus grand que ${comparison.num2} !`);
+      } else {
+        await playAudioSequence(`${comparison.num1} objets et ${comparison.num2} objets, c'est pareil !`);
+        await wait(2000);
+        await playAudioSequence(`Donc ${comparison.num1} est égal à ${comparison.num2} !`);
+      }
+      await wait(1500);
+
+      // Étape 3 : Conclusion
+      setAnimationStep(3);
+      await playAudioSequence("Voici notre conclusion finale :");
+      setHighlightedElement('final-result');
+      await wait(1800);
+      setHighlightedElement(null);
+      await wait(300);
+
+      await playAudioSequence(`On écrit : ${comparison.num1} ${comparison.symbol} ${comparison.num2}`);
+      setHighlightedElement('written-comparison');
+      await wait(2500);
+      setHighlightedElement(null);
+      await wait(500);
+
+      // Explication du symbole
+      if (comparison.symbol === '<') {
+        await playAudioSequence("Le symbole 'plus petit que' ressemble à un bec qui mange le plus gros nombre !");
+      } else if (comparison.symbol === '>') {
+        await playAudioSequence("Le symbole 'plus grand que' ressemble à un bec qui mange le plus gros nombre !");
+      } else {
+        await playAudioSequence("Le symbole 'égal' montre que les deux nombres sont identiques !");
+      }
+      await wait(3000);
+
+      setIsAnimating(false);
+      await playAudioSequence("Excellent ! Tu peux maintenant essayer une autre comparaison !");
+      
+    } catch (error) {
+      console.error('Erreur dans explainSelectedComparison:', error);
+    } finally {
+      setIsPlayingVocal(false);
+    }
+  };
+
+  // Consigne générale pour la série d'exercices
+  const explainExercisesOnce = async () => {
+    if (exerciseInstructionGivenRef.current) return;
+    
+    try {
+      speechSynthesis.cancel();
+      exerciseInstructionGivenRef.current = true;
+      setExerciseInstructionGiven(true);
+      setIsPlayingVocal(true);
+      
+      await playAudioSequence("Super ! Tu vas faire une série d'exercices pour comparer les nombres !");
+      await wait(500);
+      
+      await playAudioSequence("Tu dois regarder les deux nombres et choisir le bon symbole : plus petit, plus grand, ou égal !");
+      await wait(500);
+      
+      await playAudioSequence("Si tu te trompes, regarde bien la correction et appuie sur le bouton Suivant !");
+      
+      // Faire apparaître temporairement un bouton orange de démonstration
+      setHighlightedElement('demo-next-button');
+      await wait(2000);
+      setHighlightedElement(null);
+      
+    } catch (error) {
+      console.error('Erreur dans explainExercisesOnce:', error);
+    } finally {
+      setIsPlayingVocal(false);
+    }
+  };
+
+  // === useEffect POUR ARRÊT VOCAUX ===
+  
+  // Effect pour gérer les changements d'onglet interne (cours ↔ exercices)
+  useEffect(() => {
+    // Arrêter tous les vocaux lors du changement d'onglet
+    if ('speechSynthesis' in window) {
+      speechSynthesis.cancel();
+    }
+    setIsPlayingVocal(false);
+    
+    // Jouer automatiquement la consigne des exercices (une seule fois)
+    if (showExercises && !exerciseInstructionGivenRef.current) {
+      // Délai court pour laisser l'interface se charger
+      setTimeout(() => {
+        explainExercisesOnce();
+        exerciseInstructionGivenRef.current = true;
+      }, 600);
+    }
+  }, [showExercises]);
+
+  // Effect pour arrêter la voix quand on quitte la page
+  useEffect(() => {
+    const stopSpeechOnExit = () => {
+      if ('speechSynthesis' in window) {
+        speechSynthesis.cancel();
+      }
+      setIsPlayingVocal(false);
+      setHighlightedElement(null);
+    };
+
+    // Arrêter la voix quand on ferme/quitte la page
+    const handleBeforeUnload = () => {
+      stopSpeechOnExit();
+    };
+
+    // Arrêter la voix quand l'onglet devient inactif
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        stopSpeechOnExit();
+      }
+    };
+
+    // Arrêter la voix lors de la navigation
+    const handlePageHide = () => {
+      stopSpeechOnExit();
+    };
+
+    // Ajouter les écouteurs d'événements
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('pagehide', handlePageHide);
+
+    // Nettoyer les écouteurs lors du démontage
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('pagehide', handlePageHide);
+      stopSpeechOnExit();
+    };
+  }, []);
+
+  // Effect pour jouer automatiquement le vocal de bienvenue (une seule fois)
+  useEffect(() => {
+    if (!showExercises && !hasStarted) {
+      welcomeTimerRef.current = setTimeout(() => {
+        speakText("Clique sur le bouton violet qui bouge pour commencer.");
+      }, 1000);
+    }
+    
+    return () => {
+      if (welcomeTimerRef.current) clearTimeout(welcomeTimerRef.current);
+    };
+  }, [showExercises, hasStarted]);
+
   const handleAnswerClick = (answer: string) => {
+    stopVocal();
     setUserAnswer(answer);
     const correct = answer === exercises[currentExercise].correctAnswer;
     setIsCorrect(correct);
@@ -211,7 +577,11 @@ export default function OrdonnerComparerCP20() {
       <div className="max-w-6xl mx-auto px-3 sm:px-4 py-4 sm:py-8">
         {/* Header */}
         <div className="mb-6 sm:mb-8">
-          <Link href="/chapitre/cp-nombres-jusqu-20" className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors mb-3 sm:mb-4">
+          <Link 
+            href="/chapitre/cp-nombres-jusqu-20" 
+            onClick={stopVocal}
+            className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors mb-3 sm:mb-4"
+          >
             <ArrowLeft className="w-4 h-4" />
             <span className="text-sm sm:text-base">Retour au chapitre</span>
           </Link>
@@ -255,8 +625,27 @@ export default function OrdonnerComparerCP20() {
         {!showExercises ? (
           /* COURS */
           <div className="space-y-4 sm:space-y-8">
+            {/* Bouton d'explication vocal principal */}
+            <div className="text-center mb-6">
+              <button
+                onClick={explainChapterGoal}
+                disabled={isPlayingVocal}
+                className={`bg-gradient-to-r from-purple-500 to-pink-500 text-white px-8 py-4 rounded-xl font-bold text-xl shadow-lg hover:shadow-xl transition-all transform hover:scale-105 ${
+                  !hasStarted ? 'animate-bounce' : ''
+                } ${isPlayingVocal ? 'opacity-50 cursor-not-allowed' : ''}`}
+              >
+                <Volume2 className="inline w-6 h-6 mr-3" />
+                {isPlayingVocal ? '🔊 En cours...' : '🎯 Commencer le cours'}
+              </button>
+            </div>
+
             {/* Sélecteur de comparaison */}
-            <div className="bg-white rounded-xl p-3 sm:p-6 shadow-lg">
+            <div 
+              id="comparison-selector"
+              className={`bg-white rounded-xl p-3 sm:p-6 shadow-lg transition-all duration-500 ${
+                highlightedElement === 'comparison-selector' ? 'bg-yellow-100 ring-4 ring-yellow-400 shadow-2xl scale-105 border-yellow-400' : ''
+              }`}
+            >
               <h2 className="text-lg sm:text-2xl font-bold text-center mb-3 sm:mb-6 text-gray-900">
                 🎯 Choisis une comparaison à découvrir
               </h2>
@@ -264,11 +653,21 @@ export default function OrdonnerComparerCP20() {
                 {comparisons.map((comp) => (
                   <button
                     key={comp.id}
-                    onClick={() => setSelectedComparison(comp.id)}
-                    className={`p-2 sm:p-3 rounded-lg font-bold text-sm sm:text-base transition-colors ${
+                    id={`comparison-${comp.id}`}
+                    onClick={() => {
+                      stopVocal();
+                      setSelectedComparison(comp.id);
+                      // Démarrer l'explication vocale après un court délai
+                      setTimeout(() => {
+                        explainSelectedComparison(comp.id);
+                      }, 500);
+                    }}
+                    className={`p-2 sm:p-3 rounded-lg font-bold text-sm sm:text-base transition-all duration-500 ${
                       selectedComparison === comp.id
                         ? 'bg-green-500 text-white'
                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    } ${
+                      highlightedElement === `comparison-${comp.id}` ? 'bg-yellow-100 ring-4 ring-yellow-400 shadow-2xl scale-125' : ''
                     }`}
                   >
                     {comp.num1} {comp.symbol} {comp.num2}
@@ -278,7 +677,12 @@ export default function OrdonnerComparerCP20() {
             </div>
 
             {/* Affichage de la comparaison sélectionnée */}
-            <div className="bg-white rounded-xl p-4 sm:p-8 shadow-lg text-center">
+            <div 
+              id="comparison-display"
+              className={`bg-white rounded-xl p-4 sm:p-8 shadow-lg text-center transition-all duration-500 ${
+                highlightedElement === 'comparison-display' ? 'bg-yellow-100 ring-4 ring-yellow-400 shadow-2xl scale-105' : ''
+              }`}
+            >
               <h3 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-6 text-gray-900">
                 🔍 Analysons cette comparaison
               </h3>
@@ -294,15 +698,30 @@ export default function OrdonnerComparerCP20() {
                       
                       {/* Étape 1: Les nombres à comparer */}
                       {animationStep >= 1 && (
-                        <div className="text-center">
+                        <div 
+                          id="step-1-numbers"
+                          className={`text-center transition-all duration-500 ${
+                            highlightedElement === 'step-1-numbers' ? 'bg-yellow-100 ring-4 ring-yellow-400 shadow-2xl scale-105 rounded-lg p-4' : ''
+                          }`}
+                        >
                           <h4 className="text-lg font-bold mb-4 text-gray-800">
                             Étape 1 : Voici nos deux nombres
                           </h4>
                           <div className="text-5xl sm:text-6xl font-bold text-green-600 mb-4 flex items-center justify-center space-x-8">
-                            <div className="bg-blue-100 px-6 py-4 rounded-lg">
+                            <div 
+                              id="number-left"
+                              className={`bg-blue-100 px-6 py-4 rounded-lg transition-all duration-500 ${
+                                highlightedElement === 'number-left' ? 'bg-yellow-200 ring-4 ring-yellow-400 shadow-xl scale-110' : ''
+                              }`}
+                            >
                               {selected.num1}
                             </div>
-                            <div className="bg-red-100 px-6 py-4 rounded-lg">
+                            <div 
+                              id="number-right"
+                              className={`bg-red-100 px-6 py-4 rounded-lg transition-all duration-500 ${
+                                highlightedElement === 'number-right' ? 'bg-yellow-200 ring-4 ring-yellow-400 shadow-xl scale-110' : ''
+                              }`}
+                            >
                               {selected.num2}
                             </div>
                           </div>
@@ -312,14 +731,24 @@ export default function OrdonnerComparerCP20() {
                       
                       {/* Étape 2: Représentation concrète */}
                       {animationStep >= 2 && (
-                        <div className="bg-white rounded-lg p-6">
+                        <div 
+                          id="step-2-objects"
+                          className={`bg-white rounded-lg p-6 transition-all duration-500 ${
+                            highlightedElement === 'step-2-objects' ? 'bg-yellow-100 ring-4 ring-yellow-400 shadow-2xl scale-105' : ''
+                          }`}
+                        >
                           <h4 className="text-lg font-bold mb-4 text-gray-800">
                             Étape 2 : Comptons les objets
                           </h4>
                           <div className="flex justify-center items-center space-x-12">
                             <div className="text-center">
                               <div className="text-sm text-gray-600 mb-2">{selected.num1}</div>
-                              <div className="bg-blue-50 rounded-lg p-4 min-h-[100px] flex items-center justify-center">
+                              <div 
+                                id="objects-left"
+                                className={`bg-blue-50 rounded-lg p-4 min-h-[100px] flex items-center justify-center transition-all duration-500 ${
+                                  highlightedElement === 'objects-left' ? 'bg-yellow-200 ring-4 ring-yellow-400 shadow-xl scale-110' : ''
+                                }`}
+                              >
                                 <div className="text-2xl">
                                   {selected.num1 >= 10 && '🔟'}
                                   {'🔴'.repeat(selected.num1 % 10)}
@@ -329,7 +758,12 @@ export default function OrdonnerComparerCP20() {
                             
                             <div className="text-center">
                               <div className="text-sm text-gray-600 mb-2">{selected.num2}</div>
-                              <div className="bg-red-50 rounded-lg p-4 min-h-[100px] flex items-center justify-center">
+                              <div 
+                                id="objects-right"
+                                className={`bg-red-50 rounded-lg p-4 min-h-[100px] flex items-center justify-center transition-all duration-500 ${
+                                  highlightedElement === 'objects-right' ? 'bg-yellow-200 ring-4 ring-yellow-400 shadow-xl scale-110' : ''
+                                }`}
+                              >
                                 <div className="text-2xl">
                                   {selected.num2 >= 10 && '🔟'}
                                   {'🔵'.repeat(selected.num2 % 10)}
@@ -345,17 +779,32 @@ export default function OrdonnerComparerCP20() {
                       
                       {/* Étape 3: Conclusion */}
                       {animationStep >= 3 && (
-                        <div className="bg-yellow-50 rounded-lg p-6">
+                        <div 
+                          id="step-3-conclusion"
+                          className={`bg-yellow-50 rounded-lg p-6 transition-all duration-500 ${
+                            highlightedElement === 'step-3-conclusion' ? 'bg-yellow-200 ring-4 ring-yellow-400 shadow-2xl scale-105' : ''
+                          }`}
+                        >
                           <h4 className="text-lg font-bold mb-4 text-gray-800">
                             Étape 3 : La réponse
                           </h4>
-                          <div className="text-4xl sm:text-5xl font-bold mb-4 flex items-center justify-center space-x-4">
+                          <div 
+                            id="final-comparison"
+                            className={`text-4xl sm:text-5xl font-bold mb-4 flex items-center justify-center space-x-4 transition-all duration-500 ${
+                              highlightedElement === 'final-comparison' ? 'bg-white ring-4 ring-green-400 shadow-2xl scale-110 rounded-lg p-4' : ''
+                            }`}
+                          >
                             <span className="text-green-600">{selected.num1}</span>
-                            <span className={`${
-                              selected.symbol === '>' ? 'text-red-600' : 
-                              selected.symbol === '<' ? 'text-blue-600' : 
-                              'text-purple-600'
-                            }`}>
+                            <span 
+                              id="symbol-explanation"
+                              className={`${
+                                selected.symbol === '>' ? 'text-red-600' : 
+                                selected.symbol === '<' ? 'text-blue-600' : 
+                                'text-purple-600'
+                              } ${
+                                highlightedElement === 'symbol-explanation' ? 'bg-white ring-4 ring-red-400 shadow-2xl scale-125 rounded-lg p-2' : ''
+                              } transition-all duration-500`}
+                            >
                               {selected.symbol}
                             </span>
                             <span className="text-green-600">{selected.num2}</span>
@@ -365,14 +814,22 @@ export default function OrdonnerComparerCP20() {
                           </p>
                           <div className="flex justify-center space-x-3">
                             <button
-                              onClick={() => speakText(selected.explanation)}
+                              onClick={() => {
+                                stopVocal();
+                                speakText(selected.explanation);
+                              }}
                               className="bg-yellow-500 text-white px-4 py-2 rounded-lg font-bold hover:bg-yellow-600 transition-colors"
                             >
                               <Volume2 className="inline w-4 h-4 mr-2" />
                               Écouter
                             </button>
                             <button
-                              onClick={restartAnimation}
+                              onClick={() => {
+                                stopVocal();
+                                setTimeout(() => {
+                                  explainSelectedComparison(selected.id);
+                                }, 300);
+                              }}
                               className="bg-blue-500 text-white px-4 py-2 rounded-lg font-bold hover:bg-blue-600 transition-colors"
                             >
                               🔄 Revoir

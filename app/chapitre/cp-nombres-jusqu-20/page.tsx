@@ -105,7 +105,26 @@ export default function CPNombresJusqu20Page() {
   useEffect(() => {
     const savedProgress = localStorage.getItem('cp-nombres-20-progress');
     if (savedProgress) {
-      const progress = JSON.parse(savedProgress);
+      const rawProgress = JSON.parse(savedProgress);
+      
+      // Convertir le nouveau format objet en format tableau attendu
+      let progress: SectionProgress[] = [];
+      
+      if (Array.isArray(rawProgress)) {
+        // Ancien format (tableau)
+        progress = rawProgress;
+      } else {
+        // Nouveau format (objet)
+        progress = Object.entries(rawProgress).map(([sectionId, data]: [string, any]) => ({
+          sectionId,
+          completed: data.score > 0 || (data.completed && data.completed.length > 0),
+          score: data.score || data.completed?.length || 0,
+          maxScore: data.total || 10,
+          completedAt: new Date().toISOString(),
+          attempts: 1
+        }));
+      }
+      
       setSectionsProgress(progress);
       
       // Calculer les sections complétées et XP
@@ -133,7 +152,26 @@ export default function CPNombresJusqu20Page() {
     const handleStorageChange = () => {
       const savedProgress = localStorage.getItem('cp-nombres-20-progress');
       if (savedProgress) {
-        const progress = JSON.parse(savedProgress);
+        const rawProgress = JSON.parse(savedProgress);
+        
+        // Convertir le nouveau format objet en format tableau attendu
+        let progress: SectionProgress[] = [];
+        
+        if (Array.isArray(rawProgress)) {
+          // Ancien format (tableau)
+          progress = rawProgress;
+        } else {
+          // Nouveau format (objet)
+          progress = Object.entries(rawProgress).map(([sectionId, data]: [string, any]) => ({
+            sectionId,
+            completed: data.score > 0 || (data.completed && data.completed.length > 0),
+            score: data.score || data.completed?.length || 0,
+            maxScore: data.total || 10, // Default to 10 if total is not specified
+            completedAt: new Date().toISOString(),
+            attempts: 1 // Assuming 1 attempt for converted data
+          }));
+        }
+        
         setSectionsProgress(progress);
         
         const completed = progress.filter((p: SectionProgress) => p.completed).map((p: SectionProgress) => p.sectionId);

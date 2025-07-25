@@ -21,6 +21,32 @@ export const viewport: Viewport = {
   userScalable: false,
 }
 
+// Composant client pour nettoyer le cache et détecter les problèmes de navigation
+function NavigationProtection() {
+  if (typeof window !== 'undefined') {
+    // Nettoyer toutes les données qui pourraient causer des redirections automatiques
+    try {
+      // Supprimer les clés problématiques courantes
+      const keysToRemove = [
+        'user_session',
+        'auth_token', 
+        'redirect_url',
+        'last_page',
+        'current_user',
+        'student_progress'
+      ];
+      
+      keysToRemove.forEach(key => {
+        localStorage.removeItem(key);
+        sessionStorage.removeItem(key);
+      });
+    } catch (e) {
+      // Ignore les erreurs de storage
+    }
+  }
+  return null;
+}
+
 export default function RootLayout({
   children,
 }: {
@@ -28,7 +54,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="fr">
-      <body className={inter.className}>{children}</body>
+      <body className={inter.className}>
+        <NavigationProtection />
+        {children}
+      </body>
     </html>
   )
 } 

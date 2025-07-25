@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, Play, CheckCircle, XCircle, RotateCcw, Volume2 } from 'lucide-react';
 
@@ -15,6 +15,19 @@ export default function ComplementsDixCP() {
   const [showCompletionModal, setShowCompletionModal] = useState(false);
   const [finalScore, setFinalScore] = useState(0);
   const [shuffledChoices, setShuffledChoices] = useState<string[]>([]);
+  
+  // États pour le système vocal
+  const [highlightedElement, setHighlightedElement] = useState<string | null>(null);
+  const [isPlayingVocal, setIsPlayingVocal] = useState(false);
+  const [availableVoices, setAvailableVoices] = useState<SpeechSynthesisVoice[]>([]);
+  const [selectedVoice, setSelectedVoice] = useState<SpeechSynthesisVoice | null>(null);
+  const [useModernTTS] = useState(false);
+  const [isLoadingAudio, setIsLoadingAudio] = useState(false);
+  const [hasStarted, setHasStarted] = useState(false);
+  const hasStartedRef = useRef(false);
+  const welcomeTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const reminderTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const exerciseInstructionGivenRef = useRef(false);
 
   // Sauvegarder les progrès dans localStorage
   const saveProgress = (score: number, maxScore: number) => {
@@ -87,6 +100,308 @@ export default function ComplementsDixCP() {
     { question: '8 + ? = 10', missing: '2', choices: ['3', '1', '2'] }
   ];
 
+  // === FONCTIONS VOCALES ===
+
+  // Fonction helper pour créer une utterance optimisée
+  const createOptimizedUtterance = (text: string) => {
+    const enhancedText = text
+      .replace(/\.\.\./g, '... ')
+      .replace(/!/g, ' !')
+      .replace(/\?/g, ' ?')
+      .replace(/,(?!\s)/g, ', ')
+      .replace(/:/g, ' : ')
+      .replace(/;/g, ' ; ')
+      .replace(/\s+/g, ' ')
+      .trim();
+    
+    const utterance = new SpeechSynthesisUtterance(enhancedText);
+    utterance.lang = 'fr-FR';
+    utterance.rate = 0.85;
+    utterance.pitch = 1.1;
+    utterance.volume = 0.9;
+    
+    if (selectedVoice) {
+      utterance.voice = selectedVoice;
+    }
+    
+    return utterance;
+  };
+
+  const playAudioSequence = (text: string): Promise<void> => {
+    return new Promise((resolve) => {
+      // Arrêter les vocaux précédents
+      if ('speechSynthesis' in window) {
+        speechSynthesis.cancel();
+      }
+      
+      const utterance = createOptimizedUtterance(text);
+      utterance.onend = () => resolve();
+      speechSynthesis.speak(utterance);
+    });
+  };
+
+  const wait = (ms: number): Promise<void> => {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  };
+
+  const speakAudio = (text: string) => {
+    if ('speechSynthesis' in window) {
+      const utterance = createOptimizedUtterance(text);
+      speechSynthesis.speak(utterance);
+    }
+  };
+
+  const explainChapterGoal = async () => {
+    setHasStarted(true);
+    hasStartedRef.current = true;
+    
+    if (welcomeTimerRef.current) {
+      clearTimeout(welcomeTimerRef.current);
+      welcomeTimerRef.current = null;
+    }
+    if (reminderTimerRef.current) {
+      clearTimeout(reminderTimerRef.current);
+      reminderTimerRef.current = null;
+    }
+    
+    // Arrêter les vocaux précédents
+    if ('speechSynthesis' in window) {
+      speechSynthesis.cancel();
+    }
+    
+    setIsPlayingVocal(true);
+
+    try {
+      // 1. Introduction générale
+      await playAudioSequence("Bonjour ! Bienvenue dans le chapitre sur les compléments à 10 !");
+      await wait(200);
+
+      // 2. Explication de ce qu'on va apprendre avec surbrillance du titre
+      setHighlightedElement('explanation-title');
+      await playAudioSequence("Aujourd'hui, tu vas apprendre ce qu'est un complément à 10 !");
+      await wait(1800);
+      setHighlightedElement(null);
+      
+      await wait(200);
+
+      // 3. Explication de la définition avec surbrillance forte
+      setHighlightedElement('definition-text');
+      await playAudioSequence("Écoute bien ! Un complément à 10, c'est deux nombres qui ensemble font 10 !");
+      await wait(2800);
+      setHighlightedElement(null);
+      
+      await wait(200);
+
+      // 4. Explication de l'exemple mathématique
+      setHighlightedElement('complement-formula');
+      await playAudioSequence("Par exemple, regarde : 7 plusse 3 égale 10 !");
+      await wait(2000);
+      setHighlightedElement(null);
+      
+      await wait(200);
+
+      // 5. Explication avec l'exemple des doigts - TITRE
+      setHighlightedElement('fingers-title');
+      await playAudioSequence("Maintenant, regardons avec tes doigts pour mieux comprendre !");
+      await wait(2000);
+      setHighlightedElement(null);
+      
+      await wait(200);
+
+      // 6. Montrer les 7 doigts au début
+      setHighlightedElement('seven-fingers');
+      await playAudioSequence("Voici 7 doigts ! Une main complète et 2 doigts de l'autre !");
+      await wait(2400);
+      setHighlightedElement(null);
+      
+      await wait(200);
+
+      // 7. Expliquer le signe plus
+      setHighlightedElement('plus-sign');
+      await playAudioSequence("Le signe plusse veut dire qu'on ajoute !");
+      await wait(1500);
+      setHighlightedElement(null);
+      
+      await wait(200);
+
+      // 8. Montrer les 3 doigts à ajouter
+      setHighlightedElement('three-fingers');
+      await playAudioSequence("Et on ajoute 3 doigts de plus !");
+      await wait(1600);
+      setHighlightedElement(null);
+      
+      await wait(200);
+
+      // 9. Expliquer le signe égal
+      setHighlightedElement('equals-sign');
+      await playAudioSequence("Le signe égal veut dire : c'est la même chose que !");
+      await wait(1800);
+      setHighlightedElement(null);
+      
+      await wait(200);
+
+      // 10. Montrer les 10 doigts complets
+      setHighlightedElement('ten-fingers');
+      await playAudioSequence("Et ça fait 10 doigts en tout ! Tes deux mains complètes !");
+      await wait(2400);
+      setHighlightedElement(null);
+      
+      await wait(200);
+
+      // 11. Récapitulatif avec toute la décomposition
+      setHighlightedElement('fingers-example');
+      await playAudioSequence("Alors tu vois ! 7 doigts plusse 3 doigts, ça fait exactement 10 doigts !");
+      await wait(2800);
+      setHighlightedElement(null);
+      
+      await wait(400);
+
+      // 12. Expliquer qu'il y a d'autres façons
+      await playAudioSequence("Et tu sais quoi ? Il y a plein d'autres compléments à 10 !");
+      await wait(2000);
+
+      // 13. Mentionner 2 autres exemples spécifiques avec illuminations
+      await playAudioSequence("Voici d'autres exemples :");
+      await wait(1200);
+
+      // Illuminer 5+5
+      setHighlightedElement('pairs-grid');
+      await wait(200);
+      setHighlightedElement('pair-5-5');
+      await playAudioSequence("5 plusse 5 égale 10 !");
+      await wait(1800);
+      setHighlightedElement(null);
+      await wait(150);
+
+      // Illuminer 4+6
+      setHighlightedElement('pair-4-6');
+      await playAudioSequence("4 plusse 6 égale 10 aussi !");
+      await wait(1800);
+      setHighlightedElement(null);
+      await wait(200);
+
+      // 14. Guide vers la grille complète
+      setHighlightedElement('pairs-title');
+      await playAudioSequence("Descends un peu plus bas ! Tu verras toutes les paires qui font 10 !");
+      await wait(2400);
+      setHighlightedElement(null);
+      
+      await wait(200);
+
+      // 15. Expliquer la section détaillée
+      setHighlightedElement('detailed-explanation');
+      await playAudioSequence("Et tout est expliqué en détail à chaque fois ! Avec des points pour bien visualiser !");
+      await wait(2800);
+      setHighlightedElement(null);
+
+      await wait(200);
+
+      // 16. Guide vers le sélecteur de paires
+      setHighlightedElement('pair-selector');
+      await playAudioSequence("Tu peux choisir n'importe quelle paire pour voir ses explications !");
+      await wait(2000);
+      setHighlightedElement(null);
+      
+      await wait(200);
+
+      // 17. Guide vers l'affichage visuel
+      setHighlightedElement('visual-display');
+      await playAudioSequence("Et ici, tu verras les nombres avec des points pour bien comprendre !");
+      await wait(1800);
+      setHighlightedElement(null);
+
+      await wait(200);
+      await playAudioSequence("Alors... Es-tu prêt à maîtriser tous les compléments à 10 ?");
+
+    } catch (error) {
+      console.error('Erreur dans explainChapterGoal:', error);
+    } finally {
+      setIsPlayingVocal(false);
+      setHighlightedElement(null);
+    }
+  };
+
+  // Consigne détaillée avec l'exercice 1 réel et animations synchronisées
+  const explainExercisesOnce = async () => {
+    // Arrêter les vocaux précédents
+    if ('speechSynthesis' in window) {
+      speechSynthesis.cancel();
+    }
+
+    setIsPlayingVocal(true);
+
+    try {
+      // 1. Introduction générale
+      await playAudioSequence("Super ! Tu vas maintenant faire des exercices sur les compléments à 10 !");
+      await wait(600);
+
+      // 2. Surbrillance du container d'exercice
+      setHighlightedElement('exercise-container');
+      await playAudioSequence("Regarde ton premier exercice !");
+      await wait(1600);
+      setHighlightedElement(null);
+      
+      await wait(200);
+
+      // 3. Expliquer le titre avec surbrillance
+      setHighlightedElement('exercise-title');
+      await playAudioSequence("Tu dois trouver le nombre qui manque ! C'est-à-dire le complément !");
+      await wait(2400);
+      setHighlightedElement(null);
+      
+      await wait(200);
+
+      // 4. Montrer la question avec surbrillance forte
+      setHighlightedElement('exercise-question-text');
+      await playAudioSequence("Lis bien la question : 7 plusse quoi égale 10 ?");
+      await wait(2000);
+      setHighlightedElement(null);
+      
+      await wait(200);
+
+      // 5. Expliquer l'instruction
+      setHighlightedElement('exercise-instruction');
+      await playAudioSequence("Quel nombre complète pour faire 10 ? C'est exactement ce qu'on cherche !");
+      await wait(2400);
+      setHighlightedElement(null);
+      
+      await wait(200);
+
+      // 6. Logique de résolution avec approche additive
+      await playAudioSequence("Réfléchis ! Si on a déjà 7, combien faut-il ajouter pour arriver à 10 ?");
+      await wait(2800);
+      
+      await wait(200);
+
+      // 7. Donner la réponse avec raisonnement additif
+      await playAudioSequence("À partir de 7, il faut ajouter 3 pour arriver à 10 ! Donc la réponse est 3 !");
+      await wait(2400);
+      
+      await wait(200);
+
+      // 8. Montrer les choix
+      setHighlightedElement('exercise-choices');
+      await playAudioSequence("Maintenant, regarde les choix et clique sur 3 !");
+      await wait(1800);
+      setHighlightedElement(null);
+
+      await wait(200);
+
+      // 9. Instructions générales pour la suite
+      await playAudioSequence("Pour tous les exercices, tu feras pareil : tu regardes le premier nombre, et tu trouves ce qu'il faut ajouter pour faire 10 !");
+      await wait(3200);
+
+      await playAudioSequence("Quand tu te trompes, regarde bien la correction, puis clique sur Suivant pour continuer !");
+      await wait(2400);
+
+    } catch (error) {
+      console.error('Erreur dans explainExercisesOnce:', error);
+    } finally {
+      setIsPlayingVocal(false);
+      setHighlightedElement(null);
+    }
+  };
+
   // Fonction pour mélanger un tableau
   const shuffleArray = (array: string[]) => {
     const shuffled = [...array];
@@ -116,8 +431,126 @@ export default function ComplementsDixCP() {
     initializeShuffledChoices();
   }, []);
 
+  // Système de guidance vocale automatique
+  useEffect(() => {
+    const loadVoices = () => {
+      const voices = speechSynthesis.getVoices();
+      setAvailableVoices(voices);
+      
+      const frenchVoices = voices.filter(voice => voice.lang.startsWith('fr'));
+      const preferredVoices = [
+        'Amélie', 'Virginie', 'Aurélie', 'Alice',
+        'fr-FR-Standard-A', 'fr-FR-Wavenet-A', 'fr-FR-Wavenet-C',
+        'Hortense', 'Julie', 'Marie', 'Pauline',
+        'Thomas', 'Daniel', 'Henri', 'Pierre'
+      ];
+      
+      let bestVoice = null;
+      for (const preferred of preferredVoices) {
+        const foundVoice = frenchVoices.find(voice => 
+          voice.name.toLowerCase().includes(preferred.toLowerCase())
+        );
+        if (foundVoice) {
+          bestVoice = foundVoice;
+          break;
+        }
+      }
+      
+      if (!bestVoice && frenchVoices.length > 0) {
+        const decentVoices = frenchVoices.filter(voice => 
+          !voice.name.toLowerCase().includes('robotic') && 
+          !voice.name.toLowerCase().includes('computer')
+        );
+        bestVoice = decentVoices.length > 0 ? decentVoices[0] : frenchVoices[0];
+      }
+      
+      setSelectedVoice(bestVoice || null);
+    };
+
+    loadVoices();
+    if (speechSynthesis.onvoiceschanged !== undefined) {
+      speechSynthesis.onvoiceschanged = loadVoices;
+    }
+
+    // Guidance vocale automatique pour les non-lecteurs (COURS seulement)
+    if (!showExercises) {
+      welcomeTimerRef.current = setTimeout(() => {
+        if (!hasStartedRef.current) {
+          speakAudio("Clique sur le bouton violet qui bouge pour commencer.");
+        }
+      }, 800);
+
+
+    }
+
+          return () => {
+        if (welcomeTimerRef.current) clearTimeout(welcomeTimerRef.current);
+      };
+  }, [showExercises]);
+
+  // Effect pour gérer les changements d'onglet interne (cours ↔ exercices)
+  useEffect(() => {
+    // Arrêter tous les vocaux lors du changement d'onglet
+    if ('speechSynthesis' in window) {
+      speechSynthesis.cancel();
+    }
+    setIsPlayingVocal(false);
+    
+    // Jouer automatiquement la consigne des exercices (une seule fois)
+    if (showExercises && !exerciseInstructionGivenRef.current) {
+      // Délai court pour laisser l'interface se charger
+      setTimeout(() => {
+        explainExercisesOnce();
+        exerciseInstructionGivenRef.current = true;
+      }, 600);
+    }
+  }, [showExercises]);
+
+  // Effect pour arrêter la voix quand on quitte la page
+  useEffect(() => {
+    const stopSpeechOnExit = () => {
+      if ('speechSynthesis' in window) {
+        speechSynthesis.cancel();
+      }
+      setIsPlayingVocal(false);
+      setHighlightedElement(null);
+    };
+
+    // Arrêter la voix quand on ferme/quitte la page
+    const handleBeforeUnload = () => {
+      stopSpeechOnExit();
+    };
+
+    // Arrêter la voix quand l'onglet devient inactif
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        stopSpeechOnExit();
+      }
+    };
+
+    // Arrêter la voix lors de la navigation
+    const handlePageHide = () => {
+      stopSpeechOnExit();
+    };
+
+    // Ajouter les écouteurs d'événements
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('pagehide', handlePageHide);
+
+    // Nettoyage au démontage du composant
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('pagehide', handlePageHide);
+      stopSpeechOnExit(); // Arrêter la voix aussi au démontage
+    };
+  }, []);
+
   const speakText = (text: string) => {
     if ('speechSynthesis' in window) {
+      speechSynthesis.cancel();
+      
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = 'fr-FR';
       utterance.rate = 0.7;
@@ -150,7 +583,7 @@ export default function ComplementsDixCP() {
     if (parts.length === 2) {
       const num1 = numberToWords(parts[0].trim());
       const num2 = numberToWords(parts[1].trim());
-      const text = `${num1} plus ${num2} égale dix`;
+      const text = `${num1} plusse ${num2} égale dix`;
       speakText(text);
     }
   };
@@ -169,19 +602,18 @@ export default function ComplementsDixCP() {
       });
     }
 
-    // Si bonne réponse → passage automatique après 1.5s
+    // Passage automatique au suivant après une bonne réponse
     if (correct) {
       setTimeout(() => {
-        if (currentExercise + 1 < exercises.length) {
-          setCurrentExercise(currentExercise + 1);
-          setUserAnswer('');
-          setIsCorrect(null);
-        } else {
+        if (currentExercise + 1 >= exercises.length) {
           // Dernier exercice terminé
           const finalScoreValue = score + (!answeredCorrectly.has(currentExercise) ? 1 : 0);
           setFinalScore(finalScoreValue);
           setShowCompletionModal(true);
           saveProgress(finalScoreValue, exercises.length);
+        } else {
+          // Passer à l'exercice suivant
+          nextExercise();
         }
       }, 1500);
     }
@@ -215,7 +647,16 @@ export default function ComplementsDixCP() {
       <div className="max-w-6xl mx-auto px-3 sm:px-4 lg:px-6 py-4 sm:py-6 lg:py-8">
         {/* Header */}
         <div className="mb-6 sm:mb-8">
-          <Link href="/chapitre/cp-nombres-jusqu-20" className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors mb-3 sm:mb-4">
+          <Link 
+            href="/chapitre/cp-nombres-jusqu-20" 
+            className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors mb-3 sm:mb-4"
+            onClick={() => {
+              if ('speechSynthesis' in window) {
+                speechSynthesis.cancel();
+              }
+              setIsPlayingVocal(false);
+            }}
+          >
             <ArrowLeft className="w-4 h-4" />
             <span className="text-sm sm:text-base">Retour au chapitre</span>
           </Link>
@@ -260,39 +701,124 @@ export default function ComplementsDixCP() {
         {!showExercises ? (
           /* COURS */
           <div className="space-y-6 sm:space-y-8">
+            {/* Bouton d'explication vocal principal */}
+            <div className="text-center mb-6">
+              <button
+                onClick={explainChapterGoal}
+                disabled={isPlayingVocal}
+                className={`bg-gradient-to-r from-purple-500 to-pink-500 text-white px-8 py-4 rounded-xl font-bold text-xl shadow-lg hover:shadow-xl transition-all transform hover:scale-105 ${
+                  !hasStarted ? 'animate-bounce' : ''
+                } ${
+                  isPlayingVocal ? 'animate-pulse cursor-not-allowed opacity-75' : 'hover:from-purple-600 hover:to-pink-600'
+                }`}
+                style={{
+                  animationDuration: !hasStarted ? '2s' : 'none',
+                  animationIterationCount: !hasStarted ? 'infinite' : 'none'
+                }}
+              >
+                <Volume2 className="inline w-6 h-6 mr-3" />
+                ▶️ COMMENCER !
+              </button>
+            </div>
+
             {/* Explication des compléments à 10 */}
-            <div className="bg-white rounded-xl p-4 sm:p-6 lg:p-8 shadow-lg">
-              <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-center mb-4 sm:mb-6 text-gray-900">
+            <div 
+              id="explanation-section"
+              className={`bg-white rounded-xl p-4 sm:p-6 lg:p-8 shadow-lg transition-all duration-500 ${
+                highlightedElement === 'explanation-section' ? 'bg-yellow-100 ring-4 ring-yellow-400 shadow-2xl scale-105 border-yellow-400' : ''
+              }`}
+            >
+              <h2 
+                id="explanation-title"
+                className={`text-lg sm:text-xl lg:text-2xl font-bold text-center mb-4 sm:mb-6 text-gray-900 transition-all duration-500 ${
+                  highlightedElement === 'explanation-title' ? 'bg-yellow-200 ring-4 ring-yellow-500 rounded-lg p-4 scale-110' : ''
+                }`}
+              >
                 🧠 Qu'est-ce qu'un complément à 10 ?
               </h2>
               
-              <div className="bg-pink-50 rounded-lg p-4 sm:p-6 mb-4 sm:mb-6">
-                <p className="text-base sm:text-lg lg:text-xl text-center text-gray-800 mb-3 sm:mb-4">
+              <div 
+                id="definition-box"
+                className={`bg-pink-50 rounded-lg p-4 sm:p-6 mb-4 sm:mb-6 transition-all duration-500 ${
+                  highlightedElement === 'definition-box' ? 'bg-yellow-100 ring-4 ring-yellow-500 shadow-2xl scale-105' : ''
+                }`}
+              >
+                <p 
+                  id="definition-text"
+                  className={`text-base sm:text-lg lg:text-xl text-center text-gray-800 mb-3 sm:mb-4 transition-all duration-500 ${
+                    highlightedElement === 'definition-text' ? 'bg-yellow-200 ring-4 ring-yellow-500 rounded-lg p-2 scale-110' : ''
+                  }`}
+                >
                   Un complément à 10, c'est <strong>deux nombres qui ensemble font 10</strong> !
                 </p>
                 <div className="text-center">
-                  <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-pink-600 mb-2">7 + 3 = 10</div>
-                  <p className="text-sm sm:text-base lg:text-lg text-gray-700">7 et 3 sont des compléments à 10 !</p>
+                  <div 
+                    id="complement-formula"
+                    className={`text-2xl sm:text-3xl lg:text-4xl font-bold text-pink-600 mb-2 transition-all duration-500 ${
+                      highlightedElement === 'complement-formula' ? 'bg-yellow-200 ring-4 ring-yellow-500 rounded-lg p-4 scale-125' : ''
+                    }`}
+                  >7 + 3 = 10</div>
+                  <p 
+                    id="complement-explanation"
+                    className={`text-sm sm:text-base lg:text-lg text-gray-700 transition-all duration-500 ${
+                      highlightedElement === 'complement-explanation' ? 'bg-yellow-200 ring-4 ring-yellow-500 rounded-lg p-2 scale-110' : ''
+                    }`}
+                  >7 et 3 sont des compléments à 10 !</p>
                 </div>
               </div>
 
               {/* Visualisation avec les mains */}
-              <div className="bg-yellow-50 rounded-lg p-4 sm:p-6">
-                <h3 className="text-base sm:text-lg lg:text-xl font-bold mb-3 sm:mb-4 text-yellow-800 text-center">
+              <div 
+                id="fingers-example"
+                className={`bg-yellow-50 rounded-lg p-4 sm:p-6 transition-all duration-500 ${
+                  highlightedElement === 'fingers-example' ? 'bg-yellow-100 ring-4 ring-yellow-500 shadow-2xl scale-105' : ''
+                }`}
+              >
+                <h3 
+                  id="fingers-title"
+                  className={`text-base sm:text-lg lg:text-xl font-bold mb-3 sm:mb-4 text-yellow-800 text-center transition-all duration-500 ${
+                    highlightedElement === 'fingers-title' ? 'bg-yellow-200 ring-4 ring-yellow-500 rounded-lg p-2 scale-110' : ''
+                  }`}
+                >
                   ✋ Avec tes doigts : 7 + 3 = 10
                 </h3>
                 <div className="flex flex-col sm:flex-row justify-center items-center space-y-3 sm:space-y-0 sm:space-x-4 lg:space-x-8">
-                  <div className="text-center">
+                  <div 
+                    id="seven-fingers"
+                    className={`text-center transition-all duration-500 ${
+                      highlightedElement === 'seven-fingers' ? 'bg-yellow-200 ring-4 ring-yellow-500 rounded-lg p-4 scale-125' : ''
+                    }`}
+                  >
                     <div className="text-3xl sm:text-4xl lg:text-6xl mb-2">✋✌️</div>
                     <div className="font-bold text-sm sm:text-base lg:text-xl text-gray-800">7 doigts</div>
                   </div>
-                  <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-pink-600">+</div>
-                  <div className="text-center">
+                  <div 
+                    id="plus-sign"
+                    className={`text-2xl sm:text-3xl lg:text-4xl font-bold text-pink-600 transition-all duration-500 ${
+                      highlightedElement === 'plus-sign' ? 'bg-yellow-200 ring-4 ring-yellow-500 rounded-lg p-4 scale-150' : ''
+                    }`}
+                  >+</div>
+                  <div 
+                    id="three-fingers"
+                    className={`text-center transition-all duration-500 ${
+                      highlightedElement === 'three-fingers' ? 'bg-yellow-200 ring-4 ring-yellow-500 rounded-lg p-4 scale-125' : ''
+                    }`}
+                  >
                     <div className="text-3xl sm:text-4xl lg:text-6xl mb-2">🤟</div>
                     <div className="font-bold text-sm sm:text-base lg:text-xl text-gray-800">3 doigts</div>
                   </div>
-                  <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-pink-600">=</div>
-                  <div className="text-center">
+                  <div 
+                    id="equals-sign"
+                    className={`text-2xl sm:text-3xl lg:text-4xl font-bold text-pink-600 transition-all duration-500 ${
+                      highlightedElement === 'equals-sign' ? 'bg-yellow-200 ring-4 ring-yellow-500 rounded-lg p-4 scale-150' : ''
+                    }`}
+                  >=</div>
+                  <div 
+                    id="ten-fingers"
+                    className={`text-center transition-all duration-500 ${
+                      highlightedElement === 'ten-fingers' ? 'bg-yellow-200 ring-4 ring-yellow-500 rounded-lg p-4 scale-125' : ''
+                    }`}
+                  >
                     <div className="text-3xl sm:text-4xl lg:text-6xl mb-2">🙌</div>
                     <div className="font-bold text-sm sm:text-base lg:text-xl text-gray-800">10 doigts !</div>
                   </div>
@@ -301,8 +827,18 @@ export default function ComplementsDixCP() {
             </div>
 
             {/* Tableau de tous les compléments à 10 */}
-            <div className="bg-white rounded-xl p-4 sm:p-6 lg:p-8 shadow-lg">
-              <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-center mb-4 sm:mb-6 text-gray-900">
+            <div 
+              id="pairs-grid"
+              className={`bg-white rounded-xl p-4 sm:p-6 lg:p-8 shadow-lg transition-all duration-500 ${
+                highlightedElement === 'pairs-grid' ? 'bg-yellow-100 ring-4 ring-yellow-400 shadow-2xl scale-105 border-yellow-400' : ''
+              }`}
+            >
+              <h2 
+                id="pairs-title"
+                className={`text-lg sm:text-xl lg:text-2xl font-bold text-center mb-4 sm:mb-6 text-gray-900 transition-all duration-500 ${
+                  highlightedElement === 'pairs-title' ? 'bg-yellow-200 ring-4 ring-yellow-500 rounded-lg p-4 scale-110' : ''
+                }`}
+              >
                 📊 Toutes les paires qui font 10
               </h2>
               
@@ -310,11 +846,16 @@ export default function ComplementsDixCP() {
                 {complementPairs.map((comp) => (
                   <button
                     key={comp.pair}
+                    id={`pair-${comp.pair.replace('+', '-')}`}
                     onClick={() => setSelectedPair(comp.pair)}
-                    className={`p-3 sm:p-4 rounded-lg font-bold text-base sm:text-lg lg:text-xl transition-all ${
+                    className={`p-3 sm:p-4 rounded-lg font-bold text-base sm:text-lg lg:text-xl transition-all duration-500 ${
                       selectedPair === comp.pair
                         ? 'bg-pink-500 text-white shadow-lg scale-105'
                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    } ${
+                      highlightedElement === `pair-${comp.pair.replace('+', '-')}` 
+                        ? 'bg-yellow-200 ring-4 ring-yellow-500 shadow-2xl scale-125 text-black' 
+                        : ''
                     }`}
                   >
                     {comp.pair} = 10
@@ -323,7 +864,12 @@ export default function ComplementsDixCP() {
               </div>
 
               {/* Affichage détaillé de la paire sélectionnée */}
-              <div className="bg-pink-50 rounded-lg p-4 sm:p-6 lg:p-8">
+              <div 
+                id="detailed-explanation"
+                className={`bg-pink-50 rounded-lg p-4 sm:p-6 lg:p-8 transition-all duration-500 ${
+                  highlightedElement === 'detailed-explanation' ? 'bg-yellow-100 ring-4 ring-yellow-500 shadow-2xl scale-105' : ''
+                }`}
+              >
                 <h3 className="text-base sm:text-lg lg:text-xl font-bold mb-4 sm:mb-6 text-center text-pink-800">
                   🔍 Regardons {selectedPair} = 10
                 </h3>
@@ -414,6 +960,15 @@ export default function ComplementsDixCP() {
         ) : (
           /* EXERCICES */
           <div className="space-y-6 sm:space-y-8">
+            {/* Bouton de démonstration "Suivant" avec effet magique - TEMPORAIRE pour l'explication */}
+            {highlightedElement === 'demo-next-button' && (
+              <div className="flex justify-center">
+                <div className="bg-orange-500 text-white px-8 py-4 rounded-lg font-bold text-lg shadow-2xl ring-4 ring-yellow-400 animate-bounce scale-110 transform transition-all duration-1000 ease-out opacity-100">
+                  ✨ Suivant → ✨
+                </div>
+              </div>
+            )}
+
             {/* Header exercices */}
             <div className="bg-white rounded-xl p-4 sm:p-6 shadow-lg">
               <div className="flex flex-col sm:flex-row justify-between items-center mb-3 sm:mb-4 space-y-2 sm:space-y-0">
@@ -446,23 +1001,53 @@ export default function ComplementsDixCP() {
             </div>
 
             {/* Question */}
-            <div className="bg-white rounded-xl p-3 sm:p-6 md:p-8 shadow-lg text-center">
-              <h3 className="text-base sm:text-xl md:text-2xl font-bold mb-3 sm:mb-6 md:mb-8 text-gray-900">
+            <div 
+              id="exercise-container"
+              className={`bg-white rounded-xl p-3 sm:p-6 md:p-8 shadow-lg text-center transition-all duration-500 ${
+                highlightedElement === 'exercise-container' ? 'bg-yellow-100 ring-4 ring-yellow-400 shadow-2xl scale-105 border-yellow-400' : ''
+              }`}
+            >
+              <h3 
+                id="exercise-title"
+                className={`text-base sm:text-xl md:text-2xl font-bold mb-3 sm:mb-6 md:mb-8 text-gray-900 transition-all duration-500 ${
+                  highlightedElement === 'exercise-title' ? 'bg-yellow-200 ring-4 ring-yellow-500 rounded-lg p-4 scale-110' : ''
+                }`}
+              >
                 🎯 Trouve le nombre qui manque :
               </h3>
               
               {/* Question avec grand affichage */}
-              <div className="bg-pink-50 rounded-lg p-3 sm:p-4 md:p-8 mb-3 sm:mb-6 md:mb-8">
-                <div className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-pink-600 mb-3 sm:mb-4 md:mb-6">
+              <div 
+                id="exercise-question-area"
+                className={`bg-pink-50 rounded-lg p-3 sm:p-4 md:p-8 mb-3 sm:mb-6 md:mb-8 transition-all duration-500 ${
+                  highlightedElement === 'exercise-question-area' ? 'bg-yellow-100 ring-4 ring-yellow-500 shadow-2xl scale-105' : ''
+                }`}
+              >
+                <div 
+                  id="exercise-question-text"
+                  className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-pink-600 mb-3 sm:mb-4 md:mb-6 transition-all duration-500 ${
+                    highlightedElement === 'exercise-question-text' ? 'bg-yellow-200 ring-4 ring-yellow-500 rounded-lg p-4 scale-125' : ''
+                  }`}
+                >
                   {exercises[currentExercise].question}
                 </div>
-                <p className="text-xs sm:text-sm md:text-base text-gray-700 font-semibold">
+                <p 
+                  id="exercise-instruction"
+                  className={`text-xs sm:text-sm md:text-base text-gray-700 font-semibold transition-all duration-500 ${
+                    highlightedElement === 'exercise-instruction' ? 'bg-yellow-200 ring-4 ring-yellow-500 rounded-lg p-2 scale-110' : ''
+                  }`}
+                >
                   Quel nombre complète pour faire 10 ?
                 </p>
               </div>
               
               {/* Choix multiples avec gros boutons */}
-              <div className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-3 gap-2 sm:gap-3 md:gap-4 max-w-xs sm:max-w-sm md:max-w-md mx-auto mb-4 sm:mb-6 md:mb-8">
+              <div 
+                id="exercise-choices"
+                className={`grid grid-cols-3 sm:grid-cols-3 md:grid-cols-3 gap-2 sm:gap-3 md:gap-4 max-w-xs sm:max-w-sm md:max-w-md mx-auto mb-4 sm:mb-6 md:mb-8 transition-all duration-500 ${
+                  highlightedElement === 'exercise-choices' ? 'ring-4 ring-yellow-400 rounded-lg bg-yellow-50 p-2' : ''
+                }`}
+              >
                 {shuffledChoices.map((choice) => (
                   <button
                     key={choice}
@@ -586,7 +1171,7 @@ export default function ComplementsDixCP() {
                             <div className="bg-gradient-to-r from-purple-100 to-pink-100 rounded-lg p-3 text-center">
                               <div className="text-base sm:text-lg">🌟</div>
                               <p className="text-xs sm:text-sm font-semibold text-purple-800">
-                                Maintenant tu sais ! {numberToWords(num1)} plus {numberToWords(num2)} égale dix !
+                                Maintenant tu sais ! {numberToWords(num1)} plusse {numberToWords(num2)} égale dix !
                               </p>
                             </div>
                           </div>
@@ -597,12 +1182,17 @@ export default function ComplementsDixCP() {
                 </div>
               )}
               
-              {/* Navigation */}
-              {isCorrect === false && (
-                <div className="flex justify-center">
+              {/* Navigation - Bouton Suivant (seulement si mauvaise réponse) */}
+              {isCorrect === false && currentExercise + 1 < exercises.length && (
+                <div className="flex justify-center mt-6">
                   <button
+                    id="next-button"
                     onClick={nextExercise}
-                    className="bg-pink-500 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-lg font-bold text-base sm:text-lg hover:bg-pink-600 transition-colors"
+                    className={`bg-pink-500 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-lg font-bold text-base sm:text-lg hover:bg-pink-600 transition-all ${
+                      highlightedElement === 'next-button' 
+                        ? 'ring-4 ring-yellow-400 shadow-2xl scale-110 bg-pink-600 animate-pulse' 
+                        : ''
+                    }`}
                   >
                     Suivant →
                   </button>

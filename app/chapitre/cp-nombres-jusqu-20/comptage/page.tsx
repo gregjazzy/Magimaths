@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, Play, CheckCircle, XCircle, RotateCcw, Volume2, Pause } from 'lucide-react';
 
@@ -17,6 +17,19 @@ export default function ComptageCP() {
   const [isCountingAnimation, setIsCountingAnimation] = useState(false);
   const [currentCountingNumber, setCurrentCountingNumber] = useState(0);
   const [shuffledChoices, setShuffledChoices] = useState<string[]>([]);
+  
+  // États pour le système vocal
+  const [highlightedElement, setHighlightedElement] = useState<string | null>(null);
+  const [isPlayingVocal, setIsPlayingVocal] = useState(false);
+  const [availableVoices, setAvailableVoices] = useState<SpeechSynthesisVoice[]>([]);
+  const [selectedVoice, setSelectedVoice] = useState<SpeechSynthesisVoice | null>(null);
+  const [useModernTTS] = useState(false); // Utiliser les voix natives du système
+  const [isLoadingAudio, setIsLoadingAudio] = useState(false);
+  const [hasStarted, setHasStarted] = useState(false);
+  const hasStartedRef = useRef(false);
+  const welcomeTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const reminderTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const exerciseInstructionGivenRef = useRef(false);
 
   // Sauvegarder les progrès
   const saveProgress = (score: number, maxScore: number) => {
@@ -77,6 +90,149 @@ export default function ComptageCP() {
     { question: 'Compte les cadeaux', visual: '🎁🎁🎁🎁🎁🎁🎁🎁🎁🎁🎁🎁🎁🎁🎁🎁🎁🎁🎁🎁', correctAnswer: '20', choices: ['20', '19', '21'] }
   ];
 
+  // === FONCTIONS VOCALES ===
+
+  // Fonction helper pour créer une utterance optimisée
+  const createOptimizedUtterance = (text: string) => {
+    // Améliorer le texte avec des pauses naturelles pour réduire la monotonie
+    const enhancedText = text
+      .replace(/\.\.\./g, '... ')    // Pauses après points de suspension
+      .replace(/!/g, ' !')           // Espace avant exclamation pour l'intonation
+      .replace(/\?/g, ' ?')          // Espace avant interrogation pour l'intonation
+      .replace(/,(?!\s)/g, ', ')     // Pauses après virgules si pas déjà d'espace
+      .replace(/:/g, ' : ')          // Pauses après deux-points
+      .replace(/;/g, ' ; ')          // Pauses après point-virgules
+      .replace(/\s+/g, ' ')          // Nettoyer les espaces multiples
+      .trim();
+    
+    const utterance = new SpeechSynthesisUtterance(enhancedText);
+    utterance.lang = 'fr-FR';
+    utterance.rate = 0.85;  // Légèrement plus lent pour la compréhension
+    utterance.pitch = 1.1;  // Pitch légèrement plus aigu (adapté aux enfants)
+    utterance.volume = 0.9; // Volume confortable
+    
+    // Utiliser la voix sélectionnée si disponible
+    if (selectedVoice) {
+      utterance.voice = selectedVoice;
+    }
+    
+    return utterance;
+  };
+
+  // Fonction pour jouer un texte avec timing
+  const playAudioSequence = (text: string): Promise<void> => {
+    return new Promise((resolve) => {
+      // Arrêter les vocaux précédents
+      if ('speechSynthesis' in window) {
+        speechSynthesis.cancel();
+      }
+      
+      const utterance = createOptimizedUtterance(text);
+      utterance.onend = () => resolve();
+      speechSynthesis.speak(utterance);
+    });
+  };
+
+  // Fonction d'attente
+  const wait = (ms: number): Promise<void> => {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  };
+
+  const speakText = (text: string) => {
+    // Arrêter les vocaux précédents
+    if ('speechSynthesis' in window) {
+      speechSynthesis.cancel();
+      
+      const utterance = createOptimizedUtterance(text);
+      speechSynthesis.speak(utterance);
+    }
+  };
+
+  // Consigne générale pour la série d'exercices (une seule fois)
+  const explainExercisesOnce = async () => {
+    // Arrêter les vocaux précédents
+    if ('speechSynthesis' in window) {
+      speechSynthesis.cancel();
+    }
+
+    setIsPlayingVocal(true);
+
+    try {
+      await playAudioSequence("Super ! Tu vas faire une série d'exercices de comptage !");
+      await wait(500);
+
+      await playAudioSequence("Pour cette série d'exercices, regarde bien tous les objets, compte-les un par un sans en oublier, et trouve combien il y en a !");
+      await wait(500);
+
+      await playAudioSequence("Ensuite, clique sur le bon nombre !");
+      await wait(500);
+
+      await playAudioSequence("Quand ta réponse est mauvaise, regarde bien la correction... puis appuie sur le bouton Suivant !");
+      
+      // Faire apparaître temporairement un bouton orange de démonstration
+      setHighlightedElement('demo-next-button');
+      await wait(2000);
+      setHighlightedElement(null);
+
+    } catch (error) {
+      console.error('Erreur dans explainExercisesOnce:', error);
+    } finally {
+      setIsPlayingVocal(false);
+    }
+  };
+
+  // Instructions vocales pour le cours avec synchronisation
+  const explainChapterGoal = async () => {
+    setHasStarted(true); // Marquer que l'enfant a commencé
+    hasStartedRef.current = true; // Pour les timers
+    
+        // Annuler immédiatement les timers de rappel
+    if (welcomeTimerRef.current) {
+      clearTimeout(welcomeTimerRef.current);
+      welcomeTimerRef.current = null;
+    }
+    if (reminderTimerRef.current) {
+      clearTimeout(reminderTimerRef.current);
+      reminderTimerRef.current = null;
+    }
+
+    // Arrêter les vocaux précédents
+    if ('speechSynthesis' in window) {
+      speechSynthesis.cancel();
+    }
+
+    setIsPlayingVocal(true);
+
+    try {
+      // 1. Introduction
+      await playAudioSequence("Bienvenue dans le chapitre comptage ! Tu vas apprendre à compter jusqu'à 20.");
+      await wait(500);
+
+      // 2. Guide vers le sélecteur de nombre
+      setHighlightedElement('count-selector');
+      await playAudioSequence("Regarde ! Tu peux choisir un nombre ici pour voir comment compter jusqu'à ce nombre !");
+      await wait(2000);
+      setHighlightedElement(null);
+      
+      await wait(500);
+
+      // 3. Guide vers l'animation de comptage
+      setHighlightedElement('counting-button');
+      await playAudioSequence("Ensuite, clique sur ce bouton pour voir l'animation de comptage ! Nous compterons ensemble !");
+      await wait(2500);
+      setHighlightedElement(null);
+
+      await wait(500);
+      await playAudioSequence("Alors... Es-tu prêt à apprendre à compter ?");
+
+    } catch (error) {
+      console.error('Erreur dans explainChapterGoal:', error);
+    } finally {
+      setIsPlayingVocal(false);
+      setHighlightedElement(null);
+    }
+  };
+
   // Fonction pour mélanger un tableau
   const shuffleArray = (array: string[]) => {
     const shuffled = [...array];
@@ -100,6 +256,119 @@ export default function ComptageCP() {
       initializeShuffledChoices();
     }
   }, [currentExercise]);
+
+  // Système de guidance vocale automatique
+  useEffect(() => {
+    // Chargement et sélection automatique de la meilleure voix française
+    const loadVoices = () => {
+      const voices = speechSynthesis.getVoices();
+      setAvailableVoices(voices);
+      
+      // Filtrer les voix françaises
+      const frenchVoices = voices.filter(voice => voice.lang.startsWith('fr'));
+      
+      // Ordre de préférence pour les voix françaises
+      const preferredVoices = [
+        // Voix iOS/macOS de qualité
+        'Amélie', 'Virginie', 'Aurélie', 'Alice',
+        // Voix Android de qualité
+        'fr-FR-Standard-A', 'fr-FR-Wavenet-A', 'fr-FR-Wavenet-C',
+        // Voix Windows
+        'Hortense', 'Julie', 'Marie', 'Pauline',
+        // Voix masculines (dernier recours)
+        'Thomas', 'Daniel', 'Henri', 'Pierre'
+      ];
+      
+      let bestVoice = null;
+      
+      // Essayer de trouver la meilleure voix dans l'ordre de préférence
+      for (const preferred of preferredVoices) {
+        const foundVoice = frenchVoices.find(voice => 
+          voice.name.toLowerCase().includes(preferred.toLowerCase())
+        );
+        if (foundVoice) {
+          bestVoice = foundVoice;
+          break;
+        }
+      }
+      
+      // Si aucune voix préférée, prendre la première française avec qualité décente
+      if (!bestVoice && frenchVoices.length > 0) {
+        const decentVoices = frenchVoices.filter(voice => 
+          !voice.name.toLowerCase().includes('robotic') && 
+          !voice.name.toLowerCase().includes('computer')
+        );
+        bestVoice = decentVoices.length > 0 ? decentVoices[0] : frenchVoices[0];
+      }
+      
+      setSelectedVoice(bestVoice || null);
+    };
+
+    loadVoices();
+    if (speechSynthesis.onvoiceschanged !== undefined) {
+      speechSynthesis.onvoiceschanged = loadVoices;
+    }
+
+    // Guidance vocale automatique pour les non-lecteurs (COURS seulement)
+    if (!showExercises) {
+      welcomeTimerRef.current = setTimeout(() => {
+        if (!hasStartedRef.current) {
+          speakText("Clique sur le bouton violet qui bouge pour commencer.");
+        }
+      }, 1000); // 1 seconde après le chargement
+
+      // Rappel vocal si pas de clic après 6 secondes (5 secondes après le premier)
+      
+    }
+
+    // Nettoyage
+          return () => {
+        if (welcomeTimerRef.current) clearTimeout(welcomeTimerRef.current);
+      };
+  }, [showExercises]);
+
+  // Effect pour gérer les changements d'onglet interne (cours ↔ exercices)
+  useEffect(() => {
+    // Arrêter tous les vocaux lors du changement d'onglet
+    if ('speechSynthesis' in window) {
+      speechSynthesis.cancel();
+    }
+    setIsPlayingVocal(false);
+    
+    // Jouer automatiquement la consigne des exercices (une seule fois)
+    if (showExercises && !exerciseInstructionGivenRef.current) {
+      // Délai court pour laisser l'interface se charger
+      setTimeout(() => {
+        explainExercisesOnce();
+        exerciseInstructionGivenRef.current = true;
+      }, 800);
+    }
+  }, [showExercises]);
+
+  // Effect pour arrêter les vocaux lors de la sortie de page
+  useEffect(() => {
+    const stopVocals = () => {
+      if ('speechSynthesis' in window) {
+        speechSynthesis.cancel();
+      }
+      setIsPlayingVocal(false);
+    };
+
+    const handleVisibilityChange = () => {
+      if (document.hidden) stopVocals();
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('beforeunload', stopVocals);
+    window.addEventListener('pagehide', stopVocals);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('beforeunload', stopVocals);
+      window.removeEventListener('pagehide', stopVocals);
+      stopVocals();
+    };
+  }, []);
 
   const speakNumber = (num: number) => {
     if ('speechSynthesis' in window) {
@@ -143,6 +412,13 @@ export default function ComptageCP() {
     const correct = answer === exercises[currentExercise].correctAnswer;
     setIsCorrect(correct);
     
+    // Feedback vocal immédiat
+    if (correct) {
+      speakText("Bravo ! C'est la bonne réponse !");
+    } else {
+      speakText(`Non, essaie encore ! La bonne réponse est ${exercises[currentExercise].correctAnswer}.`);
+    }
+    
     if (correct && !answeredCorrectly.has(currentExercise)) {
       setScore(prevScore => prevScore + 1);
       setAnsweredCorrectly(prev => {
@@ -152,17 +428,18 @@ export default function ComptageCP() {
       });
     }
 
+    // Passage automatique au suivant après une bonne réponse
     if (correct) {
       setTimeout(() => {
-        if (currentExercise + 1 < exercises.length) {
-          setCurrentExercise(currentExercise + 1);
-          setUserAnswer('');
-          setIsCorrect(null);
-        } else {
+        if (currentExercise + 1 >= exercises.length) {
+          // Dernier exercice terminé
           const finalScoreValue = score + (!answeredCorrectly.has(currentExercise) ? 1 : 0);
           setFinalScore(finalScoreValue);
           setShowCompletionModal(true);
           saveProgress(finalScoreValue, exercises.length);
+        } else {
+          // Passer à l'exercice suivant
+          nextExercise();
         }
       }, 1500);
     }
@@ -196,7 +473,16 @@ export default function ComptageCP() {
       <div className="max-w-6xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8">
-          <Link href="/chapitre/cp-nombres-jusqu-20" className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors mb-4">
+          <Link 
+            href="/chapitre/cp-nombres-jusqu-20" 
+            className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors mb-4"
+            onClick={() => {
+              if ('speechSynthesis' in window) {
+                speechSynthesis.cancel();
+              }
+              setIsPlayingVocal(false);
+            }}
+          >
             <ArrowLeft className="w-4 h-4" />
             <span>Retour au chapitre</span>
           </Link>
@@ -240,6 +526,26 @@ export default function ComptageCP() {
         {!showExercises ? (
           /* COURS */
           <div className="space-y-8">
+            {/* Bouton d'explication vocal principal - Attractif pour non-lecteurs */}
+            <div className="text-center mb-6">
+              <button
+                onClick={explainChapterGoal}
+                disabled={isPlayingVocal}
+                className={`bg-gradient-to-r from-purple-500 to-pink-500 text-white px-8 py-4 rounded-xl font-bold text-xl shadow-lg hover:shadow-xl transition-all transform hover:scale-105 ${
+                  !hasStarted ? 'animate-bounce' : ''
+                } ${
+                  isPlayingVocal ? 'animate-pulse cursor-not-allowed opacity-75' : 'hover:from-purple-600 hover:to-pink-600'
+                }`}
+                style={{
+                  animationDuration: !hasStarted ? '2s' : 'none',
+                  animationIterationCount: !hasStarted ? 'infinite' : 'none'
+                }}
+              >
+                <Volume2 className="inline w-6 h-6 mr-3" />
+                ▶️ COMMENCER !
+              </button>
+            </div>
+
             {/* Comptage avec animation */}
             <div className="bg-white rounded-xl p-8 shadow-lg">
               <h2 className="text-2xl font-bold text-center mb-6 text-gray-900">
@@ -247,7 +553,14 @@ export default function ComptageCP() {
               </h2>
               
               {/* Sélecteur de quantité */}
-              <div className="bg-green-50 rounded-lg p-6 mb-6">
+              <div 
+                id="count-selector"
+                className={`bg-green-50 rounded-lg p-6 mb-6 transition-all duration-500 ${
+                  highlightedElement === 'count-selector' 
+                    ? 'ring-4 ring-yellow-400 shadow-2xl scale-105 bg-yellow-100' 
+                    : ''
+                }`}
+              >
                 <h3 className="text-xl font-bold mb-4 text-green-800 text-center">
                   Choisis combien tu veux compter :
                 </h3>
@@ -300,9 +613,14 @@ export default function ComptageCP() {
 
                   {/* Bouton pour démarrer le comptage */}
                   <button
+                    id="counting-button"
                     onClick={startCountingAnimation}
                     disabled={isCountingAnimation}
-                    className="bg-blue-500 text-white px-8 py-4 rounded-lg font-bold text-lg hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className={`bg-blue-500 text-white px-8 py-4 rounded-lg font-bold text-lg hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+                      highlightedElement === 'counting-button' 
+                        ? 'ring-4 ring-yellow-400 shadow-2xl scale-110 animate-pulse' 
+                        : ''
+                    }`}
                   >
                     {isCountingAnimation ? (
                       <>
@@ -438,6 +756,15 @@ export default function ComptageCP() {
         ) : (
           /* EXERCICES */
           <div className="space-y-8">
+            {/* Bouton de démonstration "Suivant" avec effet magique - DANS LES EXERCICES */}
+            {highlightedElement === 'demo-next-button' && (
+              <div className="flex justify-center">
+                <div className="bg-orange-500 text-white px-8 py-4 rounded-lg font-bold text-lg shadow-2xl ring-4 ring-yellow-400 animate-bounce scale-110 transform transition-all duration-1000 ease-out opacity-100">
+                  ✨ Suivant → ✨
+                </div>
+              </div>
+            )}
+
             {/* Header exercices */}
             <div className="bg-white rounded-xl p-6 shadow-lg">
               <div className="flex justify-between items-center mb-4">
@@ -595,12 +922,17 @@ export default function ComptageCP() {
                 </div>
               )}
               
-              {/* Navigation */}
-              {isCorrect === false && (
-                <div className="flex justify-center">
+              {/* Navigation - Bouton Suivant (seulement si mauvaise réponse) */}
+              {isCorrect === false && currentExercise + 1 < exercises.length && (
+                <div className="flex justify-center mt-6">
                   <button
+                    id="next-button"
                     onClick={nextExercise}
-                    className="bg-green-500 text-white px-8 py-4 rounded-lg font-bold text-lg hover:bg-green-600 transition-colors"
+                    className={`bg-green-500 text-white px-8 py-4 rounded-lg font-bold text-lg hover:bg-green-600 transition-all ${
+                      highlightedElement === 'next-button' 
+                        ? 'ring-4 ring-yellow-400 shadow-2xl scale-110 bg-green-600 animate-pulse' 
+                        : ''
+                    }`}
                   >
                     Suivant →
                   </button>

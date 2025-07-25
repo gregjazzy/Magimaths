@@ -15,65 +15,95 @@ interface SectionProgress {
 
 const sections = [
   {
-    id: 'dizaines',
-    title: 'Les dizaines',
-    description: 'Comprendre les groupes de 10 : 10, 20, 30... Valeur positionnelle',
-    icon: '📦',
+    id: 'vocabulaire-spatial',
+    title: 'Vocabulaire spatial',
+    description: 'Apprendre : dessus, dessous, devant, derrière, à côté, entre...',
+    icon: '🧭',
     duration: '10 min',
     xp: 12,
-    color: 'from-green-500 to-emerald-500',
-    verified: true
-  },
-  {
-    id: 'unites-dizaines',
-    title: 'Unités et dizaines',
-    description: 'Connaître la valeur des chiffres selon leur position',
-    icon: '🔢',
-    duration: '12 min',
-    xp: 15,
     color: 'from-blue-500 to-cyan-500',
     verified: true
   },
   {
-    id: 'lecture-ecriture',
-    title: 'Lire et écrire jusqu\'à 100',
-    description: 'Lire et écrire tous les nombres jusqu\'à 100',
-    icon: '✏️',
+    id: 'gauche-droite',
+    title: 'Gauche et droite',
+    description: 'Différencier sa gauche et sa droite, puis celle des autres',
+    icon: '👈',
     duration: '12 min',
     xp: 15,
+    color: 'from-green-500 to-emerald-500',
+    verified: true
+  },
+  {
+    id: 'positions-relatives',
+    title: 'Positions relatives',
+    description: 'Décrire la position d\'un objet par rapport à un autre',
+    icon: '📍',
+    duration: '10 min',
+    xp: 12,
     color: 'from-purple-500 to-violet-500',
     verified: true
   },
   {
-    id: 'ordonner-comparer',
-    title: 'Ordonner et comparer',
-    description: 'Ranger dans l\'ordre et comparer avec < > =',
-    icon: '📊',
-    duration: '10 min',
-    xp: 12,
+    id: 'deplacements-simples',
+    title: 'Déplacements simples',
+    description: 'Suivre et donner des consignes de déplacement',
+    icon: '🚶',
+    duration: '12 min',
+    xp: 15,
     color: 'from-orange-500 to-red-500',
     verified: true
   },
   {
-    id: 'doubles-moities',
-    title: 'Doubles et moitiés',
-    description: 'Connaître les doubles < 10 et moitiés des pairs < 20',
-    icon: '🎯',
-    duration: '8 min',
-    xp: 10,
+    id: 'parcours-chemins',
+    title: 'Parcours et chemins',
+    description: 'Suivre un parcours, retrouver son chemin sur un plan simple',
+    icon: '🛤️',
+    duration: '10 min',
+    xp: 12,
     color: 'from-pink-500 to-rose-500',
+    verified: true
+  },
+  {
+    id: 'quadrillage-simple',
+    title: 'Quadrillage simple',
+    description: 'Se repérer sur un quadrillage : cases, lignes, colonnes',
+    icon: '⬜',
+    duration: '12 min',
+    xp: 15,
+    color: 'from-indigo-500 to-blue-500',
+    verified: true
+  },
+  {
+    id: 'codage-deplacements',
+    title: 'Coder des déplacements',
+    description: 'Utiliser des flèches et symboles pour coder un déplacement',
+    icon: '➡️',
+    duration: '10 min',
+    xp: 12,
+    color: 'from-teal-500 to-green-500',
+    verified: true
+  },
+  {
+    id: 'reproduction-parcours',
+    title: 'Reproduire des parcours',
+    description: 'Refaire le même parcours qu\'un modèle donné',
+    icon: '🎯',
+    duration: '12 min',
+    xp: 15,
+    color: 'from-yellow-500 to-amber-500',
     verified: true
   }
 ]
 
-export default function CPNombresJusqu100Page() {
+export default function CPSeRepererEspacePage() {
   const [completedSections, setCompletedSections] = useState<string[]>([]);
   const [xpEarned, setXpEarned] = useState(0);
   const [sectionsProgress, setSectionsProgress] = useState<SectionProgress[]>([]);
 
   // Charger les progrès au démarrage
   useEffect(() => {
-    const savedProgress = localStorage.getItem('cp-nombres-100-progress');
+    const savedProgress = localStorage.getItem('cp-reperage-espace-progress');
     if (savedProgress) {
       const progress = JSON.parse(savedProgress);
       setSectionsProgress(progress);
@@ -101,7 +131,7 @@ export default function CPNombresJusqu100Page() {
   // Écouter les changements dans localStorage (quand on revient d'un exercice)
   useEffect(() => {
     const handleStorageChange = () => {
-      const savedProgress = localStorage.getItem('cp-nombres-100-progress');
+      const savedProgress = localStorage.getItem('cp-reperage-espace-progress');
       if (savedProgress) {
         const progress = JSON.parse(savedProgress);
         setSectionsProgress(progress);
@@ -136,11 +166,11 @@ export default function CPNombresJusqu100Page() {
   }, []);
 
   const getSectionPath = (sectionId: string) => {
-    return `/chapitre/cp-nombres-jusqu-100/${sectionId}`;
+    return `/chapitre/cp-se-reperer-espace/${sectionId}`;
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-100">
+    <div className="min-h-screen bg-gradient-to-br from-cyan-50 to-indigo-100">
       <div className="max-w-6xl mx-auto px-3 sm:px-4 py-4 sm:py-8">
         {/* Header simple */}
         <div className="mb-6 sm:mb-8">
@@ -151,13 +181,13 @@ export default function CPNombresJusqu100Page() {
           
           <div className="bg-white rounded-xl p-4 sm:p-6 shadow-lg text-center">
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
-              💯 Nombres jusqu'à 100 (2nde partie année)
+              🧭 Se repérer dans l'espace
             </h1>
             <p className="text-base sm:text-lg text-gray-600 mb-4 sm:mb-6 px-2">
-              Extension jusqu'à 100 ! Découvre les dizaines, unités et les doubles/moitiés.
+              Apprends à te situer et à décrire la position des objets autour de toi !
             </p>
             <div className="text-lg sm:text-xl mb-4 sm:mb-6">
-              <span className="bg-green-200 px-3 sm:px-4 py-2 rounded-full font-bold text-gray-800 text-sm sm:text-base">
+              <span className="bg-cyan-200 px-3 sm:px-4 py-2 rounded-full font-bold text-gray-800 text-sm sm:text-base">
                 {xpEarned} XP gagné !
               </span>
             </div>
@@ -165,13 +195,13 @@ export default function CPNombresJusqu100Page() {
         </div>
 
         {/* Introduction ludique */}
-        <div className="bg-gradient-to-r from-green-400 to-blue-500 rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 text-white">
+        <div className="bg-gradient-to-r from-cyan-400 to-indigo-500 rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 text-white">
           <div className="flex flex-col sm:flex-row items-center justify-center text-center sm:text-left space-y-3 sm:space-y-0 sm:space-x-4">
-            <div className="text-4xl sm:text-6xl">🎯</div>
+            <div className="text-4xl sm:text-6xl">🗺️</div>
             <div>
-              <h2 className="text-lg sm:text-2xl font-bold mb-2">Programme français CP - 2nde partie</h2>
+              <h2 className="text-lg sm:text-2xl font-bold mb-2">Programme français CP - Espace et géométrie</h2>
               <p className="text-sm sm:text-lg">
-                Extension vers 100 ! Unités/dizaines, comparer, ordonner. Doubles et moitiés.
+                Maîtrise le vocabulaire spatial et apprends à te repérer comme un vrai explorateur !
               </p>
             </div>
           </div>
@@ -247,7 +277,7 @@ export default function CPNombresJusqu100Page() {
           <div className="mt-4">
             <div className="bg-gray-200 rounded-full h-3">
               <div 
-                className="bg-gradient-to-r from-green-400 to-blue-500 h-3 rounded-full transition-all duration-500"
+                className="bg-gradient-to-r from-cyan-400 to-indigo-500 h-3 rounded-full transition-all duration-500"
                 style={{ width: `${(completedSections.length / sections.length) * 100}%` }}
               ></div>
             </div>
@@ -259,13 +289,13 @@ export default function CPNombresJusqu100Page() {
 
         {/* Encouragements */}
         <div className="mt-6 sm:mt-8 text-center">
-          <div className="bg-gradient-to-r from-blue-600 to-green-600 rounded-xl p-4 sm:p-6 text-white">
+          <div className="bg-gradient-to-r from-cyan-400 to-indigo-400 rounded-xl p-4 sm:p-6 text-white">
             <div className="text-3xl sm:text-4xl mb-3">🌟</div>
-            <h3 className="text-lg sm:text-xl font-bold mb-2">Super travail petit CP !</h3>
+            <h3 className="text-lg sm:text-xl font-bold mb-2">Bravo petit explorateur !</h3>
             <p className="text-sm sm:text-base lg:text-lg px-2">
-              {completedSections.length === 0 && "Prêt pour les grands nombres ?"}
-              {completedSections.length > 0 && completedSections.length < sections.length && "Tu maîtrises de mieux en mieux !"}
-              {completedSections.length === sections.length && "Bravo ! Tu connais tous les nombres jusqu'à 100 !"}
+              {completedSections.length === 0 && "Prêt à devenir un expert de l'espace ?"}
+              {completedSections.length > 0 && completedSections.length < sections.length && "Tu t'orientes de mieux en mieux !"}
+              {completedSections.length === sections.length && "Félicitations ! Tu maîtrises le repérage spatial !"}
             </p>
           </div>
         </div>

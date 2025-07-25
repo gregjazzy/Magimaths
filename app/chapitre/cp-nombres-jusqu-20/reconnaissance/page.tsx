@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, Play, Pause, CheckCircle, XCircle, RotateCcw, Volume2 } from 'lucide-react';
 
@@ -15,6 +15,18 @@ export default function ReconnaissanceNombresCP() {
   const [showCompletionModal, setShowCompletionModal] = useState(false);
   const [finalScore, setFinalScore] = useState(0);
   const [shuffledChoices, setShuffledChoices] = useState<string[]>([]);
+
+  // États pour le système vocal et animations
+  const [highlightedElement, setHighlightedElement] = useState<string | null>(null);
+  const [isPlayingVocal, setIsPlayingVocal] = useState(false);
+  const [hasStarted, setHasStarted] = useState(false);
+  const hasStartedRef = useRef(false);
+  const welcomeTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const [animatedDotIndex, setAnimatedDotIndex] = useState<number>(-1);
+  const exerciseInstructionGivenRef = useRef(false);
+  const [exerciseInstructionGiven, setExerciseInstructionGiven] = useState(false);
+  const exerciseReadingTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const allTimersRef = useRef<NodeJS.Timeout[]>([]);
 
   // Fonction pour mélanger un tableau
   const shuffleArray = (array: string[]) => {
@@ -40,6 +52,103 @@ export default function ReconnaissanceNombresCP() {
     }
   }, [currentExercise]);
 
+  // Effect pour arrêter le vocal lors de la sortie de page/onglet
+  useEffect(() => {
+    const stopSpeechOnExit = () => {
+      try {
+        if ('speechSynthesis' in window) {
+          speechSynthesis.cancel();
+          // Double annulation pour s'assurer de l'arrêt
+          setTimeout(() => {
+            if ('speechSynthesis' in window) {
+              speechSynthesis.cancel();
+            }
+          }, 100);
+        }
+      } catch (error) {
+        console.warn('Erreur lors de l\'arrêt du vocal:', error);
+      }
+      
+      // Réinitialiser tous les états liés au vocal et aux animations
+      setIsPlayingVocal(false);
+      setHighlightedElement(null);
+      setAnimatedDotIndex(-1);
+      setHasStarted(false);
+      hasStartedRef.current = false;
+      
+      // Arrêter spécifiquement toutes les fonctions vocales en cours
+      setExerciseInstructionGiven(false);
+      exerciseInstructionGivenRef.current = false;
+      
+      // Nettoyer les timers
+      if (welcomeTimerRef.current) {
+        clearTimeout(welcomeTimerRef.current);
+        welcomeTimerRef.current = null;
+      }
+    };
+
+    const handleBeforeUnload = () => {
+      stopSpeechOnExit();
+    };
+
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        stopSpeechOnExit();
+      }
+    };
+
+    const handlePageHide = () => {
+      stopSpeechOnExit();
+    };
+
+    const handlePopState = () => {
+      stopSpeechOnExit();
+    };
+
+    // Ajouter les event listeners pour tous les cas de sortie
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    window.addEventListener('unload', handlePageHide);
+    window.addEventListener('pagehide', handlePageHide);
+    window.addEventListener('blur', stopSpeechOnExit);
+    window.addEventListener('focus', () => {}); // Placeholder pour le focus
+    window.addEventListener('popstate', handlePopState);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    
+    // Event listeners supplémentaires pour une couverture maximale
+    window.addEventListener('hashchange', stopSpeechOnExit);
+    document.addEventListener('DOMContentLoaded', () => {});
+    
+    // Intercepter les clics sur les liens pour arrêter le vocal
+    document.addEventListener('click', (e) => {
+      const target = e.target as HTMLElement;
+      if (target.tagName === 'A' || target.closest('a')) {
+        stopSpeechOnExit();
+      }
+    });
+
+    // Cleanup à la destruction du composant
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+      window.removeEventListener('unload', handlePageHide);
+      window.removeEventListener('pagehide', handlePageHide);
+      window.removeEventListener('blur', stopSpeechOnExit);
+      window.removeEventListener('focus', () => {});
+      window.removeEventListener('popstate', handlePopState);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('hashchange', stopSpeechOnExit);
+      document.removeEventListener('DOMContentLoaded', () => {});
+      document.removeEventListener('click', (e) => {
+        const target = e.target as HTMLElement;
+        if (target.tagName === 'A' || target.closest('a')) {
+          stopSpeechOnExit();
+        }
+      });
+      
+      // Arrêt final et nettoyage complet
+      stopSpeechOnExit();
+    };
+  }, []);
+
   // Fonction pour créer l'affichage des boules responsive
   const renderVisualDots = (visual: string, isCourse = false) => {
     // Compter le nombre de boules bleues
@@ -56,14 +165,20 @@ export default function ReconnaissanceNombresCP() {
       <div className="flex flex-col items-center space-y-1 sm:space-y-2">
         {groups.map((group, groupIndex) => (
           <div key={groupIndex} className="flex justify-center space-x-1 sm:space-x-2">
-            {group.map((dot, dotIndex) => (
-              <span 
-                key={dotIndex} 
-                className={`${isCourse ? 'text-2xl sm:text-3xl' : 'text-lg sm:text-2xl md:text-3xl lg:text-4xl'} text-blue-600`}
-              >
-                {dot}
-              </span>
-            ))}
+            {group.map((dot, dotIndex) => {
+              const globalIndex = groupIndex * 5 + dotIndex;
+              const isAnimated = animatedDotIndex === globalIndex;
+              return (
+                <span 
+                  key={dotIndex} 
+                  className={`${isCourse ? 'text-2xl sm:text-3xl' : 'text-lg sm:text-2xl md:text-3xl lg:text-4xl'} text-blue-600 transition-all duration-300 ${
+                    isAnimated ? 'animate-bounce scale-150 bg-yellow-200 rounded-full px-1' : ''
+                  }`}
+                >
+                  {dot}
+                </span>
+              );
+            })}
           </div>
         ))}
       </div>
@@ -134,6 +249,360 @@ export default function ReconnaissanceNombresCP() {
     { question: 'Combien de chats ?', visual: '🐱🐱🐱🐱🐱🐱🐱🐱🐱🐱🐱', correctAnswer: '11', choices: ['11', '10', '12'] }
   ];
 
+
+
+  const playAudioSequence = (text: string): Promise<void> => {
+    return new Promise((resolve) => {
+      // Arrêter les vocaux précédents
+      if ('speechSynthesis' in window) {
+        speechSynthesis.cancel();
+      }
+      
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'fr-FR';
+      utterance.rate = 0.8;
+      utterance.onend = () => resolve();
+      speechSynthesis.speak(utterance);
+    });
+  };
+
+  const wait = (ms: number): Promise<void> => {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  };
+
+  // Fonction pour arrêter le vocal
+  const stopVocal = () => {
+    if ('speechSynthesis' in window) {
+      speechSynthesis.cancel();
+    }
+    setIsPlayingVocal(false);
+  };
+
+  // Consigne générale pour la série d'exercices avec exemple détaillé de l'exercice 1
+  const explainExercisesOnce = async () => {
+    if (exerciseInstructionGivenRef.current) return;
+    
+    try {
+      speechSynthesis.cancel();
+      exerciseInstructionGivenRef.current = true;
+      setExerciseInstructionGiven(true);
+      setIsPlayingVocal(true);
+      
+      // Fonction pour vérifier si on doit arrêter le vocal
+      const shouldStop = () => {
+        return !showExercises || !exerciseInstructionGivenRef.current || !document.hasFocus();
+      };
+      
+      // S'assurer qu'on est sur l'exercice 1 pour l'exemple
+      setCurrentExercise(0);
+      await wait(200);
+      
+      if (shouldStop()) return;
+      await playAudioSequence("Super ! Tu vas faire une série d'exercices pour compter et reconnaître les nombres !");
+      await wait(300);
+      
+      if (shouldStop()) return;
+      await playAudioSequence("Je vais t'expliquer avec l'exercice 1 comme exemple !");
+      await wait(300);
+      
+      if (shouldStop()) return;
+      await playAudioSequence("Regarde bien la question de l'exercice 1 :");
+      setHighlightedElement('exercise-question');
+      await wait(2500);
+      setHighlightedElement(null);
+      await wait(200);
+      
+      if (shouldStop()) return;
+      await playAudioSequence(exercises[0].question);
+      setHighlightedElement('exercise-question');
+      await wait(2000);
+      setHighlightedElement(null);
+      await wait(200);
+      
+      if (shouldStop()) return;
+      await playAudioSequence("Maintenant, regarde les objets à compter :");
+      setHighlightedElement('exercise-visual');
+      await wait(2500);
+      setHighlightedElement(null);
+      await wait(200);
+      
+      if (shouldStop()) return;
+      await playAudioSequence("Pour répondre, il faut compter chaque objet un par un !");
+      await wait(2500);
+      
+      // Compter les objets du premier exercice avec animation
+      if (shouldStop()) return;
+      const firstExerciseCount = parseInt(exercises[0].correctAnswer);
+      await playAudioSequence(`Comptons ensemble : `);
+      await wait(500);
+      
+      for (let i = 0; i < firstExerciseCount; i++) {
+        if (shouldStop()) return;
+        await playAudioSequence(`${i + 1}`);
+        setAnimatedDotIndex(i);
+        await wait(800);
+      }
+      
+      if (shouldStop()) return;
+      setAnimatedDotIndex(-1);
+      await wait(300);
+      
+      if (shouldStop()) return;
+      await playAudioSequence(`En tout, j'ai compté ${firstExerciseCount} objets !`);
+      await wait(2500);
+      
+      if (shouldStop()) return;
+      await playAudioSequence("Maintenant, regarde les choix de réponses :");
+      setHighlightedElement('exercise-choices');
+      await wait(2500);
+      setHighlightedElement(null);
+      await wait(200);
+      
+      if (shouldStop()) return;
+      await playAudioSequence(`La bonne réponse est ${firstExerciseCount}, parce que j'ai compté ${firstExerciseCount} objets !`);
+      setHighlightedElement('exercise-choices');
+      await wait(3500);
+      setHighlightedElement(null);
+      await wait(200);
+      
+      if (shouldStop()) return;
+      await playAudioSequence("C'est comme ça que tu dois faire pour tous les exercices !");
+      await wait(2000);
+      
+      if (shouldStop()) return;
+      await playAudioSequence("Compte bien chaque objet et clique sur le bon nombre !");
+      await wait(2500);
+      
+      if (shouldStop()) return;
+      await playAudioSequence("Si tu te trompes, regarde bien la correction et appuie sur Suivant !");
+      
+      // Faire apparaître temporairement un bouton orange de démonstration
+      setHighlightedElement('demo-next-button');
+      await wait(2000);
+      setHighlightedElement(null);
+      
+    } catch (error) {
+      console.error('Erreur dans explainExercisesOnce:', error);
+    } finally {
+      setIsPlayingVocal(false);
+    }
+  };
+
+  // Effect principal pour gérer cours et exercices
+  useEffect(() => {
+    // Guidance vocale automatique pour les non-lecteurs (COURS seulement)
+    if (!showExercises) {
+      welcomeTimerRef.current = setTimeout(() => {
+        if (!hasStartedRef.current) {
+          const utterance = new SpeechSynthesisUtterance("Salut ! Clique sur le bouton violet pour commencer à apprendre les nombres !");
+          utterance.lang = 'fr-FR';
+          utterance.rate = 0.8;
+          speechSynthesis.speak(utterance);
+        }
+      }, 1000);
+    }
+
+    return () => {
+      if (welcomeTimerRef.current) clearTimeout(welcomeTimerRef.current);
+    };
+  }, [showExercises]);
+
+  // Effect pour jouer automatiquement la consigne des exercices (une seule fois)
+  useEffect(() => {
+    if (showExercises && !exerciseInstructionGivenRef.current) {
+      const timer = setTimeout(() => {
+        explainExercisesOnce();
+      }, 800);
+      return () => {
+        clearTimeout(timer);
+      };
+    }
+  }, [showExercises]);
+
+  // Effect pour arrêter les vocaux lors du changement d'onglet
+  useEffect(() => {
+    // Arrêter tous les vocaux lors du changement d'onglet (mais pas au premier rendu)
+    return () => {
+      if ('speechSynthesis' in window) {
+        speechSynthesis.cancel();
+      }
+      setIsPlayingVocal(false);
+    };
+  }, [showExercises]);
+
+  // Effect pour gérer la visibilité de la page et les sorties
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        // La page n'est plus visible (onglet changé, fenêtre minimisée, etc.)
+        stopVocal();
+      }
+    };
+
+    const handleBeforeUnload = () => {
+      // L'utilisateur quitte la page
+      stopVocal();
+    };
+
+    const handlePageHide = () => {
+      // Page cachée (plus fiable que beforeunload)
+      stopVocal();
+    };
+
+    // Ajouter les listeners
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    window.addEventListener('pagehide', handlePageHide);
+
+    // Cleanup
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+      window.removeEventListener('pagehide', handlePageHide);
+      stopVocal();
+    };
+  }, []);
+
+  // Effect pour réinitialiser quand on revient sur la page
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!document.hidden && showExercises) {
+        // La page redevient visible et on est sur les exercices
+        // Réinitialiser les états si nécessaire
+        exerciseInstructionGivenRef.current = false;
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [showExercises]);
+
+  // Effect pour jouer automatiquement la consigne des exercices (800ms après le chargement)
+  useEffect(() => {
+    if (showExercises && !exerciseInstructionGivenRef.current) {
+      const timer = setTimeout(() => {
+        explainExercisesOnce();
+      }, 800);
+      return () => {
+        clearTimeout(timer);
+      };
+    }
+  }, [showExercises]);
+
+
+
+  // Explication du chapitre avec guidage vocal et animations détaillées
+  const explainChapterGoal = async () => {
+    try {
+      speechSynthesis.cancel();
+      setIsPlayingVocal(true);
+      setHasStarted(true);
+      hasStartedRef.current = true;
+      
+      // Effacer les timers de rappel et animations
+      if (welcomeTimerRef.current) clearTimeout(welcomeTimerRef.current);
+      setAnimatedDotIndex(-1);
+
+      // ÉTAPE 1: But du chapitre
+      await playAudioSequence("Super ! Tu vas apprendre à reconnaître les nombres jusqu'à 20 !");
+      await wait(500);
+      
+      await playAudioSequence("Le but de ce chapitre, c'est de savoir compter les objets et dire le bon nombre !");
+      await wait(2000);
+      
+      await playAudioSequence("Je vais te montrer étape par étape avec l'exemple du nombre 5 !");
+      await wait(500);
+
+      // ÉTAPE 2: Sélectionner le nombre 5 automatiquement
+      setSelectedNumber('5');
+      await wait(500);
+      
+      await playAudioSequence("Regarde, j'ai choisi le nombre 5 pour toi !");
+      setHighlightedElement('number-selector');
+      await wait(2500);
+      setHighlightedElement(null);
+      await wait(300);
+
+      // ÉTAPE 3: Montrer le nombre 5
+      await playAudioSequence("Voici le nombre 5 ! Regarde bien sa forme !");
+      setHighlightedElement('number-display');
+      await wait(2500);
+      setHighlightedElement(null);
+      await wait(300);
+
+      // ÉTAPE 4: Explication détaillée du comptage avec animations
+      await playAudioSequence("Maintenant, regardons les objets que ce nombre représente !");
+      setHighlightedElement('visual-dots');
+      await wait(2000);
+      
+      await playAudioSequence("Pour compter jusqu'à 5, on fait comme ça :");
+      await wait(1000);
+      
+      // Compter chaque point avec animation
+      await playAudioSequence("Un !");
+      setAnimatedDotIndex(0);
+      await wait(1200);
+      
+      await playAudioSequence("Deux !");
+      setAnimatedDotIndex(1);
+      await wait(1200);
+      
+      await playAudioSequence("Trois !");
+      setAnimatedDotIndex(2);
+      await wait(1200);
+      
+      await playAudioSequence("Quatre !");
+      setAnimatedDotIndex(3);
+      await wait(1200);
+      
+      await playAudioSequence("Cinq !");
+      setAnimatedDotIndex(4);
+      await wait(1500);
+      
+      // Arrêter l'animation
+      setAnimatedDotIndex(-1);
+      await wait(500);
+      
+      await playAudioSequence("En tout, j'ai compté 5 objets ! C'est pour ça qu'on écrit 5 !");
+      await wait(2500);
+      
+      await playAudioSequence("Et on dit ce nombre : cinq !");
+      await wait(2000);
+      
+      setHighlightedElement(null);
+      await wait(500);
+
+      // ÉTAPE 5: Autres exemples
+      await playAudioSequence("Maintenant que tu comprends, essaie avec d'autres exemples !");
+      await wait(500);
+      
+      await playAudioSequence("Tu peux essayer avec le 8 !");
+      setHighlightedElement('number-selector');
+      await wait(2000);
+      setHighlightedElement(null);
+      await wait(300);
+      
+      await playAudioSequence("Ou avec le 12 !");
+      setHighlightedElement('number-selector');
+      await wait(2000);
+      setHighlightedElement(null);
+      await wait(300);
+      
+      await playAudioSequence("Choisis n'importe quel nombre et découvre comment le compter !");
+      await wait(500);
+      
+      await playAudioSequence("Quand tu es prêt, tu peux passer aux exercices pour t'entraîner !");
+      
+    } catch (error) {
+      console.error('Erreur dans explainChapterGoal:', error);
+    } finally {
+      setIsPlayingVocal(false);
+    }
+  };
+
   const speakNumber = (text: string) => {
     if ('speechSynthesis' in window) {
       const utterance = new SpeechSynthesisUtterance(text);
@@ -179,6 +648,7 @@ export default function ReconnaissanceNombresCP() {
   };
 
   const handleAnswerClick = (answer: string) => {
+    stopVocal();
     setUserAnswer(answer);
     const correct = answer === exercises[currentExercise].correctAnswer;
     setIsCorrect(correct);
@@ -211,6 +681,7 @@ export default function ReconnaissanceNombresCP() {
   };
 
   const nextExercise = () => {
+    stopVocal();
     if (currentExercise < exercises.length - 1) {
       setCurrentExercise(currentExercise + 1);
       setUserAnswer('');
@@ -223,6 +694,7 @@ export default function ReconnaissanceNombresCP() {
   };
 
   const resetAll = () => {
+    stopVocal();
     setCurrentExercise(0);
     setUserAnswer('');
     setIsCorrect(null);
@@ -237,7 +709,11 @@ export default function ReconnaissanceNombresCP() {
       <div className="max-w-6xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8">
-          <Link href="/chapitre/cp-nombres-jusqu-20" className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors mb-4">
+          <Link 
+            href="/chapitre/cp-nombres-jusqu-20" 
+            onClick={() => stopVocal()}
+            className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors mb-4"
+          >
             <ArrowLeft className="w-4 h-4" />
             <span>Retour au chapitre</span>
           </Link>
@@ -256,7 +732,34 @@ export default function ReconnaissanceNombresCP() {
         <div className="flex justify-center mb-4 sm:mb-8">
           <div className="bg-white rounded-lg p-1 shadow-md">
             <button
-              onClick={() => setShowExercises(false)}
+              onClick={() => {
+                // Arrêt vocal renforcé avec double vérification
+                try {
+                  if ('speechSynthesis' in window) {
+                    speechSynthesis.cancel();
+                    setTimeout(() => {
+                      if ('speechSynthesis' in window) {
+                        speechSynthesis.cancel();
+                      }
+                    }, 100);
+                  }
+                } catch (error) {
+                  console.warn('Erreur lors de l\'arrêt du vocal:', error);
+                }
+                
+                // Réinitialiser tous les états
+                setIsPlayingVocal(false);
+                setHighlightedElement(null);
+                setAnimatedDotIndex(-1);
+                
+                // Nettoyer les timers
+                if (welcomeTimerRef.current) {
+                  clearTimeout(welcomeTimerRef.current);
+                  welcomeTimerRef.current = null;
+                }
+                
+                setShowExercises(false);
+              }}
               className={`px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-bold transition-all text-sm sm:text-base ${
                 !showExercises 
                   ? 'bg-orange-500 text-white shadow-md' 
@@ -266,7 +769,36 @@ export default function ReconnaissanceNombresCP() {
               📖 Cours
             </button>
             <button
-              onClick={() => setShowExercises(true)}
+              onClick={() => {
+                // Arrêt vocal renforcé avec double vérification
+                try {
+                  if ('speechSynthesis' in window) {
+                    speechSynthesis.cancel();
+                    setTimeout(() => {
+                      if ('speechSynthesis' in window) {
+                        speechSynthesis.cancel();
+                      }
+                    }, 100);
+                  }
+                } catch (error) {
+                  console.warn('Erreur lors de l\'arrêt du vocal:', error);
+                }
+                
+                // Réinitialiser tous les états
+                setIsPlayingVocal(false);
+                setHighlightedElement(null);
+                setAnimatedDotIndex(-1);
+                
+                // Nettoyer les timers
+                if (welcomeTimerRef.current) {
+                  clearTimeout(welcomeTimerRef.current);
+                  welcomeTimerRef.current = null;
+                }
+                
+                setShowExercises(true);
+                exerciseInstructionGivenRef.current = false;
+                setExerciseInstructionGiven(false);
+              }}
               className={`px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-bold transition-all text-sm sm:text-base ${
                 showExercises 
                   ? 'bg-orange-500 text-white shadow-md' 
@@ -281,8 +813,36 @@ export default function ReconnaissanceNombresCP() {
         {!showExercises ? (
           /* COURS */
           <div className="space-y-4 sm:space-y-8">
+            {/* Bouton d'explication avec guidage vocal */}
+            {!hasStarted && (
+              <div className="bg-white rounded-xl p-4 sm:p-8 shadow-lg text-center">
+                <h2 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6 text-gray-900">
+                  🔢 Reconnaissance des nombres jusqu'à 20
+                </h2>
+                <p className="text-base sm:text-lg text-gray-700 mb-4 sm:mb-6">
+                  Apprends à reconnaître, lire et compter les nombres de 1 à 20 !
+                </p>
+                <button
+                  onClick={explainChapterGoal}
+                  disabled={isPlayingVocal}
+                  className={`px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-bold text-base sm:text-lg transition-all ${
+                    isPlayingVocal
+                      ? 'bg-gray-400 text-gray-200 cursor-not-allowed'
+                      : 'bg-purple-500 text-white hover:bg-purple-600 shadow-lg hover:shadow-xl transform hover:scale-105 animate-bounce'
+                  }`}
+                >
+                  {isPlayingVocal ? '🔊 Explication en cours...' : '▶️ COMMENCER !'}
+                </button>
+              </div>
+            )}
+
             {/* Sélecteur de nombre */}
-            <div className="bg-white rounded-xl p-3 sm:p-6 shadow-lg">
+            <div 
+              id="number-selector"
+              className={`bg-white rounded-xl p-3 sm:p-6 shadow-lg transition-all duration-500 ${
+                highlightedElement === 'number-selector' ? 'bg-yellow-100 ring-4 ring-yellow-400 shadow-2xl scale-105' : ''
+              }`}
+            >
               <h2 className="text-lg sm:text-2xl font-bold text-center mb-3 sm:mb-6 text-gray-900">
                 🎯 Choisis un nombre à découvrir
               </h2>
@@ -290,7 +850,10 @@ export default function ReconnaissanceNombresCP() {
                 {numbers.map((num) => (
                   <button
                     key={num.value}
-                    onClick={() => setSelectedNumber(num.value)}
+                    onClick={() => {
+                      stopVocal();
+                      setSelectedNumber(num.value);
+                    }}
                     className={`p-3 sm:p-6 rounded-lg font-bold text-lg sm:text-2xl transition-all ${
                       selectedNumber === num.value
                         ? 'bg-orange-500 text-white shadow-lg scale-105'
@@ -304,7 +867,12 @@ export default function ReconnaissanceNombresCP() {
             </div>
 
             {/* Affichage du nombre sélectionné */}
-            <div className="bg-white rounded-xl p-4 sm:p-8 shadow-lg text-center">
+            <div 
+              id="number-display"
+              className={`bg-white rounded-xl p-4 sm:p-8 shadow-lg text-center transition-all duration-500 ${
+                highlightedElement === 'number-display' ? 'bg-yellow-100 ring-4 ring-yellow-400 shadow-2xl scale-105' : ''
+              }`}
+            >
               <h3 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-6 text-gray-900">
                 🔍 Découvrons le nombre {selectedNumber}
               </h3>
@@ -316,7 +884,12 @@ export default function ReconnaissanceNombresCP() {
                 </div>
                 
                 {/* Représentation visuelle avec points */}
-                <div className="bg-white rounded-lg p-3 sm:p-6 mb-3 sm:mb-6">
+                <div 
+                  id="visual-dots"
+                  className={`bg-white rounded-lg p-3 sm:p-6 mb-3 sm:mb-6 transition-all duration-500 ${
+                    highlightedElement === 'visual-dots' ? 'bg-blue-50 ring-4 ring-blue-400 shadow-2xl scale-105' : ''
+                  }`}
+                >
                   <h4 className="text-base sm:text-lg font-bold mb-2 sm:mb-4 text-gray-800">
                     📊 Regarde avec des points :
                   </h4>
@@ -334,7 +907,10 @@ export default function ReconnaissanceNombresCP() {
                     {numbers.find(n => n.value === selectedNumber)?.reading}
                   </p>
                   <button
-                    onClick={() => speakNumber(numbers.find(n => n.value === selectedNumber)?.reading || '')}
+                    onClick={() => {
+                      stopVocal();
+                      speakNumber(numbers.find(n => n.value === selectedNumber)?.reading || '');
+                    }}
                     className="bg-yellow-500 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-bold hover:bg-yellow-600 transition-colors text-base sm:text-lg"
                   >
                     <Volume2 className="inline w-4 h-4 sm:w-5 sm:h-5 mr-2" />
@@ -404,12 +980,22 @@ export default function ReconnaissanceNombresCP() {
 
             {/* Question */}
             <div className="bg-white rounded-xl p-3 sm:p-6 md:p-8 shadow-lg text-center">
-              <h3 className="text-base sm:text-xl md:text-2xl font-bold mb-3 sm:mb-6 md:mb-8 text-gray-900">
+              <h3 
+                id="exercise-question"
+                className={`text-base sm:text-xl md:text-2xl font-bold mb-3 sm:mb-6 md:mb-8 text-gray-900 transition-all duration-500 ${
+                  highlightedElement === 'exercise-question' ? 'bg-yellow-100 ring-4 ring-yellow-400 shadow-2xl scale-105 rounded-lg p-2' : ''
+                }`}
+              >
                 {exercises[currentExercise].question}
               </h3>
               
               {/* Affichage de la question (nombre ou objets) */}
-              <div className="bg-white border-2 border-orange-200 rounded-lg p-2 sm:p-3 md:p-6 mb-3 sm:mb-6">
+              <div 
+                id="exercise-visual"
+                className={`bg-white border-2 border-orange-200 rounded-lg p-2 sm:p-3 md:p-6 mb-3 sm:mb-6 transition-all duration-500 ${
+                  highlightedElement === 'exercise-visual' ? 'bg-blue-50 ring-4 ring-blue-400 shadow-2xl scale-105' : ''
+                }`}
+              >
                 <div className="py-1 sm:py-2 md:py-4">
                   {exercises[currentExercise].visual.includes('🔵') ? 
                     renderVisualDots(exercises[currentExercise].visual, false) :
@@ -421,7 +1007,12 @@ export default function ReconnaissanceNombresCP() {
               </div>
               
               {/* Choix multiples avec gros boutons */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-2 sm:gap-3 max-w-sm sm:max-w-md mx-auto mb-4 sm:mb-8">
+              <div 
+                id="exercise-choices"
+                className={`grid grid-cols-1 md:grid-cols-3 gap-2 sm:gap-3 max-w-sm sm:max-w-md mx-auto mb-4 sm:mb-8 transition-all duration-500 ${
+                  highlightedElement === 'exercise-choices' ? 'bg-yellow-50 ring-4 ring-yellow-400 shadow-2xl scale-105 rounded-lg p-4' : ''
+                }`}
+              >
                 {shuffledChoices.map((choice) => (
                   <button
                     key={choice}
