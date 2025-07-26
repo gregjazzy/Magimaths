@@ -774,14 +774,6 @@ export default function SensSoustraction() {
               {/* Affichage selon le type de concept */}
               {selectedConcept === 'objets' && (
                 <div className="space-y-8">
-                  {/* Situation pour quotidien dans objets si nécessaire */}
-                  {selectedConcept === 'quotidien' && examples.quotidien[currentExample] && (
-                    <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200 mb-6">
-                      <p className="text-lg text-gray-800">
-                        📖 <strong>Situation :</strong> {examples.quotidien[currentExample].situation}
-                      </p>
-                    </div>
-                  )}
                   
                   {/* Animation des objets */}
                   <div className="grid grid-cols-1 gap-8 items-center">

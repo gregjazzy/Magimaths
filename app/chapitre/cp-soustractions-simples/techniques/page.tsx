@@ -266,7 +266,7 @@ export default function TechniquesCalculSoustraction() {
   // Démonstration d'une technique
   const demonstrateTechnique = async () => {
     const examples = techniqueExamples[selectedTechnique];
-    const example = examples[currentExample as keyof typeof examples];
+    const example = examples[currentExample as keyof typeof examples] as any;
     
     if (!example) return;
     
@@ -750,7 +750,7 @@ export default function TechniquesCalculSoustraction() {
                 {animationStep >= 1 && (
                   <div className="text-center mb-6">
                     <h4 className="text-3xl font-bold text-amber-800">
-                      {techniqueExamples[selectedTechnique]?.[currentExample as keyof typeof techniqueExamples[typeof selectedTechnique]]?.question || ''}
+                      {(techniqueExamples[selectedTechnique]?.[currentExample as keyof typeof techniqueExamples[typeof selectedTechnique]] as any)?.question || ''}
                     </h4>
                   </div>
                 )}
@@ -760,7 +760,7 @@ export default function TechniquesCalculSoustraction() {
                   <div className="text-center mb-6">
                     <div className="bg-blue-100 p-4 rounded-lg">
                       <p className="text-blue-800 font-semibold">
-                        {techniqueExamples[selectedTechnique]?.[currentExample as keyof typeof techniqueExamples[typeof selectedTechnique]]?.explanation || ''}
+                        {(techniqueExamples[selectedTechnique]?.[currentExample as keyof typeof techniqueExamples[typeof selectedTechnique]] as any)?.explanation || ''}
                       </p>
                     </div>
                   </div>
