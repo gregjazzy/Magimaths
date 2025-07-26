@@ -45,12 +45,35 @@ export default function OrdonnerComparerCP20() {
     // ⚠️ NE PAS réinitialiser userHasInteractedRef - on garde l'historique d'interaction
   };
 
-  // 🔄 SOLUTION ULTRA-AGRESSIVE : Réinitialisation initiale + détection d'interaction
+  // 🔄 SOLUTION ULTRA-ROBUSTE : Gestion des boutons + arrêt vocal automatique
   useEffect(() => {
-    console.log("📍 INITIALISATION - ordonner-comparer");
+    console.log("📍 INITIALISATION COMPLÈTE - ordonner-comparer");
     
     // Reset immédiat au chargement
     resetButtons();
+    
+    // 🎵 FONCTION DE NETTOYAGE VOCAL pour la sortie de page
+    const handlePageExit = () => {
+      console.log("🚪 SORTIE DE PAGE DÉTECTÉE - Arrêt des vocaux - ordonner-comparer");
+      stopAllVocals();
+    };
+    
+    // 🔍 GESTION DE LA VISIBILITÉ (onglet caché/affiché)
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        console.log("👁️ PAGE CACHÉE - Arrêt des vocaux - ordonner-comparer");
+        stopAllVocals();
+      } else {
+        console.log("👁️ PAGE VISIBLE - Reset boutons - ordonner-comparer");
+        resetButtons();
+      }
+    };
+    
+    // 🏠 GESTION DE LA NAVIGATION
+    const handleNavigation = () => {
+      console.log("🔄 NAVIGATION DÉTECTÉE - Arrêt des vocaux - ordonner-comparer");
+      stopAllVocals();
+    };
     
     // Détection d'interaction utilisateur
     const markUserInteraction = () => {
@@ -60,10 +83,18 @@ export default function OrdonnerComparerCP20() {
       }
     };
     
-    // Event listeners pour détecter l'interaction
+    // 🎯 EVENT LISTENERS pour interaction
     document.addEventListener('click', markUserInteraction);
     document.addEventListener('keydown', markUserInteraction);
     document.addEventListener('touchstart', markUserInteraction);
+    
+    // 🚪 EVENT LISTENERS pour sortie de page
+    window.addEventListener('beforeunload', handlePageExit);
+    window.addEventListener('pagehide', handlePageExit);
+    window.addEventListener('unload', handlePageExit);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('blur', handleNavigation);
+    window.addEventListener('popstate', handleNavigation);
     
     // Check périodique AGRESSIF (toutes les 2 secondes)
     const intervalId = setInterval(() => {
@@ -74,9 +105,20 @@ export default function OrdonnerComparerCP20() {
     }, 2000);
     
     return () => {
+      // 🧹 NETTOYAGE COMPLET
+      console.log("🧹 NETTOYAGE COMPLET - ordonner-comparer");
+      stopAllVocals();
+      
+      // Retirer les event listeners
       document.removeEventListener('click', markUserInteraction);
       document.removeEventListener('keydown', markUserInteraction);
       document.removeEventListener('touchstart', markUserInteraction);
+      window.removeEventListener('beforeunload', handlePageExit);
+      window.removeEventListener('pagehide', handlePageExit);
+      window.removeEventListener('unload', handlePageExit);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('blur', handleNavigation);
+      window.removeEventListener('popstate', handleNavigation);
       clearInterval(intervalId);
     };
   }, []);
@@ -191,72 +233,84 @@ export default function OrdonnerComparerCP20() {
     localStorage.setItem('cp-nombres-20-progress', JSON.stringify(allProgress));
   };
 
-  // === FONCTIONS VOCALES ÉLABORÉES ===
+  // === 🎯 GESTION VOCALE CENTRALISÉE ULTRA-ROBUSTE ===
   
-  const playAudioSequence = (text: string): Promise<void> => {
+  // 🔥 FONCTION CENTRALISÉE : Arrêt systématique des vocaux précédents
+  const playVocal = (text: string, rate: number = 1.0): Promise<void> => {
     return new Promise((resolve) => {
       // 🔒 PROTECTION : Empêcher les vocaux sans interaction utilisateur
       if (!userHasInteractedRef.current) {
-        console.log("🚫 BLOQUÉ : Tentative de vocal sans interaction utilisateur - ordonner-comparer");
+        console.log("🚫 BLOQUÉ : Tentative de vocal sans interaction - ordonner-comparer");
         resolve();
         return;
       }
       
       // 🛑 VÉRIFIER LE SIGNAL D'ARRÊT
       if (shouldStopRef.current) {
-        resolve(); // Sort immédiatement SANS jouer
+        console.log("🛑 ARRÊT : Signal d'arrêt détecté - ordonner-comparer");
+        resolve();
         return;
       }
       
-      // Arrêter les vocaux précédents
-      if ('speechSynthesis' in window) {
-        speechSynthesis.cancel();
-      }
+      // 🔥 ARRÊT SYSTÉMATIQUE des vocaux précédents (ZÉRO CONFLIT)
+      speechSynthesis.cancel();
+      setTimeout(() => speechSynthesis.cancel(), 10); // Double sécurité
       
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = 'fr-FR';
-      utterance.rate = 1.0;
-      utterance.onend = () => resolve();
-      utterance.onerror = () => resolve();
+      utterance.rate = rate;
+      
+      utterance.onend = () => {
+        console.log("✅ VOCAL TERMINÉ :", text.substring(0, 30) + "...");
+        resolve();
+      };
+      
+      utterance.onerror = () => {
+        console.log("❌ ERREUR VOCAL :", text.substring(0, 30) + "...");
+        resolve();
+      };
+      
+      console.log("🎵 DÉMARRAGE VOCAL :", text.substring(0, 30) + "...");
       speechSynthesis.speak(utterance);
     });
   };
 
+  // Alias pour compatibilité avec l'ancien code
+  const playAudioSequence = (text: string) => playVocal(text, 1.0);
+
   const wait = (ms: number): Promise<void> => {
     return new Promise(resolve => {
-      // 🛑 VÉRIFIER LE SIGNAL D'ARRÊT
       if (shouldStopRef.current) {
-        resolve(); // Sort immédiatement SANS attendre
+        resolve();
         return;
       }
-      setTimeout(resolve, ms);
+      setTimeout(() => {
+        if (shouldStopRef.current) {
+          resolve();
+          return;
+        }
+        resolve();
+      }, ms);
     });
   };
 
   const speakText = (text: string) => {
-    if ('speechSynthesis' in window) {
-      speechSynthesis.cancel();
-      
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = 'fr-FR';
-      utterance.rate = 0.9;
-      speechSynthesis.speak(utterance);
-    }
+    playVocal(text, 0.9); // Utilise la fonction centralisée
   };
 
-  // Fonction pour arrêter le vocal
-  const stopVocal = () => {
-    // 🛑 ARRÊT AGRESSIF - Plusieurs appels pour être sûr
-    if ('speechSynthesis' in window) {
-      speechSynthesis.cancel();
-      setTimeout(() => speechSynthesis.cancel(), 10);
-      setTimeout(() => speechSynthesis.cancel(), 50);
-    }
+  // 🛑 FONCTION D'ARRÊT ULTRA-AGRESSIVE
+  const stopAllVocals = () => {
+    console.log("🛑 ARRÊT ULTRA-AGRESSIF de tous les vocaux - ordonner-comparer");
     
-    setIsPlayingVocal(false);
+    // Triple sécurité
+    speechSynthesis.cancel();
+    setTimeout(() => speechSynthesis.cancel(), 10);
+    setTimeout(() => speechSynthesis.cancel(), 50);
+    setTimeout(() => speechSynthesis.cancel(), 100);
     
-    // 🛑 SIGNAL D'ARRÊT POUR TOUTES LES SÉQUENCES
+    // Signal d'arrêt global
     shouldStopRef.current = true;
+    setIsPlayingVocal(false);
     
     // 🧹 NETTOYER LES TIMERS
     if (timeoutRef.current) {
@@ -264,6 +318,9 @@ export default function OrdonnerComparerCP20() {
       timeoutRef.current = null;
     }
   };
+  
+  // Alias pour compatibilité avec l'ancien code
+  const stopVocal = () => stopAllVocals();
 
   const explainChapterGoal = async () => {
     // ✅ Marquer l'interaction utilisateur explicitement
@@ -398,7 +455,7 @@ export default function OrdonnerComparerCP20() {
     if (!comparison) return;
     
     try {
-      speechSynthesis.cancel();
+      stopAllVocals(); // 🎯 Utilise la fonction centralisée
       setIsPlayingVocal(true);
       setIsAnimating(true);
       setAnimationStep(0);
@@ -488,7 +545,7 @@ export default function OrdonnerComparerCP20() {
       // ✅ Marquer l'interaction utilisateur explicitement
       userHasInteractedRef.current = true;
       
-      speechSynthesis.cancel();
+      stopAllVocals(); // 🎯 Utilise la fonction centralisée
       setIsPlayingVocal(true);
       
       // ✅ AUTORISER CE NOUVEAU VOCAL
@@ -518,14 +575,8 @@ export default function OrdonnerComparerCP20() {
   
   // Effect pour gérer les changements d'onglet interne (cours ↔ exercices)
   useEffect(() => {
-    // Arrêter tous les vocaux lors du changement d'onglet
-    if ('speechSynthesis' in window) {
-      speechSynthesis.cancel();
-    }
-    setIsPlayingVocal(false);
-    
-    // 🛑 SIGNAL D'ARRÊT pour les séquences en cours
-    shouldStopRef.current = true;
+    // 🎯 Arrêter tous les vocaux lors du changement d'onglet avec la fonction centralisée
+    stopAllVocals();
     
     // Nettoyer le timeout précédent s'il existe
     if (timeoutRef.current) {
@@ -551,17 +602,10 @@ export default function OrdonnerComparerCP20() {
 
   // 🔄 SOLUTION ULTRA-AGRESSIVE : Gestion des événements de navigation avec multiples event listeners
   useEffect(() => {
-    const stopVocals = () => {
-      if ('speechSynthesis' in window) {
-        speechSynthesis.cancel();
-      }
-      setIsPlayingVocal(false);
-    };
-
     const handleVisibilityChange = () => {
       if (document.hidden) {
         console.log("👁️ PAGE CACHÉE - Arrêt des vocaux - ordonner-comparer");
-        stopVocals();
+        stopAllVocals(); // 🎯 Utilise la fonction centralisée
         // Réinitialisation des états visuels
         setHighlightedElement(null);
         setSelectedComparison('5_8');
@@ -586,7 +630,7 @@ export default function OrdonnerComparerCP20() {
 
     const handleBlur = () => {
       console.log("💨 BLUR - Arrêt des vocaux - ordonner-comparer");
-      stopVocals();
+      stopAllVocals(); // 🎯 Utilise la fonction centralisée
     };
 
     const handlePopState = () => {
@@ -737,11 +781,8 @@ export default function OrdonnerComparerCP20() {
           <div className="bg-white rounded-lg p-1 shadow-md">
             <button
               onClick={() => {
-                // Arrêter immédiatement tous les vocaux
-                if ('speechSynthesis' in window) {
-                  speechSynthesis.cancel();
-                }
-                setIsPlayingVocal(false);
+                // 🎯 Arrêter immédiatement tous les vocaux avec la fonction centralisée
+                stopAllVocals();
                 setShowExercises(false);
                 // 🔄 Reset forcé après changement d'onglet
                 setTimeout(() => { resetButtons(); }, 100);
@@ -756,11 +797,8 @@ export default function OrdonnerComparerCP20() {
             </button>
             <button
               onClick={() => {
-                // Arrêter immédiatement tous les vocaux
-                if ('speechSynthesis' in window) {
-                  speechSynthesis.cancel();
-                }
-                setIsPlayingVocal(false);
+                // 🎯 Arrêter immédiatement tous les vocaux avec la fonction centralisée
+                stopAllVocals();
                 setShowExercises(true);
                 // 🔄 Reset forcé après changement d'onglet
                 setTimeout(() => { resetButtons(); }, 100);

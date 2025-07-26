@@ -35,6 +35,11 @@ export default function SensAdditionCP() {
   const exerciseInstructionGivenRef = useRef(false);
   const [exerciseInstructionGiven, setExerciseInstructionGiven] = useState(false);
   
+  // 🎵 NOUVEAUX ÉTATS POUR GESTION VOCALE ULTRA-ROBUSTE
+  const shouldStopRef = useRef(false);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const userHasInteractedRef = useRef(false);
+  
   // Exemples d'addition
   const examples = {
     objets: [
@@ -122,33 +127,80 @@ export default function SensAdditionCP() {
     }
   ];
 
-  // Fonctions vocales (basées sur reconnaissance)
-  const playAudioSequence = (text: string): Promise<void> => {
+  // 🎵 FONCTION VOCALE CENTRALISÉE ULTRA-ROBUSTE
+  const playVocal = (text: string, rate: number = 1.2): Promise<void> => {
     return new Promise((resolve) => {
-      if ('speechSynthesis' in window) {
-        speechSynthesis.cancel();
+      // 🔒 PROTECTION : Empêcher les vocaux sans interaction utilisateur
+      if (!userHasInteractedRef.current) {
+        console.log("🚫 BLOQUÉ : Tentative de vocal sans interaction");
+        resolve();
+        return;
       }
+      
+      // 🛑 VÉRIFIER LE SIGNAL D'ARRÊT
+      if (shouldStopRef.current) {
+        console.log("🛑 ARRÊT : Signal d'arrêt détecté");
+        resolve();
+        return;
+      }
+      
+      // 🔥 ARRÊT SYSTÉMATIQUE des vocaux précédents (ZÉRO CONFLIT)
+      speechSynthesis.cancel();
+      setTimeout(() => speechSynthesis.cancel(), 10); // Double sécurité
       
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = 'fr-FR';
-      utterance.rate = 1.0;
-      utterance.onend = () => resolve();
-      utterance.onerror = () => resolve();
+      utterance.rate = rate;
+      
+      utterance.onend = () => {
+        console.log("✅ VOCAL TERMINÉ :", text.substring(0, 30) + "...");
+        resolve();
+      };
+      
+      utterance.onerror = () => {
+        console.log("❌ ERREUR VOCAL :", text.substring(0, 30) + "...");
+        resolve();
+      };
+      
+      console.log("🎵 DÉMARRAGE VOCAL :", text.substring(0, 30) + "...");
       speechSynthesis.speak(utterance);
     });
   };
+
+  // 🛑 FONCTION D'ARRÊT ULTRA-AGRESSIVE
+  const stopAllVocals = () => {
+    console.log("🛑 ARRÊT ULTRA-AGRESSIF de tous les vocaux");
+    
+    // Triple sécurité
+    speechSynthesis.cancel();
+    setTimeout(() => speechSynthesis.cancel(), 10);
+    setTimeout(() => speechSynthesis.cancel(), 50);
+    setTimeout(() => speechSynthesis.cancel(), 100);
+    
+    // Signal d'arrêt global
+    shouldStopRef.current = true;
+    setIsPlayingVocal(false);
+    
+    // 🧹 NETTOYER LES TIMERS
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+  };
+
+  // Alias pour compatibilité
+  const playAudioSequence = playVocal;
 
   const wait = (ms: number): Promise<void> => {
     return new Promise(resolve => setTimeout(resolve, ms));
   };
 
   const stopVocal = () => {
-    if ('speechSynthesis' in window) {
-      speechSynthesis.cancel();
-    }
-    setIsPlayingVocal(false);
-    setHighlightedElement(null);
+    // Arrêt vocal ultra-robuste
+    stopAllVocals();
+    
     // Reset animation states specific to this chapter
+    setHighlightedElement(null);
     setShowObjectsGroup1(0);
     setShowObjectsGroup2(0);
     setShowResult(false);
@@ -161,7 +213,11 @@ export default function SensAdditionCP() {
     if (exerciseInstructionGivenRef.current) return;
     
     try {
-      speechSynthesis.cancel();
+      // 🎯 MARQUER L'INTERACTION UTILISATEUR
+      userHasInteractedRef.current = true;
+      
+      stopAllVocals();
+      shouldStopRef.current = false; // Reset signal pour nouvelle séquence
       exerciseInstructionGivenRef.current = true;
       setExerciseInstructionGiven(true);
       setIsPlayingVocal(true);
@@ -187,8 +243,7 @@ export default function SensAdditionCP() {
   const handleAnswerClick = (answer: string) => {
     if (isCorrect !== null) return;
     
-    speechSynthesis.cancel();
-    setIsPlayingVocal(false);
+    stopAllVocals();
     
     const correct = answer === exercises[currentExercise].correctAnswer;
     setIsCorrect(correct);
@@ -204,8 +259,7 @@ export default function SensAdditionCP() {
 
   // Passer à l'exercice suivant
   const nextExercise = () => {
-    speechSynthesis.cancel();
-    setIsPlayingVocal(false);
+    stopAllVocals();
     
     if (currentExercise < exercises.length - 1) {
       setCurrentExercise(currentExercise + 1);
@@ -230,49 +284,66 @@ export default function SensAdditionCP() {
     setExerciseInstructionGiven(false);
   };
 
-  // Gestion des useEffect (identique à reconnaissance)
+  // 🔄 GESTION DES INTERACTIONS UTILISATEUR
   useEffect(() => {
-    if (!hasStarted) {
-      welcomeTimerRef.current = setTimeout(() => {
-        if (!hasStartedRef.current) {
-          const utterance = new SpeechSynthesisUtterance("Salut ! Clique sur le bouton violet pour découvrir ce que veut dire additionner !");
-          utterance.lang = 'fr-FR';
-          utterance.rate = 1.0;
-          speechSynthesis.speak(utterance);
-        }
-      }, 1000);
-    }
-
-    return () => {
-      if (welcomeTimerRef.current) clearTimeout(welcomeTimerRef.current);
+    // 🎯 DÉTECTER TOUTE INTERACTION UTILISATEUR
+    const markUserInteraction = () => {
+      userHasInteractedRef.current = true;
+      console.log("✋ Interaction utilisateur détectée");
     };
-  }, [hasStarted]);
+    
+    document.addEventListener('click', markUserInteraction);
+    document.addEventListener('keydown', markUserInteraction);
+    document.addEventListener('touchstart', markUserInteraction);
+    
+    return () => {
+      document.removeEventListener('click', markUserInteraction);
+      document.removeEventListener('keydown', markUserInteraction);
+      document.removeEventListener('touchstart', markUserInteraction);
+    };
+  }, []);
 
-  // Effect pour gérer la visibilité de la page et les sorties
+  // 🎵 GESTION VOCALE ULTRA-ROBUSTE - Event Listeners
   useEffect(() => {
+    // 🎵 FONCTION DE NETTOYAGE VOCAL pour la sortie de page
+    const handlePageExit = () => {
+      console.log("🚪 SORTIE DE PAGE DÉTECTÉE - Arrêt des vocaux");
+      stopAllVocals();
+    };
+    
+    // 🔍 GESTION DE LA VISIBILITÉ (onglet caché/affiché)
     const handleVisibilityChange = () => {
       if (document.hidden) {
-        stopVocal();
+        console.log("👁️ PAGE CACHÉE - Arrêt des vocaux");
+        stopAllVocals();
       }
     };
-
-    const handleBeforeUnload = () => {
-      stopVocal();
+    
+    // 🏠 GESTION DE LA NAVIGATION
+    const handleNavigation = () => {
+      console.log("🔄 NAVIGATION DÉTECTÉE - Arrêt des vocaux");
+      stopAllVocals();
     };
-
-    const handlePageHide = () => {
-      stopVocal();
-    };
-
+    
+    // 🚪 EVENT LISTENERS pour sortie de page
+    window.addEventListener('beforeunload', handlePageExit);
+    window.addEventListener('pagehide', handlePageExit);
+    window.addEventListener('unload', handlePageExit);
     document.addEventListener('visibilitychange', handleVisibilityChange);
-    window.addEventListener('beforeunload', handleBeforeUnload);
-    window.addEventListener('pagehide', handlePageHide);
-
+    window.addEventListener('blur', handleNavigation);
+    window.addEventListener('popstate', handleNavigation);
+    
     return () => {
+      // 🧹 NETTOYAGE COMPLET
+      stopAllVocals();
+      
+      // Retirer les event listeners
+      window.removeEventListener('beforeunload', handlePageExit);
+      window.removeEventListener('pagehide', handlePageExit);
+      window.removeEventListener('unload', handlePageExit);
       document.removeEventListener('visibilitychange', handleVisibilityChange);
-      window.removeEventListener('beforeunload', handleBeforeUnload);
-      window.removeEventListener('pagehide', handlePageHide);
-      stopVocal();
+      window.removeEventListener('blur', handleNavigation);
+      window.removeEventListener('popstate', handleNavigation);
     };
   }, []);
 
@@ -289,6 +360,9 @@ export default function SensAdditionCP() {
 
   // Explication complète du concept avec animations
   const explainAdditionConcept = async () => {
+    // 🎯 MARQUER L'INTERACTION UTILISATEUR
+    userHasInteractedRef.current = true;
+    
     setHasStarted(true);
     hasStartedRef.current = true;
     
@@ -298,6 +372,8 @@ export default function SensAdditionCP() {
     }
 
     try {
+      stopAllVocals();
+      shouldStopRef.current = false; // Reset signal pour nouvelle séquence
       setIsPlayingVocal(true);
       setIsAnimating(true);
       

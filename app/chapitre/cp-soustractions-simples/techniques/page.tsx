@@ -52,42 +52,49 @@ export default function TechniquesCalculSoustraction() {
     });
   };
 
-  const playAudioSequence = (text: string, rate: number = 1.0): Promise<void> => {
+  // 🎵 FONCTION VOCALE CENTRALISÉE ULTRA-ROBUSTE
+  const playVocal = (text: string, rate: number = 1.2): Promise<void> => {
     return new Promise((resolve) => {
-      if (shouldStopRef.current) {
-        resolve();
-        return;
-      }
       if (!userHasInteractedRef.current) {
+        console.log("🚫 BLOQUÉ : Tentative de vocal sans interaction");
         resolve();
         return;
       }
-      
+      if (shouldStopRef.current) {
+        console.log("🛑 ARRÊT : Signal d'arrêt détecté");
+        resolve();
+        return;
+      }
       speechSynthesis.cancel();
-      
+      setTimeout(() => speechSynthesis.cancel(), 10);
       const utterance = new SpeechSynthesisUtterance(text);
-      utterance.rate = rate;
       utterance.lang = 'fr-FR';
-      
+      utterance.rate = rate;
       utterance.onend = () => {
+        console.log("✅ VOCAL TERMINÉ :", text.substring(0, 30) + "...");
         resolve();
       };
-      
       utterance.onerror = () => {
+        console.log("❌ ERREUR VOCAL :", text.substring(0, 30) + "...");
         resolve();
       };
-      
+      console.log("🎵 DÉMARRAGE VOCAL :", text.substring(0, 30) + "...");
       speechSynthesis.speak(utterance);
     });
   };
 
-  const stopVocal = () => {
-    shouldStopRef.current = true;
+  const stopAllVocals = () => {
+    console.log("🛑 ARRÊT ULTRA-AGRESSIF de tous les vocaux");
     speechSynthesis.cancel();
-    // Triple sécurité
     setTimeout(() => speechSynthesis.cancel(), 10);
     setTimeout(() => speechSynthesis.cancel(), 50);
     setTimeout(() => speechSynthesis.cancel(), 100);
+    shouldStopRef.current = true;
+    setIsPlayingVocal(false);
+  };
+
+  const playAudioSequence = playVocal;
+  const stopVocal = stopAllVocals;
   };
 
   // Exemples pour chaque technique
@@ -397,6 +404,39 @@ export default function TechniquesCalculSoustraction() {
     exerciseInstructionGivenRef.current = false;
     hasStartedRef.current = false;
   };
+
+  // 🎵 GESTION VOCALE ULTRA-ROBUSTE - Event Listeners
+  useEffect(() => {
+    const handlePageExit = () => {
+      console.log("🚪 SORTIE DE PAGE DÉTECTÉE - Arrêt des vocaux");
+      stopAllVocals();
+    };
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        console.log("👁️ PAGE CACHÉE - Arrêt des vocaux");
+        stopAllVocals();
+      }
+    };
+    const handleNavigation = () => {
+      console.log("🔄 NAVIGATION DÉTECTÉE - Arrêt des vocaux");
+      stopAllVocals();
+    };
+    window.addEventListener('beforeunload', handlePageExit);
+    window.addEventListener('pagehide', handlePageExit);
+    window.addEventListener('unload', handlePageExit);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('blur', handleNavigation);
+    window.addEventListener('popstate', handleNavigation);
+    return () => {
+      stopAllVocals();
+      window.removeEventListener('beforeunload', handlePageExit);
+      window.removeEventListener('pagehide', handlePageExit);
+      window.removeEventListener('unload', handlePageExit);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('blur', handleNavigation);
+      window.removeEventListener('popstate', handleNavigation);
+    };
+  }, []);
 
   // Gestion des événements pour persistance des boutons
   useEffect(() => {

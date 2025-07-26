@@ -50,43 +50,64 @@ export default function ProblemesAddition() {
     });
   };
 
-  const playAudioSequence = (text: string, rate: number = 1.0): Promise<void> => {
+  // 🎵 FONCTION VOCALE CENTRALISÉE ULTRA-ROBUSTE
+  const playVocal = (text: string, rate: number = 1.2): Promise<void> => {
     return new Promise((resolve) => {
-      if (shouldStopRef.current) {
-        resolve();
-        return;
-      }
+      // 🔒 PROTECTION : Empêcher les vocaux sans interaction utilisateur
       if (!userHasInteractedRef.current) {
+        console.log("🚫 BLOQUÉ : Tentative de vocal sans interaction");
         resolve();
         return;
       }
       
+      // 🛑 VÉRIFIER LE SIGNAL D'ARRÊT
+      if (shouldStopRef.current) {
+        console.log("🛑 ARRÊT : Signal d'arrêt détecté");
+        resolve();
+        return;
+      }
+      
+      // 🔥 ARRÊT SYSTÉMATIQUE des vocaux précédents (ZÉRO CONFLIT)
       speechSynthesis.cancel();
+      setTimeout(() => speechSynthesis.cancel(), 10); // Double sécurité
       
       const utterance = new SpeechSynthesisUtterance(text);
-      utterance.rate = rate;
       utterance.lang = 'fr-FR';
+      utterance.rate = rate;
       
       utterance.onend = () => {
+        console.log("✅ VOCAL TERMINÉ :", text.substring(0, 30) + "...");
         resolve();
       };
       
       utterance.onerror = () => {
+        console.log("❌ ERREUR VOCAL :", text.substring(0, 30) + "...");
         resolve();
       };
       
+      console.log("🎵 DÉMARRAGE VOCAL :", text.substring(0, 30) + "...");
       speechSynthesis.speak(utterance);
     });
   };
 
-  const stopVocal = () => {
-    shouldStopRef.current = true;
-    speechSynthesis.cancel();
+  // 🛑 FONCTION D'ARRÊT ULTRA-AGRESSIVE
+  const stopAllVocals = () => {
+    console.log("🛑 ARRÊT ULTRA-AGRESSIF de tous les vocaux");
+    
     // Triple sécurité
+    speechSynthesis.cancel();
     setTimeout(() => speechSynthesis.cancel(), 10);
     setTimeout(() => speechSynthesis.cancel(), 50);
     setTimeout(() => speechSynthesis.cancel(), 100);
+    
+    // Signal d'arrêt global
+    shouldStopRef.current = true;
+    setIsPlayingVocal(false);
   };
+
+  // Alias pour compatibilité
+  const playAudioSequence = playVocal;
+  const stopVocal = stopAllVocals;
 
   // Situations de problèmes pour le cours
   const problemSituations = {
@@ -409,6 +430,50 @@ export default function ProblemesAddition() {
     exerciseInstructionGivenRef.current = false;
     hasStartedRef.current = false;
   };
+
+  // 🎵 GESTION VOCALE ULTRA-ROBUSTE - Event Listeners
+  useEffect(() => {
+    // 🎵 FONCTION DE NETTOYAGE VOCAL pour la sortie de page
+    const handlePageExit = () => {
+      console.log("🚪 SORTIE DE PAGE DÉTECTÉE - Arrêt des vocaux");
+      stopAllVocals();
+    };
+    
+    // 🔍 GESTION DE LA VISIBILITÉ (onglet caché/affiché)
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        console.log("👁️ PAGE CACHÉE - Arrêt des vocaux");
+        stopAllVocals();
+      }
+    };
+    
+    // 🏠 GESTION DE LA NAVIGATION
+    const handleNavigation = () => {
+      console.log("🔄 NAVIGATION DÉTECTÉE - Arrêt des vocaux");
+      stopAllVocals();
+    };
+    
+    // 🚪 EVENT LISTENERS pour sortie de page
+    window.addEventListener('beforeunload', handlePageExit);
+    window.addEventListener('pagehide', handlePageExit);
+    window.addEventListener('unload', handlePageExit);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('blur', handleNavigation);
+    window.addEventListener('popstate', handleNavigation);
+    
+    return () => {
+      // 🧹 NETTOYAGE COMPLET
+      stopAllVocals();
+      
+      // Retirer les event listeners
+      window.removeEventListener('beforeunload', handlePageExit);
+      window.removeEventListener('pagehide', handlePageExit);
+      window.removeEventListener('unload', handlePageExit);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('blur', handleNavigation);
+      window.removeEventListener('popstate', handleNavigation);
+    };
+  }, []);
 
   // Gestion des événements pour persistance des boutons
   useEffect(() => {

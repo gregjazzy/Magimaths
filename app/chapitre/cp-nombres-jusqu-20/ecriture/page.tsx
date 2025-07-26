@@ -32,6 +32,9 @@ export default function EcritureCP() {
   
   // 🆕 SOLUTION ULTRA-AGRESSIVE pour la persistance des boutons
   const userHasInteractedRef = useRef(false);
+  
+  // 🎵 NOUVEAUX ÉTATS POUR GESTION VOCALE ULTRA-ROBUSTE
+  const shouldStopRef = useRef(false);
 
   // Fonction centralisée pour réinitialiser les boutons
   const resetButtons = () => {
@@ -76,6 +79,53 @@ export default function EcritureCP() {
       document.removeEventListener('keydown', markUserInteraction);
       document.removeEventListener('touchstart', markUserInteraction);
       clearInterval(intervalId);
+    };
+  }, []);
+
+  // 🎵 GESTION VOCALE ULTRA-ROBUSTE - Event Listeners
+  useEffect(() => {
+    // 🎵 FONCTION DE NETTOYAGE VOCAL pour la sortie de page
+    const handlePageExit = () => {
+      console.log("🚪 SORTIE DE PAGE DÉTECTÉE - Arrêt des vocaux");
+      stopAllVocals();
+    };
+    
+    // 🔍 GESTION DE LA VISIBILITÉ (onglet caché/affiché)
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        console.log("👁️ PAGE CACHÉE - Arrêt des vocaux");
+        stopAllVocals();
+      } else {
+        console.log("👁️ PAGE VISIBLE - Reset boutons");
+        resetButtons();
+      }
+    };
+    
+    // 🏠 GESTION DE LA NAVIGATION
+    const handleNavigation = () => {
+      console.log("🔄 NAVIGATION DÉTECTÉE - Arrêt des vocaux");
+      stopAllVocals();
+    };
+    
+    // 🚪 EVENT LISTENERS pour sortie de page
+    window.addEventListener('beforeunload', handlePageExit);
+    window.addEventListener('pagehide', handlePageExit);
+    window.addEventListener('unload', handlePageExit);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('blur', handleNavigation);
+    window.addEventListener('popstate', handleNavigation);
+    
+    return () => {
+      // 🧹 NETTOYAGE COMPLET
+      stopAllVocals();
+      
+      // Retirer les event listeners
+      window.removeEventListener('beforeunload', handlePageExit);
+      window.removeEventListener('pagehide', handlePageExit);
+      window.removeEventListener('unload', handlePageExit);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('blur', handleNavigation);
+      window.removeEventListener('popstate', handleNavigation);
     };
   }, []);
 
@@ -181,26 +231,68 @@ export default function EcritureCP() {
     return utterance;
   };
 
-  // Fonction pour jouer un texte avec timing
-  const playAudioSequence = (text: string): Promise<void> => {
+  // 🎵 FONCTION VOCALE CENTRALISÉE ULTRA-ROBUSTE
+  const playVocal = (text: string, rate: number = 1.2): Promise<void> => {
     return new Promise((resolve) => {
       // 🔒 PROTECTION : Empêcher les vocaux sans interaction utilisateur
       if (!userHasInteractedRef.current) {
-        console.log("🚫 BLOQUÉ : Tentative de vocal sans interaction utilisateur - ecriture");
+        console.log("🚫 BLOQUÉ : Tentative de vocal sans interaction");
         resolve();
         return;
       }
       
-      // Arrêter les vocaux précédents
-      if ('speechSynthesis' in window) {
-        speechSynthesis.cancel();
+      // 🛑 VÉRIFIER LE SIGNAL D'ARRÊT
+      if (shouldStopRef.current) {
+        console.log("🛑 ARRÊT : Signal d'arrêt détecté");
+        resolve();
+        return;
       }
       
+      // 🔥 ARRÊT SYSTÉMATIQUE des vocaux précédents (ZÉRO CONFLIT)
+      speechSynthesis.cancel();
+      setTimeout(() => speechSynthesis.cancel(), 10); // Double sécurité
+      
       const utterance = createOptimizedUtterance(text);
-      utterance.onend = () => resolve();
+      utterance.rate = rate;
+      
+      utterance.onend = () => {
+        console.log("✅ VOCAL TERMINÉ :", text.substring(0, 30) + "...");
+        resolve();
+      };
+      
+      utterance.onerror = () => {
+        console.log("❌ ERREUR VOCAL :", text.substring(0, 30) + "...");
+        resolve();
+      };
+      
+      console.log("🎵 DÉMARRAGE VOCAL :", text.substring(0, 30) + "...");
       speechSynthesis.speak(utterance);
     });
   };
+
+  // 🛑 FONCTION D'ARRÊT ULTRA-AGRESSIVE
+  const stopAllVocals = () => {
+    console.log("🛑 ARRÊT ULTRA-AGRESSIF de tous les vocaux");
+    
+    // Triple sécurité
+    speechSynthesis.cancel();
+    setTimeout(() => speechSynthesis.cancel(), 10);
+    setTimeout(() => speechSynthesis.cancel(), 50);
+    setTimeout(() => speechSynthesis.cancel(), 100);
+    
+    // Signal d'arrêt global
+    shouldStopRef.current = true;
+    setIsPlayingVocal(false);
+    
+    // 🧹 NETTOYER LES TIMERS
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+  };
+
+  // Alias pour compatibilité
+  const playAudioSequence = playVocal;
 
   // Fonction d'attente
   const wait = (ms: number): Promise<void> => {
@@ -208,13 +300,12 @@ export default function EcritureCP() {
   };
 
   const speakAudio = (text: string) => {
-    // Arrêter les vocaux précédents
-    if ('speechSynthesis' in window) {
-      speechSynthesis.cancel();
-      
-      const utterance = createOptimizedUtterance(text);
-      speechSynthesis.speak(utterance);
-    }
+    // Arrêt vocal ultra-robuste
+    stopAllVocals();
+    shouldStopRef.current = false; // Reset signal pour nouvelle séquence
+    
+    const utterance = createOptimizedUtterance(text);
+    speechSynthesis.speak(utterance);
   };
 
   // Consigne générale pour la série d'exercices (une seule fois)
@@ -222,10 +313,9 @@ export default function EcritureCP() {
     // ✅ Marquer l'interaction utilisateur explicitement
     userHasInteractedRef.current = true;
     
-    // Arrêter les vocaux précédents
-    if ('speechSynthesis' in window) {
-      speechSynthesis.cancel();
-    }
+    // Arrêt vocal ultra-robuste
+    stopAllVocals();
+    shouldStopRef.current = false; // Reset signal pour nouvelle séquence
 
     setIsPlayingVocal(true);
     setExerciseInstructionGiven(true);

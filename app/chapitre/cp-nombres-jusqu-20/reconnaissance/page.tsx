@@ -22,6 +22,10 @@ export default function ReconnaissanceNombresCP() {
   const [hasStarted, setHasStarted] = useState(false);
   const hasStartedRef = useRef(false);
   const userHasInteractedRef = useRef(false);
+  
+  // 🎵 NOUVEAUX ÉTATS POUR GESTION VOCALE ULTRA-ROBUSTE
+  const shouldStopRef = useRef(false);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const [animatedDotIndex, setAnimatedDotIndex] = useState<number>(-1);
   const exerciseInstructionGivenRef = useRef(false);
@@ -102,6 +106,53 @@ export default function ReconnaissanceNombresCP() {
     setTimeout(() => {
       resetButtons();
     }, 500);
+  }, []);
+
+  // 🎵 GESTION VOCALE ULTRA-ROBUSTE - Event Listeners
+  useEffect(() => {
+    // 🎵 FONCTION DE NETTOYAGE VOCAL pour la sortie de page
+    const handlePageExit = () => {
+      console.log("🚪 SORTIE DE PAGE DÉTECTÉE - Arrêt des vocaux");
+      stopAllVocals();
+    };
+    
+    // 🔍 GESTION DE LA VISIBILITÉ (onglet caché/affiché)
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        console.log("👁️ PAGE CACHÉE - Arrêt des vocaux");
+        stopAllVocals();
+      } else {
+        console.log("👁️ PAGE VISIBLE - Reset boutons");
+        resetButtons();
+      }
+    };
+    
+    // 🏠 GESTION DE LA NAVIGATION
+    const handleNavigation = () => {
+      console.log("🔄 NAVIGATION DÉTECTÉE - Arrêt des vocaux");
+      stopAllVocals();
+    };
+    
+    // 🚪 EVENT LISTENERS pour sortie de page
+    window.addEventListener('beforeunload', handlePageExit);
+    window.addEventListener('pagehide', handlePageExit);
+    window.addEventListener('unload', handlePageExit);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('blur', handleNavigation);
+    window.addEventListener('popstate', handleNavigation);
+    
+    return () => {
+      // 🧹 NETTOYAGE COMPLET
+      stopAllVocals();
+      
+      // Retirer les event listeners
+      window.removeEventListener('beforeunload', handlePageExit);
+      window.removeEventListener('pagehide', handlePageExit);
+      window.removeEventListener('unload', handlePageExit);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('blur', handleNavigation);
+      window.removeEventListener('popstate', handleNavigation);
+    };
   }, []);
 
   // Effet pour mélanger les choix quand on change d'exercice
@@ -215,39 +266,36 @@ export default function ReconnaissanceNombresCP() {
 
 
 
-  const playAudioSequence = (text: string): Promise<void> => {
-    return new Promise((resolve) => {
-      // 🛡️ PROTECTION: Empêcher les vocaux automatiques sans interaction utilisateur
-      if (!userHasInteractedRef.current) {
-        console.warn("🚫 Vocal bloqué - aucune interaction utilisateur détectée");
-        resolve();
-        return;
-      }
-      
-      // Arrêter les vocaux précédents
-      if ('speechSynthesis' in window) {
-        speechSynthesis.cancel();
-      }
-      
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = 'fr-FR';
-      utterance.rate = 1.0;
-      utterance.onend = () => resolve();
-      speechSynthesis.speak(utterance);
-    });
+  // 🎵 IMPORT DU GESTIONNAIRE AUDIO HYBRIDE
+  const { playCP20Audio, stopAllAudio, markUserInteraction } = require('../../../../lib/audioManager');
+  
+  // 🛑 FONCTION D'ARRÊT HYBRIDE
+  const stopAllVocals = () => {
+    console.log("🛑 ARRÊT HYBRIDE de tous les vocaux");
+    
+    // Utiliser le gestionnaire hybride
+    stopAllAudio();
+    
+    // Signal d'arrêt local
+    shouldStopRef.current = true;
+    setIsPlayingVocal(false);
+    
+    // 🧹 NETTOYER LES TIMERS
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
   };
+
+  // Alias pour compatibilité
+  const playAudioSequence = playVocal;
 
   const wait = (ms: number): Promise<void> => {
     return new Promise(resolve => setTimeout(resolve, ms));
   };
 
-  // Fonction pour arrêter le vocal
-  const stopVocal = () => {
-    if ('speechSynthesis' in window) {
-      speechSynthesis.cancel();
-    }
-    setIsPlayingVocal(false);
-  };
+  // Fonction pour arrêter le vocal (alias pour compatibilité)
+  const stopVocal = stopAllVocals;
 
   // Consigne générale pour la série d'exercices avec exemple détaillé de l'exercice 1
   const explainExercisesOnce = async () => {
@@ -257,7 +305,8 @@ export default function ReconnaissanceNombresCP() {
       // 🎯 MARQUER L'INTERACTION UTILISATEUR
       userHasInteractedRef.current = true;
       
-      speechSynthesis.cancel();
+      stopAllVocals();
+      shouldStopRef.current = false; // Reset signal pour nouvelle séquence
       exerciseInstructionGivenRef.current = true;
       setExerciseInstructionGiven(true);
       setIsPlayingVocal(true);
@@ -272,7 +321,7 @@ export default function ReconnaissanceNombresCP() {
       await wait(200);
       
       if (shouldStop()) return;
-      await playAudioSequence("Super ! Tu vas faire une série d'exercices pour compter et reconnaître les nombres !");
+      await playCP20Audio('reconnaissance', 'exercise-intro', "Super ! Tu vas faire une série d'exercices pour compter et reconnaître les nombres !");
       await wait(300);
       
       if (shouldStop()) return;
@@ -469,9 +518,10 @@ export default function ReconnaissanceNombresCP() {
   const explainChapterGoal = async () => {
     try {
       // 🎯 MARQUER L'INTERACTION UTILISATEUR
-      userHasInteractedRef.current = true;
+      markUserInteraction();
       
-      speechSynthesis.cancel();
+      stopAllVocals();
+      shouldStopRef.current = false; // Reset signal pour nouvelle séquence
       setIsPlayingVocal(true);
       setHasStarted(true);
       hasStartedRef.current = true;
@@ -480,7 +530,7 @@ export default function ReconnaissanceNombresCP() {
       setAnimatedDotIndex(-1);
 
       // ÉTAPE 1: But du chapitre
-      await playAudioSequence("Super ! Tu vas apprendre à reconnaître les nombres jusqu'à 20 !");
+      await playCP20Audio('reconnaissance', 'course-intro', "Super ! Tu vas apprendre à reconnaître les nombres jusqu'à 20 !");
       await wait(500);
       
       await playAudioSequence("Le but de ce chapitre, c'est de savoir compter les objets et dire le bon nombre !");
@@ -721,16 +771,9 @@ export default function ReconnaissanceNombresCP() {
               onClick={() => {
                 console.log("🎯 CLIC ONGLET COURS - réinitialisation + arrêt");
                 
-                // Arrêt vocal renforcé avec double vérification
+                // Arrêt vocal ultra-robuste
                 try {
-                  if ('speechSynthesis' in window) {
-                    speechSynthesis.cancel();
-                    setTimeout(() => {
-                      if ('speechSynthesis' in window) {
-                        speechSynthesis.cancel();
-                      }
-                    }, 100);
-                  }
+                  stopAllVocals();
                 } catch (error) {
                   console.warn('Erreur lors de l\'arrêt du vocal:', error);
                 }
@@ -759,16 +802,9 @@ export default function ReconnaissanceNombresCP() {
               onClick={() => {
                 console.log("🎯 CLIC ONGLET EXERCICES - réinitialisation + arrêt");
                 
-                // Arrêt vocal renforcé avec double vérification
+                // Arrêt vocal ultra-robuste
                 try {
-                  if ('speechSynthesis' in window) {
-                    speechSynthesis.cancel();
-                    setTimeout(() => {
-                      if ('speechSynthesis' in window) {
-                        speechSynthesis.cancel();
-                      }
-                    }, 100);
-                  }
+                  stopAllVocals();
                 } catch (error) {
                   console.warn('Erreur lors de l\'arrêt du vocal:', error);
                 }

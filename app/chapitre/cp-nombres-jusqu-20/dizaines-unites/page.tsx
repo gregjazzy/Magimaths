@@ -68,6 +68,10 @@ export default function ValeurPositionnelleCP20() {
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const shouldStopRef = useRef(false);
   const userHasInteractedRef = useRef(false);
+  
+  // 🎵 NOUVEAUX ÉTATS POUR GESTION VOCALE ULTRA-ROBUSTE
+  const shouldStopRef = useRef(false);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // 🔄 FONCTION DE RÉINITIALISATION CENTRALISÉE
   const resetButtons = () => {
@@ -173,6 +177,67 @@ export default function ValeurPositionnelleCP20() {
     }
   }, [currentExercise]);
 
+  // 🎵 FONCTION VOCALE CENTRALISÉE ULTRA-ROBUSTE
+  const playVocal = (text: string, rate: number = 1.2): Promise<void> => {
+    return new Promise((resolve) => {
+      // 🔒 PROTECTION : Empêcher les vocaux sans interaction utilisateur
+      if (!userHasInteractedRef.current) {
+        console.log("🚫 BLOQUÉ : Tentative de vocal sans interaction");
+        resolve();
+        return;
+      }
+      
+      // 🛑 VÉRIFIER LE SIGNAL D'ARRÊT
+      if (shouldStopRef.current) {
+        console.log("🛑 ARRÊT : Signal d'arrêt détecté");
+        resolve();
+        return;
+      }
+      
+      // 🔥 ARRÊT SYSTÉMATIQUE des vocaux précédents (ZÉRO CONFLIT)
+      speechSynthesis.cancel();
+      setTimeout(() => speechSynthesis.cancel(), 10); // Double sécurité
+      
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'fr-FR';
+      utterance.rate = rate;
+      
+      utterance.onend = () => {
+        console.log("✅ VOCAL TERMINÉ :", text.substring(0, 30) + "...");
+        resolve();
+      };
+      
+      utterance.onerror = () => {
+        console.log("❌ ERREUR VOCAL :", text.substring(0, 30) + "...");
+        resolve();
+      };
+      
+      console.log("🎵 DÉMARRAGE VOCAL :", text.substring(0, 30) + "...");
+      speechSynthesis.speak(utterance);
+    });
+  };
+
+  // 🛑 FONCTION D'ARRÊT ULTRA-AGRESSIVE
+  const stopAllVocals = () => {
+    console.log("🛑 ARRÊT ULTRA-AGRESSIF de tous les vocaux");
+    
+    // Triple sécurité
+    speechSynthesis.cancel();
+    setTimeout(() => speechSynthesis.cancel(), 10);
+    setTimeout(() => speechSynthesis.cancel(), 50);
+    setTimeout(() => speechSynthesis.cancel(), 100);
+    
+    // Signal d'arrêt global
+    shouldStopRef.current = true;
+    setIsPlayingVocal(false);
+    
+    // 🧹 NETTOYER LES TIMERS
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+  };
+
   // === useEffect POUR ARRÊT VOCAUX ===
   
   // Effect pour gérer les changements d'onglet interne (cours ↔ exercices)
@@ -181,19 +246,34 @@ export default function ValeurPositionnelleCP20() {
     // Vocal automatique supprimé - les navigateurs modernes bloquent les vocaux sans interaction utilisateur
   }, [showExercises]);
 
-  // Effect pour arrêter la voix quand on quitte la page
+  // 🎵 GESTION VOCALE ULTRA-ROBUSTE - Event Listeners
   useEffect(() => {
-    const stopSpeechOnExit = () => {
-      if ('speechSynthesis' in window) {
-        speechSynthesis.cancel();
+    // 🎵 FONCTION DE NETTOYAGE VOCAL pour la sortie de page
+    const handlePageExit = () => {
+      console.log("🚪 SORTIE DE PAGE DÉTECTÉE - Arrêt des vocaux");
+      stopAllVocals();
+    };
+    
+    // 🔍 GESTION DE LA VISIBILITÉ (onglet caché/affiché)
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        console.log("👁️ PAGE CACHÉE - Arrêt des vocaux");
+        stopAllVocals();
+      } else {
+        console.log("👁️ PAGE VISIBLE - Reset boutons");
+        resetButtons();
       }
-      setIsPlayingVocal(false);
-      setHighlightedElement(null);
+    };
+    
+    // 🏠 GESTION DE LA NAVIGATION
+    const handleNavigation = () => {
+      console.log("🔄 NAVIGATION DÉTECTÉE - Arrêt des vocaux");
+      stopAllVocals();
     };
 
     // Arrêter la voix quand on ferme/quitte la page
     const handleBeforeUnload = () => {
-      stopSpeechOnExit();
+      handlePageExit();
     };
 
     // Arrêter et réinitialiser quand on quitte

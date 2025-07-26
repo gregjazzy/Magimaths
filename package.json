@@ -7,9 +7,11 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "generate-audio": "node scripts/generate-audio.js"
   },
   "dependencies": {
+    "@google-cloud/text-to-speech": "^6.2.0",
     "@headlessui/react": "^1.7.0",
     "@heroicons/react": "^2.0.0",
     "@hookform/resolvers": "^3.3.0",

@@ -270,14 +270,69 @@ export default function DoublesMotiesCP20() {
     }
   };
 
-  const playAudioSequence = (text: string): Promise<void> => {
+  // 🎵 FONCTION VOCALE CENTRALISÉE ULTRA-ROBUSTE
+  const playVocal = (text: string, rate: number = 1.2): Promise<void> => {
     return new Promise((resolve) => {
-      // 🛡️ PROTECTION: Empêcher les vocaux automatiques sans interaction utilisateur
+      // 🔒 PROTECTION : Empêcher les vocaux sans interaction utilisateur
       if (!userHasInteractedRef.current) {
-        console.warn("🚫 Vocal bloqué - aucune interaction utilisateur détectée");
+        console.log("🚫 BLOQUÉ : Tentative de vocal sans interaction");
         resolve();
         return;
       }
+      
+      // 🛑 VÉRIFIER LE SIGNAL D'ARRÊT
+      if (shouldStopRef.current) {
+        console.log("🛑 ARRÊT : Signal d'arrêt détecté");
+        resolve();
+        return;
+      }
+      
+      // 🔥 ARRÊT SYSTÉMATIQUE des vocaux précédents (ZÉRO CONFLIT)
+      speechSynthesis.cancel();
+      setTimeout(() => speechSynthesis.cancel(), 10); // Double sécurité
+      
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'fr-FR';
+      utterance.rate = rate;
+      
+      utterance.onend = () => {
+        console.log("✅ VOCAL TERMINÉ :", text.substring(0, 30) + "...");
+        resolve();
+      };
+      
+      utterance.onerror = () => {
+        console.log("❌ ERREUR VOCAL :", text.substring(0, 30) + "...");
+        resolve();
+      };
+      
+      console.log("🎵 DÉMARRAGE VOCAL :", text.substring(0, 30) + "...");
+      speechSynthesis.speak(utterance);
+    });
+  };
+
+  // 🛑 FONCTION D'ARRÊT ULTRA-AGRESSIVE
+  const stopAllVocals = () => {
+    console.log("🛑 ARRÊT ULTRA-AGRESSIF de tous les vocaux");
+    
+    // Triple sécurité
+    speechSynthesis.cancel();
+    setTimeout(() => speechSynthesis.cancel(), 10);
+    setTimeout(() => speechSynthesis.cancel(), 50);
+    setTimeout(() => speechSynthesis.cancel(), 100);
+    
+    // Signal d'arrêt global
+    shouldStopRef.current = true;
+    setIsPlayingVocal(false);
+    
+    // 🧹 NETTOYER LES TIMERS
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+  };
+
+  // Alias pour compatibilité
+  const playAudioSequence = playVocal;
       
       // 🛑 VÉRIFIER LE SIGNAL D'ARRÊT
       if (shouldStopRef.current) {
