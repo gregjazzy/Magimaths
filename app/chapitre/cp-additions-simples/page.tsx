@@ -25,16 +25,6 @@ const sections = [
     verified: true
   },
   {
-    id: 'additions-10',
-    title: 'Additions jusqu\'à 10',
-    description: 'Mes premières additions avec des petits nombres',
-    icon: '🔢',
-    duration: '12 min',
-    xp: 15,
-    color: 'from-blue-500 to-cyan-500',
-    verified: true
-  },
-  {
     id: 'additions-20',
     title: 'Additions jusqu\'à 20',
     description: 'Additions plus grandes en comptant sur mes doigts',
@@ -177,49 +167,7 @@ export default function CPAdditionsSimplesPage() {
           </div>
         </div>
 
-        {/* Ce qu'il faut retenir selon le programme */}
-        <div className="bg-white rounded-xl p-4 sm:p-6 lg:p-8 shadow-lg mb-6 sm:mb-8">
-          <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-800 mb-4 sm:mb-6 flex flex-col sm:flex-row items-start sm:items-center">
-            <span className="text-2xl sm:text-3xl mr-0 sm:mr-3 mb-2 sm:mb-0">💡</span>
-            <span className="text-center sm:text-left">Ce qu'il faut retenir (Programme officiel)</span>
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-            <div className="bg-purple-50 p-4 sm:p-6 rounded-lg border border-purple-200">
-              <h3 className="font-bold text-purple-800 mb-3 text-sm sm:text-base">➕ Comprendre l'addition</h3>
-              <ul className="space-y-2 text-gray-700 text-sm sm:text-base">
-                <li className="flex items-start">
-                  <span className="text-purple-500 mr-2">•</span>
-                  Additionner = ajouter, mettre ensemble
-                </li>
-                <li className="flex items-start">
-                  <span className="text-purple-500 mr-2">•</span>
-                  Comprendre le symbole +
-                </li>
-                <li className="flex items-start">
-                  <span className="text-purple-500 mr-2">•</span>
-                  Utiliser ses doigts, objets concrets
-                </li>
-              </ul>
-            </div>
-            <div className="bg-pink-50 p-4 sm:p-6 rounded-lg border border-pink-200">
-              <h3 className="font-bold text-pink-800 mb-3 text-sm sm:text-base">🎯 Calculer et résoudre</h3>
-              <ul className="space-y-2 text-gray-700 text-sm sm:text-base">
-                <li className="flex items-start">
-                  <span className="text-pink-500 mr-2">•</span>
-                  Additions jusqu'à 20
-                </li>
-                <li className="flex items-start">
-                  <span className="text-pink-500 mr-2">•</span>
-                  Techniques de calcul mental
-                </li>
-                <li className="flex items-start">
-                  <span className="text-pink-500 mr-2">•</span>
-                  Résoudre des problèmes simples
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
+
 
         {/* Exercices - grille simple style CE1 */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">

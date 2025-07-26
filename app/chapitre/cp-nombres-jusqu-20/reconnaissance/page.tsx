@@ -21,12 +21,11 @@ export default function ReconnaissanceNombresCP() {
   const [isPlayingVocal, setIsPlayingVocal] = useState(false);
   const [hasStarted, setHasStarted] = useState(false);
   const hasStartedRef = useRef(false);
-  const welcomeTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const userHasInteractedRef = useRef(false);
+
   const [animatedDotIndex, setAnimatedDotIndex] = useState<number>(-1);
   const exerciseInstructionGivenRef = useRef(false);
   const [exerciseInstructionGiven, setExerciseInstructionGiven] = useState(false);
-  const exerciseReadingTimerRef = useRef<NodeJS.Timeout | null>(null);
-  const allTimersRef = useRef<NodeJS.Timeout[]>([]);
 
   // Fonction pour mélanger un tableau
   const shuffleArray = (array: string[]) => {
@@ -45,6 +44,66 @@ export default function ReconnaissanceNombresCP() {
     setShuffledChoices(shuffled);
   };
 
+  // 🔄 FONCTION DE RÉINITIALISATION CENTRALISÉE
+  const resetButtons = () => {
+    console.log("🔄 RÉINITIALISATION DES BOUTONS - reconnaissance");
+    setExerciseInstructionGiven(false);
+    setHasStarted(false);
+    exerciseInstructionGivenRef.current = false;
+    hasStartedRef.current = false;
+    // ⚠️ NE PAS réinitialiser userHasInteractedRef - on garde l'historique d'interaction
+  };
+
+  // 🔄 RÉINITIALISER les boutons à chaque chargement de page
+  useEffect(() => {
+    console.log("🔄 CHARGEMENT INITIAL - reconnaissance");
+    resetButtons();
+    
+    // 🎯 DÉTECTER TOUTE INTERACTION UTILISATEUR
+    const markUserInteraction = () => {
+      userHasInteractedRef.current = true;
+      console.log("✋ Interaction utilisateur détectée");
+    };
+    
+    document.addEventListener('click', markUserInteraction);
+    document.addEventListener('keydown', markUserInteraction);
+    document.addEventListener('touchstart', markUserInteraction);
+    
+    // 🔄 VÉRIFICATION PÉRIODIQUE - Force la réinitialisation toutes les 2 secondes
+    const intervalId = setInterval(() => {
+      // Si les boutons ont disparu mais qu'on est sur la page, les remettre
+      if (hasStartedRef.current || exerciseInstructionGivenRef.current) {
+        console.log("🔄 VÉRIFICATION PÉRIODIQUE - réinitialisation forcée");
+        resetButtons();
+      }
+    }, 2000);
+    
+    return () => {
+      document.removeEventListener('click', markUserInteraction);
+      document.removeEventListener('keydown', markUserInteraction);
+      document.removeEventListener('touchstart', markUserInteraction);
+      clearInterval(intervalId);
+    };
+  }, []); // Une seule fois au chargement
+
+  // 🔍 DEBUG: Surveiller les changements d'exerciseInstructionGiven
+  useEffect(() => {
+    console.log("🔍 exerciseInstructionGiven changed to:", exerciseInstructionGiven);
+  }, [exerciseInstructionGiven]);
+
+  // 🔍 DEBUG: Surveiller les changements d'hasStarted
+  useEffect(() => {
+    console.log("🔍 hasStarted changed to:", hasStarted);
+  }, [hasStarted]);
+
+  // 🔄 RESET ULTIME au montage du composant
+  useEffect(() => {
+    console.log("🚀 MONTAGE COMPOSANT - reset ultime");
+    setTimeout(() => {
+      resetButtons();
+    }, 500);
+  }, []);
+
   // Effet pour mélanger les choix quand on change d'exercice
   useEffect(() => {
     if (exercises.length > 0) {
@@ -52,102 +111,7 @@ export default function ReconnaissanceNombresCP() {
     }
   }, [currentExercise]);
 
-  // Effect pour arrêter le vocal lors de la sortie de page/onglet
-  useEffect(() => {
-    const stopSpeechOnExit = () => {
-      try {
-        if ('speechSynthesis' in window) {
-          speechSynthesis.cancel();
-          // Double annulation pour s'assurer de l'arrêt
-          setTimeout(() => {
-            if ('speechSynthesis' in window) {
-              speechSynthesis.cancel();
-            }
-          }, 100);
-        }
-      } catch (error) {
-        console.warn('Erreur lors de l\'arrêt du vocal:', error);
-      }
-      
-      // Réinitialiser tous les états liés au vocal et aux animations
-      setIsPlayingVocal(false);
-      setHighlightedElement(null);
-      setAnimatedDotIndex(-1);
-      setHasStarted(false);
-      hasStartedRef.current = false;
-      
-      // Arrêter spécifiquement toutes les fonctions vocales en cours
-      setExerciseInstructionGiven(false);
-      exerciseInstructionGivenRef.current = false;
-      
-      // Nettoyer les timers
-      if (welcomeTimerRef.current) {
-        clearTimeout(welcomeTimerRef.current);
-        welcomeTimerRef.current = null;
-      }
-    };
 
-    const handleBeforeUnload = () => {
-      stopSpeechOnExit();
-    };
-
-    const handleVisibilityChange = () => {
-      if (document.hidden) {
-        stopSpeechOnExit();
-      }
-    };
-
-    const handlePageHide = () => {
-      stopSpeechOnExit();
-    };
-
-    const handlePopState = () => {
-      stopSpeechOnExit();
-    };
-
-    // Ajouter les event listeners pour tous les cas de sortie
-    window.addEventListener('beforeunload', handleBeforeUnload);
-    window.addEventListener('unload', handlePageHide);
-    window.addEventListener('pagehide', handlePageHide);
-    window.addEventListener('blur', stopSpeechOnExit);
-    window.addEventListener('focus', () => {}); // Placeholder pour le focus
-    window.addEventListener('popstate', handlePopState);
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    
-    // Event listeners supplémentaires pour une couverture maximale
-    window.addEventListener('hashchange', stopSpeechOnExit);
-    document.addEventListener('DOMContentLoaded', () => {});
-    
-    // Intercepter les clics sur les liens pour arrêter le vocal
-    document.addEventListener('click', (e) => {
-      const target = e.target as HTMLElement;
-      if (target.tagName === 'A' || target.closest('a')) {
-        stopSpeechOnExit();
-      }
-    });
-
-    // Cleanup à la destruction du composant
-    return () => {
-      window.removeEventListener('beforeunload', handleBeforeUnload);
-      window.removeEventListener('unload', handlePageHide);
-      window.removeEventListener('pagehide', handlePageHide);
-      window.removeEventListener('blur', stopSpeechOnExit);
-      window.removeEventListener('focus', () => {});
-      window.removeEventListener('popstate', handlePopState);
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-      window.removeEventListener('hashchange', stopSpeechOnExit);
-      document.removeEventListener('DOMContentLoaded', () => {});
-      document.removeEventListener('click', (e) => {
-        const target = e.target as HTMLElement;
-        if (target.tagName === 'A' || target.closest('a')) {
-          stopSpeechOnExit();
-        }
-      });
-      
-      // Arrêt final et nettoyage complet
-      stopSpeechOnExit();
-    };
-  }, []);
 
   // Fonction pour créer l'affichage des boules responsive
   const renderVisualDots = (visual: string, isCourse = false) => {
@@ -253,6 +217,13 @@ export default function ReconnaissanceNombresCP() {
 
   const playAudioSequence = (text: string): Promise<void> => {
     return new Promise((resolve) => {
+      // 🛡️ PROTECTION: Empêcher les vocaux automatiques sans interaction utilisateur
+      if (!userHasInteractedRef.current) {
+        console.warn("🚫 Vocal bloqué - aucune interaction utilisateur détectée");
+        resolve();
+        return;
+      }
+      
       // Arrêter les vocaux précédents
       if ('speechSynthesis' in window) {
         speechSynthesis.cancel();
@@ -260,7 +231,7 @@ export default function ReconnaissanceNombresCP() {
       
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = 'fr-FR';
-      utterance.rate = 0.8;
+      utterance.rate = 1.0;
       utterance.onend = () => resolve();
       speechSynthesis.speak(utterance);
     });
@@ -283,6 +254,9 @@ export default function ReconnaissanceNombresCP() {
     if (exerciseInstructionGivenRef.current) return;
     
     try {
+      // 🎯 MARQUER L'INTERACTION UTILISATEUR
+      userHasInteractedRef.current = true;
+      
       speechSynthesis.cancel();
       exerciseInstructionGivenRef.current = true;
       setExerciseInstructionGiven(true);
@@ -390,120 +364,119 @@ export default function ReconnaissanceNombresCP() {
 
   // Effect principal pour gérer cours et exercices
   useEffect(() => {
-    // Guidance vocale automatique pour les non-lecteurs (COURS seulement)
-    if (!showExercises) {
-      welcomeTimerRef.current = setTimeout(() => {
-        if (!hasStartedRef.current) {
-          const utterance = new SpeechSynthesisUtterance("Salut ! Clique sur le bouton violet pour commencer à apprendre les nombres !");
-          utterance.lang = 'fr-FR';
-          utterance.rate = 0.8;
-          speechSynthesis.speak(utterance);
-        }
-      }, 1000);
-    }
-
-    return () => {
-      if (welcomeTimerRef.current) clearTimeout(welcomeTimerRef.current);
-    };
-  }, [showExercises]);
-
-  // Effect pour jouer automatiquement la consigne des exercices (une seule fois)
-  useEffect(() => {
-    if (showExercises && !exerciseInstructionGivenRef.current) {
-      const timer = setTimeout(() => {
-        explainExercisesOnce();
-      }, 800);
-      return () => {
-        clearTimeout(timer);
-      };
-    }
-  }, [showExercises]);
-
-  // Effect pour arrêter les vocaux lors du changement d'onglet
-  useEffect(() => {
-    // Arrêter tous les vocaux lors du changement d'onglet (mais pas au premier rendu)
-    return () => {
-      if ('speechSynthesis' in window) {
-        speechSynthesis.cancel();
-      }
-      setIsPlayingVocal(false);
-    };
+    console.log("🔍 showExercises changed to:", showExercises);
+    // Vocal automatique supprimé - les navigateurs modernes bloquent les vocaux sans interaction utilisateur
   }, [showExercises]);
 
   // Effect pour gérer la visibilité de la page et les sorties
   useEffect(() => {
     const handleVisibilityChange = () => {
+      console.log("🔄 VISIBILITY CHANGE - hidden:", document.hidden);
       if (document.hidden) {
-        // La page n'est plus visible (onglet changé, fenêtre minimisée, etc.)
+        console.log("🚪 PAGE CACHÉE - arrêt vocal");
         stopVocal();
+      } else {
+        console.log("👁️ PAGE VISIBLE - réinitialisation boutons");
+        resetButtons();
       }
     };
 
     const handleBeforeUnload = () => {
-      // L'utilisateur quitte la page
+      console.log("🚪 BEFORE UNLOAD - arrêt vocal");
       stopVocal();
     };
 
     const handlePageHide = () => {
-      // Page cachée (plus fiable que beforeunload)
+      console.log("🚪 PAGE HIDE - arrêt vocal");
       stopVocal();
     };
 
-    // Ajouter les listeners
+    const handleFocus = () => {
+      console.log("🎯 WINDOW FOCUS - réinitialisation boutons");
+      resetButtons();
+    };
+
+    const handleBlur = () => {
+      console.log("😴 WINDOW BLUR - arrêt vocal");
+      stopVocal();
+    };
+
+    const handlePageShow = (event) => {
+      console.log("📄 PAGE SHOW - persisted:", event.persisted);
+      resetButtons();
+    };
+
+    const handlePopState = () => {
+      console.log("⬅️ POP STATE - réinitialisation boutons");
+      resetButtons();
+    };
+
+    const handleMouseEnter = () => {
+      console.log("🐭 MOUSE ENTER - réinitialisation boutons");
+      resetButtons();
+    };
+
+    const handleScroll = () => {
+      console.log("📜 SCROLL - réinitialisation boutons");
+      resetButtons();
+    };
+
+    // 🚀 DÉTECTION AGRESSIVE - tous les événements possibles
     document.addEventListener('visibilitychange', handleVisibilityChange);
     window.addEventListener('beforeunload', handleBeforeUnload);
     window.addEventListener('pagehide', handlePageHide);
+    window.addEventListener('pageshow', handlePageShow);
+    window.addEventListener('focus', handleFocus);
+    window.addEventListener('blur', handleBlur);
+    window.addEventListener('popstate', handlePopState);
+    document.addEventListener('mouseenter', handleMouseEnter);
+    window.addEventListener('scroll', handleScroll);
+    
+    // Événements supplémentaires pour détecter le retour
+    document.addEventListener('DOMContentLoaded', () => {
+      console.log("📄 DOM CONTENT LOADED");
+      resetButtons();
+    });
+
+    // 🔄 FORCE RESET après 1 seconde (au cas où les événements ratent)
+    setTimeout(() => {
+      console.log("⏰ TIMEOUT 1s - réinitialisation forcée");
+      resetButtons();
+    }, 1000);
 
     // Cleanup
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
       window.removeEventListener('beforeunload', handleBeforeUnload);
       window.removeEventListener('pagehide', handlePageHide);
+      window.removeEventListener('pageshow', handlePageShow);
+      window.removeEventListener('focus', handleFocus);
+      window.removeEventListener('blur', handleBlur);
+      window.removeEventListener('popstate', handlePopState);
+      document.removeEventListener('mouseenter', handleMouseEnter);
+      window.removeEventListener('scroll', handleScroll);
       stopVocal();
     };
   }, []);
 
-  // Effect pour réinitialiser quand on revient sur la page
-  useEffect(() => {
-    const handleVisibilityChange = () => {
-      if (!document.hidden && showExercises) {
-        // La page redevient visible et on est sur les exercices
-        // Réinitialiser les états si nécessaire
-        exerciseInstructionGivenRef.current = false;
-      }
-    };
 
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    
-    return () => {
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-    };
-  }, [showExercises]);
 
-  // Effect pour jouer automatiquement la consigne des exercices (800ms après le chargement)
-  useEffect(() => {
-    if (showExercises && !exerciseInstructionGivenRef.current) {
-      const timer = setTimeout(() => {
-        explainExercisesOnce();
-      }, 800);
-      return () => {
-        clearTimeout(timer);
-      };
-    }
-  }, [showExercises]);
+
 
 
 
   // Explication du chapitre avec guidage vocal et animations détaillées
   const explainChapterGoal = async () => {
     try {
+      // 🎯 MARQUER L'INTERACTION UTILISATEUR
+      userHasInteractedRef.current = true;
+      
       speechSynthesis.cancel();
       setIsPlayingVocal(true);
       setHasStarted(true);
       hasStartedRef.current = true;
       
-      // Effacer les timers de rappel et animations
-      if (welcomeTimerRef.current) clearTimeout(welcomeTimerRef.current);
+      // Effacer les animations
       setAnimatedDotIndex(-1);
 
       // ÉTAPE 1: But du chapitre
@@ -604,10 +577,16 @@ export default function ReconnaissanceNombresCP() {
   };
 
   const speakNumber = (text: string) => {
+    // 🛡️ PROTECTION: Empêcher les vocaux automatiques sans interaction utilisateur
+    if (!userHasInteractedRef.current) {
+      console.warn("🚫 Vocal bloqué - aucune interaction utilisateur détectée");
+      return;
+    }
+    
     if ('speechSynthesis' in window) {
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = 'fr-FR';
-      utterance.rate = 0.7;
+      utterance.rate = 0.9;
       speechSynthesis.speak(utterance);
     }
   };
@@ -709,14 +688,21 @@ export default function ReconnaissanceNombresCP() {
       <div className="max-w-6xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8">
-          <Link 
-            href="/chapitre/cp-nombres-jusqu-20" 
-            onClick={() => stopVocal()}
-            className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors mb-4"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            <span>Retour au chapitre</span>
-          </Link>
+          <div className="flex justify-between items-center mb-4">
+            <Link 
+              href="/chapitre/cp-nombres-jusqu-20" 
+              onClick={() => {
+                console.log("🎯 CLIC RETOUR CHAPITRE - arrêt vocal");
+                stopVocal();
+              }}
+              className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              <span>Retour au chapitre</span>
+            </Link>
+            
+
+          </div>
           
           <div className="bg-white rounded-xl p-4 sm:p-6 shadow-lg text-center">
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-2 sm:mb-4">
@@ -733,6 +719,8 @@ export default function ReconnaissanceNombresCP() {
           <div className="bg-white rounded-lg p-1 shadow-md">
             <button
               onClick={() => {
+                console.log("🎯 CLIC ONGLET COURS - réinitialisation + arrêt");
+                
                 // Arrêt vocal renforcé avec double vérification
                 try {
                   if ('speechSynthesis' in window) {
@@ -752,13 +740,12 @@ export default function ReconnaissanceNombresCP() {
                 setHighlightedElement(null);
                 setAnimatedDotIndex(-1);
                 
-                // Nettoyer les timers
-                if (welcomeTimerRef.current) {
-                  clearTimeout(welcomeTimerRef.current);
-                  welcomeTimerRef.current = null;
-                }
-                
                 setShowExercises(false);
+                
+                // 🔄 FORCE RESET pour s'assurer que les boutons reviennent
+                setTimeout(() => {
+                  resetButtons();
+                }, 100);
               }}
               className={`px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-bold transition-all text-sm sm:text-base ${
                 !showExercises 
@@ -770,6 +757,8 @@ export default function ReconnaissanceNombresCP() {
             </button>
             <button
               onClick={() => {
+                console.log("🎯 CLIC ONGLET EXERCICES - réinitialisation + arrêt");
+                
                 // Arrêt vocal renforcé avec double vérification
                 try {
                   if ('speechSynthesis' in window) {
@@ -789,15 +778,14 @@ export default function ReconnaissanceNombresCP() {
                 setHighlightedElement(null);
                 setAnimatedDotIndex(-1);
                 
-                // Nettoyer les timers
-                if (welcomeTimerRef.current) {
-                  clearTimeout(welcomeTimerRef.current);
-                  welcomeTimerRef.current = null;
-                }
-                
                 setShowExercises(true);
                 exerciseInstructionGivenRef.current = false;
                 setExerciseInstructionGiven(false);
+                
+                // 🔄 FORCE RESET pour s'assurer que les boutons reviennent
+                setTimeout(() => {
+                  resetButtons();
+                }, 100);
               }}
               className={`px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-bold transition-all text-sm sm:text-base ${
                 showExercises 
@@ -814,7 +802,10 @@ export default function ReconnaissanceNombresCP() {
           /* COURS */
           <div className="space-y-4 sm:space-y-8">
             {/* Bouton d'explication avec guidage vocal */}
-            {!hasStarted && (
+            {(() => {
+              console.log("🔍 COURS - hasStarted:", hasStarted, "| Affichage bouton COMMENCER:", !hasStarted);
+              return !hasStarted;
+            })() && (
               <div className="bg-white rounded-xl p-4 sm:p-8 shadow-lg text-center">
                 <h2 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6 text-gray-900">
                   🔢 Reconnaissance des nombres jusqu'à 20
@@ -908,6 +899,9 @@ export default function ReconnaissanceNombresCP() {
                   </p>
                   <button
                     onClick={() => {
+                      // 🎯 MARQUER L'INTERACTION UTILISATEUR
+                      userHasInteractedRef.current = true;
+                      
                       stopVocal();
                       speakNumber(numbers.find(n => n.value === selectedNumber)?.reading || '');
                     }}
@@ -961,6 +955,31 @@ export default function ReconnaissanceNombresCP() {
                   Recommencer
                 </button>
               </div>
+
+              {/* Bouton Instructions principal - style identique au bouton COMMENCER */}
+              {(() => {
+                console.log("🔍 EXERCICES - exerciseInstructionGiven:", exerciseInstructionGiven, "| Affichage bouton INSTRUCTIONS:", !exerciseInstructionGiven);
+                return !exerciseInstructionGiven;
+              })() && (
+                <div className="text-center mb-6">
+                  <button
+                    onClick={explainExercisesOnce}
+                    disabled={isPlayingVocal}
+                    className={`bg-gradient-to-r from-orange-500 to-yellow-500 text-white px-8 py-4 rounded-xl font-bold text-xl shadow-lg hover:shadow-xl transition-all transform hover:scale-105 ${
+                      !exerciseInstructionGiven ? 'animate-bounce' : ''
+                    } ${
+                      isPlayingVocal ? 'animate-pulse cursor-not-allowed opacity-75' : 'hover:from-orange-600 hover:to-yellow-600'
+                    }`}
+                    style={{
+                      animationDuration: !exerciseInstructionGiven ? '2s' : 'none',
+                      animationIterationCount: !exerciseInstructionGiven ? 'infinite' : 'none'
+                    }}
+                  >
+                    <Volume2 className="inline w-6 h-6 mr-3" />
+                    🔊 ÉCOUTER LES INSTRUCTIONS !
+                  </button>
+                </div>
+              )}
               
               {/* Barre de progression */}
               <div className="w-full bg-gray-200 rounded-full h-3 sm:h-4 mb-2 sm:mb-3">

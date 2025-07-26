@@ -15,6 +15,7 @@ export default function ComplementsDixCP() {
   const [showCompletionModal, setShowCompletionModal] = useState(false);
   const [finalScore, setFinalScore] = useState(0);
   const [shuffledChoices, setShuffledChoices] = useState<string[]>([]);
+  const [exerciseInstructionGiven, setExerciseInstructionGiven] = useState(false);
   
   // États pour le système vocal
   const [highlightedElement, setHighlightedElement] = useState<string | null>(null);
@@ -25,9 +26,57 @@ export default function ComplementsDixCP() {
   const [isLoadingAudio, setIsLoadingAudio] = useState(false);
   const [hasStarted, setHasStarted] = useState(false);
   const hasStartedRef = useRef(false);
-  const welcomeTimerRef = useRef<NodeJS.Timeout | null>(null);
-  const reminderTimerRef = useRef<NodeJS.Timeout | null>(null);
   const exerciseInstructionGivenRef = useRef(false);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  
+  // 🆕 SOLUTION ULTRA-AGRESSIVE pour la persistance des boutons
+  const userHasInteractedRef = useRef(false);
+
+  // Fonction centralisée pour réinitialiser les boutons
+  const resetButtons = () => {
+    console.log("🔄 RÉINITIALISATION DES BOUTONS - complements-10");
+    setExerciseInstructionGiven(false);
+    setHasStarted(false);
+    exerciseInstructionGivenRef.current = false;
+    hasStartedRef.current = false;
+    // ⚠️ NE PAS réinitialiser userHasInteractedRef - on garde l'historique d'interaction
+  };
+
+  // 🔄 SOLUTION ULTRA-AGRESSIVE : Réinitialisation initiale + détection d'interaction
+  useEffect(() => {
+    console.log("📍 INITIALISATION - complements-10");
+    
+    // Reset immédiat au chargement
+    resetButtons();
+    
+    // Détection d'interaction utilisateur
+    const markUserInteraction = () => {
+      if (!userHasInteractedRef.current) {
+        console.log("✅ PREMIÈRE INTERACTION UTILISATEUR détectée - complements-10");
+        userHasInteractedRef.current = true;
+      }
+    };
+    
+    // Event listeners pour détecter l'interaction
+    document.addEventListener('click', markUserInteraction);
+    document.addEventListener('keydown', markUserInteraction);
+    document.addEventListener('touchstart', markUserInteraction);
+    
+    // Check périodique AGRESSIF (toutes les 2 secondes)
+    const intervalId = setInterval(() => {
+      if (hasStartedRef.current || exerciseInstructionGivenRef.current) {
+        console.log("⚠️ CHECK PÉRIODIQUE : Boutons cachés détectés, RESET FORCÉ - complements-10");
+        resetButtons();
+      }
+    }, 2000);
+    
+    return () => {
+      document.removeEventListener('click', markUserInteraction);
+      document.removeEventListener('keydown', markUserInteraction);
+      document.removeEventListener('touchstart', markUserInteraction);
+      clearInterval(intervalId);
+    };
+  }, []);
 
   // Sauvegarder les progrès dans localStorage
   const saveProgress = (score: number, maxScore: number) => {
@@ -116,7 +165,7 @@ export default function ComplementsDixCP() {
     
     const utterance = new SpeechSynthesisUtterance(enhancedText);
     utterance.lang = 'fr-FR';
-    utterance.rate = 0.85;
+    utterance.rate = 1.1;
     utterance.pitch = 1.1;
     utterance.volume = 0.9;
     
@@ -129,6 +178,13 @@ export default function ComplementsDixCP() {
 
   const playAudioSequence = (text: string): Promise<void> => {
     return new Promise((resolve) => {
+      // 🔒 PROTECTION : Empêcher les vocaux sans interaction utilisateur
+      if (!userHasInteractedRef.current) {
+        console.log("🚫 BLOQUÉ : Tentative de vocal sans interaction utilisateur - complements-10");
+        resolve();
+        return;
+      }
+      
       // Arrêter les vocaux précédents
       if ('speechSynthesis' in window) {
         speechSynthesis.cancel();
@@ -152,17 +208,11 @@ export default function ComplementsDixCP() {
   };
 
   const explainChapterGoal = async () => {
+    // ✅ Marquer l'interaction utilisateur explicitement
+    userHasInteractedRef.current = true;
+    
     setHasStarted(true);
     hasStartedRef.current = true;
-    
-    if (welcomeTimerRef.current) {
-      clearTimeout(welcomeTimerRef.current);
-      welcomeTimerRef.current = null;
-    }
-    if (reminderTimerRef.current) {
-      clearTimeout(reminderTimerRef.current);
-      reminderTimerRef.current = null;
-    }
     
     // Arrêter les vocaux précédents
     if ('speechSynthesis' in window) {
@@ -323,12 +373,16 @@ export default function ComplementsDixCP() {
 
   // Consigne détaillée avec l'exercice 1 réel et animations synchronisées
   const explainExercisesOnce = async () => {
+    // ✅ Marquer l'interaction utilisateur explicitement
+    userHasInteractedRef.current = true;
+    
     // Arrêter les vocaux précédents
     if ('speechSynthesis' in window) {
       speechSynthesis.cancel();
     }
 
     setIsPlayingVocal(true);
+    setExerciseInstructionGiven(true);
 
     try {
       // 1. Introduction générale
@@ -472,20 +526,10 @@ export default function ComplementsDixCP() {
       speechSynthesis.onvoiceschanged = loadVoices;
     }
 
-    // Guidance vocale automatique pour les non-lecteurs (COURS seulement)
-    if (!showExercises) {
-      welcomeTimerRef.current = setTimeout(() => {
-        if (!hasStartedRef.current) {
-          speakAudio("Clique sur le bouton violet qui bouge pour commencer.");
-        }
-      }, 800);
+    // 🚫 SUPPRIMÉ : Plus de guidance vocale automatique (cause warnings)
+    // Seuls les clics manuels déclenchent les vocaux maintenant
 
-
-    }
-
-          return () => {
-        if (welcomeTimerRef.current) clearTimeout(welcomeTimerRef.current);
-      };
+          // 🚫 Plus de nettoyage de timers automatiques nécessaire
   }, [showExercises]);
 
   // Effect pour gérer les changements d'onglet interne (cours ↔ exercices)
@@ -496,12 +540,19 @@ export default function ComplementsDixCP() {
     }
     setIsPlayingVocal(false);
     
+    // Nettoyer le timeout précédent s'il existe
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+    
     // Jouer automatiquement la consigne des exercices (une seule fois)
     if (showExercises && !exerciseInstructionGivenRef.current) {
       // Délai court pour laisser l'interface se charger
-      setTimeout(() => {
+      timeoutRef.current = setTimeout(() => {
         explainExercisesOnce();
         exerciseInstructionGivenRef.current = true;
+        timeoutRef.current = null;
       }, 600);
     }
   }, [showExercises]);
@@ -525,6 +576,12 @@ export default function ComplementsDixCP() {
     const handleVisibilityChange = () => {
       if (document.hidden) {
         stopSpeechOnExit();
+      } else {
+        // 🔄 La page redevient visible - RÉINITIALISER LES BOUTONS !
+        setExerciseInstructionGiven(false);
+        setHasStarted(false);
+        exerciseInstructionGivenRef.current = false;
+        hasStartedRef.current = false;
       }
     };
 
@@ -553,7 +610,7 @@ export default function ComplementsDixCP() {
       
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = 'fr-FR';
-      utterance.rate = 0.7;
+      utterance.rate = 0.9;
       speechSynthesis.speak(utterance);
     }
   };
@@ -620,6 +677,12 @@ export default function ComplementsDixCP() {
   };
 
   const nextExercise = () => {
+    // Arrêter tous les vocaux immédiatement
+    if ('speechSynthesis' in window) {
+      speechSynthesis.cancel();
+    }
+    setIsPlayingVocal(false);
+    
     if (currentExercise < exercises.length - 1) {
       setCurrentExercise(currentExercise + 1);
       setUserAnswer('');
@@ -983,6 +1046,28 @@ export default function ComplementsDixCP() {
                   Recommencer
                 </button>
               </div>
+
+              {/* Bouton Instructions principal - style identique au bouton COMMENCER */}
+              {!exerciseInstructionGiven && (
+                <div className="text-center mb-6">
+                  <button
+                    onClick={explainExercisesOnce}
+                    disabled={isPlayingVocal}
+                    className={`bg-gradient-to-r from-orange-500 to-yellow-500 text-white px-8 py-4 rounded-xl font-bold text-xl shadow-lg hover:shadow-xl transition-all transform hover:scale-105 ${
+                      !exerciseInstructionGiven ? 'animate-bounce' : ''
+                    } ${
+                      isPlayingVocal ? 'animate-pulse cursor-not-allowed opacity-75' : 'hover:from-orange-600 hover:to-yellow-600'
+                    }`}
+                    style={{
+                      animationDuration: !exerciseInstructionGiven ? '2s' : 'none',
+                      animationIterationCount: !exerciseInstructionGiven ? 'infinite' : 'none'
+                    }}
+                  >
+                    <Volume2 className="inline w-6 h-6 mr-3" />
+                    🔊 ÉCOUTER LES INSTRUCTIONS !
+                  </button>
+                </div>
+              )}
               
               {/* Barre de progression */}
               <div className="w-full bg-gray-200 rounded-full h-3 sm:h-4 mb-2 sm:mb-3">

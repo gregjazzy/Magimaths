@@ -17,6 +17,7 @@ export default function ComptageCP() {
   const [isCountingAnimation, setIsCountingAnimation] = useState(false);
   const [currentCountingNumber, setCurrentCountingNumber] = useState(0);
   const [shuffledChoices, setShuffledChoices] = useState<string[]>([]);
+  const [exerciseInstructionGiven, setExerciseInstructionGiven] = useState(false);
   
   // États pour le système vocal
   const [highlightedElement, setHighlightedElement] = useState<string | null>(null);
@@ -27,9 +28,57 @@ export default function ComptageCP() {
   const [isLoadingAudio, setIsLoadingAudio] = useState(false);
   const [hasStarted, setHasStarted] = useState(false);
   const hasStartedRef = useRef(false);
-  const welcomeTimerRef = useRef<NodeJS.Timeout | null>(null);
-  const reminderTimerRef = useRef<NodeJS.Timeout | null>(null);
   const exerciseInstructionGivenRef = useRef(false);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  
+  // 🆕 SOLUTION ULTRA-AGRESSIVE pour la persistance des boutons
+  const userHasInteractedRef = useRef(false);
+
+  // Fonction centralisée pour réinitialiser les boutons
+  const resetButtons = () => {
+    console.log("🔄 RÉINITIALISATION DES BOUTONS - comptage");
+    setExerciseInstructionGiven(false);
+    setHasStarted(false);
+    exerciseInstructionGivenRef.current = false;
+    hasStartedRef.current = false;
+    // ⚠️ NE PAS réinitialiser userHasInteractedRef - on garde l'historique d'interaction
+  };
+
+  // 🔄 SOLUTION ULTRA-AGRESSIVE : Réinitialisation initiale + détection d'interaction
+  useEffect(() => {
+    console.log("📍 INITIALISATION - comptage");
+    
+    // Reset immédiat au chargement
+    resetButtons();
+    
+    // Détection d'interaction utilisateur
+    const markUserInteraction = () => {
+      if (!userHasInteractedRef.current) {
+        console.log("✅ PREMIÈRE INTERACTION UTILISATEUR détectée - comptage");
+        userHasInteractedRef.current = true;
+      }
+    };
+    
+    // Event listeners pour détecter l'interaction
+    document.addEventListener('click', markUserInteraction);
+    document.addEventListener('keydown', markUserInteraction);
+    document.addEventListener('touchstart', markUserInteraction);
+    
+    // Check périodique AGRESSIF (toutes les 2 secondes)
+    const intervalId = setInterval(() => {
+      if (hasStartedRef.current || exerciseInstructionGivenRef.current) {
+        console.log("⚠️ CHECK PÉRIODIQUE : Boutons cachés détectés, RESET FORCÉ - comptage");
+        resetButtons();
+      }
+    }, 2000);
+    
+    return () => {
+      document.removeEventListener('click', markUserInteraction);
+      document.removeEventListener('keydown', markUserInteraction);
+      document.removeEventListener('touchstart', markUserInteraction);
+      clearInterval(intervalId);
+    };
+  }, []);
 
   // Sauvegarder les progrès
   const saveProgress = (score: number, maxScore: number) => {
@@ -107,7 +156,7 @@ export default function ComptageCP() {
     
     const utterance = new SpeechSynthesisUtterance(enhancedText);
     utterance.lang = 'fr-FR';
-    utterance.rate = 0.85;  // Légèrement plus lent pour la compréhension
+    utterance.rate = 1.1;  // Légèrement plus lent pour la compréhension
     utterance.pitch = 1.1;  // Pitch légèrement plus aigu (adapté aux enfants)
     utterance.volume = 0.9; // Volume confortable
     
@@ -122,6 +171,13 @@ export default function ComptageCP() {
   // Fonction pour jouer un texte avec timing
   const playAudioSequence = (text: string): Promise<void> => {
     return new Promise((resolve) => {
+      // 🔒 PROTECTION : Empêcher les vocaux sans interaction utilisateur
+      if (!userHasInteractedRef.current) {
+        console.log("🚫 BLOQUÉ : Tentative de vocal sans interaction utilisateur - comptage");
+        resolve();
+        return;
+      }
+      
       // Arrêter les vocaux précédents
       if ('speechSynthesis' in window) {
         speechSynthesis.cancel();
@@ -150,12 +206,16 @@ export default function ComptageCP() {
 
   // Consigne générale pour la série d'exercices (une seule fois)
   const explainExercisesOnce = async () => {
+    // ✅ Marquer l'interaction utilisateur explicitement
+    userHasInteractedRef.current = true;
+    
     // Arrêter les vocaux précédents
     if ('speechSynthesis' in window) {
       speechSynthesis.cancel();
     }
 
     setIsPlayingVocal(true);
+    setExerciseInstructionGiven(true);
 
     try {
       await playAudioSequence("Super ! Tu vas faire une série d'exercices de comptage !");
@@ -183,18 +243,11 @@ export default function ComptageCP() {
 
   // Instructions vocales pour le cours avec synchronisation
   const explainChapterGoal = async () => {
+    // ✅ Marquer l'interaction utilisateur explicitement
+    userHasInteractedRef.current = true;
+    
     setHasStarted(true); // Marquer que l'enfant a commencé
     hasStartedRef.current = true; // Pour les timers
-    
-        // Annuler immédiatement les timers de rappel
-    if (welcomeTimerRef.current) {
-      clearTimeout(welcomeTimerRef.current);
-      welcomeTimerRef.current = null;
-    }
-    if (reminderTimerRef.current) {
-      clearTimeout(reminderTimerRef.current);
-      reminderTimerRef.current = null;
-    }
 
     // Arrêter les vocaux précédents
     if ('speechSynthesis' in window) {
@@ -309,22 +362,8 @@ export default function ComptageCP() {
       speechSynthesis.onvoiceschanged = loadVoices;
     }
 
-    // Guidance vocale automatique pour les non-lecteurs (COURS seulement)
-    if (!showExercises) {
-      welcomeTimerRef.current = setTimeout(() => {
-        if (!hasStartedRef.current) {
-          speakText("Clique sur le bouton violet qui bouge pour commencer.");
-        }
-      }, 1000); // 1 seconde après le chargement
-
-      // Rappel vocal si pas de clic après 6 secondes (5 secondes après le premier)
-      
-    }
-
-    // Nettoyage
-          return () => {
-        if (welcomeTimerRef.current) clearTimeout(welcomeTimerRef.current);
-      };
+    // 🚫 SUPPRIMÉ : Plus de guidance vocale automatique (cause warnings)
+    // Seuls les clics manuels déclenchent les vocaux maintenant
   }, [showExercises]);
 
   // Effect pour gérer les changements d'onglet interne (cours ↔ exercices)
@@ -335,17 +374,24 @@ export default function ComptageCP() {
     }
     setIsPlayingVocal(false);
     
+    // Nettoyer le timeout précédent s'il existe
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+    
     // Jouer automatiquement la consigne des exercices (une seule fois)
     if (showExercises && !exerciseInstructionGivenRef.current) {
       // Délai court pour laisser l'interface se charger
-      setTimeout(() => {
+      timeoutRef.current = setTimeout(() => {
         explainExercisesOnce();
         exerciseInstructionGivenRef.current = true;
+        timeoutRef.current = null;
       }, 800);
     }
   }, [showExercises]);
 
-  // Effect pour arrêter les vocaux lors de la sortie de page
+  // 🔄 SOLUTION ULTRA-AGRESSIVE : Gestion des événements de navigation avec multiples event listeners
   useEffect(() => {
     const stopVocals = () => {
       if ('speechSynthesis' in window) {
@@ -355,27 +401,90 @@ export default function ComptageCP() {
     };
 
     const handleVisibilityChange = () => {
-      if (document.hidden) stopVocals();
+      if (document.hidden) {
+        console.log("👁️ PAGE CACHÉE - Arrêt des vocaux - comptage");
+        stopVocals();
+      } else {
+        console.log("👁️ PAGE VISIBLE - Reset des boutons - comptage");
+        resetButtons();
+      }
     };
 
+    // 🆕 Handlers supplémentaires pour capturer tous les cas de navigation
+    const handleFocus = () => {
+      console.log("🎯 FOCUS - Reset des boutons - comptage");
+      resetButtons();
+    };
+
+    const handlePageShow = () => {
+      console.log("📄 PAGESHOW - Reset des boutons - comptage");
+      resetButtons();
+    };
+
+    const handleBlur = () => {
+      console.log("💨 BLUR - Arrêt des vocaux - comptage");
+      stopVocals();
+    };
+
+    const handlePopState = () => {
+      console.log("⬅️ POPSTATE - Reset des boutons - comptage");
+      resetButtons();
+    };
+
+    const handleMouseEnter = () => {
+      resetButtons();
+    };
+
+    const handleScroll = () => {
+      resetButtons();
+    };
+
+    // Event listeners multiples pour maximum de couverture
     document.addEventListener('visibilitychange', handleVisibilityChange);
-    window.addEventListener('beforeunload', stopVocals);
-    window.addEventListener('pagehide', stopVocals);
+    window.addEventListener('focus', handleFocus);
+    window.addEventListener('pageshow', handlePageShow);
+    window.addEventListener('blur', handleBlur);
+    window.addEventListener('popstate', handlePopState);
+    document.addEventListener('mouseenter', handleMouseEnter);
+    window.addEventListener('scroll', handleScroll);
+    
+    // DOMContentLoaded pour reset sur chargement complet
+    document.addEventListener('DOMContentLoaded', () => {
+      console.log("🏁 DOMContentLoaded - Reset des boutons - comptage");
+      resetButtons();
+    });
+
+    // Timeout de sécurité sur le chargement
+    const loadTimeout = setTimeout(() => {
+      console.log("⏰ TIMEOUT CHARGEMENT - Reset de sécurité - comptage");
+      resetButtons();
+    }, 1000);
 
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
-      window.removeEventListener('beforeunload', stopVocals);
-      window.removeEventListener('pagehide', stopVocals);
+      window.removeEventListener('focus', handleFocus);
+      window.removeEventListener('pageshow', handlePageShow);
+      window.removeEventListener('blur', handleBlur);
+      window.removeEventListener('popstate', handlePopState);
+      document.removeEventListener('mouseenter', handleMouseEnter);
+      window.removeEventListener('scroll', handleScroll);
+      clearTimeout(loadTimeout);
       stopVocals();
     };
   }, []);
 
   const speakNumber = (num: number) => {
+    // 🔒 PROTECTION : Empêcher les vocaux sans interaction utilisateur
+    if (!userHasInteractedRef.current) {
+      console.log("🚫 BLOQUÉ : Tentative de vocal speakNumber sans interaction utilisateur - comptage");
+      return;
+    }
+    
     if ('speechSynthesis' in window) {
       const numbers = ['zéro', 'un', 'deux', 'trois', 'quatre', 'cinq', 'six', 'sept', 'huit', 'neuf', 'dix', 'onze', 'douze', 'treize', 'quatorze', 'quinze', 'seize', 'dix-sept', 'dix-huit', 'dix-neuf', 'vingt'];
       const utterance = new SpeechSynthesisUtterance(numbers[num] || num.toString());
       utterance.lang = 'fr-FR';
-      utterance.rate = 0.8;
+      utterance.rate = 1.0;
       speechSynthesis.speak(utterance);
     }
   };
@@ -389,7 +498,7 @@ export default function ComptageCP() {
     if ('speechSynthesis' in window) {
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = 'fr-FR';
-      utterance.rate = 0.7;
+      utterance.rate = 0.9;
       speechSynthesis.speak(utterance);
     }
   };
@@ -446,6 +555,12 @@ export default function ComptageCP() {
   };
 
   const nextExercise = () => {
+    // Arrêter tous les vocaux immédiatement
+    if ('speechSynthesis' in window) {
+      speechSynthesis.cancel();
+    }
+    setIsPlayingVocal(false);
+    
     if (currentExercise < exercises.length - 1) {
       setCurrentExercise(currentExercise + 1);
       setUserAnswer('');
@@ -501,7 +616,11 @@ export default function ComptageCP() {
         <div className="flex justify-center mb-8">
           <div className="bg-white rounded-lg p-1 shadow-md">
             <button
-              onClick={() => setShowExercises(false)}
+              onClick={() => {
+                setShowExercises(false);
+                // 🔄 Reset forcé après changement d'onglet
+                setTimeout(() => { resetButtons(); }, 100);
+              }}
               className={`px-6 py-3 rounded-lg font-bold transition-all ${
                 !showExercises 
                   ? 'bg-green-500 text-white shadow-md' 
@@ -511,7 +630,11 @@ export default function ComptageCP() {
               📖 Cours
             </button>
             <button
-              onClick={() => setShowExercises(true)}
+              onClick={() => {
+                setShowExercises(true);
+                // 🔄 Reset forcé après changement d'onglet
+                setTimeout(() => { resetButtons(); }, 100);
+              }}
               className={`px-6 py-3 rounded-lg font-bold transition-all ${
                 showExercises 
                   ? 'bg-green-500 text-white shadow-md' 
@@ -779,6 +902,28 @@ export default function ComptageCP() {
                   Recommencer
                 </button>
               </div>
+
+              {/* Bouton Instructions principal - style identique au bouton COMMENCER */}
+              {!exerciseInstructionGiven && (
+                <div className="text-center mb-6">
+                  <button
+                    onClick={explainExercisesOnce}
+                    disabled={isPlayingVocal}
+                    className={`bg-gradient-to-r from-orange-500 to-yellow-500 text-white px-8 py-4 rounded-xl font-bold text-xl shadow-lg hover:shadow-xl transition-all transform hover:scale-105 ${
+                      !exerciseInstructionGiven ? 'animate-bounce' : ''
+                    } ${
+                      isPlayingVocal ? 'animate-pulse cursor-not-allowed opacity-75' : 'hover:from-orange-600 hover:to-yellow-600'
+                    }`}
+                    style={{
+                      animationDuration: !exerciseInstructionGiven ? '2s' : 'none',
+                      animationIterationCount: !exerciseInstructionGiven ? 'infinite' : 'none'
+                    }}
+                  >
+                    <Volume2 className="inline w-6 h-6 mr-3" />
+                    🔊 ÉCOUTER LES INSTRUCTIONS !
+                  </button>
+                </div>
+              )}
               
               {/* Barre de progression */}
               <div className="w-full bg-gray-200 rounded-full h-4 mb-3">

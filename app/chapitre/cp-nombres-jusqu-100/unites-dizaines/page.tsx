@@ -216,7 +216,7 @@ export default function UnitesDizainesCP() {
     if ('speechSynthesis' in window) {
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = 'fr-FR';
-      utterance.rate = 0.7;
+      utterance.rate = 0.9;
       speechSynthesis.speak(utterance);
     }
   };

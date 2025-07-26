@@ -87,7 +87,7 @@ export default function LireNombresCE1Page() {
     if ('speechSynthesis' in window) {
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = 'fr-FR';
-      utterance.rate = 0.8;
+      utterance.rate = 1.0;
       speechSynthesis.speak(utterance);
     }
   };

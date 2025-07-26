@@ -16,6 +16,7 @@ export default function EcritureCP() {
   const [finalScore, setFinalScore] = useState(0);
   const [exerciseType, setExerciseType] = useState<'chiffres' | 'lettres'>('chiffres');
   const [shuffledChoices, setShuffledChoices] = useState<string[]>([]);
+  const [exerciseInstructionGiven, setExerciseInstructionGiven] = useState(false);
   
   // États pour le système vocal
   const [highlightedElement, setHighlightedElement] = useState<string | null>(null);
@@ -26,11 +27,57 @@ export default function EcritureCP() {
   const [isLoadingAudio, setIsLoadingAudio] = useState(false);
   const [hasStarted, setHasStarted] = useState(false);
   const hasStartedRef = useRef(false);
-  const welcomeTimerRef = useRef<NodeJS.Timeout | null>(null);
-  const reminderTimerRef = useRef<NodeJS.Timeout | null>(null);
   const exerciseInstructionGivenRef = useRef(false);
-  const exerciseReadingTimerRef = useRef<NodeJS.Timeout | null>(null);
-  const allTimersRef = useRef<NodeJS.Timeout[]>([]);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  
+  // 🆕 SOLUTION ULTRA-AGRESSIVE pour la persistance des boutons
+  const userHasInteractedRef = useRef(false);
+
+  // Fonction centralisée pour réinitialiser les boutons
+  const resetButtons = () => {
+    console.log("🔄 RÉINITIALISATION DES BOUTONS - ecriture");
+    setExerciseInstructionGiven(false);
+    setHasStarted(false);
+    exerciseInstructionGivenRef.current = false;
+    hasStartedRef.current = false;
+    // ⚠️ NE PAS réinitialiser userHasInteractedRef - on garde l'historique d'interaction
+  };
+
+  // 🔄 SOLUTION ULTRA-AGRESSIVE : Réinitialisation initiale + détection d'interaction
+  useEffect(() => {
+    console.log("📍 INITIALISATION - ecriture");
+    
+    // Reset immédiat au chargement
+    resetButtons();
+    
+    // Détection d'interaction utilisateur
+    const markUserInteraction = () => {
+      if (!userHasInteractedRef.current) {
+        console.log("✅ PREMIÈRE INTERACTION UTILISATEUR détectée - ecriture");
+        userHasInteractedRef.current = true;
+      }
+    };
+    
+    // Event listeners pour détecter l'interaction
+    document.addEventListener('click', markUserInteraction);
+    document.addEventListener('keydown', markUserInteraction);
+    document.addEventListener('touchstart', markUserInteraction);
+    
+    // Check périodique AGRESSIF (toutes les 2 secondes)
+    const intervalId = setInterval(() => {
+      if (hasStartedRef.current || exerciseInstructionGivenRef.current) {
+        console.log("⚠️ CHECK PÉRIODIQUE : Boutons cachés détectés, RESET FORCÉ - ecriture");
+        resetButtons();
+      }
+    }, 2000);
+    
+    return () => {
+      document.removeEventListener('click', markUserInteraction);
+      document.removeEventListener('keydown', markUserInteraction);
+      document.removeEventListener('touchstart', markUserInteraction);
+      clearInterval(intervalId);
+    };
+  }, []);
 
   // États pour le jeu de correspondances
   const [gameSelectedChiffre, setGameSelectedChiffre] = useState<string | null>(null);
@@ -122,7 +169,7 @@ export default function EcritureCP() {
     
     const utterance = new SpeechSynthesisUtterance(enhancedText);
     utterance.lang = 'fr-FR';
-    utterance.rate = 0.85;  // Légèrement plus lent pour la compréhension
+    utterance.rate = 1.1;  // Légèrement plus lent pour la compréhension
     utterance.pitch = 1.1;  // Pitch légèrement plus aigu (adapté aux enfants)
     utterance.volume = 0.9; // Volume confortable
     
@@ -137,6 +184,13 @@ export default function EcritureCP() {
   // Fonction pour jouer un texte avec timing
   const playAudioSequence = (text: string): Promise<void> => {
     return new Promise((resolve) => {
+      // 🔒 PROTECTION : Empêcher les vocaux sans interaction utilisateur
+      if (!userHasInteractedRef.current) {
+        console.log("🚫 BLOQUÉ : Tentative de vocal sans interaction utilisateur - ecriture");
+        resolve();
+        return;
+      }
+      
       // Arrêter les vocaux précédents
       if ('speechSynthesis' in window) {
         speechSynthesis.cancel();
@@ -165,12 +219,16 @@ export default function EcritureCP() {
 
   // Consigne générale pour la série d'exercices (une seule fois)
   const explainExercisesOnce = async () => {
+    // ✅ Marquer l'interaction utilisateur explicitement
+    userHasInteractedRef.current = true;
+    
     // Arrêter les vocaux précédents
     if ('speechSynthesis' in window) {
       speechSynthesis.cancel();
     }
 
     setIsPlayingVocal(true);
+    setExerciseInstructionGiven(true);
 
     try {
       await playAudioSequence("Super ! Tu vas faire une série d'exercices d'écriture !");
@@ -208,18 +266,11 @@ export default function EcritureCP() {
 
   // Instructions vocales pour le cours avec synchronisation
   const explainChapterGoal = async () => {
+    // ✅ Marquer l'interaction utilisateur explicitement
+    userHasInteractedRef.current = true;
+    
     setHasStarted(true); // Marquer que l'enfant a commencé
     hasStartedRef.current = true; // Pour les timers
-    
-    // Annuler immédiatement les timers de rappel
-    if (welcomeTimerRef.current) {
-      clearTimeout(welcomeTimerRef.current);
-      welcomeTimerRef.current = null;
-    }
-    if (reminderTimerRef.current) {
-      clearTimeout(reminderTimerRef.current);
-      reminderTimerRef.current = null;
-    }
     
     // Arrêter les vocaux précédents
     if ('speechSynthesis' in window) {
@@ -443,22 +494,8 @@ export default function EcritureCP() {
       speechSynthesis.onvoiceschanged = loadVoices;
     }
 
-    // Guidance vocale automatique pour les non-lecteurs (COURS seulement)
-    if (!showExercises) {
-      welcomeTimerRef.current = setTimeout(() => {
-        if (!hasStartedRef.current) {
-          speakAudio("Clique sur le bouton violet qui bouge pour commencer.");
-        }
-      }, 1000); // 1 seconde après le chargement
-
-      // Rappel vocal si pas de clic après 6 secondes (5 secondes après le premier)
-       // 6 secondes après le chargement (5 secondes après le premier message)
-    }
-
-    // Nettoyage
-          return () => {
-        if (welcomeTimerRef.current) clearTimeout(welcomeTimerRef.current);
-      };
+    // 🚫 SUPPRIMÉ : Plus de guidance vocale automatique (cause warnings)
+    // Seuls les clics manuels déclenchent les vocaux maintenant
   }, [showExercises]);
 
   // Effect pour gérer les changements d'onglet interne (cours ↔ exercices)
@@ -469,12 +506,19 @@ export default function EcritureCP() {
     }
     setIsPlayingVocal(false);
     
+    // Nettoyer le timeout précédent s'il existe
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+    
     // Jouer automatiquement la consigne des exercices (une seule fois)
     if (showExercises && !exerciseInstructionGivenRef.current) {
       // Délai court pour laisser l'interface se charger
-      setTimeout(() => {
+      timeoutRef.current = setTimeout(() => {
         explainExercisesOnce();
         exerciseInstructionGivenRef.current = true;
+        timeoutRef.current = null;
       }, 800);
     }
   }, [showExercises]);
@@ -487,6 +531,12 @@ export default function EcritureCP() {
       if (document.hidden) {
         // La page n'est plus visible (onglet changé, fenêtre minimisée, etc.)
         stopAllVocalAndAnimations();
+      } else {
+        // 🔄 La page redevient visible - RÉINITIALISER LES BOUTONS !
+        setExerciseInstructionGiven(false);
+        setHasStarted(false);
+        exerciseInstructionGivenRef.current = false;
+        hasStartedRef.current = false;
       }
     };
 
@@ -567,7 +617,7 @@ export default function EcritureCP() {
       speechSynthesis.cancel(); // Arrêter toute lecture en cours
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = 'fr-FR';
-      utterance.rate = 0.7;
+      utterance.rate = 0.9;
       speechSynthesis.speak(utterance);
     }
   };
@@ -611,25 +661,7 @@ export default function EcritureCP() {
       speechSynthesis.cancel();
     }
     
-    // Arrêter tous les timers
-    if (welcomeTimerRef.current) {
-      clearTimeout(welcomeTimerRef.current);
-      welcomeTimerRef.current = null;
-    }
-    if (reminderTimerRef.current) {
-      clearTimeout(reminderTimerRef.current);
-      reminderTimerRef.current = null;
-    }
-    if (exerciseReadingTimerRef.current) {
-      clearTimeout(exerciseReadingTimerRef.current);
-      exerciseReadingTimerRef.current = null;
-    }
-    
-    // Arrêter tous les autres timers trackés
-    allTimersRef.current.forEach(timer => {
-      if (timer) clearTimeout(timer);
-    });
-    allTimersRef.current = [];
+    // 🚫 Plus de gestion d'anciens timers - supprimés
     
     // Réinitialiser tous les états vocaux et animations
     setIsPlayingVocal(false);
@@ -736,11 +768,7 @@ export default function EcritureCP() {
                 // Arrêter spécifiquement les fonctions vocales
                 exerciseInstructionGivenRef.current = false;
                 
-                // Nettoyer les timers
-                if (welcomeTimerRef.current) {
-                  clearTimeout(welcomeTimerRef.current);
-                  welcomeTimerRef.current = null;
-                }
+                // 🚫 Plus de gestion d'anciens timers
                 
                 setShowExercises(false);
               }}
@@ -777,11 +805,7 @@ export default function EcritureCP() {
                 // Arrêter spécifiquement les fonctions vocales
                 exerciseInstructionGivenRef.current = false;
                 
-                // Nettoyer les timers
-                if (welcomeTimerRef.current) {
-                  clearTimeout(welcomeTimerRef.current);
-                  welcomeTimerRef.current = null;
-                }
+                // 🚫 Plus de gestion d'anciens timers
                 
                 setShowExercises(true);
                 setTimeout(() => {
@@ -1238,6 +1262,28 @@ export default function EcritureCP() {
                   Recommencer
                 </button>
               </div>
+
+              {/* Bouton Instructions principal - style identique au bouton COMMENCER */}
+              {!exerciseInstructionGiven && (
+                <div className="text-center mb-6">
+                  <button
+                    onClick={explainExercisesOnce}
+                    disabled={isPlayingVocal}
+                    className={`bg-gradient-to-r from-orange-500 to-yellow-500 text-white px-8 py-4 rounded-xl font-bold text-xl shadow-lg hover:shadow-xl transition-all transform hover:scale-105 ${
+                      !exerciseInstructionGiven ? 'animate-bounce' : ''
+                    } ${
+                      isPlayingVocal ? 'animate-pulse cursor-not-allowed opacity-75' : 'hover:from-orange-600 hover:to-yellow-600'
+                    }`}
+                    style={{
+                      animationDuration: !exerciseInstructionGiven ? '2s' : 'none',
+                      animationIterationCount: !exerciseInstructionGiven ? 'infinite' : 'none'
+                    }}
+                  >
+                    <Volume2 className="inline w-6 h-6 mr-3" />
+                    🔊 ÉCOUTER LES INSTRUCTIONS !
+                  </button>
+                </div>
+              )}
               
               {/* Barre de progression */}
               <div className="w-full bg-gray-200 rounded-full h-4 mb-3">

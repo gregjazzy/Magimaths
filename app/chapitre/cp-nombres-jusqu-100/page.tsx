@@ -53,16 +53,6 @@ const sections = [
     xp: 12,
     color: 'from-orange-500 to-red-500',
     verified: true
-  },
-  {
-    id: 'doubles-moities',
-    title: 'Doubles et moitiés',
-    description: 'Connaître les doubles < 10 et moitiés des pairs < 20',
-    icon: '🎯',
-    duration: '8 min',
-    xp: 10,
-    color: 'from-pink-500 to-rose-500',
-    verified: true
   }
 ]
 
@@ -154,7 +144,7 @@ export default function CPNombresJusqu100Page() {
               💯 Nombres jusqu'à 100 (2nde partie année)
             </h1>
             <p className="text-base sm:text-lg text-gray-600 mb-4 sm:mb-6 px-2">
-              Extension jusqu'à 100 ! Découvre les dizaines, unités et les doubles/moitiés.
+              Extension jusqu'à 100 ! Découvre les dizaines, unités et apprends à ordonner.
             </p>
             <div className="text-lg sm:text-xl mb-4 sm:mb-6">
               <span className="bg-green-200 px-3 sm:px-4 py-2 rounded-full font-bold text-gray-800 text-sm sm:text-base">
@@ -171,7 +161,7 @@ export default function CPNombresJusqu100Page() {
             <div>
               <h2 className="text-lg sm:text-2xl font-bold mb-2">Programme français CP - 2nde partie</h2>
               <p className="text-sm sm:text-lg">
-                Extension vers 100 ! Unités/dizaines, comparer, ordonner. Doubles et moitiés.
+                Extension vers 100 ! Unités/dizaines, comparer et ordonner les nombres.
               </p>
             </div>
           </div>

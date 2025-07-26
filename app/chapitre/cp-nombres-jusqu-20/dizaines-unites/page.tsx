@@ -40,6 +40,7 @@ const styles = `
   }
 `;
 
+// ✅✅✅ VERSION CACHE FORCÉ CLEARED ✅✅✅
 export default function ValeurPositionnelleCP20() {
   const [selectedNumber, setSelectedNumber] = useState('15');
   const [currentExercise, setCurrentExercise] = useState(0);
@@ -61,12 +62,75 @@ export default function ValeurPositionnelleCP20() {
   const [highlightedElement, setHighlightedElement] = useState<string | null>(null);
   const [exerciseInstructionGiven, setExerciseInstructionGiven] = useState(false);
   
-  // Refs pour les timers
-  const welcomeTimerRef = useRef<NodeJS.Timeout | null>(null);
-  const reminderTimerRef = useRef<NodeJS.Timeout | null>(null);
+  // Refs pour les timers et états
   const exerciseInstructionGivenRef = useRef(false);
-  const exerciseReadingTimerRef = useRef<NodeJS.Timeout | null>(null);
-  const allTimersRef = useRef<NodeJS.Timeout[]>([]);
+  const hasStartedRef = useRef(false);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const shouldStopRef = useRef(false);
+  const userHasInteractedRef = useRef(false);
+
+  // 🔄 FONCTION DE RÉINITIALISATION CENTRALISÉE
+  const resetButtons = () => {
+    console.log("🔄 RÉINITIALISATION DES BOUTONS - dizaines-unites");
+    setExerciseInstructionGiven(false);
+    setHasStarted(false);
+    exerciseInstructionGivenRef.current = false;
+    hasStartedRef.current = false;
+    // ⚠️ NE PAS réinitialiser userHasInteractedRef - on garde l'historique d'interaction
+  };
+
+  // 🔄 RÉINITIALISER les boutons à chaque chargement de page
+  useEffect(() => {
+    console.log("🔄 CHARGEMENT INITIAL - dizaines-unites");
+    resetButtons();
+    
+    // 🎯 DÉTECTER TOUTE INTERACTION UTILISATEUR
+    const markUserInteraction = () => {
+      userHasInteractedRef.current = true;
+      console.log("✋ Interaction utilisateur détectée");
+    };
+    
+    document.addEventListener('click', markUserInteraction);
+    document.addEventListener('keydown', markUserInteraction);
+    document.addEventListener('touchstart', markUserInteraction);
+    
+    // 🔄 VÉRIFICATION PÉRIODIQUE - Force la réinitialisation toutes les 2 secondes
+    const intervalId = setInterval(() => {
+      // Si les boutons ont disparu mais qu'on est sur la page, les remettre
+      if (hasStartedRef.current || exerciseInstructionGivenRef.current) {
+        console.log("🔄 VÉRIFICATION PÉRIODIQUE - réinitialisation forcée");
+        resetButtons();
+      }
+    }, 2000);
+    
+    return () => {
+      document.removeEventListener('click', markUserInteraction);
+      document.removeEventListener('keydown', markUserInteraction);
+      document.removeEventListener('touchstart', markUserInteraction);
+      clearInterval(intervalId);
+    };
+  }, []); // Une seule fois au chargement
+
+  // 🔍 DEBUG: Surveiller les changements d'exerciseInstructionGiven
+  useEffect(() => {
+    console.log("🔍 exerciseInstructionGiven changed to:", exerciseInstructionGiven);
+  }, [exerciseInstructionGiven]);
+
+  // 🔍 DEBUG: Surveiller les changements d'hasStarted
+  useEffect(() => {
+    console.log("🔍 hasStarted changed to:", hasStarted);
+  }, [hasStarted]);
+
+  // 🔄 RESET ULTIME au montage du composant
+  useEffect(() => {
+    console.log("🚀 MONTAGE COMPOSANT - reset ultime");
+    setTimeout(() => {
+      resetButtons();
+    }, 500);
+  }, []);
+
+  
+
 
   // Hook pour détecter la taille de l'écran
   useEffect(() => {
@@ -85,33 +149,6 @@ export default function ValeurPositionnelleCP20() {
   }, []);
 
   // Arrêter la voix quand on quitte la page
-  useEffect(() => {
-    const stopSpeechOnExit = () => {
-      if ('speechSynthesis' in window) {
-        speechSynthesis.cancel();
-      }
-      setIsPlayingVocal(false);
-      setHighlightedElement(null);
-    };
-
-    const handleBeforeUnload = () => stopSpeechOnExit();
-    const handleVisibilityChange = () => {
-      if (document.hidden) stopSpeechOnExit();
-    };
-    const handlePageHide = () => stopSpeechOnExit();
-
-    window.addEventListener('beforeunload', handleBeforeUnload);
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    window.addEventListener('pagehide', handlePageHide);
-
-    return () => {
-      window.removeEventListener('beforeunload', handleBeforeUnload);
-      document.removeEventListener('visibilitychange', handleVisibilityChange);  
-      window.removeEventListener('pagehide', handlePageHide);
-      stopSpeechOnExit();
-    };
-  }, []);
-
   // Fonction pour mélanger un tableau
   const shuffleArray = (array: string[]) => {
     const shuffled = [...array];
@@ -136,30 +173,129 @@ export default function ValeurPositionnelleCP20() {
     }
   }, [currentExercise]);
 
-  // Effect pour jouer automatiquement le vocal de bienvenue (une seule fois)
+  // === useEffect POUR ARRÊT VOCAUX ===
+  
+  // Effect pour gérer les changements d'onglet interne (cours ↔ exercices)
   useEffect(() => {
-    if (!showExercises && !hasStarted) {
-      welcomeTimerRef.current = setTimeout(() => {
-        if (!hasStarted) {
-          speakText("Salut ! Clique sur le bouton violet pour découvrir les dizaines et les unités !");
-        }
-      }, 1000);
-    }
-    
-    return () => {
-      if (welcomeTimerRef.current) clearTimeout(welcomeTimerRef.current);
+    console.log("🔍 showExercises changed to:", showExercises);
+    // Vocal automatique supprimé - les navigateurs modernes bloquent les vocaux sans interaction utilisateur
+  }, [showExercises]);
+
+  // Effect pour arrêter la voix quand on quitte la page
+  useEffect(() => {
+    const stopSpeechOnExit = () => {
+      if ('speechSynthesis' in window) {
+        speechSynthesis.cancel();
+      }
+      setIsPlayingVocal(false);
+      setHighlightedElement(null);
     };
-  }, [showExercises, hasStarted]);
+
+    // Arrêter la voix quand on ferme/quitte la page
+    const handleBeforeUnload = () => {
+      stopSpeechOnExit();
+    };
+
+    // Arrêter et réinitialiser quand on quitte
+    const handleVisibilityChange = () => {
+      console.log("🔄 VISIBILITY CHANGE - hidden:", document.hidden);
+      if (document.hidden) {
+        console.log("🚪 PAGE CACHÉE - arrêt vocal");
+        stopVocal();
+      } else {
+        console.log("👁️ PAGE VISIBLE - réinitialisation boutons");
+        resetButtons();
+      }
+    };
+
+    const handleFocus = () => {
+      console.log("🎯 WINDOW FOCUS - réinitialisation boutons");
+      resetButtons();
+    };
+
+    const handleBlur = () => {
+      console.log("😴 WINDOW BLUR - arrêt vocal");
+      stopVocal();
+    };
+
+    const handlePageShow = (event) => {
+      console.log("📄 PAGE SHOW - persisted:", event.persisted);
+      resetButtons();
+    };
+
+    const handlePopState = () => {
+      console.log("⬅️ POP STATE - réinitialisation boutons");
+      resetButtons();
+    };
+
+    const handleMouseEnter = () => {
+      console.log("🐭 MOUSE ENTER - réinitialisation boutons");
+      resetButtons();
+    };
+
+    const handleScroll = () => {
+      console.log("📜 SCROLL - réinitialisation boutons");
+      resetButtons();
+    };
+
+    const handlePageHide = () => {
+      console.log("🚪 PAGE HIDE - arrêt vocal");
+      stopVocal();
+    };
+
+    // 🚀 DÉTECTION AGRESSIVE - tous les événements possibles
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    window.addEventListener('pagehide', handlePageHide);
+    window.addEventListener('pageshow', handlePageShow);
+    window.addEventListener('focus', handleFocus);
+    window.addEventListener('blur', handleBlur);
+    window.addEventListener('popstate', handlePopState);
+    document.addEventListener('mouseenter', handleMouseEnter);
+    window.addEventListener('scroll', handleScroll);
+    
+    // Événements supplémentaires pour détecter le retour
+    document.addEventListener('DOMContentLoaded', () => {
+      console.log("📄 DOM CONTENT LOADED");
+      resetButtons();
+    });
+
+    // 🔄 FORCE RESET après 1 seconde (au cas où les événements ratent)
+    setTimeout(() => {
+      console.log("⏰ TIMEOUT 1s - réinitialisation forcée");
+      resetButtons();
+    }, 1000);
+
+    // Cleanup
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+      window.removeEventListener('pagehide', handlePageHide);
+      window.removeEventListener('pageshow', handlePageShow);
+      window.removeEventListener('focus', handleFocus);
+      window.removeEventListener('blur', handleBlur);
+      window.removeEventListener('popstate', handlePopState);
+      document.removeEventListener('mouseenter', handleMouseEnter);
+      window.removeEventListener('scroll', handleScroll);
+      stopSpeechOnExit();
+    };
+  }, []);
+
+  // ❌ VOCAL DE BIENVENUE AUTO DÉSACTIVÉ pour éviter conflit avec arrêt manuel
+  // L'utilisateur peut cliquer sur le bouton violet s'il veut commencer
+  // 🚫 SUPPRIMÉ : useEffect de nettoyage obsolète
 
   // Explication complète et interactive des exercices
   const explainExercisesOnce = async () => {
-    if (exerciseInstructionGivenRef.current) return;
-    
     try {
+      // 🎯 MARQUER L'INTERACTION UTILISATEUR
+      userHasInteractedRef.current = true;
+      
       speechSynthesis.cancel();
-      exerciseInstructionGivenRef.current = true;
-      setExerciseInstructionGiven(true);
       setIsPlayingVocal(true);
+      
+      // ✅ AUTORISER CE NOUVEAU VOCAL
+      shouldStopRef.current = false;
       
       await wait(500);
       
@@ -171,12 +307,9 @@ export default function ValeurPositionnelleCP20() {
       await playAudioSequence("Tu auras deux types de questions : trouver les dizaines ou les unités dans un nombre, ou calculer des compositions !");
       await wait(1200);
       
-      // Présentation des aides
-      await playAudioSequence("Si tu as besoin d'aide, tu as plusieurs boutons :");
+      // Instructions de réflexion
+      await playAudioSequence("Prends ton temps pour réfléchir à chaque question !");
       await wait(1000);
-      
-      await playAudioSequence("Le bouton bleu pour lire la question, le bouton violet pour une explication complète !");
-      await wait(1200);
       
       // Instructions de base
       await playAudioSequence("Lis bien chaque question, réfléchis, puis clique sur ta réponse !");
@@ -201,83 +334,9 @@ export default function ValeurPositionnelleCP20() {
     }
   };
 
-  // Effect pour gérer les changements d'onglet interne (cours ↔ exercices)
-  useEffect(() => {
-    // Arrêter tous les vocaux lors du changement d'onglet
-    if ('speechSynthesis' in window) {
-      speechSynthesis.cancel();
-    }
-    setIsPlayingVocal(false);
-    setHighlightedElement(null);
-    
-    // Jouer automatiquement la consigne des exercices (une seule fois)
-    if (showExercises && !exerciseInstructionGivenRef.current) {
-      const timer = setTimeout(() => {
-        explainExercisesOnce();
-      }, 800);
-      
-      return () => {
-        clearTimeout(timer);
-      };
-    }
-  }, [showExercises]);
 
-  useEffect(() => {
-    const stopSpeechOnExit = () => {
-      if ('speechSynthesis' in window) {
-        speechSynthesis.cancel();
-      }
-      setIsPlayingVocal(false);
-      setHighlightedElement(null);
-    };
 
-    // Arrêter la voix quand on ferme/quitte la page
-    const handleBeforeUnload = () => {
-      stopSpeechOnExit();
-    };
 
-    // Arrêter la voix quand l'onglet devient inactif
-    const handleVisibilityChange = () => {
-      if (document.hidden) {
-        stopSpeechOnExit();
-      }
-    };
-
-    // Arrêter la voix lors de la navigation
-    const handlePageHide = () => {
-      stopSpeechOnExit();
-    };
-
-    // Ajouter les écouteurs d'événements
-    window.addEventListener('beforeunload', handleBeforeUnload);
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    window.addEventListener('pagehide', handlePageHide);
-
-    // Nettoyage au démontage du composant
-    return () => {
-      window.removeEventListener('beforeunload', handleBeforeUnload);
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-      window.removeEventListener('pagehide', handlePageHide);
-      stopSpeechOnExit(); // Arrêter la voix aussi au démontage
-    };
-  }, []);
-
-  // Effect pour réinitialiser quand on revient sur la page
-  useEffect(() => {
-    const handleVisibilityChange = () => {
-      if (!document.hidden && showExercises) {
-        // La page redevient visible et on est sur les exercices
-        // Réinitialiser les états si nécessaire
-        exerciseInstructionGivenRef.current = false;
-      }
-    };
-
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    
-    return () => {
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-    };
-  }, [showExercises]);
 
   // L'animation ne se déclenche plus automatiquement - uniquement sur clic
 
@@ -346,26 +405,58 @@ export default function ValeurPositionnelleCP20() {
       
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = 'fr-FR';
-      utterance.rate = 0.7;
+      utterance.rate = 0.9;
       speechSynthesis.speak(utterance);
     }
   };
 
   const wait = (ms: number): Promise<void> => {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    return new Promise(resolve => {
+      // 🛑 VÉRIFIER LE SIGNAL D'ARRÊT
+      if (shouldStopRef.current) {
+        resolve();
+        return;
+      }
+      setTimeout(resolve, ms);
+    });
   };
 
   // Fonction pour arrêter le vocal
   const stopVocal = () => {
+    // 🛑 ARRÊT AGRESSIF - Plusieurs appels pour être sûr
     if ('speechSynthesis' in window) {
       speechSynthesis.cancel();
+      setTimeout(() => speechSynthesis.cancel(), 10);
+      setTimeout(() => speechSynthesis.cancel(), 50);
     }
+    
     setIsPlayingVocal(false);
-    setHighlightedElement(null);
+    
+    // 🛑 SIGNAL D'ARRÊT POUR TOUTES LES SÉQUENCES
+    shouldStopRef.current = true;
+    
+    // 🧹 NETTOYER TOUS LES TIMERS
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
   };
 
   const playAudioSequence = (text: string): Promise<void> => {
     return new Promise((resolve) => {
+      // 🛡️ PROTECTION: Empêcher les vocaux automatiques sans interaction utilisateur
+      if (!userHasInteractedRef.current) {
+        console.warn("🚫 Vocal bloqué - aucune interaction utilisateur détectée");
+        resolve();
+        return;
+      }
+      
+      // 🛑 VÉRIFIER LE SIGNAL D'ARRÊT
+      if (shouldStopRef.current) {
+        resolve();
+        return;
+      }
+      
       // Arrêter les vocaux précédents
       if ('speechSynthesis' in window) {
         speechSynthesis.cancel();
@@ -373,7 +464,7 @@ export default function ValeurPositionnelleCP20() {
       
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = 'fr-FR';
-      utterance.rate = 0.8;
+      utterance.rate = 1.0;
       utterance.onend = () => resolve();
       utterance.onerror = () => resolve();
       speechSynthesis.speak(utterance);
@@ -383,13 +474,17 @@ export default function ValeurPositionnelleCP20() {
   // Nouvelle explication fluide et immersive du chapitre
   const explainChapterGoal = async () => {
     try {
+      // 🎯 MARQUER L'INTERACTION UTILISATEUR
+      userHasInteractedRef.current = true;
+      
       speechSynthesis.cancel();
       setIsPlayingVocal(true);
       setHasStarted(true);
       
-      // Effacer les timers de rappel s'ils existent
-      if (welcomeTimerRef.current) clearTimeout(welcomeTimerRef.current);
-      if (reminderTimerRef.current) clearTimeout(reminderTimerRef.current);
+      // ✅ AUTORISER CE NOUVEAU VOCAL
+      shouldStopRef.current = false;
+      
+
 
       await wait(500);
 
@@ -485,56 +580,28 @@ export default function ValeurPositionnelleCP20() {
     }
   };
 
-  // Fonction pour générer une explication interactive quand c'est faux
+  // Fonction pour générer une explication simple quand c'est faux
   const generateAnimatedExplanation = (exercise: any) => {
     const correctAnswer = exercise.correctAnswer;
     
-    // Rendre les fonctions vocales disponibles globalement pour les boutons HTML
-    (window as any).explainQuestionGlobal = () => explainExerciseQuestion(currentExercise);
-    (window as any).reExplainWrongAnswerGlobal = () => explainWrongAnswer(exercise, userAnswer, correctAnswer);
-    
     if (exercise.type === 'dizaines') {
       return `
-        <div class="bg-blue-50 rounded-lg p-4 mb-4 text-center space-y-3">
-          <h4 class="font-bold text-blue-800 mb-4">La bonne réponse est ${correctAnswer} ${correctAnswer === '1' ? 'dizaine' : 'dizaines'}</h4>
-          <div class="flex flex-col sm:flex-row gap-2 justify-center">
-            <button onclick="window.explainQuestionGlobal()" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg font-bold text-sm">
-              🔍 Ré-expliquer l'exercice
-            </button>
-            <button onclick="window.reExplainWrongAnswerGlobal()" class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg font-bold text-sm">
-              🔊 Pourquoi c'est ${correctAnswer} ?
-            </button>
-          </div>
+        <div class="bg-blue-50 rounded-lg p-4 mb-4 text-center">
+          <h4 class="font-bold text-blue-800">La bonne réponse est ${correctAnswer} ${correctAnswer === '1' ? 'dizaine' : 'dizaines'}</h4>
         </div>
       `;
     } else if (exercise.type === 'unites') {
       return `
-        <div class="bg-red-50 rounded-lg p-4 mb-4 text-center space-y-3">
-          <h4 class="font-bold text-red-800 mb-4">La bonne réponse est ${correctAnswer} ${correctAnswer === '1' ? 'unité' : 'unités'}</h4>
-          <div class="flex flex-col sm:flex-row gap-2 justify-center">
-            <button onclick="window.explainQuestionGlobal()" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg font-bold text-sm">
-              🔍 Ré-expliquer l'exercice
-            </button>
-            <button onclick="window.reExplainWrongAnswerGlobal()" class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg font-bold text-sm">
-              🔊 Pourquoi c'est ${correctAnswer} ?
-            </button>
-          </div>
+        <div class="bg-red-50 rounded-lg p-4 mb-4 text-center">
+          <h4 class="font-bold text-red-800">La bonne réponse est ${correctAnswer} ${correctAnswer === '1' ? 'unité' : 'unités'}</h4>
         </div>
       `;
     } else {
       // Pour les exercices de composition
       const answer = exercise.correctAnswer;
       return `
-        <div class="bg-green-50 rounded-lg p-4 mb-4 text-center space-y-3">
-          <h4 class="font-bold text-green-800 mb-4">La bonne réponse est ${answer}</h4>
-          <div class="flex flex-col sm:flex-row gap-2 justify-center">
-            <button onclick="window.explainQuestionGlobal()" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg font-bold text-sm">
-              🔍 Ré-expliquer l'exercice
-            </button>
-            <button onclick="window.reExplainWrongAnswerGlobal()" class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg font-bold text-sm">
-              🔊 Comment calculer ?
-            </button>
-          </div>
+        <div class="bg-green-50 rounded-lg p-4 mb-4 text-center">
+          <h4 class="font-bold text-green-800">La bonne réponse est ${answer}</h4>
         </div>
       `;
     }
@@ -556,25 +623,15 @@ export default function ValeurPositionnelleCP20() {
       // Effacer l'explication si c'est correct
       setAnimatedExplanation('');
       
-      // Explication vocale pour la bonne réponse
-      setTimeout(() => {
-        explainCorrectAnswer(exercises[currentExercise], answer);
-      }, 800);
-      
-      // Passage automatique au suivant après l'explication vocale
+      // Passage automatique au suivant (sans vocal)
       setTimeout(() => {
         nextExercise();
-      }, 4000); // Plus de temps pour l'explication vocale
+      }, 1500); // Temps réduit sans vocal
       
     } else if (!correct) {
       // Générer l'explication animée HTML si c'est faux (pour le bouton)
       const explanation = generateAnimatedExplanation(exercises[currentExercise]);
       setAnimatedExplanation(explanation);
-      
-      // Explication vocale détaillée pour la mauvaise réponse
-      setTimeout(() => {
-        explainWrongAnswer(exercises[currentExercise], answer, exercises[currentExercise].correctAnswer);
-      }, 800);
     }
   };
 
@@ -586,6 +643,9 @@ export default function ValeurPositionnelleCP20() {
     try {
       speechSynthesis.cancel();
       setIsPlayingVocal(true);
+      
+      // ✅ AUTORISER CE NOUVEAU VOCAL
+      shouldStopRef.current = false;
       
       await wait(300);
       
@@ -851,7 +911,7 @@ export default function ValeurPositionnelleCP20() {
     const index = exerciseIndex !== undefined ? exerciseIndex : currentExercise;
     const exerciseData = exercises[index];
     if (exerciseData) {
-      speakText(exerciseData.question);
+        speakText(exerciseData.question);
     }
   };
 
@@ -881,18 +941,15 @@ export default function ValeurPositionnelleCP20() {
   };
 
   const nextExercise = () => {
+    // ✅ ARRÊT COMPLET avec signal
     stopVocal();
+    
     if (currentExercise < exercises.length - 1) {
       const nextIndex = currentExercise + 1;
       setCurrentExercise(nextIndex);
       setUserAnswer('');
       setIsCorrect(null);
       setAnimatedExplanation('');
-      
-      // Encouragement vocal pour le prochain exercice
-      setTimeout(() => {
-        encourageNextExercise(nextIndex + 1);
-      }, 500);
       
     } else {
       setFinalScore(score);
@@ -943,39 +1000,16 @@ export default function ValeurPositionnelleCP20() {
           <div className="bg-white rounded-lg p-1 shadow-md flex h-auto">
             <button
               onClick={() => {
-                // Arrêt vocal renforcé avec double vérification
-                try {
-                  if ('speechSynthesis' in window) {
-                    speechSynthesis.cancel();
-                    setTimeout(() => {
-                      if ('speechSynthesis' in window) {
-                        speechSynthesis.cancel();
-                      }
-                    }, 100);
-                  }
-                } catch (error) {
-                  console.warn('Erreur lors de l\'arrêt du vocal:', error);
-                }
+                console.log("🎯 CLIC ONGLET COURS - réinitialisation + arrêt");
                 
-                // Réinitialiser tous les états
-                setIsPlayingVocal(false);
-                setHighlightedElement(null);
-                
-                // Arrêter spécifiquement les fonctions vocales
-                exerciseInstructionGivenRef.current = false;
-                setExerciseInstructionGiven(false);
-                
-                // Nettoyer les timers
-                if (welcomeTimerRef.current) {
-                  clearTimeout(welcomeTimerRef.current);
-                  welcomeTimerRef.current = null;
-                }
-                if (reminderTimerRef.current) {
-                  clearTimeout(reminderTimerRef.current);
-                  reminderTimerRef.current = null;
-                }
-                
+                // ARRÊT COMPLET AVEC SIGNAL
+                stopVocal();
                 setShowExercises(false);
+                
+                // 🔄 FORCE RESET pour s'assurer que les boutons reviennent
+                setTimeout(() => {
+                  resetButtons();
+                }, 100);
               }}
               className={`px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-bold transition-all text-sm sm:text-base h-full flex items-center justify-center ${
                 !showExercises 
@@ -987,39 +1021,22 @@ export default function ValeurPositionnelleCP20() {
             </button>
             <button
               onClick={() => {
-                // Arrêt vocal renforcé avec double vérification
-                try {
-                  if ('speechSynthesis' in window) {
-                    speechSynthesis.cancel();
-                    setTimeout(() => {
-                      if ('speechSynthesis' in window) {
-                        speechSynthesis.cancel();
-                      }
-                    }, 100);
-                  }
-                } catch (error) {
-                  console.warn('Erreur lors de l\'arrêt du vocal:', error);
-                }
+                console.log("🎯 CLIC ONGLET EXERCICES - réinitialisation + arrêt");
                 
-                // Réinitialiser tous les états
-                setIsPlayingVocal(false);
+                // ARRÊT COMPLET AVEC SIGNAL
+                stopVocal();
+                
+                // RESET ANIMATIONS
                 setHighlightedElement(null);
+                setSelectedNumber('10');
                 
-                // Réinitialiser le flag pour permettre le vocal automatique
-                exerciseInstructionGivenRef.current = false;
-                setExerciseInstructionGiven(false);
-                
-                // Nettoyer les timers
-                if (welcomeTimerRef.current) {
-                  clearTimeout(welcomeTimerRef.current);
-                  welcomeTimerRef.current = null;
-                }
-                if (reminderTimerRef.current) {
-                  clearTimeout(reminderTimerRef.current);
-                  reminderTimerRef.current = null;
-                }
-                
+                // GO TO EXERCISES
                 setShowExercises(true);
+                
+                // 🔄 FORCE RESET pour s'assurer que les boutons reviennent
+                setTimeout(() => {
+                  resetButtons();
+                }, 100);
               }}
               className={`px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-bold transition-all text-sm sm:text-base h-full flex flex-col items-center justify-center ${
                 showExercises 
@@ -1333,6 +1350,28 @@ export default function ValeurPositionnelleCP20() {
                   Recommencer
                 </button>
               </div>
+
+              {/* Bouton Instructions principal - style identique au bouton COMMENCER */}
+              {!exerciseInstructionGiven && (
+                <div className="text-center mb-6">
+                  <button
+                    onClick={explainExercisesOnce}
+                    disabled={isPlayingVocal}
+                    className={`bg-gradient-to-r from-orange-500 to-yellow-500 text-white px-8 py-4 rounded-xl font-bold text-xl shadow-lg hover:shadow-xl transition-all transform hover:scale-105 ${
+                      !exerciseInstructionGiven ? 'animate-bounce' : ''
+                    } ${
+                      isPlayingVocal ? 'animate-pulse cursor-not-allowed opacity-75' : 'hover:from-orange-600 hover:to-yellow-600'
+                    }`}
+                    style={{
+                      animationDuration: !exerciseInstructionGiven ? '2s' : 'none',
+                      animationIterationCount: !exerciseInstructionGiven ? 'infinite' : 'none'
+                    }}
+                  >
+                    <Volume2 className="inline w-6 h-6 mr-3" />
+                    🔊 ÉCOUTER LES INSTRUCTIONS !
+                  </button>
+                </div>
+              )}
               
               {/* Barre de progression */}
               <div className="w-full bg-gray-200 rounded-full h-2 sm:h-3 mb-1 sm:mb-2">
@@ -1353,31 +1392,16 @@ export default function ValeurPositionnelleCP20() {
             {/* Question */}
             <div className="bg-white rounded-xl p-3 sm:p-6 md:p-8 shadow-lg text-center">
               <div className="flex flex-col items-center gap-2 mb-3 sm:mb-6 md:mb-8">
-                <h3 
-                  id="exercise-question"
+              <h3 
+                id="exercise-question"
                   className={`text-base sm:text-xl md:text-2xl font-bold text-gray-900 transition-all duration-500 ${
-                    highlightedElement === 'exercise-question' ? 'bg-yellow-100 ring-4 ring-yellow-400 shadow-2xl scale-105 rounded-lg p-2' : ''
-                  }`}
-                >
-                  {exercises[currentExercise].question}
-                </h3>
+                  highlightedElement === 'exercise-question' ? 'bg-yellow-100 ring-4 ring-yellow-400 shadow-2xl scale-105 rounded-lg p-2' : ''
+                }`}
+              >
+                {exercises[currentExercise].question}
+              </h3>
                 
-                {/* Petit bouton pour lire juste l'énoncé */}
-                <button
-                  onClick={() => {
-                    stopVocal();
-                    readExerciseStatement(currentExercise);
-                  }}
-                  disabled={isPlayingVocal || isCorrect !== null}
-                  className={`px-3 py-1 rounded-full text-xs font-medium transition-all ${
-                    isPlayingVocal || isCorrect !== null
-                      ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                      : 'bg-blue-100 text-blue-600 hover:bg-blue-200 hover:scale-105'
-                  }`}
-                >
-                  <Volume2 className="w-3 h-3 mr-1 inline" />
-                  Lire la question
-                </button>
+
               </div>
               
               {/* Affichage du nombre ou de l'expression */}
@@ -1408,24 +1432,7 @@ export default function ValeurPositionnelleCP20() {
                 )}
               </div>
               
-              {/* Bouton d'aide vocale */}
-              <div className="mb-4 sm:mb-6 text-center">
-                <button
-                  onClick={() => {
-                    stopVocal();
-                    explainExerciseQuestion(currentExercise);
-                  }}
-                  disabled={isPlayingVocal || isCorrect !== null}
-                  className={`px-4 py-2 rounded-lg font-bold text-sm transition-all ${
-                    isPlayingVocal || isCorrect !== null
-                      ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                      : 'bg-purple-500 hover:bg-purple-600 text-white shadow-lg hover:shadow-xl transform hover:scale-105'
-                  }`}
-                >
-                  <Volume2 className="w-4 h-4 mr-2 inline" />
-                  {isPlayingVocal ? 'Explication en cours...' : '🤔 Aide : Expliquer cet exercice'}
-                </button>
-              </div>
+
               
               {/* Choix multiples */}
               <div 

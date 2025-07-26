@@ -14,6 +14,8 @@ export default function DecompositionsCP() {
   const [answeredCorrectly, setAnsweredCorrectly] = useState<Set<number>>(new Set());
   const [showCompletionModal, setShowCompletionModal] = useState(false);
   const [finalScore, setFinalScore] = useState(0);
+  const [exerciseInstructionGiven, setExerciseInstructionGiven] = useState(false);
+  
   // Fonction pour mélanger un tableau (définie ici pour pouvoir l'utiliser dans useState)
   const shuffleArray = (array: string[]) => {
     const shuffled = [...array];
@@ -35,9 +37,57 @@ export default function DecompositionsCP() {
   const [isLoadingAudio, setIsLoadingAudio] = useState(false);
   const [hasStarted, setHasStarted] = useState(false);
   const hasStartedRef = useRef(false);
-  const welcomeTimerRef = useRef<NodeJS.Timeout | null>(null);
-  const reminderTimerRef = useRef<NodeJS.Timeout | null>(null);
   const exerciseInstructionGivenRef = useRef(false);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  
+  // 🆕 SOLUTION ULTRA-AGRESSIVE pour la persistance des boutons
+  const userHasInteractedRef = useRef(false);
+
+  // Fonction centralisée pour réinitialiser les boutons
+  const resetButtons = () => {
+    console.log("🔄 RÉINITIALISATION DES BOUTONS - decompositions");
+    setExerciseInstructionGiven(false);
+    setHasStarted(false);
+    exerciseInstructionGivenRef.current = false;
+    hasStartedRef.current = false;
+    // ⚠️ NE PAS réinitialiser userHasInteractedRef - on garde l'historique d'interaction
+  };
+
+  // 🔄 SOLUTION ULTRA-AGRESSIVE : Réinitialisation initiale + détection d'interaction
+  useEffect(() => {
+    console.log("📍 INITIALISATION - decompositions");
+    
+    // Reset immédiat au chargement
+    resetButtons();
+    
+    // Détection d'interaction utilisateur
+    const markUserInteraction = () => {
+      if (!userHasInteractedRef.current) {
+        console.log("✅ PREMIÈRE INTERACTION UTILISATEUR détectée - decompositions");
+        userHasInteractedRef.current = true;
+      }
+    };
+    
+    // Event listeners pour détecter l'interaction
+    document.addEventListener('click', markUserInteraction);
+    document.addEventListener('keydown', markUserInteraction);
+    document.addEventListener('touchstart', markUserInteraction);
+    
+    // Check périodique AGRESSIF (toutes les 2 secondes)
+    const intervalId = setInterval(() => {
+      if (hasStartedRef.current || exerciseInstructionGivenRef.current) {
+        console.log("⚠️ CHECK PÉRIODIQUE : Boutons cachés détectés, RESET FORCÉ - decompositions");
+        resetButtons();
+      }
+    }, 2000);
+    
+    return () => {
+      document.removeEventListener('click', markUserInteraction);
+      document.removeEventListener('keydown', markUserInteraction);
+      document.removeEventListener('touchstart', markUserInteraction);
+      clearInterval(intervalId);
+    };
+  }, []);
 
   // Sauvegarder les progrès
   const saveProgress = (score: number, maxScore: number) => {
@@ -159,7 +209,7 @@ export default function DecompositionsCP() {
     
     const utterance = new SpeechSynthesisUtterance(enhancedText);
     utterance.lang = 'fr-FR';
-    utterance.rate = 0.85;  // Légèrement plus lent pour la compréhension
+    utterance.rate = 1.1;  // Légèrement plus lent pour la compréhension
     utterance.pitch = 1.1;  // Pitch légèrement plus aigu (adapté aux enfants)
     utterance.volume = 0.9; // Volume confortable
     
@@ -174,6 +224,13 @@ export default function DecompositionsCP() {
   // Fonction pour jouer un texte avec timing
   const playAudioSequence = (text: string): Promise<void> => {
     return new Promise((resolve) => {
+      // 🔒 PROTECTION : Empêcher les vocaux sans interaction utilisateur
+      if (!userHasInteractedRef.current) {
+        console.log("🚫 BLOQUÉ : Tentative de vocal sans interaction utilisateur - decompositions");
+        resolve();
+        return;
+      }
+      
       // Arrêter les vocaux précédents
       if ('speechSynthesis' in window) {
         speechSynthesis.cancel();
@@ -202,140 +259,24 @@ export default function DecompositionsCP() {
 
   // Consigne détaillée avec l'exercice 1 réel et animations synchronisées
   const explainExercisesOnce = async () => {
+    // ✅ Marquer l'interaction utilisateur explicitement
+    userHasInteractedRef.current = true;
+    
     // Arrêter les vocaux précédents
     if ('speechSynthesis' in window) {
       speechSynthesis.cancel();
     }
 
     setIsPlayingVocal(true);
+    setExerciseInstructionGiven(true);
 
     try {
-      // 1. Introduction générale
-      await playAudioSequence("Super ! Tu vas maintenant faire des exercices de décomposition !");
-      await wait(800);
-
-      // 2. Surbrillance du container d'exercice
-      setHighlightedElement('exercise-container');
-      await playAudioSequence("Regarde ton premier exercice !");
-      await wait(2000);
-      setHighlightedElement(null);
-      
-      await wait(300);
-
-      // 3. Expliquer le titre avec surbrillance
-      setHighlightedElement('exercise-title');
-      await playAudioSequence("Tu dois compléter la décomposition ! C'est-à-dire trouver le nombre qui manque !");
-      await wait(3000);
-      setHighlightedElement(null);
-      
-      await wait(300);
-
-      // 4. Montrer la question avec surbrillance forte
-      setHighlightedElement('exercise-question-text');
-      await playAudioSequence("Lis bien la question : 5 égale 2 plusse quoi ?");
-      await wait(2500);
-      setHighlightedElement(null);
-      
-      await wait(300);
-
-      // 5. Expliquer avec les 5 cercles rouges - le nombre total
-      setHighlightedElement('exercise-total-circles');
-      await playAudioSequence("Regarde ! Voici 5 cercles rouges ! Compte-les : un, deux, trois, quatre, cinq !");
-      await wait(3500);
-      setHighlightedElement(null);
-      
-      await wait(300);
-
-      // 6. Expliquer le signe égal
-      setHighlightedElement('exercise-equals');
-      await playAudioSequence("Le signe égal veut dire : c'est la même chose que !");
-      await wait(2200);
-      setHighlightedElement(null);
-      
-      await wait(300);
-
-      // 7. Montrer la première partie avec 2 cercles
-      setHighlightedElement('exercise-first-part');
-      await playAudioSequence("D'un côté, on a déjà 2 cercles ! Compte : un, deux !");
-      await wait(2500);
-      setHighlightedElement(null);
-      
-      await wait(300);
-
-      // 8. Expliquer le signe plus
-      setHighlightedElement('exercise-plus');
-      await playAudioSequence("Le signe plusse veut dire qu'on ajoute encore des cercles !");
-      await wait(2200);
-      setHighlightedElement(null);
-      
-      await wait(300);
-
-      // 9. Montrer le point d'interrogation
-      setHighlightedElement('exercise-question-mark');
-      await playAudioSequence("Et le point d'interrogation, c'est ce que tu dois trouver ! Combien de cercles faut-il ajouter ?");
-      await wait(3500);
-      setHighlightedElement(null);
-      
-      await wait(300);
-
-      // 10. Logique de résolution avec approche additive
-      await playAudioSequence("Réfléchis ! Si on a déjà 2 cercles, combien faut-il en rajouter pour en avoir 5 en tout ?");
-      await wait(3500);
-      
-      await wait(300);
-
-      // 11. Donner la réponse avec raisonnement additif
-      await playAudioSequence("À partir de 2, il faut rajouter 3 cercles pour en avoir 5 ! Donc la réponse est 3 !");
-      await wait(2500);
-      
-      await wait(300);
-
-      // 12. Montrer les choix
-      setHighlightedElement('exercise-choices');
-      await playAudioSequence("Maintenant, regarde les choix et clique sur 3 !");
-      await wait(2200);
-      setHighlightedElement(null);
-
-      await wait(300);
-
-      // 13. Instructions générales pour la suite
-      await playAudioSequence("Pour tous les exercices, tu feras pareil : tu regardes le nombre total, tu vois ce qu'on a déjà, et tu trouves ce qui manque !");
-      await wait(3500);
-
-      await playAudioSequence("Quand tu te trompes, regarde bien la correction, puis clique sur Suivant pour continuer !");
-      await wait(3000);
-
-      await playAudioSequence("Allez, c'est parti ! Clique sur 3 pour commencer !");
-      await wait(2000);
-
-      // 14. Encourager à essayer d'autres nombres avec illuminations
-      await playAudioSequence("Après les exercices, n'oublie pas d'essayer avec d'autres nombres !");
-      await wait(2000);
-
-      await playAudioSequence("Retourne dans la section cours pour essayer par exemple avec... ");
+      // Simple introduction aux exercices
+      await playAudioSequence("Parfait ! Place aux exercices de décomposition !");
       await wait(1500);
-
-      // Illuminer chaque nombre en le disant
-      setHighlightedElement('number-button-4');
-      await playAudioSequence("4 !");
-      await wait(800);
-      setHighlightedElement(null);
-      await wait(100);
-
-      setHighlightedElement('number-button-6');
-      await playAudioSequence("6 !");
-      await wait(800);
-      setHighlightedElement(null);
-      await wait(100);
-
-      setHighlightedElement('number-button-7');
-      await playAudioSequence("7 !");
-      await wait(800);
-      setHighlightedElement(null);
-      await wait(100);
-
-      await playAudioSequence("ou un autre nombre ! Tu verras, c'est très amusant de découvrir toutes les décompositions !");
-      await wait(3000);
+      
+      await playAudioSequence("Tu dois trouver le nombre qui manque dans chaque décomposition !");
+      await wait(2000);
 
     } catch (error) {
       console.error('Erreur dans explainExercisesOnce:', error);
@@ -347,18 +288,11 @@ export default function DecompositionsCP() {
 
   // Instructions vocales pour le cours avec synchronisation et animations fortes
   const explainChapterGoal = async () => {
-    setHasStarted(true); // Marquer que l'enfant a commencé
-    hasStartedRef.current = true; // Pour les timers
+    // ✅ Marquer l'interaction utilisateur explicitement
+    userHasInteractedRef.current = true;
     
-    // Annuler immédiatement les timers de rappel
-    if (welcomeTimerRef.current) {
-      clearTimeout(welcomeTimerRef.current);
-      welcomeTimerRef.current = null;
-    }
-    if (reminderTimerRef.current) {
-      clearTimeout(reminderTimerRef.current);
-      reminderTimerRef.current = null;
-    }
+    setHasStarted(true);
+    hasStartedRef.current = true;
     
     // Arrêter les vocaux précédents
     if ('speechSynthesis' in window) {
@@ -368,112 +302,93 @@ export default function DecompositionsCP() {
     setIsPlayingVocal(true);
 
     try {
-      // 1. Introduction générale
-      await playAudioSequence("Bonjour ! Bienvenue dans le chapitre sur les décompositions !");
-      await wait(300);
-
-      // 2. Explication du concept de décomposition
-      await playAudioSequence("Aujourd'hui, nous allons apprendre les décompositions de nombres !");
-      await wait(2500);
-      
-      await playAudioSequence("Une décomposition, c'est montrer toutes les façons de faire un nombre avec deux autres nombres !");
-      await wait(3500);
-      
-      await playAudioSequence("Par exemple, le nombre 5 peut se faire avec 2 plusse 3, ou avec 1 plusse 4, ou avec 0 plusse 5 !");
-      await wait(4000);
-      
-      await wait(300);
-
-      // 3. Montrer le sélecteur de nombres
-      setHighlightedElement('number-selector');
-      await playAudioSequence("Regarde ces nombres ! Tu peux choisir n'importe lequel pour découvrir toutes ses décompositions !");
-      await wait(3500);
-      setHighlightedElement(null);
-      
-      await wait(300);
-
-      // 4. Exemple avec le nombre 5 par défaut
-      setHighlightedElement('decompositions-display');
-      await playAudioSequence("Prenons l'exemple du nombre 5 ! Regarde toutes les façons de le faire !");
-      await wait(3000);
-      setHighlightedElement(null);
-      
-      await wait(300);
-
-      // 5. Proposer d'essayer d'autres nombres
-      await playAudioSequence("Tu peux essayer avec d'autres nombres ! Par exemple...");
+      // 1. Introduction
+      await playAudioSequence("Bonjour ! Je vais t'expliquer ce qu'est une décomposition !");
       await wait(2000);
 
-      // Illuminer le bouton 4 
-      setHighlightedElement('number-button-4');
-      await playAudioSequence("Essaie avec le 4 !");
-      await wait(2000);
+      // 2. Mettre en surbrillance la section d'explication
+      setHighlightedElement('explanation-section');
+      await playAudioSequence("Regarde cette explication !");
+      await wait(1500);
       setHighlightedElement(null);
-      await wait(300);
-
-      // Illuminer le bouton 6
-      setHighlightedElement('number-button-6');
-      await playAudioSequence("Ou avec le 6 !");
-      await wait(2000);
-      setHighlightedElement(null);
-      await wait(300);
-
-      // Illuminer le bouton 7
-      setHighlightedElement('number-button-7');
-      await playAudioSequence("Ou encore le 7 !");
-      await wait(2000);
-      setHighlightedElement(null);
-      await wait(300);
-
-      await playAudioSequence("Clique sur un nombre et découvre toutes ses décompositions !");
-      await wait(2500);
-
-      // 13. Transition vers les décompositions générales
-      await wait(300);
-      setHighlightedElement('explanation-title');
-      await playAudioSequence("Maintenant, découvrons les décompositions avec tous les nombres !");
-      await wait(2500);
-      setHighlightedElement(null);
-
-      // 14. Explication générale des décompositions
-      await wait(300);
+      
+      // 3. Définition avec surbrillance
       setHighlightedElement('definition-text');
       await playAudioSequence("Une décomposition, c'est couper un nombre en plusieurs morceaux !");
       await wait(3000);
       setHighlightedElement(null);
+      
+      await wait(500);
 
-      // 15. Exemple avec les pommes
-      await wait(300);
-      setHighlightedElement('apples-title');
-      await playAudioSequence("Par exemple, regardons avec des pommes !");
+      // 4. Introduction de l'exemple avec pommes
+      setHighlightedElement('visual-example');
+      await playAudioSequence("Je vais te montrer avec un exemple concret !");
       await wait(2000);
       setHighlightedElement(null);
 
-      // 16. Guide vers le sélecteur de nombre
-      await wait(300);
-      setHighlightedElement('number-selector');
-      await playAudioSequence("Regarde ! Tu peux choisir un nombre ici pour voir toutes ses décompositions !");
+      // 5. Montrer les 5 pommes
+      setHighlightedElement('five-apples');
+      await playAudioSequence("Voici 5 pommes ! Compte avec moi : un, deux, trois, quatre, cinq !");
+      await wait(3500);
+      setHighlightedElement(null);
+
+      await wait(800);
+
+      // 6. Expliquer le signe égal
+      setHighlightedElement('equals-sign');
+      await playAudioSequence("Le signe égal veut dire que c'est la même chose !");
       await wait(2500);
       setHighlightedElement(null);
-      
-      await wait(300);
 
-      // 17. Guide vers l'affichage des décompositions
-      setHighlightedElement('decompositions-display');
-      await playAudioSequence("Et ici, tu verras toutes les façons différentes de faire ton nombre avec des additions !");
+      await wait(500);
+
+      // 7. Montrer les 2 pommes
+      setHighlightedElement('two-apples');
+      await playAudioSequence("D'un côté, j'ai 2 pommes !");
+      await wait(2000);
+      setHighlightedElement(null);
+
+      await wait(500);
+
+      // 8. Expliquer le signe plus
+      setHighlightedElement('plus-sign');
+      await playAudioSequence("Le signe plus veut dire qu'on ajoute !");
+      await wait(2000);
+      setHighlightedElement(null);
+
+      await wait(500);
+
+      // 9. Montrer les 3 pommes
+      setHighlightedElement('three-apples');
+      await playAudioSequence("Et de l'autre côté, j'ajoute 3 pommes !");
+      await wait(2500);
+      setHighlightedElement(null);
+
+      await wait(800);
+
+      // 10. Résumé de l'exemple
+      setHighlightedElement('visual-example');
+      await playAudioSequence("Donc 5 pommes, c'est la même chose que 2 pommes plus 3 pommes !");
+      await wait(3500);
+      setHighlightedElement(null);
+
+      await wait(1000);
+
+      // 11. Transition vers les exemples
+      await playAudioSequence("Maintenant, tu peux t'entraîner avec plein d'exemples !");
+      await wait(2500);
+
+      // 12. Mettre en surbrillance la section de choix de nombre
+      setHighlightedElement('number-selector');
+      await playAudioSequence("Regarde ici ! Tu peux choisir un nombre à décomposer !");
       await wait(3000);
       setHighlightedElement(null);
 
-      await wait(300);
+      await wait(800);
 
-      // 18. Guide vers les boutons audio
-      setHighlightedElement('audio-buttons');
-      await playAudioSequence("Et tu peux cliquer sur chaque décomposition pour l'écouter !");
-      await wait(2200);
-      setHighlightedElement(null);
-
-      await wait(300);
-      await playAudioSequence("Alors... Es-tu prêt à découvrir toutes les décompositions ?");
+      // 13. Encourager à essayer
+      await playAudioSequence("Clique sur un nombre et découvre toutes ses décompositions !");
+      await wait(2500);
 
     } catch (error) {
       console.error('Erreur dans explainChapterGoal:', error);
@@ -556,22 +471,8 @@ export default function DecompositionsCP() {
       speechSynthesis.onvoiceschanged = loadVoices;
     }
 
-    // Guidance vocale automatique pour les non-lecteurs (COURS seulement)
-    if (!showExercises) {
-      welcomeTimerRef.current = setTimeout(() => {
-        if (!hasStartedRef.current) {
-          speakAudio("Clique sur le bouton violet qui bouge pour commencer.");
-        }
-      }, 1000); // 1 seconde après le chargement
-
-      // Rappel vocal si pas de clic après 6 secondes (5 secondes après le premier)
-       // 6 secondes après le chargement (5 secondes après le premier message)
-    }
-
-    // Nettoyage
-          return () => {
-        if (welcomeTimerRef.current) clearTimeout(welcomeTimerRef.current);
-      };
+    // 🚫 SUPPRIMÉ : Plus de guidance vocale automatique (cause warnings)
+    // Seuls les clics manuels déclenchent les vocaux maintenant
   }, [showExercises]);
 
   // Effect pour gérer les changements d'onglet interne (cours ↔ exercices)
@@ -582,12 +483,19 @@ export default function DecompositionsCP() {
     }
     setIsPlayingVocal(false);
     
+    // Nettoyer le timeout précédent s'il existe
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+    
     // Jouer automatiquement la consigne des exercices (une seule fois)
     if (showExercises && !exerciseInstructionGivenRef.current) {
       // Délai court pour laisser l'interface se charger
-      setTimeout(() => {
+      timeoutRef.current = setTimeout(() => {
         explainExercisesOnce();
         exerciseInstructionGivenRef.current = true;
+        timeoutRef.current = null;
       }, 800);
     }
   }, [showExercises]);
@@ -611,6 +519,12 @@ export default function DecompositionsCP() {
     const handleVisibilityChange = () => {
       if (document.hidden) {
         stopSpeechOnExit();
+      } else {
+        // 🔄 La page redevient visible - RÉINITIALISER LES BOUTONS !
+        setExerciseInstructionGiven(false);
+        setHasStarted(false);
+        exerciseInstructionGivenRef.current = false;
+        hasStartedRef.current = false;
       }
     };
 
@@ -655,7 +569,7 @@ export default function DecompositionsCP() {
     if ('speechSynthesis' in window) {
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = 'fr-FR';
-      utterance.rate = 0.7;
+      utterance.rate = 0.9;
       speechSynthesis.speak(utterance);
     }
   };
@@ -692,6 +606,12 @@ export default function DecompositionsCP() {
   };
 
   const nextExercise = () => {
+    // Arrêter tous les vocaux immédiatement
+    if ('speechSynthesis' in window) {
+      speechSynthesis.cancel();
+    }
+    setIsPlayingVocal(false);
+    
     if (currentExercise < exercises.length - 1) {
       setCurrentExercise(currentExercise + 1);
       setUserAnswer('');
@@ -1057,6 +977,28 @@ export default function DecompositionsCP() {
                   Recommencer
                 </button>
               </div>
+
+              {/* Bouton Instructions principal - style identique au bouton COMMENCER */}
+              {!exerciseInstructionGiven && (
+                <div className="text-center mb-6">
+                  <button
+                    onClick={explainExercisesOnce}
+                    disabled={isPlayingVocal}
+                    className={`bg-gradient-to-r from-orange-500 to-yellow-500 text-white px-8 py-4 rounded-xl font-bold text-xl shadow-lg hover:shadow-xl transition-all transform hover:scale-105 ${
+                      !exerciseInstructionGiven ? 'animate-bounce' : ''
+                    } ${
+                      isPlayingVocal ? 'animate-pulse cursor-not-allowed opacity-75' : 'hover:from-orange-600 hover:to-yellow-600'
+                    }`}
+                    style={{
+                      animationDuration: !exerciseInstructionGiven ? '2s' : 'none',
+                      animationIterationCount: !exerciseInstructionGiven ? 'infinite' : 'none'
+                    }}
+                  >
+                    <Volume2 className="inline w-6 h-6 mr-3" />
+                    🔊 ÉCOUTER LES INSTRUCTIONS !
+                  </button>
+                </div>
+              )}
               
               {/* Barre de progression */}
               <div className="w-full bg-gray-200 rounded-full h-3 sm:h-4 mb-2 sm:mb-3">

@@ -29,11 +29,71 @@ export default function DoublesMotiesCP20() {
   const [animationStep, setAnimationStep] = useState<'none' | 'separating' | 'group1' | 'group2' | 'finished'>('none');
   
   // Refs pour les timers
-  const welcomeTimerRef = useRef<NodeJS.Timeout | null>(null);
-  const reminderTimerRef = useRef<NodeJS.Timeout | null>(null);
   const exerciseInstructionGivenRef = useRef(false);
-  const exerciseReadingTimerRef = useRef<NodeJS.Timeout | null>(null);
-  const allTimersRef = useRef<NodeJS.Timeout[]>([]);
+  const shouldStopRef = useRef(false);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const hasStartedRef = useRef(false);
+  const userHasInteractedRef = useRef(false);
+
+  // 🔄 FONCTION DE RÉINITIALISATION CENTRALISÉE
+  const resetButtons = () => {
+    console.log("🔄 RÉINITIALISATION DES BOUTONS - doubles-moities");
+    setExerciseInstructionGiven(false);
+    setHasStarted(false);
+    exerciseInstructionGivenRef.current = false;
+    hasStartedRef.current = false;
+    // ⚠️ NE PAS réinitialiser userHasInteractedRef - on garde l'historique d'interaction
+  };
+
+  // 🔄 RÉINITIALISER les boutons à chaque chargement de page
+  useEffect(() => {
+    console.log("🔄 CHARGEMENT INITIAL - doubles-moities");
+    resetButtons();
+    
+    // 🎯 DÉTECTER TOUTE INTERACTION UTILISATEUR
+    const markUserInteraction = () => {
+      userHasInteractedRef.current = true;
+      console.log("✋ Interaction utilisateur détectée");
+    };
+    
+    document.addEventListener('click', markUserInteraction);
+    document.addEventListener('keydown', markUserInteraction);
+    document.addEventListener('touchstart', markUserInteraction);
+    
+    // 🔄 VÉRIFICATION PÉRIODIQUE - Force la réinitialisation toutes les 2 secondes
+    const intervalId = setInterval(() => {
+      // Si les boutons ont disparu mais qu'on est sur la page, les remettre
+      if (hasStartedRef.current || exerciseInstructionGivenRef.current) {
+        console.log("🔄 VÉRIFICATION PÉRIODIQUE - réinitialisation forcée");
+        resetButtons();
+      }
+    }, 2000);
+    
+    return () => {
+      document.removeEventListener('click', markUserInteraction);
+      document.removeEventListener('keydown', markUserInteraction);
+      document.removeEventListener('touchstart', markUserInteraction);
+      clearInterval(intervalId);
+    };
+  }, []); // Une seule fois au chargement
+
+  // 🔍 DEBUG: Surveiller les changements d'exerciseInstructionGiven
+  useEffect(() => {
+    console.log("🔍 exerciseInstructionGiven changed to:", exerciseInstructionGiven);
+  }, [exerciseInstructionGiven]);
+
+  // 🔍 DEBUG: Surveiller les changements d'hasStarted
+  useEffect(() => {
+    console.log("🔍 hasStarted changed to:", hasStarted);
+  }, [hasStarted]);
+
+  // 🔄 RESET ULTIME au montage du composant
+  useEffect(() => {
+    console.log("🚀 MONTAGE COMPOSANT - reset ultime");
+    setTimeout(() => {
+      resetButtons();
+    }, 500);
+  }, []);
 
   // Fonction pour mélanger un tableau
   const shuffleArray = (array: string[]) => {
@@ -157,7 +217,7 @@ export default function DoublesMotiesCP20() {
       speechSynthesis.cancel(); // Arrêter tout vocal précédent
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = 'fr-FR';
-      utterance.rate = 0.7;
+      utterance.rate = 0.9;
       speechSynthesis.speak(utterance);
     }
   };
@@ -166,21 +226,32 @@ export default function DoublesMotiesCP20() {
   const createOptimizedUtterance = (text: string) => {
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = 'fr-FR';
-    utterance.rate = 0.8;
+    utterance.rate = 1.0;
     utterance.pitch = 1.1;
     utterance.volume = 0.9;
     return utterance;
   };
 
   const wait = (ms: number): Promise<void> => {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    return new Promise(resolve => {
+      // 🛑 VÉRIFIER LE SIGNAL D'ARRÊT
+      if (shouldStopRef.current) {
+        resolve(); // Sort immédiatement SANS attendre
+        return;
+      }
+      setTimeout(resolve, ms);
+    });
   };
 
   // Fonction pour arrêter le vocal
   const stopVocal = () => {
+    // 🛑 ARRÊT AGRESSIF - Plusieurs appels pour être sûr
     if ('speechSynthesis' in window) {
       speechSynthesis.cancel();
+      setTimeout(() => speechSynthesis.cancel(), 10);
+      setTimeout(() => speechSynthesis.cancel(), 50);
     }
+    
     setIsPlayingVocal(false);
     setHighlightedElement(null);
     // Réinitialiser les animations spécifiques
@@ -188,10 +259,32 @@ export default function DoublesMotiesCP20() {
     setAnimationStep('none');
     setGroup1Objects(0);
     setGroup2Objects(0);
+    
+    // 🛑 SIGNAL D'ARRÊT POUR TOUTES LES SÉQUENCES
+    shouldStopRef.current = true;
+    
+    // 🧹 NETTOYER TOUS LES TIMERS TRACKÉS
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
   };
 
   const playAudioSequence = (text: string): Promise<void> => {
     return new Promise((resolve) => {
+      // 🛡️ PROTECTION: Empêcher les vocaux automatiques sans interaction utilisateur
+      if (!userHasInteractedRef.current) {
+        console.warn("🚫 Vocal bloqué - aucune interaction utilisateur détectée");
+        resolve();
+        return;
+      }
+      
+      // 🛑 VÉRIFIER LE SIGNAL D'ARRÊT
+      if (shouldStopRef.current) {
+        resolve(); // Sort immédiatement SANS jouer
+        return;
+      }
+      
       // Arrêter les vocaux précédents
       if ('speechSynthesis' in window) {
         speechSynthesis.cancel();
@@ -199,7 +292,7 @@ export default function DoublesMotiesCP20() {
       
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = 'fr-FR';
-      utterance.rate = 0.8;
+      utterance.rate = 1.0;
       utterance.onend = () => resolve();
       utterance.onerror = () => resolve();
       speechSynthesis.speak(utterance);
@@ -215,11 +308,14 @@ export default function DoublesMotiesCP20() {
       speechSynthesis.cancel();
       setIsPlayingVocal(true);
       
+      // ✅ AUTORISER CE NOUVEAU VOCAL
+      shouldStopRef.current = false;
+      
       // Sélectionner le concept
       setSelectedConcept(conceptId);
-
-      await wait(400);
       
+      await wait(400);
+
       if (concept.type === 'double') {
         // EXPLICATION POUR LES DOUBLES
         await playAudioSequence(`Super ! Tu veux découvrir le double de ${concept.number} !`);
@@ -234,23 +330,23 @@ export default function DoublesMotiesCP20() {
         await wait(2500);
         setHighlightedElement(null);
         await wait(300);
-        
+
         // Visualisation
         await playAudioSequence("Regarde avec les objets visuels !");
         setHighlightedElement('visual-objects');
         await wait(2000);
         setHighlightedElement(null);
         await wait(300);
-        
+
         // Résultat
         await playAudioSequence(`${concept.number} plus ${concept.number} égale ${concept.result} !`);
         setHighlightedElement('explanation-section');
         await wait(2500);
         setHighlightedElement(null);
         await wait(300);
-        
+
         await playAudioSequence(`Donc le double de ${concept.number}, c'est ${concept.result} !`);
-        
+
       } else {
         // EXPLICATION POUR LES MOITIÉS
         await playAudioSequence(`Génial ! Tu veux découvrir la moitié de ${concept.number} !`);
@@ -265,14 +361,14 @@ export default function DoublesMotiesCP20() {
         await wait(2500);
         setHighlightedElement(null);
         await wait(300);
-        
+
         // Animation de séparation
         await playAudioSequence(`Regarde, je vais partager ${concept.number} objets en 2 groupes !`);
         setHighlightedElement('visual-objects');
         await wait(2000);
         setHighlightedElement(null);
         await wait(300);
-        
+
         // Animation visuelle
         setShowGroupAnimation(true);
         setAnimationStep('separating');
@@ -288,7 +384,7 @@ export default function DoublesMotiesCP20() {
         await wait(800);
         setAnimationStep('finished');
         await wait(300);
-        
+
         // Résultat
         await playAudioSequence(`Chaque groupe a ${concept.result} objets !`);
         setHighlightedElement('explanation-section');
@@ -298,7 +394,7 @@ export default function DoublesMotiesCP20() {
         
         await playAudioSequence(`Donc la moitié de ${concept.number}, c'est ${concept.result} !`);
       }
-      
+
       await wait(500);
       await playAudioSequence("Tu peux essayer un autre exemple si tu veux !");
       
@@ -315,10 +411,12 @@ export default function DoublesMotiesCP20() {
       speechSynthesis.cancel();
       setIsPlayingVocal(true);
       setHasStarted(true);
+      hasStartedRef.current = true;
       
-      // Effacer les timers de rappel s'ils existent
-      if (welcomeTimerRef.current) clearTimeout(welcomeTimerRef.current);
-      if (reminderTimerRef.current) clearTimeout(reminderTimerRef.current);
+      // ✅ AUTORISER CE NOUVEAU VOCAL
+      shouldStopRef.current = false;
+      
+      // 🔄 RÉINITIALISATION - Plus de timers automatiques
 
       await wait(500);
 
@@ -345,7 +443,7 @@ export default function DoublesMotiesCP20() {
       await wait(2000);
       setHighlightedElement(null);
       await wait(400);
-      
+
       // 6. Démonstration visuelle du double
       await playAudioSequence("Regarde bien cette démonstration !");
       setHighlightedElement('visual-display');
@@ -440,8 +538,11 @@ export default function DoublesMotiesCP20() {
       setExerciseInstructionGiven(true);
       setIsPlayingVocal(true);
       
-      await wait(300);
+      // ✅ AUTORISER CE NOUVEAU VOCAL
+      shouldStopRef.current = false;
       
+      await wait(300);
+
       await playAudioSequence("Parfait ! Maintenant, place aux exercices pratiques !");
       await wait(1000);
       
@@ -491,7 +592,7 @@ export default function DoublesMotiesCP20() {
         await wait(1000);
         
         await playAudioSequence(`Un double, c'est comme si tu avais ${exercise.number} objets, et qu'on t'en donnait encore ${exercise.number} !`);
-        await wait(1500);
+      await wait(1500);
         
         await playAudioSequence(`Donc tu calcules : ${exercise.number} plus ${exercise.number} !`);
         await wait(1200);
@@ -502,7 +603,7 @@ export default function DoublesMotiesCP20() {
         // Petit exemple concret
         if (exercise.number <= 5) {
           await playAudioSequence(`Par exemple, imagine ${exercise.number} pommes, puis encore ${exercise.number} pommes. Combien en as-tu au total ?`);
-          await wait(1500);
+      await wait(1500);
         }
         
       } else if (exercise.type === 'moitie') {
@@ -513,7 +614,7 @@ export default function DoublesMotiesCP20() {
         await wait(1000);
         
         await playAudioSequence(`Une moitié, c'est partager ${exercise.number} objets en deux groupes exactement égaux !`);
-        await wait(1500);
+      await wait(1500);
         
         await playAudioSequence(`Tu peux aussi dire : ${exercise.number} divisé par 2 !`);
         await wait(1200);
@@ -880,41 +981,38 @@ export default function DoublesMotiesCP20() {
     }
   };
 
-  // Effect pour jouer automatiquement le vocal de bienvenue (une seule fois)
+  // 🚫 SUPPRIMÉ : Effect de vocal automatique - Plus utilisé dans la solution ultra-agressive
+
+  // Effect pour gérer les changements d'onglet interne (cours ↔ exercices)
   useEffect(() => {
-    if (!showExercises) {
-      welcomeTimerRef.current = setTimeout(() => {
-        speakText("Salut ! Clique sur le bouton violet pour découvrir la magie des doubles et des moitiés !");
-      }, 1000);
-      
-      if (welcomeTimerRef.current) {
-        allTimersRef.current.push(welcomeTimerRef.current);
-      }
+    // Arrêter tous les vocaux lors du changement d'onglet
+    if ('speechSynthesis' in window) {
+      speechSynthesis.cancel();
+    }
+    setIsPlayingVocal(false);
+    
+    // 🛑 SIGNAL D'ARRÊT pour les séquences en cours
+    shouldStopRef.current = true;
+    
+    // Nettoyer le timeout précédent s'il existe
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
     }
     
-    return () => {
-      if (welcomeTimerRef.current) {
-        clearTimeout(welcomeTimerRef.current);
-        // Retirer le timer de la liste des timers trackés
-        allTimersRef.current = allTimersRef.current.filter(t => t !== welcomeTimerRef.current);
-        welcomeTimerRef.current = null;
-      }
-    };
-  }, [showExercises, hasStarted]);
-
-  // Effect pour jouer automatiquement la consigne des exercices (une seule fois)
-  useEffect(() => {
+    // ✅ AUTO-LANCEMENT DES EXERCICES RÉACTIVÉ avec signal d'arrêt
     if (showExercises && !exerciseInstructionGivenRef.current) {
-      const timer = setTimeout(() => {
+      // Délai court pour laisser l'interface se charger
+      timeoutRef.current = setTimeout(() => {
+        // ✅ AUTORISER LE NOUVEAU VOCAL
+        shouldStopRef.current = false;
         explainExercisesOnce();
-      }, 800);
-      allTimersRef.current.push(timer);
-      
-      return () => {
-        clearTimeout(timer);
-        // Retirer le timer de la liste des timers trackés
-        allTimersRef.current = allTimersRef.current.filter(t => t !== timer);
-      };
+        exerciseInstructionGivenRef.current = true;
+        timeoutRef.current = null;
+      }, 600);
+    } else if (!showExercises) {
+      // ✅ RESET quand on revient au cours
+      exerciseInstructionGivenRef.current = false;
     }
   }, [showExercises]);
 
@@ -947,8 +1045,30 @@ export default function DoublesMotiesCP20() {
   useEffect(() => {
     const handleVisibilityChange = () => {
       if (document.hidden) {
-        // La page n'est plus visible (onglet changé, fenêtre minimisée, etc.)
-        stopVocal();
+        // ❌ SORTIE : ARRÊT TOTAL ET AGRESSIF
+        stopVocal(); // Déjà renforcé avec appels multiples
+        
+        // 🛑 DOUBLE SÉCURITÉ - Forcer l'arrêt une fois de plus
+        if ('speechSynthesis' in window) {
+          setTimeout(() => {
+            speechSynthesis.cancel();
+            speechSynthesis.cancel();
+          }, 100);
+        }
+        
+        // Réinitialisation des états visuels
+        setHighlightedElement(null);
+        setSelectedConcept('double_5');
+        setShowGroupAnimation(false);
+        setAnimationStep('none');
+        setGroup1Objects(0);
+        setGroup2Objects(0);
+      } else {
+        // 🔄 La page redevient visible - RÉINITIALISER LES BOUTONS !
+        setExerciseInstructionGiven(false);
+        setHasStarted(false);
+        exerciseInstructionGivenRef.current = false;
+        hasStartedRef.current = false;
       }
     };
 
@@ -977,21 +1097,7 @@ export default function DoublesMotiesCP20() {
   }, []);
 
   // Effect pour réinitialiser quand on revient sur la page
-  useEffect(() => {
-    const handleVisibilityChange = () => {
-      if (!document.hidden && showExercises) {
-        // La page redevient visible et on est sur les exercices
-        // Réinitialiser les états si nécessaire
-        exerciseInstructionGivenRef.current = false;
-      }
-    };
 
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    
-    return () => {
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-    };
-  }, [showExercises]);
 
   const handleAnswerClick = (answer: string) => {
     stopVocal();
@@ -1011,7 +1117,6 @@ export default function DoublesMotiesCP20() {
       const nextTimer = setTimeout(() => {
         nextExercise();
       }, 1500);
-      allTimersRef.current.push(nextTimer);
     }
   };
 
@@ -1020,15 +1125,7 @@ export default function DoublesMotiesCP20() {
     const index = exerciseIndex !== undefined ? exerciseIndex : currentExercise;
     const exerciseData = exercises[index];
     if (exerciseData) {
-      // Arrêter le timer précédent s'il existe
-      if (exerciseReadingTimerRef.current) {
-        clearTimeout(exerciseReadingTimerRef.current);
-      }
-      
-      exerciseReadingTimerRef.current = setTimeout(() => {
-        speakText(exerciseData.question);
-        exerciseReadingTimerRef.current = null;
-      }, 1000);
+      speakText(exerciseData.question);
     }
   };
 
@@ -1201,7 +1298,6 @@ export default function DoublesMotiesCP20() {
                 const readTimer = setTimeout(() => {
                   readExerciseStatement(0);
                 }, 1500);
-                allTimersRef.current.push(readTimer);
               }}
               className={`px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-bold transition-all text-sm sm:text-base ${
                 showExercises 
@@ -1427,6 +1523,28 @@ export default function DoublesMotiesCP20() {
                   Recommencer
                 </button>
               </div>
+
+              {/* Bouton Instructions principal - style identique au bouton COMMENCER */}
+              {!exerciseInstructionGiven && (
+                <div className="text-center mb-6">
+                  <button
+                    onClick={explainExercisesOnce}
+                    disabled={isPlayingVocal}
+                    className={`bg-gradient-to-r from-orange-500 to-yellow-500 text-white px-8 py-4 rounded-xl font-bold text-xl shadow-lg hover:shadow-xl transition-all transform hover:scale-105 ${
+                      !exerciseInstructionGiven ? 'animate-bounce' : ''
+                    } ${
+                      isPlayingVocal ? 'animate-pulse cursor-not-allowed opacity-75' : 'hover:from-orange-600 hover:to-yellow-600'
+                    }`}
+                    style={{
+                      animationDuration: !exerciseInstructionGiven ? '2s' : 'none',
+                      animationIterationCount: !exerciseInstructionGiven ? 'infinite' : 'none'
+                    }}
+                  >
+                    <Volume2 className="inline w-6 h-6 mr-3" />
+                    🔊 ÉCOUTER LES INSTRUCTIONS !
+                  </button>
+                </div>
+              )}
               
               {/* Barre de progression */}
               <div className="w-full bg-gray-200 rounded-full h-3 sm:h-4 mb-2 sm:mb-3">
