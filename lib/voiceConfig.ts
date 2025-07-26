@@ -126,6 +126,12 @@ export const createConfigFromVoice = (voice: SpeechSynthesisVoice): VoiceConfigu
 
 // 📱 DÉTECTION AUTOMATIQUE DU SYSTÈME
 export const getSystemOptimizedConfig = (): VoiceConfiguration => {
+  // Vérification côté client uniquement
+  if (typeof window === 'undefined' || typeof navigator === 'undefined') {
+    console.log('🌐 Configuration serveur (fallback)');
+    return BROWSER_VOICE_CONFIG;
+  }
+  
   const userAgent = navigator.userAgent.toLowerCase();
   
   if (userAgent.includes('mac')) {
