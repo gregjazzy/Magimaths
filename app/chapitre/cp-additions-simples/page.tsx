@@ -25,25 +25,36 @@ const sections = [
     verified: true
   },
   {
-    id: 'additions-20',
-    title: 'Additions jusqu\'à 20',
-    description: 'Additions plus grandes en comptant sur mes doigts',
-    icon: '🤲',
-    duration: '15 min',
-    xp: 18,
-    color: 'from-green-500 to-emerald-500',
+    id: 'decompositions',
+    title: 'Décompositions additives',
+    description: 'Savoir que 5 = 2+3 = 1+4... Toutes les façons de faire un nombre',
+    icon: '🧩',
+    duration: '10 min',
+    xp: 12,
+    color: 'from-orange-500 to-red-500',
     verified: true
   },
   {
-    id: 'techniques',
-    title: 'Techniques de calcul',
-    description: 'Apprendre des astuces pour calculer plus facilement',
+    id: 'complements-10',
+    title: 'Compléments à 10',
+    description: 'Connaître par cœur les compléments à 10 (7+3=10, 6+4=10...)',
     icon: '🎯',
-    duration: '12 min',
-    xp: 15,
-    color: 'from-indigo-500 to-purple-500',
+    duration: '8 min',
+    xp: 10,
+    color: 'from-pink-500 to-rose-500',
     verified: true
   },
+  {
+    id: 'additions-jusqu-20',
+    title: 'Additions jusqu\'à 20',
+    description: 'Maîtrise toutes les additions jusqu\'à 20 avec des stratégies magiques !',
+    icon: '🧮',
+    duration: '20 min',
+    xp: 25,
+    color: 'from-purple-500 to-pink-500',
+    verified: true
+  },
+
   {
     id: 'problemes',
     title: 'Problèmes d\'addition',
@@ -126,6 +137,10 @@ export default function CPAdditionsSimplesPage() {
   }, []);
 
   const getSectionPath = (sectionId: string) => {
+    // Chapitres qui restent dans cp-nombres-jusqu-20
+    if (sectionId === 'decompositions' || sectionId === 'complements-10') {
+      return `/chapitre/cp-nombres-jusqu-20/${sectionId}`;
+    }
     return `/chapitre/cp-additions-simples/${sectionId}`;
   };
 

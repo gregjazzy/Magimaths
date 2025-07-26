@@ -401,7 +401,7 @@ export default function ReconnaissanceNombresCP() {
       stopVocal();
     };
 
-    const handlePageShow = (event) => {
+    const handlePageShow = (event: PageTransitionEvent) => {
       console.log("📄 PAGE SHOW - persisted:", event.persisted);
       resetButtons();
     };

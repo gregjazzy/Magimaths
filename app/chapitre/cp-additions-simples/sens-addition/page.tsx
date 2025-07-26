@@ -4,6 +4,9 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, Volume2, Play, Pause, RefreshCw, CheckCircle, XCircle } from 'lucide-react';
 
+// Types pour la sécurité TypeScript
+type ConceptType = 'objets' | 'nombres' | 'quotidien';
+
 export default function SensAdditionCP() {
   // États pour les animations
   const [currentStep, setCurrentStep] = useState(0);
@@ -11,7 +14,7 @@ export default function SensAdditionCP() {
   const [showObjectsGroup1, setShowObjectsGroup1] = useState(0);
   const [showObjectsGroup2, setShowObjectsGroup2] = useState(0);
   const [showResult, setShowResult] = useState(false);
-  const [selectedConcept, setSelectedConcept] = useState('objets'); // objets, nombres, quotidien
+  const [selectedConcept, setSelectedConcept] = useState<ConceptType>('objets'); // objets, nombres, quotidien
   
   // États pour les onglets et exercices
   const [showExercises, setShowExercises] = useState(false);
@@ -350,7 +353,7 @@ export default function SensAdditionCP() {
 
   // Démonstration animée d'une addition
   const demonstrateAddition = async () => {
-    const example = examples[selectedConcept][currentExample];
+    const example = examples[selectedConcept as keyof typeof examples][currentExample];
     
     try {
       setCurrentStep(0);
@@ -360,7 +363,7 @@ export default function SensAdditionCP() {
       
       // Étape 1: Premier groupe
       setCurrentStep(1);
-      await playAudioSequence(`D'abord, je mets ${example.group1} ${example.description || 'objets'} ici !`);
+      await playAudioSequence(`D'abord, je mets ${example.group1} ${'description' in example ? example.description : 'objets'} ici !`);
       
       for (let i = 1; i <= example.group1; i++) {
         setShowObjectsGroup1(i);
@@ -370,7 +373,7 @@ export default function SensAdditionCP() {
       
       // Étape 2: Deuxième groupe
       setCurrentStep(2);
-      await playAudioSequence(`Maintenant, j'ajoute ${example.group2} ${example.description || 'objets'} de plus !`);
+      await playAudioSequence(`Maintenant, j'ajoute ${example.group2} ${'description' in example ? example.description : 'objets'} de plus !`);
       
       for (let i = 1; i <= example.group2; i++) {
         setShowObjectsGroup2(i);
@@ -392,7 +395,7 @@ export default function SensAdditionCP() {
       // Résultat
       setCurrentStep(4);
       setShowResult(true);
-      await playAudioSequence(`En tout, j'ai ${example.result} ${example.description || 'objets'} !`);
+      await playAudioSequence(`En tout, j'ai ${example.result} ${'description' in example ? example.description : 'objets'} !`);
       await wait(1500);
       
       // Explication mathématique
@@ -407,7 +410,7 @@ export default function SensAdditionCP() {
   };
 
   // Changer de concept
-  const switchConcept = async (concept: string) => {
+  const switchConcept = async (concept: ConceptType) => {
     stopVocal();
     setSelectedConcept(concept);
     setCurrentExample(0);
@@ -432,7 +435,7 @@ export default function SensAdditionCP() {
 
   // Changer d'exemple
   const changeExample = () => {
-    const maxExamples = examples[selectedConcept].length;
+    const maxExamples = examples[selectedConcept as keyof typeof examples].length;
     setCurrentExample((currentExample + 1) % maxExamples);
   };
 
@@ -609,14 +612,6 @@ export default function SensAdditionCP() {
           {/* Affichage selon le type de concept */}
           {selectedConcept === 'objets' && (
             <div className="space-y-8">
-              {/* Situation pour quotidien */}
-              {selectedConcept === 'quotidien' && examples.quotidien[currentExample] && (
-                <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200 mb-6">
-                  <p className="text-lg text-gray-800">
-                    📖 <strong>Situation :</strong> {examples.quotidien[currentExample].situation}
-                  </p>
-                </div>
-              )}
               
               {/* Animation des objets */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
@@ -635,12 +630,12 @@ export default function SensAdditionCP() {
                         className="inline-block animate-bounce"
                         style={{ animationDelay: `${i * 0.2}s` }}
                       >
-                        {examples[selectedConcept][currentExample].items || '●'}
+                        {(examples[selectedConcept as keyof typeof examples][currentExample] as any).items || '●'}
                       </span>
                     ))}
                   </div>
                   <div className="text-xl font-bold text-purple-800 mt-4">
-                    {examples[selectedConcept][currentExample].group1}
+                    {examples[selectedConcept as keyof typeof examples][currentExample].group1}
                   </div>
                 </div>
 
@@ -668,12 +663,12 @@ export default function SensAdditionCP() {
                         className="inline-block animate-bounce"
                         style={{ animationDelay: `${i * 0.2}s` }}
                       >
-                        {examples[selectedConcept][currentExample].items || '●'}
+                        {(examples[selectedConcept as keyof typeof examples][currentExample] as any).items || '●'}
                       </span>
                     ))}
                   </div>
                   <div className="text-xl font-bold text-pink-800 mt-4">
-                    {examples[selectedConcept][currentExample].group2}
+                    {examples[selectedConcept as keyof typeof examples][currentExample].group2}
                   </div>
                 </div>
               </div>
@@ -684,14 +679,14 @@ export default function SensAdditionCP() {
                   <div className="bg-green-100 p-8 rounded-lg border-4 border-green-300 animate-pulse">
                     <h4 className="text-2xl font-bold text-green-800 mb-4">Résultat !</h4>
                     <div className="text-8xl mb-4">
-                      {Array.from({ length: examples[selectedConcept][currentExample].result }, (_, i) => (
+                      {Array.from({ length: examples[selectedConcept as keyof typeof examples][currentExample].result }, (_, i) => (
                         <span key={i} className="animate-bounce" style={{ animationDelay: `${i * 0.1}s` }}>
-                          {examples[selectedConcept][currentExample].items || '●'}
+                          {(examples[selectedConcept as keyof typeof examples][currentExample] as any).items || '●'}
                         </span>
                       ))}
                     </div>
                     <div className="text-4xl font-bold text-green-800">
-                      {examples[selectedConcept][currentExample].group1} + {examples[selectedConcept][currentExample].group2} = {examples[selectedConcept][currentExample].result}
+                      {examples[selectedConcept as keyof typeof examples][currentExample].group1} + {examples[selectedConcept as keyof typeof examples][currentExample].group2} = {examples[selectedConcept as keyof typeof examples][currentExample].result}
                     </div>
                   </div>
                 </div>

@@ -218,7 +218,7 @@ export default function ValeurPositionnelleCP20() {
       stopVocal();
     };
 
-    const handlePageShow = (event) => {
+    const handlePageShow = (event: PageTransitionEvent) => {
       console.log("📄 PAGE SHOW - persisted:", event.persisted);
       resetButtons();
     };

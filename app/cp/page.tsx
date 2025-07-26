@@ -58,6 +58,32 @@ const chapters = [
     color: 'red'
   },
   {
+    id: 'cp-multiplications-simples',
+    title: 'Premières multiplications',
+    description: 'Découvrir la multiplication avec des groupes et des objets',
+    sections: [
+      { id: 'sens-multiplication', title: 'Le sens de la multiplication', completed: false },
+      { id: 'groupes-egaux', title: 'Groupes égaux', completed: false },
+      { id: 'addition-repetee', title: 'Addition répétée', completed: false },
+      { id: 'table-2', title: 'Table de 2', completed: false },
+      { id: 'table-5', title: 'Table de 5', completed: false },
+      { id: 'table-10', title: 'Table de 10', completed: false },
+      { id: 'problemes-simples', title: 'Problèmes simples', completed: false }
+    ],
+    color: 'emerald'
+  },
+  {
+    id: 'cp-calcul-mental',
+    title: 'Calcul mental',
+    description: 'S\'entraîner au calcul rapide avec des jeux et défis chronométrés',
+    sections: [
+      { id: 'debut-annee', title: 'Début d\'année', completed: false },
+      { id: 'milieu-annee', title: 'Milieu d\'année', completed: false },
+      { id: 'fin-annee', title: 'Fin d\'année', completed: false }
+    ],
+    color: 'cyan'
+  },
+  {
     id: 'cp-geometrie-espace',
     title: 'Géométrie et espace',
     description: 'Se repérer dans l\'espace et reconnaître les formes',
@@ -150,6 +176,8 @@ export default function CPPage() {
                   ${chapter.color === 'green' ? 'border-green-200 hover:border-green-500' : ''}
                   ${chapter.color === 'purple' ? 'border-purple-200 hover:border-purple-500' : ''}
                   ${chapter.color === 'red' ? 'border-red-200 hover:border-red-500' : ''}
+                  ${chapter.color === 'emerald' ? 'border-emerald-200 hover:border-emerald-500' : ''}
+                  ${chapter.color === 'cyan' ? 'border-cyan-200 hover:border-cyan-500' : ''}
                   ${chapter.color === 'indigo' ? 'border-indigo-200 hover:border-indigo-500' : ''}
                   ${chapter.color === 'yellow' ? 'border-yellow-200 hover:border-yellow-500' : ''}
                 `}>
@@ -160,6 +188,8 @@ export default function CPPage() {
                     ${chapter.color === 'green' ? 'bg-gradient-to-r from-green-300 to-green-400' : ''}
                     ${chapter.color === 'purple' ? 'bg-gradient-to-r from-purple-300 to-purple-400' : ''}
                     ${chapter.color === 'red' ? 'bg-gradient-to-r from-red-300 to-red-400' : ''}
+                    ${chapter.color === 'emerald' ? 'bg-gradient-to-r from-emerald-300 to-emerald-400' : ''}
+                    ${chapter.color === 'cyan' ? 'bg-gradient-to-r from-cyan-300 to-cyan-400' : ''}
                     ${chapter.color === 'indigo' ? 'bg-gradient-to-r from-indigo-300 to-indigo-400' : ''}  
                     ${chapter.color === 'yellow' ? 'bg-gradient-to-r from-yellow-300 to-yellow-400' : ''}
                   `} />
@@ -171,6 +201,8 @@ export default function CPPage() {
                     ${chapter.color === 'green' ? 'bg-gradient-to-br from-green-100 to-green-200' : ''}
                     ${chapter.color === 'purple' ? 'bg-gradient-to-br from-purple-100 to-purple-200' : ''}
                     ${chapter.color === 'red' ? 'bg-gradient-to-br from-red-100 to-red-200' : ''}
+                    ${chapter.color === 'emerald' ? 'bg-gradient-to-br from-emerald-100 to-emerald-200' : ''}
+                    ${chapter.color === 'cyan' ? 'bg-gradient-to-br from-cyan-100 to-cyan-200' : ''}
                     ${chapter.color === 'indigo' ? 'bg-gradient-to-br from-indigo-100 to-indigo-200' : ''}
                     ${chapter.color === 'yellow' ? 'bg-gradient-to-br from-yellow-100 to-yellow-200' : ''}
                   `} />
@@ -193,6 +225,8 @@ export default function CPPage() {
                         ${chapter.color === 'green' ? 'bg-gradient-to-br from-green-300 to-green-500' : ''}
                         ${chapter.color === 'purple' ? 'bg-gradient-to-br from-purple-300 to-purple-500' : ''}
                         ${chapter.color === 'red' ? 'bg-gradient-to-br from-red-300 to-red-500' : ''}
+                        ${chapter.color === 'emerald' ? 'bg-gradient-to-br from-emerald-300 to-emerald-500' : ''}
+                        ${chapter.color === 'cyan' ? 'bg-gradient-to-br from-cyan-300 to-cyan-500' : ''}
                         ${chapter.color === 'indigo' ? 'bg-gradient-to-br from-indigo-300 to-indigo-500' : ''}
                         ${chapter.color === 'yellow' ? 'bg-gradient-to-br from-yellow-300 to-yellow-500' : ''}
                       `}>
@@ -200,6 +234,8 @@ export default function CPPage() {
                         {chapter.color === 'green' && '💯'}
                         {chapter.color === 'purple' && '➕'}
                         {chapter.color === 'red' && '➖'}
+                        {chapter.color === 'emerald' && '✖️'}
+                        {chapter.color === 'cyan' && '🧠'}
                         {chapter.color === 'indigo' && '📐'}
                         {chapter.color === 'yellow' && '📏'}
                       </div>
@@ -209,6 +245,8 @@ export default function CPPage() {
                         ${chapter.color === 'green' ? 'bg-green-400' : ''}
                         ${chapter.color === 'purple' ? 'bg-purple-400' : ''}
                         ${chapter.color === 'red' ? 'bg-red-400' : ''}
+                        ${chapter.color === 'emerald' ? 'bg-emerald-400' : ''}
+                        ${chapter.color === 'cyan' ? 'bg-cyan-400' : ''}
                         ${chapter.color === 'indigo' ? 'bg-indigo-400' : ''}
                         ${chapter.color === 'yellow' ? 'bg-yellow-400' : ''}
                       `}>
@@ -240,6 +278,8 @@ export default function CPPage() {
                         ${chapter.color === 'green' ? 'bg-gradient-to-r from-green-400 to-green-500' : ''}
                         ${chapter.color === 'purple' ? 'bg-gradient-to-r from-purple-400 to-purple-500' : ''}
                         ${chapter.color === 'red' ? 'bg-gradient-to-r from-red-400 to-red-500' : ''}
+                        ${chapter.color === 'emerald' ? 'bg-gradient-to-r from-emerald-400 to-emerald-500' : ''}
+                        ${chapter.color === 'cyan' ? 'bg-gradient-to-r from-cyan-400 to-cyan-500' : ''}
                         ${chapter.color === 'indigo' ? 'bg-gradient-to-r from-indigo-400 to-indigo-500' : ''}
                         ${chapter.color === 'yellow' ? 'bg-gradient-to-r from-yellow-400 to-yellow-500' : ''}
                       `}>

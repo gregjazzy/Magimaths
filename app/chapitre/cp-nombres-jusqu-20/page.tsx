@@ -44,26 +44,7 @@ const sections = [
     color: 'from-purple-500 to-violet-500',
     verified: true
   },
-  {
-    id: 'decompositions',
-    title: 'Décompositions additives',
-    description: 'Savoir que 5 = 2+3 = 1+4... Toutes les façons de faire un nombre',
-    icon: '🧩',
-    duration: '10 min',
-    xp: 12,
-    color: 'from-orange-500 to-red-500',
-    verified: true
-  },
-  {
-    id: 'complements-10',
-    title: 'Compléments à 10',
-    description: 'Connaître par cœur les compléments à 10 (7+3=10, 6+4=10...)',
-    icon: '🎯',
-    duration: '8 min',
-    xp: 10,
-    color: 'from-pink-500 to-rose-500',
-    verified: true
-  },
+
   {
     id: 'dizaines-unites',
     title: 'Dizaines et unités',
