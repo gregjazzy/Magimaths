@@ -676,7 +676,7 @@ export default function OrdonnerComparerCP20() {
       document.removeEventListener('mouseenter', handleMouseEnter);
       window.removeEventListener('scroll', handleScroll);
       clearTimeout(loadTimeout);
-      stopVocals();
+      stopAllVocals();
     };
   }, []);
 

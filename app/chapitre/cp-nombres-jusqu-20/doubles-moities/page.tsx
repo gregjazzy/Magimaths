@@ -333,26 +333,6 @@ export default function DoublesMotiesCP20() {
 
   // Alias pour compatibilité
   const playAudioSequence = playVocal;
-      
-      // 🛑 VÉRIFIER LE SIGNAL D'ARRÊT
-      if (shouldStopRef.current) {
-        resolve(); // Sort immédiatement SANS jouer
-        return;
-      }
-      
-      // Arrêter les vocaux précédents
-      if ('speechSynthesis' in window) {
-        speechSynthesis.cancel();
-      }
-      
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = 'fr-FR';
-      utterance.rate = 1.0;
-      utterance.onend = () => resolve();
-      utterance.onerror = () => resolve();
-      speechSynthesis.speak(utterance);
-    });
-  };
 
   // Explication interactive d'un concept spécifique avec animations fluides
   const explainConcept = async (conceptId: string) => {

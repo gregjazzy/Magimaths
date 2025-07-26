@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, Play, Pause, CheckCircle, XCircle, RotateCcw, Volume2 } from 'lucide-react';
+import { playCP20Audio, stopAllAudio, markUserInteraction } from '../../../../lib/audioManager';
 
 export default function ReconnaissanceNombresCP() {
   const [selectedNumber, setSelectedNumber] = useState('5');
@@ -287,7 +288,10 @@ export default function ReconnaissanceNombresCP() {
     }
   };
 
-  // Alias pour compatibilité
+  // Alias pour compatibilité avec le système hybride
+  const playVocal = (audioKey: string, fallbackText?: string, rate: number = 1.1) => {
+    return playCP20Audio('reconnaissance', audioKey, fallbackText);
+  };
   const playAudioSequence = playVocal;
 
   const wait = (ms: number): Promise<void> => {

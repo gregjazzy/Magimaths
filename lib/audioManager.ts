@@ -22,6 +22,11 @@ const audioState: AudioManagerState = {
 
 // 🎯 INITIALISATION SIMPLE DE LA VOIX CONFIGURÉE
 const initializeConfiguredVoice = (): void => {
+  // Vérification côté client uniquement
+  if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
+    return;
+  }
+  
   // Attendre que les voix soient chargées
   if (speechSynthesis.getVoices().length === 0) {
     speechSynthesis.addEventListener('voiceschanged', () => {
@@ -125,6 +130,13 @@ const playPreGeneratedAudio = (audioPath: string, resolve: () => void): void => 
 
 // 🔄 LECTURE WEB SPEECH API AVEC CONFIGURATION FIXE (FALLBACK)
 const playConfiguredWebSpeechAudio = (text: string, customRate: number, resolve: () => void): void => {
+  // 🔒 Vérification côté client uniquement
+  if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
+    console.log("🚫 BLOQUÉ : speechSynthesis non disponible");
+    resolve();
+    return;
+  }
+  
   // 🔒 Protection : Empêcher les vocaux sans interaction utilisateur
   if (!audioState.userHasInteracted) {
     console.log("🚫 BLOQUÉ : Tentative de vocal sans interaction");
@@ -180,11 +192,13 @@ export const stopAllAudio = (): void => {
     audioState.currentAudio = null;
   }
   
-  // 🔄 Arrêter Web Speech API
-  speechSynthesis.cancel();
-  setTimeout(() => speechSynthesis.cancel(), 10);
-  setTimeout(() => speechSynthesis.cancel(), 50);
-  setTimeout(() => speechSynthesis.cancel(), 100);
+  // 🔄 Arrêter Web Speech API (côté client uniquement)
+  if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+    speechSynthesis.cancel();
+    setTimeout(() => speechSynthesis.cancel(), 10);
+    setTimeout(() => speechSynthesis.cancel(), 50);
+    setTimeout(() => speechSynthesis.cancel(), 100);
+  }
   
   // 🔄 Réinitialiser l'état
   audioState.isPlaying = false;
@@ -286,10 +300,10 @@ export const isAudioAvailable = (section: string, chapter: string, audioKey: str
   const sectionAudios = AVAILABLE_AUDIOS[section as keyof typeof AVAILABLE_AUDIOS];
   if (!sectionAudios) return false;
   
-  const chapterAudios = sectionAudios[chapter as keyof typeof sectionAudios];
+  const chapterAudios = sectionAudios[chapter as keyof typeof sectionAudios] as readonly string[] | undefined;
   if (!chapterAudios) return false;
   
-  return chapterAudios.includes(audioKey as any);
+  return (chapterAudios as readonly string[]).includes(audioKey);
 };
 
 export default {

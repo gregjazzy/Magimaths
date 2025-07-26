@@ -27,6 +27,7 @@ export default function AdditionsJusqu20() {
   const [score, setScore] = useState(0);
   const [finalScore, setFinalScore] = useState(0);
   const [showCompletionModal, setShowCompletionModal] = useState(false);
+  const [isPlayingVocal, setIsPlayingVocal] = useState(false);
   
   // Refs pour la gestion vocale ultra-agressive
   const hasStartedRef = useRef(false);

@@ -68,10 +68,6 @@ export default function ValeurPositionnelleCP20() {
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const shouldStopRef = useRef(false);
   const userHasInteractedRef = useRef(false);
-  
-  // 🎵 NOUVEAUX ÉTATS POUR GESTION VOCALE ULTRA-ROBUSTE
-  const shouldStopRef = useRef(false);
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // 🔄 FONCTION DE RÉINITIALISATION CENTRALISÉE
   const resetButtons = () => {
@@ -276,18 +272,6 @@ export default function ValeurPositionnelleCP20() {
       handlePageExit();
     };
 
-    // Arrêter et réinitialiser quand on quitte
-    const handleVisibilityChange = () => {
-      console.log("🔄 VISIBILITY CHANGE - hidden:", document.hidden);
-      if (document.hidden) {
-        console.log("🚪 PAGE CACHÉE - arrêt vocal");
-        stopVocal();
-      } else {
-        console.log("👁️ PAGE VISIBLE - réinitialisation boutons");
-        resetButtons();
-      }
-    };
-
     const handleFocus = () => {
       console.log("🎯 WINDOW FOCUS - réinitialisation boutons");
       resetButtons();
@@ -357,7 +341,7 @@ export default function ValeurPositionnelleCP20() {
       window.removeEventListener('popstate', handlePopState);
       document.removeEventListener('mouseenter', handleMouseEnter);
       window.removeEventListener('scroll', handleScroll);
-      stopSpeechOnExit();
+      stopAllVocals();
     };
   }, []);
 

@@ -71,6 +71,11 @@ export const BROWSER_VOICE_CONFIG: VoiceConfiguration = {
 
 // 🎯 FONCTION POUR APPLIQUER UNE CONFIGURATION
 export const getOptimizedVoice = (config: VoiceConfiguration): SpeechSynthesisVoice | null => {
+  // Vérification côté client uniquement
+  if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
+    return null;
+  }
+  
   const voices = speechSynthesis.getVoices();
   
   // 1. Chercher la voix préférée par nom
