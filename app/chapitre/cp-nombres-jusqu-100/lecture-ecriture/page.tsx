@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, CheckCircle, XCircle, RotateCcw, Volume2, Eye, Edit } from 'lucide-react';
 
 export default function LectureEcritureCP100() {
   const [selectedNumber, setSelectedNumber] = useState('45');
@@ -17,7 +16,6 @@ export default function LectureEcritureCP100() {
   const [shuffledChoices, setShuffledChoices] = useState<string[]>([]);
   
   // États pour l'animation progressive
-  const [animationStep, setAnimationStep] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
 
   // Fonction pour mélanger un tableau
@@ -104,11 +102,9 @@ export default function LectureEcritureCP100() {
   ];
 
   const speakText = (text: string) => {
-    if ('speechSynthesis' in window) {
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = 'fr-FR';
       utterance.rate = 0.9;
-      speechSynthesis.speak(utterance);
     }
   };
 
@@ -369,20 +365,16 @@ export default function LectureEcritureCP100() {
                                 {/* Dizaines */}
                                 {visualization.dizaines > 0 && (
                                   <div className={`text-center transition-all duration-1000 ${
-                                    !isAnimating || animationStep >= 1 
                                       ? 'opacity-100 transform scale-100' 
                                       : 'opacity-0 transform scale-50'
                                   }`}>
                                     <div className="text-2xl sm:text-3xl md:text-4xl mb-2">
-                                      {(!isAnimating || animationStep >= 1) ? visualization.dizainesBoxes : ''}
                                     </div>
                                     <div className={`text-sm sm:text-base font-semibold text-blue-600 transition-all duration-500 ${
-                                      !isAnimating || animationStep >= 1 ? 'opacity-100' : 'opacity-0'
                                     }`}>
                                       {visualization.dizaines} dizaine{visualization.dizaines > 1 ? 's' : ''}
                                     </div>
                                     <div className={`text-xs sm:text-sm text-gray-600 transition-all duration-500 ${
-                                      !isAnimating || animationStep >= 1 ? 'opacity-100' : 'opacity-0'
                                     }`}>
                                       = {visualization.dizaines * 10}
                                     </div>
@@ -392,7 +384,6 @@ export default function LectureEcritureCP100() {
                                 {/* Plus */}
                                 {visualization.dizaines > 0 && visualization.unites > 0 && (
                                   <div className={`text-center transition-all duration-500 ${
-                                    !isAnimating || animationStep >= 2 
                                       ? 'opacity-100' 
                                       : 'opacity-0'
                                   }`}>
@@ -403,20 +394,16 @@ export default function LectureEcritureCP100() {
                                 {/* Unités */}
                                 {visualization.unites > 0 && (
                                   <div className={`text-center transition-all duration-1000 ${
-                                    !isAnimating || animationStep >= 2 
                                       ? 'opacity-100 transform scale-100' 
                                       : 'opacity-0 transform scale-50'
                                   }`}>
                                     <div className="text-2xl sm:text-3xl md:text-4xl mb-2">
-                                      {(!isAnimating || animationStep >= 2) ? visualization.unitesCircles : ''}
                                     </div>
                                     <div className={`text-sm sm:text-base font-semibold text-red-600 transition-all duration-500 ${
-                                      !isAnimating || animationStep >= 2 ? 'opacity-100' : 'opacity-0'
                                     }`}>
                                       {visualization.unites} unité{visualization.unites > 1 ? 's' : ''}
                                     </div>
                                     <div className={`text-xs sm:text-sm text-gray-600 transition-all duration-500 ${
-                                      !isAnimating || animationStep >= 2 ? 'opacity-100' : 'opacity-0'
                                     }`}>
                                       = {visualization.unites}
                                     </div>
@@ -426,7 +413,6 @@ export default function LectureEcritureCP100() {
 
                               {/* Résultat final */}
                               <div className={`text-center mt-4 pt-4 border-t-2 border-gray-200 transition-all duration-1000 ${
-                                !isAnimating || animationStep >= 3 
                                   ? 'opacity-100 transform translate-y-0' 
                                   : 'opacity-0 transform translate-y-4'
                               }`}>
@@ -445,7 +431,6 @@ export default function LectureEcritureCP100() {
                                   isAnimating ? 'opacity-50 cursor-not-allowed' : ''
                                 }`}
                               >
-                                <Volume2 className="w-4 h-4 sm:w-5 sm:h-5" />
                                 <span>{isAnimating ? 'Animation en cours...' : 'Voir l\'animation'}</span>
                               </button>
                             </div>
@@ -463,7 +448,6 @@ export default function LectureEcritureCP100() {
                         onClick={() => speakText(selected.pronunciation)}
                         className="bg-green-500 text-white px-4 sm:px-6 md:px-8 py-2 sm:py-3 md:py-4 rounded-lg font-bold text-sm sm:text-base md:text-lg lg:text-xl hover:bg-green-600 transition-colors"
                       >
-                        <Volume2 className="inline w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 mr-2 sm:mr-3" />
                         {selected.pronunciation}
                       </button>
                     </div>
@@ -580,7 +564,6 @@ export default function LectureEcritureCP100() {
                             ? 'bg-gradient-to-br from-red-400 to-red-600 text-white shadow-2xl scale-105 border-red-300'
                             : 'bg-gradient-to-br from-blue-400 to-blue-600 text-white shadow-2xl scale-105 border-blue-300'
                         : exercises[currentExercise].correctAnswer === choice && isCorrect === false
-                          ? 'bg-gradient-to-br from-green-100 to-green-200 text-green-800 border-4 border-green-500 shadow-xl animate-pulse'
                           : 'bg-gradient-to-br from-gray-50 to-gray-100 text-gray-800 border-2 border-gray-200 hover:border-purple-300 hover:shadow-lg hover:bg-gradient-to-br hover:from-purple-50 hover:to-purple-100 disabled:opacity-50 disabled:transform-none'
                     } disabled:cursor-not-allowed flex items-center justify-center shadow-lg`}
                   >
@@ -658,20 +641,16 @@ export default function LectureEcritureCP100() {
                               {/* Dizaines */}
                               {visualization.dizaines > 0 && (
                                 <div className={`text-center transition-all duration-1000 ${
-                                  !isAnimating || animationStep >= 1 
                                     ? 'opacity-100 transform scale-100' 
                                     : 'opacity-0 transform scale-50'
                                 }`}>
                                   <div className="text-4xl mb-2 transition-all duration-500">
-                                    {(!isAnimating || animationStep >= 1) ? visualization.dizainesBoxes : ''}
                                   </div>
                                   <div className={`text-lg font-semibold text-blue-600 transition-all duration-500 ${
-                                    !isAnimating || animationStep >= 1 ? 'opacity-100' : 'opacity-0'
                                   }`}>
                                     {visualization.dizaines} dizaine{visualization.dizaines > 1 ? 's' : ''}
                                   </div>
                                   <div className={`text-sm text-gray-600 transition-all duration-500 ${
-                                    !isAnimating || animationStep >= 1 ? 'opacity-100' : 'opacity-0'
                                   }`}>
                                     = {visualization.dizaines * 10}
                                   </div>
@@ -681,7 +660,6 @@ export default function LectureEcritureCP100() {
                               {/* Plus */}
                               {visualization.dizaines > 0 && visualization.unites > 0 && (
                                 <div className={`text-center transition-all duration-500 ${
-                                  !isAnimating || animationStep >= 2 
                                     ? 'opacity-100' 
                                     : 'opacity-0'
                                 }`}>
@@ -692,20 +670,16 @@ export default function LectureEcritureCP100() {
                               {/* Unités */}
                               {visualization.unites > 0 && (
                                 <div className={`text-center transition-all duration-1000 ${
-                                  !isAnimating || animationStep >= 2 
                                     ? 'opacity-100 transform scale-100' 
                                     : 'opacity-0 transform scale-50'
                                 }`}>
                                   <div className="text-4xl mb-2 transition-all duration-500">
-                                    {(!isAnimating || animationStep >= 2) ? visualization.unitesCircles : ''}
                                   </div>
                                   <div className={`text-lg font-semibold text-red-600 transition-all duration-500 ${
-                                    !isAnimating || animationStep >= 2 ? 'opacity-100' : 'opacity-0'
                                   }`}>
                                     {visualization.unites} unité{visualization.unites > 1 ? 's' : ''}
                                   </div>
                                   <div className={`text-sm text-gray-600 transition-all duration-500 ${
-                                    !isAnimating || animationStep >= 2 ? 'opacity-100' : 'opacity-0'
                                   }`}>
                                     = {visualization.unites}
                                   </div>
@@ -715,7 +689,6 @@ export default function LectureEcritureCP100() {
 
                             {/* Égal */}
                             <div className={`text-center mt-4 pt-4 border-t-2 border-gray-200 transition-all duration-1000 ${
-                              !isAnimating || animationStep >= 3 
                                 ? 'opacity-100 transform translate-y-0' 
                                 : 'opacity-0 transform translate-y-4'
                             }`}>
@@ -734,7 +707,6 @@ export default function LectureEcritureCP100() {
                                 isAnimating ? 'opacity-50 cursor-not-allowed' : ''
                               }`}
                             >
-                              <Volume2 className="w-5 h-5" />
                               <span>{isAnimating ? 'Animation en cours...' : 'Voir l\'animation'}</span>
                             </button>
                           </div>

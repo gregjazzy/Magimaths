@@ -53,7 +53,7 @@ export const chaptersData: Chapter[] = [
   },
   {
     id: 'cp-additions-simples',
-    title: 'Additions simples',
+    title: 'Additions',
     description: 'Apprendre à additionner dans la limite de 20',
     classLevel: 'CP',
     category: 'numeracy',

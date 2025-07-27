@@ -24,16 +24,7 @@ const sections = [
     color: 'from-blue-500 to-cyan-500',
     verified: true
   },
-  {
-    id: 'comptage',
-    title: 'Compter jusqu\'à 20',
-    description: 'Dénombrer des collections et réciter la suite numérique',
-    icon: '🔢',
-    duration: '10 min',
-    xp: 12,
-    color: 'from-green-500 to-emerald-500',
-    verified: true
-  },
+
   {
     id: 'ecriture',
     title: 'Lire et écrire',

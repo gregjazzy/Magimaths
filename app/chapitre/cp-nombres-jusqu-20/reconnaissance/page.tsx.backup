@@ -1,0 +1,189 @@
+'use client';
+
+import { useState } from 'react';
+import Link from 'next/link';
+import { ArrowLeft, CheckCircle } from 'lucide-react';
+
+export default function ReconnaissanceNombresCP() {
+  const [selectedNumber, setSelectedNumber] = useState('5');
+
+  // Fonction pour mélanger un tableau
+  const shuffleArray = (array: string[]) => {
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+  };
+
+  // Fonction pour afficher des points visuels
+  const renderVisualDots = (visual: string, showAnimation: boolean = false) => {
+    const dotsCount = (visual.match(/🔵/g) || []).length;
+    const dots = [];
+    
+    for (let i = 0; i < dotsCount; i++) {
+      dots.push(
+        <span
+          key={i}
+          className="text-2xl sm:text-3xl md:text-4xl inline-block mx-1"
+        >
+          🔵
+        </span>
+      );
+    }
+    
+    return <div className="flex flex-wrap justify-center gap-1 sm:gap-2">{dots}</div>;
+  };
+
+  // Exercices pour s'entraîner
+  const exercises = [
+    {
+      question: "Combien vois-tu de points bleus ?",
+      visual: "🔵🔵🔵🔵🔵",
+      correctAnswer: "5",
+      choices: ["3", "4", "5", "6"]
+    },
+    {
+      question: "Quel nombre vois-tu ?",
+      visual: "8",
+      correctAnswer: "8",
+      choices: ["6", "8", "9", "10"]
+    },
+    // ... autres exercices
+  ];
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-orange-50">
+      <div className="container mx-auto px-4 py-4 sm:py-8">
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 sm:mb-8">
+          <Link 
+            href="/cp" 
+            className="mb-4 sm:mb-0 inline-flex items-center text-blue-600 hover:text-blue-800 font-medium text-sm sm:text-base"
+          >
+            <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" />
+            Retour au CP
+          </Link>
+          
+          <div className="text-center sm:text-left">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-2 sm:mb-4">
+              👁️ Reconnaître les nombres de 0 à 20
+            </h1>
+            <p className="text-base sm:text-lg text-gray-600">
+              Apprends à identifier et nommer les nombres jusqu'à 20 !
+            </p>
+          </div>
+        </div>
+
+        {/* Contenu du cours */}
+        <div className="space-y-4 sm:space-y-8">
+          {/* Introduction */}
+          <div className="bg-white rounded-xl p-4 sm:p-8 shadow-lg text-center">
+            <h2 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6 text-gray-900">
+              🔢 Reconnaissance des nombres jusqu'à 20
+            </h2>
+            <p className="text-base sm:text-lg text-gray-700 mb-4 sm:mb-6">
+              Apprends à reconnaître, lire et compter les nombres de 1 à 20 !
+            </p>
+            <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+              <CheckCircle className="w-8 h-8 text-green-600 mx-auto mb-2" />
+              <p className="text-green-800 font-medium">Cours disponible pour apprentissage</p>
+            </div>
+          </div>
+
+          {/* Sélection de nombre */}
+          <div className="bg-white rounded-xl p-4 sm:p-6 shadow-lg">
+            <h3 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 text-gray-900 text-center">
+              🎯 Choisir un nombre à étudier
+            </h3>
+            
+            {/* Grille de sélection des nombres */}
+            <div className="grid grid-cols-5 sm:grid-cols-7 gap-2 sm:gap-3 mb-4 sm:mb-6">
+              {Array.from({length: 21}, (_, i) => i).map((num) => (
+                <button
+                  key={num}
+                  onClick={() => setSelectedNumber(num.toString())}
+                  className={`aspect-square rounded-lg font-bold text-lg sm:text-xl transition-all ${
+                    selectedNumber === num.toString()
+                      ? 'bg-orange-500 text-white shadow-lg scale-110'
+                      : 'bg-gray-100 text-gray-700 hover:bg-orange-100 hover:scale-105'
+                  }`}
+                >
+                  {num}
+                </button>
+              ))}
+            </div>
+
+            {/* Affichage du nombre sélectionné */}
+            <div className="text-center bg-orange-50 rounded-xl p-4 sm:p-6">
+              <div className="text-6xl sm:text-8xl font-bold text-orange-600 mb-3 sm:mb-4">
+                {selectedNumber}
+              </div>
+              <div className="text-lg sm:text-xl text-gray-700 mb-2 sm:mb-3">
+                Le nombre : <span className="font-bold">{selectedNumber}</span>
+              </div>
+              <div className="text-base sm:text-lg text-gray-600">
+                Avec les doigts : {parseInt(selectedNumber) <= 10 ? '✋'.repeat(Math.floor(parseInt(selectedNumber) / 5)) + '🤚'.slice(0, parseInt(selectedNumber) % 5) : '✋✋ + ' + (parseInt(selectedNumber) - 10) + ' doigts'}
+              </div>
+            </div>
+          </div>
+
+          {/* Conseils pour les petits */}
+          <div className="bg-gradient-to-r from-pink-400 to-orange-400 rounded-xl p-4 sm:p-6 text-white">
+            <h3 className="text-lg sm:text-xl font-bold mb-2 sm:mb-3">💡 Trucs pour bien reconnaître les nombres</h3>
+            <ul className="space-y-1 sm:space-y-2 text-sm sm:text-lg">
+              <li>• Utilise tes doigts pour compter jusqu'à 10</li>
+              <li>• Les nombres jusqu'à 20, c'est 10 + encore un peu</li>
+              <li>• Regarde bien la forme du chiffre</li>
+              <li>• Entraîne-toi à les dire à voix haute</li>
+            </ul>
+          </div>
+
+          {/* Exemples visuels */}
+          <div className="bg-white rounded-xl p-4 sm:p-6 shadow-lg">
+            <h3 className="text-xl sm:text-2xl font-bold mb-4 text-gray-900 text-center">
+              👀 Exemples visuels
+            </h3>
+            
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {[
+                { number: "3", visual: "🔵🔵🔵", description: "Trois points" },
+                { number: "7", visual: "🔵🔵🔵🔵🔵🔵🔵", description: "Sept points" },
+                { number: "12", visual: "12", description: "Le chiffre douze" }
+              ].map((example, index) => (
+                <div key={index} className="bg-gray-50 rounded-lg p-4 text-center">
+                  <div className="text-3xl font-bold text-orange-600 mb-2">
+                    {example.number}
+                  </div>
+                  <div className="text-2xl mb-2">
+                    {example.visual}
+                  </div>
+                  <div className="text-sm text-gray-600">
+                    {example.description}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Navigation */}
+          <div className="flex justify-between items-center pt-4">
+            <Link 
+              href="/chapitre/cp-nombres-jusqu-20" 
+              className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors"
+            >
+              ← Chapitre précédent
+            </Link>
+            <Link 
+              href="/chapitre/cp-nombres-jusqu-20/comptage" 
+              className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors"
+            >
+              Chapitre suivant →
+            </Link>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+} 

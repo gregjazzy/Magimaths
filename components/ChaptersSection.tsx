@@ -1,6 +1,5 @@
 'use client';
 
-import { motion } from 'framer-motion';
 import { ArrowRight, BookOpen, Clock, Star, Trophy } from 'lucide-react';
 import Link from 'next/link';
 import { getChaptersGroupedByClass, getAvailableClassLevels } from '@/lib/chapters';

@@ -1,6 +1,5 @@
 'use client';
 
-import { motion } from 'framer-motion';
 import { Target, Clock, Flame, Check } from 'lucide-react';
 
 interface DailyGoalProps {

@@ -1,52 +1,185 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Volume2, RotateCcw, ArrowLeft, CheckCircle, XCircle, Star, Trophy, Target, Play, Minus } from 'lucide-react';
-
-// Types pour la sécurité TypeScript
-type ConceptType = 'objets' | 'nombres' | 'quotidien';
+import Link from 'next/link';
+import { ArrowLeft, Play, Book, Target, CheckCircle, XCircle, Trophy, Star, Minus } from 'lucide-react';
 
 export default function SensSoustraction() {
   // États pour la navigation et les animations
   const [showExercises, setShowExercises] = useState(false);
   const [hasStarted, setHasStarted] = useState(false);
-  const [exerciseInstructionGiven, setExerciseInstructionGiven] = useState(false);
+  const [isPlayingVocal, setIsPlayingVocal] = useState(false);
   const [highlightedElement, setHighlightedElement] = useState<string | null>(null);
-  const [selectedConcept, setSelectedConcept] = useState<ConceptType>('objets');
-  
-  // États pour les animations du cours
-  const [currentStep, setCurrentStep] = useState(0);
-  const [isAnimating, setIsAnimating] = useState(false);
-  const [showObjectsStart, setShowObjectsStart] = useState(0);
-  const [showObjectsRemoved, setShowObjectsRemoved] = useState(0);
-  const [showObjectsResult, setShowObjectsResult] = useState(0);
-  const [showResult, setShowResult] = useState(false);
-  const [currentExample, setCurrentExample] = useState(0);
-  
+  const [animatingStep, setAnimatingStep] = useState<string | null>(null);
+  const [currentExample, setCurrentExample] = useState<number | null>(null);
+
   // États pour les exercices
   const [currentExercise, setCurrentExercise] = useState(0);
   const [userAnswer, setUserAnswer] = useState('');
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
   const [score, setScore] = useState(0);
-  const [finalScore, setFinalScore] = useState(0);
   const [showCompletionModal, setShowCompletionModal] = useState(false);
-  const [isPlayingVocal, setIsPlayingVocal] = useState(false);
-  
-  // Refs pour la gestion vocale ultra-agressive
-  const hasStartedRef = useRef(false);
-  const exerciseInstructionGivenRef = useRef(false);
-  const shouldStopRef = useRef(false);
-  const userHasInteractedRef = useRef(false);
 
-  // Utilitaires vocaux
-  const wait = (ms: number): Promise<void> => {
-    return new Promise((resolve) => {
-      if (shouldStopRef.current) {
+  // Refs pour gérer l'audio
+  const stopSignalRef = useRef(false);
+  const currentAudioRef = useRef<SpeechSynthesisUtterance | null>(null);
+
+  // Données des exemples de soustraction avec animations
+  const subtractionExamples = [
+    {
+      id: 'ballons',
+      title: 'Les ballons qui s\'envolent',
+      story: 'Emma a 7 ballons. 3 ballons s\'envolent. Combien lui reste-t-il de ballons ?',
+      start: 7,
+      removed: 3,
+      result: 4,
+      item: '🎈',
+      action: 's\'envolent',
+      color: 'text-blue-500'
+    },
+    {
+      id: 'pommes',
+      title: 'Les pommes mangées',
+      story: 'Dans le panier, il y a 6 pommes. Paul en mange 2. Combien reste-t-il de pommes ?',
+      start: 6,
+      removed: 2,
+      result: 4,
+      item: '🍎',
+      action: 'sont mangées',
+      color: 'text-red-500'
+    },
+    {
+      id: 'voitures',
+      title: 'Les voitures qui partent',
+      story: 'Sur le parking, il y a 8 voitures. 5 voitures partent. Combien reste-t-il de voitures ?',
+      start: 8,
+      removed: 5,
+      result: 3,
+      item: '🚗',
+      action: 'partent',
+      color: 'text-yellow-500'
+    }
+  ];
+
+  // Exercices pour les élèves
+  const exercises = [
+    {
+      story: 'Lisa a 9 crayons. Elle en donne 3 à son amie. Combien lui reste-t-il de crayons ?',
+      answer: 6,
+      visual: '✏️'
+    },
+    {
+      story: 'Dans l\'aquarium, il y a 10 poissons. 4 poissons sont pêchés. Combien reste-t-il de poissons ?',
+      answer: 6,
+      visual: '🐠'
+    },
+    {
+      story: 'Tom collectionne 12 cartes. Il en perd 5. Combien de cartes lui reste-t-il ?',
+      answer: 7,
+      visual: '🃏'
+    },
+    {
+      story: 'Dans le jardin, il y a 15 fleurs. 8 fleurs sont cueillies. Combien de fleurs restent-elles ?',
+      answer: 7,
+      visual: '🌸'
+    },
+    {
+      story: 'Marie a 11 bonbons. Elle en mange 4. Combien lui reste-t-il de bonbons ?',
+      answer: 7,
+      visual: '🍬'
+    }
+  ];
+
+  // Fonction pour arrêter tous les vocaux et animations
+  const stopAllVocalsAndAnimations = () => {
+    console.log('🛑 Arrêt de tous les vocaux et animations');
+    stopSignalRef.current = true;
+    
+    // Arrêter complètement la synthèse vocale
+    if (speechSynthesis.speaking || speechSynthesis.pending) {
+      speechSynthesis.cancel();
+      console.log('🔇 speechSynthesis.cancel() appelé');
+    }
+    
+    if (currentAudioRef.current) {
+      currentAudioRef.current = null;
+    }
+    
+    setIsPlayingVocal(false);
+    setHighlightedElement(null);
+    setAnimatingStep(null);
+    setCurrentExample(null);
+  };
+
+  // Fonction pour jouer l'audio avec voix féminine française
+  const playAudio = async (text: string, slowMode = false) => {
+    return new Promise<void>((resolve) => {
+      if (stopSignalRef.current) {
         resolve();
         return;
       }
+      
+      setIsPlayingVocal(true);
+      const utterance = new SpeechSynthesisUtterance(text);
+      
+      utterance.lang = 'fr-FR';
+      utterance.rate = slowMode ? 0.6 : 0.8;
+      utterance.pitch = 1.0;
+      utterance.volume = 1.0;
+
+      // Sélectionner la MEILLEURE voix française féminine disponible
+      const voices = speechSynthesis.getVoices();
+      console.log('Voix disponibles:', voices.map(v => `${v.name} (${v.lang}) ${v.default ? '✓' : ''}`));
+      
+      // Priorité aux voix FÉMININES françaises de qualité
+      const bestFrenchVoice = voices.find(voice => 
+        (voice.lang === 'fr-FR' || voice.lang === 'fr') && 
+        (voice.name.toLowerCase().includes('audrey') ||    
+         voice.name.toLowerCase().includes('marie') ||     
+         voice.name.toLowerCase().includes('amélie') ||    
+         voice.name.toLowerCase().includes('virginie') ||  
+         voice.name.toLowerCase().includes('julie') ||     
+         voice.name.toLowerCase().includes('celine') ||    
+         voice.name.toLowerCase().includes('léa') ||       
+         voice.name.toLowerCase().includes('charlotte'))   
+      ) || voices.find(voice => 
+        (voice.lang === 'fr-FR' || voice.lang === 'fr') && 
+        voice.localService                                 
+      ) || voices.find(voice => 
+        voice.lang === 'fr-FR'                            
+      ) || voices.find(voice => 
+        voice.lang.startsWith('fr')                       
+      );
+
+      if (bestFrenchVoice) {
+        utterance.voice = bestFrenchVoice;
+        console.log('🎤 Voix sélectionnée:', bestFrenchVoice.name);
+      } else {
+        console.warn('⚠️ Aucune voix française trouvée');
+      }
+      
+      utterance.onend = () => {
+        setIsPlayingVocal(false);
+        currentAudioRef.current = null;
+        resolve();
+      };
+      
+      utterance.onerror = () => {
+        setIsPlayingVocal(false);
+        currentAudioRef.current = null;
+        resolve();
+      };
+      
+      currentAudioRef.current = utterance;
+      speechSynthesis.speak(utterance);
+    });
+  };
+
+  // Fonction pour attendre
+  const wait = async (ms: number) => {
+    return new Promise<void>((resolve) => {
       setTimeout(() => {
-        if (shouldStopRef.current) {
+        if (stopSignalRef.current) {
           resolve();
           return;
         }
@@ -55,412 +188,159 @@ export default function SensSoustraction() {
     });
   };
 
-  // 🎵 FONCTION VOCALE CENTRALISÉE ULTRA-ROBUSTE
-  const playVocal = (text: string, rate: number = 1.2): Promise<void> => {
-    return new Promise((resolve) => {
-      // 🔒 PROTECTION : Empêcher les vocaux sans interaction utilisateur
-      if (!userHasInteractedRef.current) {
-        console.log("🚫 BLOQUÉ : Tentative de vocal sans interaction");
-        resolve();
-        return;
+  // Fonction pour faire défiler vers une section
+  const scrollToSection = (elementId: string) => {
+    setTimeout(() => {
+      const element = document.getElementById(elementId);
+      if (element) {
+        element.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'center',
+          inline: 'nearest' 
+        });
       }
-      
-      // 🛑 VÉRIFIER LE SIGNAL D'ARRÊT
-      if (shouldStopRef.current) {
-        console.log("🛑 ARRÊT : Signal d'arrêt détecté");
-        resolve();
-        return;
-      }
-      
-      // 🔥 ARRÊT SYSTÉMATIQUE des vocaux précédents (ZÉRO CONFLIT)
-      speechSynthesis.cancel();
-      setTimeout(() => speechSynthesis.cancel(), 10); // Double sécurité
-      
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = 'fr-FR';
-      utterance.rate = rate;
-      
-      utterance.onend = () => {
-        console.log("✅ VOCAL TERMINÉ :", text.substring(0, 30) + "...");
-        resolve();
-      };
-      
-      utterance.onerror = () => {
-        console.log("❌ ERREUR VOCAL :", text.substring(0, 30) + "...");
-        resolve();
-      };
-      
-      console.log("🎵 DÉMARRAGE VOCAL :", text.substring(0, 30) + "...");
-      speechSynthesis.speak(utterance);
-    });
+    }, 300);
   };
 
-  // 🛑 FONCTION D'ARRÊT ULTRA-AGRESSIVE
-  const stopAllVocals = () => {
-    console.log("🛑 ARRÊT ULTRA-AGRESSIF de tous les vocaux");
-    
-    // Triple sécurité
-    speechSynthesis.cancel();
-    setTimeout(() => speechSynthesis.cancel(), 10);
-    setTimeout(() => speechSynthesis.cancel(), 50);
-    setTimeout(() => speechSynthesis.cancel(), 100);
-    
-    // Signal d'arrêt global
-    shouldStopRef.current = true;
-    setIsPlayingVocal(false);
-  };
+  // Fonction pour expliquer le chapitre principal
+  const explainChapter = async () => {
+    stopAllVocalsAndAnimations();
+    await wait(300);
+    stopSignalRef.current = false;
+    setHasStarted(true);
 
-  // Alias pour compatibilité
-  const playAudioSequence = playVocal;
-  const stopVocal = stopAllVocals;
-
-  // Exemples de soustraction
-  const examples = {
-    objets: [
-      { start: 5, remove: 2, result: 3, items: '🍎', description: 'pommes', action: 'mange' },
-      { start: 7, remove: 3, result: 4, items: '🚗', description: 'voitures', action: 'part avec' },
-      { start: 6, remove: 4, result: 2, items: '⭐', description: 'étoiles', action: 'efface' },
-      { start: 8, remove: 5, result: 3, items: '🎾', description: 'balles', action: 'prend' }
-    ],
-    nombres: [
-      { start: 9, remove: 4, result: 5 },
-      { start: 7, remove: 2, result: 5 },
-      { start: 10, remove: 6, result: 4 },
-      { start: 8, remove: 3, result: 5 }
-    ],
-    quotidien: [
-      { 
-        situation: 'Marie a 6 bonbons. Elle en donne 2 à son frère', 
-        start: 6, remove: 2, result: 4, item: '🍬',
-        action: 'donne'
-      },
-      { 
-        situation: 'Dans le panier, il y a 5 oranges. Papa en prend 3 pour le jus', 
-        start: 5, remove: 3, result: 2, item: '🍊',
-        action: 'prend'
-      },
-      { 
-        situation: 'Tom collectionne 8 cartes. Il en perd 3 dans la cour', 
-        start: 8, remove: 3, result: 5, item: '🃏',
-        action: 'perd'
-      }
-    ]
-  };
-
-  // Exercices variés (18 exercices)
-  const exercises = [
-    // Concept de base
-    { 
-      question: 'Que veut dire "soustraire" ?', 
-      visual: '🍎🍎🍎 ➜ 🍎',
-      correctAnswer: 'Enlever, retirer',
-      choices: ['Enlever, retirer', 'Ajouter', 'Compter']
-    },
-    { 
-      question: 'Que fait-on quand on enlève 2 objets à 5 objets ?', 
-      visual: '🚗🚗🚗🚗🚗 ➜ ?',
-      correctAnswer: 'On les retire',
-      choices: ['On les ajoute', 'On les retire', 'On les garde']
-    },
-    
-    // Soustractions visuelles simples
-    { 
-      question: 'Il y a 4 pommes. On en mange 1. Combien en reste-t-il ?', 
-      visual: '🍎🍎🍎🍎 ➜ 🍎🍎🍎',
-      correctAnswer: '3',
-      choices: ['2', '3', '4']
-    },
-    { 
-      question: 'Sur la table, 5 crayons. J\'en prends 2. Combien en reste-t-il ?', 
-      visual: '✏️✏️✏️✏️✏️ ➜ ?',
-      correctAnswer: '3',
-      choices: ['3', '4', '5']
-    },
-    
-    // Soustractions numériques
-    { 
-      question: 'Combien font 6 - 2 ?', 
-      visual: '6 - 2 = ?',
-      correctAnswer: '4',
-      choices: ['3', '4', '5']
-    },
-    { 
-      question: 'Combien font 8 - 3 ?', 
-      visual: '8 - 3 = ?',
-      correctAnswer: '5',
-      choices: ['4', '5', '6']
-    },
-    { 
-      question: 'Combien font 7 - 4 ?', 
-      visual: '7 - 4 = ?',
-      correctAnswer: '3',
-      choices: ['2', '3', '4']
-    },
-    { 
-      question: 'Combien font 9 - 5 ?', 
-      visual: '9 - 5 = ?',
-      correctAnswer: '4',
-      choices: ['3', '4', '5']
-    },
-    
-    // Problèmes contextuels
-    { 
-      question: 'Emma a 7 stickers. Elle en colle 3 sur son cahier. Combien lui en reste-t-il ?', 
-      visual: '⭐⭐⭐⭐⭐⭐⭐ ➜ ⭐⭐⭐⭐',
-      correctAnswer: '4',
-      choices: ['3', '4', '5']
-    },
-    { 
-      question: 'Dans le jardin, 6 papillons volent. 2 s\'envolent. Combien en reste-t-il ?', 
-      visual: '🦋🦋🦋🦋🦋🦋 ➜ ?',
-      correctAnswer: '4',
-      choices: ['3', '4', '5']
-    },
-    { 
-      question: 'Lucas a 9 billes. Il en donne 4 à son ami. Combien lui en reste-t-il ?', 
-      visual: '⚪⚪⚪⚪⚪⚪⚪⚪⚪ ➜ ?',
-      correctAnswer: '5',
-      choices: ['4', '5', '6']
-    },
-    
-    // Soustractions jusqu'à 10
-    { 
-      question: 'Combien font 10 - 3 ?', 
-      visual: '10 - 3 = ?',
-      correctAnswer: '7',
-      choices: ['6', '7', '8']
-    },
-    { 
-      question: 'Combien font 10 - 6 ?', 
-      visual: '10 - 6 = ?',
-      correctAnswer: '4',
-      choices: ['3', '4', '5']
-    },
-    { 
-      question: 'Combien font 10 - 1 ?', 
-      visual: '10 - 1 = ?',
-      correctAnswer: '9',
-      choices: ['8', '9', '10']
-    },
-    
-    // Comparaisons et différences
-    { 
-      question: 'Quelle est la différence entre 8 et 3 ?', 
-      visual: '8 ⬅️➡️ 3',
-      correctAnswer: '5',
-      choices: ['4', '5', '6']
-    },
-    { 
-      question: 'Il y a 7 filles et 4 garçons. Combien y a-t-il de filles en plus ?', 
-      visual: '👧👧👧👧👧👧👧 ➜ 👦👦👦👦',
-      correctAnswer: '3',
-      choices: ['2', '3', '4']
-    },
-    
-    // Situations avancées
-    { 
-      question: 'Maman achète 8 œufs. Elle en casse 2 en cuisinant. Combien d\'œufs entiers reste-t-il ?', 
-      visual: '🥚🥚🥚🥚🥚🥚🥚🥚 ➜ ?',
-      correctAnswer: '6',
-      choices: ['5', '6', '7']
-    },
-    { 
-      question: 'Sur l\'étagère, 10 livres. Emma en emprunte 4. Combien de livres restent sur l\'étagère ?', 
-      visual: '📚📚📚📚📚📚📚📚📚📚 ➜ ?',
-      correctAnswer: '6',
-      choices: ['5', '6', '7']
-    }
-  ];
-
-  // Fonction principale d'explication du cours
-  const explainSubtractionConcept = async () => {
     try {
-      shouldStopRef.current = false;
-      userHasInteractedRef.current = true;
-      
-      await playAudioSequence("Salut ! Aujourd'hui, nous allons découvrir le sens de la soustraction !", 1.1);
-      await wait(800);
-      
-      setHighlightedElement('title');
-      await playAudioSequence("Soustraire, c'est enlever, retirer des objets ! C'est le contraire d'additionner !", 1.1);
-      await wait(800);
-      
-      // Expliquer le concept avec un exemple concret
-      setHighlightedElement('demonstration');
-      await playAudioSequence("Regarde bien cette démonstration avec des pommes !", 1.1);
+      // Introduction
+      setHighlightedElement('intro');
+      scrollToSection('intro-section');
+      await playAudio("Bonjour ! Aujourd'hui, nous allons découvrir la soustraction. La soustraction, c'est quand on enlève quelque chose !");
       await wait(500);
-      
-      await demonstrateSubtraction();
-      
-      // Expliquer le symbole moins
-      setHighlightedElement('symbole');
-      await playAudioSequence("Le symbole moins ressemble à un trait horizontal : tiret ! Il veut dire qu'on enlève !", 1.1);
-      await wait(1500);
-      
-      // Encourager à tester les différents modes
-      setHighlightedElement('modes');
-      await playAudioSequence("Tu peux essayer avec des objets, des nombres, ou des situations de la vie quotidienne !", 1.1);
-      await wait(1000);
-      
-      setHighlightedElement('exercise_tab');
-      await playAudioSequence("Maintenant, clique sur l'onglet Exercices pour t'entraîner à comprendre la soustraction !", 1.1);
-      
-      setHighlightedElement(null);
-      
-    } catch (error) {
-      console.error('Erreur dans explainSubtractionConcept:', error);
-    }
-  };
 
-  // Démonstration animée d'une soustraction
-  const demonstrateSubtraction = async () => {
-    const example = examples[selectedConcept as keyof typeof examples][currentExample];
-    
-    try {
-      setCurrentStep(0);
-      setShowObjectsStart(0);
-      setShowObjectsRemoved(0);
-      setShowObjectsResult(0);
-      setShowResult(false);
-      
-      // Étape 1: Montrer tous les objets au début
-      setCurrentStep(1);
-      await playAudioSequence(`D'abord, j'ai ${example.start} ${'description' in example ? example.description : 'objets'} !`, 1.1);
-      
-      for (let i = 1; i <= example.start; i++) {
-        setShowObjectsStart(i);
-        await wait(400);
-      }
-      await wait(1000);
-      
-      // Étape 2: Enlever des objets
-      setCurrentStep(2);
-      await playAudioSequence(`Maintenant, j'en ${'action' in example ? example.action : 'enlève'} ${example.remove} !`, 1.1);
-      
-      for (let i = 1; i <= example.remove; i++) {
-        setShowObjectsRemoved(i);
-        await wait(600);
-      }
-      await wait(1000);
-      
-      // Étape 3: Montrer le résultat
-      setCurrentStep(3);
-      await playAudioSequence(`Il me reste ${example.result} ${'description' in example ? example.description : 'objets'} !`, 1.1);
-      
-      for (let i = 1; i <= example.result; i++) {
-        setShowObjectsResult(i);
-        await wait(400);
-      }
-      await wait(1000);
-      
-      // Étape 4: Montrer l'opération
-      setCurrentStep(4);
-      setShowResult(true);
-      await playAudioSequence(`Donc ${example.start} moins ${example.remove} égale ${example.result} !`, 1.1);
-      await wait(1500);
-      
-      await playAudioSequence("C'est exactement comme ça que fonctionne la soustraction !", 1.1);
-      
-    } catch (error) {
-      console.error('Erreur dans demonstrateSubtraction:', error);
-    }
-  };
+      if (stopSignalRef.current) return;
 
-  // Changer de concept
-  const switchConcept = async (concept: ConceptType) => {
-    stopVocal();
-    setSelectedConcept(concept);
-    setCurrentExample(0);
-    
-    try {
-      setCurrentStep(0);
-      
-      if (concept === 'objets') {
-        await playAudioSequence("Super ! Avec les objets, on peut vraiment voir ce qu'on enlève !", 1.1);
-      } else if (concept === 'nombres') {
-        await playAudioSequence("Parfait ! Maintenant on travaille directement avec les nombres !", 1.1);
-      } else {
-        await playAudioSequence("Excellent ! Ces situations arrivent tous les jours dans la vraie vie !", 1.1);
-      }
-      
-    } catch (error) {
-      console.error('Erreur dans switchConcept:', error);
-    }
-  };
-
-  // Changer d'exemple
-  const changeExample = () => {
-    const maxExamples = examples[selectedConcept as keyof typeof examples].length;
-    setCurrentExample((currentExample + 1) % maxExamples);
-  };
-
-  // Fonction d'explication des exercices
-  const explainExercisesOnce = async () => {
-    try {
-      shouldStopRef.current = false;
-      userHasInteractedRef.current = true;
-      setExerciseInstructionGiven(true);
-      exerciseInstructionGivenRef.current = true;
-      
-      await playAudioSequence("Super ! Tu es dans les exercices sur le sens de la soustraction !", 1.0);
+      // Le signe moins
+      setHighlightedElement('minus-sign');
+      scrollToSection('minus-section');
+      await playAudio("Le signe de la soustraction, c'est le signe moins. Il ressemble à un petit trait horizontal.");
       await wait(800);
-      
-      await playAudioSequence("Tu vas découvrir 18 exercices variés pour bien comprendre ce que veut dire soustraire !", 1.0);
+
+      if (stopSignalRef.current) return;
+
+      // Explication du concept
+      setHighlightedElement('concept');
+      scrollToSection('concept-section');
+      await playAudio("Soustraire, ça veut dire enlever, retirer, ou faire partir quelque chose ! Regardons ensemble comment ça marche.");
+      await wait(500);
+
+      if (stopSignalRef.current) return;
+
+      // Animation du concept principal
+      setAnimatingStep('demo-start');
+      await playAudio("Imagine : j'ai 5 ballons colorés.");
       await wait(1000);
-      
-      await playAudioSequence("Il y a des questions sur le concept, des soustractions visuelles, des calculs et des petits problèmes !", 1.0);
+
+      if (stopSignalRef.current) return;
+
+      setAnimatingStep('demo-remove');
+      await playAudio("Puis, 2 ballons s'envolent dans le ciel !");
+      await wait(1500);
+
+      if (stopSignalRef.current) return;
+
+      setAnimatingStep('demo-result');
+      await playAudio("Combien me reste-t-il de ballons ? Il me reste 3 ballons ! Car 5 moins 2 égale 3 !");
       await wait(1000);
-      
-      await playAudioSequence("Pour chaque question, lis bien et choisis la bonne réponse. N'oublie pas : soustraire c'est enlever ! Allez, c'est parti !", 1.0);
-      
-    } catch (error) {
-      console.error('Erreur dans explainExercisesOnce:', error);
+
+      if (stopSignalRef.current) return;
+
+      // Transition vers les exemples
+      setHighlightedElement('examples');
+      scrollToSection('examples-section');
+      await playAudio("Maintenant, regarde tous ces exemples ! Tu peux en choisir un pour voir l'animation complète.");
+      await wait(500);
+
+    } finally {
+      setHighlightedElement(null);
+      setAnimatingStep(null);
     }
   };
 
-  const speakText = (text: string) => {
-    if (!userHasInteractedRef.current) return;
-    speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.rate = 1.0;
-    utterance.lang = 'fr-FR';
-    speechSynthesis.speak(utterance);
+  // Fonction pour expliquer un exemple spécifique
+  const explainSpecificExample = async (index: number) => {
+    stopAllVocalsAndAnimations();
+    await wait(300);
+    stopSignalRef.current = false;
+    
+    const example = subtractionExamples[index];
+    setCurrentExample(index);
+
+    try {
+      // Scroll vers la zone d'animation
+      scrollToSection('animation-section');
+      await wait(500);
+
+      // Lecture du problème
+      setHighlightedElement('story');
+      await playAudio(example.story);
+      await wait(800);
+
+      if (stopSignalRef.current) return;
+
+      // Montrer la situation de départ
+      setAnimatingStep('start');
+      await playAudio(`Au début, il y a ${example.start} ${example.item === '🎈' ? 'ballons' : example.item === '🍎' ? 'pommes' : 'voitures'}.`);
+      await wait(1500);
+
+      if (stopSignalRef.current) return;
+
+      // Action de soustraction
+      setAnimatingStep('removing');
+      await playAudio(`Maintenant, ${example.removed} ${example.action} !`);
+      await wait(2000);
+
+      if (stopSignalRef.current) return;
+
+      // Résultat
+      setAnimatingStep('result');
+      await playAudio(`Il reste ${example.result} ! Donc ${example.start} moins ${example.removed} égale ${example.result} !`);
+      await wait(1500);
+
+      if (stopSignalRef.current) return;
+
+      // Calcul écrit
+      setAnimatingStep('calculation');
+      await playAudio(`On peut l'écrire : ${example.start} moins ${example.removed} égale ${example.result}. Bravo !`);
+      await wait(1000);
+
+    } finally {
+      setHighlightedElement(null);
+      setAnimatingStep(null);
+      setCurrentExample(null);
+    }
   };
 
-  // Fonction pour vérifier la réponse
-  const checkAnswer = (selectedAnswer: string) => {
-    stopVocal();
-    const exerciseData = exercises[currentExercise];
+  // Fonction pour les exercices
+  const checkAnswer = () => {
+    const userNum = parseInt(userAnswer);
+    const correct = userNum === exercises[currentExercise].answer;
+    setIsCorrect(correct);
     
-    if (selectedAnswer === exerciseData.correctAnswer) {
-      setIsCorrect(true);
+    if (correct) {
       setScore(score + 1);
-      speakText("Bravo ! C'est la bonne réponse !");
-      
-      setTimeout(() => {
-        nextExercise();
-      }, 2000);
-    } else {
-      setIsCorrect(false);
-      speakText(`Pas tout à fait ! La bonne réponse était : ${exerciseData.correctAnswer}`);
     }
   };
 
   const nextExercise = () => {
-    stopVocal();
     if (currentExercise < exercises.length - 1) {
-      const nextIndex = currentExercise + 1;
-      setCurrentExercise(nextIndex);
+      setCurrentExercise(currentExercise + 1);
       setUserAnswer('');
       setIsCorrect(null);
     } else {
-      setFinalScore(score + (isCorrect ? 1 : 0));
       setShowCompletionModal(true);
     }
   };
 
   const resetExercises = () => {
-    stopVocal();
     setCurrentExercise(0);
     setUserAnswer('');
     setIsCorrect(null);
@@ -468,656 +348,459 @@ export default function SensSoustraction() {
     setShowCompletionModal(false);
   };
 
-  // Fonction centralisée de reset des boutons
-  const resetButtons = () => {
-    console.log('🔄 resetButtons called');
-    setExerciseInstructionGiven(false);
-    setHasStarted(false);
-    exerciseInstructionGivenRef.current = false;
-    hasStartedRef.current = false;
-  };
-
-  // 🎵 GESTION VOCALE ULTRA-ROBUSTE - Event Listeners
+  // Gestion des événements pour arrêter les vocaux
   useEffect(() => {
-    // 🎵 FONCTION DE NETTOYAGE VOCAL pour la sortie de page
-    const handlePageExit = () => {
-      console.log("🚪 SORTIE DE PAGE DÉTECTÉE - Arrêt des vocaux");
-      stopAllVocals();
-    };
-    
-    // 🔍 GESTION DE LA VISIBILITÉ (onglet caché/affiché)
     const handleVisibilityChange = () => {
       if (document.hidden) {
-        console.log("👁️ PAGE CACHÉE - Arrêt des vocaux");
-        stopAllVocals();
-      }
-    };
-    
-    // 🏠 GESTION DE LA NAVIGATION
-    const handleNavigation = () => {
-      console.log("🔄 NAVIGATION DÉTECTÉE - Arrêt des vocaux");
-      stopAllVocals();
-    };
-    
-    // 🚪 EVENT LISTENERS pour sortie de page
-    window.addEventListener('beforeunload', handlePageExit);
-    window.addEventListener('pagehide', handlePageExit);
-    window.addEventListener('unload', handlePageExit);
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    window.addEventListener('blur', handleNavigation);
-    window.addEventListener('popstate', handleNavigation);
-    
-    return () => {
-      // 🧹 NETTOYAGE COMPLET
-      stopAllVocals();
-      
-      // Retirer les event listeners
-      window.removeEventListener('beforeunload', handlePageExit);
-      window.removeEventListener('pagehide', handlePageExit);
-      window.removeEventListener('unload', handlePageExit);
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-      window.removeEventListener('blur', handleNavigation);
-      window.removeEventListener('popstate', handleNavigation);
-    };
-  }, []);
-
-  // Gestion des événements pour persistance des boutons
-  useEffect(() => {
-    console.log('🚀 Component mounted, setting up ultra-aggressive reset');
-    resetButtons();
-    
-    // Marquer l'interaction utilisateur
-    const markUserInteraction = () => {
-      userHasInteractedRef.current = true;
-    };
-    
-    document.addEventListener('click', markUserInteraction);
-    document.addEventListener('keydown', markUserInteraction);
-    document.addEventListener('touchstart', markUserInteraction);
-    
-    // Reset périodique ultra-agressif
-    const interval = setInterval(() => {
-      if (hasStartedRef.current || exerciseInstructionGivenRef.current) {
-        console.log('⏰ Periodic reset triggered');
-        resetButtons();
-      }
-    }, 2000);
-
-    // Gestion de la visibilité
-    const handleVisibilityChange = () => {
-      if (document.hidden) {
-        console.log('👁️ Page hidden, stopping vocals');
-        stopVocal();
-        shouldStopRef.current = true;
-      } else {
-        console.log('👁️ Page visible, resetting buttons');
-        resetButtons();
+        stopAllVocalsAndAnimations();
       }
     };
 
-    const handleFocus = () => {
-      console.log('🎯 Window focused, resetting buttons');
-      resetButtons();
-    };
-
-    const handlePageShow = () => {
-      console.log('📄 Page show, resetting buttons');
-      resetButtons();
-    };
-
-    const handleBlur = () => {
-      console.log('😴 Window blurred, stopping vocals');
-      stopVocal();
+    const handleBeforeUnload = () => {
+      stopAllVocalsAndAnimations();
     };
 
     const handlePopState = () => {
-      console.log('⬅️ Pop state, resetting buttons');
-      resetButtons();
+      stopAllVocalsAndAnimations();
     };
 
-    const handleMouseEnter = () => {
-      resetButtons();
-    };
-
-    const handleScroll = () => {
-      resetButtons();
-    };
-
+    // Event listeners
     document.addEventListener('visibilitychange', handleVisibilityChange);
-    window.addEventListener('focus', handleFocus);
-    window.addEventListener('blur', handleBlur);
-    window.addEventListener('pageshow', handlePageShow);
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    window.addEventListener('pagehide', handleBeforeUnload);
     window.addEventListener('popstate', handlePopState);
-    document.addEventListener('mouseenter', handleMouseEnter);
-    window.addEventListener('scroll', handleScroll);
 
-    document.addEventListener('DOMContentLoaded', () => {
-      resetButtons();
-    });
-
-    // Reset sur chargement initial
-    setTimeout(() => {
-      resetButtons();
-    }, 1000);
+    // Override history methods
+    const originalPushState = history.pushState;
+    const originalReplaceState = history.replaceState;
+    
+    history.pushState = function(...args) {
+      stopAllVocalsAndAnimations();
+      return originalPushState.apply(history, args);
+    };
+    
+    history.replaceState = function(...args) {
+      stopAllVocalsAndAnimations();
+      return originalReplaceState.apply(history, args);
+    };
 
     return () => {
-      clearInterval(interval);
-      document.removeEventListener('click', markUserInteraction);
-      document.removeEventListener('keydown', markUserInteraction);
-      document.removeEventListener('touchstart', markUserInteraction);
+      stopAllVocalsAndAnimations();
       document.removeEventListener('visibilitychange', handleVisibilityChange);
-      window.removeEventListener('focus', handleFocus);
-      window.removeEventListener('blur', handleBlur);
-      window.removeEventListener('pageshow', handlePageShow);
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+      window.removeEventListener('pagehide', handleBeforeUnload);
       window.removeEventListener('popstate', handlePopState);
-      document.removeEventListener('mouseenter', handleMouseEnter);
-      window.removeEventListener('scroll', handleScroll);
+      history.pushState = originalPushState;
+      history.replaceState = originalReplaceState;
     };
   }, []);
 
-  // Rendu des objets pour les animations
-  const renderObjects = (count: number, color: string, item: string, opacity: number = 1) => {
+  // Fonction pour rendre les objets avec animations
+  const renderObjects = (count: number, item: string, colorClass: string, fadeOut = false) => {
     return Array.from({ length: count }, (_, i) => (
       <div
         key={i}
-        className={`w-12 h-12 rounded-lg ${color} border-2 border-white shadow-md animate-bounce flex items-center justify-center text-2xl transition-opacity duration-500`}
-        style={{ 
-          animationDelay: `${i * 100}ms`,
-          opacity: opacity
-        }}
+        className={`text-3xl ${colorClass} transition-all duration-1000 transform ${
+          fadeOut ? 'opacity-30 scale-75' : 'opacity-100 scale-100'
+        } ${
+          animatingStep === 'start' || animatingStep === 'removing' ? 'animate-bounce' : ''
+        }`}
+        style={{ animationDelay: `${i * 100}ms` }}
       >
         {item}
       </div>
     ));
   };
 
-  // Styles CSS intégrés
-  const styles = `
-    @keyframes float {
-      0%, 100% { transform: translateY(0px); }
-      50% { transform: translateY(-10px); }
-    }
-    @keyframes pulse-glow {
-      0%, 100% { box-shadow: 0 0 5px rgba(239, 68, 68, 0.5); }
-      50% { box-shadow: 0 0 20px rgba(239, 68, 68, 0.8); }
-    }
-    @keyframes fadeOut {
-      0% { opacity: 1; transform: scale(1); }
-      100% { opacity: 0; transform: scale(0.8); }
-    }
-    .float { animation: float 3s ease-in-out infinite; }
-    .pulse-glow { animation: pulse-glow 2s ease-in-out infinite; }
-    .fade-out { animation: fadeOut 0.8s ease-in-out forwards; }
-  `;
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-red-50 to-orange-100">
-      <style dangerouslySetInnerHTML={{ __html: styles }} />
-      
-      <div className="max-w-6xl mx-auto px-4 py-6">
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-100">
+      <div className="max-w-6xl mx-auto px-4 py-8">
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <button
-            onClick={() => window.history.back()}
-            className="flex items-center space-x-2 text-red-600 hover:text-red-800 transition-colors"
+        <div className="mb-8">
+          <Link 
+            href="/chapitre/cp-soustractions-simples" 
+            onClick={stopAllVocalsAndAnimations}
+            className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors mb-4"
           >
-            <ArrowLeft className="w-5 h-5" />
-            <span>Retour aux soustractions simples</span>
-          </button>
+            <ArrowLeft className="w-4 h-4" />
+            <span>Retour au chapitre</span>
+          </Link>
           
-          <h1 
-            className={`text-3xl font-bold text-center text-red-800 ${
-              highlightedElement === 'title' ? 'pulse-glow bg-yellow-200 px-4 py-2 rounded-lg' : ''
-            }`}
-          >
-            🪣 Le sens de la soustraction
-          </h1>
-          
-          <div className="w-32"></div>
+          <div className="text-center">
+            <h1 className="text-4xl font-bold text-gray-800 mb-2">
+              ➖ Le sens de la soustraction
+            </h1>
+            <p className="text-lg text-gray-600">
+              Apprendre à enlever et à comprendre le signe moins
+            </p>
+          </div>
         </div>
 
         {/* Navigation Tabs */}
-        <div className="flex justify-center space-x-4 mb-6">
+        <div className="flex justify-center space-x-4 mb-8">
           <button
             onClick={() => {
+              stopAllVocalsAndAnimations();
               setShowExercises(false);
-              stopVocal();
-              setTimeout(() => { resetButtons(); }, 100);
             }}
             className={`px-6 py-3 rounded-lg font-semibold transition-all ${
               !showExercises
-                ? 'bg-red-600 text-white shadow-lg'
-                : 'bg-white text-red-600 hover:bg-red-50'
-            }`}
+                ? 'bg-purple-600 text-white shadow-lg'
+                : 'bg-white text-purple-600 hover:bg-purple-50'
+            } ${highlightedElement === 'course_tab' ? 'ring-4 ring-purple-400 animate-pulse' : ''}`}
           >
             📚 Cours
           </button>
           <button
             onClick={() => {
+              stopAllVocalsAndAnimations();
               setShowExercises(true);
-              stopVocal();
-              setTimeout(() => { resetButtons(); }, 100);
             }}
             className={`px-6 py-3 rounded-lg font-semibold transition-all ${
               showExercises
-                ? 'bg-red-600 text-white shadow-lg'
-                : 'bg-white text-red-600 hover:bg-red-50'
-            } ${highlightedElement === 'exercise_tab' ? 'pulse-glow' : ''}`}
+                ? 'bg-purple-600 text-white shadow-lg'
+                : 'bg-white text-purple-600 hover:bg-purple-50'
+            } ${highlightedElement === 'exercise_tab' ? 'ring-4 ring-purple-400 animate-pulse' : ''}`}
           >
             🎯 Exercices
           </button>
         </div>
 
         {!showExercises ? (
-          // Section Cours
+          /* Section Cours */
           <div className="space-y-8">
             {/* Bouton COMMENCER */}
             {!hasStarted && (
-              <div className="flex justify-center">
+              <div className="text-center mb-8">
                 <button
-                  onClick={() => {
-                    setHasStarted(true);
-                    hasStartedRef.current = true;
-                    explainSubtractionConcept();
-                  }}
-                  className="bg-gradient-to-r from-red-500 to-orange-500 text-white px-8 py-4 rounded-xl text-xl font-bold hover:from-red-600 hover:to-orange-600 transition-all shadow-lg animate-bounce"
+                  onClick={explainChapter}
+                  className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-8 py-4 rounded-xl font-bold text-xl shadow-lg hover:shadow-xl transition-all transform hover:scale-105 animate-pulse"
                 >
-                  <div className="flex items-center space-x-3">
-                    <Volume2 className="w-6 h-6" />
-                    <span>🚀 COMMENCER !</span>
-                  </div>
+                  ▶️ COMMENCER !
                 </button>
               </div>
             )}
 
-            {/* Introduction visuelle */}
-            <div className="bg-white rounded-xl p-6 shadow-lg">
-              <h2 className="text-2xl font-bold text-red-800 mb-4 text-center">
-                ✨ Découvre le sens de la soustraction !
-              </h2>
-              
-              <div className="text-center text-gray-700 space-y-2">
-                <p>🪣 Apprends ce que veut dire "enlever"</p>
-                <p>➖ Découvre le symbole moins</p>
-                <p>🎯 Comprends avec des exemples concrets !</p>
-              </div>
-            </div>
-
-            {/* Explication du symbole */}
+            {/* Introduction */}
             <div 
-              className={`bg-white rounded-xl p-6 shadow-lg ${
-                highlightedElement === 'symbole' ? 'pulse-glow' : ''
+              id="intro-section"
+              className={`bg-white rounded-xl shadow-lg p-6 transition-all duration-300 ${
+                highlightedElement === 'intro' ? 'ring-4 ring-purple-400 bg-purple-50' : ''
               }`}
             >
-              <h3 className="text-xl font-bold text-red-800 mb-4 text-center">
-                ➖ Le symbole moins
-              </h3>
-              
-              <div className="text-center space-y-4">
-                <div className="text-8xl font-bold text-red-600 animate-pulse">
-                  <Minus className="w-24 h-24 mx-auto" />
+              <div className="flex items-center gap-3 mb-4">
+                <div className="p-2 bg-purple-100 rounded-lg">
+                  <Book className="w-6 h-6 text-purple-600" />
                 </div>
-                <p className="text-lg text-gray-700">
-                  Le symbole <span className="font-bold text-red-600">moins (-)</span> veut dire qu'on <span className="font-bold">enlève</span> ou qu'on <span className="font-bold">retire</span> !
-                </p>
+                <h2 className="text-2xl font-bold text-gray-800">Qu'est-ce que la soustraction ?</h2>
               </div>
+              <p className="text-lg text-gray-700 leading-relaxed">
+                La soustraction, c'est quand on enlève, on retire, ou on fait partir quelque chose. 
+                C'est l'inverse de l'addition : au lieu d'ajouter, on retire !
+              </p>
             </div>
 
-            {/* Sélecteur de modes */}
+            {/* Le signe moins */}
             <div 
-              className={`bg-white rounded-xl p-6 shadow-lg ${
-                highlightedElement === 'modes' ? 'pulse-glow' : ''
+              id="minus-section"
+              className={`bg-white rounded-xl shadow-lg p-6 transition-all duration-300 ${
+                highlightedElement === 'minus-sign' ? 'ring-4 ring-purple-400 bg-purple-50' : ''
               }`}
             >
-              <h3 className="text-xl font-bold text-red-800 mb-4 text-center">
-                🎮 Choisis ton mode d'apprentissage
-              </h3>
+              <div className="flex items-center gap-3 mb-6">
+                <div className="p-2 bg-red-100 rounded-lg">
+                  <Minus className="w-6 h-6 text-red-600" />
+                </div>
+                <h2 className="text-2xl font-bold text-gray-800">Le signe moins ( - )</h2>
+              </div>
               
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                <button
-                  onClick={() => switchConcept('objets')}
-                  className={`p-4 rounded-lg border-2 transition-all ${
-                    selectedConcept === 'objets'
-                      ? 'border-red-500 bg-red-50'
-                      : 'border-gray-200 hover:border-red-300'
-                  }`}
-                >
-                  <div className="text-3xl mb-2">🍎</div>
-                  <h4 className="font-bold text-red-800">Avec des objets</h4>
-                  <p className="text-sm text-gray-600">Voir vraiment ce qu'on enlève</p>
-                </button>
-                
-                <button
-                  onClick={() => switchConcept('nombres')}
-                  className={`p-4 rounded-lg border-2 transition-all ${
-                    selectedConcept === 'nombres'
-                      ? 'border-red-500 bg-red-50'
-                      : 'border-gray-200 hover:border-red-300'
-                  }`}
-                >
-                  <div className="text-3xl mb-2">🔢</div>
-                  <h4 className="font-bold text-red-800">Avec des nombres</h4>
-                  <p className="text-sm text-gray-600">Calculs directs</p>
-                </button>
-                
-                <button
-                  onClick={() => switchConcept('quotidien')}
-                  className={`p-4 rounded-lg border-2 transition-all ${
-                    selectedConcept === 'quotidien'
-                      ? 'border-red-500 bg-red-50'
-                      : 'border-gray-200 hover:border-red-300'
-                  }`}
-                >
-                  <div className="text-3xl mb-2">🌟</div>
-                  <h4 className="font-bold text-red-800">Situations réelles</h4>
-                  <p className="text-sm text-gray-600">Dans la vraie vie</p>
-                </button>
+              <div className="text-center">
+                <div className="inline-block bg-yellow-100 p-8 rounded-2xl">
+                  <div className="text-8xl font-bold text-red-600 mb-4">-</div>
+                  <p className="text-lg text-gray-700">
+                    C'est le signe de la soustraction !<br/>
+                    Il nous dit qu'on doit <span className="font-bold text-red-600">enlever</span> quelque chose.
+                  </p>
+                </div>
               </div>
             </div>
 
-            {/* Zone de démonstration */}
+            {/* Concept principal avec animation */}
             <div 
-              className={`bg-white rounded-xl p-6 shadow-lg ${
-                highlightedElement === 'demonstration' ? 'pulse-glow' : ''
+              id="concept-section"
+              className={`bg-white rounded-xl shadow-lg p-6 transition-all duration-300 ${
+                highlightedElement === 'concept' ? 'ring-4 ring-purple-400 bg-purple-50' : ''
               }`}
             >
-              <div className="flex justify-between items-center mb-6">
-                <h3 className="text-xl font-bold text-red-800">
-                  {selectedConcept === 'objets' && '🎭 Démonstration avec objets'}
-                  {selectedConcept === 'nombres' && '🧮 Démonstration avec nombres'}
-                  {selectedConcept === 'quotidien' && '🌟 Situation de la vie quotidienne'}
-                </h3>
-                
-                <button
-                  onClick={changeExample}
-                  className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors"
-                >
-                  <RotateCcw className="inline w-4 h-4 mr-2" />
-                  Autre exemple
-                </button>
+              <div className="flex items-center gap-3 mb-6">
+                <div className="p-2 bg-blue-100 rounded-lg">
+                  <Target className="w-6 h-6 text-blue-600" />
+                </div>
+                <h2 className="text-2xl font-bold text-gray-800">Comment ça marche ?</h2>
               </div>
 
-              {/* Affichage selon le type de concept */}
-              {selectedConcept === 'objets' && (
-                <div className="space-y-8">
-                  
-                  {/* Animation des objets */}
-                  <div className="grid grid-cols-1 gap-8 items-center">
-                    
-                    {/* Étape 1 : Objets de départ */}
-                    {currentStep >= 1 && (
-                      <div className="text-center">
-                        <div className="bg-blue-100 p-6 rounded-lg">
-                          <h4 className="text-lg font-bold text-blue-800 mb-4">Au départ</h4>
-                          <div className="grid grid-cols-5 gap-2 justify-center max-w-md mx-auto">
-                            {renderObjects(showObjectsStart, 'bg-blue-400', (examples[selectedConcept as keyof typeof examples][currentExample] as any).items || '●')}
+              {/* Animation de démonstration */}
+              <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-6">
+                <div className="text-center space-y-6">
+                  {/* Étape de départ */}
+                  {(animatingStep === 'demo-start' || animatingStep === 'demo-remove' || animatingStep === 'demo-result') && (
+                    <div>
+                      <p className="text-lg font-semibold mb-4">J'ai 5 ballons :</p>
+                      <div className="flex justify-center gap-3 mb-6">
+                        {Array.from({ length: 5 }, (_, i) => (
+                          <div
+                            key={i}
+                            className={`text-4xl transition-all duration-1000 ${
+                              animatingStep === 'demo-remove' && i < 2 ? 'opacity-30 scale-75 animate-pulse' : 'opacity-100 scale-100'
+                            }`}
+                          >
+                            🎈
                           </div>
-                          <div className="text-xl font-bold text-blue-800 mt-4">
-                            {examples[selectedConcept as keyof typeof examples][currentExample].start}
-                          </div>
-                        </div>
+                        ))}
                       </div>
-                    )}
+                    </div>
+                  )}
 
-                    {/* Flèche vers le bas */}
-                    {currentStep >= 2 && (
-                      <div className="text-center">
-                        <div className="text-4xl animate-bounce">⬇️</div>
-                        <p className="text-lg font-semibold text-red-600 mt-2">
-                          On enlève {examples[selectedConcept as keyof typeof examples][currentExample].remove}
-                        </p>
+                  {/* Action d'enlever */}
+                  {animatingStep === 'demo-remove' && (
+                    <div className="p-4 bg-yellow-100 rounded-lg">
+                      <p className="text-lg font-semibold">2 ballons s'envolent ! 💨</p>
+                    </div>
+                  )}
+
+                  {/* Résultat */}
+                  {animatingStep === 'demo-result' && (
+                    <div>
+                      <p className="text-lg font-semibold mb-4">Il me reste 3 ballons :</p>
+                      <div className="flex justify-center gap-3 mb-4">
+                        {Array.from({ length: 3 }, (_, i) => (
+                          <div key={i} className="text-4xl animate-bounce">🎈</div>
+                        ))}
                       </div>
-                    )}
-
-                    {/* Étape 2 : Objets enlevés */}
-                    {currentStep >= 2 && (
-                      <div className="text-center">
-                        <div className="bg-red-100 p-6 rounded-lg">
-                          <h4 className="text-lg font-bold text-red-800 mb-4">Ce qu'on enlève</h4>
-                          <div className="grid grid-cols-5 gap-2 justify-center max-w-md mx-auto">
-                            {renderObjects(showObjectsRemoved, 'bg-red-400', (examples[selectedConcept as keyof typeof examples][currentExample] as any).items || '●', 0.6)}
-                          </div>
-                          <div className="text-xl font-bold text-red-800 mt-4">
-                            {showObjectsRemoved}
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Flèche vers le bas */}
-                    {currentStep >= 3 && (
-                      <div className="text-center">
-                        <div className="text-4xl animate-bounce">⬇️</div>
-                        <p className="text-lg font-semibold text-green-600 mt-2">
-                          Il reste...
-                        </p>
-                      </div>
-                    )}
-
-                    {/* Étape 3 : Résultat */}
-                    {currentStep >= 3 && (
-                      <div className="text-center">
-                        <div className="bg-green-100 p-6 rounded-lg">
-                          <h4 className="text-lg font-bold text-green-800 mb-4">Ce qui reste</h4>
-                          <div className="grid grid-cols-5 gap-2 justify-center max-w-md mx-auto">
-                            {renderObjects(showObjectsResult, 'bg-green-400', (examples[selectedConcept as keyof typeof examples][currentExample] as any).items || '●')}
-                          </div>
-                          <div className="text-xl font-bold text-green-800 mt-4">
-                            {examples[selectedConcept as keyof typeof examples][currentExample].result}
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Opération finale */}
-                  {showResult && (
-                    <div className="text-center">
-                      <div className="bg-purple-100 p-6 rounded-lg">
-                        <h4 className="text-2xl font-bold text-purple-800 mb-4">🎯 L'opération</h4>
-                        <div className="text-4xl font-bold text-purple-800">
-                          {examples[selectedConcept as keyof typeof examples][currentExample].start} - {examples[selectedConcept as keyof typeof examples][currentExample].remove} = {examples[selectedConcept as keyof typeof examples][currentExample].result}
-                        </div>
+                      <div className="p-4 bg-green-100 rounded-lg">
+                        <p className="text-2xl font-bold text-green-800">5 - 2 = 3</p>
                       </div>
                     </div>
                   )}
                 </div>
-              )}
-
-              {/* Affichage pour les nombres purs */}
-              {selectedConcept === 'nombres' && (
-                <div className="space-y-8">
-                  <div className="grid grid-cols-1 md:grid-cols-5 gap-4 items-center text-center">
-                    <div className="text-8xl font-bold text-blue-600">
-                      {examples.nombres[currentExample].start}
-                    </div>
-                    <div className="text-6xl font-bold text-red-500">-</div>
-                    <div className="text-8xl font-bold text-red-600">
-                      {examples.nombres[currentExample].remove}
-                    </div>
-                    <div className="text-6xl font-bold text-purple-500">=</div>
-                    <div className={`text-8xl font-bold transition-all duration-500 ${
-                      showResult ? 'text-green-600 scale-110' : 'text-gray-300'
-                    }`}>
-                      {showResult ? examples.nombres[currentExample].result : '?'}
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Affichage pour les situations quotidiennes */}
-              {selectedConcept === 'quotidien' && (
-                <div className="space-y-8">
-                  <div className="bg-yellow-50 p-6 rounded-lg border border-yellow-200">
-                    <p className="text-xl text-gray-800 mb-4">
-                      📖 <strong>Situation :</strong> {examples.quotidien[currentExample].situation}
-                    </p>
-                  </div>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
-                    <div className="text-center">
-                      <h4 className="text-lg font-bold text-blue-800 mb-4">Au départ</h4>
-                      <div className="text-6xl mb-2">{examples.quotidien[currentExample].item}</div>
-                      <div className="text-4xl font-bold text-blue-600">
-                        {examples.quotidien[currentExample].start}
-                      </div>
-                    </div>
-                    
-                    <div className="text-center">
-                      <div className="text-4xl font-bold text-red-500 mb-2">-</div>
-                      <div className="text-6xl mb-2 opacity-60">{examples.quotidien[currentExample].item}</div>
-                      <div className="text-4xl font-bold text-red-600">
-                        {examples.quotidien[currentExample].remove}
-                      </div>
-                    </div>
-                    
-                    <div className="text-center">
-                      <h4 className="text-lg font-bold text-green-800 mb-4">Il reste</h4>
-                      <div className="text-6xl mb-2">{examples.quotidien[currentExample].item}</div>
-                      <div className={`text-4xl font-bold transition-all duration-500 ${
-                        showResult ? 'text-green-600 scale-110' : 'text-gray-300'
-                      }`}>
-                        {showResult ? examples.quotidien[currentExample].result : '?'}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-              
-              <div className="text-center mt-6">
-                <button
-                  onClick={demonstrateSubtraction}
-                  className="bg-red-500 text-white px-6 py-3 rounded-lg hover:bg-red-600 transition-colors"
-                >
-                  🔄 Voir la démonstration
-                </button>
               </div>
             </div>
+
+            {/* Exemples */}
+            <div 
+              id="examples-section"
+              className={`bg-white rounded-xl shadow-lg p-6 transition-all duration-300 ${
+                highlightedElement === 'examples' ? 'ring-4 ring-purple-400 bg-purple-50' : ''
+              }`}
+            >
+              <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">
+                🎯 Choisis un exemple pour voir l'animation !
+              </h2>
+              
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {subtractionExamples.map((example, index) => (
+                  <div 
+                    key={index}
+                    className={`bg-gradient-to-br from-purple-50 to-pink-50 rounded-lg p-6 cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-lg ${
+                      currentExample === index ? 'ring-4 ring-purple-400 bg-purple-100' : ''
+                    }`}
+                    onClick={() => explainSpecificExample(index)}
+                  >
+                    <div className="text-center">
+                      <div className="text-4xl mb-2">{example.item}</div>
+                      <h3 className="font-bold text-lg text-gray-800 mb-2">{example.title}</h3>
+                      <p className="text-sm text-gray-600 mb-4">{example.story}</p>
+                      <button className="bg-purple-500 text-white px-3 py-1 rounded-lg text-sm hover:bg-purple-600 transition-colors">
+                        ▶️ Voir l'animation
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Zone d'animation */}
+            {currentExample !== null && (
+              <div 
+                id="animation-section"
+                className="bg-white rounded-xl shadow-lg p-6"
+              >
+                <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">
+                  🎬 Animation de la soustraction
+                </h2>
+                
+                {(() => {
+                  const example = subtractionExamples[currentExample];
+                  return (
+                    <div className="space-y-6">
+                      {/* Histoire */}
+                      <div className={`p-4 rounded-lg text-center ${
+                        highlightedElement === 'story' ? 'bg-blue-100 ring-2 ring-blue-400' : 'bg-gray-50'
+                      }`}>
+                        <p className="text-lg font-semibold">{example.story}</p>
+                      </div>
+
+                      {/* Animation des objets */}
+                      <div className="flex flex-col items-center space-y-6">
+                        {/* Situation de départ */}
+                        {(animatingStep === 'start' || animatingStep === 'removing' || animatingStep === 'result' || animatingStep === 'calculation') && (
+                          <div className={`p-6 rounded-lg ${animatingStep === 'start' ? 'bg-blue-100 ring-2 ring-blue-400' : 'bg-gray-50'}`}>
+                            <div className="text-center mb-4">
+                              <p className="text-lg font-semibold">Au début : {example.start}</p>
+                            </div>
+                            <div className="grid grid-cols-4 gap-3 justify-items-center">
+                              {Array.from({ length: example.start }, (_, i) => (
+                                <div
+                                  key={i}
+                                  className={`text-3xl ${example.color} transition-all duration-1000 ${
+                                    animatingStep === 'removing' && i < example.removed ? 'opacity-30 scale-75 animate-pulse' : 'opacity-100'
+                                  }`}
+                                >
+                                  {example.item}
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Action d'enlever */}
+                        {animatingStep === 'removing' && (
+                          <div className="p-4 bg-yellow-100 rounded-lg">
+                            <p className="text-lg font-semibold text-center">
+                              {example.removed} {example.action} ! 💨
+                            </p>
+                          </div>
+                        )}
+
+                        {/* Résultat */}
+                        {(animatingStep === 'result' || animatingStep === 'calculation') && (
+                          <div className={`p-6 rounded-lg ${animatingStep === 'result' ? 'bg-green-100 ring-2 ring-green-400' : 'bg-gray-50'}`}>
+                            <div className="text-center mb-4">
+                              <p className="text-lg font-semibold">Il reste : {example.result}</p>
+                            </div>
+                            <div className="flex justify-center gap-3">
+                              {Array.from({ length: example.result }, (_, i) => (
+                                <div key={i} className={`text-3xl ${example.color} animate-bounce`}>
+                                  {example.item}
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Calcul écrit */}
+                        {animatingStep === 'calculation' && (
+                          <div className="p-6 bg-purple-100 rounded-lg">
+                            <p className="text-3xl font-bold text-center text-purple-800">
+                              {example.start} - {example.removed} = {example.result}
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })()}
+              </div>
+            )}
           </div>
         ) : (
-          // Section Exercices
+          /* Section Exercices */
           <div className="space-y-6">
-            {/* Bouton INSTRUCTIONS */}
-            {!exerciseInstructionGiven && (
-              <div className="flex justify-center">
-                <button
-                  onClick={() => {
-                    userHasInteractedRef.current = true;
-                    explainExercisesOnce();
-                  }}
-                  className="bg-gradient-to-r from-yellow-500 to-red-500 text-white px-8 py-4 rounded-xl text-xl font-bold hover:from-yellow-600 hover:to-red-600 transition-all shadow-lg animate-bounce"
-                >
-                  <div className="flex items-center space-x-3">
-                    <Volume2 className="w-6 h-6" />
-                    <span>🔊 ÉCOUTER LES INSTRUCTIONS !</span>
-                  </div>
-                </button>
+            <div className="bg-white rounded-xl shadow-lg p-6">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold text-gray-800">
+                  Exercice {currentExercise + 1} / {exercises.length}
+                </h2>
+                <div className="text-lg font-semibold text-purple-600">
+                  Score : {score} / {exercises.length}
+                </div>
               </div>
-            )}
 
-            {/* Modal de fin */}
-            {showCompletionModal && (
-              <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                <div className="bg-white rounded-xl p-8 max-w-md w-full mx-4">
+              {!showCompletionModal ? (
+                <div className="space-y-6">
+                  {/* Icône visuelle */}
                   <div className="text-center">
-                    <Trophy className="w-16 h-16 text-yellow-500 mx-auto mb-4" />
-                    <h3 className="text-2xl font-bold text-red-800 mb-4">
-                      Félicitations ! 🎉
-                    </h3>
-                    <p className="text-gray-700 mb-2">
-                      Tu comprends maintenant le sens de la soustraction !
-                    </p>
-                    <p className="text-lg font-semibold text-red-600 mb-6">
-                      Score : {finalScore} / {exercises.length}
-                    </p>
-                    <div className="space-y-3">
+                    <div className="text-6xl mb-4">{exercises[currentExercise].visual}</div>
+                  </div>
+
+                  {/* Énoncé du problème */}
+                  <div className="p-4 bg-purple-50 rounded-lg">
+                    <p className="text-lg text-center">{exercises[currentExercise].story}</p>
+                  </div>
+
+                  {/* Zone de réponse */}
+                  <div className="text-center space-y-4">
+                    <input
+                      type="number"
+                      value={userAnswer}
+                      onChange={(e) => setUserAnswer(e.target.value)}
+                      placeholder="Ta réponse..."
+                      className="text-center text-xl font-bold border-2 border-gray-300 rounded-lg px-4 py-2 w-32"
+                      onKeyPress={(e) => e.key === 'Enter' && checkAnswer()}
+                    />
+                    <div>
                       <button
-                        onClick={resetExercises}
-                        className="w-full bg-red-600 text-white py-3 rounded-lg hover:bg-red-700 transition-colors"
+                        onClick={checkAnswer}
+                        disabled={!userAnswer}
+                        className="bg-purple-500 text-white px-6 py-2 rounded-lg font-semibold hover:bg-purple-600 disabled:opacity-50"
                       >
-                        🔄 Recommencer
-                      </button>
-                      <button
-                        onClick={() => setShowExercises(false)}
-                        className="w-full bg-gray-600 text-white py-3 rounded-lg hover:bg-gray-700 transition-colors"
-                      >
-                        📚 Retour au cours
+                        Vérifier
                       </button>
                     </div>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Interface d'exercice */}
-            {!showCompletionModal && (
-              <div className="bg-white rounded-xl p-6 shadow-lg">
-                <div className="flex justify-between items-center mb-6">
-                  <div className="text-sm text-gray-600">
-                    Question {currentExercise + 1} / {exercises.length}
-                  </div>
-                  <div className="text-sm text-red-600 font-semibold">
-                    Score : {score} / {exercises.length}
-                  </div>
-                </div>
-
-                <div className="text-center space-y-6">
-                  {/* Question */}
-                  <h3 className="text-xl font-bold text-red-800">
-                    {exercises[currentExercise].question}
-                  </h3>
-                  
-                  {/* Visuel */}
-                  <div className="bg-gray-50 p-6 rounded-lg">
-                    <div className="text-3xl">
-                      {exercises[currentExercise].visual}
-                    </div>
-                  </div>
-
-                  {/* Choix de réponses */}
-                  <div className="grid grid-cols-1 gap-3 max-w-md mx-auto">
-                    {exercises[currentExercise].choices.map((choice, index) => (
-                      <button
-                        key={index}
-                        onClick={() => checkAnswer(choice)}
-                        disabled={isCorrect !== null}
-                        className="p-4 bg-white border-2 border-red-200 rounded-lg hover:border-red-400 hover:bg-red-50 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                      >
-                        {choice}
-                      </button>
-                    ))}
                   </div>
 
                   {/* Feedback */}
                   {isCorrect !== null && (
-                    <div className={`p-4 rounded-lg ${
+                    <div className={`p-4 rounded-lg text-center ${
                       isCorrect ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
                     }`}>
-                      {isCorrect ? (
-                        <div className="flex items-center justify-center space-x-2">
+                      <div className="flex items-center justify-center gap-2 mb-2">
+                        {isCorrect ? (
                           <CheckCircle className="w-6 h-6" />
-                          <span className="font-semibold">Excellent ! 🎉</span>
-                        </div>
-                      ) : (
-                        <div className="space-y-2">
-                          <div className="flex items-center justify-center space-x-2">
-                            <XCircle className="w-6 h-6" />
-                            <span className="font-semibold">Pas tout à fait...</span>
-                          </div>
-                          <p className="text-sm">La bonne réponse était : {exercises[currentExercise].correctAnswer}</p>
-                          <button
-                            onClick={nextExercise}
-                            className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
-                          >
-                            Question suivante →
-                          </button>
-                        </div>
-                      )}
+                        ) : (
+                          <XCircle className="w-6 h-6" />
+                        )}
+                        <span className="font-bold">
+                          {isCorrect ? 'Bravo ! Bonne réponse !' : `Pas tout à fait... La réponse était ${exercises[currentExercise].answer}`}
+                        </span>
+                      </div>
+                      
+                      <button
+                        onClick={nextExercise}
+                        className="bg-purple-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-purple-600 mt-2"
+                      >
+                        {currentExercise < exercises.length - 1 ? 'Exercice suivant' : 'Voir mes résultats'}
+                      </button>
                     </div>
                   )}
                 </div>
-              </div>
-            )}
+              ) : (
+                /* Modal de fin */
+                <div className="text-center space-y-6">
+                  <div className="text-6xl">🎉</div>
+                  <h2 className="text-3xl font-bold text-gray-800">
+                    Exercices terminés !
+                  </h2>
+                  <div className="text-2xl font-bold text-purple-600">
+                    Score : {score} / {exercises.length}
+                  </div>
+                  <div className="flex justify-center space-x-4">
+                    <button
+                      onClick={resetExercises}
+                      className="bg-purple-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-purple-600"
+                    >
+                      Recommencer
+                    </button>
+                    <button
+                      onClick={() => setShowExercises(false)}
+                      className="bg-pink-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-pink-600"
+                    >
+                      Retour au cours
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         )}
       </div>

@@ -1,48 +1,368 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Volume2, RotateCcw, ArrowLeft, CheckCircle, XCircle, Star, Trophy, Target, Play } from 'lucide-react';
-
-// Types pour la sécurité TypeScript
-type SituationType = 'bonbons' | 'jouets' | 'animaux' | 'fruits' | 'ecole';
+import Link from 'next/link';
+import { ArrowLeft, Play, Book, Target, CheckCircle, XCircle, Trophy, Star } from 'lucide-react';
 
 export default function ProblemesAddition() {
   // États pour la navigation et les animations
   const [showExercises, setShowExercises] = useState(false);
   const [hasStarted, setHasStarted] = useState(false);
-  const [exerciseInstructionGiven, setExerciseInstructionGiven] = useState(false);
+  const [isPlayingVocal, setIsPlayingVocal] = useState(false);
+  const [isAnimationRunning, setIsAnimationRunning] = useState(false);
   const [highlightedElement, setHighlightedElement] = useState<string | null>(null);
-  
-  // États pour les animations du cours
-  const [selectedSituation, setSelectedSituation] = useState<SituationType>('bonbons');
-  const [animationStep, setAnimationStep] = useState(0);
-  const [showObjects, setShowObjects] = useState({ group1: 0, group2: 0, result: 0 });
-  const [showSolution, setShowSolution] = useState(false);
-  
+  const [animatingStep, setAnimatingStep] = useState<string | null>(null);
+  const [currentExample, setCurrentExample] = useState<number | null>(null);
+  const [highlightedExamples, setHighlightedExamples] = useState<number[]>([]);
+  const [highlightNumbersInStory, setHighlightNumbersInStory] = useState(false);
+
   // États pour les exercices
   const [currentExercise, setCurrentExercise] = useState(0);
   const [userAnswer, setUserAnswer] = useState('');
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
   const [score, setScore] = useState(0);
-  const [finalScore, setFinalScore] = useState(0);
   const [showCompletionModal, setShowCompletionModal] = useState(false);
-  const [isPlayingVocal, setIsPlayingVocal] = useState(false);
-  
-  // Refs pour la gestion vocale ultra-agressive
-  const hasStartedRef = useRef(false);
-  const exerciseInstructionGivenRef = useRef(false);
-  const shouldStopRef = useRef(false);
-  const userHasInteractedRef = useRef(false);
 
-  // Utilitaires vocaux
-  const wait = (ms: number): Promise<void> => {
-    return new Promise((resolve) => {
-      if (shouldStopRef.current) {
+  // Refs pour gérer l'audio
+  const stopSignalRef = useRef(false);
+  const currentAudioRef = useRef<SpeechSynthesisUtterance | null>(null);
+
+  // Données des problèmes avec animations
+  const problemExamples = [
+    {
+      id: 'bonbons',
+      title: 'Les bonbons de Marie',
+      story: 'Marie a 3 bonbons rouges et 4 bonbons bleus. Combien a-t-elle de bonbons en tout ?',
+      first: 3,
+      second: 4,
+      result: 7,
+      item: '🍬',
+      color1: 'text-red-600',
+      color2: 'text-blue-600'
+    },
+    {
+      id: 'jouets',
+      title: 'Les voitures de Tom',
+      story: 'Tom a 5 petites voitures et 3 camions. Combien a-t-il de véhicules au total ?',
+      first: 5,
+      second: 3,
+      result: 8,
+      item: '🚗',
+      color1: 'text-orange-600',
+      color2: 'text-green-600'
+    },
+    {
+      id: 'animaux',
+      title: 'Les poissons de l\'aquarium',
+      story: 'Dans l\'aquarium, il y a 6 poissons rouges et 2 poissons jaunes. Combien y a-t-il de poissons ?',
+      first: 6,
+      second: 2,
+      result: 8,
+      item: '🐠',
+      color1: 'text-red-600',
+      color2: 'text-amber-600'
+    },
+    {
+      id: 'ecole',
+      title: 'La cour de récréation',
+      story: 'Pendant la récréation, Julie compte les enfants qui jouent. Elle voit 7 enfants qui jouent au ballon près du grand chêne et 5 autres enfants qui font de la corde à sauter près des bancs. Combien d\'enfants s\'amusent dans la cour ?',
+      first: 7,
+      second: 5,
+      result: 12,
+      item: '👦',
+      color1: 'text-blue-600',
+      color2: 'text-green-600'
+    },
+    {
+      id: 'marche',
+      title: 'Au marché avec Maman',
+      story: 'Au marché du village, Maman achète des légumes frais pour la semaine. Le gentil marchand lui donne 9 tomates bien mûres qu\'elle met dans son panier d\'osier, puis il ajoute 6 concombres verts et croquants. Maman veut savoir combien de légumes elle rapporte à la maison.',
+      first: 9,
+      second: 6,
+      result: 15,
+      item: '🍅',
+      color1: 'text-red-600',
+      color2: 'text-green-600'
+    },
+    {
+      id: 'parc',
+      title: 'Les canards du parc',
+      story: 'Au parc près de l\'étang, Pablo adore nourrir les canards avec du pain. Ce matin ensoleillé, il compte 8 canards qui nagent tranquillement près du petit pont en bois. Soudain, 7 autres canards arrivent en se dandinant depuis les roseaux. Pablo se demande combien de canards vont partager son délicieux pain.',
+      first: 8,
+      second: 7,
+      result: 15,
+      item: '🦆',
+      color1: 'text-yellow-600',
+      color2: 'text-blue-600'
+    },
+    {
+      id: 'bibliotheque',
+      title: 'La grande bibliothèque de l\'école',
+      story: 'Pour organiser la bibliothèque de l\'école, Madame Dupont compte les livres. Sur l\'étagère des contes, elle trouve 12 livres d\'aventures poussiéreux qu\'elle nettoie soigneusement. Puis, dans un carton tout neuf livré ce matin, elle découvre 8 magnifiques livres de contes de fées avec des couvertures dorées. Elle veut savoir combien de livres de contes elle aura en tout pour ses élèves.',
+      first: 12,
+      second: 8,
+      result: 20,
+      item: '📚',
+      color1: 'text-purple-600',
+      color2: 'text-amber-600'
+    },
+    {
+      id: 'patisserie',
+      title: 'La boulangerie de Monsieur Paul',
+      story: 'Ce matin, dans sa petite boulangerie qui sent bon le pain chaud, Monsieur Paul prépare des croissants pour le petit-déjeuner de ses clients fidèles. Il sort du four 15 croissants dorés et croustillants qu\'il place délicatement sur un plateau. Ensuite, il prépare une nouvelle fournée et cuit 9 croissants supplémentaires qu\'il dispose sur un second plateau. Madame Martin, sa meilleure cliente, lui demande combien de croissants il a préparés ce matin.',
+      first: 15,
+      second: 9,
+      result: 24,
+      item: '🥐',
+      color1: 'text-amber-700',
+      color2: 'text-yellow-600'
+    },
+    {
+      id: 'jardin',
+      title: 'Le jardin secret de Grand-Papa',
+      story: 'Dans son magnifique jardin fleuri qu\'il cultive avec amour depuis des années, Grand-Papa plante des tulipes colorées pour faire une surprise à sa petite-fille Léa. Il creuse soigneusement la terre humide et plante 18 bulbes de tulipes rouges près de la tonnelle en bois. Puis, inspiré par tant de beauté, il se dirige vers le parterre près de la fontaine et plante 13 bulbes de tulipes jaunes qui brilleront comme des soleils au printemps prochain. Léa, curieuse, veut savoir combien de tulipes fleuriront dans le jardin.',
+      first: 18,
+      second: 13,
+      result: 31,
+      item: '🌷',
+      color1: 'text-red-700',
+      color2: 'text-yellow-700'
+    }
+  ];
+
+  // Exercices pour les élèves
+  const exercises = [
+    {
+      story: 'Lucas a 4 billes rouges et 5 billes vertes. Combien a-t-il de billes en tout ?',
+      answer: 9,
+      visual: '🔵'
+    },
+    {
+      story: 'Dans le panier, il y a 7 pommes et 3 oranges. Combien y a-t-il de fruits ?',
+      answer: 10,
+      visual: '🍎'
+    },
+    {
+      story: 'Sophie collectionne les autocollants. Elle en a 8 brillants et 6 colorés. Combien en a-t-elle ?',
+      answer: 14,
+      visual: '✨'
+    },
+    {
+      story: 'Au zoo, il y a 9 singes et 4 éléphants. Combien d\'animaux voit-on ?',
+      answer: 13,
+      visual: '🐵'
+    },
+    {
+      story: 'Dans la boîte de crayons, il y a 12 crayons de couleur et 3 feutres. Combien d\'outils pour dessiner ?',
+      answer: 15,
+      visual: '🖍️'
+    },
+    {
+      story: 'Dans le petit jardin de Mamie, les fleurs poussent magnifiquement. Elle compte 6 tournesols géants qui brillent au soleil et 8 jolies marguerites blanches qui dansent dans le vent. Combien de fleurs colorent son jardin ?',
+      answer: 14,
+      visual: '🌻'
+    },
+    {
+      story: 'Pour son goûter d\'anniversaire, Théo prépare des petits gâteaux. Il place 9 cupcakes à la vanille sur le plateau doré et 7 muffins aux pépites de chocolat sur l\'assiette en porcelaine. Combien de délicieuses pâtisseries a-t-il préparées ?',
+      answer: 16,
+      visual: '🧁'
+    },
+    {
+      story: 'En classe de sport, Madame Rousseau organise les équipes. Elle compte 8 filles qui portent des maillots rouges et 9 garçons en maillots bleus. Combien d\'élèves participent au match de handball ?',
+      answer: 17,
+      visual: '⚽'
+    },
+    {
+      story: 'Pour le spectacle de l\'école, Madame Leblanc prépare les costumes. Elle a cousu 14 robes de princesses scintillantes et 7 costumes de chevaliers avec des armures dorées. Combien de costumes brillants a-t-elle préparés pour ses petits acteurs ?',
+      answer: 21,
+      visual: '👗'
+    },
+    {
+      story: 'Dans le grand verger de Maître Jacques, les arbres regorgent de fruits mûrs. Ce matin, il cueille 16 poires juteuses dans les premiers arbres ensoleillés, puis 12 poires supplémentaires dans les arbres plus ombragés. Sa femme lui demande combien de poires délicieuses il a récoltées pour faire de la compote.',
+      answer: 28,
+      visual: '🍐'
+    },
+    {
+      story: 'Léo le petit collectionneur est très fier de ses cartes précieuses. Dans son album rouge, il range soigneusement 19 cartes de dragons étincelants qu\'il a échangées avec ses amis. Dans son album bleu, il classe 15 cartes de héros légendaires qu\'il a reçues pour son anniversaire. Il veut épater son grand frère en lui disant combien de cartes extraordinaires il possède maintenant.',
+      answer: 34,
+      visual: '🎯'
+    },
+    {
+      story: 'Au petit étang du parc, Alice adore observer les canards. Elle voit d\'abord 11 canards blancs qui nagent paisiblement près des nénuphars roses. Puis, 6 canards bruns arrivent en cancanant joyeusement depuis l\'autre rive. Alice veut savoir combien de canards barbotent maintenant dans l\'étang.',
+      answer: 17,
+      visual: '🦆'
+    }
+  ];
+
+  // Fonction pour générer un message de correction personnalisé
+  const getPersonalizedFeedback = (exerciseIndex: number, isCorrect: boolean) => {
+    const exercise = exercises[exerciseIndex];
+    const icon = exercise.visual;
+    
+    if (isCorrect) {
+             const successMessages = [
+         `Bravo ! ${icon} Lucas a effectivement ${exercise.answer} billes colorées (rouges et vertes) !`,
+         `Parfait ! ${icon} Il y a bien ${exercise.answer} fruits délicieux dans le panier !`,
+         `Excellent ! ${icon} Sophie a exactement ${exercise.answer} autocollants dans sa collection !`,
+         `Super ! ${icon} On compte bien ${exercise.answer} animaux fascinants au zoo !`,
+         `Bravo ! ${icon} Il y a précisément ${exercise.answer} outils artistiques dans la boîte !`,
+         `Magnifique ! ${icon} Le petit jardin de Mamie rayonne avec ${exercise.answer} fleurs !`,
+         `Délicieux ! ${icon} Théo a mitonné ${exercise.answer} pâtisseries pour son anniversaire !`,
+         `Formidable ! ${icon} ${exercise.answer} élèves vont s'affronter au handball !`,
+         `Merveilleux ! ${icon} Madame Leblanc a confectionné ${exercise.answer} costumes scintillants !`,
+         `Excellent ! ${icon} Maître Jacques a récolté ${exercise.answer} poires succulentes !`,
+                  `Fantastique ! ${icon} Léo possède maintenant ${exercise.answer} cartes extraordinaires !`,
+         `Merveilleux ! ${icon} Alice observe ${exercise.answer} canards qui barbotent dans l'étang !`
+       ];
+       return successMessages[exerciseIndex] || `Bravo ! ${icon} Tu as trouvé ${exercise.answer} !`;
+    } else {
+             const correctionMessages = [
+         `${icon} Lucas avait 4 billes rouges + 5 billes vertes = ${exercise.answer} billes colorées !`,
+         `${icon} Dans le panier délicieux : 7 pommes + 3 oranges = ${exercise.answer} fruits juteux !`,
+         `${icon} Sophie collectionne : 8 autocollants brillants + 6 colorés = ${exercise.answer} autocollants !`,
+         `${icon} Au zoo fascinant : 9 singes espiègles + 4 éléphants majestueux = ${exercise.answer} animaux !`,
+         `${icon} Dans la boîte artistique : 12 crayons colorés + 3 feutres = ${exercise.answer} outils créatifs !`,
+         `${icon} Dans le jardin de Mamie : 6 tournesols géants + 8 marguerites blanches = ${exercise.answer} fleurs magnifiques !`,
+         `${icon} Pour l'anniversaire de Théo : 9 cupcakes vanille + 7 muffins chocolat = ${exercise.answer} pâtisseries délicieuses !`,
+         `${icon} Match de handball : 8 filles en rouge + 9 garçons en bleu = ${exercise.answer} élèves sportifs !`,
+         `${icon} Spectacle scintillant : 14 robes de princesses + 7 costumes de chevaliers = ${exercise.answer} costumes brillants !`,
+         `${icon} Verger de Maître Jacques : 16 poires des arbres ensoleillés + 12 des ombragés = ${exercise.answer} poires juteuses !`,
+         `${icon} Collection de Léo : 19 cartes de dragons + 15 cartes de héros = ${exercise.answer} cartes précieuses !`,
+         `${icon} À l'étang d'Alice : 11 canards blancs + 6 canards bruns = ${exercise.answer} canards barboteurs !`
+       ];
+      return correctionMessages[exerciseIndex] || `${icon} La réponse était ${exercise.answer} !`;
+    }
+  };
+
+  // Fonction pour mettre en évidence les nombres dans un texte
+  const highlightNumbers = (text: string, isExplicitHighlight = false) => {
+    // Remplace les nombres et signes mathématiques par des spans colorés (SANS les tirets -)
+    return text.split(/(\d+|\+|=)/).map((part, index) => {
+      // Si c'est un nombre
+      if (/^\d+$/.test(part)) {
+        const className = isExplicitHighlight 
+          ? "bg-yellow-300 text-yellow-900 px-2 py-1 rounded-lg font-black text-xl mx-1 shadow-lg ring-2 ring-yellow-400 animate-pulse"
+          : "bg-blue-200 text-blue-800 px-1.5 py-0.5 rounded-md font-bold mx-0.5 shadow-sm";
+        return (
+          <span 
+            key={index} 
+            className={className}
+          >
+            {part}
+          </span>
+        );
+      }
+      // Si c'est un signe mathématique (+ ou = seulement, PAS -)
+      if (/^[\+\=]$/.test(part)) {
+        const className = isExplicitHighlight
+          ? "bg-orange-300 text-orange-900 px-2 py-1 rounded-lg font-black text-xl mx-1 shadow-lg ring-2 ring-orange-400 animate-pulse"
+          : "bg-orange-200 text-orange-800 px-1.5 py-0.5 rounded-md font-bold mx-0.5 shadow-sm";
+        return (
+          <span 
+            key={index} 
+            className={className}
+          >
+            {part}
+          </span>
+        );
+      }
+      return part;
+    });
+  };
+
+  // Fonction pour arrêter tous les vocaux et animations
+  const stopAllVocalsAndAnimations = () => {
+    console.log('🛑 Arrêt de tous les vocaux et animations');
+    stopSignalRef.current = true;
+    
+    // Arrêter complètement la synthèse vocale
+    if (speechSynthesis.speaking || speechSynthesis.pending) {
+      speechSynthesis.cancel();
+      console.log('🔇 speechSynthesis.cancel() appelé');
+    }
+    
+    if (currentAudioRef.current) {
+      currentAudioRef.current = null;
+    }
+    
+    setIsPlayingVocal(false);
+    setIsAnimationRunning(false);
+    setHighlightedElement(null);
+    setAnimatingStep(null);
+    setCurrentExample(null);
+    setHighlightedExamples([]);
+    setHighlightNumbersInStory(false);
+  };
+
+  // Fonction pour jouer l'audio avec voix féminine française
+  const playAudio = async (text: string, slowMode = false) => {
+    return new Promise<void>((resolve) => {
+      if (stopSignalRef.current) {
         resolve();
         return;
       }
+      
+      setIsPlayingVocal(true);
+      const utterance = new SpeechSynthesisUtterance(text);
+      
+      utterance.lang = 'fr-FR';
+      utterance.rate = slowMode ? 0.6 : 0.8;
+      utterance.pitch = 1.0;
+      utterance.volume = 1.0;
+
+      // Sélectionner la MEILLEURE voix française féminine disponible
+      const voices = speechSynthesis.getVoices();
+      console.log('Voix disponibles:', voices.map(v => `${v.name} (${v.lang}) ${v.default ? '✓' : ''}`));
+      
+      // Priorité aux voix FÉMININES françaises de qualité
+      const bestFrenchVoice = voices.find(voice => 
+        (voice.lang === 'fr-FR' || voice.lang === 'fr') && 
+        (voice.name.toLowerCase().includes('audrey') ||    
+         voice.name.toLowerCase().includes('marie') ||     
+         voice.name.toLowerCase().includes('amélie') ||    
+         voice.name.toLowerCase().includes('virginie') ||  
+         voice.name.toLowerCase().includes('julie') ||     
+         voice.name.toLowerCase().includes('celine') ||    
+         voice.name.toLowerCase().includes('léa') ||       
+         voice.name.toLowerCase().includes('charlotte'))   
+      ) || voices.find(voice => 
+        (voice.lang === 'fr-FR' || voice.lang === 'fr') && 
+        voice.localService                                 
+      ) || voices.find(voice => 
+        voice.lang === 'fr-FR'                            
+      ) || voices.find(voice => 
+        voice.lang.startsWith('fr')                       
+      );
+
+      if (bestFrenchVoice) {
+        utterance.voice = bestFrenchVoice;
+        console.log('🎤 Voix sélectionnée:', bestFrenchVoice.name);
+      } else {
+        console.warn('⚠️ Aucune voix française trouvée');
+      }
+      
+      utterance.onend = () => {
+        setIsPlayingVocal(false);
+        currentAudioRef.current = null;
+        resolve();
+      };
+      
+      utterance.onerror = () => {
+        setIsPlayingVocal(false);
+        currentAudioRef.current = null;
+        resolve();
+      };
+      
+      currentAudioRef.current = utterance;
+      speechSynthesis.speak(utterance);
+    });
+  };
+
+  // Fonction pour attendre
+  const wait = async (ms: number) => {
+    return new Promise<void>((resolve) => {
       setTimeout(() => {
-        if (shouldStopRef.current) {
+        if (stopSignalRef.current) {
           resolve();
           return;
         }
@@ -51,371 +371,204 @@ export default function ProblemesAddition() {
     });
   };
 
-  // 🎵 FONCTION VOCALE CENTRALISÉE ULTRA-ROBUSTE
-  const playVocal = (text: string, rate: number = 1.2): Promise<void> => {
-    return new Promise((resolve) => {
-      // 🔒 PROTECTION : Empêcher les vocaux sans interaction utilisateur
-      if (!userHasInteractedRef.current) {
-        console.log("🚫 BLOQUÉ : Tentative de vocal sans interaction");
-        resolve();
-        return;
+  // Fonction pour faire défiler vers une section
+  const scrollToSection = (elementId: string) => {
+    setTimeout(() => {
+      const element = document.getElementById(elementId);
+      if (element) {
+        element.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'center',
+          inline: 'nearest' 
+        });
       }
-      
-      // 🛑 VÉRIFIER LE SIGNAL D'ARRÊT
-      if (shouldStopRef.current) {
-        console.log("🛑 ARRÊT : Signal d'arrêt détecté");
-        resolve();
-        return;
-      }
-      
-      // 🔥 ARRÊT SYSTÉMATIQUE des vocaux précédents (ZÉRO CONFLIT)
-      speechSynthesis.cancel();
-      setTimeout(() => speechSynthesis.cancel(), 10); // Double sécurité
-      
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = 'fr-FR';
-      utterance.rate = rate;
-      
-      utterance.onend = () => {
-        console.log("✅ VOCAL TERMINÉ :", text.substring(0, 30) + "...");
-        resolve();
-      };
-      
-      utterance.onerror = () => {
-        console.log("❌ ERREUR VOCAL :", text.substring(0, 30) + "...");
-        resolve();
-      };
-      
-      console.log("🎵 DÉMARRAGE VOCAL :", text.substring(0, 30) + "...");
-      speechSynthesis.speak(utterance);
-    });
+    }, 300);
   };
 
-  // 🛑 FONCTION D'ARRÊT ULTRA-AGRESSIVE
-  const stopAllVocals = () => {
-    console.log("🛑 ARRÊT ULTRA-AGRESSIF de tous les vocaux");
-    
-    // Triple sécurité
-    speechSynthesis.cancel();
-    setTimeout(() => speechSynthesis.cancel(), 10);
-    setTimeout(() => speechSynthesis.cancel(), 50);
-    setTimeout(() => speechSynthesis.cancel(), 100);
-    
-    // Signal d'arrêt global
-    shouldStopRef.current = true;
-    setIsPlayingVocal(false);
-  };
+  // Fonction pour expliquer le chapitre principal
+  const explainChapter = async () => {
+    stopAllVocalsAndAnimations();
+    await wait(300);
+    stopSignalRef.current = false;
+    setIsAnimationRunning(true);
+    setHasStarted(true);
 
-  // Alias pour compatibilité
-  const playAudioSequence = playVocal;
-  const stopVocal = stopAllVocals;
-
-  // Situations de problèmes pour le cours
-  const problemSituations = {
-    bonbons: {
-      story: "Julie a 3 bonbons rouges. Sa maman lui donne 4 bonbons bleus. Combien Julie a-t-elle de bonbons en tout ?",
-      item: '🍬',
-      group1: 3,
-      group2: 4,
-      result: 7,
-      color1: 'bg-red-400',
-      color2: 'bg-blue-400',
-      keywords: ['a', 'donne', 'en tout']
-    },
-    jouets: {
-      story: "Tom joue avec 5 petites voitures. Papa lui apporte 3 voitures de plus. Combien Tom a-t-il de voitures maintenant ?",
-      item: '🚗',
-      group1: 5,
-      group2: 3,
-      result: 8,
-      color1: 'bg-yellow-400',
-      color2: 'bg-green-400',
-      keywords: ['joue avec', 'apporte', 'maintenant']
-    },
-    animaux: {
-      story: "Dans le jardin, il y a 2 chats qui dorment. 6 chats arrivent en courant. Combien y a-t-il de chats en tout ?",
-      item: '🐱',
-      group1: 2,
-      group2: 6,
-      result: 8,
-      color1: 'bg-orange-400',
-      color2: 'bg-purple-400',
-      keywords: ['il y a', 'arrivent', 'en tout']
-    },
-    fruits: {
-      story: "Maman met 4 pommes dans le panier. Puis elle ajoute 5 pommes de plus. Combien de pommes sont dans le panier ?",
-      item: '🍎',
-      group1: 4,
-      group2: 5,
-      result: 9,
-      color1: 'bg-red-400',
-      color2: 'bg-pink-400',
-      keywords: ['met', 'ajoute', 'dans le panier']
-    },
-    ecole: {
-      story: "Dans la classe, il y a 7 filles assises. 4 garçons entrent dans la classe. Combien d'élèves y a-t-il maintenant ?",
-      item: '👶',
-      group1: 7,
-      group2: 4,
-      result: 11,
-      color1: 'bg-pink-400',
-      color2: 'bg-blue-400',
-      keywords: ['il y a', 'entrent', 'maintenant']
-    }
-  };
-
-  // Exercices variés (15 problèmes)
-  const exercises = [
-    {
-      story: "Léa a 3 crayons rouges et 2 crayons bleus. Combien a-t-elle de crayons en tout ?",
-      answer: 5,
-      hint: "3 + 2 = ?",
-      visual: "✏️"
-    },
-    {
-      story: "Sur la table, il y a 4 assiettes. Maman ajoute 3 assiettes. Combien y a-t-il d'assiettes maintenant ?",
-      answer: 7,
-      hint: "4 + 3 = ?",
-      visual: "🍽️"
-    },
-    {
-      story: "Paul collectionne les billes. Il en a 6 dans sa poche et trouve 4 billes par terre. Combien a-t-il de billes en tout ?",
-      answer: 10,
-      hint: "6 + 4 = ?",
-      visual: "⚪"
-    },
-    {
-      story: "Dans le vase, il y a 5 fleurs jaunes. Papa y met 3 fleurs roses. Combien de fleurs y a-t-il dans le vase ?",
-      answer: 8,
-      hint: "5 + 3 = ?",
-      visual: "🌸"
-    },
-    {
-      story: "Marie dessine 2 étoiles sur sa feuille. Puis elle dessine 7 étoiles de plus. Combien d'étoiles a-t-elle dessinées ?",
-      answer: 9,
-      hint: "2 + 7 = ?",
-      visual: "⭐"
-    },
-    {
-      story: "Dans la cour, 8 enfants jouent au ballon. 3 autres enfants arrivent. Combien d'enfants jouent maintenant ?",
-      answer: 11,
-      hint: "8 + 3 = ?",
-      visual: "⚽"
-    },
-    {
-      story: "Grand-mère a préparé 5 gâteaux le matin et 6 gâteaux l'après-midi. Combien de gâteaux a-t-elle préparés ?",
-      answer: 11,
-      hint: "5 + 6 = ?",
-      visual: "🧁"
-    },
-    {
-      story: "Dans l'aquarium, nagent 4 poissons rouges et 5 poissons bleus. Combien de poissons y a-t-il dans l'aquarium ?",
-      answer: 9,
-      hint: "4 + 5 = ?",
-      visual: "🐠"
-    },
-    {
-      story: "Lucas a 7 cartes Pokemon. Son ami lui en donne 4. Combien Lucas a-t-il de cartes maintenant ?",
-      answer: 11,
-      hint: "7 + 4 = ?",
-      visual: "🃏"
-    },
-    {
-      story: "Sur l'arbre, il y a 6 oiseaux qui chantent. 2 oiseaux viennent se poser. Combien d'oiseaux y a-t-il sur l'arbre ?",
-      answer: 8,
-      hint: "6 + 2 = ?",
-      visual: "🐦"
-    },
-    {
-      story: "Emma range 3 livres sur l'étagère du haut et 8 livres sur l'étagère du bas. Combien de livres a-t-elle rangés ?",
-      answer: 11,
-      hint: "3 + 8 = ?",
-      visual: "📚"
-    },
-    {
-      story: "Dans le parc, 9 canards nagent dans l'étang. 2 canards arrivent en volant. Combien de canards sont dans l'étang ?",
-      answer: 11,
-      hint: "9 + 2 = ?",
-      visual: "🦆"
-    },
-    {
-      story: "Théo compte 5 papillons dans le jardin. Puis il voit 4 papillons de plus. Combien de papillons a-t-il vus en tout ?",
-      answer: 9,
-      hint: "5 + 4 = ?",
-      visual: "🦋"
-    },
-    {
-      story: "Maman achète 6 bananes et 3 oranges. Combien de fruits a-t-elle achetés ?",
-      answer: 9,
-      hint: "6 + 3 = ?",
-      visual: "🍌"
-    },
-    {
-      story: "Dans la boîte, il y a 8 perles bleues et 4 perles vertes. Combien de perles y a-t-il dans la boîte ?",
-      answer: 12,
-      hint: "8 + 4 = ?",
-      visual: "💎"
-    }
-  ];
-
-  // Fonction principale d'explication du cours
-  const explainProblems = async () => {
     try {
-      shouldStopRef.current = false;
-      userHasInteractedRef.current = true;
-      
-      await playAudioSequence("Salut ! Aujourd'hui, nous allons apprendre à résoudre des problèmes d'addition !", 1.1);
-      await wait(800);
-      
-      setHighlightedElement('title');
-      await playAudioSequence("Dans la vie de tous les jours, nous rencontrons souvent des situations où nous devons additionner !", 1.1);
-      await wait(800);
-      
-      // Expliquer la méthode
-      setHighlightedElement('methode');
-      await playAudioSequence("Pour résoudre un problème, il faut suivre 3 étapes importantes !", 1.1);
+      // Introduction
+      setHighlightedElement('intro');
+      scrollToSection('intro-section');
+      await playAudio("Bonjour ! Aujourd'hui, nous allons apprendre à résoudre des problèmes d'addition. C'est très important de savoir transformer une histoire en calcul !");
       await wait(500);
-      
-      await playAudioSequence("Étape 1 : Lire le problème attentivement et chercher les mots-clés !", 1.1);
+
+      if (stopSignalRef.current) return;
+
+      // Méthode
+      setHighlightedElement('method');
+      scrollToSection('method-section');
+      await playAudio("Pour résoudre un problème d'addition, il faut suivre 3 étapes importantes :");
+      await wait(300);
+
+      // Étape 1
+      setAnimatingStep('step1');
+      await playAudio("Première étape : je lis le problème et je comprends l'histoire.");
+      await wait(500);
+
+      if (stopSignalRef.current) return;
+
+      // Étape 2
+      setAnimatingStep('step2');
+      await playAudio("Deuxième étape : je trouve les deux nombres à additionner dans l'histoire.");
+      await wait(500);
+
+      if (stopSignalRef.current) return;
+
+      // Démonstration du soulignage des nombres
+      setHighlightNumbersInStory(true);
+      await playAudio("Regardez ! Je souligne tous les nombres que je trouve pour les repérer facilement !");
       await wait(1000);
-      
-      await playAudioSequence("Étape 2 : Identifier les nombres et l'opération à faire !", 1.1);
+
+      if (stopSignalRef.current) return;
+
+      await playAudio("Voyez-vous comme les nombres ressortent bien ? C'est plus facile de les voir maintenant !");
       await wait(1000);
-      
-      await playAudioSequence("Étape 3 : Calculer la réponse et vérifier si elle a du sens !", 1.1);
-      await wait(1500);
-      
-      // Démonstration avec un exemple
-      setSelectedSituation('bonbons');
-      setHighlightedElement('situation');
-      await playAudioSequence("Regardons ensemble ce problème avec Julie et ses bonbons !", 1.1);
+
+      if (stopSignalRef.current) return;
+
+      setHighlightNumbersInStory(false);
+      await wait(300);
+
+      // Étape 3
+      setAnimatingStep('step3');
+      await playAudio("Troisième étape : j'écris l'addition et je calcule le résultat !");
       await wait(800);
-      
-      await demonstrateProblem();
-      
-      setHighlightedElement('exercise_tab');
-      await playAudioSequence("Maintenant, clique sur l'onglet Exercices pour t'entraîner à résoudre plein de problèmes différents !", 1.1);
-      
+
+      if (stopSignalRef.current) return;
+
+      // Transition vers les exemples
+      setHighlightedElement('examples');
+      scrollToSection('examples-section');
+      await playAudio("Maintenant, regardons des exemples ensemble !");
+      await wait(300);
+
+      if (stopSignalRef.current) return;
+
+      // Illuminer quelques exemples pendant l'explication  
+      setHighlightedExamples([0, 2, 4]); // Illuminer bonbons, cour, marché
+      await playAudio("Tu peux choisir celui que tu préfères pour voir l'animation détaillée !");
+      await wait(1000);
+
+      if (stopSignalRef.current) return;
+
+      // Changer d'exemples illuminés pour montrer la variété
+      setHighlightedExamples([1, 5, 8]); // Illuminer voitures, canards, boulangerie
+      await wait(800);
+
+      // Arrêter l'illumination
+      setHighlightedExamples([]);
+
+    } finally {
       setHighlightedElement(null);
-      
-    } catch (error) {
-      console.error('Erreur dans explainProblems:', error);
+      setAnimatingStep(null);
+      setHighlightNumbersInStory(false);
+      setIsAnimationRunning(false);
     }
   };
 
-  // Démonstration d'un problème étape par étape
-  const demonstrateProblem = async () => {
-    const situation = problemSituations[selectedSituation];
+  // Fonction pour expliquer un exemple spécifique
+  const explainSpecificExample = async (index: number) => {
+    stopAllVocalsAndAnimations();
+    await wait(300);
+    stopSignalRef.current = false;
+    setIsAnimationRunning(true);
     
-    try {
-      setAnimationStep(0);
-      setShowObjects({ group1: 0, group2: 0, result: 0 });
-      setShowSolution(false);
-      
-      // Lire le problème
-      setAnimationStep(1);
-      await playAudioSequence(situation.story, 1.0);
-      await wait(1000);
-      
-      // Identifier les mots-clés
-      setAnimationStep(2);
-      await playAudioSequence("Je repère les mots-clés qui m'indiquent qu'il faut additionner !", 1.1);
-      await wait(1000);
-      
-      // Montrer le premier groupe
-      setAnimationStep(3);
-      setShowObjects({ group1: situation.group1, group2: 0, result: 0 });
-      await playAudioSequence(`D'abord, Julie a ${situation.group1} bonbons !`, 1.1);
-      await wait(1000);
-      
-      // Montrer le deuxième groupe
-      setAnimationStep(4);
-      setShowObjects({ group1: situation.group1, group2: situation.group2, result: 0 });
-      await playAudioSequence(`Ensuite, maman lui donne ${situation.group2} bonbons de plus !`, 1.1);
-      await wait(1000);
-      
-      // Montrer la solution
-      setAnimationStep(5);
-      setShowObjects({ group1: situation.group1, group2: situation.group2, result: situation.result });
-      setShowSolution(true);
-      await playAudioSequence(`En tout, ${situation.group1} plus ${situation.group2} égale ${situation.result} bonbons !`, 1.1);
-      await wait(1500);
-      
-      await playAudioSequence("C'est exactement comme ça qu'on résout un problème d'addition !", 1.1);
-      
-    } catch (error) {
-      console.error('Erreur dans demonstrateProblem:', error);
-    }
-  };
+    const example = problemExamples[index];
+    setCurrentExample(index);
 
-  // Fonction d'explication des exercices
-  const explainExercisesOnce = async () => {
     try {
-      shouldStopRef.current = false;
-      userHasInteractedRef.current = true;
-      setExerciseInstructionGiven(true);
-      exerciseInstructionGivenRef.current = true;
-      
-      await playAudioSequence("Super ! Tu es dans les exercices de problèmes d'addition !", 1.0);
+      // Scroll vers la zone d'animation
+      scrollToSection('animation-section');
+      await wait(500);
+
+      // Lecture du problème
+      setHighlightedElement('story');
+      await playAudio(example.story);
       await wait(800);
-      
-      await playAudioSequence("Tu vas résoudre 15 problèmes différents de la vie quotidienne !", 1.0);
+
+      if (stopSignalRef.current) return;
+
+      // Identifier les nombres - Phase 1 : Soulignage
+      setAnimatingStep('identify');
+      setHighlightNumbersInStory(true);
+      await playAudio("Première chose à faire : je souligne tous les nombres que je vois dans l'histoire !");
       await wait(1000);
-      
-      await playAudioSequence("Pour chaque problème : lis bien l'histoire, trouve les nombres à additionner, puis écris ta réponse !", 1.0);
+
+      if (stopSignalRef.current) return;
+
+      await playAudio(`Parfait ! J'ai souligné les nombres : ${example.first} et ${example.second}. Ce sont mes deux nombres importants !`);
       await wait(1000);
-      
-      await playAudioSequence("N'oublie pas de suivre les 3 étapes qu'on a vues dans le cours ! Allez, c'est parti pour devenir un expert des problèmes !", 1.0);
-      
-    } catch (error) {
-      console.error('Erreur dans explainExercisesOnce:', error);
+
+      if (stopSignalRef.current) return;
+
+      setHighlightNumbersInStory(false);
+      await wait(300);
+
+      // Montrer les objets du premier groupe
+      setAnimatingStep('group1');
+      await playAudio(`Voici les ${example.first} premiers objets.`);
+      await wait(1000);
+
+      if (stopSignalRef.current) return;
+
+      // Montrer les objets du deuxième groupe
+      setAnimatingStep('group2');
+      await playAudio(`Et voici les ${example.second} autres objets.`);
+      await wait(1000);
+
+      if (stopSignalRef.current) return;
+
+      // Calcul
+      setAnimatingStep('calculation');
+      await playAudio(`Pour trouver le total, je fais l'addition : ${example.first} plus ${example.second} égale ${example.result}.`);
+      await wait(800);
+
+      if (stopSignalRef.current) return;
+
+      // Résultat final
+      setAnimatingStep('result');
+      await playAudio(`La réponse est ${example.result} ! Bravo !`);
+      await wait(1000);
+
+    } finally {
+      setHighlightedElement(null);
+      setAnimatingStep(null);
+      setCurrentExample(null);
+      setHighlightNumbersInStory(false);
+      setIsAnimationRunning(false);
     }
   };
 
-  const speakText = (text: string) => {
-    if (!userHasInteractedRef.current) return;
-    speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.rate = 1.0;
-    utterance.lang = 'fr-FR';
-    speechSynthesis.speak(utterance);
-  };
-
-  // Fonction pour vérifier la réponse
+  // Fonction pour les exercices
   const checkAnswer = () => {
-    stopVocal();
-    const exerciseData = exercises[currentExercise];
     const userNum = parseInt(userAnswer);
+    const correct = userNum === exercises[currentExercise].answer;
+    setIsCorrect(correct);
     
-    if (userNum === exerciseData.answer) {
-      setIsCorrect(true);
+    if (correct) {
       setScore(score + 1);
-      speakText("Bravo ! C'est la bonne réponse !");
-      
-      setTimeout(() => {
-        nextExercise();
-      }, 2000);
-    } else {
-      setIsCorrect(false);
-      speakText(`Pas tout à fait ! ${exerciseData.hint}`);
     }
   };
 
   const nextExercise = () => {
-    stopVocal();
     if (currentExercise < exercises.length - 1) {
-      const nextIndex = currentExercise + 1;
-      setCurrentExercise(nextIndex);
+      setCurrentExercise(currentExercise + 1);
       setUserAnswer('');
       setIsCorrect(null);
     } else {
-      setFinalScore(score + (isCorrect ? 1 : 0));
       setShowCompletionModal(true);
     }
   };
 
   const resetExercises = () => {
-    stopVocal();
     setCurrentExercise(0);
     setUserAnswer('');
     setIsCorrect(null);
@@ -423,159 +576,66 @@ export default function ProblemesAddition() {
     setShowCompletionModal(false);
   };
 
-  // Fonction centralisée de reset des boutons
-  const resetButtons = () => {
-    console.log('🔄 resetButtons called');
-    setExerciseInstructionGiven(false);
-    setHasStarted(false);
-    exerciseInstructionGivenRef.current = false;
-    hasStartedRef.current = false;
-  };
-
-  // 🎵 GESTION VOCALE ULTRA-ROBUSTE - Event Listeners
+  // Gestion des événements pour arrêter les vocaux
   useEffect(() => {
-    // 🎵 FONCTION DE NETTOYAGE VOCAL pour la sortie de page
-    const handlePageExit = () => {
-      console.log("🚪 SORTIE DE PAGE DÉTECTÉE - Arrêt des vocaux");
-      stopAllVocals();
-    };
-    
-    // 🔍 GESTION DE LA VISIBILITÉ (onglet caché/affiché)
     const handleVisibilityChange = () => {
       if (document.hidden) {
-        console.log("👁️ PAGE CACHÉE - Arrêt des vocaux");
-        stopAllVocals();
-      }
-    };
-    
-    // 🏠 GESTION DE LA NAVIGATION
-    const handleNavigation = () => {
-      console.log("🔄 NAVIGATION DÉTECTÉE - Arrêt des vocaux");
-      stopAllVocals();
-    };
-    
-    // 🚪 EVENT LISTENERS pour sortie de page
-    window.addEventListener('beforeunload', handlePageExit);
-    window.addEventListener('pagehide', handlePageExit);
-    window.addEventListener('unload', handlePageExit);
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    window.addEventListener('blur', handleNavigation);
-    window.addEventListener('popstate', handleNavigation);
-    
-    return () => {
-      // 🧹 NETTOYAGE COMPLET
-      stopAllVocals();
-      
-      // Retirer les event listeners
-      window.removeEventListener('beforeunload', handlePageExit);
-      window.removeEventListener('pagehide', handlePageExit);
-      window.removeEventListener('unload', handlePageExit);
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-      window.removeEventListener('blur', handleNavigation);
-      window.removeEventListener('popstate', handleNavigation);
-    };
-  }, []);
-
-  // Gestion des événements pour persistance des boutons
-  useEffect(() => {
-    console.log('🚀 Component mounted, setting up ultra-aggressive reset');
-    resetButtons();
-    
-    // Marquer l'interaction utilisateur
-    const markUserInteraction = () => {
-      userHasInteractedRef.current = true;
-    };
-    
-    document.addEventListener('click', markUserInteraction);
-    document.addEventListener('keydown', markUserInteraction);
-    document.addEventListener('touchstart', markUserInteraction);
-    
-    // Reset périodique ultra-agressif
-    const interval = setInterval(() => {
-      if (hasStartedRef.current || exerciseInstructionGivenRef.current) {
-        console.log('⏰ Periodic reset triggered');
-        resetButtons();
-      }
-    }, 2000);
-
-    // Gestion de la visibilité
-    const handleVisibilityChange = () => {
-      if (document.hidden) {
-        console.log('👁️ Page hidden, stopping vocals');
-        stopVocal();
-        shouldStopRef.current = true;
-      } else {
-        console.log('👁️ Page visible, resetting buttons');
-        resetButtons();
+        stopAllVocalsAndAnimations();
       }
     };
 
-    const handleFocus = () => {
-      console.log('🎯 Window focused, resetting buttons');
-      resetButtons();
-    };
-
-    const handlePageShow = () => {
-      console.log('📄 Page show, resetting buttons');
-      resetButtons();
-    };
-
-    const handleBlur = () => {
-      console.log('😴 Window blurred, stopping vocals');
-      stopVocal();
+    const handleBeforeUnload = () => {
+      stopAllVocalsAndAnimations();
     };
 
     const handlePopState = () => {
-      console.log('⬅️ Pop state, resetting buttons');
-      resetButtons();
+      stopAllVocalsAndAnimations();
     };
 
-    const handleMouseEnter = () => {
-      resetButtons();
-    };
-
-    const handleScroll = () => {
-      resetButtons();
-    };
-
+    // Event listeners
     document.addEventListener('visibilitychange', handleVisibilityChange);
-    window.addEventListener('focus', handleFocus);
-    window.addEventListener('blur', handleBlur);
-    window.addEventListener('pageshow', handlePageShow);
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    window.addEventListener('pagehide', handleBeforeUnload);
     window.addEventListener('popstate', handlePopState);
-    document.addEventListener('mouseenter', handleMouseEnter);
-    window.addEventListener('scroll', handleScroll);
 
-    document.addEventListener('DOMContentLoaded', () => {
-      resetButtons();
-    });
-
-    // Reset sur chargement initial
-    setTimeout(() => {
-      resetButtons();
-    }, 1000);
+    // Override history methods
+    const originalPushState = history.pushState;
+    const originalReplaceState = history.replaceState;
+    
+    history.pushState = function(...args) {
+      stopAllVocalsAndAnimations();
+      return originalPushState.apply(history, args);
+    };
+    
+    history.replaceState = function(...args) {
+      stopAllVocalsAndAnimations();
+      return originalReplaceState.apply(history, args);
+    };
 
     return () => {
-      clearInterval(interval);
-      document.removeEventListener('click', markUserInteraction);
-      document.removeEventListener('keydown', markUserInteraction);
-      document.removeEventListener('touchstart', markUserInteraction);
+      stopAllVocalsAndAnimations();
       document.removeEventListener('visibilitychange', handleVisibilityChange);
-      window.removeEventListener('focus', handleFocus);
-      window.removeEventListener('blur', handleBlur);
-      window.removeEventListener('pageshow', handlePageShow);
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+      window.removeEventListener('pagehide', handleBeforeUnload);
       window.removeEventListener('popstate', handlePopState);
-      document.removeEventListener('mouseenter', handleMouseEnter);
-      window.removeEventListener('scroll', handleScroll);
+      history.pushState = originalPushState;
+      history.replaceState = originalReplaceState;
     };
   }, []);
 
-  // Rendu des objets pour les animations
-  const renderObjects = (count: number, color: string, item: string) => {
+  // Effet pour gérer les changements d'onglet interne (cours ↔ exercices)
+  useEffect(() => {
+    stopAllVocalsAndAnimations();
+  }, [showExercises]);
+
+  // Fonction pour rendre les objets avec animations
+  const renderObjects = (count: number, item: string, colorClass: string) => {
     return Array.from({ length: count }, (_, i) => (
       <div
         key={i}
-        className={`w-12 h-12 rounded-lg ${color} border-2 border-white shadow-md animate-bounce flex items-center justify-center text-2xl`}
+        className={`text-3xl ${colorClass} transition-all duration-500 transform ${
+          animatingStep === 'group1' || animatingStep === 'group2' ? 'animate-bounce' : ''
+        }`}
         style={{ animationDelay: `${i * 100}ms` }}
       >
         {item}
@@ -583,392 +643,404 @@ export default function ProblemesAddition() {
     ));
   };
 
-  // Styles CSS intégrés
-  const styles = `
-    @keyframes float {
-      0%, 100% { transform: translateY(0px); }
-      50% { transform: translateY(-10px); }
-    }
-    @keyframes pulse-glow {
-      0%, 100% { box-shadow: 0 0 5px rgba(59, 130, 246, 0.5); }
-      50% { box-shadow: 0 0 20px rgba(59, 130, 246, 0.8); }
-    }
-    .float { animation: float 3s ease-in-out infinite; }
-    .pulse-glow { animation: pulse-glow 2s ease-in-out infinite; }
-  `;
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-red-100">
-      <style dangerouslySetInnerHTML={{ __html: styles }} />
-      
-      <div className="max-w-6xl mx-auto px-4 py-6">
+      <div className="max-w-6xl mx-auto px-4 py-8">
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <button
-            onClick={() => window.history.back()}
-            className="flex items-center space-x-2 text-orange-600 hover:text-orange-800 transition-colors"
+        <div className="mb-8">
+          <Link 
+            href="/chapitre/cp-additions-simples" 
+            onClick={stopAllVocalsAndAnimations}
+            className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors mb-4"
           >
-            <ArrowLeft className="w-5 h-5" />
-            <span>Retour aux additions simples</span>
-          </button>
+            <ArrowLeft className="w-4 h-4" />
+            <span>Retour au chapitre</span>
+          </Link>
           
-          <h1 
-            className={`text-3xl font-bold text-center text-orange-800 ${
-              highlightedElement === 'title' ? 'pulse-glow bg-yellow-200 px-4 py-2 rounded-lg' : ''
-            }`}
-          >
-            🧩 Problèmes d'addition
-          </h1>
-          
-          <div className="w-32"></div>
+          <div className="text-center">
+            <h1 className="text-4xl font-bold text-gray-800 mb-2">
+              🧮 Problèmes d'addition
+            </h1>
+            <p className="text-lg text-gray-600">
+              Apprendre à résoudre des problèmes avec des histoires
+            </p>
+          </div>
         </div>
 
         {/* Navigation Tabs */}
-        <div className="flex justify-center space-x-4 mb-6">
+        <div className="flex justify-center space-x-4 mb-8">
           <button
             onClick={() => {
+              stopAllVocalsAndAnimations();
               setShowExercises(false);
-              stopVocal();
-              setTimeout(() => { resetButtons(); }, 100);
             }}
             className={`px-6 py-3 rounded-lg font-semibold transition-all ${
               !showExercises
                 ? 'bg-orange-600 text-white shadow-lg'
                 : 'bg-white text-orange-600 hover:bg-orange-50'
-            }`}
+            } ${highlightedElement === 'course_tab' ? 'ring-4 ring-orange-400 animate-pulse' : ''}`}
           >
             📚 Cours
           </button>
           <button
             onClick={() => {
+              stopAllVocalsAndAnimations();
               setShowExercises(true);
-              stopVocal();
-              setTimeout(() => { resetButtons(); }, 100);
             }}
             className={`px-6 py-3 rounded-lg font-semibold transition-all ${
               showExercises
                 ? 'bg-orange-600 text-white shadow-lg'
                 : 'bg-white text-orange-600 hover:bg-orange-50'
-            } ${highlightedElement === 'exercise_tab' ? 'pulse-glow' : ''}`}
+            } ${highlightedElement === 'exercise_tab' ? 'ring-4 ring-orange-400 animate-pulse' : ''}`}
           >
             🎯 Exercices
           </button>
         </div>
 
         {!showExercises ? (
-          // Section Cours
+          /* Section Cours */
           <div className="space-y-8">
             {/* Bouton COMMENCER */}
-            {!hasStarted && (
-              <div className="flex justify-center">
-                <button
-                  onClick={() => {
-                    setHasStarted(true);
-                    hasStartedRef.current = true;
-                    explainProblems();
-                  }}
-                  className="bg-gradient-to-r from-orange-500 to-red-500 text-white px-8 py-4 rounded-xl text-xl font-bold hover:from-orange-600 hover:to-red-600 transition-all shadow-lg animate-bounce"
-                >
-                  <div className="flex items-center space-x-3">
-                    <Volume2 className="w-6 h-6" />
-                    <span>🚀 COMMENCER !</span>
-                  </div>
-                </button>
-              </div>
-            )}
+            <div className="text-center mb-8">
+              <button
+                onClick={() => {
+                  stopAllVocalsAndAnimations();
+                  explainChapter();
+                }}
+                disabled={isAnimationRunning}
+                className={`px-8 py-4 rounded-xl font-bold text-xl shadow-lg transition-all transform ${
+                  isAnimationRunning 
+                    ? 'bg-gray-400 text-gray-200 cursor-not-allowed' 
+                    : 'bg-gradient-to-r from-orange-500 to-red-500 text-white hover:shadow-xl hover:scale-105 animate-pulse'
+                }`}
+              >
+                {isAnimationRunning ? '⏳ Animation en cours...' : '▶️ COMMENCER !'}
+              </button>
+            </div>
 
-            {/* Introduction visuelle */}
-            <div className="bg-white rounded-xl p-6 shadow-lg">
-              <h2 className="text-2xl font-bold text-orange-800 mb-4 text-center">
-                ✨ Résoudre des problèmes comme un champion !
+            {/* Introduction */}
+            <div 
+              id="intro-section"
+              className={`bg-white rounded-xl shadow-lg p-6 transition-all duration-300 ${
+                highlightedElement === 'intro' ? 'ring-4 ring-orange-400 bg-orange-50' : ''
+              }`}
+            >
+              <div className="flex items-center gap-3 mb-4">
+                <div className="p-2 bg-orange-100 rounded-lg">
+                  <Book className="w-6 h-6 text-orange-600" />
+                </div>
+                <h2 className="text-2xl font-bold text-gray-800">Qu'est-ce qu'un problème d'addition ?</h2>
+              </div>
+              <p className="text-lg text-gray-700 leading-relaxed">
+                Un problème d'addition raconte une histoire avec des nombres. 
+                Notre mission est de trouver ces nombres et de les additionner pour répondre à la question !
+              </p>
+            </div>
+
+            {/* Méthode */}
+            <div 
+              id="method-section"
+              className={`bg-white rounded-xl shadow-lg p-6 transition-all duration-300 ${
+                highlightedElement === 'method' ? 'ring-4 ring-orange-400 bg-orange-50' : ''
+              }`}
+            >
+              <div className="flex items-center gap-3 mb-6">
+                <div className="p-2 bg-purple-100 rounded-lg">
+                  <Target className="w-6 h-6 text-purple-600" />
+                </div>
+                <h2 className="text-2xl font-bold text-gray-800">Ma méthode en 3 étapes</h2>
+              </div>
+              
+              <div className="space-y-4">
+                <div className={`flex items-center gap-4 p-4 rounded-lg transition-all ${
+                  animatingStep === 'step1' ? 'bg-blue-100 ring-2 ring-blue-400' : 'bg-gray-100'
+                }`}>
+                  <div className="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold">1</div>
+                  <p className="text-lg text-gray-800">Je lis le problème et je comprends l'histoire</p>
+                </div>
+                
+                <div className={`flex items-center gap-4 p-4 rounded-lg transition-all ${
+                  animatingStep === 'step2' ? 'bg-green-100 ring-2 ring-green-400' : 'bg-gray-100'
+                }`}>
+                  <div className="w-8 h-8 bg-green-500 text-white rounded-full flex items-center justify-center font-bold">2</div>
+                  <p className="text-lg text-gray-800">Je trouve les deux nombres à additionner</p>
+                </div>
+                
+                <div className={`flex items-center gap-4 p-4 rounded-lg transition-all ${
+                  animatingStep === 'step3' ? 'bg-purple-100 ring-2 ring-purple-400' : 'bg-gray-100'
+                }`}>
+                  <div className="w-8 h-8 bg-purple-500 text-white rounded-full flex items-center justify-center font-bold">3</div>
+                  <p className="text-lg text-gray-800">J'écris l'addition et je calcule</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Démonstration du soulignage */}
+            <div className="bg-white rounded-xl shadow-lg p-6">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="p-2 bg-yellow-100 rounded-lg">
+                  <span className="text-2xl">✏️</span>
+                </div>
+                <h2 className="text-2xl font-bold text-gray-800">Démonstration : souligner les nombres</h2>
+              </div>
+              
+              <div className="space-y-4">
+                <div className="p-4 bg-gray-50 rounded-lg">
+                  <p className="text-lg font-semibold text-gray-800 mb-3">Exemple d'histoire :</p>
+                  <div className="text-lg text-gray-700 p-3 bg-white rounded border">
+                    {highlightNumbers("Marie a 3 bonbons rouges et 4 bonbons bleus. Combien a-t-elle de bonbons en tout ?", highlightNumbersInStory)}
+                  </div>
+                </div>
+                
+                {highlightNumbersInStory && (
+                  <div className="text-center p-4 bg-yellow-50 border-2 border-yellow-200 rounded-lg">
+                    <p className="text-lg text-yellow-800 font-semibold">
+                      🎯 Voyez comme les nombres <span className="bg-yellow-300 px-2 py-1 rounded font-black">3</span> et <span className="bg-yellow-300 px-2 py-1 rounded font-black">4</span> ressortent bien !
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Exemples */}
+            <div 
+              id="examples-section"
+              className={`bg-white rounded-xl shadow-lg p-6 transition-all duration-300 ${
+                highlightedElement === 'examples' ? 'ring-4 ring-orange-400 bg-orange-50' : ''
+              }`}
+            >
+              <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">
+                🎯 Choisis un problème à résoudre ensemble !
               </h2>
               
-              <div className="text-center text-gray-700 space-y-2">
-                <p>🔍 Apprends à bien lire un problème</p>
-                <p>🧠 Trouve les nombres à additionner</p>
-                <p>🎯 Calcule la bonne réponse !</p>
-              </div>
-            </div>
-
-            {/* Méthode de résolution */}
-            <div 
-              className={`bg-white rounded-xl p-6 shadow-lg ${
-                highlightedElement === 'methode' ? 'pulse-glow' : ''
-              }`}
-            >
-              <h3 className="text-xl font-bold text-orange-800 mb-4 text-center">
-                🎯 Les 3 étapes pour résoudre un problème
-              </h3>
-              
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="p-4 bg-blue-50 rounded-lg text-center">
-                  <div className="text-3xl mb-2">📖</div>
-                  <h4 className="font-bold text-blue-800">Étape 1</h4>
-                  <p className="text-sm text-blue-600">Lire et chercher les mots-clés</p>
-                </div>
-                
-                <div className="p-4 bg-green-50 rounded-lg text-center">
-                  <div className="text-3xl mb-2">🔢</div>
-                  <h4 className="font-bold text-green-800">Étape 2</h4>
-                  <p className="text-sm text-green-600">Identifier les nombres</p>
-                </div>
-                
-                <div className="p-4 bg-purple-50 rounded-lg text-center">
-                  <div className="text-3xl mb-2">✅</div>
-                  <h4 className="font-bold text-purple-800">Étape 3</h4>
-                  <p className="text-sm text-purple-600">Calculer et vérifier</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Exemple de problème */}
-            <div 
-              className={`bg-white rounded-xl p-6 shadow-lg ${
-                highlightedElement === 'situation' ? 'pulse-glow' : ''
-              }`}
-            >
-              <h3 className="text-xl font-bold text-orange-800 mb-4 text-center">
-                📝 Exemple : Le problème de Julie
-              </h3>
-              
-              {/* Sélecteur de situation */}
-              <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
-                {Object.entries(problemSituations).map(([key, situation]) => (
-                  <button
-                    key={key}
-                    onClick={() => setSelectedSituation(key as SituationType)}
-                    className={`p-3 rounded-lg border-2 transition-all ${
-                      selectedSituation === key
-                        ? 'border-orange-500 bg-orange-50'
-                        : 'border-gray-200 hover:border-orange-300'
+                {problemExamples.map((example, index) => (
+                  <div 
+                    key={index}
+                    className={`bg-gradient-to-br from-blue-50 to-purple-50 rounded-lg p-6 transition-all duration-300 ${
+                      isAnimationRunning 
+                        ? 'opacity-50 cursor-not-allowed' 
+                        : 'cursor-pointer hover:scale-105 hover:shadow-lg'
+                    } ${currentExample === index ? 'ring-4 ring-purple-400 bg-purple-100' : ''} ${
+                      highlightedExamples.includes(index) ? 'ring-4 ring-orange-400 bg-orange-100 animate-pulse' : ''
                     }`}
+                    onClick={isAnimationRunning ? undefined : () => explainSpecificExample(index)}
                   >
-                    <div className="text-3xl mb-2">{situation.item}</div>
-                    <div className="text-sm text-gray-600">
-                      {key === 'bonbons' ? 'Bonbons' :
-                       key === 'jouets' ? 'Jouets' :
-                       key === 'animaux' ? 'Animaux' :
-                       key === 'fruits' ? 'Fruits' : 'École'}
+                    <div className="text-center">
+                      <div className="text-4xl mb-2">{example.item}</div>
+                      <h3 className="font-bold text-lg text-gray-800 mb-2">{example.title}</h3>
+                      <div className="text-sm text-gray-600 mb-4">
+                        {example.story}
+                      </div>
+                      <div className={`px-3 py-1 rounded-lg text-sm transition-all ${
+                        highlightedExamples.includes(index) 
+                          ? 'bg-orange-500 text-white animate-bounce shadow-lg ring-2 ring-orange-300' 
+                          : 'bg-blue-500 text-white hover:bg-blue-600'
+                      }`}>
+                        ▶️ Voir l'animation
+                      </div>
                     </div>
-                  </button>
+                  </div>
                 ))}
               </div>
-
-              {/* Zone d'animation du problème */}
-              <div className="bg-gradient-to-r from-yellow-50 to-orange-50 rounded-lg p-6 min-h-64">
-                <div className="text-center mb-6">
-                  <div className="bg-white p-4 rounded-lg shadow mb-4">
-                    <p className="text-lg text-gray-800 leading-relaxed">
-                      {problemSituations[selectedSituation].story}
-                    </p>
-                  </div>
-                </div>
-                
-                {animationStep >= 3 && (
-                  <div className="flex justify-center items-center space-x-8 mb-6">
-                    {/* Premier groupe */}
-                    <div className="flex flex-col items-center">
-                      <div className="text-lg font-semibold mb-2 text-orange-700">
-                        Premier groupe
-                      </div>
-                      <div className="grid grid-cols-3 gap-2">
-                        {renderObjects(showObjects.group1, problemSituations[selectedSituation].color1, problemSituations[selectedSituation].item)}
-                      </div>
-                      <div className="text-xl font-bold text-orange-800 mt-2">
-                        {showObjects.group1}
-                      </div>
-                    </div>
-                    
-                    {/* Signe + */}
-                    {animationStep >= 4 && (
-                      <div className="text-4xl font-bold text-orange-600 animate-pulse">+</div>
-                    )}
-                    
-                    {/* Deuxième groupe */}
-                    {animationStep >= 4 && (
-                      <div className="flex flex-col items-center">
-                        <div className="text-lg font-semibold mb-2 text-red-700">
-                          Deuxième groupe
-                        </div>
-                        <div className="grid grid-cols-3 gap-2">
-                          {renderObjects(showObjects.group2, problemSituations[selectedSituation].color2, problemSituations[selectedSituation].item)}
-                        </div>
-                        <div className="text-xl font-bold text-red-800 mt-2">
-                          {showObjects.group2}
-                        </div>
-                      </div>
-                    )}
-                    
-                    {/* Signe = et résultat */}
-                    {showSolution && (
-                      <>
-                        <div className="text-4xl font-bold text-orange-600">=</div>
-                        <div className="flex flex-col items-center">
-                          <div className="text-lg font-semibold mb-2 text-green-700">
-                            En tout
-                          </div>
-                          <div className="text-4xl font-bold text-green-800 bg-green-100 px-4 py-2 rounded-lg animate-pulse">
-                            {showObjects.result}
-                          </div>
-                        </div>
-                      </>
-                    )}
-                  </div>
-                )}
-                
-                {showSolution && (
-                  <div className="text-center">
-                    <div className="bg-green-100 p-4 rounded-lg">
-                      <h4 className="font-bold text-green-800 mb-2">✅ Solution</h4>
-                      <p className="text-green-700 text-lg">
-                        {problemSituations[selectedSituation].group1} + {problemSituations[selectedSituation].group2} = {problemSituations[selectedSituation].result}
-                      </p>
-                    </div>
-                  </div>
-                )}
-              </div>
-              
-              <div className="text-center mt-4">
-                <button
-                  onClick={demonstrateProblem}
-                  className="bg-orange-500 text-white px-6 py-3 rounded-lg hover:bg-orange-600 transition-colors"
-                >
-                  🔄 Voir la démonstration
-                </button>
-              </div>
             </div>
+
+            {/* Zone d'animation */}
+            {currentExample !== null && (
+              <div 
+                id="animation-section"
+                className="bg-white rounded-xl shadow-lg p-6"
+              >
+                <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">
+                  🎬 Animation du problème
+                </h2>
+                
+                {(() => {
+                  const example = problemExamples[currentExample];
+                  return (
+                    <div className="space-y-6">
+                      {/* Histoire */}
+                      <div className={`p-4 rounded-lg text-center ${
+                        highlightedElement === 'story' ? 'bg-blue-100 ring-2 ring-blue-400' : 'bg-gray-100'
+                      }`}>
+                        <div className="text-lg font-semibold text-gray-800">
+                          {highlightNumbers(example.story, highlightNumbersInStory)}
+                        </div>
+                      </div>
+
+                      {/* Identification des nombres */}
+                      {animatingStep === 'identify' && (
+                        <div className="text-center p-4 bg-yellow-100 rounded-lg">
+                          <p className="text-lg text-yellow-800">
+                            Je trouve les nombres : <span className="font-bold text-blue-600">{example.first}</span> et <span className="font-bold text-green-600">{example.second}</span>
+                          </p>
+                        </div>
+                      )}
+
+                      {/* Animation des objets */}
+                      <div className="flex justify-center items-center space-x-8">
+                        {/* Premier groupe */}
+                        {(animatingStep === 'group1' || animatingStep === 'group2' || animatingStep === 'calculation' || animatingStep === 'result') && (
+                          <div className={`p-4 rounded-lg ${animatingStep === 'group1' ? 'bg-red-100 ring-2 ring-red-400' : 'bg-gray-100'}`}>
+                            <div className="text-center mb-2">
+                              <span className="font-bold text-gray-800">{example.first}</span>
+                            </div>
+                            <div className="grid grid-cols-3 gap-2">
+                              {renderObjects(example.first, example.item, example.color1)}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Signe + */}
+                        {(animatingStep === 'group2' || animatingStep === 'calculation' || animatingStep === 'result') && (
+                          <div className="text-4xl font-bold text-gray-700">+</div>
+                        )}
+
+                        {/* Deuxième groupe */}
+                        {(animatingStep === 'group2' || animatingStep === 'calculation' || animatingStep === 'result') && (
+                          <div className={`p-4 rounded-lg ${animatingStep === 'group2' ? 'bg-blue-100 ring-2 ring-blue-400' : 'bg-gray-100'}`}>
+                            <div className="text-center mb-2">
+                              <span className="font-bold text-gray-800">{example.second}</span>
+                            </div>
+                            <div className="grid grid-cols-3 gap-2">
+                              {renderObjects(example.second, example.item, example.color2)}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Signe = et résultat */}
+                        {(animatingStep === 'calculation' || animatingStep === 'result') && (
+                          <>
+                            <div className="text-4xl font-bold text-gray-700">=</div>
+                            <div className={`p-4 rounded-lg ${animatingStep === 'result' ? 'bg-green-100 ring-2 ring-green-400 animate-pulse' : 'bg-gray-100'}`}>
+                              <div className="text-center mb-2">
+                                <span className="font-bold text-2xl text-gray-800">{example.result}</span>
+                              </div>
+                              {animatingStep === 'result' && (
+                                <div className="grid grid-cols-4 gap-2">
+                                  {renderObjects(example.result, example.item, 'text-green-600')}
+                                </div>
+                              )}
+                            </div>
+                          </>
+                        )}
+                      </div>
+
+                      {/* Calcul écrit */}
+                      {(animatingStep === 'calculation' || animatingStep === 'result') && (
+                        <div className="text-center p-4 bg-purple-100 rounded-lg">
+                          <div className="text-2xl font-bold text-purple-800">
+                            {highlightNumbers(`${example.first} + ${example.second} = ${example.result}`)}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })()}
+              </div>
+            )}
           </div>
         ) : (
-          // Section Exercices
+          /* Section Exercices */
           <div className="space-y-6">
-            {/* Bouton INSTRUCTIONS */}
-            {!exerciseInstructionGiven && (
-              <div className="flex justify-center">
-                <button
-                  onClick={() => {
-                    userHasInteractedRef.current = true;
-                    explainExercisesOnce();
-                  }}
-                  className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-8 py-4 rounded-xl text-xl font-bold hover:from-yellow-600 hover:to-orange-600 transition-all shadow-lg animate-bounce"
-                >
-                  <div className="flex items-center space-x-3">
-                    <Volume2 className="w-6 h-6" />
-                    <span>🔊 ÉCOUTER LES INSTRUCTIONS !</span>
-                  </div>
-                </button>
-              </div>
-            )}
-
-            {/* Modal de fin */}
-            {showCompletionModal && (
-              <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                <div className="bg-white rounded-xl p-8 max-w-md w-full mx-4">
-                  <div className="text-center">
-                    <Trophy className="w-16 h-16 text-yellow-500 mx-auto mb-4" />
-                    <h3 className="text-2xl font-bold text-orange-800 mb-4">
-                      Félicitations ! 🎉
-                    </h3>
-                    <p className="text-gray-700 mb-2">
-                      Tu as terminé tous les problèmes d'addition !
-                    </p>
-                    <p className="text-lg font-semibold text-orange-600 mb-6">
-                      Score : {finalScore} / {exercises.length}
-                    </p>
-                    <div className="space-y-3">
-                      <button
-                        onClick={resetExercises}
-                        className="w-full bg-orange-600 text-white py-3 rounded-lg hover:bg-orange-700 transition-colors"
-                      >
-                        🔄 Recommencer
-                      </button>
-                      <button
-                        onClick={() => setShowExercises(false)}
-                        className="w-full bg-gray-600 text-white py-3 rounded-lg hover:bg-gray-700 transition-colors"
-                      >
-                        📚 Retour au cours
-                      </button>
-                    </div>
-                  </div>
+            <div className="bg-white rounded-xl shadow-lg p-6">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold text-gray-800">
+                  Exercice {currentExercise + 1} / {exercises.length}
+                </h2>
+                <div className="text-lg font-semibold text-blue-600">
+                  Score : {score} / {exercises.length}
                 </div>
               </div>
-            )}
 
-            {/* Interface d'exercice */}
-            {!showCompletionModal && (
-              <div className="bg-white rounded-xl p-6 shadow-lg">
-                <div className="flex justify-between items-center mb-6">
-                  <div className="text-sm text-gray-600">
-                    Problème {currentExercise + 1} / {exercises.length}
-                  </div>
-                  <div className="text-sm text-orange-600 font-semibold">
-                    Score : {score} / {exercises.length}
-                  </div>
-                </div>
-
-                <div className="text-center space-y-6">
+              {!showCompletionModal ? (
+                <div className="space-y-6">
                   {/* Icône visuelle */}
-                  <div className="text-6xl mb-4">
-                    {exercises[currentExercise].visual}
-                  </div>
-                  
-                  {/* Énoncé du problème */}
-                  <div className="bg-blue-50 p-6 rounded-lg">
-                    <h3 className="text-lg text-gray-800 leading-relaxed">
-                      {exercises[currentExercise].story}
-                    </h3>
+                  <div className="text-center">
+                    <div className="text-6xl mb-4">{exercises[currentExercise].visual}</div>
                   </div>
 
-                  <div className="space-y-4">
+                  {/* Énoncé du problème */}
+                  <div className="p-4 bg-blue-50 rounded-lg">
+                    <div className="text-lg text-center">{exercises[currentExercise].story}</div>
+                  </div>
+
+                  {/* Zone de réponse */}
+                  <div className="text-center space-y-4">
                     <input
                       type="number"
                       value={userAnswer}
                       onChange={(e) => setUserAnswer(e.target.value)}
-                      className="w-32 p-3 text-center text-xl border-2 border-orange-300 rounded-lg focus:border-orange-500 focus:outline-none"
-                      placeholder="?"
+                      placeholder="Ta réponse..."
+                      className="text-center text-xl font-bold border-2 border-gray-300 rounded-lg px-4 py-2 w-32"
                       onKeyPress={(e) => e.key === 'Enter' && checkAnswer()}
                     />
-                    
                     <div>
                       <button
                         onClick={checkAnswer}
                         disabled={!userAnswer}
-                        className="bg-orange-600 text-white px-6 py-3 rounded-lg hover:bg-orange-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+                        className="bg-blue-500 text-white px-6 py-2 rounded-lg font-semibold hover:bg-blue-600 disabled:opacity-50"
                       >
-                        ✓ Vérifier
+                        Vérifier
                       </button>
                     </div>
                   </div>
 
                   {/* Feedback */}
                   {isCorrect !== null && (
-                    <div className={`p-4 rounded-lg ${
+                    <div className={`p-4 rounded-lg text-center ${
                       isCorrect ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
                     }`}>
-                      {isCorrect ? (
-                        <div className="flex items-center justify-center space-x-2">
+                      <div className="flex items-center justify-center gap-2 mb-2">
+                        {isCorrect ? (
                           <CheckCircle className="w-6 h-6" />
-                          <span className="font-semibold">Excellent ! 🎉</span>
+                        ) : (
+                          <XCircle className="w-6 h-6" />
+                        )}
+                        <div className="text-2xl">{exercises[currentExercise].visual}</div>
+                      </div>
+                      <div className="mb-3">
+                        <div className="font-bold">
+                          {getPersonalizedFeedback(currentExercise, isCorrect)}
                         </div>
-                      ) : (
-                        <div className="space-y-2">
-                          <div className="flex items-center justify-center space-x-2">
-                            <XCircle className="w-6 h-6" />
-                            <span className="font-semibold">Pas tout à fait...</span>
-                          </div>
-                          <p className="text-sm">{exercises[currentExercise].hint}</p>
-                          <button
-                            onClick={nextExercise}
-                            className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
-                          >
-                            Problème suivant →
-                          </button>
-                        </div>
-                      )}
+                      </div>
+                      
+                      <button
+                        onClick={nextExercise}
+                        className="bg-orange-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-orange-600 mt-2"
+                      >
+                        {currentExercise < exercises.length - 1 ? 'Exercice suivant' : 'Voir mes résultats'}
+                      </button>
                     </div>
                   )}
                 </div>
-              </div>
-            )}
+              ) : (
+                /* Modal de fin */
+                <div className="text-center space-y-6">
+                  <div className="text-6xl">🎉</div>
+                  <h2 className="text-3xl font-bold text-gray-800">
+                    Exercices terminés !
+                  </h2>
+                  <div className="text-2xl font-bold text-blue-600">
+                    Score : {score} / {exercises.length}
+                  </div>
+                  <div className="flex justify-center space-x-4">
+                    <button
+                      onClick={resetExercises}
+                      className="bg-blue-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-600"
+                    >
+                      Recommencer
+                    </button>
+                    <button
+                      onClick={() => setShowExercises(false)}
+                      className="bg-orange-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-orange-600"
+                    >
+                      Retour au cours
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         )}
       </div>
