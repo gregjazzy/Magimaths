@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { ArrowLeft, Play, CheckCircle, XCircle, RotateCcw, Volume2 } from 'lucide-react';
 
 export default function DizainesCP() {
   // Styles CSS pour les animations
@@ -34,6 +35,7 @@ export default function DizainesCP() {
     }
     
     .animate-slide-in { animation: slideInFromLeft 0.8s ease-out; }
+    .animate-bounce-in { animation: bounceIn 0.6s ease-out; }
     .animate-glow { animation: glow 2s ease-in-out infinite; }
     .animate-wiggle { animation: wiggle 1s ease-in-out infinite; }
     .animate-fade-in-up { animation: fadeInUp 0.6s ease-out; }
@@ -58,6 +60,7 @@ export default function DizainesCP() {
   const [showCompletionModal, setShowCompletionModal] = useState(false);
   const [finalScore, setFinalScore] = useState(0);
   const [shuffledChoices, setShuffledChoices] = useState<string[]>([]);
+  const [animationStep, setAnimationStep] = useState(0);
 
   // Fonction pour mélanger un tableau
   const shuffleArray = (array: string[]) => {
@@ -90,6 +93,8 @@ export default function DizainesCP() {
 
   // Fonctions de contrôle de l'animation
   const nextStep = () => {
+    if (animationStep < 3) {
+      setAnimationStep(animationStep + 1);
     }
   };
   
@@ -202,9 +207,11 @@ export default function DizainesCP() {
   ];
 
   const speakText = (text: string) => {
+    if ('speechSynthesis' in window) {
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = 'fr-FR';
       utterance.rate = 0.9;
+      speechSynthesis.speak(utterance);
     }
   };
 
@@ -384,12 +391,15 @@ export default function DizainesCP() {
                   <div className="space-y-8">
                     {/* Boutons de contrôle - bien visibles en haut */}
                     <div className="flex justify-center space-x-4 mb-8">
+                      {animationStep < 3 && (
                         <button
                           onClick={nextStep}
+                          className="bg-gradient-to-r from-blue-500 to-green-500 text-white px-8 py-4 rounded-xl font-bold text-xl hover:from-blue-600 hover:to-green-600 transition-all shadow-lg transform hover:scale-105 animate-pulse"
                         >
                           ▶️ Suivant
                         </button>
                       )}
+                      {animationStep > 0 && (
                         <button
                           onClick={restartAnimation}
                           className="bg-gray-500 text-white px-6 py-4 rounded-xl font-bold text-lg hover:bg-gray-600 transition-colors shadow-md"
@@ -400,6 +410,7 @@ export default function DizainesCP() {
                     </div>
                     
                     {/* Message de démarrage */}
+                    {animationStep === 0 && (
                       <div className="bg-gradient-to-r from-purple-100 to-blue-100 rounded-lg p-8 text-center">
                         <div className="text-6xl mb-4">🚀</div>
                         <h4 className="text-2xl font-bold mb-4 text-gray-800">
@@ -408,15 +419,18 @@ export default function DizainesCP() {
                         <p className="text-lg text-gray-700 mb-4">
                           Appuie sur "Suivant" pour commencer l'aventure !
                         </p>
+                        <div className="text-4xl animate-bounce">⬆️</div>
                       </div>
                     )}
                     
                     {/* Étape 1: Le nombre */}
+                    {animationStep >= 1 && (
                       <div className="bg-gradient-to-r from-green-100 to-blue-100 rounded-lg p-8 text-center animate-slide-in">
                         <h4 className="text-xl font-bold mb-4 text-green-800">
                           📍 Étape 1 : Voici le nombre
                         </h4>
                         <div className="flex items-center justify-center space-x-4 mb-4">
+                          <div className="text-9xl font-bold text-green-600 animate-bounce-in">
                             {selected.value}
                           </div>
                           <div className="text-2xl font-semibold text-gray-600">
@@ -430,10 +444,12 @@ export default function DizainesCP() {
                     )}
                     
                     {/* Étape 2: Les boîtes de 10 */}
+                    {animationStep >= 2 && (
                       <div className="bg-gradient-to-r from-blue-100 to-purple-100 rounded-lg p-8 animate-slide-in">
                         <h4 className="text-xl font-bold mb-4 text-blue-800">
                           📦 Étape 2 : Comptons les boîtes de 10
                         </h4>
+                        <div className="text-7xl mb-6 animate-bounce-in">
                           {selected.visual}
                         </div>
                         <p className="text-xl text-gray-700 font-semibold">
@@ -443,6 +459,7 @@ export default function DizainesCP() {
                     )}
                     
                     {/* Étape 3: La décomposition */}
+                    {animationStep >= 3 && (
                       <div className="bg-gradient-to-r from-yellow-100 to-orange-100 rounded-lg p-8 animate-slide-in">
                         <h4 className="text-xl font-bold mb-4 text-orange-800">
                           ✨ Étape 3 : La décomposition magique
@@ -458,6 +475,7 @@ export default function DizainesCP() {
                             onClick={() => speakText(`${selected.groups} fois 10 égale ${selected.value}`)}
                             className="bg-green-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-green-600 transition-colors"
                           >
+                            <Volume2 className="inline w-4 h-4 mr-2" />
                             Écouter la décomposition
                           </button>
                         </div>
@@ -471,6 +489,7 @@ export default function DizainesCP() {
                           <div
                             key={step}
                             className={`w-6 h-6 rounded-full flex items-center justify-center font-bold text-sm transition-all ${
+                              animationStep >= step 
                                 ? 'bg-green-500 text-white shadow-lg' 
                                 : 'bg-gray-300 text-gray-600'
                             }`}
@@ -480,10 +499,15 @@ export default function DizainesCP() {
                         ))}
                       </div>
                       <p className="text-sm text-gray-600 mt-2 font-semibold">
+                        {animationStep === 0 && "Prêt à commencer"}
+                        {animationStep === 1 && "Étape 1/3 : Le nombre"}
+                        {animationStep === 2 && "Étape 2/3 : Les boîtes"}
+                        {animationStep === 3 && "Étape 3/3 : La décomposition"}
                       </p>
                     </div>
                     
                     {/* Message de fin */}
+                    {animationStep === 3 && (
                       <div className="bg-gradient-to-r from-green-100 to-blue-100 rounded-lg p-6 text-center animate-fade-in-up">
                         <div className="text-4xl mb-3">🎉</div>
                         <p className="text-lg font-bold text-green-700">
@@ -501,6 +525,7 @@ export default function DizainesCP() {
 
             {/* Tableau récapitulatif avec animations */}
             <div className="bg-white rounded-xl p-8 shadow-lg animate-fade-in-up">
+              <h2 className="text-2xl font-bold text-center mb-6 text-gray-900 animate-bounce">
                 📊 Tableau magique des dizaines
               </h2>
               
@@ -516,6 +541,7 @@ export default function DizainesCP() {
                   <tbody>
                     {dizaines.map((diz, index) => (
                       <tr key={diz.value} className="hover:bg-green-50 animate-slide-in" style={{ animationDelay: `${index * 0.3}s`, animationFillMode: 'both' }}>
+                        <td className="border-2 border-green-600 p-4 text-center text-3xl hover:animate-bounce cursor-pointer">
                           {diz.visual}
                         </td>
                         <td className="border-2 border-green-600 p-4 text-center text-2xl font-bold text-green-600 hover:animate-wiggle cursor-pointer">
@@ -671,6 +697,7 @@ export default function DizainesCP() {
                         onClick={() => speakDecomposition(exercises[currentExercise])}
                         className="bg-blue-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-blue-600 transition-colors inline-flex items-center space-x-2"
                       >
+                        <Volume2 className="w-4 h-4" />
                         <span>Écouter la décomposition</span>
                       </button>
                     </div>

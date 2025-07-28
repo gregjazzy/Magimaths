@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { ArrowLeft, CheckCircle, XCircle, RotateCcw, Volume2, Split, Copy } from 'lucide-react';
 
 export default function DoublesCP() {
   const [selectedType, setSelectedType] = useState<'doubles' | 'moities'>('doubles');
@@ -128,9 +129,11 @@ export default function DoublesCP() {
   ];
 
   const speakText = (text: string) => {
+    if ('speechSynthesis' in window) {
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = 'fr-FR';
       utterance.rate = 0.9;
+      speechSynthesis.speak(utterance);
     }
   };
 
@@ -344,6 +347,7 @@ export default function DoublesCP() {
                             onClick={() => speakText(`Le double de ${item.number} est ${item.double}`)}
                             className="bg-blue-400 hover:bg-blue-500 text-white p-2 rounded-lg transition-colors"
                           >
+                            <Volume2 className="w-5 h-5" />
                           </button>
                         </div>
                       </div>
@@ -400,6 +404,7 @@ export default function DoublesCP() {
                             onClick={() => speakText(`La moitié de ${item.number} est ${item.moitie}`)}
                             className="bg-green-400 hover:bg-green-500 text-white p-2 rounded-lg transition-colors"
                           >
+                            <Volume2 className="w-5 h-5" />
                           </button>
                         </div>
                       </div>

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { ArrowLeft, CheckCircle, XCircle, RotateCcw, Volume2 } from 'lucide-react';
 
 export default function OrdonnerComparerCP100() {
   const [selectedComparison, setSelectedComparison] = useState('67_34');
@@ -124,9 +125,11 @@ export default function OrdonnerComparerCP100() {
   };
 
   const speakText = (text: string) => {
+    if ('speechSynthesis' in window) {
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = 'fr-FR';
       utterance.rate = 0.9;
+      speechSynthesis.speak(utterance);
     }
   };
 
@@ -319,6 +322,7 @@ export default function OrdonnerComparerCP100() {
                         onClick={() => speakText(selected.explanation)}
                         className="bg-yellow-500 text-white px-3 sm:px-4 py-2 sm:py-3 rounded-lg font-bold hover:bg-yellow-600 transition-colors text-sm sm:text-base"
                       >
+                        <Volume2 className="inline w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                         Écouter
                       </button>
                     </div>

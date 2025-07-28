@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { ArrowLeft, CheckCircle, XCircle, RotateCcw, Volume2, Package, Dot } from 'lucide-react';
 
 // Styles CSS pour les animations personnalisées
 const styles = `
@@ -68,6 +69,7 @@ const styles = `
     animation: slideInRight 1s ease-out 0.3s both;
   }
   
+  .animate-bounce-in {
     animation: bounceIn 1.2s ease-out 0.6s both;
   }
   
@@ -211,9 +213,11 @@ export default function UnitesDizainesCP() {
   ];
 
   const speakText = (text: string) => {
+    if ('speechSynthesis' in window) {
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = 'fr-FR';
       utterance.rate = 0.9;
+      speechSynthesis.speak(utterance);
     }
   };
 
@@ -366,6 +370,7 @@ export default function UnitesDizainesCP() {
                 <div className="grid md:grid-cols-2 gap-8 items-center">
                   {/* Visualisation */}
                   <div className="text-center">
+                    <div className="text-8xl font-bold text-blue-600 mb-4 animate-bounce-in transform hover:scale-110 transition-transform duration-500 cursor-pointer">
                       34
                     </div>
                     <div className="text-4xl mb-4 animate-slide-in-left">
@@ -379,6 +384,7 @@ export default function UnitesDizainesCP() {
                   {/* Tableau des positions */}
                   <div className="bg-white rounded-lg p-6 shadow-md animate-glow">
                     <div className="text-center mb-4">
+                      <h4 className="text-xl font-bold text-gray-800 animate-bounce-in">
                         🎯 Tableau magique des positions !
                       </h4>
                     </div>
@@ -399,20 +405,24 @@ export default function UnitesDizainesCP() {
                       <tbody>
                         <tr>
                           <td className="border-2 border-blue-600 p-6 text-center bg-gradient-to-br from-blue-100 to-blue-200 animate-slide-in-left">
+                            <div className="text-8xl font-bold text-blue-600 animate-bounce-in transform hover:scale-110 transition-transform duration-300">
                               3
                             </div>
                             <div className="text-lg font-semibold text-blue-800 mt-3 animate-fade-in-up">
                               3 × 10 = 30
                             </div>
+                            <div className="text-3xl mt-2 animate-pulse">
                               🔟🔟🔟
                             </div>
                           </td>
                           <td className="border-2 border-blue-600 p-6 text-center bg-gradient-to-br from-green-100 to-green-200 animate-slide-in-right">
+                            <div className="text-8xl font-bold text-green-600 animate-bounce-in transform hover:scale-110 transition-transform duration-300" style={{animationDelay: '0.2s'}}>
                               4
                             </div>
                             <div className="text-lg font-semibold text-green-800 mt-3 animate-fade-in-up" style={{animationDelay: '0.1s'}}>
                               4 × 1 = 4
                             </div>
+                            <div className="text-3xl mt-2 animate-pulse" style={{animationDelay: '0.5s'}}>
                               🔴🔴🔴🔴
                             </div>
                           </td>
@@ -421,6 +431,8 @@ export default function UnitesDizainesCP() {
                     </table>
                     
                     {/* Animation de la somme finale */}
+                    <div className="text-center mt-6 bg-gradient-to-r from-yellow-100 to-orange-100 rounded-lg p-4 animate-bounce-in" style={{animationDelay: '1.2s'}}>
+                      <div className="text-3xl font-bold text-gray-800 animate-pulse">
                         ✨ 30 + 4 = 34 ✨
                       </div>
                       <div className="text-lg text-gray-600 mt-2 animate-fade-in-up" style={{animationDelay: '1.5s'}}>
@@ -431,12 +443,17 @@ export default function UnitesDizainesCP() {
                     {/* Flèches animées pour montrer le mouvement */}
                     <div className="flex justify-center items-center mt-4 space-x-4 animate-fade-in-up" style={{animationDelay: '1.8s'}}>
                       <div className="text-center">
+                        <div className="text-2xl animate-bounce">⬇️</div>
                         <div className="text-sm font-semibold text-blue-600">Dizaines</div>
                       </div>
+                      <div className="text-4xl font-bold text-purple-600 animate-pulse">+</div>
                       <div className="text-center">
+                        <div className="text-2xl animate-bounce" style={{animationDelay: '0.3s'}}>⬇️</div>
                         <div className="text-sm font-semibold text-green-600">Unités</div>
                       </div>
+                      <div className="text-4xl font-bold text-purple-600 animate-pulse" style={{animationDelay: '0.6s'}}>=</div>
                       <div className="text-center">
+                        <div className="text-2xl animate-bounce" style={{animationDelay: '0.9s'}}>🎉</div>
                         <div className="text-sm font-semibold text-purple-600">Résultat</div>
                       </div>
                     </div>
@@ -533,6 +550,7 @@ export default function UnitesDizainesCP() {
                             onClick={() => speakText(`${selected.dizaines} dizaines font ${selected.dizaines * 10}`)}
                             className="bg-blue-400 hover:bg-blue-500 text-white p-2 rounded-lg transition-colors mt-3"
                           >
+                            <Volume2 className="w-5 h-5" />
                           </button>
                         </div>
                       </div>
@@ -562,6 +580,7 @@ export default function UnitesDizainesCP() {
                             onClick={() => speakText(`${selected.unites} unités font ${selected.unites}`)}
                             className="bg-green-400 hover:bg-green-500 text-white p-2 rounded-lg transition-colors mt-3"
                           >
+                            <Volume2 className="w-5 h-5" />
                           </button>
                         </div>
                       </div>
@@ -579,6 +598,7 @@ export default function UnitesDizainesCP() {
                         onClick={() => speakText(`${selected.dizaines * 10} plus ${selected.unites} égale ${selected.number}`)}
                         className="bg-yellow-500 hover:bg-yellow-600 text-white px-6 py-3 rounded-lg font-bold mt-4 transition-colors"
                       >
+                        <Volume2 className="inline w-5 h-5 mr-2" />
                         Écouter
                       </button>
                     </div>
@@ -754,6 +774,7 @@ export default function UnitesDizainesCP() {
                         <div className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg p-6">
                           {/* Affichage du nombre avec décomposition animée */}
                           <div className="text-center mb-6">
+                            <div className="text-6xl font-bold text-gray-800 mb-4 animate-pulse">
                               {number}
                             </div>
                             
@@ -773,6 +794,7 @@ export default function UnitesDizainesCP() {
                                 <tbody>
                                   <tr>
                                     <td className={`border-2 border-blue-500 p-4 text-center ${
+                                      exercise.type === 'dizaines' ? 'bg-yellow-100 animate-pulse' : 'bg-blue-50'
                                     }`}>
                                       <div className="text-4xl font-bold text-blue-600 mb-2">
                                         {dizaines}
@@ -785,6 +807,7 @@ export default function UnitesDizainesCP() {
                                       </div>
                                     </td>
                                     <td className={`border-2 border-blue-500 p-4 text-center ${
+                                      exercise.type === 'unites' ? 'bg-yellow-100 animate-pulse' : 'bg-green-50'
                                     }`}>
                                       <div className="text-4xl font-bold text-green-600 mb-2">
                                         {unites}
@@ -836,6 +859,7 @@ export default function UnitesDizainesCP() {
                         onClick={() => speakExplanation(exercises[currentExercise])}
                         className="bg-blue-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-blue-600 transition-colors inline-flex items-center space-x-2"
                       >
+                        <Volume2 className="w-4 h-4" />
                         <span>Écouter l'explication</span>
                       </button>
                     </div>
