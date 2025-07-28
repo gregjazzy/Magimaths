@@ -409,7 +409,7 @@ export default function SensSoustraction() {
       <div
         key={i}
         className={`text-3xl ${colorClass} transition-all duration-1000 transform ${
-          fadeOut ? 'opacity-30 scale-75' : 'opacity-100 scale-100'
+          fadeOut ? 'opacity-70 scale-75' : 'opacity-100 scale-100'
         } ${
           animatingStep === 'start' || animatingStep === 'removing' ? 'animate-bounce' : ''
         }`}
@@ -613,7 +613,7 @@ export default function SensSoustraction() {
                               key={i}
                               className={`relative transform transition-all duration-1000 ${
                                 animatingStep === 'demo-remove' && i < 2 
-                                  ? 'opacity-30 scale-75 -translate-y-8 rotate-12' 
+                                  ? 'opacity-70 scale-75 -translate-y-8 rotate-12' 
                                   : 'opacity-100 scale-100 hover:scale-110'
                               }`}
                             >
@@ -751,7 +751,7 @@ export default function SensSoustraction() {
                                 <div
                                   key={i}
                                   className={`text-3xl ${example.color} transition-all duration-1000 ${
-                                    animatingStep === 'removing' && i < example.removed ? 'opacity-30 scale-75 animate-pulse' : 'opacity-100'
+                                    animatingStep === 'removing' && i < example.removed ? 'opacity-70 scale-75 animate-pulse' : 'opacity-100'
                                   }`}
                                 >
                                   {example.item}
