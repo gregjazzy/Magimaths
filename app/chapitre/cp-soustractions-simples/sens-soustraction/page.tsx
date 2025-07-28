@@ -477,17 +477,21 @@ export default function SensSoustraction() {
         {!showExercises ? (
           /* Section Cours */
           <div className="space-y-8">
-            {/* Bouton COMMENCER */}
-            {!hasStarted && (
-              <div className="text-center mb-8">
-                <button
-                  onClick={explainChapter}
-                  className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-8 py-4 rounded-xl font-bold text-xl shadow-lg hover:shadow-xl transition-all transform hover:scale-105 animate-pulse"
-                >
-                  ▶️ COMMENCER !
-                </button>
-              </div>
-            )}
+            {/* Bouton COMMENCER/RECOMMENCER */}
+            <div className="text-center mb-8">
+              <button
+                onClick={explainChapter}
+                disabled={isPlayingVocal}
+                className={`bg-gradient-to-r from-purple-500 to-pink-500 text-white px-8 py-4 rounded-xl font-bold text-xl shadow-lg hover:shadow-xl transition-all transform hover:scale-105 ${
+                  isPlayingVocal ? 'opacity-75 cursor-not-allowed animate-pulse' : 'animate-pulse hover:animate-none'
+                }`}
+              >
+                {isPlayingVocal ? '🎤 JE PARLE...' : (hasStarted ? '🔄 RECOMMENCER !' : '▶️ COMMENCER !')}
+              </button>
+              <p className="text-sm text-gray-600 mt-2">
+                {isPlayingVocal ? 'Écoute bien l\'explication...' : (hasStarted ? 'Clique pour réécouter l\'explication complète' : 'Clique ici pour débuter l\'explication interactive')}
+              </p>
+            </div>
 
             {/* Introduction */}
             <div 
