@@ -516,19 +516,53 @@ export default function SensSoustraction() {
               }`}
             >
               <div className="flex items-center gap-3 mb-6">
-                <div className="p-2 bg-red-100 rounded-lg">
+                <div className="p-3 bg-gradient-to-br from-red-100 to-pink-100 rounded-xl shadow-md">
                   <Minus className="w-6 h-6 text-red-600" />
                 </div>
-                <h2 className="text-2xl font-bold text-gray-800">Le signe moins ( - )</h2>
+                <h2 className="text-2xl font-bold bg-gradient-to-r from-red-600 to-pink-600 bg-clip-text text-transparent">
+                  Le signe moins ( - )
+                </h2>
               </div>
               
               <div className="text-center">
-                <div className="inline-block bg-yellow-100 p-8 rounded-2xl">
-                  <div className="text-8xl font-bold text-red-600 mb-4">-</div>
-                <p className="text-lg text-gray-700">
-                    C'est le signe de la soustraction !<br/>
-                    Il nous dit qu'on doit <span className="font-bold text-red-600">enlever</span> quelque chose.
-                </p>
+                <div className="relative inline-block">
+                  <div className="absolute inset-0 bg-gradient-to-r from-red-200 to-pink-200 rounded-3xl blur-sm opacity-75"></div>
+                  <div className="relative bg-gradient-to-br from-red-50 via-white to-pink-50 p-12 rounded-3xl border-2 border-red-100 shadow-xl">
+                    <div className="mb-6">
+                      <div className="inline-flex items-center justify-center w-24 h-24 bg-gradient-to-br from-red-500 to-pink-500 rounded-2xl shadow-lg mb-4 transform hover:scale-110 transition-transform duration-300">
+                        <span className="text-6xl font-bold text-white">-</span>
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-4">
+                      <h3 className="text-2xl font-bold text-gray-800 mb-3">
+                        🎯 Le symbole magique de la soustraction !
+                      </h3>
+                      
+                      <div className="bg-white/80 rounded-xl p-4 border border-red-100">
+                        <p className="text-lg text-gray-700 leading-relaxed">
+                          Ce petit trait horizontal nous dit : <br/>
+                          <span className="inline-flex items-center gap-2 mt-2 px-4 py-2 bg-gradient-to-r from-red-100 to-pink-100 rounded-full">
+                            <span className="text-xl">✨</span>
+                            <span className="font-bold text-red-600">« Enlève-moi quelque chose ! »</span>
+                            <span className="text-xl">✨</span>
+                          </span>
+                        </p>
+                      </div>
+                      
+                      <div className="flex justify-center gap-4 mt-6">
+                        <div className="bg-red-100 px-4 py-2 rounded-full">
+                          <span className="text-red-700 font-semibold">👋 Enlever</span>
+                        </div>
+                        <div className="bg-pink-100 px-4 py-2 rounded-full">
+                          <span className="text-pink-700 font-semibold">🚀 Retirer</span>
+                        </div>
+                        <div className="bg-orange-100 px-4 py-2 rounded-full">
+                          <span className="text-orange-700 font-semibold">💨 Faire partir</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -541,57 +575,88 @@ export default function SensSoustraction() {
               }`}
             >
               <div className="flex items-center gap-3 mb-6">
-                <div className="p-2 bg-blue-100 rounded-lg">
+                <div className="p-3 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-xl shadow-md">
                   <Target className="w-6 h-6 text-blue-600" />
+                </div>
+                <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                  Comment ça marche ?
+                </h2>
               </div>
-                <h2 className="text-2xl font-bold text-gray-800">Comment ça marche ?</h2>
-            </div>
 
               {/* Animation de démonstration */}
-              <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-6">
-                <div className="text-center space-y-6">
-                  {/* Étape de départ */}
-                  {(animatingStep === 'demo-start' || animatingStep === 'demo-remove' || animatingStep === 'demo-result') && (
-                    <div>
-                      <p className="text-lg font-semibold mb-4">J'ai 5 ballons :</p>
-                      <div className="flex justify-center gap-3 mb-6">
-                        {Array.from({ length: 5 }, (_, i) => (
-                          <div
-                            key={i}
-                            className={`text-4xl transition-all duration-1000 ${
-                              animatingStep === 'demo-remove' && i < 2 ? 'opacity-30 scale-75 animate-pulse' : 'opacity-100 scale-100'
-                            }`}
-                          >
-                            🎈
+              <div className="relative">
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-200 to-indigo-200 rounded-2xl blur-sm opacity-50"></div>
+                <div className="relative bg-gradient-to-br from-blue-50 via-white to-indigo-50 rounded-2xl p-8 border-2 border-blue-100 shadow-xl">
+                  <div className="text-center space-y-8">
+                    {/* Étape de départ */}
+                    {(animatingStep === 'demo-start' || animatingStep === 'demo-remove' || animatingStep === 'demo-result') && (
+                      <div className="bg-white/80 rounded-xl p-6 border border-blue-100">
+                        <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center justify-center gap-2">
+                          <span className="text-2xl">🎭</span>
+                          Démonstration magique
+                          <span className="text-2xl">✨</span>
+                        </h3>
+                        <p className="text-lg font-semibold mb-6 text-gray-700">J'ai 5 beaux ballons colorés :</p>
+                        <div className="flex justify-center gap-4 mb-6">
+                          {Array.from({ length: 5 }, (_, i) => (
+                            <div
+                              key={i}
+                              className={`relative transform transition-all duration-1000 ${
+                                animatingStep === 'demo-remove' && i < 2 
+                                  ? 'opacity-30 scale-75 -translate-y-8 rotate-12' 
+                                  : 'opacity-100 scale-100 hover:scale-110'
+                              }`}
+                            >
+                              <div className="text-5xl filter drop-shadow-lg">🎈</div>
+                              {animatingStep === 'demo-remove' && i < 2 && (
+                                <div className="absolute -top-2 -right-2 text-xl animate-pulse">💨</div>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Action d'enlever */}
+                    {animatingStep === 'demo-remove' && (
+                      <div className="bg-gradient-to-r from-yellow-100 to-orange-100 p-6 rounded-xl border-2 border-yellow-200 shadow-lg">
+                        <p className="text-xl font-bold text-orange-800 flex items-center justify-center gap-2">
+                          <span className="text-2xl">💨</span>
+                          2 ballons s'envolent dans le ciel !
+                          <span className="text-2xl">🌤️</span>
+                        </p>
+                      </div>
+                    )}
+
+                    {/* Résultat */}
+                    {animatingStep === 'demo-result' && (
+                      <div className="space-y-6">
+                        <div className="bg-white/80 rounded-xl p-6 border border-green-200">
+                          <p className="text-lg font-semibold mb-6 text-gray-700">Il me reste 3 magnifiques ballons :</p>
+                          <div className="flex justify-center gap-4 mb-6">
+                            {Array.from({ length: 3 }, (_, i) => (
+                              <div key={i} className="text-5xl animate-bounce filter drop-shadow-lg" style={{animationDelay: `${i * 0.2}s`}}>
+                                🎈
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+
+                        <div className="bg-gradient-to-r from-green-100 to-emerald-100 p-8 rounded-xl border-2 border-green-200 shadow-lg">
+                          <h3 className="text-lg font-semibold text-green-800 mb-4">🎯 Le calcul magique :</h3>
+                          <div className="inline-flex items-center gap-4 bg-white rounded-full px-8 py-4 shadow-md">
+                            <span className="text-3xl font-bold text-blue-600">5</span>
+                            <span className="text-3xl font-bold text-red-600">-</span>
+                            <span className="text-3xl font-bold text-orange-600">2</span>
+                            <span className="text-3xl font-bold text-gray-600">=</span>
+                            <span className="text-3xl font-bold text-green-600">3</span>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
-                        ))}
-                        </div>
-                      </div>
-                    )}
-
-                  {/* Action d'enlever */}
-                  {animatingStep === 'demo-remove' && (
-                    <div className="p-4 bg-yellow-100 rounded-lg">
-                      <p className="text-lg font-semibold">2 ballons s'envolent ! 💨</p>
-                      </div>
-                    )}
-
-                  {/* Résultat */}
-                  {animatingStep === 'demo-result' && (
-                    <div>
-                      <p className="text-lg font-semibold mb-4">Il me reste 3 ballons :</p>
-                      <div className="flex justify-center gap-3 mb-4">
-                        {Array.from({ length: 3 }, (_, i) => (
-                          <div key={i} className="text-4xl animate-bounce">🎈</div>
-                        ))}
-                          </div>
-                      <div className="p-4 bg-green-100 rounded-lg">
-                        <p className="text-2xl font-bold text-green-800">5 - 2 = 3</p>
-                        </div>
-                      </div>
-                    )}
-                      </div>
-                          </div>
                   </div>
 
             {/* Exemples */}
