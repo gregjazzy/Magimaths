@@ -612,13 +612,13 @@ export default function SensSoustraction() {
                             <div
                               key={i}
                               className={`relative transform transition-all duration-1000 ${
-                                animatingStep === 'demo-remove' && i < 2 
+                                (animatingStep === 'demo-remove' || animatingStep === 'demo-result') && i < 2 
                                   ? 'opacity-70 scale-75 -translate-y-8 rotate-12' 
                                   : 'opacity-100 scale-100 hover:scale-110'
                               }`}
                             >
                               <div className="text-5xl filter drop-shadow-lg">🎈</div>
-                              {animatingStep === 'demo-remove' && i < 2 && (
+                              {(animatingStep === 'demo-remove' || animatingStep === 'demo-result') && i < 2 && (
                                 <div className="absolute -top-2 -right-2 text-xl animate-pulse">💨</div>
                               )}
                             </div>
@@ -751,7 +751,7 @@ export default function SensSoustraction() {
                                 <div
                                   key={i}
                                   className={`text-3xl ${example.color} transition-all duration-1000 ${
-                                    animatingStep === 'removing' && i < example.removed ? 'opacity-70 scale-75 animate-pulse' : 'opacity-100'
+                                    (animatingStep === 'removing' || animatingStep === 'result' || animatingStep === 'calculation') && i < example.removed ? 'opacity-70 scale-75 animate-pulse' : 'opacity-100'
                                   }`}
                                 >
                                   {example.item}
