@@ -1,0 +1,1049 @@
+'use client';
+
+import React, { useState, useRef, useEffect } from 'react';
+import Link from 'next/link';
+import { ArrowLeft, Play, Book, Target, CheckCircle, XCircle, Trophy, Star } from 'lucide-react';
+
+export default function ProblemesAddition() {
+  // États pour la navigation et les animations
+  const [showExercises, setShowExercises] = useState(false);
+  const [hasStarted, setHasStarted] = useState(false);
+  const [isPlayingVocal, setIsPlayingVocal] = useState(false);
+  const [isAnimationRunning, setIsAnimationRunning] = useState(false);
+  const [highlightedElement, setHighlightedElement] = useState<string | null>(null);
+  const [animatingStep, setAnimatingStep] = useState<string | null>(null);
+  const [currentExample, setCurrentExample] = useState<number | null>(null);
+  const [highlightedExamples, setHighlightedExamples] = useState<number[]>([]);
+  const [highlightNumbersInStory, setHighlightNumbersInStory] = useState(false);
+
+  // États pour les exercices
+  const [currentExercise, setCurrentExercise] = useState(0);
+  const [userAnswer, setUserAnswer] = useState('');
+  const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
+  const [score, setScore] = useState(0);
+  const [showCompletionModal, setShowCompletionModal] = useState(false);
+
+  // Refs pour gérer l'audio
+  const stopSignalRef = useRef(false);
+  const currentAudioRef = useRef<SpeechSynthesisUtterance | null>(null);
+
+  // Données des problèmes avec animations
+  const problemExamples = [
+    {
+      id: 'bonbons',
+      title: 'Les bonbons de Marie',
+      story: 'Marie a 3 bonbons rouges et 4 bonbons bleus. Combien a-t-elle de bonbons en tout ?',
+      first: 3,
+      second: 4,
+      result: 7,
+      item: '🍬',
+      color1: 'text-red-600',
+      color2: 'text-blue-600'
+    },
+    {
+      id: 'jouets',
+      title: 'Les voitures de Tom',
+      story: 'Tom a 5 petites voitures et 3 camions. Combien a-t-il de véhicules au total ?',
+      first: 5,
+      second: 3,
+      result: 8,
+      item: '🚗',
+      color1: 'text-orange-600',
+      color2: 'text-green-600'
+    },
+    {
+      id: 'animaux',
+      title: 'Les poissons de l\'aquarium',
+      story: 'Dans l\'aquarium, il y a 6 poissons rouges et 2 poissons jaunes. Combien y a-t-il de poissons ?',
+      first: 6,
+      second: 2,
+      result: 8,
+      item: '🐠',
+      color1: 'text-red-600',
+      color2: 'text-amber-600'
+    },
+    {
+      id: 'ecole',
+      title: 'La cour de récréation',
+      story: 'Pendant la récréation, Julie compte les enfants qui jouent. Elle voit 7 enfants qui jouent au ballon près du grand chêne et 5 autres enfants qui font de la corde à sauter près des bancs. Combien d\'enfants s\'amusent dans la cour ?',
+      first: 7,
+      second: 5,
+      result: 12,
+      item: '👦',
+      color1: 'text-blue-600',
+      color2: 'text-green-600'
+    },
+    {
+      id: 'marche',
+      title: 'Au marché avec Maman',
+      story: 'Au marché du village, Maman achète des légumes frais pour la semaine. Le gentil marchand lui donne 9 tomates bien mûres qu\'elle met dans son panier d\'osier, puis il ajoute 6 concombres verts et croquants. Maman veut savoir combien de légumes elle rapporte à la maison.',
+      first: 9,
+      second: 6,
+      result: 15,
+      item: '🍅',
+      color1: 'text-red-600',
+      color2: 'text-green-600'
+    },
+    {
+      id: 'parc',
+      title: 'Les canards du parc',
+      story: 'Au parc près de l\'étang, Pablo adore nourrir les canards avec du pain. Ce matin ensoleillé, il compte 8 canards qui nagent tranquillement près du petit pont en bois. Soudain, 7 autres canards arrivent en se dandinant depuis les roseaux. Pablo se demande combien de canards vont partager son délicieux pain.',
+      first: 8,
+      second: 7,
+      result: 15,
+      item: '🦆',
+      color1: 'text-yellow-600',
+      color2: 'text-blue-600'
+    },
+    {
+      id: 'bibliotheque',
+      title: 'La grande bibliothèque de l\'école',
+      story: 'Pour organiser la bibliothèque de l\'école, Madame Dupont compte les livres. Sur l\'étagère des contes, elle trouve 12 livres d\'aventures poussiéreux qu\'elle nettoie soigneusement. Puis, dans un carton tout neuf livré ce matin, elle découvre 8 magnifiques livres de contes de fées avec des couvertures dorées. Elle veut savoir combien de livres de contes elle aura en tout pour ses élèves.',
+      first: 12,
+      second: 8,
+      result: 20,
+      item: '📚',
+      color1: 'text-purple-600',
+      color2: 'text-amber-600'
+    },
+    {
+      id: 'patisserie',
+      title: 'La boulangerie de Monsieur Paul',
+      story: 'Ce matin, dans sa petite boulangerie qui sent bon le pain chaud, Monsieur Paul prépare des croissants pour le petit-déjeuner de ses clients fidèles. Il sort du four 15 croissants dorés et croustillants qu\'il place délicatement sur un plateau. Ensuite, il prépare une nouvelle fournée et cuit 9 croissants supplémentaires qu\'il dispose sur un second plateau. Madame Martin, sa meilleure cliente, lui demande combien de croissants il a préparés ce matin.',
+      first: 15,
+      second: 9,
+      result: 24,
+      item: '🥐',
+      color1: 'text-amber-700',
+      color2: 'text-yellow-600'
+    },
+    {
+      id: 'jardin',
+      title: 'Le jardin secret de Grand-Papa',
+      story: 'Dans son magnifique jardin fleuri qu\'il cultive avec amour depuis des années, Grand-Papa plante des tulipes colorées pour faire une surprise à sa petite-fille Léa. Il creuse soigneusement la terre humide et plante 18 bulbes de tulipes rouges près de la tonnelle en bois. Puis, inspiré par tant de beauté, il se dirige vers le parterre près de la fontaine et plante 13 bulbes de tulipes jaunes qui brilleront comme des soleils au printemps prochain. Léa, curieuse, veut savoir combien de tulipes fleuriront dans le jardin.',
+      first: 18,
+      second: 13,
+      result: 31,
+      item: '🌷',
+      color1: 'text-red-700',
+      color2: 'text-yellow-700'
+    }
+  ];
+
+  // Exercices pour les élèves
+  const exercises = [
+    {
+      story: 'Lucas a 4 billes rouges et 5 billes vertes. Combien a-t-il de billes en tout ?',
+      answer: 9,
+      visual: '🔵'
+    },
+    {
+      story: 'Dans le panier, il y a 7 pommes et 3 oranges. Combien y a-t-il de fruits ?',
+      answer: 10,
+      visual: '🍎'
+    },
+    {
+      story: 'Sophie collectionne les autocollants. Elle en a 8 brillants et 6 colorés. Combien en a-t-elle ?',
+      answer: 14,
+      visual: '✨'
+    },
+    {
+      story: 'Au zoo, il y a 9 singes et 4 éléphants. Combien d\'animaux voit-on ?',
+      answer: 13,
+      visual: '🐵'
+    },
+    {
+      story: 'Dans la boîte de crayons, il y a 12 crayons de couleur et 3 feutres. Combien d\'outils pour dessiner ?',
+      answer: 15,
+      visual: '🖍️'
+    },
+    {
+      story: 'Dans le petit jardin de Mamie, les fleurs poussent magnifiquement. Elle compte 6 tournesols géants qui brillent au soleil et 8 jolies marguerites blanches qui dansent dans le vent. Combien de fleurs colorent son jardin ?',
+      answer: 14,
+      visual: '🌻'
+    },
+    {
+      story: 'Pour son goûter d\'anniversaire, Théo prépare des petits gâteaux. Il place 9 cupcakes à la vanille sur le plateau doré et 7 muffins aux pépites de chocolat sur l\'assiette en porcelaine. Combien de délicieuses pâtisseries a-t-il préparées ?',
+      answer: 16,
+      visual: '🧁'
+    },
+    {
+      story: 'En classe de sport, Madame Rousseau organise les équipes. Elle compte 8 filles qui portent des maillots rouges et 9 garçons en maillots bleus. Combien d\'élèves participent au match de handball ?',
+      answer: 17,
+      visual: '⚽'
+    },
+    {
+      story: 'Pour le spectacle de l\'école, Madame Leblanc prépare les costumes. Elle a cousu 14 robes de princesses scintillantes et 7 costumes de chevaliers avec des armures dorées. Combien de costumes brillants a-t-elle préparés pour ses petits acteurs ?',
+      answer: 21,
+      visual: '👗'
+    },
+    {
+      story: 'Dans le grand verger de Maître Jacques, les arbres regorgent de fruits mûrs. Ce matin, il cueille 16 poires juteuses dans les premiers arbres ensoleillés, puis 12 poires supplémentaires dans les arbres plus ombragés. Sa femme lui demande combien de poires délicieuses il a récoltées pour faire de la compote.',
+      answer: 28,
+      visual: '🍐'
+    },
+    {
+      story: 'Léo le petit collectionneur est très fier de ses cartes précieuses. Dans son album rouge, il range soigneusement 19 cartes de dragons étincelants qu\'il a échangées avec ses amis. Dans son album bleu, il classe 15 cartes de héros légendaires qu\'il a reçues pour son anniversaire. Il veut épater son grand frère en lui disant combien de cartes extraordinaires il possède maintenant.',
+      answer: 34,
+      visual: '🎯'
+    },
+    {
+      story: 'Au petit étang du parc, Alice adore observer les canards. Elle voit d\'abord 11 canards blancs qui nagent paisiblement près des nénuphars roses. Puis, 6 canards bruns arrivent en cancanant joyeusement depuis l\'autre rive. Alice veut savoir combien de canards barbotent maintenant dans l\'étang.',
+      answer: 17,
+      visual: '🦆'
+    }
+  ];
+
+  // Fonction pour générer un message de correction personnalisé
+  const getPersonalizedFeedback = (exerciseIndex: number, isCorrect: boolean) => {
+    const exercise = exercises[exerciseIndex];
+    const icon = exercise.visual;
+    
+    if (isCorrect) {
+             const successMessages = [
+         `Bravo ! ${icon} Lucas a effectivement ${exercise.answer} billes colorées (rouges et vertes) !`,
+         `Parfait ! ${icon} Il y a bien ${exercise.answer} fruits délicieux dans le panier !`,
+         `Excellent ! ${icon} Sophie a exactement ${exercise.answer} autocollants dans sa collection !`,
+         `Super ! ${icon} On compte bien ${exercise.answer} animaux fascinants au zoo !`,
+         `Bravo ! ${icon} Il y a précisément ${exercise.answer} outils artistiques dans la boîte !`,
+         `Magnifique ! ${icon} Le petit jardin de Mamie rayonne avec ${exercise.answer} fleurs !`,
+         `Délicieux ! ${icon} Théo a mitonné ${exercise.answer} pâtisseries pour son anniversaire !`,
+         `Formidable ! ${icon} ${exercise.answer} élèves vont s'affronter au handball !`,
+         `Merveilleux ! ${icon} Madame Leblanc a confectionné ${exercise.answer} costumes scintillants !`,
+         `Excellent ! ${icon} Maître Jacques a récolté ${exercise.answer} poires succulentes !`,
+                  `Fantastique ! ${icon} Léo possède maintenant ${exercise.answer} cartes extraordinaires !`,
+         `Merveilleux ! ${icon} Alice observe ${exercise.answer} canards qui barbotent dans l'étang !`
+       ];
+       return successMessages[exerciseIndex] || `Bravo ! ${icon} Tu as trouvé ${exercise.answer} !`;
+    } else {
+             const correctionMessages = [
+         `${icon} Lucas avait 4 billes rouges + 5 billes vertes = ${exercise.answer} billes colorées !`,
+         `${icon} Dans le panier délicieux : 7 pommes + 3 oranges = ${exercise.answer} fruits juteux !`,
+         `${icon} Sophie collectionne : 8 autocollants brillants + 6 colorés = ${exercise.answer} autocollants !`,
+         `${icon} Au zoo fascinant : 9 singes espiègles + 4 éléphants majestueux = ${exercise.answer} animaux !`,
+         `${icon} Dans la boîte artistique : 12 crayons colorés + 3 feutres = ${exercise.answer} outils créatifs !`,
+         `${icon} Dans le jardin de Mamie : 6 tournesols géants + 8 marguerites blanches = ${exercise.answer} fleurs magnifiques !`,
+         `${icon} Pour l'anniversaire de Théo : 9 cupcakes vanille + 7 muffins chocolat = ${exercise.answer} pâtisseries délicieuses !`,
+         `${icon} Match de handball : 8 filles en rouge + 9 garçons en bleu = ${exercise.answer} élèves sportifs !`,
+         `${icon} Spectacle scintillant : 14 robes de princesses + 7 costumes de chevaliers = ${exercise.answer} costumes brillants !`,
+         `${icon} Verger de Maître Jacques : 16 poires des arbres ensoleillés + 12 des ombragés = ${exercise.answer} poires juteuses !`,
+         `${icon} Collection de Léo : 19 cartes de dragons + 15 cartes de héros = ${exercise.answer} cartes précieuses !`,
+         `${icon} À l'étang d'Alice : 11 canards blancs + 6 canards bruns = ${exercise.answer} canards barboteurs !`
+       ];
+      return correctionMessages[exerciseIndex] || `${icon} La réponse était ${exercise.answer} !`;
+    }
+  };
+
+  // Fonction pour mettre en évidence les nombres dans un texte
+  const highlightNumbers = (text: string, isExplicitHighlight = false) => {
+    // Remplace les nombres et signes mathématiques par des spans colorés (SANS les tirets -)
+    return text.split(/(\d+|\+|=)/).map((part, index) => {
+      // Si c'est un nombre
+      if (/^\d+$/.test(part)) {
+        const className = isExplicitHighlight 
+          ? "bg-yellow-300 text-yellow-900 px-2 py-1 rounded-lg font-black text-xl mx-1 shadow-lg ring-2 ring-yellow-400 animate-pulse"
+          : "bg-blue-200 text-blue-800 px-1.5 py-0.5 rounded-md font-bold mx-0.5 shadow-sm";
+        return (
+          <span 
+            key={index} 
+            className={className}
+          >
+            {part}
+          </span>
+        );
+      }
+      // Si c'est un signe mathématique (+ ou = seulement, PAS -)
+      if (/^[\+\=]$/.test(part)) {
+        const className = isExplicitHighlight
+          ? "bg-orange-300 text-orange-900 px-2 py-1 rounded-lg font-black text-xl mx-1 shadow-lg ring-2 ring-orange-400 animate-pulse"
+          : "bg-orange-200 text-orange-800 px-1.5 py-0.5 rounded-md font-bold mx-0.5 shadow-sm";
+        return (
+          <span 
+            key={index} 
+            className={className}
+          >
+            {part}
+          </span>
+        );
+      }
+      return part;
+    });
+  };
+
+  // Fonction pour arrêter tous les vocaux et animations
+  const stopAllVocalsAndAnimations = () => {
+    console.log('🛑 Arrêt de tous les vocaux et animations');
+    stopSignalRef.current = true;
+    
+    // Arrêter complètement la synthèse vocale
+    if (speechSynthesis.speaking || speechSynthesis.pending) {
+      speechSynthesis.cancel();
+      console.log('🔇 speechSynthesis.cancel() appelé');
+    }
+    
+    if (currentAudioRef.current) {
+      currentAudioRef.current = null;
+    }
+    
+    setIsPlayingVocal(false);
+    setIsAnimationRunning(false);
+    setHighlightedElement(null);
+    setAnimatingStep(null);
+    setCurrentExample(null);
+    setHighlightedExamples([]);
+    setHighlightNumbersInStory(false);
+  };
+
+  // Fonction pour jouer l'audio avec voix féminine française
+  const playAudio = async (text: string, slowMode = false) => {
+    return new Promise<void>((resolve) => {
+      if (stopSignalRef.current) {
+        resolve();
+        return;
+      }
+      
+      setIsPlayingVocal(true);
+      const utterance = new SpeechSynthesisUtterance(text);
+      
+      utterance.lang = 'fr-FR';
+      utterance.rate = slowMode ? 0.6 : 0.8;
+      utterance.pitch = 1.0;
+      utterance.volume = 1.0;
+
+      // Sélectionner la MEILLEURE voix française féminine disponible
+      const voices = speechSynthesis.getVoices();
+      console.log('Voix disponibles:', voices.map(v => `${v.name} (${v.lang}) ${v.default ? '✓' : ''}`));
+      
+      // Priorité aux voix FÉMININES françaises de qualité
+      const bestFrenchVoice = voices.find(voice => 
+        (voice.lang === 'fr-FR' || voice.lang === 'fr') && 
+        (voice.name.toLowerCase().includes('audrey') ||    
+         voice.name.toLowerCase().includes('marie') ||     
+         voice.name.toLowerCase().includes('amélie') ||    
+         voice.name.toLowerCase().includes('virginie') ||  
+         voice.name.toLowerCase().includes('julie') ||     
+         voice.name.toLowerCase().includes('celine') ||    
+         voice.name.toLowerCase().includes('léa') ||       
+         voice.name.toLowerCase().includes('charlotte'))   
+      ) || voices.find(voice => 
+        (voice.lang === 'fr-FR' || voice.lang === 'fr') && 
+        voice.localService                                 
+      ) || voices.find(voice => 
+        voice.lang === 'fr-FR'                            
+      ) || voices.find(voice => 
+        voice.lang.startsWith('fr')                       
+      );
+
+      if (bestFrenchVoice) {
+        utterance.voice = bestFrenchVoice;
+        console.log('🎤 Voix sélectionnée:', bestFrenchVoice.name);
+      } else {
+        console.warn('⚠️ Aucune voix française trouvée');
+      }
+      
+      utterance.onend = () => {
+        setIsPlayingVocal(false);
+        currentAudioRef.current = null;
+        resolve();
+      };
+      
+      utterance.onerror = () => {
+        setIsPlayingVocal(false);
+        currentAudioRef.current = null;
+        resolve();
+      };
+      
+      currentAudioRef.current = utterance;
+      speechSynthesis.speak(utterance);
+    });
+  };
+
+  // Fonction pour attendre
+  const wait = async (ms: number) => {
+    return new Promise<void>((resolve) => {
+      setTimeout(() => {
+        if (stopSignalRef.current) {
+          resolve();
+          return;
+        }
+        resolve();
+      }, ms);
+    });
+  };
+
+  // Fonction pour faire défiler vers une section
+  const scrollToSection = (elementId: string) => {
+    setTimeout(() => {
+      const element = document.getElementById(elementId);
+      if (element) {
+        element.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'center',
+          inline: 'nearest' 
+        });
+      }
+    }, 300);
+  };
+
+  // Fonction pour expliquer le chapitre principal
+  const explainChapter = async () => {
+    stopAllVocalsAndAnimations();
+    await wait(300);
+    stopSignalRef.current = false;
+    setIsAnimationRunning(true);
+    setHasStarted(true);
+
+    try {
+      // Introduction
+      setHighlightedElement('intro');
+      scrollToSection('intro-section');
+      await playAudio("Bonjour ! Aujourd'hui, nous allons apprendre à résoudre des problèmes d'addition. C'est très important de savoir transformer une histoire en calcul !");
+      await wait(500);
+
+      if (stopSignalRef.current) return;
+
+      // Méthode
+      setHighlightedElement('method');
+      scrollToSection('method-section');
+      await playAudio("Pour résoudre un problème d'addition, il faut suivre 3 étapes importantes :");
+      await wait(300);
+
+      // Étape 1
+      setAnimatingStep('step1');
+      await playAudio("Première étape : je lis le problème et je comprends l'histoire.");
+      await wait(500);
+
+      if (stopSignalRef.current) return;
+
+      // Étape 2
+      setAnimatingStep('step2');
+      await playAudio("Deuxième étape : je trouve les deux nombres à additionner dans l'histoire.");
+      await wait(500);
+
+      if (stopSignalRef.current) return;
+
+      // Démonstration du soulignage des nombres
+      setHighlightNumbersInStory(true);
+      await playAudio("Regardez ! Je souligne tous les nombres que je trouve pour les repérer facilement !");
+      await wait(1000);
+
+      if (stopSignalRef.current) return;
+
+      await playAudio("Voyez-vous comme les nombres ressortent bien ? C'est plus facile de les voir maintenant !");
+      await wait(1000);
+
+      if (stopSignalRef.current) return;
+
+      setHighlightNumbersInStory(false);
+      await wait(300);
+
+      // Étape 3
+      setAnimatingStep('step3');
+      await playAudio("Troisième étape : j'écris l'addition et je calcule le résultat !");
+      await wait(800);
+
+      if (stopSignalRef.current) return;
+
+      // Transition vers les exemples
+      setHighlightedElement('examples');
+      scrollToSection('examples-section');
+      await playAudio("Maintenant, regardons des exemples ensemble !");
+      await wait(300);
+
+      if (stopSignalRef.current) return;
+
+      // Illuminer quelques exemples pendant l'explication  
+      setHighlightedExamples([0, 2, 4]); // Illuminer bonbons, cour, marché
+      await playAudio("Tu peux choisir celui que tu préfères pour voir l'animation détaillée !");
+      await wait(1000);
+
+      if (stopSignalRef.current) return;
+
+      // Changer d'exemples illuminés pour montrer la variété
+      setHighlightedExamples([1, 5, 8]); // Illuminer voitures, canards, boulangerie
+      await wait(800);
+
+      // Arrêter l'illumination
+      setHighlightedExamples([]);
+
+    } finally {
+      setHighlightedElement(null);
+      setAnimatingStep(null);
+      setHighlightNumbersInStory(false);
+      setIsAnimationRunning(false);
+    }
+  };
+
+  // Fonction pour expliquer un exemple spécifique
+  const explainSpecificExample = async (index: number) => {
+    stopAllVocalsAndAnimations();
+    await wait(300);
+    stopSignalRef.current = false;
+    setIsAnimationRunning(true);
+    
+    const example = problemExamples[index];
+    setCurrentExample(index);
+
+    try {
+      // Scroll vers la zone d'animation
+      scrollToSection('animation-section');
+      await wait(500);
+
+      // Lecture du problème
+      setHighlightedElement('story');
+      await playAudio(example.story);
+      await wait(800);
+
+      if (stopSignalRef.current) return;
+
+      // Identifier les nombres - Phase 1 : Soulignage
+      setAnimatingStep('identify');
+      setHighlightNumbersInStory(true);
+      await playAudio("Première chose à faire : je souligne tous les nombres que je vois dans l'histoire !");
+      await wait(1000);
+
+      if (stopSignalRef.current) return;
+
+      await playAudio(`Parfait ! J'ai souligné les nombres : ${example.first} et ${example.second}. Ce sont mes deux nombres importants !`);
+      await wait(1000);
+
+      if (stopSignalRef.current) return;
+
+      setHighlightNumbersInStory(false);
+      await wait(300);
+
+      // Montrer les objets du premier groupe
+      setAnimatingStep('group1');
+      await playAudio(`Voici les ${example.first} premiers objets.`);
+      await wait(1000);
+
+      if (stopSignalRef.current) return;
+
+      // Montrer les objets du deuxième groupe
+      setAnimatingStep('group2');
+      await playAudio(`Et voici les ${example.second} autres objets.`);
+      await wait(1000);
+
+      if (stopSignalRef.current) return;
+
+      // Calcul
+      setAnimatingStep('calculation');
+      await playAudio(`Pour trouver le total, je fais l'addition : ${example.first} plus ${example.second} égale ${example.result}.`);
+      await wait(800);
+
+      if (stopSignalRef.current) return;
+
+      // Résultat final
+      setAnimatingStep('result');
+      await playAudio(`La réponse est ${example.result} ! Bravo !`);
+      await wait(1000);
+
+    } finally {
+      setHighlightedElement(null);
+      setAnimatingStep(null);
+      setCurrentExample(null);
+      setHighlightNumbersInStory(false);
+      setIsAnimationRunning(false);
+    }
+  };
+
+  // Fonction pour les exercices
+  const checkAnswer = () => {
+    const userNum = parseInt(userAnswer);
+    const correct = userNum === exercises[currentExercise].answer;
+    setIsCorrect(correct);
+    
+    if (correct) {
+      setScore(score + 1);
+    }
+  };
+
+  const nextExercise = () => {
+    if (currentExercise < exercises.length - 1) {
+      setCurrentExercise(currentExercise + 1);
+      setUserAnswer('');
+      setIsCorrect(null);
+    } else {
+      setShowCompletionModal(true);
+    }
+  };
+
+  const resetExercises = () => {
+    setCurrentExercise(0);
+    setUserAnswer('');
+    setIsCorrect(null);
+    setScore(0);
+    setShowCompletionModal(false);
+  };
+
+  // Gestion des événements pour arrêter les vocaux
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        stopAllVocalsAndAnimations();
+      }
+    };
+
+    const handleBeforeUnload = () => {
+      stopAllVocalsAndAnimations();
+    };
+
+    const handlePopState = () => {
+      stopAllVocalsAndAnimations();
+    };
+
+    // Event listeners
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    window.addEventListener('pagehide', handleBeforeUnload);
+    window.addEventListener('popstate', handlePopState);
+
+    // Override history methods
+    const originalPushState = history.pushState;
+    const originalReplaceState = history.replaceState;
+    
+    history.pushState = function(...args) {
+      stopAllVocalsAndAnimations();
+      return originalPushState.apply(history, args);
+    };
+    
+    history.replaceState = function(...args) {
+      stopAllVocalsAndAnimations();
+      return originalReplaceState.apply(history, args);
+    };
+
+    return () => {
+      stopAllVocalsAndAnimations();
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+      window.removeEventListener('pagehide', handleBeforeUnload);
+      window.removeEventListener('popstate', handlePopState);
+      history.pushState = originalPushState;
+      history.replaceState = originalReplaceState;
+    };
+  }, []);
+
+  // Effet pour gérer les changements d'onglet interne (cours ↔ exercices)
+  useEffect(() => {
+    stopAllVocalsAndAnimations();
+  }, [showExercises]);
+
+  // Fonction pour rendre les objets avec animations
+  const renderObjects = (count: number, item: string, colorClass: string) => {
+    return Array.from({ length: count }, (_, i) => (
+      <div
+        key={i}
+        className={`text-3xl ${colorClass} transition-all duration-500 transform ${
+          animatingStep === 'group1' || animatingStep === 'group2' ? 'animate-bounce' : ''
+        }`}
+        style={{ animationDelay: `${i * 100}ms` }}
+      >
+        {item}
+      </div>
+    ));
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-red-100">
+      <div className="max-w-6xl mx-auto px-4 py-8">
+        {/* Header */}
+        <div className="mb-8">
+          <Link 
+            href="/chapitre/cp-additions-simples" 
+            onClick={stopAllVocalsAndAnimations}
+            className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors mb-4"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            <span>Retour au chapitre</span>
+          </Link>
+          
+          <div className="text-center">
+            <h1 className="text-4xl font-bold text-gray-800 mb-2">
+              🧮 Problèmes d'addition
+            </h1>
+            <p className="text-lg text-gray-600">
+              Apprendre à résoudre des problèmes avec des histoires
+            </p>
+          </div>
+        </div>
+
+        {/* Navigation Tabs */}
+        <div className="flex justify-center space-x-4 mb-8">
+          <button
+            onClick={() => {
+              stopAllVocalsAndAnimations();
+              setShowExercises(false);
+            }}
+            className={`px-6 py-3 rounded-lg font-semibold transition-all ${
+              !showExercises
+                ? 'bg-orange-600 text-white shadow-lg'
+                : 'bg-white text-orange-600 hover:bg-orange-50'
+            } ${highlightedElement === 'course_tab' ? 'ring-4 ring-orange-400 animate-pulse' : ''}`}
+          >
+            📚 Cours
+          </button>
+          <button
+            onClick={() => {
+              stopAllVocalsAndAnimations();
+              setShowExercises(true);
+            }}
+            className={`px-6 py-3 rounded-lg font-semibold transition-all ${
+              showExercises
+                ? 'bg-orange-600 text-white shadow-lg'
+                : 'bg-white text-orange-600 hover:bg-orange-50'
+            } ${highlightedElement === 'exercise_tab' ? 'ring-4 ring-orange-400 animate-pulse' : ''}`}
+          >
+            🎯 Exercices
+          </button>
+        </div>
+
+        {!showExercises ? (
+          /* Section Cours */
+          <div className="space-y-8">
+            {/* Bouton COMMENCER */}
+            <div className="text-center mb-8">
+              <button
+                onClick={() => {
+                  stopAllVocalsAndAnimations();
+                  explainChapter();
+                }}
+                disabled={isAnimationRunning}
+                className={`px-8 py-4 rounded-xl font-bold text-xl shadow-lg transition-all transform ${
+                  isAnimationRunning 
+                    ? 'bg-gray-400 text-gray-200 cursor-not-allowed' 
+                    : 'bg-gradient-to-r from-orange-500 to-red-500 text-white hover:shadow-xl hover:scale-105 animate-pulse'
+                }`}
+              >
+                {isAnimationRunning ? '⏳ Animation en cours...' : '▶️ COMMENCER !'}
+              </button>
+            </div>
+
+            {/* Introduction */}
+            <div 
+              id="intro-section"
+              className={`bg-white rounded-xl shadow-lg p-6 transition-all duration-300 ${
+                highlightedElement === 'intro' ? 'ring-4 ring-orange-400 bg-orange-50' : ''
+              }`}
+            >
+              <div className="flex items-center gap-3 mb-4">
+                <div className="p-2 bg-orange-100 rounded-lg">
+                  <Book className="w-6 h-6 text-orange-600" />
+                </div>
+                <h2 className="text-2xl font-bold text-gray-800">Qu'est-ce qu'un problème d'addition ?</h2>
+              </div>
+              <p className="text-lg text-gray-700 leading-relaxed">
+                Un problème d'addition raconte une histoire avec des nombres. 
+                Notre mission est de trouver ces nombres et de les additionner pour répondre à la question !
+              </p>
+            </div>
+
+            {/* Méthode */}
+            <div 
+              id="method-section"
+              className={`bg-white rounded-xl shadow-lg p-6 transition-all duration-300 ${
+                highlightedElement === 'method' ? 'ring-4 ring-orange-400 bg-orange-50' : ''
+              }`}
+            >
+              <div className="flex items-center gap-3 mb-6">
+                <div className="p-2 bg-purple-100 rounded-lg">
+                  <Target className="w-6 h-6 text-purple-600" />
+                </div>
+                <h2 className="text-2xl font-bold text-gray-800">Ma méthode en 3 étapes</h2>
+              </div>
+              
+              <div className="space-y-4">
+                <div className={`flex items-center gap-4 p-4 rounded-lg transition-all ${
+                  animatingStep === 'step1' ? 'bg-blue-100 ring-2 ring-blue-400' : 'bg-gray-100'
+                }`}>
+                  <div className="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold">1</div>
+                  <p className="text-lg text-gray-800">Je lis le problème et je comprends l'histoire</p>
+                </div>
+                
+                <div className={`flex items-center gap-4 p-4 rounded-lg transition-all ${
+                  animatingStep === 'step2' ? 'bg-green-100 ring-2 ring-green-400' : 'bg-gray-100'
+                }`}>
+                  <div className="w-8 h-8 bg-green-500 text-white rounded-full flex items-center justify-center font-bold">2</div>
+                  <p className="text-lg text-gray-800">Je trouve les deux nombres à additionner</p>
+                </div>
+                
+                <div className={`flex items-center gap-4 p-4 rounded-lg transition-all ${
+                  animatingStep === 'step3' ? 'bg-purple-100 ring-2 ring-purple-400' : 'bg-gray-100'
+                }`}>
+                  <div className="w-8 h-8 bg-purple-500 text-white rounded-full flex items-center justify-center font-bold">3</div>
+                  <p className="text-lg text-gray-800">J'écris l'addition et je calcule</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Démonstration du soulignage */}
+            <div className="bg-white rounded-xl shadow-lg p-6">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="p-2 bg-yellow-100 rounded-lg">
+                  <span className="text-2xl">✏️</span>
+                </div>
+                <h2 className="text-2xl font-bold text-gray-800">Démonstration : souligner les nombres</h2>
+              </div>
+              
+              <div className="space-y-4">
+                <div className="p-4 bg-gray-50 rounded-lg">
+                  <p className="text-lg font-semibold text-gray-800 mb-3">Exemple d'histoire :</p>
+                  <div className="text-lg text-gray-700 p-3 bg-white rounded border">
+                    {highlightNumbers("Marie a 3 bonbons rouges et 4 bonbons bleus. Combien a-t-elle de bonbons en tout ?", highlightNumbersInStory)}
+                  </div>
+                </div>
+                
+                {highlightNumbersInStory && (
+                  <div className="text-center p-4 bg-yellow-50 border-2 border-yellow-200 rounded-lg">
+                    <p className="text-lg text-yellow-800 font-semibold">
+                      🎯 Voyez comme les nombres <span className="bg-yellow-300 px-2 py-1 rounded font-black">3</span> et <span className="bg-yellow-300 px-2 py-1 rounded font-black">4</span> ressortent bien !
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Exemples */}
+            <div 
+              id="examples-section"
+              className={`bg-white rounded-xl shadow-lg p-6 transition-all duration-300 ${
+                highlightedElement === 'examples' ? 'ring-4 ring-orange-400 bg-orange-50' : ''
+              }`}
+            >
+              <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">
+                🎯 Choisis un problème à résoudre ensemble !
+              </h2>
+              
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {problemExamples.map((example, index) => (
+                  <div 
+                    key={index}
+                    className={`bg-gradient-to-br from-blue-50 to-purple-50 rounded-lg p-6 transition-all duration-300 ${
+                      isAnimationRunning 
+                        ? 'opacity-50 cursor-not-allowed' 
+                        : 'cursor-pointer hover:scale-105 hover:shadow-lg'
+                    } ${currentExample === index ? 'ring-4 ring-purple-400 bg-purple-100' : ''} ${
+                      highlightedExamples.includes(index) ? 'ring-4 ring-orange-400 bg-orange-100 animate-pulse' : ''
+                    }`}
+                    onClick={isAnimationRunning ? undefined : () => explainSpecificExample(index)}
+                  >
+                    <div className="text-center">
+                      <div className="text-4xl mb-2">{example.item}</div>
+                      <h3 className="font-bold text-lg text-gray-800 mb-2">{example.title}</h3>
+                      <div className="text-sm text-gray-600 mb-4">
+                        {example.story}
+                      </div>
+                      <div className={`px-3 py-1 rounded-lg text-sm transition-all ${
+                        highlightedExamples.includes(index) 
+                          ? 'bg-orange-500 text-white animate-bounce shadow-lg ring-2 ring-orange-300' 
+                          : 'bg-blue-500 text-white hover:bg-blue-600'
+                      }`}>
+                        ▶️ Voir l'animation
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Zone d'animation */}
+            {currentExample !== null && (
+              <div 
+                id="animation-section"
+                className="bg-white rounded-xl shadow-lg p-6"
+              >
+                <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">
+                  🎬 Animation du problème
+                </h2>
+                
+                {(() => {
+                  const example = problemExamples[currentExample];
+                  return (
+                    <div className="space-y-6">
+                      {/* Histoire */}
+                      <div className={`p-4 rounded-lg text-center ${
+                        highlightedElement === 'story' ? 'bg-blue-100 ring-2 ring-blue-400' : 'bg-gray-100'
+                      }`}>
+                        <div className="text-lg font-semibold text-gray-800">
+                          {highlightNumbers(example.story, highlightNumbersInStory)}
+                        </div>
+                      </div>
+
+                      {/* Identification des nombres */}
+                      {animatingStep === 'identify' && (
+                        <div className="text-center p-4 bg-yellow-100 rounded-lg">
+                          <p className="text-lg text-yellow-800">
+                            Je trouve les nombres : <span className="font-bold text-blue-600">{example.first}</span> et <span className="font-bold text-green-600">{example.second}</span>
+                          </p>
+                        </div>
+                      )}
+
+                      {/* Animation des objets */}
+                      <div className="flex justify-center items-center space-x-8">
+                        {/* Premier groupe */}
+                        {(animatingStep === 'group1' || animatingStep === 'group2' || animatingStep === 'calculation' || animatingStep === 'result') && (
+                          <div className={`p-4 rounded-lg ${animatingStep === 'group1' ? 'bg-red-100 ring-2 ring-red-400' : 'bg-gray-100'}`}>
+                            <div className="text-center mb-2">
+                              <span className="font-bold text-gray-800">{example.first}</span>
+                            </div>
+                            <div className="grid grid-cols-3 gap-2">
+                              {renderObjects(example.first, example.item, example.color1)}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Signe + */}
+                        {(animatingStep === 'group2' || animatingStep === 'calculation' || animatingStep === 'result') && (
+                          <div className="text-4xl font-bold text-gray-700">+</div>
+                        )}
+
+                        {/* Deuxième groupe */}
+                        {(animatingStep === 'group2' || animatingStep === 'calculation' || animatingStep === 'result') && (
+                          <div className={`p-4 rounded-lg ${animatingStep === 'group2' ? 'bg-blue-100 ring-2 ring-blue-400' : 'bg-gray-100'}`}>
+                            <div className="text-center mb-2">
+                              <span className="font-bold text-gray-800">{example.second}</span>
+                            </div>
+                            <div className="grid grid-cols-3 gap-2">
+                              {renderObjects(example.second, example.item, example.color2)}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Signe = et résultat */}
+                        {(animatingStep === 'calculation' || animatingStep === 'result') && (
+                          <>
+                            <div className="text-4xl font-bold text-gray-700">=</div>
+                            <div className={`p-4 rounded-lg ${animatingStep === 'result' ? 'bg-green-100 ring-2 ring-green-400 animate-pulse' : 'bg-gray-100'}`}>
+                              <div className="text-center mb-2">
+                                <span className="font-bold text-2xl text-gray-800">{example.result}</span>
+                              </div>
+                              {animatingStep === 'result' && (
+                                <div className="grid grid-cols-4 gap-2">
+                                  {renderObjects(example.result, example.item, 'text-green-600')}
+                                </div>
+                              )}
+                            </div>
+                          </>
+                        )}
+                      </div>
+
+                      {/* Calcul écrit */}
+                      {(animatingStep === 'calculation' || animatingStep === 'result') && (
+                        <div className="text-center p-4 bg-purple-100 rounded-lg">
+                          <div className="text-2xl font-bold text-purple-800">
+                            {highlightNumbers(`${example.first} + ${example.second} = ${example.result}`)}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })()}
+              </div>
+            )}
+          </div>
+        ) : (
+          /* Section Exercices */
+          <div className="space-y-6">
+            <div className="bg-white rounded-xl shadow-lg p-6">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold text-gray-800">
+                  Exercice {currentExercise + 1} / {exercises.length}
+                </h2>
+                <div className="text-lg font-semibold text-blue-600">
+                  Score : {score} / {exercises.length}
+                </div>
+              </div>
+
+              {!showCompletionModal ? (
+                <div className="space-y-6">
+                  {/* Icône visuelle */}
+                  <div className="text-center">
+                    <div className="text-6xl mb-4">{exercises[currentExercise].visual}</div>
+                  </div>
+
+                  {/* Énoncé du problème */}
+                  <div className="p-4 bg-blue-50 rounded-lg">
+                    <div className="text-lg text-center">{exercises[currentExercise].story}</div>
+                  </div>
+
+                  {/* Zone de réponse */}
+                  <div className="text-center space-y-4">
+                    <input
+                      type="number"
+                      value={userAnswer}
+                      onChange={(e) => setUserAnswer(e.target.value)}
+                      placeholder="Ta réponse..."
+                      className="text-center text-xl font-bold border-2 border-gray-300 rounded-lg px-4 py-2 w-32"
+                      onKeyPress={(e) => e.key === 'Enter' && checkAnswer()}
+                    />
+                    <div>
+                      <button
+                        onClick={checkAnswer}
+                        disabled={!userAnswer}
+                        className="bg-blue-500 text-white px-6 py-2 rounded-lg font-semibold hover:bg-blue-600 disabled:opacity-50"
+                      >
+                        Vérifier
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Feedback */}
+                  {isCorrect !== null && (
+                    <div className={`p-4 rounded-lg text-center ${
+                      isCorrect ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                    }`}>
+                      <div className="flex items-center justify-center gap-2 mb-2">
+                        {isCorrect ? (
+                          <CheckCircle className="w-6 h-6" />
+                        ) : (
+                          <XCircle className="w-6 h-6" />
+                        )}
+                        <div className="text-2xl">{exercises[currentExercise].visual}</div>
+                      </div>
+                      <div className="mb-3">
+                        <div className="font-bold">
+                          {getPersonalizedFeedback(currentExercise, isCorrect)}
+                        </div>
+                      </div>
+                      
+                      <button
+                        onClick={nextExercise}
+                        className="bg-orange-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-orange-600 mt-2"
+                      >
+                        {currentExercise < exercises.length - 1 ? 'Exercice suivant' : 'Voir mes résultats'}
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                /* Modal de fin */
+                <div className="text-center space-y-6">
+                  <div className="text-6xl">🎉</div>
+                  <h2 className="text-3xl font-bold text-gray-800">
+                    Exercices terminés !
+                  </h2>
+                  <div className="text-2xl font-bold text-blue-600">
+                    Score : {score} / {exercises.length}
+                  </div>
+                  <div className="flex justify-center space-x-4">
+                    <button
+                      onClick={resetExercises}
+                      className="bg-blue-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-600"
+                    >
+                      Recommencer
+                    </button>
+                    <button
+                      onClick={() => setShowExercises(false)}
+                      className="bg-orange-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-orange-600"
+                    >
+                      Retour au cours
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+} 

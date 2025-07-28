@@ -29,7 +29,7 @@ const chapters = [
       { id: 'ordonner-comparer', title: 'Ordonner et comparer', completed: false },
       { id: 'doubles-moities', title: 'Doubles et moitiés', completed: false }
     ],
-    color: 'green' 
+        color: 'green' 
   },
   {
     id: 'cp-additions-simples',
@@ -75,11 +75,13 @@ const chapters = [
   {
     id: 'cp-calcul-mental',
     title: 'Calcul mental',
-    description: 'S\'entraîner au calcul rapide avec des jeux et défis chronométrés',
+    description: 'Développer la rapidité et l\'aisance en calcul mental',
     sections: [
-      { id: 'debut-annee', title: 'Début d\'année', completed: false },
-      { id: 'milieu-annee', title: 'Milieu d\'année', completed: false },
-      { id: 'fin-annee', title: 'Fin d\'année', completed: false }
+      { id: 'additions-simples', title: 'Additions simples', completed: false },
+      { id: 'soustractions-simples', title: 'Soustractions simples', completed: false },
+      { id: 'doubles-moities', title: 'Doubles et moitiés', completed: false },
+      { id: 'complements-10', title: 'Compléments à 10', completed: false },
+      { id: 'multiplications-2-5-10', title: 'Tables de 2, 5 et 10', completed: false }
     ],
     color: 'cyan'
   },

@@ -1,0 +1,318 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 214, 219, 220;
+  --background-end-rgb: 255, 255, 255;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 255, 255, 255;
+    --background-start-rgb: 0, 0, 0;
+    --background-end-rgb: 0, 0, 0;
+  }
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(
+      to bottom,
+      transparent,
+      rgb(var(--background-end-rgb))
+    )
+    rgb(var(--background-start-rgb));
+}
+
+/* ===== STYLES POUR LES DIFFICULTÉS ===== */
+.difficulty-debutant {
+  @apply bg-green-100 text-green-800 border border-green-200;
+}
+
+.difficulty-intermediaire {
+  @apply bg-yellow-100 text-yellow-800 border border-yellow-200;
+}
+
+.difficulty-avance {
+  @apply bg-orange-100 text-orange-800 border border-orange-200;
+}
+
+.difficulty-expert {
+  @apply bg-red-100 text-red-800 border border-red-200;
+}
+
+/* Synonymes anglais */
+.difficulty-beginner {
+  @apply bg-green-100 text-green-800 border border-green-200;
+}
+
+.difficulty-intermediate {
+  @apply bg-yellow-100 text-yellow-800 border border-yellow-200;
+}
+
+.difficulty-advanced {
+  @apply bg-orange-100 text-orange-800 border border-orange-200;
+}
+
+/* ===== STYLES POUR LES CATÉGORIES ===== */
+.category-algebra {
+  @apply bg-blue-100 text-blue-800;
+}
+
+.category-analysis {
+  @apply bg-purple-100 text-purple-800;
+}
+
+.category-geometry {
+  @apply bg-green-100 text-green-800;
+}
+
+.category-probability {
+  @apply bg-orange-100 text-orange-800;
+}
+
+.category-statistics {
+  @apply bg-cyan-100 text-cyan-800;
+}
+
+.category-numeracy {
+  @apply bg-indigo-100 text-indigo-800;
+}
+
+.category-functions {
+  @apply bg-pink-100 text-pink-800;
+}
+
+/* ===== ANIMATIONS ===== */
+@keyframes bounce-subtle {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-10px);
+  }
+  60% {
+    transform: translateY(-5px);
+  }
+}
+
+.animate-bounce-subtle {
+  animation: bounce-subtle 6s infinite;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease-out;
+}
+
+/* ===== UTILITAIRES ===== */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.glass-effect {
+  /* Fallback pour Safari et autres navigateurs */
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.8);
+  /* Fallback si backdrop-filter n'est pas supporté */
+  background: rgba(255, 255, 255, 0.9);
+}
+
+/* ===== COMPOSANTS RÉUTILISABLES ===== */
+.card {
+  @apply bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200;
+}
+
+.btn-primary {
+  @apply bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2;
+}
+
+.btn-secondary {
+  @apply bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2;
+}
+
+.input-field {
+  @apply border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white text-gray-900;
+}
+
+/* Forcer le contraste sur tous les inputs pour éviter les problèmes de dark mode */
+input[type="text"], input[type="number"], textarea {
+  @apply bg-white text-gray-900 !important;
+}
+
+input[type="text"]::placeholder, input[type="number"]::placeholder, textarea::placeholder {
+  @apply text-gray-500 !important;
+}
+
+/* ===== STYLES SPÉCIFIQUES À L'APPLICATION ===== */
+.class-card {
+  @apply bg-white rounded-lg shadow-sm border border-gray-200 p-4 hover:shadow-md transition-all duration-300 cursor-pointer;
+}
+
+.class-card:hover {
+  @apply transform -translate-y-1;
+}
+
+.special-chapter {
+  @apply bg-gradient-to-br from-blue-50 to-purple-50 border-2 border-blue-200;
+}
+
+.xp-badge {
+  @apply inline-flex items-center px-2 py-1 rounded text-xs font-medium;
+}
+
+.stat-card {
+  @apply bg-white rounded-lg shadow-sm border border-gray-200 p-4;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .class-card {
+    @apply p-3;
+  }
+  
+  .stat-card {
+    @apply p-3;
+  }
+}
+
+/* ===== FOCUS ET ACCESSIBILITÉ ===== */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+button:focus-visible,
+a:focus-visible {
+  @apply outline-none ring-2 ring-blue-500 ring-offset-2;
+}
+
+/* ===== ANIMATIONS POUR FRACTIONS ===== */
+@keyframes pulse-subtle {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+}
+
+@keyframes bounce-gentle {
+  0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+  40% { transform: translateY(-8px); }
+  60% { transform: translateY(-4px); }
+}
+
+@keyframes glow {
+  0%, 100% { background-color: rgb(156, 163, 175); }
+  50% { background-color: rgb(99, 102, 241); }
+}
+
+@keyframes slide-in-right {
+  0% { 
+    transform: translateX(20px); 
+    opacity: 0; 
+  }
+  100% { 
+    transform: translateX(0); 
+    opacity: 1; 
+  }
+}
+
+@keyframes fade-in-up {
+  0% { 
+    transform: translateY(20px); 
+    opacity: 0; 
+  }
+  100% { 
+    transform: translateY(0); 
+    opacity: 1; 
+  }
+}
+
+.animate-pulse-subtle {
+  animation: pulse-subtle 3s ease-in-out infinite;
+}
+
+.animate-bounce-gentle {
+  animation: bounce-gentle 2s ease-in-out infinite;
+}
+
+.animate-bounce-gentle-delay {
+  animation: bounce-gentle 2s ease-in-out infinite 0.3s;
+}
+
+.animate-glow {
+  animation: glow 2s ease-in-out infinite;
+}
+
+.animate-slide-in-right {
+  animation: slide-in-right 1s ease-out forwards;
+}
+
+.animate-slide-in-right-delay {
+  animation: slide-in-right 1s ease-out forwards 0.2s;
+  opacity: 0;
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 1s ease-out forwards 0.5s;
+  opacity: 0;
+}
+
+/* ===== ANIMATIONS PERSONNALISÉES ===== */
+
+/* Délais d'animation pour les feedbacks */
+.animation-delay-500 {
+  animation-delay: 0.5s;
+}
+
+.animation-delay-1000 {
+  animation-delay: 1s;
+}
+
+.animation-delay-1500 {
+  animation-delay: 1.5s;
+}
+
+/* Animation de pulsation personnalisée pour les feedbacks */
+@keyframes feedback-pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.05);
+  }
+}
+
+.animate-feedback-pulse {
+  animation: feedback-pulse 2s ease-in-out infinite;
+}

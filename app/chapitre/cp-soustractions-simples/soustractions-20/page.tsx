@@ -12,14 +12,14 @@ export default function SoustractionsJusqu20() {
   const [highlightedElement, setHighlightedElement] = useState<string | null>(null);
   const [animatingStep, setAnimatingStep] = useState<string | null>(null);
   const [currentExample, setCurrentExample] = useState<number | null>(null);
-
+  
   // États pour les exercices
   const [currentExercise, setCurrentExercise] = useState(0);
   const [userAnswer, setUserAnswer] = useState('');
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
   const [score, setScore] = useState(0);
   const [showCompletionModal, setShowCompletionModal] = useState(false);
-
+  
   // Refs pour gérer l'audio
   const stopSignalRef = useRef(false);
   const currentAudioRef = useRef<SpeechSynthesisUtterance | null>(null);
@@ -263,7 +263,7 @@ export default function SoustractionsJusqu20() {
       scrollToSection('challenges-section');
       await playAudio("Avec des nombres plus grands, on a besoin de nouvelles stratégies intelligentes pour calculer plus vite !");
       await wait(500);
-
+      
       if (stopSignalRef.current) return;
 
       // Démonstration
@@ -272,7 +272,7 @@ export default function SoustractionsJusqu20() {
       scrollToSection('demo-section');
       await playAudio("Par exemple, pour 15 moins 7, on peut passer par 10 : 15 moins 5 égale 10, puis 10 moins 2 égale 8 !");
       await wait(1500);
-
+      
       if (stopSignalRef.current) return;
 
       // Transition vers les exemples
@@ -305,7 +305,7 @@ export default function SoustractionsJusqu20() {
       setHighlightedElement('example-title');
       await playAudio(`Découvrons la technique : ${example.title} avec ${example.operation} !`);
       await wait(800);
-
+      
       if (stopSignalRef.current) return;
 
       // Explication de la stratégie
@@ -365,13 +365,13 @@ export default function SoustractionsJusqu20() {
 
     setAnimatingStep('decomposition-step2');
     await playAudio(`${example.start} moins 10 égale ${example.start - 10}`);
-    await wait(1000);
-
+      await wait(1000);
+      
     if (stopSignalRef.current) return;
 
     setAnimatingStep('decomposition-result');
     await playAudio(`${example.start - 10} plus 1 égale ${example.result} !`);
-    await wait(1000);
+      await wait(1000);
   };
 
   // Animation pour la stratégie de comptage
@@ -488,7 +488,7 @@ export default function SoustractionsJusqu20() {
           <div className="text-center">
             <h1 className="text-4xl font-bold text-gray-800 mb-2">
               🚀 Soustractions jusqu'à 20
-            </h1>
+          </h1>
             <p className="text-lg text-gray-600">
               Maîtriser les techniques avancées de soustraction
             </p>
@@ -550,7 +550,7 @@ export default function SoustractionsJusqu20() {
               <div className="flex items-center gap-3 mb-4">
                 <div className="p-2 bg-orange-100 rounded-lg">
                   <Book className="w-6 h-6 text-orange-600" />
-                </div>
+              </div>
                 <h2 className="text-2xl font-bold text-gray-800">Les soustractions jusqu'à 20</h2>
               </div>
               <p className="text-lg text-gray-700 leading-relaxed">
@@ -613,7 +613,7 @@ export default function SoustractionsJusqu20() {
                       <span className="bg-red-100 px-4 py-2 rounded-lg">15 - 5</span>
                       <span>=</span>
                       <span className="bg-yellow-100 px-4 py-2 rounded-lg">10</span>
-                    </div>
+              </div>
                     <div className="flex justify-center items-center space-x-4 text-xl">
                       <span className="bg-yellow-100 px-4 py-2 rounded-lg">10 - 2</span>
                       <span>=</span>
@@ -654,12 +654,12 @@ export default function SoustractionsJusqu20() {
                         ▶️ Voir l'animation
                       </button>
                     </div>
-                  </div>
+                    </div>
                 ))}
               </div>
-            </div>
+              </div>
 
-            {/* Zone d'animation */}
+              {/* Zone d'animation */}
             {currentExample !== null && (
               <div 
                 id="animation-section"
@@ -679,9 +679,9 @@ export default function SoustractionsJusqu20() {
                       }`}>
                         <h3 className="text-xl font-bold">{example.title}</h3>
                         <div className="text-2xl font-mono mt-2">{example.operation}</div>
-                      </div>
-
-                      {/* Animation selon la stratégie */}
+                </div>
+                
+                {/* Animation selon la stratégie */}
                       {example.strategy === 'complement10' && (
                         <div className="space-y-4">
                           {(animatingStep === 'complement10-step1' || animatingStep === 'complement10-step2' || animatingStep === 'complement10-result') && (
@@ -696,8 +696,8 @@ export default function SoustractionsJusqu20() {
                                   <span className="bg-red-200 px-3 py-1 rounded">{example.step1}</span>
                                   <span>=</span>
                                   <span className="bg-yellow-200 px-3 py-1 rounded">10</span>
-                                </div>
-                              </div>
+                    </div>
+                  </div>
 
                               {/* Étape 2 */}
                               {(animatingStep === 'complement10-step2' || animatingStep === 'complement10-result') && (
@@ -710,13 +710,13 @@ export default function SoustractionsJusqu20() {
                                     <span className={`px-3 py-1 rounded ${animatingStep === 'complement10-result' ? 'bg-green-200 animate-pulse' : 'bg-gray-200'}`}>
                                       {animatingStep === 'complement10-result' ? example.result : '?'}
                                     </span>
-                                  </div>
-                                </div>
-                              )}
-                            </div>
+                    </div>
+                  </div>
+                )}
+                    </div>
                           )}
-                        </div>
-                      )}
+                  </div>
+                )}
 
                       {example.strategy === 'decomposition' && (
                         <div className="space-y-4">
@@ -731,31 +731,31 @@ export default function SoustractionsJusqu20() {
                                   <span className="bg-red-200 px-3 py-1 rounded">10</span>
                                   <span>+</span>
                                   <span className="bg-green-200 px-3 py-1 rounded">1</span>
-                                </div>
+                    </div>
                                 
                                 {animatingStep === 'decomposition-step2' && (
                                   <div className="flex justify-center items-center space-x-4 text-xl mb-4">
                                     <span className="bg-yellow-200 px-3 py-1 rounded">{example.start - 10}</span>
                                     <span>+</span>
                                     <span className="bg-green-200 px-3 py-1 rounded">1</span>
-                                  </div>
-                                )}
+                  </div>
+                )}
 
                                 {animatingStep === 'decomposition-result' && (
                                   <div className="text-2xl font-bold text-green-600 animate-pulse">
                                     = {example.result}
-                                  </div>
-                                )}
-                              </div>
-                            </div>
+                  </div>
+                )}
+              </div>
+            </div>
                           )}
-                        </div>
-                      )}
+              </div>
+            )}
 
                       {example.strategy === 'counting' && (
                         <div className="space-y-4">
                           {(animatingStep === 'counting-start' || animatingStep === 'counting-down' || animatingStep === 'counting-result') && (
-                            <div className="text-center">
+                  <div className="text-center">
                               <p className="text-lg mb-4">Comptage à rebours depuis {example.start} :</p>
                               <div className="flex justify-center space-x-2 flex-wrap">
                                 {Array.from({ length: example.remove + 1 }, (_, i) => {
@@ -772,14 +772,14 @@ export default function SoustractionsJusqu20() {
                                       }`}
                                     >
                                       {num}
-                                    </div>
+                    </div>
                                   );
                                 })}
-                              </div>
-                            </div>
+                  </div>
+                </div>
                           )}
-                        </div>
-                      )}
+              </div>
+            )}
 
                       {/* Résultat final */}
                       {animatingStep === 'final-result' && (
@@ -799,14 +799,14 @@ export default function SoustractionsJusqu20() {
           /* Section Exercices */
           <div className="space-y-6">
             <div className="bg-white rounded-xl shadow-lg p-6">
-              <div className="flex justify-between items-center mb-6">
+                <div className="flex justify-between items-center mb-6">
                 <h2 className="text-2xl font-bold text-gray-800">
-                  Exercice {currentExercise + 1} / {exercises.length}
+                    Exercice {currentExercise + 1} / {exercises.length}
                 </h2>
                 <div className="text-lg font-semibold text-orange-600">
-                  Score : {score} / {exercises.length}
+                    Score : {score} / {exercises.length}
+                  </div>
                 </div>
-              </div>
 
               {!showCompletionModal ? (
                 <div className="space-y-6">
@@ -848,25 +848,25 @@ export default function SoustractionsJusqu20() {
                       isCorrect ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
                     }`}>
                       <div className="flex items-center justify-center gap-2 mb-2">
-                        {isCorrect ? (
+                      {isCorrect ? (
                           <CheckCircle className="w-6 h-6" />
-                        ) : (
-                          <XCircle className="w-6 h-6" />
+                      ) : (
+                            <XCircle className="w-6 h-6" />
                         )}
                         <span className="font-bold">
                           {isCorrect ? 'Bravo ! Bonne réponse !' : `Pas tout à fait... La réponse était ${exercises[currentExercise].answer}`}
                         </span>
-                      </div>
+                          </div>
                       
-                      <button
-                        onClick={nextExercise}
+                          <button
+                            onClick={nextExercise}
                         className="bg-orange-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-orange-600 mt-2"
-                      >
+                          >
                         {currentExercise < exercises.length - 1 ? 'Exercice suivant' : 'Voir mes résultats'}
-                      </button>
+                          </button>
+                        </div>
+                      )}
                     </div>
-                  )}
-                </div>
               ) : (
                 /* Modal de fin */
                 <div className="text-center space-y-6">
@@ -890,9 +890,9 @@ export default function SoustractionsJusqu20() {
                     >
                       Retour au cours
                     </button>
-                  </div>
                 </div>
-              )}
+              </div>
+            )}
             </div>
           </div>
         )}

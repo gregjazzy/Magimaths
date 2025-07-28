@@ -12,14 +12,14 @@ export default function SensSoustraction() {
   const [highlightedElement, setHighlightedElement] = useState<string | null>(null);
   const [animatingStep, setAnimatingStep] = useState<string | null>(null);
   const [currentExample, setCurrentExample] = useState<number | null>(null);
-
+  
   // États pour les exercices
   const [currentExercise, setCurrentExercise] = useState(0);
   const [userAnswer, setUserAnswer] = useState('');
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
   const [score, setScore] = useState(0);
   const [showCompletionModal, setShowCompletionModal] = useState(false);
-
+  
   // Refs pour gérer l'audio
   const stopSignalRef = useRef(false);
   const currentAudioRef = useRef<SpeechSynthesisUtterance | null>(null);
@@ -238,13 +238,13 @@ export default function SensSoustraction() {
       setAnimatingStep('demo-start');
       await playAudio("Imagine : j'ai 5 ballons colorés.");
       await wait(1000);
-
+      
       if (stopSignalRef.current) return;
 
       setAnimatingStep('demo-remove');
       await playAudio("Puis, 2 ballons s'envolent dans le ciel !");
       await wait(1500);
-
+      
       if (stopSignalRef.current) return;
 
       setAnimatingStep('demo-result');
@@ -283,7 +283,7 @@ export default function SensSoustraction() {
       setHighlightedElement('story');
       await playAudio(example.story);
       await wait(800);
-
+      
       if (stopSignalRef.current) return;
 
       // Montrer la situation de départ
@@ -429,7 +429,7 @@ export default function SensSoustraction() {
           <div className="text-center">
             <h1 className="text-4xl font-bold text-gray-800 mb-2">
               ➖ Le sens de la soustraction
-            </h1>
+          </h1>
             <p className="text-lg text-gray-600">
               Apprendre à enlever et à comprendre le signe moins
             </p>
@@ -491,7 +491,7 @@ export default function SensSoustraction() {
               <div className="flex items-center gap-3 mb-4">
                 <div className="p-2 bg-purple-100 rounded-lg">
                   <Book className="w-6 h-6 text-purple-600" />
-                </div>
+              </div>
                 <h2 className="text-2xl font-bold text-gray-800">Qu'est-ce que la soustraction ?</h2>
               </div>
               <p className="text-lg text-gray-700 leading-relaxed">
@@ -517,10 +517,10 @@ export default function SensSoustraction() {
               <div className="text-center">
                 <div className="inline-block bg-yellow-100 p-8 rounded-2xl">
                   <div className="text-8xl font-bold text-red-600 mb-4">-</div>
-                  <p className="text-lg text-gray-700">
+                <p className="text-lg text-gray-700">
                     C'est le signe de la soustraction !<br/>
                     Il nous dit qu'on doit <span className="font-bold text-red-600">enlever</span> quelque chose.
-                  </p>
+                </p>
                 </div>
               </div>
             </div>
@@ -535,9 +535,9 @@ export default function SensSoustraction() {
               <div className="flex items-center gap-3 mb-6">
                 <div className="p-2 bg-blue-100 rounded-lg">
                   <Target className="w-6 h-6 text-blue-600" />
-                </div>
-                <h2 className="text-2xl font-bold text-gray-800">Comment ça marche ?</h2>
               </div>
+                <h2 className="text-2xl font-bold text-gray-800">Comment ça marche ?</h2>
+            </div>
 
               {/* Animation de démonstration */}
               <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-6">
@@ -555,18 +555,18 @@ export default function SensSoustraction() {
                             }`}
                           >
                             🎈
-                          </div>
+              </div>
                         ))}
+                        </div>
                       </div>
-                    </div>
-                  )}
+                    )}
 
                   {/* Action d'enlever */}
                   {animatingStep === 'demo-remove' && (
                     <div className="p-4 bg-yellow-100 rounded-lg">
                       <p className="text-lg font-semibold">2 ballons s'envolent ! 💨</p>
-                    </div>
-                  )}
+                      </div>
+                    )}
 
                   {/* Résultat */}
                   {animatingStep === 'demo-result' && (
@@ -576,15 +576,15 @@ export default function SensSoustraction() {
                         {Array.from({ length: 3 }, (_, i) => (
                           <div key={i} className="text-4xl animate-bounce">🎈</div>
                         ))}
-                      </div>
+                          </div>
                       <div className="p-4 bg-green-100 rounded-lg">
                         <p className="text-2xl font-bold text-green-800">5 - 2 = 3</p>
+                        </div>
                       </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
+                    )}
+                      </div>
+                          </div>
+                  </div>
 
             {/* Exemples */}
             <div 
@@ -613,11 +613,11 @@ export default function SensSoustraction() {
                       <button className="bg-purple-500 text-white px-3 py-1 rounded-lg text-sm hover:bg-purple-600 transition-colors">
                         ▶️ Voir l'animation
                       </button>
-                    </div>
-                  </div>
+                        </div>
+                      </div>
                 ))}
-              </div>
-            </div>
+                    </div>
+                </div>
 
             {/* Zone d'animation */}
             {currentExample !== null && (
@@ -638,7 +638,7 @@ export default function SensSoustraction() {
                         highlightedElement === 'story' ? 'bg-blue-100 ring-2 ring-blue-400' : 'bg-gray-50'
                       }`}>
                         <p className="text-lg font-semibold">{example.story}</p>
-                      </div>
+                    </div>
 
                       {/* Animation des objets */}
                       <div className="flex flex-col items-center space-y-6">
@@ -647,7 +647,7 @@ export default function SensSoustraction() {
                           <div className={`p-6 rounded-lg ${animatingStep === 'start' ? 'bg-blue-100 ring-2 ring-blue-400' : 'bg-gray-50'}`}>
                             <div className="text-center mb-4">
                               <p className="text-lg font-semibold">Au début : {example.start}</p>
-                            </div>
+                    </div>
                             <div className="grid grid-cols-4 gap-3 justify-items-center">
                               {Array.from({ length: example.start }, (_, i) => (
                                 <div
@@ -657,19 +657,19 @@ export default function SensSoustraction() {
                                   }`}
                                 >
                                   {example.item}
-                                </div>
+                    </div>
                               ))}
-                            </div>
-                          </div>
-                        )}
+                  </div>
+                </div>
+              )}
 
                         {/* Action d'enlever */}
                         {animatingStep === 'removing' && (
                           <div className="p-4 bg-yellow-100 rounded-lg">
                             <p className="text-lg font-semibold text-center">
                               {example.removed} {example.action} ! 💨
-                            </p>
-                          </div>
+                    </p>
+                  </div>
                         )}
 
                         {/* Résultat */}
@@ -677,15 +677,15 @@ export default function SensSoustraction() {
                           <div className={`p-6 rounded-lg ${animatingStep === 'result' ? 'bg-green-100 ring-2 ring-green-400' : 'bg-gray-50'}`}>
                             <div className="text-center mb-4">
                               <p className="text-lg font-semibold">Il reste : {example.result}</p>
-                            </div>
+                      </div>
                             <div className="flex justify-center gap-3">
                               {Array.from({ length: example.result }, (_, i) => (
                                 <div key={i} className={`text-3xl ${example.color} animate-bounce`}>
                                   {example.item}
-                                </div>
+                    </div>
                               ))}
-                            </div>
-                          </div>
+                      </div>
+                    </div>
                         )}
 
                         {/* Calcul écrit */}
@@ -694,14 +694,14 @@ export default function SensSoustraction() {
                             <p className="text-3xl font-bold text-center text-purple-800">
                               {example.start} - {example.removed} = {example.result}
                             </p>
-                          </div>
-                        )}
                       </div>
+                        )}
                     </div>
+                  </div>
                   );
                 })()}
-              </div>
-            )}
+                </div>
+              )}
           </div>
         ) : (
           /* Section Exercices */
@@ -713,7 +713,7 @@ export default function SensSoustraction() {
                 </h2>
                 <div className="text-lg font-semibold text-purple-600">
                   Score : {score} / {exercises.length}
-                </div>
+                  </div>
               </div>
 
               {!showCompletionModal ? (
@@ -721,12 +721,12 @@ export default function SensSoustraction() {
                   {/* Icône visuelle */}
                   <div className="text-center">
                     <div className="text-6xl mb-4">{exercises[currentExercise].visual}</div>
-                  </div>
+                    </div>
 
                   {/* Énoncé du problème */}
                   <div className="p-4 bg-purple-50 rounded-lg">
                     <p className="text-lg text-center">{exercises[currentExercise].story}</p>
-                  </div>
+                </div>
 
                   {/* Zone de réponse */}
                   <div className="text-center space-y-4">
@@ -755,25 +755,25 @@ export default function SensSoustraction() {
                       isCorrect ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
                     }`}>
                       <div className="flex items-center justify-center gap-2 mb-2">
-                        {isCorrect ? (
+                      {isCorrect ? (
                           <CheckCircle className="w-6 h-6" />
-                        ) : (
-                          <XCircle className="w-6 h-6" />
+                      ) : (
+                            <XCircle className="w-6 h-6" />
                         )}
                         <span className="font-bold">
                           {isCorrect ? 'Bravo ! Bonne réponse !' : `Pas tout à fait... La réponse était ${exercises[currentExercise].answer}`}
                         </span>
-                      </div>
+                          </div>
                       
-                      <button
-                        onClick={nextExercise}
+                          <button
+                            onClick={nextExercise}
                         className="bg-purple-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-purple-600 mt-2"
-                      >
+                          >
                         {currentExercise < exercises.length - 1 ? 'Exercice suivant' : 'Voir mes résultats'}
-                      </button>
+                          </button>
+                        </div>
+                      )}
                     </div>
-                  )}
-                </div>
               ) : (
                 /* Modal de fin */
                 <div className="text-center space-y-6">
@@ -797,9 +797,9 @@ export default function SensSoustraction() {
                     >
                       Retour au cours
                     </button>
-                  </div>
                 </div>
-              )}
+              </div>
+            )}
             </div>
           </div>
         )}

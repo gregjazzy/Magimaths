@@ -775,7 +775,7 @@ export default function AdditionsJusqua100() {
     
     if (correct) {
       setScore(score + 1);
-      setAnsweredCorrectly(prev => new Set([...prev, currentExercise]));
+      setAnsweredCorrectly(prev => new Set([...Array.from(prev), currentExercise]));
     }
   };
 

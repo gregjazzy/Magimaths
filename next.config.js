@@ -2,6 +2,24 @@
 const nextConfig = {
   // Retirer output: 'standalone' en développement
   // output: 'standalone', // Pour containerisation si besoin (uniquement pour production)
+  
+  // Exclure les dossiers de sauvegarde du build
+  pageExtensions: ['tsx', 'ts', 'jsx', 'js'],
+  
+  webpack: (config, { buildId, dev, isServer, defaultLoaders, webpack }) => {
+    // Exclure les dossiers de sauvegarde
+    config.module.rules.push({
+      test: /\.(tsx|ts|jsx|js)$/,
+      exclude: [
+        /backup-.*$/,
+        /.*\.backup$/,
+        /temp_broken_files/,
+        /backups/
+      ]
+    });
+    return config;
+  },
+  
   images: {
     domains: [],
     formats: ['image/webp', 'image/avif'], // Formats optimisés

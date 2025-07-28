@@ -12,7 +12,7 @@ export default function TechniquesCalculSoustraction() {
   const [highlightedElement, setHighlightedElement] = useState<string | null>(null);
   const [animatingStep, setAnimatingStep] = useState<string | null>(null);
   const [currentExample, setCurrentExample] = useState<number | null>(null);
-
+  
   // États pour les exercices
   const [currentExercise, setCurrentExercise] = useState(0);
   const [userAnswer, setUserAnswer] = useState('');
@@ -20,7 +20,7 @@ export default function TechniquesCalculSoustraction() {
   const [score, setScore] = useState(0);
   const [showCompletionModal, setShowCompletionModal] = useState(false);
   const [showHint, setShowHint] = useState(false);
-
+  
   // Refs pour gérer l'audio
   const stopSignalRef = useRef(false);
   const currentAudioRef = useRef<SpeechSynthesisUtterance | null>(null);
@@ -324,7 +324,7 @@ export default function TechniquesCalculSoustraction() {
       scrollToSection('demo-section');
       await playAudio("Par exemple, pour 13 moins 9, au lieu de compter, je pense : 9 plus quoi égale 13 ? C'est 4 !");
       await wait(1500);
-
+      
       if (stopSignalRef.current) return;
 
       // Transition vers les exemples
@@ -357,13 +357,13 @@ export default function TechniquesCalculSoustraction() {
       setHighlightedElement('technique-title');
       await playAudio(`Découvrons la technique : ${technique.title} avec ${technique.operation} !`);
       await wait(800);
-
+      
       if (stopSignalRef.current) return;
 
       // Explication générale de la technique
       setAnimatingStep('technique-explanation');
       await playAudio(technique.explanation);
-      await wait(1000);
+        await wait(1000);
 
       if (stopSignalRef.current) return;
 
@@ -381,7 +381,7 @@ export default function TechniquesCalculSoustraction() {
       setAnimatingStep('final-result');
       await playAudio(`Excellent ! Avec la technique ${technique.title}, ${technique.operation} égale ${technique.result} ! Cette méthode est très efficace !`);
       await wait(1000);
-
+      
     } finally {
       setHighlightedElement(null);
       setAnimatingStep(null);
@@ -484,7 +484,7 @@ export default function TechniquesCalculSoustraction() {
           <div className="text-center">
             <h1 className="text-4xl font-bold text-gray-800 mb-2">
               🎯 Techniques de soustraction
-            </h1>
+          </h1>
             <p className="text-lg text-gray-600">
               Les méthodes secrètes des champions du calcul mental
             </p>
@@ -546,7 +546,7 @@ export default function TechniquesCalculSoustraction() {
               <div className="flex items-center gap-3 mb-4">
                 <div className="p-2 bg-purple-100 rounded-lg">
                   <Lightbulb className="w-6 h-6 text-purple-600" />
-                </div>
+              </div>
                 <h2 className="text-2xl font-bold text-gray-800">Les techniques secrètes</h2>
               </div>
               <p className="text-lg text-gray-700 leading-relaxed">
@@ -598,9 +598,9 @@ export default function TechniquesCalculSoustraction() {
                   <div className="text-3xl mb-2">💥</div>
                   <h4 className="font-bold text-red-800 text-sm">Casser dizaine</h4>
                   <p className="text-xs text-red-600">12 = 10 + 2</p>
-                </div>
               </div>
             </div>
+              </div>
 
             {/* Démonstration */}
             <div 
@@ -631,11 +631,11 @@ export default function TechniquesCalculSoustraction() {
                       <span className="bg-blue-100 px-4 py-2 rounded-lg">9 + 4</span>
                       <span>=</span>
                       <span className="bg-green-100 px-4 py-2 rounded-lg animate-pulse">13</span>
-                    </div>
+              </div>
                     <p className="text-xl font-bold text-green-600">Donc 13 - 9 = 4 !</p>
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
             </div>
 
             {/* Exemples */}
@@ -651,8 +651,8 @@ export default function TechniquesCalculSoustraction() {
               
               <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
                 {techniqueExamples.map((technique, index) => (
-                  <div 
-                    key={index}
+                      <div 
+                        key={index}
                     className={`bg-gradient-to-br from-purple-50 to-indigo-50 rounded-lg p-4 cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-lg ${
                       currentExample === index ? 'ring-4 ring-purple-400 bg-purple-100' : ''
                     }`}
@@ -667,9 +667,9 @@ export default function TechniquesCalculSoustraction() {
                         ▶️ Animation
                       </button>
                     </div>
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
             </div>
 
             {/* Zone d'animation */}
@@ -692,7 +692,7 @@ export default function TechniquesCalculSoustraction() {
                       }`}>
                         <h3 className="text-xl font-bold">{technique.title}</h3>
                         <div className="text-2xl font-mono mt-2">{technique.operation}</div>
-                      </div>
+                    </div>
 
                       {/* Animation des étapes */}
                       <div className="space-y-4">
@@ -712,15 +712,15 @@ export default function TechniquesCalculSoustraction() {
                                 'bg-gray-400'
                               }`}>
                                 {step.step}
-                              </div>
+                  </div>
                               <div className="flex-1">
                                 <div className="text-lg font-mono mb-1">{step.text}</div>
                                 <div className="text-sm text-gray-600">{step.visual}</div>
-                              </div>
-                            </div>
-                          </div>
+              </div>
+            </div>
+          </div>
                         ))}
-                      </div>
+                  </div>
 
                       {/* Résultat final */}
                       {animatingStep === 'final-result' && (
@@ -731,9 +731,9 @@ export default function TechniquesCalculSoustraction() {
                           <p className="text-lg text-green-600 mt-2">
                             Technique : {technique.title} ✨
                           </p>
-                        </div>
-                      )}
                     </div>
+                      )}
+                  </div>
                   );
                 })()}
               </div>
@@ -743,14 +743,14 @@ export default function TechniquesCalculSoustraction() {
           /* Section Exercices */
           <div className="space-y-6">
             <div className="bg-white rounded-xl shadow-lg p-6">
-              <div className="flex justify-between items-center mb-6">
+                <div className="flex justify-between items-center mb-6">
                 <h2 className="text-2xl font-bold text-gray-800">
-                  Exercice {currentExercise + 1} / {exercises.length}
+                    Exercice {currentExercise + 1} / {exercises.length}
                 </h2>
                 <div className="text-lg font-semibold text-purple-600">
-                  Score : {score} / {exercises.length}
+                    Score : {score} / {exercises.length}
+                  </div>
                 </div>
-              </div>
 
               {!showCompletionModal ? (
                 <div className="space-y-6">
@@ -760,7 +760,7 @@ export default function TechniquesCalculSoustraction() {
                     <div className="bg-purple-100 px-4 py-2 rounded-lg inline-block">
                       <span className="text-purple-800 font-semibold">
                         Technique : {exercises[currentExercise].technique}
-                      </span>
+                    </span>
                     </div>
                   </div>
 
@@ -788,12 +788,12 @@ export default function TechniquesCalculSoustraction() {
                       >
                         Vérifier
                       </button>
-                      <button
+                        <button
                         onClick={() => setShowHint(!showHint)}
                         className="bg-yellow-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-yellow-600"
-                      >
+                        >
                         💡 Indice
-                      </button>
+                        </button>
                     </div>
                   </div>
 
@@ -814,25 +814,25 @@ export default function TechniquesCalculSoustraction() {
                       isCorrect ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
                     }`}>
                       <div className="flex items-center justify-center gap-2 mb-2">
-                        {isCorrect ? (
+                      {isCorrect ? (
                           <CheckCircle className="w-6 h-6" />
-                        ) : (
-                          <XCircle className="w-6 h-6" />
+                      ) : (
+                            <XCircle className="w-6 h-6" />
                         )}
                         <span className="font-bold">
                           {isCorrect ? 'Bravo ! Tu maîtrises cette technique !' : `Pas tout à fait... La réponse était ${exercises[currentExercise].answer}`}
                         </span>
-                      </div>
+                          </div>
                       
-                      <button
-                        onClick={nextExercise}
+                          <button
+                            onClick={nextExercise}
                         className="bg-purple-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-purple-600 mt-2"
-                      >
+                          >
                         {currentExercise < exercises.length - 1 ? 'Technique suivante' : 'Voir mes résultats'}
-                      </button>
+                          </button>
+                        </div>
+                      )}
                     </div>
-                  )}
-                </div>
               ) : (
                 /* Modal de fin */
                 <div className="text-center space-y-6">
@@ -856,9 +856,9 @@ export default function TechniquesCalculSoustraction() {
                     >
                       Retour au cours
                     </button>
-                  </div>
                 </div>
-              )}
+              </div>
+            )}
             </div>
           </div>
         )}

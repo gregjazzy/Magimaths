@@ -12,7 +12,7 @@ export default function ProblemesSoustraction() {
   const [highlightedElement, setHighlightedElement] = useState<string | null>(null);
   const [animatingStep, setAnimatingStep] = useState<string | null>(null);
   const [currentExample, setCurrentExample] = useState<number | null>(null);
-
+  
   // États pour les exercices
   const [currentExercise, setCurrentExercise] = useState(0);
   const [userAnswer, setUserAnswer] = useState('');
@@ -20,7 +20,7 @@ export default function ProblemesSoustraction() {
   const [score, setScore] = useState(0);
   const [showCompletionModal, setShowCompletionModal] = useState(false);
   const [showHint, setShowHint] = useState(false);
-
+  
   // Refs pour gérer l'audio
   const stopSignalRef = useRef(false);
   const currentAudioRef = useRef<SpeechSynthesisUtterance | null>(null);
@@ -307,7 +307,7 @@ export default function ProblemesSoustraction() {
       scrollToSection('demo-section');
       await playAudio("Par exemple : Emma a 12 voitures, elle en donne 5. Je lis, je comprends qu'il faut enlever, je calcule 12 moins 5 égale 7, et je vérifie : 7 plus 5 égale bien 12 !");
       await wait(1500);
-
+      
       if (stopSignalRef.current) return;
 
       // Transition vers les exemples
@@ -373,7 +373,7 @@ export default function ProblemesSoustraction() {
       setAnimatingStep('final-result');
       await playAudio(`Bravo ! La réponse est ${problem.result}. Cette méthode en 4 étapes fonctionne toujours !`);
       await wait(1000);
-
+      
     } finally {
       setHighlightedElement(null);
       setAnimatingStep(null);
@@ -493,7 +493,7 @@ export default function ProblemesSoustraction() {
           <div className="text-center">
             <h1 className="text-4xl font-bold text-gray-800 mb-2">
               📚 Problèmes de soustraction
-            </h1>
+          </h1>
             <p className="text-lg text-gray-600">
               Résoudre des problèmes de la vraie vie étape par étape
             </p>
@@ -555,7 +555,7 @@ export default function ProblemesSoustraction() {
               <div className="flex items-center gap-3 mb-4">
                 <div className="p-2 bg-rose-100 rounded-lg">
                   <BookOpen className="w-6 h-6 text-rose-600" />
-                </div>
+              </div>
                 <h2 className="text-2xl font-bold text-gray-800">Problèmes de la vraie vie</h2>
               </div>
               <p className="text-lg text-gray-700 leading-relaxed">
@@ -585,16 +585,16 @@ export default function ProblemesSoustraction() {
                   </div>
                   <h4 className="font-bold text-blue-800">1. Lire</h4>
                   <p className="text-sm text-blue-600">Je lis tout le problème</p>
-                </div>
-                
+                  </div>
+                  
                 <div className="p-4 bg-green-50 rounded-lg text-center">
                   <div className="p-2 bg-green-100 rounded-full w-12 h-12 mx-auto mb-2 flex items-center justify-center">
                     <Search className="w-6 h-6 text-green-600" />
                   </div>
                   <h4 className="font-bold text-green-800">2. Comprendre</h4>
                   <p className="text-sm text-green-600">Qu'est-ce qui se passe ?</p>
-                </div>
-                
+                  </div>
+                  
                 <div className="p-4 bg-purple-50 rounded-lg text-center">
                   <div className="p-2 bg-purple-100 rounded-full w-12 h-12 mx-auto mb-2 flex items-center justify-center">
                     <Calculator className="w-6 h-6 text-purple-600" />
@@ -679,7 +679,7 @@ export default function ProblemesSoustraction() {
                       <div className="text-lg font-mono bg-white px-3 py-1 rounded mb-3">{problem.operation}</div>
                       <button className="bg-rose-500 text-white px-3 py-1 rounded-lg text-sm hover:bg-rose-600 transition-colors">
                         ▶️ Résoudre ensemble
-                      </button>
+                </button>
                     </div>
                   </div>
                 ))}
@@ -707,7 +707,7 @@ export default function ProblemesSoustraction() {
                         <h3 className="text-xl font-bold">{problem.title}</h3>
                         <p className="text-gray-600 mt-2">{problem.story}</p>
                         <p className="text-gray-800 font-semibold mt-1">{problem.question}</p>
-                      </div>
+              </div>
 
                       {/* Animation des étapes */}
                       <div className="space-y-4">
@@ -720,17 +720,17 @@ export default function ProblemesSoustraction() {
                               animatingStep === 'step-read' ? 'bg-blue-500 animate-pulse' : 'bg-gray-400'
                             }`}>
                               1
-                            </div>
+                    </div>
                             <div className="flex-1">
                               <div className="flex items-center gap-2 mb-1">
                                 <BookOpen className="w-5 h-5 text-blue-600" />
                                 <span className="font-bold text-blue-800">LIRE</span>
-                              </div>
+                  </div>
                               <div className="text-gray-700">Je lis attentivement le problème</div>
-                            </div>
+                      </div>
                           </div>
-                        </div>
-
+                    </div>
+                    
                         {/* Étape 2: Comprendre */}
                         <div className={`p-4 rounded-lg transition-all duration-500 ${
                           animatingStep === 'step-understand' ? 'bg-green-100 ring-2 ring-green-400 scale-105' : 'bg-gray-50'
@@ -740,7 +740,7 @@ export default function ProblemesSoustraction() {
                               animatingStep === 'step-understand' ? 'bg-green-500 animate-pulse' : 'bg-gray-400'
                             }`}>
                               2
-                            </div>
+                      </div>
                             <div className="flex-1">
                               <div className="flex items-center gap-2 mb-1">
                                 <Search className="w-5 h-5 text-green-600" />
@@ -749,8 +749,8 @@ export default function ProblemesSoustraction() {
                               <div className="text-gray-700">{problem.steps[1].text}</div>
                             </div>
                           </div>
-                        </div>
-
+                    </div>
+                    
                         {/* Étape 3: Calculer */}
                         <div className={`p-4 rounded-lg transition-all duration-500 ${
                           animatingStep === 'step-calculate' ? 'bg-purple-100 ring-2 ring-purple-400 scale-105' : 'bg-gray-50'
@@ -763,9 +763,9 @@ export default function ProblemesSoustraction() {
                             </div>
                             <div className="flex-1">
                               <div className="flex items-center gap-2 mb-1">
-                                <Calculator className="w-5 h-5 text-purple-600" />
+                        <Calculator className="w-5 h-5 text-purple-600" />
                                 <span className="font-bold text-purple-800">CALCULER</span>
-                              </div>
+                      </div>
                               <div className="text-xl font-mono text-purple-700">{problem.operation} = {problem.result}</div>
                               {animatingStep === 'step-calculate' && (
                                 <div className="mt-3 grid grid-cols-10 gap-1 max-w-md">
@@ -775,11 +775,11 @@ export default function ProblemesSoustraction() {
                                     problem.color,
                                     parseInt(problem.operation.split(' - ')[1])
                                   )}
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                        </div>
+                  </div>
+                )}
+                      </div>
+                    </div>
+                  </div>
 
                         {/* Étape 4: Vérifier */}
                         <div className={`p-4 rounded-lg transition-all duration-500 ${
@@ -790,17 +790,17 @@ export default function ProblemesSoustraction() {
                               animatingStep === 'step-verify' ? 'bg-orange-500 animate-pulse' : 'bg-gray-400'
                             }`}>
                               4
-                            </div>
+                    </div>
                             <div className="flex-1">
                               <div className="flex items-center gap-2 mb-1">
                                 <Eye className="w-5 h-5 text-orange-600" />
                                 <span className="font-bold text-orange-800">VÉRIFIER</span>
-                              </div>
+                  </div>
                               <div className="text-orange-700">{problem.result} + {problem.operation.split(' - ')[1]} = {problem.operation.split(' - ')[0]} ✓</div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
+              </div>
+            </div>
+          </div>
+                  </div>
 
                       {/* Résultat final */}
                       {animatingStep === 'final-result' && (
@@ -811,14 +811,14 @@ export default function ProblemesSoustraction() {
                           <p className="text-lg text-green-600 mt-2">
                             Problème résolu avec la méthode en 4 étapes ! 🎉
                           </p>
-                        </div>
-                      )}
                     </div>
+                      )}
+                  </div>
                   );
                 })()}
               </div>
             )}
-          </div>
+                  </div>
         ) : (
           /* Section Exercices */
           <div className="space-y-6">
@@ -828,9 +828,9 @@ export default function ProblemesSoustraction() {
                   Exercice {currentExercise + 1} / {exercises.length}
                 </h2>
                 <div className="text-lg font-semibold text-rose-600">
-                  Score : {score} / {exercises.length}
+                    Score : {score} / {exercises.length}
+                  </div>
                 </div>
-              </div>
 
               {!showCompletionModal ? (
                 <div className="space-y-6">
@@ -848,14 +848,14 @@ export default function ProblemesSoustraction() {
 
                   {/* Zone de réponse */}
                   <div className="text-center space-y-4">
-                    <input
-                      type="number"
-                      value={userAnswer}
-                      onChange={(e) => setUserAnswer(e.target.value)}
+                      <input
+                        type="number"
+                        value={userAnswer}
+                        onChange={(e) => setUserAnswer(e.target.value)}
                       placeholder="Ta réponse..."
                       className="text-center text-xl font-bold border-2 border-gray-300 rounded-lg px-4 py-2 w-32"
-                      onKeyPress={(e) => e.key === 'Enter' && checkAnswer()}
-                    />
+                        onKeyPress={(e) => e.key === 'Enter' && checkAnswer()}
+                      />
                     <div className="flex justify-center space-x-3">
                       <button
                         onClick={checkAnswer}
@@ -864,12 +864,12 @@ export default function ProblemesSoustraction() {
                       >
                         Vérifier
                       </button>
-                      <button
+                        <button
                         onClick={() => setShowHint(!showHint)}
                         className="bg-yellow-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-yellow-600"
-                      >
+                        >
                         💡 Indice
-                      </button>
+                        </button>
                     </div>
                   </div>
 
@@ -890,25 +890,25 @@ export default function ProblemesSoustraction() {
                       isCorrect ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
                     }`}>
                       <div className="flex items-center justify-center gap-2 mb-2">
-                        {isCorrect ? (
+                      {isCorrect ? (
                           <CheckCircle className="w-6 h-6" />
-                        ) : (
-                          <XCircle className="w-6 h-6" />
+                      ) : (
+                            <XCircle className="w-6 h-6" />
                         )}
                         <span className="font-bold">
                           {isCorrect ? 'Bravo ! Tu as résolu le problème !' : `Pas tout à fait... La réponse était ${exercises[currentExercise].answer}`}
                         </span>
-                      </div>
+                          </div>
                       
-                      <button
-                        onClick={nextExercise}
+                          <button
+                            onClick={nextExercise}
                         className="bg-rose-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-rose-600 mt-2"
-                      >
+                          >
                         {currentExercise < exercises.length - 1 ? 'Problème suivant' : 'Voir mes résultats'}
-                      </button>
+                          </button>
+                        </div>
+                      )}
                     </div>
-                  )}
-                </div>
               ) : (
                 /* Modal de fin */
                 <div className="text-center space-y-6">
@@ -932,9 +932,9 @@ export default function ProblemesSoustraction() {
                     >
                       Retour au cours
                     </button>
-                  </div>
                 </div>
-              )}
+              </div>
+            )}
             </div>
           </div>
         )}

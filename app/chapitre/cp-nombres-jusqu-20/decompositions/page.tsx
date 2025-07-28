@@ -184,8 +184,8 @@ export default function DecompositionsCP() {
         console.log('⚠️ Utilisation première voix Apple disponible:', selectedVoice.name);
       }
 
-      if (selectedVoice) {
-        utterance.voice = selectedVoice;
+    if (selectedVoice) {
+      utterance.voice = selectedVoice;
         console.log('✅ Voix sélectionnée (Apple système):', selectedVoice.name, '(', selectedVoice.lang, ')');
       } else {
         console.log('❌ AUCUNE VOIX APPLE SYSTÈME TROUVÉE - TTS peut échouer');
@@ -343,7 +343,7 @@ export default function DecompositionsCP() {
       await wait(1200);
       await playAudio("Clique sur les exemples pour voir d'autres décompositions !", true);
       if (stopSignalRef.current) return;
-      
+
       await wait(800);
       setHighlightedElement(null);
     } finally {
@@ -671,8 +671,8 @@ export default function DecompositionsCP() {
                         `Exemple : ${decompositionExamples[currentExample].number} = ${decompositionExamples[currentExample].parts[0]} + ${decompositionExamples[currentExample].parts[1]}` 
                         : 'Exemple : 5 = 2 + 3'
                       }
-                    </div>
-                  </div>
+                </div>
+              </div>
 
                   {/* Animation intégrée dans le concept */}
                   {currentExample !== null ? (
@@ -682,8 +682,8 @@ export default function DecompositionsCP() {
                         <div className="p-3 rounded-lg bg-blue-100 border-l-4 border-blue-500 text-center">
                           <div className="text-lg font-bold text-blue-800">
                             {animatingStep === 'introduction' && '🎯 Regardons ensemble...'}
-                          </div>
-                        </div>
+                  </div>
+                  </div>
                       )}
                       
                       {/* Nombre complet */}
@@ -694,13 +694,13 @@ export default function DecompositionsCP() {
                           </h4>
                           <div className="mb-4">
                             {renderCircles(decompositionExamples[currentExample].number, decompositionExamples[currentExample].item, highlightedNumber === decompositionExamples[currentExample].number)}
-                          </div>
+                  </div>
                           <div className={`text-xl font-bold transition-all duration-500 ${
                             highlightedNumber === decompositionExamples[currentExample].number ? 'text-yellow-600 scale-125 animate-pulse' : 'text-yellow-800'
                           }`}>
                             {decompositionExamples[currentExample].number} objets en tout
-                          </div>
-                        </div>
+                </div>
+              </div>
                       )}
 
                       {/* Décomposition en parties */}
@@ -718,8 +718,8 @@ export default function DecompositionsCP() {
                             </div>
                             <div className="text-xl font-bold text-purple-800">
                               {decompositionExamples[currentExample].parts[0]}
-                            </div>
-                          </div>
+              </div>
+            </div>
 
                           {/* Symbole + */}
                           <div className="text-center flex items-center justify-center">
@@ -727,9 +727,9 @@ export default function DecompositionsCP() {
                               showingProcess === 'grouping' ? 'text-green-500 animate-bounce scale-125 ring-4 ring-yellow-400 bg-yellow-100 rounded-full p-4 shadow-2xl' : 'text-gray-400'
                             }`}>
                               +
-                            </div>
-                          </div>
-
+                        </div>
+                      </div>
+                      
                           {/* Deuxième groupe */}
                           <div className={`text-center p-6 rounded-lg transition-all duration-500 ${
                             showingProcess === 'separating' ? 'ring-4 ring-pink-400 bg-pink-100 scale-105' : 'bg-pink-50'
@@ -739,30 +739,30 @@ export default function DecompositionsCP() {
                             </h4>
                             <div className="mb-4">
                               {renderCircles(decompositionExamples[currentExample].parts[1], decompositionExamples[currentExample].item)}
-                            </div>
+                      </div>
                             <div className="text-xl font-bold text-pink-800">
                               {decompositionExamples[currentExample].parts[1]}
-                            </div>
-                          </div>
                         </div>
+                        </div>
+                      </div>
                       )}
-
+                      
                       {/* Résultat */}
                       {decompositionStep === 'result' && (
                         <div className={`text-center p-6 rounded-lg transition-all duration-1000 bg-green-100 ring-4 ring-green-400 scale-105`}>
                           <h4 className="text-2xl font-bold text-green-800 mb-4">🎉 Décomposition réussie !</h4>
                           <div className="mb-4">
                             {renderCircles(decompositionExamples[currentExample].number, decompositionExamples[currentExample].item)}
-                          </div>
+                        </div>
                           <div className="text-3xl font-bold text-green-800 mb-2">
                             {decompositionExamples[currentExample].number} = {decompositionExamples[currentExample].parts[0]} + {decompositionExamples[currentExample].parts[1]}
-                          </div>
+                      </div>
                           <div className="text-lg text-green-600">
                             {decompositionExamples[currentExample].parts[0]} + {decompositionExamples[currentExample].parts[1]} = {decompositionExamples[currentExample].number} !
-                          </div>
-                        </div>
-                      )}
                     </div>
+                    </div>
+                      )}
+                  </div>
                   ) : (
                     /* Version statique quand pas d'animation */
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -807,14 +807,14 @@ export default function DecompositionsCP() {
                     } ${currentExample === index ? 'ring-4 ring-yellow-400 bg-yellow-100' : ''}`}
                     onClick={isAnimationRunning ? undefined : () => explainSpecificExample(index)}
                   >
-                    <div className="text-center">
+                <div className="text-center">
                       <div className="text-3xl mb-2">{example.item}</div>
                       <div className="font-bold text-lg text-gray-800 mb-2">
                         {example.number} = {example.parts[0]} + {example.parts[1]}
-                      </div>
+                  </div>
                       <div className="text-sm text-gray-600 mb-3">
                         Décomposition de {example.number}
-                      </div>
+                  </div>
                       <button className={`px-3 py-1 rounded-lg text-sm transition-colors ${
                         isAnimationRunning 
                           ? 'bg-gray-400 text-gray-200' 
@@ -822,7 +822,7 @@ export default function DecompositionsCP() {
                       }`}>
                         {isAnimationRunning ? '⏳ Attendez...' : '▶️ Voir l\'animation'}
                       </button>
-                    </div>
+                </div>
                   </div>
                 ))}
               </div>
@@ -838,12 +838,12 @@ export default function DecompositionsCP() {
                   <div className="text-3xl mb-2">🤲</div>
                   <div className="font-bold">Utilise tes doigts</div>
                   <div className="text-sm">Sépare-les en groupes</div>
-                </div>
+            </div>
                 <div>
                   <div className="text-3xl mb-2">🧸</div>
                   <div className="font-bold">Prends des objets</div>
                   <div className="text-sm">Groupe-les différemment</div>
-                </div>
+          </div>
                 <div>
                   <div className="text-3xl mb-2">✏️</div>
                   <div className="font-bold">Dessine des groupes</div>
@@ -898,7 +898,7 @@ export default function DecompositionsCP() {
                 </div>
                 <div className="mb-4">
                   {renderCircles(exercises[currentExercise].number, '🔴')}
-                </div>
+                    </div>
                 <p className="text-lg text-gray-700 font-semibold">
                   Sépare ce nombre en deux parties !
                 </p>
@@ -952,11 +952,11 @@ export default function DecompositionsCP() {
                   </div>
                 </div>
               )}
-              
+
               {/* Navigation */}
               {isCorrect === false && (
                 <div className="flex justify-center">
-                  <button
+                      <button 
                     onClick={nextExercise}
                     className="bg-purple-500 text-white px-8 py-4 rounded-lg font-bold text-lg hover:bg-purple-600 transition-colors"
                   >

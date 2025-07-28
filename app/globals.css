@@ -316,3 +316,76 @@ a:focus-visible {
 .animate-feedback-pulse {
   animation: feedback-pulse 2s ease-in-out infinite;
 }
+
+/* ===== ANIMATIONS POUR LES ADDITIONS POSÉES ===== */
+
+/* Animation de fade-in pour les explications */
+@keyframes fade-in {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.5s ease-out forwards;
+}
+
+/* Animation de highlight pour les colonnes */
+@keyframes column-highlight {
+  0% {
+    background-color: transparent;
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.animate-column-highlight {
+  animation: column-highlight 1s ease-in-out;
+}
+
+/* Animation spéciale pour les retenues */
+@keyframes carry-bounce {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-10px);
+  }
+  60% {
+    transform: translateY(-5px);
+  }
+}
+
+.animate-carry-bounce {
+  animation: carry-bounce 1s ease-in-out;
+}
+
+/* Animation pour les résultats qui apparaissent */
+@keyframes result-reveal {
+  0% {
+    opacity: 0;
+    transform: scale(0.8) rotate(-5deg);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.1) rotate(2deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+.animate-result-reveal {
+  animation: result-reveal 0.8s ease-out;
+}

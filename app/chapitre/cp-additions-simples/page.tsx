@@ -54,7 +54,6 @@ const sections = [
     color: 'from-purple-500 to-pink-500',
     verified: true
   },
-
   {
     id: 'problemes',
     title: 'Problèmes d\'addition',
@@ -83,7 +82,7 @@ const sections = [
     duration: '12 min',
     xp: 15,
     color: 'from-green-500 to-teal-500',
-    verified: false
+    verified: true
   }
 ]
 
@@ -201,8 +200,6 @@ export default function CPAdditionsSimplesPage() {
             </div>
           </div>
         </div>
-
-
 
         {/* Exercices - grille simple style CE1 */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
