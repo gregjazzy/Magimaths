@@ -646,8 +646,8 @@ export default function SensSoustraction() {
                         {(animatingStep === 'start' || animatingStep === 'removing' || animatingStep === 'result' || animatingStep === 'calculation') && (
                           <div className={`p-6 rounded-lg ${animatingStep === 'start' ? 'bg-blue-100 ring-2 ring-blue-400' : 'bg-gray-50'}`}>
                             <div className="text-center mb-4">
-                              <p className="text-lg font-semibold">Au début : {example.start}</p>
-                    </div>
+                              <p className="text-lg font-semibold text-gray-800">Au début : {example.start}</p>
+                            </div>
                             <div className="grid grid-cols-4 gap-3 justify-items-center">
                               {Array.from({ length: example.start }, (_, i) => (
                                 <div
@@ -657,35 +657,35 @@ export default function SensSoustraction() {
                                   }`}
                                 >
                                   {example.item}
-                    </div>
+                                </div>
                               ))}
-                  </div>
-                </div>
-              )}
+                            </div>
+                          </div>
+                        )}
 
                         {/* Action d'enlever */}
                         {animatingStep === 'removing' && (
                           <div className="p-4 bg-yellow-100 rounded-lg">
-                            <p className="text-lg font-semibold text-center">
+                            <p className="text-lg font-semibold text-center text-gray-800">
                               {example.removed} {example.action} ! 💨
-                    </p>
-                  </div>
+                            </p>
+                          </div>
                         )}
 
                         {/* Résultat */}
                         {(animatingStep === 'result' || animatingStep === 'calculation') && (
                           <div className={`p-6 rounded-lg ${animatingStep === 'result' ? 'bg-green-100 ring-2 ring-green-400' : 'bg-gray-50'}`}>
                             <div className="text-center mb-4">
-                              <p className="text-lg font-semibold">Il reste : {example.result}</p>
-                      </div>
+                              <p className="text-lg font-semibold text-gray-800">Il reste : {example.result}</p>
+                            </div>
                             <div className="flex justify-center gap-3">
                               {Array.from({ length: example.result }, (_, i) => (
                                 <div key={i} className={`text-3xl ${example.color} animate-bounce`}>
                                   {example.item}
-                    </div>
+                                </div>
                               ))}
-                      </div>
-                    </div>
+                            </div>
+                          </div>
                         )}
 
                         {/* Calcul écrit */}
