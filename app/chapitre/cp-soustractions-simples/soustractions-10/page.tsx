@@ -516,10 +516,13 @@ export default function SoustractionsJusqu10() {
               stopAllVocalsAndAnimations();
               setShowExercises(false);
             }}
+            disabled={isPlayingVocal}
             className={`px-6 py-3 rounded-lg font-semibold transition-all ${
-              !showExercises
-                ? 'bg-green-600 text-white shadow-lg'
-                : 'bg-white text-green-600 hover:bg-green-50'
+              isPlayingVocal 
+                ? 'bg-gray-300 text-gray-500 cursor-not-allowed opacity-50'
+                : !showExercises
+                  ? 'bg-green-600 text-white shadow-lg'
+                  : 'bg-white text-green-600 hover:bg-green-50'
             } ${highlightedElement === 'course_tab' ? 'ring-4 ring-green-400 animate-pulse' : ''}`}
           >
             📚 Cours
@@ -529,10 +532,13 @@ export default function SoustractionsJusqu10() {
               stopAllVocalsAndAnimations();
               setShowExercises(true);
             }}
+            disabled={isPlayingVocal}
             className={`px-6 py-3 rounded-lg font-semibold transition-all ${
-              showExercises
-                ? 'bg-green-600 text-white shadow-lg'
-                : 'bg-white text-green-600 hover:bg-green-50'
+              isPlayingVocal 
+                ? 'bg-gray-300 text-gray-500 cursor-not-allowed opacity-50'
+                : showExercises
+                  ? 'bg-green-600 text-white shadow-lg'
+                  : 'bg-white text-green-600 hover:bg-green-50'
             } ${highlightedElement === 'exercise_tab' ? 'ring-4 ring-green-400 animate-pulse' : ''}`}
           >
             🎯 Exercices
@@ -669,17 +675,32 @@ export default function SoustractionsJusqu10() {
                 {subtractionExamples.map((example, index) => (
                   <div 
                     key={index}
-                    className={`bg-gradient-to-br from-green-50 to-blue-50 rounded-lg p-6 cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-lg ${
+                    className={`bg-gradient-to-br from-green-50 to-blue-50 rounded-lg p-6 transition-all duration-300 ${
+                      isPlayingVocal 
+                        ? 'opacity-50 cursor-not-allowed' 
+                        : 'cursor-pointer hover:scale-105 hover:shadow-lg'
+                    } ${
                       currentExample === index ? 'ring-4 ring-green-400 bg-green-100' : ''
                     }`}
-                    onClick={() => explainSpecificExample(index)}
+                    onClick={() => {
+                      if (!isPlayingVocal) {
+                        explainSpecificExample(index);
+                      }
+                    }}
                   >
                     <div className="text-center">
                       <div className="text-4xl mb-2">{example.item}</div>
-                      <h3 className="font-bold text-lg text-gray-800 mb-2">{example.title}</h3>
-                      <div className="text-xl font-mono bg-white px-3 py-1 rounded mb-3">{example.operation}</div>
-                      <p className="text-sm text-gray-600 mb-4">{example.explanation}</p>
-                      <button className="bg-green-500 text-white px-3 py-1 rounded-lg text-sm hover:bg-green-600 transition-colors">
+                      <h3 className={`font-bold text-lg mb-2 ${isPlayingVocal ? 'text-gray-400' : 'text-gray-800'}`}>{example.title}</h3>
+                      <div className={`text-xl font-mono bg-white px-3 py-1 rounded mb-3 ${isPlayingVocal ? 'opacity-50' : ''}`}>{example.operation}</div>
+                      <p className={`text-sm mb-4 ${isPlayingVocal ? 'text-gray-400' : 'text-gray-600'}`}>{example.explanation}</p>
+                      <button 
+                        disabled={isPlayingVocal}
+                        className={`px-3 py-1 rounded-lg text-sm transition-colors ${
+                          isPlayingVocal 
+                            ? 'bg-gray-300 text-gray-500 cursor-not-allowed' 
+                            : 'bg-green-500 text-white hover:bg-green-600'
+                        }`}
+                      >
                         ▶️ Voir l'animation
                       </button>
                     </div>
@@ -851,8 +872,12 @@ export default function SoustractionsJusqu10() {
                     <div>
                       <button
                         onClick={checkAnswer}
-                        disabled={!userAnswer}
-                        className="bg-green-500 text-white px-6 py-2 rounded-lg font-semibold hover:bg-green-600 disabled:opacity-50"
+                        disabled={!userAnswer || isPlayingVocal}
+                        className={`px-6 py-2 rounded-lg font-semibold transition-colors ${
+                          !userAnswer || isPlayingVocal
+                            ? 'bg-gray-300 text-gray-500 cursor-not-allowed opacity-50'
+                            : 'bg-green-500 text-white hover:bg-green-600'
+                        }`}
                       >
                         Vérifier
                       </button>
@@ -877,7 +902,12 @@ export default function SoustractionsJusqu10() {
                       
                       <button
                         onClick={nextExercise}
-                        className="bg-green-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-green-600 mt-2"
+                        disabled={isPlayingVocal}
+                        className={`px-4 py-2 rounded-lg font-semibold mt-2 transition-colors ${
+                          isPlayingVocal 
+                            ? 'bg-gray-300 text-gray-500 cursor-not-allowed opacity-50' 
+                            : 'bg-green-500 text-white hover:bg-green-600'
+                        }`}
                       >
                         {currentExercise < exercises.length - 1 ? 'Exercice suivant' : 'Voir mes résultats'}
                       </button>
@@ -897,13 +927,23 @@ export default function SoustractionsJusqu10() {
                   <div className="flex justify-center space-x-4">
                     <button
                       onClick={resetExercises}
-                      className="bg-green-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-600"
+                      disabled={isPlayingVocal}
+                      className={`px-6 py-3 rounded-lg font-semibold transition-colors ${
+                        isPlayingVocal 
+                          ? 'bg-gray-300 text-gray-500 cursor-not-allowed opacity-50' 
+                          : 'bg-green-500 text-white hover:bg-green-600'
+                      }`}
                     >
                       Recommencer
                     </button>
                     <button
                       onClick={() => setShowExercises(false)}
-                      className="bg-blue-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-600"
+                      disabled={isPlayingVocal}
+                      className={`px-6 py-3 rounded-lg font-semibold transition-colors ${
+                        isPlayingVocal 
+                          ? 'bg-gray-300 text-gray-500 cursor-not-allowed opacity-50' 
+                          : 'bg-blue-500 text-white hover:bg-blue-600'
+                      }`}
                     >
                       Retour au cours
                     </button>
