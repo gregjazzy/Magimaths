@@ -289,14 +289,14 @@ export default function SoustractionsJusqu10() {
 
       // Présentation de l'exemple
       setHighlightedElement('example-title');
-      await playAudio(`Regardons la méthode : ${example.title} avec ${example.operation} !`);
+      await playAudio(`Regardons la méthode : ${example.title} avec ${example.operation} !`, true);
       await wait(800);
 
       if (stopSignalRef.current) return;
 
       // Explication de la stratégie
       setAnimatingStep('strategy-explanation');
-      await playAudio(example.explanation);
+      await playAudio(example.explanation, true);
       await wait(1000);
 
       if (stopSignalRef.current) return;
@@ -312,7 +312,7 @@ export default function SoustractionsJusqu10() {
 
       // Résultat final
       setAnimatingStep('final-result');
-      await playAudio(`Donc ${example.operation} égale ${example.result} ! Bravo !`);
+      await playAudio(`Donc ${example.operation} égale ${example.result} ! Bravo !`, true);
       await wait(1000);
 
     } finally {
@@ -325,7 +325,7 @@ export default function SoustractionsJusqu10() {
   // Animation pour la stratégie de comptage
   const animateCountingStrategy = async (example: any) => {
     setAnimatingStep('counting-start');
-    await playAudio(`On part de ${example.start}`);
+    await playAudio(`On part de ${example.start}`, true);
     await wait(800);
 
     if (stopSignalRef.current) return;
@@ -333,51 +333,51 @@ export default function SoustractionsJusqu10() {
     setAnimatingStep('counting-down');
     for (let i = 1; i <= example.remove; i++) {
       const currentNumber = example.start - i;
-      await playAudio(`${currentNumber}`);
+      await playAudio(`${currentNumber}`, true);
       await wait(600);
       if (stopSignalRef.current) return;
     }
 
     setAnimatingStep('counting-result');
-    await playAudio(`On arrive à ${example.result} !`);
+    await playAudio(`On arrive à ${example.result} !`, true);
     await wait(500);
   };
 
   // Animation pour la stratégie visuelle
   const animateVisualStrategy = async (example: any) => {
     setAnimatingStep('visual-start');
-    await playAudio(`Voici ${example.start} objets`);
+    await playAudio(`Voici ${example.start} objets`, true);
     await wait(1500);
 
     if (stopSignalRef.current) return;
 
     setAnimatingStep('visual-removing');
-    await playAudio(`On en enlève ${example.remove}`);
+    await playAudio(`On en enlève ${example.remove}`, true);
     await wait(2000);
 
     if (stopSignalRef.current) return;
 
     setAnimatingStep('visual-result');
-    await playAudio(`Il en reste ${example.result} !`);
+    await playAudio(`Il en reste ${example.result} !`, true);
     await wait(500);
   };
 
   // Animation pour la stratégie avec les doigts
   const animateFingersStrategy = async (example: any) => {
     setAnimatingStep('fingers-start');
-    await playAudio(`Lève ${example.start} doigts !`);
+    await playAudio(`Lève ${example.start} doigts !`, true);
     await wait(1500);
 
     if (stopSignalRef.current) return;
 
     setAnimatingStep('fingers-remove');
-    await playAudio(`Maintenant, baisse ${example.remove} doigts !`);
+    await playAudio(`Maintenant, baisse ${example.remove} doigts !`, true);
     await wait(1500);
 
     if (stopSignalRef.current) return;
 
     setAnimatingStep('fingers-count');
-    await playAudio(`Compte ceux qui restent levés : ${example.result} doigts !`);
+    await playAudio(`Compte ceux qui restent levés : ${example.result} doigts !`, true);
     await wait(1000);
   };
 
