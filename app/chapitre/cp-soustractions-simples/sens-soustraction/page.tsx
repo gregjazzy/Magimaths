@@ -237,21 +237,21 @@ export default function SensSoustraction() {
       // Animation du concept principal
       setAnimatingStep('demo-start');
       scrollToSection('concept-section');
-      await playAudio("Imagine : j'ai 5 ballons colorés.");
+      await playAudio("Imagine : j'ai 5 ballons colorés.", true);
       await wait(1000);
       
       if (stopSignalRef.current) return;
 
       setAnimatingStep('demo-remove');
       scrollToSection('concept-section');
-      await playAudio("Puis, 2 ballons s'envolent dans le ciel !");
+      await playAudio("Puis, 2 ballons s'envolent dans le ciel !", true);
       await wait(1500);
       
       if (stopSignalRef.current) return;
 
       setAnimatingStep('demo-result');
       scrollToSection('concept-section');
-      await playAudio("Combien me reste-t-il de ballons ? Il me reste 3 ballons ! Car 5 moins 2 égale 3 !");
+      await playAudio("Combien me reste-t-il de ballons ? Il me reste 3 ballons ! Car 5 moins 2 égale 3 !", true);
       await wait(1000);
 
       if (stopSignalRef.current) return;
@@ -287,7 +287,7 @@ export default function SensSoustraction() {
       // Lecture du problème
       setHighlightedElement('story');
       scrollToSection('animation-section');
-      await playAudio(example.story);
+      await playAudio(example.story, true);
       await wait(800);
       
       if (stopSignalRef.current) return;
@@ -295,7 +295,7 @@ export default function SensSoustraction() {
       // Montrer la situation de départ
       setAnimatingStep('start');
       scrollToSection('animation-section');
-      await playAudio(`Au début, il y a ${example.start} ${example.item === '🎈' ? 'ballons' : example.item === '🍎' ? 'pommes' : 'voitures'}.`);
+      await playAudio(`Au début, il y a ${example.start} ${example.item === '🎈' ? 'ballons' : example.item === '🍎' ? 'pommes' : 'voitures'}.`, true);
       await wait(1500);
 
       if (stopSignalRef.current) return;
@@ -303,7 +303,7 @@ export default function SensSoustraction() {
       // Action de soustraction
       setAnimatingStep('removing');
       scrollToSection('animation-section');
-      await playAudio(`Maintenant, ${example.removed} ${example.action} !`);
+      await playAudio(`Maintenant, ${example.removed} ${example.action} !`, true);
       await wait(2000);
 
       if (stopSignalRef.current) return;
@@ -311,7 +311,7 @@ export default function SensSoustraction() {
       // Résultat
       setAnimatingStep('result');
       scrollToSection('animation-section');
-      await playAudio(`Il reste ${example.result} ! Donc ${example.start} moins ${example.removed} égale ${example.result} !`);
+      await playAudio(`Il reste ${example.result} ! Donc ${example.start} moins ${example.removed} égale ${example.result} !`, true);
       await wait(1500);
 
       if (stopSignalRef.current) return;
@@ -319,7 +319,7 @@ export default function SensSoustraction() {
       // Calcul écrit
       setAnimatingStep('calculation');
       scrollToSection('animation-section');
-      await playAudio(`On peut l'écrire : ${example.start} moins ${example.removed} égale ${example.result}. Bravo !`);
+      await playAudio(`On peut l'écrire : ${example.start} moins ${example.removed} égale ${example.result}. Bravo !`, true);
       await wait(1000);
 
     } finally {
