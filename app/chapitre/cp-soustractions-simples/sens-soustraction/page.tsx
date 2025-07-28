@@ -263,6 +263,8 @@ export default function SensSoustraction() {
       await wait(500);
 
     } finally {
+      // Pause de 1 seconde pour laisser l'élève comprendre
+      await wait(1000);
       setHighlightedElement(null);
       setAnimatingStep(null);
     }
@@ -321,6 +323,8 @@ export default function SensSoustraction() {
       await wait(1000);
 
     } finally {
+      // Pause de 1 seconde pour laisser l'élève comprendre
+      await wait(1000);
       setHighlightedElement(null);
       setAnimatingStep(null);
       setCurrentExample(null);
