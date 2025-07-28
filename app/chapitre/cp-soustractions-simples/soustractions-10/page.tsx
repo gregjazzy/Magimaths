@@ -691,7 +691,7 @@ export default function SoustractionsJusqu10() {
                     <div className="text-center">
                       <div className="text-4xl mb-2">{example.item}</div>
                       <h3 className={`font-bold text-lg mb-2 ${isPlayingVocal ? 'text-gray-400' : 'text-gray-800'}`}>{example.title}</h3>
-                      <div className={`text-xl font-mono bg-white px-3 py-1 rounded mb-3 ${isPlayingVocal ? 'opacity-50' : ''}`}>{example.operation}</div>
+                      <div className={`text-xl font-mono bg-white text-gray-800 px-3 py-1 rounded mb-3 ${isPlayingVocal ? 'opacity-50' : ''}`}>{example.operation}</div>
                       <p className={`text-sm mb-4 ${isPlayingVocal ? 'text-gray-400' : 'text-gray-600'}`}>{example.explanation}</p>
                       <button 
                         disabled={isPlayingVocal}
@@ -727,8 +727,8 @@ export default function SoustractionsJusqu10() {
                       <div className={`p-4 rounded-lg text-center ${
                         highlightedElement === 'example-title' ? 'bg-blue-100 ring-2 ring-blue-400' : 'bg-gray-50'
                       }`}>
-                        <h3 className="text-xl font-bold">{example.title}</h3>
-                        <div className="text-2xl font-mono mt-2">{example.operation}</div>
+                        <h3 className="text-xl font-bold text-gray-800">{example.title}</h3>
+                        <div className="text-2xl font-mono mt-2 text-gray-800">{example.operation}</div>
                       </div>
 
                       {/* Animation selon la stratégie */}
@@ -736,7 +736,7 @@ export default function SoustractionsJusqu10() {
                         <div className="space-y-4">
                           {(animatingStep === 'counting-start' || animatingStep === 'counting-down' || animatingStep === 'counting-result') && (
                             <div className="text-center">
-                              <p className="text-lg mb-4">Comptons à rebours depuis {example.start} :</p>
+                              <p className="text-lg mb-4 text-gray-800">Comptons à rebours depuis {example.start} :</p>
                               <div className="flex justify-center space-x-3">
                                 {Array.from({ length: example.start + 1 }, (_, i) => {
                                   const num = example.start - i;
@@ -765,7 +765,7 @@ export default function SoustractionsJusqu10() {
                         <div className="space-y-4">
                           {(animatingStep === 'visual-start' || animatingStep === 'visual-removing' || animatingStep === 'visual-result') && (
                             <div className="text-center">
-                              <p className="text-lg mb-4">Objets à compter :</p>
+                              <p className="text-lg mb-4 text-gray-800">Objets à compter :</p>
                               <div className="grid grid-cols-5 gap-3 justify-items-center max-w-md mx-auto">
                                 {renderObjects(
                                   example.start, 
@@ -789,7 +789,7 @@ export default function SoustractionsJusqu10() {
                           {(animatingStep === 'fingers-start' || animatingStep === 'fingers-remove' || animatingStep === 'fingers-count') && (
                             <div className="text-center">
                               <div className="bg-purple-50 p-6 rounded-lg">
-                                <p className="text-lg mb-4">Utilise tes doigts :</p>
+                                <p className="text-lg mb-4 text-purple-800">Utilise tes doigts :</p>
                                 <div className="flex justify-center gap-2 mb-4 flex-wrap">
                                   {Array.from({ length: example.start }, (_, i) => (
                                     <div
