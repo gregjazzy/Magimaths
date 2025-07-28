@@ -58,6 +58,7 @@ export default function DizainesCP() {
   const [showCompletionModal, setShowCompletionModal] = useState(false);
   const [finalScore, setFinalScore] = useState(0);
   const [shuffledChoices, setShuffledChoices] = useState<string[]>([]);
+  const [animationStep, setAnimationStep] = useState(0);
 
   // Fonction pour mélanger un tableau
   const shuffleArray = (array: string[]) => {
@@ -90,6 +91,8 @@ export default function DizainesCP() {
 
   // Fonctions de contrôle de l'animation
   const nextStep = () => {
+    if (animationStep < 3) {
+      setAnimationStep(animationStep + 1);
     }
   };
   
@@ -384,12 +387,14 @@ export default function DizainesCP() {
                   <div className="space-y-8">
                     {/* Boutons de contrôle - bien visibles en haut */}
                     <div className="flex justify-center space-x-4 mb-8">
+                      {animationStep < 3 && (
                         <button
                           onClick={nextStep}
                         >
                           ▶️ Suivant
                         </button>
                       )}
+                      {animationStep > 0 && (
                         <button
                           onClick={restartAnimation}
                           className="bg-gray-500 text-white px-6 py-4 rounded-xl font-bold text-lg hover:bg-gray-600 transition-colors shadow-md"
@@ -400,6 +405,7 @@ export default function DizainesCP() {
                     </div>
                     
                     {/* Message de démarrage */}
+                    {animationStep === 0 && (
                       <div className="bg-gradient-to-r from-purple-100 to-blue-100 rounded-lg p-8 text-center">
                         <div className="text-6xl mb-4">🚀</div>
                         <h4 className="text-2xl font-bold mb-4 text-gray-800">
@@ -412,6 +418,7 @@ export default function DizainesCP() {
                     )}
                     
                     {/* Étape 1: Le nombre */}
+                    {animationStep >= 1 && (
                       <div className="bg-gradient-to-r from-green-100 to-blue-100 rounded-lg p-8 text-center animate-slide-in">
                         <h4 className="text-xl font-bold mb-4 text-green-800">
                           📍 Étape 1 : Voici le nombre
@@ -430,6 +437,7 @@ export default function DizainesCP() {
                     )}
                     
                     {/* Étape 2: Les boîtes de 10 */}
+                    {animationStep >= 2 && (
                       <div className="bg-gradient-to-r from-blue-100 to-purple-100 rounded-lg p-8 animate-slide-in">
                         <h4 className="text-xl font-bold mb-4 text-blue-800">
                           📦 Étape 2 : Comptons les boîtes de 10
@@ -443,6 +451,7 @@ export default function DizainesCP() {
                     )}
                     
                     {/* Étape 3: La décomposition */}
+                    {animationStep >= 3 && (
                       <div className="bg-gradient-to-r from-yellow-100 to-orange-100 rounded-lg p-8 animate-slide-in">
                         <h4 className="text-xl font-bold mb-4 text-orange-800">
                           ✨ Étape 3 : La décomposition magique
@@ -471,6 +480,7 @@ export default function DizainesCP() {
                           <div
                             key={step}
                             className={`w-6 h-6 rounded-full flex items-center justify-center font-bold text-sm transition-all ${
+                              animationStep >= step 
                                 ? 'bg-green-500 text-white shadow-lg' 
                                 : 'bg-gray-300 text-gray-600'
                             }`}
@@ -480,10 +490,15 @@ export default function DizainesCP() {
                         ))}
                       </div>
                       <p className="text-sm text-gray-600 mt-2 font-semibold">
+                        {animationStep === 0 && "Prêt à commencer"}
+                        {animationStep === 1 && "Étape 1/3 : Le nombre"}
+                        {animationStep === 2 && "Étape 2/3 : Les boîtes"}
+                        {animationStep === 3 && "Étape 3/3 : La décomposition"}
                       </p>
                     </div>
                     
                     {/* Message de fin */}
+                    {animationStep === 3 && (
                       <div className="bg-gradient-to-r from-green-100 to-blue-100 rounded-lg p-6 text-center animate-fade-in-up">
                         <div className="text-4xl mb-3">🎉</div>
                         <p className="text-lg font-bold text-green-700">

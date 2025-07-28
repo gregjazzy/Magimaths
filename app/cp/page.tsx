@@ -33,7 +33,7 @@ const chapters = [
   },
   {
     id: 'cp-additions-simples',
-    title: 'Additions simples',
+    title: 'Additions',
     description: 'Apprendre à additionner dans la limite de 20',
     sections: [
       { id: 'sens-addition', title: 'Le sens de l\'addition', completed: false },

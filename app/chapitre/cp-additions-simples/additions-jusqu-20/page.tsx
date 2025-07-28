@@ -1,891 +1,1284 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
-import { Volume2, RotateCcw, ArrowLeft, CheckCircle, XCircle, Star, Trophy, Target, Play } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import Link from 'next/link';
+import { ArrowLeft, CheckCircle, XCircle, RotateCcw } from 'lucide-react';
 
-// Types pour la sécurité TypeScript
-type AdditionKey = '3_plus_2' | '7_plus_5' | '8_plus_7' | '9_plus_6' | '4_plus_6';
-
-export default function AdditionsJusqu20() {
-  // États pour la navigation et les animations
-  const [showExercises, setShowExercises] = useState(false);
-  const [hasStarted, setHasStarted] = useState(false);
-  const [exerciseInstructionGiven, setExerciseInstructionGiven] = useState(false);
+export default function AdditionsJusqu20CP() {
+  // États pour l'audio et animations
+  const [isPlayingVocal, setIsPlayingVocal] = useState(false);
+  const [isAnimationRunning, setIsAnimationRunning] = useState(false);
   const [highlightedElement, setHighlightedElement] = useState<string | null>(null);
-  
-  // États pour les animations du cours
-  const [selectedAddition, setSelectedAddition] = useState<AdditionKey>('3_plus_2');
-  const [animationStep, setAnimationStep] = useState(0);
-  const [showObjects, setShowObjects] = useState({ group1: 0, group2: 0, result: 0 });
-  const [showStrategy, setShowStrategy] = useState<string | null>(null);
-  const [showCarryOver, setShowCarryOver] = useState(false);
+  const [hasStarted, setHasStarted] = useState(false);
+  const [isClient, setIsClient] = useState(false);
+  const [animatingStep, setAnimatingStep] = useState<string | null>(null);
+  const [currentExample, setCurrentExample] = useState<number | null>(null);
+  const [highlightedNumber, setHighlightedNumber] = useState<number | null>(null);
+  const [showingProcess, setShowingProcess] = useState<'showing-first' | 'showing-second' | 'counting' | 'result' | null>(null);
+  const [additionStep, setAdditionStep] = useState<'overview' | 'complement-strategy' | 'moving-objects' | 'first-ten' | 'adding-rest' | 'final-result' | null>(null);
+  const [countingProgress, setCountingProgress] = useState<number>(0);
+  const [movingBlues, setMovingBlues] = useState<number>(0);
+  const [showStrategy, setShowStrategy] = useState<boolean>(false);
   
   // États pour les exercices
+  const [showExercises, setShowExercises] = useState(false);
   const [currentExercise, setCurrentExercise] = useState(0);
   const [userAnswer, setUserAnswer] = useState('');
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
   const [score, setScore] = useState(0);
-  const [finalScore, setFinalScore] = useState(0);
+  const [answeredCorrectly, setAnsweredCorrectly] = useState<Set<number>>(new Set());
   const [showCompletionModal, setShowCompletionModal] = useState(false);
-  const [isPlayingVocal, setIsPlayingVocal] = useState(false);
-  
-  // Refs pour la gestion vocale ultra-agressive
-  const hasStartedRef = useRef(false);
-  const exerciseInstructionGivenRef = useRef(false);
-  const shouldStopRef = useRef(false);
-  const userHasInteractedRef = useRef(false);
+  const [finalScore, setFinalScore] = useState(0);
 
-  // Utilitaires vocaux
-  const wait = (ms: number): Promise<void> => {
-    return new Promise((resolve) => {
-      if (shouldStopRef.current) {
-        resolve();
-        return;
-      }
-      setTimeout(() => {
-        if (shouldStopRef.current) {
-          resolve();
-          return;
-        }
-        resolve();
-      }, ms);
-    });
+  // Refs pour gérer l'audio
+  const stopSignalRef = useRef(false);
+  const currentAudioRef = useRef<SpeechSynthesisUtterance | null>(null);
+
+  // Données des additions jusqu'à 20 avec animations
+  const additionExamples = [
+    { 
+      first: 7, 
+      second: 5, 
+      result: 12,
+      item1: '🔴', 
+      item2: '🔵',
+      description: 'addition avec passage de dizaine',
+      strategy: 'complément à 10',
+      explanation: 'Pour 7 + 5, je prends 3 de 5 pour faire 7 + 3 = 10, puis j\'ajoute les 2 qui restent : 10 + 2 = 12'
+    },
+    { 
+      first: 6, 
+      second: 6, 
+      result: 12,
+      item1: '🟢', 
+      item2: '🟢',
+      description: 'double de 6',
+      strategy: 'doubles',
+      explanation: '6 + 6 = 12. Les doubles sont faciles à retenir !'
+    },
+    { 
+      first: 8, 
+      second: 7, 
+      result: 15,
+      item1: '🟡', 
+      item2: '🟣',
+      description: 'addition avec passage de dizaine',
+      strategy: 'complément à 10',
+      explanation: 'Pour 8 + 7, je prends 2 de 7 pour faire 8 + 2 = 10, puis j\'ajoute les 5 qui restent : 10 + 5 = 15'
+    },
+    { 
+      first: 9, 
+      second: 6, 
+      result: 15,
+      item1: '🔴', 
+      item2: '🔵',
+      description: 'addition avec passage de dizaine',
+      strategy: 'complément à 10',
+      explanation: 'Pour 9 + 6, je prends 1 de 6 pour faire 9 + 1 = 10, puis j\'ajoute les 5 qui restent : 10 + 5 = 15'
+    },
+    { 
+      first: 10, 
+      second: 8, 
+      result: 18,
+      item1: '🟢', 
+      item2: '🟡',
+      description: 'addition avec 10',
+      strategy: 'ajouter à 10',
+      explanation: '10 + 8 = 18. Quand on ajoute à 10, c\'est très facile !'
+    }
+  ];
+
+  // Exercices sur les additions jusqu'à 20
+  const exercises = [
+    { question: 'Calcule : 7 + 5 = ?', correctAnswer: '12', choices: ['11', '12', '13'], type: 'passage-dizaine' },
+    { question: 'Calcule : 6 + 6 = ?', correctAnswer: '12', choices: ['11', '12', '13'], type: 'double' },
+    { question: 'Calcule : 8 + 7 = ?', correctAnswer: '15', choices: ['14', '15', '16'], type: 'passage-dizaine' },
+    { question: 'Calcule : 9 + 4 = ?', correctAnswer: '13', choices: ['12', '13', '14'], type: 'passage-dizaine' },
+    { question: 'Calcule : 10 + 6 = ?', correctAnswer: '16', choices: ['15', '16', '17'], type: 'avec-10' },
+    { question: 'Calcule : 5 + 8 = ?', correctAnswer: '13', choices: ['12', '13', '14'], type: 'passage-dizaine' },
+    { question: 'Calcule : 9 + 9 = ?', correctAnswer: '18', choices: ['17', '18', '19'], type: 'double' },
+    { question: 'Calcule : 7 + 8 = ?', correctAnswer: '15', choices: ['14', '15', '16'], type: 'passage-dizaine' },
+    { question: 'Calcule : 10 + 9 = ?', correctAnswer: '19', choices: ['18', '19', '20'], type: 'avec-10' },
+    { question: 'Calcule : 6 + 8 = ?', correctAnswer: '14', choices: ['13', '14', '15'], type: 'passage-dizaine' }
+  ];
+
+  // Fonction pour arrêter toutes les animations et vocaux
+  const stopAllVocalsAndAnimations = () => {
+    console.log('🛑 Arrêt de tous les vocaux et animations');
+    stopSignalRef.current = true;
+    
+    // Arrêter complètement la synthèse vocale
+    if (speechSynthesis.speaking || speechSynthesis.pending) {
+      speechSynthesis.cancel();
+      console.log('🔇 speechSynthesis.cancel() appelé');
+    }
+    
+    if (currentAudioRef.current) {
+      currentAudioRef.current = null;
+    }
+    
+    setIsPlayingVocal(false);
+    setIsAnimationRunning(false);
+    setHighlightedElement(null);
+    setAnimatingStep(null);
+    setCurrentExample(null);
+    setHighlightedNumber(null);
+    setShowingProcess(null);
+    setAdditionStep(null);
+    setCountingProgress(0);
+    setMovingBlues(0);
+    setShowStrategy(false);
   };
 
-  // 🎵 FONCTION VOCALE CENTRALISÉE ULTRA-ROBUSTE
-  const playVocal = (text: string, rate: number = 1.2): Promise<void> => {
-    return new Promise((resolve) => {
-      // 🔒 PROTECTION : Empêcher les vocaux sans interaction utilisateur
-      if (!userHasInteractedRef.current) {
-        console.log("🚫 BLOQUÉ : Tentative de vocal sans interaction");
+  // Fonction pour jouer l'audio avec voix féminine française
+  const playAudio = async (text: string, slowMode = false) => {
+    return new Promise<void>((resolve) => {
+      if (stopSignalRef.current) {
         resolve();
         return;
       }
       
-      // 🛑 VÉRIFIER LE SIGNAL D'ARRÊT
-      if (shouldStopRef.current) {
-        console.log("🛑 ARRÊT : Signal d'arrêt détecté");
-        resolve();
-        return;
-      }
-      
-      // 🔥 ARRÊT SYSTÉMATIQUE des vocaux précédents (ZÉRO CONFLIT)
-      speechSynthesis.cancel();
-      setTimeout(() => speechSynthesis.cancel(), 10); // Double sécurité
-      
+      setIsPlayingVocal(true);
       const utterance = new SpeechSynthesisUtterance(text);
+      
       utterance.lang = 'fr-FR';
-      utterance.rate = rate;
+      utterance.rate = slowMode ? 0.6 : 0.8;
+      utterance.pitch = 1.0;
+      utterance.volume = 1.0;
+
+      // Sélectionner la MEILLEURE voix française féminine disponible
+      const voices = speechSynthesis.getVoices();
+      console.log('Voix disponibles:', voices.map(v => `${v.name} (${v.lang}) ${v.default ? '✓' : ''}`));
+      
+      // Priorité aux voix FÉMININES françaises de qualité
+      const bestFrenchVoice = voices.find(voice => 
+        (voice.lang === 'fr-FR' || voice.lang === 'fr') && 
+        (voice.name.toLowerCase().includes('audrey') ||    // Voix féminine française courante  
+         voice.name.toLowerCase().includes('marie') ||     // Voix féminine française
+         voice.name.toLowerCase().includes('amélie') ||    // Voix féminine française
+         voice.name.toLowerCase().includes('virginie') ||  // Voix féminine française
+         voice.name.toLowerCase().includes('julie') ||     // Voix féminine française
+         voice.name.toLowerCase().includes('celine') ||    // Voix féminine française
+         voice.name.toLowerCase().includes('léa') ||       // Voix féminine française
+         voice.name.toLowerCase().includes('charlotte'))   // Voix féminine française
+      ) || voices.find(voice => 
+        (voice.lang === 'fr-FR' || voice.lang === 'fr') && 
+        voice.localService                                 // Voix système française
+      ) || voices.find(voice => 
+        voice.lang === 'fr-FR'                            // N'importe quelle voix fr-FR
+      ) || voices.find(voice => 
+        voice.lang.startsWith('fr')                       // N'importe quelle voix française
+      );
+
+      if (bestFrenchVoice) {
+        utterance.voice = bestFrenchVoice;
+        console.log('🎤 Voix sélectionnée:', bestFrenchVoice.name);
+      } else {
+        console.warn('⚠️ Aucune voix française trouvée');
+      }
       
       utterance.onend = () => {
-        console.log("✅ VOCAL TERMINÉ :", text.substring(0, 30) + "...");
+        setIsPlayingVocal(false);
+        currentAudioRef.current = null;
         resolve();
       };
       
       utterance.onerror = () => {
-        console.log("❌ ERREUR VOCAL :", text.substring(0, 30) + "...");
+        setIsPlayingVocal(false);
+        currentAudioRef.current = null;
         resolve();
       };
       
-      console.log("🎵 DÉMARRAGE VOCAL :", text.substring(0, 30) + "...");
+      currentAudioRef.current = utterance;
       speechSynthesis.speak(utterance);
     });
   };
 
-  // 🛑 FONCTION D'ARRÊT ULTRA-AGRESSIVE
-  const stopAllVocals = () => {
-    console.log("🛑 ARRÊT ULTRA-AGRESSIF de tous les vocaux");
-    
-    // Triple sécurité
-    speechSynthesis.cancel();
-    setTimeout(() => speechSynthesis.cancel(), 10);
-    setTimeout(() => speechSynthesis.cancel(), 50);
-    setTimeout(() => speechSynthesis.cancel(), 100);
-    
-    // Signal d'arrêt global
-    shouldStopRef.current = true;
-    setIsPlayingVocal(false);
+  // Fonction utilitaire pour les pauses
+  const wait = (ms: number) => {
+    return new Promise(resolve => {
+      if (stopSignalRef.current) {
+        resolve(undefined);
+        return;
+      }
+      setTimeout(resolve, ms);
+    });
   };
 
-  // Alias pour compatibilité
-  const playAudioSequence = playVocal;
-  const stopVocal = stopAllVocals;
-
-  // Données des additions pour le cours
-  const additionExamples = {
-    '3_plus_2': { num1: 3, num2: 2, result: 5, difficulty: 'simple' },
-    '7_plus_5': { num1: 7, num2: 5, result: 12, difficulty: 'carry' },
-    '8_plus_7': { num1: 8, num2: 7, result: 15, difficulty: 'carry' },
-    '9_plus_6': { num1: 9, num2: 6, result: 15, difficulty: 'carry' },
-    '4_plus_6': { num1: 4, num2: 6, result: 10, difficulty: 'to_ten' }
+  // Fonction pour scroller vers une section
+  const scrollToSection = (sectionId: string) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ 
+        behavior: 'smooth', 
+        block: 'center' 
+      });
+    }
   };
 
-  // Exercices variés (plus de 15)
-  const exercises = [
-    // Additions simples
-    { question: "Combien font 2 + 3 ?", answer: 5, type: "simple", hint: "Compte sur tes doigts !" },
-    { question: "Combien font 4 + 1 ?", answer: 5, type: "simple", hint: "Ajoute 1 à 4 !" },
-    { question: "Combien font 3 + 4 ?", answer: 7, type: "simple", hint: "3 puis 4 de plus !" },
-    { question: "Combien font 2 + 6 ?", answer: 8, type: "simple", hint: "2 plus 6 égale..." },
-    { question: "Combien font 5 + 2 ?", answer: 7, type: "simple", hint: "5 et encore 2 !" },
+  // Fonction pour rendre les objets avec animations
+  const renderObjects = (count: number, item: string, isHighlighted = false) => {
+    if (count <= 0) return null;
     
-    // Additions avec 10
-    { question: "Combien font 10 + 3 ?", answer: 13, type: "with_ten", hint: "10 et 3 de plus !" },
-    { question: "Combien font 6 + 10 ?", answer: 16, type: "with_ten", hint: "6 puis ajoute 10 !" },
-    { question: "Combien font 10 + 7 ?", answer: 17, type: "with_ten", hint: "Une dizaine et 7 unités !" },
+    const objects = [];
+    for (let i = 0; i < count; i++) {
+      objects.push(
+        <span
+          key={i}
+          className={`text-4xl inline-block transition-all duration-500 ${
+            isHighlighted ? 'animate-bounce scale-125' : ''
+          } ${
+            countingProgress > 0 && i < countingProgress ? 'text-green-500 scale-110' : ''
+          }`}
+          style={{ 
+            animationDelay: `${i * 100}ms`
+          }}
+        >
+          {item}
+        </span>
+      );
+    }
     
-    // Additions avec retenue
-    { question: "Combien font 7 + 4 ?", answer: 11, type: "carry", hint: "7 + 3 = 10, puis + 1 !" },
-    { question: "Combien font 8 + 5 ?", answer: 13, type: "carry", hint: "8 + 2 = 10, puis + 3 !" },
-    { question: "Combien font 9 + 3 ?", answer: 12, type: "carry", hint: "9 + 1 = 10, puis + 2 !" },
-    { question: "Combien font 6 + 7 ?", answer: 13, type: "carry", hint: "6 + 4 = 10, puis + 3 !" },
-    { question: "Combien font 9 + 8 ?", answer: 17, type: "carry", hint: "9 + 1 = 10, puis + 7 !" },
-    
-    // Compléments
-    { question: "Que faut-il ajouter à 8 pour faire 10 ?", answer: 2, type: "complement", hint: "8 + ? = 10" },
-    { question: "Que faut-il ajouter à 6 pour faire 15 ?", answer: 9, type: "complement", hint: "6 + ? = 15" },
-    { question: "Que faut-il ajouter à 12 pour faire 20 ?", answer: 8, type: "complement", hint: "12 + ? = 20" },
-    
-    // Doubles
-    { question: "Combien font 6 + 6 ?", answer: 12, type: "double", hint: "Le double de 6 !" },
-    { question: "Combien font 8 + 8 ?", answer: 16, type: "double", hint: "Le double de 8 !" },
-    { question: "Combien font 9 + 9 ?", answer: 18, type: "double", hint: "Le double de 9 !" },
-    
-    // Problèmes contextuels
-    { question: "Julie a 7 billes, Tom lui en donne 6. Combien Julie a-t-elle de billes maintenant ?", answer: 13, type: "problem", hint: "7 + 6 = ?" },
-    { question: "Dans un panier, il y a 8 pommes rouges et 4 pommes vertes. Combien y a-t-il de pommes en tout ?", answer: 12, type: "problem", hint: "8 + 4 = ?" }
-  ];
+    return (
+      <div className="flex flex-wrap gap-2 justify-center items-center">
+        {objects}
+      </div>
+    );
+  };
 
-  // Fonction principale d'explication du cours
-  const explainAdditions = async () => {
+  // Fonction pour expliquer le chapitre principal avec la belle animation
+  const explainChapter = async () => {
+    stopAllVocalsAndAnimations();
+    await wait(300);
+    stopSignalRef.current = false;
+    setIsAnimationRunning(true);
+    setHasStarted(true);
+    
     try {
-      shouldStopRef.current = false;
-      userHasInteractedRef.current = true;
+      // 1. Objet du chapitre
+      await playAudio("Bonjour ! Aujourd'hui, nous allons apprendre les additions jusqu'à 20 !", true);
+      if (stopSignalRef.current) return;
       
-      await playAudioSequence("Salut ! Aujourd'hui, nous allons apprendre les additions jusqu'à 20 !", 1.1);
-      await wait(800);
+      await wait(1200);
+      await playAudio("C'est passionnant ! Nous allons découvrir des techniques magiques pour calculer facilement !", true);
+      if (stopSignalRef.current) return;
       
-      setHighlightedElement('title');
-      await playAudioSequence("Regarde bien, nous allons découvrir plein d'astuces pour additionner facilement !", 1.1);
-      await wait(800);
+      // 2. Montrer la vue d'ensemble
+      await wait(1800);
+      setHighlightedElement('concept-section');
+      setCurrentExample(0);
+      setAdditionStep('overview');
+      const example = additionExamples[0];
+      await playAudio(`Regardons ensemble comment faire ${example.first} plus ${example.second} !`, true);
+      if (stopSignalRef.current) return;
       
-      // Animation 3 + 2
-      setHighlightedElement('addition_examples');
-      setSelectedAddition('3_plus_2');
-      await playAudioSequence("Commençons par une addition simple : 3 plus 2 !", 1.1);
-      await wait(500);
+      await wait(1500);
+      await playAudio(`Voici mes objets : ${example.first} objets rouges et ${example.second} objets bleus.`, true);
+      if (stopSignalRef.current) return;
       
-      // Animation des objets pour 3 + 2
-      setAnimationStep(1);
-      setShowObjects({ group1: 3, group2: 0, result: 0 });
-      await playAudioSequence("Voici 3 objets bleus...", 1.1);
+      // 3. Expliquer la stratégie du complément à 10
+      await wait(2000);
+      setAdditionStep('complement-strategy');
+      setShowStrategy(true);
+      await playAudio("Je vais te montrer une astuce magique : le complément à 10 !", true);
+      if (stopSignalRef.current) return;
+      
+      await wait(1500);
+      await playAudio(`Au lieu de compter ${example.first} plus ${example.second}, je vais séparer les ${example.second} objets bleus.`, true);
+      if (stopSignalRef.current) return;
+      
+      // Calculs dynamiques pour l'exemple
+      const complement = 10 - example.first;
+      const remaining = example.second - complement;
+      
+      await wait(1500);
+      await playAudio(`Je prends ${complement} objets bleus pour compléter les ${example.first} rouges et faire 10.`, true);
+      if (stopSignalRef.current) return;
+      
+      // 4. Animation du déplacement des objets bleus
       await wait(1000);
+      setAdditionStep('moving-objects');
+      await playAudio(`Regarde ! Les ${complement} objets bleus vont rejoindre les ${example.first} rouges.`, true);
+      if (stopSignalRef.current) return;
       
-      setAnimationStep(2);
-      setShowObjects({ group1: 3, group2: 2, result: 0 });
-      await playAudioSequence("Maintenant, j'ajoute 2 objets rouges...", 1.1);
-      await wait(1000);
-      
-      setAnimationStep(3);
-      setShowObjects({ group1: 3, group2: 2, result: 5 });
-      await playAudioSequence("En tout, cela fait 5 objets ! 3 plus 2 égale 5 !", 1.1);
-      await wait(1500);
-      
-      // Addition avec passage à la dizaine
-      setSelectedAddition('7_plus_5');
-      setAnimationStep(0);
-      setShowObjects({ group1: 0, group2: 0, result: 0 });
-      await wait(500);
-      
-      await playAudioSequence("Maintenant, essayons quelque chose de plus difficile : 7 plus 5 !", 1.1);
-      await wait(500);
-      
-      setAnimationStep(1);
-      setShowObjects({ group1: 7, group2: 0, result: 0 });
-      await playAudioSequence("Voici 7 objets...", 1.1);
+      // Animation progressive du déplacement
       await wait(800);
+      for (let i = 1; i <= complement; i++) {
+        if (stopSignalRef.current) return;
+        setMovingBlues(i);
+        await playAudio(`${i}...`, true);
+        await wait(600);
+      }
+      await playAudio("Maintenant j'ai 10 objets ensemble !", true);
+      if (stopSignalRef.current) return;
       
-      setAnimationStep(2);
-      setShowObjects({ group1: 7, group2: 5, result: 0 });
-      await playAudioSequence("J'ajoute 5 objets...", 1.1);
-      await wait(800);
-      
-      setShowStrategy('complement_10');
-      await playAudioSequence("Astuce ! Je peux d'abord compléter à 10 : 7 plus 3 égale 10...", 1.1);
-      await wait(1000);
-      
-      setShowCarryOver(true);
-      await playAudioSequence("Puis j'ajoute les 2 qui restent : 10 plus 2 égale 12 !", 1.1);
-      await wait(1000);
-      
-      setAnimationStep(3);
-      setShowObjects({ group1: 7, group2: 5, result: 12 });
-      await playAudioSequence("Donc 7 plus 5 égale 12 ! C'est magique, non ?", 1.1);
+      // 5. Montrer les 10 objets
       await wait(1500);
+      setAdditionStep('first-ten');
+      await playAudio(`${example.first} plus ${complement} égale 10 ! C'est beaucoup plus facile !`, true);
+      if (stopSignalRef.current) return;
       
-      // Expliquer les stratégies
-      setHighlightedElement('strategies');
-      await playAudioSequence("Il existe plusieurs stratégies pour additionner facilement !", 1.1);
-      await wait(500);
+      // 6. Ajouter les restants
+      await wait(1800);
+      setAdditionStep('adding-rest');
+      await playAudio(`Maintenant j'ajoute les ${remaining} objets bleus qui restent.`, true);
+      if (stopSignalRef.current) return;
       
-      setShowStrategy('doubles');
-      await playAudioSequence("Les doubles sont faciles : 6 plus 6 égale 12, 8 plus 8 égale 16 !", 1.1);
+      await wait(1200);
+      await playAudio(`10 plus ${remaining} égale ${example.result} !`, true);
+      if (stopSignalRef.current) return;
+      
+      // 7. Résultat final
       await wait(1500);
+      setAdditionStep('final-result');
+      await playAudio(`Et voilà ! ${example.first} plus ${example.second} égale ${example.result}, grâce à l'astuce du complément à 10 !`, true);
+      if (stopSignalRef.current) return;
       
-      setShowStrategy('complement_10');
-      await playAudioSequence("Pour passer à la dizaine, complète d'abord à 10, puis ajoute le reste !", 1.1);
-      await wait(1500);
+      await wait(2000);
+      await playAudio("Avec cette technique, tu peux additionner beaucoup plus facilement !", true);
+      if (stopSignalRef.current) return;
       
-      setShowStrategy('counting');
-      await playAudioSequence("Tu peux aussi compter sur tes doigts ou dans ta tête !", 1.1);
-      await wait(1500);
-      
-      // Encouragement à passer aux exercices
-      setHighlightedElement('exercise_tab');
-      await playAudioSequence("Maintenant, clique sur l'onglet Exercices pour t'entraîner ! Tu vas devenir un champion des additions !", 1.1);
-      
+      // 8. Présentation des autres exemples
+      await wait(2500);
+      setHighlightedNumber(null);
+      setShowingProcess(null);
+      setAdditionStep(null);
+      setCountingProgress(0);
+      setMovingBlues(0);
+      setShowStrategy(false);
+      setCurrentExample(null);
       setHighlightedElement(null);
-      setAnimationStep(0);
-      setShowStrategy(null);
-      setShowCarryOver(false);
+      await playAudio("Parfait ! Maintenant tu comprends les additions jusqu'à 20 !", true);
+      if (stopSignalRef.current) return;
       
-    } catch (error) {
-      console.error('Erreur dans explainAdditions:', error);
-    }
-  };
-
-  // Fonction d'explication des exercices
-  const explainExercisesOnce = async () => {
-    try {
-      shouldStopRef.current = false;
-      userHasInteractedRef.current = true;
-      setExerciseInstructionGiven(true);
-      exerciseInstructionGivenRef.current = true;
+      await wait(1200);
+      await playAudio("Il y a plein d'autres additions et d'astuces à découvrir !", true);
+      if (stopSignalRef.current) return;
       
-      await playAudioSequence("Super ! Tu es dans les exercices d'additions jusqu'à 20 !", 1.0);
+      await wait(1500);
+      setHighlightedElement('examples-section');
+      scrollToSection('examples-section');
+      await playAudio("Regarde ! Tu peux essayer avec d'autres nombres !", true);
+      if (stopSignalRef.current) return;
+      
+      await wait(1200);
+      await playAudio("Clique sur les exemples pour voir d'autres techniques !", true);
+      if (stopSignalRef.current) return;
+      
       await wait(800);
-      
-      await playAudioSequence("Tu vas résoudre différents types d'additions : des simples, des doubles, des additions avec retenue, et même des petits problèmes !", 1.0);
-      await wait(1000);
-      
-      await playAudioSequence("Pour chaque exercice, lis bien la question, réfléchis, puis tape ta réponse. N'hésite pas à utiliser les astuces qu'on a vues dans le cours !", 1.0);
-      await wait(1000);
-      
-      await playAudioSequence("Si tu te trompes, ce n'est pas grave ! Je te donnerai un indice pour t'aider. Allez, c'est parti pour devenir un as des additions !", 1.0);
-      
-    } catch (error) {
-      console.error('Erreur dans explainExercisesOnce:', error);
+      setHighlightedElement(null);
+    } finally {
+      setHighlightedElement(null);
+      setHighlightedNumber(null);
+      setShowingProcess(null);
+      setAnimatingStep(null);
+      setCurrentExample(null);
+      setAdditionStep(null);
+      setCountingProgress(0);
+      setMovingBlues(0);
+      setShowStrategy(false);
+      setIsAnimationRunning(false);
     }
   };
 
-  const speakText = (text: string) => {
-    if (!userHasInteractedRef.current) return;
-    speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.rate = 1.0;
-    utterance.lang = 'fr-FR';
-    speechSynthesis.speak(utterance);
+  // Fonction pour expliquer un exemple spécifique
+  const explainSpecificExample = async (index: number) => {
+    stopAllVocalsAndAnimations();
+    await wait(300);
+    stopSignalRef.current = false;
+    setIsAnimationRunning(true);
+    
+    const example = additionExamples[index];
+    
+    try {
+      setCurrentExample(index);
+      scrollToSection('concept-section');
+      
+      // Utiliser la même séquence que le chapitre principal mais adaptée
+      await playAudio(`Je vais te montrer comment calculer ${example.first} plus ${example.second} avec l'astuce du complément à 10.`, true);
+      if (stopSignalRef.current) return;
+      
+      await wait(1500);
+      setAdditionStep('overview');
+      await playAudio(`Voici mes objets : ${example.first} objets rouges et ${example.second} objets bleus.`, true);
+      if (stopSignalRef.current) return;
+      
+      if (example.strategy === 'complément à 10') {
+        // Calculs dynamiques pour cet exemple
+        const complement = 10 - example.first;
+        const remaining = example.second - complement;
+        
+      await wait(1500);
+        setAdditionStep('complement-strategy');
+        setShowStrategy(true);
+        await playAudio("Je vais utiliser l'astuce du complément à 10 !", true);
+        if (stopSignalRef.current) return;
+      
+      await wait(1500);
+        await playAudio(`Au lieu de compter ${example.first} plus ${example.second}, je vais séparer les ${example.second} objets bleus.`, true);
+        if (stopSignalRef.current) return;
+      
+      await wait(1500);
+        await playAudio(`Je prends ${complement} objets bleus pour compléter les ${example.first} rouges et faire 10.`, true);
+        if (stopSignalRef.current) return;
+        
+        // Animation du déplacement des objets bleus
+        await wait(1000);
+        setAdditionStep('moving-objects');
+        await playAudio(`Regarde ! Les ${complement} objets bleus vont rejoindre les ${example.first} rouges.`, true);
+        if (stopSignalRef.current) return;
+        
+        // Animation progressive du déplacement
+        await wait(800);
+        for (let i = 1; i <= complement; i++) {
+          if (stopSignalRef.current) return;
+          setMovingBlues(i);
+          await playAudio(`${i}...`, true);
+          await wait(600);
+        }
+        await playAudio("Maintenant j'ai 10 objets ensemble !", true);
+        if (stopSignalRef.current) return;
+        
+        // Montrer les 10 objets
+        await wait(1500);
+        setAdditionStep('first-ten');
+        await playAudio(`${example.first} plus ${complement} égale 10 ! C'est beaucoup plus facile !`, true);
+        if (stopSignalRef.current) return;
+        
+        // Ajouter les restants
+        await wait(1800);
+        setAdditionStep('adding-rest');
+        await playAudio(`Maintenant j'ajoute les ${remaining} objets bleus qui restent.`, true);
+        if (stopSignalRef.current) return;
+        
+        await wait(1200);
+        await playAudio(`10 plus ${remaining} égale ${example.result} !`, true);
+        if (stopSignalRef.current) return;
+        
+        // Résultat final
+        await wait(1500);
+        setAdditionStep('final-result');
+        await playAudio(`Et voilà ! ${example.first} plus ${example.second} égale ${example.result}, grâce à l'astuce du complément à 10 !`, true);
+        if (stopSignalRef.current) return;
+      } else {
+        await wait(1500);
+        setAdditionStep('final-result');
+        await playAudio(example.explanation, true);
+        if (stopSignalRef.current) return;
+        
+        await wait(1200);
+        await playAudio(`${example.first} plus ${example.second} égale ${example.result} !`, true);
+        if (stopSignalRef.current) return;
+      }
+      
+      await wait(2000);
+      setCurrentExample(null);
+      setHighlightedNumber(null);
+      setShowingProcess(null);
+      setAnimatingStep(null);
+      setAdditionStep(null);
+      setCountingProgress(0);
+      setMovingBlues(0);
+      setShowStrategy(false);
+    } finally {
+      setCurrentExample(null);
+      setHighlightedNumber(null);
+      setShowingProcess(null);
+      setAnimatingStep(null);
+      setAdditionStep(null);
+      setCountingProgress(0);
+      setMovingBlues(0);
+      setShowStrategy(false);
+      setIsAnimationRunning(false);
+    }
   };
 
-  // Fonction pour vérifier la réponse
-  const checkAnswer = () => {
-    stopVocal();
-    const exerciseData = exercises[currentExercise];
-    const userNum = parseInt(userAnswer);
+  // Gestion des exercices
+  const handleAnswerClick = (answer: string) => {
+    stopAllVocalsAndAnimations();
+    setUserAnswer(answer);
+    const correct = answer === exercises[currentExercise].correctAnswer;
+    setIsCorrect(correct);
     
-    if (userNum === exerciseData.answer) {
-      setIsCorrect(true);
-      setScore(score + 1);
-      speakText("Bravo ! C'est exact !");
-      
+    if (correct && !answeredCorrectly.has(currentExercise)) {
+      setScore(prevScore => prevScore + 1);
+      setAnsweredCorrectly(prev => {
+        const newSet = new Set(prev);
+        newSet.add(currentExercise);
+        return newSet;
+      });
+    }
+
+    if (correct) {
       setTimeout(() => {
-        nextExercise();
-      }, 2000);
+        if (currentExercise + 1 < exercises.length) {
+          setCurrentExercise(currentExercise + 1);
+          setUserAnswer('');
+          setIsCorrect(null);
     } else {
-      setIsCorrect(false);
-      speakText(`Pas tout à fait ! ${exerciseData.hint}`);
+          const finalScoreValue = score + (!answeredCorrectly.has(currentExercise) ? 1 : 0);
+          setFinalScore(finalScoreValue);
+          setShowCompletionModal(true);
+        }
+      }, 1500);
     }
   };
 
   const nextExercise = () => {
-    stopVocal();
+    stopAllVocalsAndAnimations();
     if (currentExercise < exercises.length - 1) {
-      const nextIndex = currentExercise + 1;
-      setCurrentExercise(nextIndex);
+      setCurrentExercise(currentExercise + 1);
       setUserAnswer('');
       setIsCorrect(null);
     } else {
-      setFinalScore(score + (isCorrect ? 1 : 0));
+      setFinalScore(score);
       setShowCompletionModal(true);
     }
   };
 
-  const resetExercises = () => {
-    stopVocal();
+  const resetAll = () => {
+    stopAllVocalsAndAnimations();
     setCurrentExercise(0);
     setUserAnswer('');
     setIsCorrect(null);
     setScore(0);
+    setAnsweredCorrectly(new Set());
     setShowCompletionModal(false);
+    setFinalScore(0);
   };
 
-  // Fonction centralisée de reset des boutons
-  const resetButtons = () => {
-    console.log('🔄 resetButtons called');
-    setExerciseInstructionGiven(false);
-    setHasStarted(false);
-    exerciseInstructionGivenRef.current = false;
-    hasStartedRef.current = false;
+  // Fonction helper pour les messages de fin
+  const getCompletionMessage = (score: number, total: number) => {
+    const percentage = Math.round((score / total) * 100);
+    if (percentage >= 90) return { title: "🎉 Champion des additions !", message: "Tu maîtrises parfaitement les additions jusqu'à 20 !", emoji: "🎉" };
+    if (percentage >= 70) return { title: "👏 Très bien !", message: "Tu progresses super bien !", emoji: "👏" };
+    if (percentage >= 50) return { title: "👍 C'est bien !", message: "Continue, tu apprends bien !", emoji: "😊" };
+    return { title: "💪 Continue !", message: "Recommence pour mieux comprendre les additions !", emoji: "📚" };
   };
 
-  // 🎵 GESTION VOCALE ULTRA-ROBUSTE - Event Listeners
+  // Effet pour initialiser le client
   useEffect(() => {
-    // 🎵 FONCTION DE NETTOYAGE VOCAL pour la sortie de page
-    const handlePageExit = () => {
-      console.log("🚪 SORTIE DE PAGE DÉTECTÉE - Arrêt des vocaux");
-      stopAllVocals();
-    };
-    
-    // 🔍 GESTION DE LA VISIBILITÉ (onglet caché/affiché)
-    const handleVisibilityChange = () => {
-      if (document.hidden) {
-        console.log("👁️ PAGE CACHÉE - Arrêt des vocaux");
-        stopAllVocals();
-      }
-    };
-    
-    // 🏠 GESTION DE LA NAVIGATION
-    const handleNavigation = () => {
-      console.log("🔄 NAVIGATION DÉTECTÉE - Arrêt des vocaux");
-      stopAllVocals();
-    };
-    
-    // 🚪 EVENT LISTENERS pour sortie de page
-    window.addEventListener('beforeunload', handlePageExit);
-    window.addEventListener('pagehide', handlePageExit);
-    window.addEventListener('unload', handlePageExit);
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    window.addEventListener('blur', handleNavigation);
-    window.addEventListener('popstate', handleNavigation);
-    
-    return () => {
-      // 🧹 NETTOYAGE COMPLET
-      stopAllVocals();
-      
-      // Retirer les event listeners
-      window.removeEventListener('beforeunload', handlePageExit);
-      window.removeEventListener('pagehide', handlePageExit);
-      window.removeEventListener('unload', handlePageExit);
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-      window.removeEventListener('blur', handleNavigation);
-      window.removeEventListener('popstate', handleNavigation);
-    };
+    setIsClient(true);
   }, []);
 
-  // Gestion des événements pour persistance des boutons
+  // Effet pour gérer les changements de visibilité de la page et navigation
   useEffect(() => {
-    console.log('🚀 Component mounted, setting up ultra-aggressive reset');
-    resetButtons();
-    
-    // Marquer l'interaction utilisateur
-    const markUserInteraction = () => {
-      userHasInteractedRef.current = true;
-    };
-    
-    document.addEventListener('click', markUserInteraction);
-    document.addEventListener('keydown', markUserInteraction);
-    document.addEventListener('touchstart', markUserInteraction);
-    
-    // Reset périodique ultra-agressif
-    const interval = setInterval(() => {
-      if (hasStartedRef.current || exerciseInstructionGivenRef.current) {
-        console.log('⏰ Periodic reset triggered');
-        resetButtons();
-      }
-    }, 2000);
-
-    // Gestion de la visibilité
     const handleVisibilityChange = () => {
       if (document.hidden) {
-        console.log('👁️ Page hidden, stopping vocals');
-        stopVocal();
-        shouldStopRef.current = true;
-      } else {
-        console.log('👁️ Page visible, resetting buttons');
-        resetButtons();
+        console.log('Page cachée - arrêt du vocal');
+        stopAllVocalsAndAnimations();
       }
     };
 
-    const handleFocus = () => {
-      console.log('🎯 Window focused, resetting buttons');
-      resetButtons();
-    };
-
-    const handlePageShow = () => {
-      console.log('📄 Page show, resetting buttons');
-      resetButtons();
-    };
-
-    const handleBlur = () => {
-      console.log('😴 Window blurred, stopping vocals');
-      stopVocal();
+    const handleBeforeUnload = () => {
+      console.log('Avant déchargement - arrêt du vocal');
+      stopAllVocalsAndAnimations();
     };
 
     const handlePopState = () => {
-      console.log('⬅️ Pop state, resetting buttons');
-      resetButtons();
+      console.log('Navigation back/forward - arrêt du vocal');
+      stopAllVocalsAndAnimations();
     };
 
-    const handleMouseEnter = () => {
-      resetButtons();
+    const handlePageHide = () => {
+      console.log('Page masquée - arrêt du vocal');
+      stopAllVocalsAndAnimations();
     };
 
-    const handleScroll = () => {
-      resetButtons();
+    const handleUnload = () => {
+      console.log('Déchargement - arrêt du vocal');
+      stopAllVocalsAndAnimations();
     };
 
+    const handleHashChange = () => {
+      console.log('Changement de hash - arrêt du vocal');
+      stopAllVocalsAndAnimations();
+    };
+
+    const handleBlur = () => {
+      console.log('Perte de focus fenêtre - arrêt du vocal');
+      stopAllVocalsAndAnimations();
+    };
+
+    // Event listeners standard
     document.addEventListener('visibilitychange', handleVisibilityChange);
-    window.addEventListener('focus', handleFocus);
-    window.addEventListener('blur', handleBlur);
-    window.addEventListener('pageshow', handlePageShow);
+    window.addEventListener('beforeunload', handleBeforeUnload);
     window.addEventListener('popstate', handlePopState);
-    document.addEventListener('mouseenter', handleMouseEnter);
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('pagehide', handlePageHide);
+    window.addEventListener('unload', handleUnload);
+    window.addEventListener('hashchange', handleHashChange);
+    window.addEventListener('blur', handleBlur);
 
-    document.addEventListener('DOMContentLoaded', () => {
-      resetButtons();
-    });
+    // Override des méthodes history pour détecter navigation programmatique
+    const originalPushState = history.pushState;
+    const originalReplaceState = history.replaceState;
 
-    // Reset sur chargement initial
-    setTimeout(() => {
-      resetButtons();
-    }, 1000);
+    history.pushState = function(...args) {
+      console.log('Navigation programmatique pushState - arrêt du vocal');
+      stopAllVocalsAndAnimations();
+      return originalPushState.apply(this, args);
+    };
+
+    history.replaceState = function(...args) {
+      console.log('Navigation programmatique replaceState - arrêt du vocal');
+      stopAllVocalsAndAnimations();
+      return originalReplaceState.apply(this, args);
+    };
 
     return () => {
-      clearInterval(interval);
-      document.removeEventListener('click', markUserInteraction);
-      document.removeEventListener('keydown', markUserInteraction);
-      document.removeEventListener('touchstart', markUserInteraction);
       document.removeEventListener('visibilitychange', handleVisibilityChange);
-      window.removeEventListener('focus', handleFocus);
-      window.removeEventListener('blur', handleBlur);
-      window.removeEventListener('pageshow', handlePageShow);
+      window.removeEventListener('beforeunload', handleBeforeUnload);
       window.removeEventListener('popstate', handlePopState);
-      document.removeEventListener('mouseenter', handleMouseEnter);
-      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('pagehide', handlePageHide);
+      window.removeEventListener('unload', handleUnload);
+      window.removeEventListener('hashchange', handleHashChange);
+      window.removeEventListener('blur', handleBlur);
+      
+      // Restaurer les méthodes originales
+      history.pushState = originalPushState;
+      history.replaceState = originalReplaceState;
     };
   }, []);
 
-  // Rendu des objets pour les animations
-  const renderObjects = (count: number, color: string) => {
-    return Array.from({ length: count }, (_, i) => (
-      <div
-        key={i}
-        className={`w-8 h-8 rounded-full ${color} border-2 border-white shadow-md animate-bounce`}
-        style={{ animationDelay: `${i * 100}ms` }}
-      />
-    ));
-  };
+  // Effet pour gérer les changements d'onglet interne (cours ↔ exercices)
+  useEffect(() => {
+    stopAllVocalsAndAnimations();
+  }, [showExercises]);
 
-  // Styles CSS intégrés
-  const styles = `
-    @keyframes float {
-      0%, 100% { transform: translateY(0px); }
-      50% { transform: translateY(-10px); }
-    }
-    @keyframes pulse-glow {
-      0%, 100% { box-shadow: 0 0 5px rgba(59, 130, 246, 0.5); }
-      50% { box-shadow: 0 0 20px rgba(59, 130, 246, 0.8); }
-    }
-    @keyframes shake {
-      0%, 100% { transform: translateX(0); }
-      25% { transform: translateX(-5px); }
-      75% { transform: translateX(5px); }
-    }
-    .float { animation: float 3s ease-in-out infinite; }
-    .pulse-glow { animation: pulse-glow 2s ease-in-out infinite; }
-    .shake { animation: shake 0.5s ease-in-out infinite; }
-  `;
+  // Effet pour nettoyer lors du démontage
+  useEffect(() => {
+    return () => {
+      stopAllVocalsAndAnimations();
+    };
+  }, []);
+
+  if (!isClient) {
+    return <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-100 flex items-center justify-center">
+      <div className="text-xl">Chargement...</div>
+    </div>;
+  }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-100">
-      <style dangerouslySetInnerHTML={{ __html: styles }} />
-      
-      <div className="max-w-6xl mx-auto px-4 py-6">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-100">
+      <div className="max-w-6xl mx-auto px-4 py-8">
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <button
-            onClick={() => window.history.back()}
-            className="flex items-center space-x-2 text-purple-600 hover:text-purple-800 transition-colors"
+        <div className="mb-8">
+          <Link 
+            href="/chapitre/cp-additions-simples" 
+            onClick={stopAllVocalsAndAnimations}
+            className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors mb-4"
           >
-            <ArrowLeft className="w-5 h-5" />
+            <ArrowLeft className="w-4 h-4" />
             <span>Retour aux additions simples</span>
-          </button>
+          </Link>
           
-          <h1 
-            className={`text-3xl font-bold text-center text-purple-800 ${
-              highlightedElement === 'title' ? 'pulse-glow bg-yellow-200 px-4 py-2 rounded-lg' : ''
-            }`}
-          >
+          <div className="bg-white rounded-xl p-6 shadow-lg text-center">
+            <h1 className="text-4xl font-bold text-gray-900 mb-4">
             🧮 Additions jusqu'à 20
           </h1>
-          
-          <div className="w-32"></div>
+            <p className="text-lg text-gray-600">
+              Découvre les techniques magiques pour calculer jusqu'à 20 !
+            </p>
+          </div>
         </div>
 
-        {/* Navigation Tabs */}
-        <div className="flex justify-center space-x-4 mb-6">
+        {/* Navigation entre cours et exercices */}
+        <div className="flex justify-center mb-8">
+          <div className="bg-white rounded-lg p-1 shadow-md">
           <button
             onClick={() => {
+                stopAllVocalsAndAnimations();
               setShowExercises(false);
-              stopVocal();
-              setTimeout(() => { resetButtons(); }, 100);
             }}
-            className={`px-6 py-3 rounded-lg font-semibold transition-all ${
+              className={`px-6 py-3 rounded-lg font-bold transition-all ${
               !showExercises
-                ? 'bg-purple-600 text-white shadow-lg'
-                : 'bg-white text-purple-600 hover:bg-purple-50'
+                  ? 'bg-blue-500 text-white shadow-md' 
+                  : 'text-gray-600 hover:bg-gray-100'
             }`}
           >
-            📚 Cours
+              📖 Cours
           </button>
           <button
             onClick={() => {
+                stopAllVocalsAndAnimations();
               setShowExercises(true);
-              stopVocal();
-              setTimeout(() => { resetButtons(); }, 100);
             }}
-            className={`px-6 py-3 rounded-lg font-semibold transition-all ${
+              className={`px-6 py-3 rounded-lg font-bold transition-all ${
               showExercises
-                ? 'bg-purple-600 text-white shadow-lg'
-                : 'bg-white text-purple-600 hover:bg-purple-50'
-            } ${highlightedElement === 'exercise_tab' ? 'pulse-glow' : ''}`}
-          >
-            🎯 Exercices
+                  ? 'bg-blue-500 text-white shadow-md' 
+                  : 'text-gray-600 hover:bg-gray-100'
+              }`}
+            >
+              ✏️ Exercices ({score}/{exercises.length})
           </button>
+          </div>
         </div>
 
         {!showExercises ? (
-          // Section Cours
+          /* COURS */
           <div className="space-y-8">
-            {/* Bouton COMMENCER */}
-            {!hasStarted && (
-              <div className="flex justify-center">
+            {/* Bouton d'explication vocal principal */}
+            <div className="text-center mb-6">
                 <button
-                  onClick={() => {
-                    setHasStarted(true);
-                    hasStartedRef.current = true;
-                    explainAdditions();
-                  }}
-                  className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-8 py-4 rounded-xl text-xl font-bold hover:from-purple-600 hover:to-pink-600 transition-all shadow-lg animate-bounce"
-                >
-                  <div className="flex items-center space-x-3">
-                    <Volume2 className="w-6 h-6" />
-                    <span>🚀 COMMENCER !</span>
-                  </div>
+                onClick={explainChapter}
+                disabled={isAnimationRunning}
+                className={`px-8 py-4 rounded-xl font-bold text-xl shadow-lg transition-all transform ${
+                  isAnimationRunning 
+                    ? 'bg-gray-400 text-gray-200 cursor-not-allowed' 
+                    : 'bg-gradient-to-r from-blue-500 to-purple-500 text-white hover:shadow-xl hover:scale-105'
+                }`}
+                style={{
+                  animationDuration: !hasStarted && !isAnimationRunning ? '2s' : 'none',
+                  animationIterationCount: !hasStarted && !isAnimationRunning ? 'infinite' : 'none'
+                }}
+              >
+                {isAnimationRunning ? '⏳ Animation en cours...' : '▶️ COMMENCER !'}
                 </button>
               </div>
-            )}
 
-            {/* Introduction visuelle */}
-            <div className="bg-white rounded-xl p-6 shadow-lg">
-              <h2 className="text-2xl font-bold text-purple-800 mb-4 text-center">
-                ✨ Découvre les additions magiques !
-              </h2>
-              
-              <div className="text-center text-gray-700 space-y-2">
-                <p>🎯 Apprends à additionner jusqu'à 20</p>
-                <p>🧠 Découvre des astuces géniales</p>
-                <p>🏆 Deviens un champion des maths !</p>
-              </div>
-            </div>
-
-            {/* Section exemples d'additions */}
+            {/* Explication du concept avec animation intégrée */}
             <div 
-              className={`bg-white rounded-xl p-6 shadow-lg ${
-                highlightedElement === 'addition_examples' ? 'pulse-glow' : ''
+              id="concept-section"
+              className={`bg-white rounded-xl p-8 shadow-lg transition-all duration-1000 ${
+                highlightedElement === 'concept-section' ? 'ring-4 ring-blue-400 bg-blue-50 scale-105' : ''
               }`}
             >
-              <h3 className="text-xl font-bold text-purple-800 mb-4 text-center">
-                🔢 Exemples d'additions
-              </h3>
+              <h2 className="text-2xl font-bold text-center mb-6 text-gray-900">
+                🧮 Comment faire des additions jusqu'à 20 ?
+              </h2>
               
-              {/* Sélecteur d'addition */}
-              <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
-                {Object.entries(additionExamples).map(([key, example]) => (
-                  <button
-                    key={key}
-                    onClick={() => setSelectedAddition(key as AdditionKey)}
-                    className={`p-3 rounded-lg border-2 transition-all ${
-                      selectedAddition === key
-                        ? 'border-purple-500 bg-purple-50'
-                        : 'border-gray-200 hover:border-purple-300'
-                    }`}
-                  >
-                    <div className="text-lg font-bold">
-                      {example.num1} + {example.num2}
+              <div className="bg-blue-50 rounded-lg p-6 mb-6">
+                <p className="text-lg text-center text-blue-800 font-semibold mb-6">
+                  Découvre les techniques magiques pour calculer facilement !
+                </p>
+                
+                <div className="bg-white rounded-lg p-6">
+                  <div className="text-center mb-6">
+                    <div className="text-2xl font-bold text-blue-600 mb-4">
+                      {currentExample !== null ? 
+                        `${additionExamples[currentExample].first} + ${additionExamples[currentExample].second} = ${additionExamples[currentExample].result}` 
+                        : '7 + 5 = 12'
+                      }
                     </div>
-                    <div className="text-sm text-gray-600">
-                      = {example.result}
                     </div>
-                  </button>
+
+                  {/* Animation avec stratégie du complément à 10 intégrée */}
+                  {currentExample !== null ? (
+                    <div className="space-y-6">
+                                              {/* Vue d'ensemble */}
+                        {additionStep === 'overview' && (
+                          <div className="bg-white rounded-lg p-6 border-2 border-gray-300">
+                            <div className="text-lg text-gray-700 mb-4 text-center">Problème : {additionExamples[currentExample].first} + {additionExamples[currentExample].second} = ?</div>
+                            <div className="text-lg text-gray-700 mb-4 text-center">Voici tous mes objets :</div>
+                            <div className="flex flex-wrap gap-2 justify-center mb-4">
+                              {/* Premier nombre d'objets rouges */}
+                              {Array.from({ length: additionExamples[currentExample].first }, (_, i) => (
+                                <span key={`red-${i}`} className="text-3xl border-2 border-red-300 rounded-lg p-1 bg-red-50">🔴</span>
+                              ))}
+                              {/* Deuxième nombre d'objets bleus */}
+                              {Array.from({ length: additionExamples[currentExample].second }, (_, i) => (
+                                <span key={`blue-${i}`} className="text-3xl border-2 border-blue-300 rounded-lg p-1 bg-blue-50">🔵</span>
                 ))}
               </div>
-
-              {/* Zone d'animation */}
-              <div className="bg-gradient-to-r from-blue-50 to-green-50 rounded-lg p-6 min-h-64">
-                <div className="text-center mb-4">
-                  <h4 className="text-2xl font-bold text-purple-800">
-                    {additionExamples[selectedAddition].num1} + {additionExamples[selectedAddition].num2} = ?
-                  </h4>
+                            <div className="text-xl font-bold text-gray-800 text-center">
+                              <span className="text-red-600">{additionExamples[currentExample].first} objets rouges</span> + <span className="text-blue-600">{additionExamples[currentExample].second} objets bleus</span> = <span className="text-purple-600">?</span>
                 </div>
-                
-                <div className="flex justify-center items-center space-x-8">
-                  {/* Groupe 1 */}
-                  <div className="flex flex-col items-center">
-                    <div className="text-lg font-semibold mb-2 text-blue-700">
-                      Premier nombre: {additionExamples[selectedAddition].num1}
+                          </div>
+                        )}
+
+                                              {/* Animation fluide du complément à 10 */}
+                        {(additionStep === 'complement-strategy' || additionStep === 'moving-objects' || additionStep === 'first-ten' || additionStep === 'adding-rest') && showStrategy && (() => {
+                          const example = additionExamples[currentExample];
+                          const complement = 10 - example.first; // Ce qu'il faut prendre du second pour faire 10
+                          const remaining = example.second - complement; // Ce qui reste du second
+                          
+                          return (
+                            <div className="bg-yellow-50 rounded-lg p-6 border-2 border-yellow-300">
+                              <div className="text-center text-lg text-yellow-800 font-bold mb-4">🎯 Astuce magique : Complément à 10</div>
+                              
+                              {/* Animation continue sur une seule ligne */}
+                              <div className="bg-white rounded-lg p-6 border-2 border-yellow-300">
+                                <div className="flex justify-center items-center gap-4 mb-4">
+                                  
+                                  {/* Premier nombre d'objets rouges (deviennent 10 objets) */}
+                                  <div className="text-center">
+                                    <div className="text-sm text-red-700 mb-2">
+                                      {(additionStep === 'complement-strategy' || additionStep === 'moving-objects') && `${example.first} objets rouges`}
+                                      {(additionStep === 'first-ten' || additionStep === 'adding-rest') && `10 objets (${example.first}+${complement})`}
                     </div>
-                    <div className="grid grid-cols-3 gap-2">
-                      {renderObjects(showObjects.group1, 'bg-blue-400')}
+                                    <div className="flex gap-1 justify-center border-2 border-red-300 rounded-lg p-2 bg-red-50">
+                                      {Array.from({ length: example.first }, (_, i) => (
+                                        <span key={i} className="text-2xl">🔴</span>
+                                      ))}
+                                      {/* Bleus qui arrivent pour faire 10 */}
+                                      {(additionStep === 'first-ten' || additionStep === 'adding-rest') && Array.from({ length: complement }, (_, i) => (
+                                        <span key={`moved-${i}`} className="text-2xl animate-pulse">🔵</span>
+                                      ))}
                     </div>
+                                    {(additionStep === 'first-ten' || additionStep === 'adding-rest') && (
+                                      <div className="text-green-700 font-bold mt-2">{example.first} + {complement} = 10 ✅</div>
+                                    )}
                   </div>
                   
                   {/* Signe + */}
-                  <div className="text-4xl font-bold text-purple-600 animate-pulse">+</div>
-                  
-                  {/* Groupe 2 */}
-                  <div className="flex flex-col items-center">
-                    <div className="text-lg font-semibold mb-2 text-red-700">
-                      Deuxième nombre: {additionExamples[selectedAddition].num2}
+                                  <div className="text-3xl text-yellow-600 font-bold">+</div>
+
+                                  {/* Deuxième nombre d'objets bleus (avec séparation progressive) */}
+                                  <div className="text-center">
+                                    <div className="text-sm text-blue-700 mb-2">
+                                      {additionStep === 'complement-strategy' && `${example.second} objets bleus`}
+                                      {additionStep === 'moving-objects' && `Les ${complement} vont faire 10...`}
+                                      {additionStep === 'first-ten' && `${remaining} bleus restants`}
+                                      {additionStep === 'adding-rest' && `${remaining} bleus restants`}
                     </div>
-                    <div className="grid grid-cols-3 gap-2">
-                      {renderObjects(showObjects.group2, 'bg-red-400')}
+                                    <div className="flex gap-1 justify-center border-2 border-blue-300 rounded-lg p-2 bg-blue-50">
+                                      {/* Les premiers bleus qui vont partir */}
+                                      {additionStep === 'complement-strategy' && Array.from({ length: complement }, (_, i) => (
+                                        <span key={i} className="text-2xl border-2 border-green-400 rounded bg-green-100 animate-pulse">🔵</span>
+                                      ))}
+                                      {additionStep === 'moving-objects' && Array.from({ length: complement }, (_, i) => (
+                                        <span key={i} className={`text-2xl transition-all duration-1000 ${
+                                          i < movingBlues ? 'opacity-30 scale-75 animate-ping' : 'border-2 border-green-400 rounded bg-green-100 animate-pulse'
+                                        }`}>🔵</span>
+                                      ))}
+                                      {/* Les restants (toujours présents) */}
+                                      {Array.from({ length: remaining }, (_, i) => (
+                                        <span key={`remaining-${i}`} className={`text-2xl ${
+                                          additionStep === 'adding-rest' ? 'animate-bounce scale-125 bg-orange-200 rounded-full' : ''
+                                        }`}>🔵</span>
+                                      ))}
                     </div>
                   </div>
                   
                   {/* Signe = */}
-                  <div className="text-4xl font-bold text-purple-600">=</div>
-                  
-                  {/* Résultat */}
-                  <div className="flex flex-col items-center">
-                    <div className="text-lg font-semibold mb-2 text-green-700">
-                      Résultat: {showObjects.result > 0 ? additionExamples[selectedAddition].result : '?'}
+                                  <div className="text-3xl text-purple-600 font-bold">=</div>
+
+                                  {/* Résultat progressif */}
+                                  <div className="text-center">
+                                    <div className="text-sm text-purple-700 mb-2">
+                                      {additionStep === 'complement-strategy' && 'Résultat'}
+                                      {additionStep === 'moving-objects' && 'En cours...'}
+                                      {additionStep === 'first-ten' && '10 objets !'}
+                                      {additionStep === 'adding-rest' && `${example.result} objets !`}
                     </div>
-                    <div className="grid grid-cols-4 gap-2">
-                      {renderObjects(showObjects.result, 'bg-green-400')}
+                                    <div className="border-2 border-purple-300 rounded-lg p-2 bg-purple-50 min-h-[60px] flex items-center justify-center">
+                                      {additionStep === 'complement-strategy' && (
+                                        <span className="text-2xl text-gray-400">?</span>
+                                      )}
+                                      {additionStep === 'moving-objects' && (
+                                        <span className="text-lg text-purple-600 animate-pulse">En formation...</span>
+                                      )}
+                                      {additionStep === 'first-ten' && (
+                                        <div className="flex gap-1">
+                                          {Array.from({ length: 10 }, (_, i) => (
+                                            <span key={i} className="text-lg animate-pulse">{i < example.first ? '🔴' : '🔵'}</span>
+                                          ))}
                     </div>
+                                      )}
+                                      {additionStep === 'adding-rest' && (
+                                        <div className="flex gap-1">
+                                          {Array.from({ length: example.result }, (_, i) => (
+                                            <span key={i} className="text-lg">{i < example.first ? '🔴' : '🔵'}</span>
+                                          ))}
+                                        </div>
+                                      )}
+                                    </div>
+                                    {additionStep === 'adding-rest' && (
+                                      <div className="text-orange-700 font-bold mt-2">10 + {remaining} = {example.result} ✅</div>
+                                    )}
                   </div>
                 </div>
                 
-                {/* Affichage des stratégies */}
-                {showStrategy === 'complement_10' && (
-                  <div className="mt-6 p-4 bg-yellow-100 rounded-lg">
-                    <h5 className="font-bold text-orange-800 mb-2">🎯 Stratégie : Complément à 10</h5>
-                    <p className="text-orange-700">
-                      Pour 7 + 5 : Je prends 3 de 5 pour faire 7 + 3 = 10, puis j'ajoute les 2 qui restent !
-                    </p>
-                    {showCarryOver && (
-                      <div className="mt-2 p-2 bg-orange-100 rounded">
-                        <span className="font-semibold">10 + 2 = 12 !</span>
+                                {/* Formule du bas */}
+                                <div className="text-center text-lg font-bold text-gray-700 border-t-2 border-yellow-200 pt-3">
+                                  {additionStep === 'complement-strategy' && `${example.first} + ${example.second} = ?`}
+                                  {additionStep === 'moving-objects' && `${example.first} + (${complement} + ${remaining}) = ?`}
+                                  {additionStep === 'first-ten' && `(${example.first} + ${complement}) + ${remaining} = 10 + ${remaining}`}
+                                  {additionStep === 'adding-rest' && `${example.first} + ${example.second} = (${example.first} + ${complement}) + ${remaining} = 10 + ${remaining} = ${example.result} 🎉`}
                       </div>
-                    )}
+                  </div>
+                            </div>
+                          );
+                        })()}
+
+                      
+
+                      {/* Résultat final */}
+                      {additionStep === 'final-result' && currentExample !== null && (() => {
+                        const example = additionExamples[currentExample];
+                        const complement = 10 - example.first;
+                        const remaining = example.second - complement;
+                        
+                        return (
+                          <div className="bg-purple-100 rounded-lg p-6 border-2 border-purple-400 ring-4 ring-purple-400 scale-105">
+                            <h4 className="text-2xl font-bold text-purple-800 mb-4 text-center">🎉 Résultat final !</h4>
+                            <div className="bg-white rounded-lg p-4 mb-4">
+                              <div className="text-center mb-4">
+                                <div className="text-3xl font-bold text-purple-800 mb-2">{example.first} + {example.second} = {example.result}</div>
+                                <div className="text-lg text-purple-600">
+                                  {example.strategy === 'complément à 10' ? 'Grâce au complément à 10 !' : 
+                                   example.strategy === 'doubles' ? 'Grâce aux doubles !' :
+                                   example.strategy === 'ajouter à 10' ? 'Grâce à l\'addition à 10 !' : 'Excellent calcul !'}
+                                </div>
+                              </div>
+                              <div className="flex flex-wrap gap-1 justify-center">
+                                {Array.from({ length: example.result }, (_, i) => (
+                                  <span key={i} className="text-lg animate-pulse">{i < example.first ? '🔴' : '🔵'}</span>
+                                ))}
+                              </div>
+                            </div>
+                            {example.strategy === 'complément à 10' && (
+                              <div className="text-center bg-purple-200 rounded-lg p-4">
+                                <div className="text-lg font-bold text-purple-800">
+                                  {example.first} + {example.second} = {example.first} + ({complement} + {remaining}) = ({example.first} + {complement}) + {remaining} = 10 + {remaining} = {example.result} ! 🎯
+                                </div>
                   </div>
                 )}
-                
-                {showStrategy === 'doubles' && (
-                  <div className="mt-6 p-4 bg-pink-100 rounded-lg">
-                    <h5 className="font-bold text-pink-800 mb-2">✨ Stratégie : Les doubles</h5>
-                    <p className="text-pink-700">
-                      Les doubles sont super faciles ! 6 + 6 = 12, 8 + 8 = 16, 9 + 9 = 18 !
-                    </p>
+                          </div>
+                        );
+                      })()}
+                    </div>
+                  ) : (
+                    /* Version statique avec visualisation complète */
+                    currentExample !== null ? (() => {
+                      const example = additionExamples[currentExample];
+                      
+                      return (
+                        <div className="space-y-8">
+                          {/* Visualisation complète de l'exemple choisi */}
+                          <div className="bg-gray-50 rounded-lg p-6">
+                            <h4 className="text-lg font-bold text-center text-gray-800 mb-6">🧮 Visualisation de {example.first} + {example.second} = {example.result}</h4>
+                            
+                            {/* Montrer tous les objets ensemble */}
+                            <div className="text-center mb-6">
+                              <div className="bg-white rounded-lg p-6 border-2 border-gray-300">
+                                <div className="text-lg text-gray-700 mb-4">Voici tous les objets ensemble :</div>
+                                <div className="flex flex-wrap gap-2 justify-center mb-4">
+                                  {/* Premier nombre d'objets rouges */}
+                                  {Array.from({ length: example.first }, (_, i) => (
+                                    <span key={`red-${i}`} className="text-3xl border-2 border-red-300 rounded-lg p-1 bg-red-50">🔴</span>
+                                  ))}
+                                  {/* Deuxième nombre d'objets bleus */}
+                                  {Array.from({ length: example.second }, (_, i) => (
+                                    <span key={`blue-${i}`} className="text-3xl border-2 border-blue-300 rounded-lg p-1 bg-blue-50">🔵</span>
+                                  ))}
                   </div>
-                )}
-                
-                {showStrategy === 'counting' && (
-                  <div className="mt-6 p-4 bg-green-100 rounded-lg">
-                    <h5 className="font-bold text-green-800 mb-2">👆 Stratégie : Compter</h5>
-                    <p className="text-green-700">
-                      Tu peux compter sur tes doigts ou dans ta tête en partant du plus grand nombre !
-                    </p>
-                  </div>
-                )}
+                                <div className="text-xl font-bold text-gray-800">
+                                  <span className="text-red-600">{example.first} objets rouges</span> + <span className="text-blue-600">{example.second} objets bleus</span> = <span className="text-green-600">{example.result} objets en tout</span>
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Décomposition claire */}
+                            <div className="grid grid-cols-1 md:grid-cols-5 gap-4 items-center">
+                              <div className="text-center p-4 bg-red-50 rounded-lg border-2 border-red-200">
+                                <div className="text-sm text-gray-600 mb-2">{example.first} objets rouges</div>
+                                <div className="flex flex-wrap gap-1 justify-center mb-2">
+                                  {Array.from({ length: example.first }, (_, i) => (
+                                    <span key={i} className="text-2xl">🔴</span>
+                                  ))}
+                                </div>
+                                <div className="text-xl font-bold text-red-800">{example.first}</div>
+                              </div>
+                              <div className="text-center flex items-center justify-center">
+                                <div className="text-4xl font-bold text-gray-600 bg-gray-200 rounded-full px-3 py-1">+</div>
+                              </div>
+                              <div className="text-center p-4 bg-blue-50 rounded-lg border-2 border-blue-200">
+                                <div className="text-sm text-gray-600 mb-2">{example.second} objets bleus</div>
+                                <div className="flex flex-wrap gap-1 justify-center mb-2">
+                                  {Array.from({ length: example.second }, (_, i) => (
+                                    <span key={i} className="text-2xl">🔵</span>
+                                  ))}
+                                </div>
+                                <div className="text-xl font-bold text-blue-800">{example.second}</div>
+                              </div>
+                              <div className="text-center flex items-center justify-center">
+                                <div className="text-4xl font-bold text-gray-600 bg-gray-200 rounded-full px-3 py-1">=</div>
+                              </div>
+                              <div className="text-center p-4 bg-green-50 rounded-lg border-2 border-green-200">
+                                <div className="text-sm text-gray-600 mb-2">{example.result} objets en tout</div>
+                                <div className="flex flex-wrap gap-1 justify-center mb-2">
+                                  {Array.from({ length: example.result }, (_, i) => (
+                                    <span key={i} className="text-lg">{i < example.first ? '🔴' : '🔵'}</span>
+                                  ))}
+                                </div>
+                                <div className="text-xl font-bold text-green-800">{example.result}</div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })() : <div></div>
+                  )}
+                </div>
               </div>
             </div>
 
-            {/* Section stratégies */}
+            {/* Autres exemples */}
             <div 
-              className={`bg-white rounded-xl p-6 shadow-lg ${
-                highlightedElement === 'strategies' ? 'pulse-glow' : ''
+              id="examples-section"
+              className={`bg-white rounded-xl p-8 shadow-lg transition-all duration-1000 ${
+                highlightedElement === 'examples-section' ? 'ring-4 ring-green-400 bg-green-50 scale-105' : ''
               }`}
             >
-              <h3 className="text-xl font-bold text-purple-800 mb-4 text-center">
-                🧠 Stratégies d'addition
-              </h3>
+              <h2 className="text-2xl font-bold text-center mb-6 text-gray-900">
+                🌟 Autres exemples d'additions
+              </h2>
               
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="p-4 bg-blue-50 rounded-lg text-center">
-                  <div className="text-2xl mb-2">🎯</div>
-                  <h4 className="font-bold text-blue-800">Complément à 10</h4>
-                  <p className="text-sm text-blue-600">Passe d'abord par 10 !</p>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {additionExamples.map((example, index) => (
+                  <div 
+                    key={index}
+                    className={`bg-gradient-to-br from-blue-50 to-purple-50 rounded-lg p-6 transition-all duration-300 ${
+                      isAnimationRunning 
+                        ? 'opacity-50 cursor-not-allowed' 
+                        : 'cursor-pointer hover:scale-105 hover:shadow-lg'
+                    } ${currentExample === index ? 'ring-4 ring-purple-400 bg-purple-100' : ''}`}
+                    onClick={isAnimationRunning ? undefined : () => explainSpecificExample(index)}
+                  >
+                    <div className="text-center">
+                      <div className="flex justify-center space-x-2 mb-3">
+                        <span className="text-2xl">{example.item1}</span>
+                        <span className="text-2xl">{example.item2}</span>
+                </div>
+                      <div className="font-bold text-lg text-gray-800 mb-2">
+                        {example.first} + {example.second} = {example.result}
+                </div>
+                      <div className="text-sm text-gray-600 mb-2">
+                        {example.description}
+                </div>
+                      <div className={`text-xs px-2 py-1 rounded-full mb-3 ${
+                        example.strategy === 'complément à 10' ? 'bg-blue-100 text-blue-800' :
+                        example.strategy === 'doubles' ? 'bg-pink-100 text-pink-800' :
+                        example.strategy === 'ajouter à 10' ? 'bg-green-100 text-green-800' :
+                        'bg-gray-100 text-gray-800'
+                      }`}>
+                        {example.strategy}
+              </div>
+                <button
+                        onClick={isAnimationRunning ? undefined : (e) => {
+                          e.stopPropagation(); // Empêche le clic de remonter au div parent
+                          stopAllVocalsAndAnimations();
+                          explainSpecificExample(index);
+                        }}
+                        className={`px-3 py-1 rounded-lg text-sm transition-colors ${
+                          isAnimationRunning 
+                            ? 'bg-gray-400 text-gray-200' 
+                            : 'bg-blue-500 text-white hover:bg-blue-600'
+                        }`}
+                      >
+                        {isAnimationRunning ? '⏳ Attendez...' : '▶️ Voir l\'animation'}
+                </button>
+              </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Stratégies d'addition */}
+            <div className="bg-white rounded-xl p-8 shadow-lg">
+              <h2 className="text-2xl font-bold text-center mb-6 text-gray-900">
+                🧠 Stratégies d'addition
+              </h2>
+              
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="bg-blue-50 rounded-lg p-6 text-center">
+                  <div className="text-4xl mb-4">🎯</div>
+                  <h3 className="text-xl font-bold mb-3 text-blue-800">Complément à 10</h3>
+                  <p className="text-blue-600">
+                    Pour 7 + 5 : prends 3 de 5 pour faire 10, puis ajoute les 2 qui restent !
+                  </p>
+                  <div className="mt-3 p-2 bg-blue-100 rounded">
+                    <span className="text-sm font-bold text-blue-800">7 + 3 = 10, puis 10 + 2 = 12</span>
+                  </div>
                 </div>
                 
-                <div className="p-4 bg-pink-50 rounded-lg text-center">
-                  <div className="text-2xl mb-2">✨</div>
-                  <h4 className="font-bold text-pink-800">Les doubles</h4>
-                  <p className="text-sm text-pink-600">Faciles à retenir !</p>
+                <div className="bg-pink-50 rounded-lg p-6 text-center">
+                  <div className="text-4xl mb-4">💕</div>
+                  <h3 className="text-xl font-bold mb-3 text-pink-800">Les doubles</h3>
+                  <p className="text-pink-600">
+                    6 + 6 = 12, 7 + 7 = 14, 8 + 8 = 16, 9 + 9 = 18
+                  </p>
+                  <div className="mt-3 p-2 bg-pink-100 rounded">
+                    <span className="text-sm font-bold text-pink-800">Faciles à retenir !</span>
+                  </div>
                 </div>
                 
-                <div className="p-4 bg-green-50 rounded-lg text-center">
-                  <div className="text-2xl mb-2">👆</div>
-                  <h4 className="font-bold text-green-800">Compter</h4>
-                  <p className="text-sm text-green-600">Sur les doigts ou dans sa tête !</p>
+                <div className="bg-green-50 rounded-lg p-6 text-center">
+                  <div className="text-4xl mb-4">➕</div>
+                  <h3 className="text-xl font-bold mb-3 text-green-800">Ajouter à 10</h3>
+                  <p className="text-green-600">
+                    10 + 5 = 15, 10 + 8 = 18, 10 + 9 = 19
+                  </p>
+                  <div className="mt-3 p-2 bg-green-100 rounded">
+                    <span className="text-sm font-bold text-green-800">Super facile !</span>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         ) : (
-          // Section Exercices
-          <div className="space-y-6">
-            {/* Bouton INSTRUCTIONS */}
-            {!exerciseInstructionGiven && (
-              <div className="flex justify-center">
-                <button
-                  onClick={() => {
-                    userHasInteractedRef.current = true;
-                    explainExercisesOnce();
-                  }}
-                  className="bg-gradient-to-r from-orange-500 to-yellow-500 text-white px-8 py-4 rounded-xl text-xl font-bold hover:from-orange-600 hover:to-yellow-600 transition-all shadow-lg animate-bounce"
+          /* EXERCICES */
+          <div className="space-y-8">
+            {/* Header exercices */}
+            <div className="bg-white rounded-xl p-6 shadow-lg">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-2xl font-bold text-gray-900">
+                  ✏️ Exercice {currentExercise + 1} sur {exercises.length}
+                </h2>
+                      <button
+                  onClick={resetAll}
+                  className="bg-gray-500 text-white px-4 py-2 rounded-lg font-bold hover:bg-gray-600 transition-colors"
                 >
-                  <div className="flex items-center space-x-3">
-                    <Volume2 className="w-6 h-6" />
-                    <span>🔊 ÉCOUTER LES INSTRUCTIONS !</span>
-                  </div>
-                </button>
-              </div>
-            )}
-
-            {/* Modal de fin */}
-            {showCompletionModal && (
-              <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                <div className="bg-white rounded-xl p-8 max-w-md w-full mx-4">
-                  <div className="text-center">
-                    <Trophy className="w-16 h-16 text-yellow-500 mx-auto mb-4" />
-                    <h3 className="text-2xl font-bold text-purple-800 mb-4">
-                      Félicitations ! 🎉
-                    </h3>
-                    <p className="text-gray-700 mb-2">
-                      Tu as terminé tous les exercices !
-                    </p>
-                    <p className="text-lg font-semibold text-purple-600 mb-6">
-                      Score : {finalScore} / {exercises.length}
-                    </p>
-                    <div className="space-y-3">
-                      <button
-                        onClick={resetExercises}
-                        className="w-full bg-purple-600 text-white py-3 rounded-lg hover:bg-purple-700 transition-colors"
-                      >
-                        🔄 Recommencer
-                      </button>
-                      <button
-                        onClick={() => setShowExercises(false)}
-                        className="w-full bg-gray-600 text-white py-3 rounded-lg hover:bg-gray-700 transition-colors"
-                      >
-                        📚 Retour au cours
+                  <RotateCcw className="inline w-4 h-4 mr-2" />
+                  Recommencer
                       </button>
                     </div>
+              
+              {/* Barre de progression */}
+              <div className="w-full bg-gray-200 rounded-full h-4 mb-3">
+                <div 
+                  className="bg-blue-500 h-4 rounded-full transition-all duration-500"
+                  style={{ width: `${((currentExercise + 1) / exercises.length) * 100}%` }}
+                ></div>
+                  </div>
+              
+              {/* Score */}
+              <div className="text-center">
+                <div className="text-xl font-bold text-blue-600">
+                  Score : {score}/{exercises.length}
+                  </div>
                   </div>
                 </div>
-              </div>
-            )}
 
-            {/* Interface d'exercice */}
-            {!showCompletionModal && (
-              <div className="bg-white rounded-xl p-6 shadow-lg">
-                <div className="flex justify-between items-center mb-6">
-                  <div className="text-sm text-gray-600">
-                    Exercice {currentExercise + 1} / {exercises.length}
-                  </div>
-                  <div className="text-sm text-purple-600 font-semibold">
-                    Score : {score} / {exercises.length}
-                  </div>
-                </div>
-
-                <div className="text-center space-y-6">
-                  <h3 className="text-xl font-bold text-purple-800">
+            {/* Question */}
+            <div className="bg-white rounded-xl p-8 shadow-lg text-center">
+              <h3 className="text-2xl font-bold mb-6 text-gray-900">
                     {exercises[currentExercise].question}
                   </h3>
                   
-                  {/* Badge du type d'exercice */}
-                  <div className="flex justify-center">
+              {/* Badge du type */}
+              <div className="flex justify-center mb-6">
                     <span className={`px-3 py-1 rounded-full text-sm font-semibold ${
-                      exercises[currentExercise].type === 'simple' ? 'bg-green-100 text-green-800' :
-                      exercises[currentExercise].type === 'carry' ? 'bg-orange-100 text-orange-800' :
+                  exercises[currentExercise].type === 'passage-dizaine' ? 'bg-blue-100 text-blue-800' :
                       exercises[currentExercise].type === 'double' ? 'bg-pink-100 text-pink-800' :
-                      exercises[currentExercise].type === 'complement' ? 'bg-blue-100 text-blue-800' :
-                      exercises[currentExercise].type === 'with_ten' ? 'bg-purple-100 text-purple-800' :
-                      'bg-yellow-100 text-yellow-800'
-                    }`}>
-                      {exercises[currentExercise].type === 'simple' ? '🟢 Simple' :
-                       exercises[currentExercise].type === 'carry' ? '🟠 Avec retenue' :
-                       exercises[currentExercise].type === 'double' ? '💖 Double' :
-                       exercises[currentExercise].type === 'complement' ? '🔵 Complément' :
-                       exercises[currentExercise].type === 'with_ten' ? '🟣 Avec 10' :
-                       '📝 Problème'}
+                  exercises[currentExercise].type === 'avec-10' ? 'bg-green-100 text-green-800' :
+                  'bg-gray-100 text-gray-800'
+                }`}>
+                  {exercises[currentExercise].type === 'passage-dizaine' ? '🎯 Passage de dizaine' :
+                   exercises[currentExercise].type === 'double' ? '💕 Double' :
+                   exercises[currentExercise].type === 'avec-10' ? '➕ Avec 10' :
+                   '📝 Calcul'}
                     </span>
                   </div>
 
-                  <div className="space-y-4">
-                    <input
-                      type="number"
-                      value={userAnswer}
-                      onChange={(e) => setUserAnswer(e.target.value)}
-                      className="w-32 p-3 text-center text-xl border-2 border-purple-300 rounded-lg focus:border-purple-500 focus:outline-none"
-                      placeholder="?"
-                      onKeyPress={(e) => e.key === 'Enter' && checkAnswer()}
-                    />
-                    
-                    <div>
+              {/* Choix multiples */}
+              <div className="grid grid-cols-1 gap-4 max-w-md mx-auto mb-8">
+                {exercises[currentExercise].choices.map((choice) => (
                       <button
-                        onClick={checkAnswer}
-                        disabled={!userAnswer}
-                        className="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
-                      >
-                        ✓ Vérifier
+                    key={choice}
+                    onClick={() => handleAnswerClick(choice)}
+                    disabled={isCorrect !== null}
+                    className={`p-6 rounded-lg font-bold text-3xl transition-all ${
+                      userAnswer === choice
+                        ? isCorrect === true
+                          ? 'bg-green-500 text-white'
+                          : isCorrect === false
+                            ? 'bg-red-500 text-white'
+                          : 'bg-blue-500 text-white'
+                        : exercises[currentExercise].correctAnswer === choice && isCorrect === false
+                          ? 'bg-green-200 text-green-800 border-2 border-green-500'
+                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200 disabled:opacity-50'
+                    } disabled:cursor-not-allowed`}
+                  >
+                    {choice}
                       </button>
-                    </div>
+                ))}
                   </div>
 
-                  {/* Feedback */}
+              {/* Résultat */}
                   {isCorrect !== null && (
-                    <div className={`p-4 rounded-lg ${
+                <div className={`p-6 rounded-lg mb-6 ${
                       isCorrect ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
                     }`}>
+                  <div className="flex items-center justify-center space-x-3">
                       {isCorrect ? (
-                        <div className="flex items-center justify-center space-x-2">
-                          <CheckCircle className="w-6 h-6" />
-                          <span className="font-semibold">Excellent ! 🎉</span>
-                        </div>
-                      ) : (
-                        <div className="space-y-2">
-                          <div className="flex items-center justify-center space-x-2">
-                            <XCircle className="w-6 h-6" />
-                            <span className="font-semibold">Pas tout à fait...</span>
+                      <>
+                        <CheckCircle className="w-8 h-8" />
+                        <span className="font-bold text-xl">
+                          Excellent ! La réponse est bien {exercises[currentExercise].correctAnswer} !
+                        </span>
+                      </>
+                    ) : (
+                      <>
+                        <XCircle className="w-8 h-8" />
+                        <span className="font-bold text-xl">
+                          Pas tout à fait... La bonne réponse est : {exercises[currentExercise].correctAnswer}
+                        </span>
+                      </>
+                    )}
                           </div>
-                          <p className="text-sm">{exercises[currentExercise].hint}</p>
+                </div>
+              )}
+              
+              {/* Navigation */}
+              {isCorrect === false && (
+                <div className="flex justify-center">
                           <button
                             onClick={nextExercise}
-                            className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
+                    className="bg-blue-500 text-white px-8 py-4 rounded-lg font-bold text-lg hover:bg-blue-600 transition-colors"
                           >
-                            Exercice suivant →
+                    Suivant →
                           </button>
                         </div>
                       )}
+            </div>
                     </div>
                   )}
+
+        {/* Modale de fin */}
+        {showCompletionModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-2xl p-8 max-w-md w-full text-center shadow-2xl">
+              {(() => {
+                const result = getCompletionMessage(finalScore, exercises.length);
+                return (
+                  <>
+                    <div className="text-6xl mb-4">{result.emoji}</div>
+                    <h3 className="text-2xl font-bold text-gray-900 mb-3">{result.title}</h3>
+                    <p className="text-lg text-gray-700 mb-6">{result.message}</p>
+                    <div className="bg-blue-100 rounded-lg p-4 mb-6">
+                      <p className="text-xl font-bold text-gray-900">
+                        Score : {finalScore}/{exercises.length}
+                      </p>
+                      <div className="text-4xl mt-2">
+                        {finalScore >= 8 ? '⭐⭐⭐' : finalScore >= 6 ? '⭐⭐' : '⭐'}
                 </div>
+                      <p className="text-sm text-gray-600 mt-2">
+                        Bravo ! Tu maîtrises les additions jusqu'à 20 !
+                      </p>
               </div>
-            )}
+                    <div className="flex space-x-3">
+                      <button
+                        onClick={resetAll}
+                        className="flex-1 bg-blue-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-blue-600 transition-colors"
+                      >
+                        Recommencer
+                      </button>
+                      <button
+                        onClick={() => {
+                          stopAllVocalsAndAnimations();
+                          setShowCompletionModal(false);
+                        }}
+                        className="flex-1 bg-gray-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-gray-600 transition-colors"
+                      >
+                        Fermer
+                      </button>
+                    </div>
+                  </>
+                );
+              })()}
+            </div>
           </div>
         )}
       </div>

@@ -15,88 +15,67 @@ interface SectionProgress {
 
 const sections = [
   {
-    id: 'reconnaissance',
-    title: 'Reconnaître les nombres',
-    description: 'Identifier et nommer les nombres de 0 à 20',
-    icon: '👁️',
-    duration: '8 min',
-    xp: 10,
+    id: 'reperage-espace',
+    title: 'Se repérer dans l\'espace',
+    description: 'Apprendre les mots : dessus, dessous, devant, derrière, à côté...',
+    icon: '🧭',
+    duration: '12 min',
+    xp: 15,
+    color: 'from-indigo-500 to-purple-500',
+    verified: true
+  },
+  {
+    id: 'formes-geometriques',
+    title: 'Les formes géométriques',
+    description: 'Reconnaître les carrés, cercles, triangles et rectangles',
+    icon: '🔺',
+    duration: '10 min',
+    xp: 12,
     color: 'from-blue-500 to-cyan-500',
     verified: true
   },
-
   {
-    id: 'ecriture',
-    title: 'Lire et écrire',
-    description: 'Écrire les nombres en chiffres et en lettres',
-    icon: '✏️',
+    id: 'lignes-traits',
+    title: 'Lignes et traits',
+    description: 'Tracer des lignes droites et courbes avec précision',
+    icon: '📏',
+    duration: '8 min',
+    xp: 10,
+    color: 'from-green-500 to-emerald-500',
+    verified: true
+  },
+  {
+    id: 'reproductions',
+    title: 'Reproduire des figures',
+    description: 'Copier des dessins simples et des motifs géométriques',
+    icon: '🎨',
     duration: '12 min',
     xp: 15,
     color: 'from-purple-500 to-violet-500',
     verified: true
   },
-
   {
-    id: 'dizaines-unites',
-    title: 'Dizaines et unités',
-    description: 'Comprendre la différence entre unités et dizaines',
-    icon: '🔢',
+    id: 'quadrillages',
+    title: 'Se repérer sur quadrillage',
+    description: 'Utiliser un quadrillage pour dessiner et se repérer dans l\'espace',
+    icon: '⬜',
     duration: '10 min',
     xp: 12,
-    color: 'from-blue-500 to-indigo-500',
-    verified: true
-  },
-  {
-    id: 'ordonner-comparer',
-    title: 'Ordonner et comparer',
-    description: 'Utiliser les signes <, > et = pour comparer les nombres',
-    icon: '📊',
-    duration: '12 min',
-    xp: 15,
-    color: 'from-green-500 to-teal-500',
-    verified: true
-  },
-  {
-    id: 'doubles-moities',
-    title: 'Doubles et moitiés',
-    description: 'Connaître les doubles < 10 et moitiés des pairs < 20',
-    icon: '🎯',
-    duration: '10 min',
-    xp: 12,
-    color: 'from-yellow-500 to-amber-500',
+    color: 'from-red-500 to-pink-500',
     verified: true
   }
 ]
 
-export default function CPNombresJusqu20Page() {
+export default function CPGeometrieEspacePage() {
   const [completedSections, setCompletedSections] = useState<string[]>([]);
   const [xpEarned, setXpEarned] = useState(0);
   const [sectionsProgress, setSectionsProgress] = useState<SectionProgress[]>([]);
 
   // Charger les progrès au démarrage
   useEffect(() => {
-    const savedProgress = localStorage.getItem('cp-nombres-20-progress');
+    const savedProgress = localStorage.getItem('cp-geometrie-progress');
     if (savedProgress) {
-      const rawProgress = JSON.parse(savedProgress);
-      
-      // Convertir le nouveau format objet en format tableau attendu
-      let progress: SectionProgress[] = [];
-      
-      if (Array.isArray(rawProgress)) {
-        // Ancien format (tableau)
-        progress = rawProgress;
-      } else {
-        // Nouveau format (objet)
-        progress = Object.entries(rawProgress).map(([sectionId, data]: [string, any]) => ({
-          sectionId,
-          completed: data.score > 0 || (data.completed && data.completed.length > 0),
-          score: data.score || data.completed?.length || 0,
-          maxScore: data.total || 10,
-          completedAt: new Date().toISOString(),
-          attempts: 1
-        }));
-      }
-      
+      const progress = JSON.parse(savedProgress);
       setSectionsProgress(progress);
       
       // Calculer les sections complétées et XP
@@ -122,28 +101,9 @@ export default function CPNombresJusqu20Page() {
   // Écouter les changements dans localStorage (quand on revient d'un exercice)
   useEffect(() => {
     const handleStorageChange = () => {
-      const savedProgress = localStorage.getItem('cp-nombres-20-progress');
+      const savedProgress = localStorage.getItem('cp-geometrie-progress');
       if (savedProgress) {
-        const rawProgress = JSON.parse(savedProgress);
-        
-        // Convertir le nouveau format objet en format tableau attendu
-        let progress: SectionProgress[] = [];
-        
-        if (Array.isArray(rawProgress)) {
-          // Ancien format (tableau)
-          progress = rawProgress;
-        } else {
-          // Nouveau format (objet)
-          progress = Object.entries(rawProgress).map(([sectionId, data]: [string, any]) => ({
-            sectionId,
-            completed: data.score > 0 || (data.completed && data.completed.length > 0),
-            score: data.score || data.completed?.length || 0,
-            maxScore: data.total || 10, // Default to 10 if total is not specified
-            completedAt: new Date().toISOString(),
-            attempts: 1 // Assuming 1 attempt for converted data
-          }));
-        }
-        
+        const progress = JSON.parse(savedProgress);
         setSectionsProgress(progress);
         
         const completed = progress.filter((p: SectionProgress) => p.completed).map((p: SectionProgress) => p.sectionId);
@@ -176,11 +136,11 @@ export default function CPNombresJusqu20Page() {
   }, []);
 
   const getSectionPath = (sectionId: string) => {
-    return `/chapitre/cp-nombres-jusqu-20/${sectionId}`;
+    return `/chapitre/cp-geometrie-espace/${sectionId}`;
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-yellow-100">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-blue-50">
       <div className="max-w-6xl mx-auto px-3 sm:px-4 py-4 sm:py-8">
         {/* Header simple */}
         <div className="mb-6 sm:mb-8">
@@ -191,13 +151,13 @@ export default function CPNombresJusqu20Page() {
           
           <div className="bg-white rounded-xl p-4 sm:p-6 shadow-lg text-center">
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
-              🔢 Nombres jusqu'à 20 (1ère partie année)
+              📐 Géométrie et espace
             </h1>
             <p className="text-base sm:text-lg text-gray-600 mb-4 sm:mb-6 px-2">
-              Découvre tes premiers nombres de 0 à 20 et apprends les compléments à 10 !
+              Découvre les formes, apprends à te repérer dans l\'espace et trace tes premiers dessins !
             </p>
             <div className="text-lg sm:text-xl mb-4 sm:mb-6">
-              <span className="bg-orange-200 px-3 sm:px-4 py-2 rounded-full font-bold text-gray-800 text-sm sm:text-base">
+              <span className="bg-indigo-200 px-3 sm:px-4 py-2 rounded-full font-bold text-gray-800 text-sm sm:text-base">
                 {xpEarned} XP gagné !
               </span>
             </div>
@@ -205,14 +165,58 @@ export default function CPNombresJusqu20Page() {
         </div>
 
         {/* Introduction ludique */}
-        <div className="bg-gradient-to-r from-orange-400 to-red-500 rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 text-white">
+        <div className="bg-gradient-to-r from-indigo-400 to-blue-500 rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 text-white">
           <div className="flex flex-col sm:flex-row items-center justify-center text-center sm:text-left space-y-3 sm:space-y-0 sm:space-x-4">
             <div className="text-4xl sm:text-6xl">🎯</div>
             <div>
-              <h2 className="text-lg sm:text-2xl font-bold mb-2">Programme français CP - 1ère partie</h2>
+              <h2 className="text-lg sm:text-2xl font-bold mb-2">Programme français CP - Géométrie</h2>
               <p className="text-sm sm:text-lg">
-                Dénombrer, lire, écrire les premiers nombres. Connaître les décompositions et compléments à 10 !
+                Se repérer dans l\'espace, reconnaître les formes, reproduire des figures !
               </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Ce qu'il faut retenir selon le programme */}
+        <div className="bg-white rounded-xl p-4 sm:p-6 lg:p-8 shadow-lg mb-6 sm:mb-8">
+          <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-800 mb-4 sm:mb-6 flex flex-col sm:flex-row items-start sm:items-center">
+            <span className="text-2xl sm:text-3xl mr-0 sm:mr-3 mb-2 sm:mb-0">💡</span>
+            <span className="text-center sm:text-left">Ce qu'il faut retenir (Programme officiel)</span>
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+            <div className="bg-indigo-50 p-4 sm:p-6 rounded-lg border border-indigo-200">
+              <h3 className="font-bold text-indigo-800 mb-3 text-sm sm:text-base">🧭 Se repérer dans l\'espace</h3>
+              <ul className="space-y-2 text-gray-700 text-sm sm:text-base">
+                <li className="flex items-start">
+                  <span className="text-indigo-500 mr-2">•</span>
+                  Vocabulaire spatial (dessus, dessous, devant...)
+                </li>
+                <li className="flex items-start">
+                  <span className="text-indigo-500 mr-2">•</span>
+                  Se déplacer sur un quadrillage
+                </li>
+                <li className="flex items-start">
+                  <span className="text-indigo-500 mr-2">•</span>
+                  Décrire une position relative
+                </li>
+              </ul>
+            </div>
+            <div className="bg-blue-50 p-4 sm:p-6 rounded-lg border border-blue-200">
+              <h3 className="font-bold text-blue-800 mb-3 text-sm sm:text-base">🔺 Formes et figures</h3>
+              <ul className="space-y-2 text-gray-700 text-sm sm:text-base">
+                <li className="flex items-start">
+                  <span className="text-blue-500 mr-2">•</span>
+                  Reconnaître carré, rectangle, triangle, cercle
+                </li>
+                <li className="flex items-start">
+                  <span className="text-blue-500 mr-2">•</span>
+                  Tracer à la règle et au compas
+                </li>
+                <li className="flex items-start">
+                  <span className="text-blue-500 mr-2">•</span>
+                  Reproduire des figures simples
+                </li>
+              </ul>
             </div>
           </div>
         </div>
@@ -287,7 +291,7 @@ export default function CPNombresJusqu20Page() {
           <div className="mt-4">
             <div className="bg-gray-200 rounded-full h-3">
               <div 
-                className="bg-gradient-to-r from-orange-400 to-red-500 h-3 rounded-full transition-all duration-500"
+                className="bg-gradient-to-r from-indigo-400 to-blue-500 h-3 rounded-full transition-all duration-500"
                 style={{ width: `${(completedSections.length / sections.length) * 100}%` }}
               ></div>
             </div>
@@ -299,13 +303,13 @@ export default function CPNombresJusqu20Page() {
 
         {/* Encouragements */}
         <div className="mt-6 sm:mt-8 text-center">
-          <div className="bg-gradient-to-r from-pink-400 to-orange-400 rounded-xl p-4 sm:p-6 text-white">
+          <div className="bg-gradient-to-r from-indigo-400 to-blue-400 rounded-xl p-4 sm:p-6 text-white">
             <div className="text-3xl sm:text-4xl mb-3">🌟</div>
-            <h3 className="text-lg sm:text-xl font-bold mb-2">Bravo petit CP !</h3>
+            <h3 className="text-lg sm:text-xl font-bold mb-2">Bravo petit architecte !</h3>
             <p className="text-sm sm:text-base lg:text-lg px-2">
-              {completedSections.length === 0 && "Découvre tes premiers nombres !"}
-              {completedSections.length > 0 && completedSections.length < sections.length && "Continue, tu apprends super bien !"}
-              {completedSections.length === sections.length && "Félicitations ! Tu maîtrises les nombres jusqu'à 20 !"}
+              {completedSections.length === 0 && "Prêt à explorer les formes et l'espace ?"}
+              {completedSections.length > 0 && completedSections.length < sections.length && "Continue, tu deviens un expert des formes !"}
+              {completedSections.length === sections.length && "Félicitations ! Tu maîtrises la géométrie !"}
             </p>
           </div>
         </div>

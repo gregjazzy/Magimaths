@@ -64,6 +64,26 @@ const sections = [
     xp: 12,
     color: 'from-red-500 to-pink-500',
     verified: true
+  },
+  {
+    id: 'additions-jusqu-100',
+    title: 'Additions jusqu\'à 100',
+    description: 'Maîtriser les additions avec des nombres plus grands et découvrir de nouvelles stratégies',
+    icon: '💯',
+    duration: '15 min',
+    xp: 18,
+    color: 'from-blue-500 to-indigo-500',
+    verified: false
+  },
+  {
+    id: 'poser-addition',
+    title: 'Poser une addition',
+    description: 'Apprendre à poser une addition en colonnes comme les grands !',
+    icon: '📝',
+    duration: '12 min',
+    xp: 15,
+    color: 'from-green-500 to-teal-500',
+    verified: false
   }
 ]
 
@@ -156,7 +176,7 @@ export default function CPAdditionsSimplesPage() {
           
           <div className="bg-white rounded-xl p-4 sm:p-6 shadow-lg text-center">
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
-              ➕ Additions simples
+              ➕ Additions
             </h1>
             <p className="text-base sm:text-lg text-gray-600 mb-4 sm:mb-6 px-2">
               Apprends à additionner ! Découvre comment ajouter des nombres pour en faire de plus grands.

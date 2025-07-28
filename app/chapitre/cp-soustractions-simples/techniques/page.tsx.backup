@@ -1,27 +1,23 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Volume2, RotateCcw, ArrowLeft, CheckCircle, XCircle, Star, Trophy, Target, Play, Minus } from 'lucide-react';
 
 // Types pour la sécurité TypeScript
-type ConceptType = 'objets' | 'nombres' | 'quotidien';
+type TechniqueType = 'complement' | 'addition' | 'decomposition' | 'proximite' | 'cassage';
 
-export default function SensSoustraction() {
+export default function TechniquesCalculSoustraction() {
   // États pour la navigation et les animations
   const [showExercises, setShowExercises] = useState(false);
   const [hasStarted, setHasStarted] = useState(false);
   const [exerciseInstructionGiven, setExerciseInstructionGiven] = useState(false);
   const [highlightedElement, setHighlightedElement] = useState<string | null>(null);
-  const [selectedConcept, setSelectedConcept] = useState<ConceptType>('objets');
   
   // États pour les animations du cours
-  const [currentStep, setCurrentStep] = useState(0);
-  const [isAnimating, setIsAnimating] = useState(false);
-  const [showObjectsStart, setShowObjectsStart] = useState(0);
-  const [showObjectsRemoved, setShowObjectsRemoved] = useState(0);
-  const [showObjectsResult, setShowObjectsResult] = useState(0);
-  const [showResult, setShowResult] = useState(false);
-  const [currentExample, setCurrentExample] = useState(0);
+  const [selectedTechnique, setSelectedTechnique] = useState<TechniqueType>('complement');
+  const [currentExample, setCurrentExample] = useState('13_minus_9');
+  const [animationStep, setAnimationStep] = useState(0);
+  const [showSteps, setShowSteps] = useState<string[]>([]);
+  const [showCalculation, setShowCalculation] = useState<any>(null);
   
   // États pour les exercices
   const [currentExercise, setCurrentExercise] = useState(0);
@@ -30,6 +26,7 @@ export default function SensSoustraction() {
   const [score, setScore] = useState(0);
   const [finalScore, setFinalScore] = useState(0);
   const [showCompletionModal, setShowCompletionModal] = useState(false);
+  const [showHint, setShowHint] = useState(false);
   
   // Refs pour la gestion vocale ultra-agressive
   const hasStartedRef = useRef(false);
@@ -54,343 +51,258 @@ export default function SensSoustraction() {
     });
   };
 
-  // 🎵 FONCTION VOCALE CENTRALISÉE ULTRA-ROBUSTE
-  const playVocal = (text: string, rate: number = 1.2): Promise<void> => {
+  const playAudioSequence = (text: string, rate: number = 1.0): Promise<void> => {
     return new Promise((resolve) => {
-      // 🔒 PROTECTION : Empêcher les vocaux sans interaction utilisateur
-      if (!userHasInteractedRef.current) {
-        console.log("🚫 BLOQUÉ : Tentative de vocal sans interaction");
-        resolve();
-        return;
-      }
-      
-      // 🛑 VÉRIFIER LE SIGNAL D'ARRÊT
       if (shouldStopRef.current) {
-        console.log("🛑 ARRÊT : Signal d'arrêt détecté");
+        resolve();
+        return;
+      }
+      if (!userHasInteractedRef.current) {
         resolve();
         return;
       }
       
-      // 🔥 ARRÊT SYSTÉMATIQUE des vocaux précédents (ZÉRO CONFLIT)
-      speechSynthesis.cancel();
-      setTimeout(() => speechSynthesis.cancel(), 10); // Double sécurité
       
       const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = 'fr-FR';
       utterance.rate = rate;
+      utterance.lang = 'fr-FR';
       
       utterance.onend = () => {
-        console.log("✅ VOCAL TERMINÉ :", text.substring(0, 30) + "...");
         resolve();
       };
       
       utterance.onerror = () => {
-        console.log("❌ ERREUR VOCAL :", text.substring(0, 30) + "...");
         resolve();
       };
       
-      console.log("🎵 DÉMARRAGE VOCAL :", text.substring(0, 30) + "...");
-      speechSynthesis.speak(utterance);
     });
   };
 
-  // 🛑 FONCTION D'ARRÊT ULTRA-AGRESSIVE
-  const stopAllVocals = () => {
-    console.log("🛑 ARRÊT ULTRA-AGRESSIF de tous les vocaux");
-    
-    // Triple sécurité
-    speechSynthesis.cancel();
-    setTimeout(() => speechSynthesis.cancel(), 10);
-    setTimeout(() => speechSynthesis.cancel(), 50);
-    setTimeout(() => speechSynthesis.cancel(), 100);
-    
-    // Signal d'arrêt global
+  const stopVocal = () => {
     shouldStopRef.current = true;
-    setIsPlayingVocal(false);
+    // Triple sécurité
   };
 
-  // Alias pour compatibilité
-  const playAudioSequence = playVocal;
-  const stopVocal = stopAllVocals;
-
-  // Exemples de soustraction
-  const examples = {
-    objets: [
-      { start: 5, remove: 2, result: 3, items: '🍎', description: 'pommes', action: 'mange' },
-      { start: 7, remove: 3, result: 4, items: '🚗', description: 'voitures', action: 'part avec' },
-      { start: 6, remove: 4, result: 2, items: '⭐', description: 'étoiles', action: 'efface' },
-      { start: 8, remove: 5, result: 3, items: '🎾', description: 'balles', action: 'prend' }
-    ],
-    nombres: [
-      { start: 9, remove: 4, result: 5 },
-      { start: 7, remove: 2, result: 5 },
-      { start: 10, remove: 6, result: 4 },
-      { start: 8, remove: 3, result: 5 }
-    ],
-    quotidien: [
-      { 
-        situation: 'Marie a 6 bonbons. Elle en donne 2 à son frère', 
-        start: 6, remove: 2, result: 4, item: '🍬',
-        action: 'donne'
+  // Exemples pour chaque technique
+  const techniqueExamples = {
+    complement: {
+      '13_minus_9': { 
+        question: '13 - 9',
+        complement: 4,
+        steps: ['9 + ? = 13', '9 + 4 = 13', 'Donc 13 - 9 = 4'],
+        explanation: 'Je cherche ce qu\'il faut ajouter à 9 pour faire 13'
       },
-      { 
-        situation: 'Dans le panier, il y a 5 oranges. Papa en prend 3 pour le jus', 
-        start: 5, remove: 3, result: 2, item: '🍊',
-        action: 'prend'
-      },
-      { 
-        situation: 'Tom collectionne 8 cartes. Il en perd 3 dans la cour', 
-        start: 8, remove: 3, result: 5, item: '🃏',
-        action: 'perd'
+      '15_minus_7': { 
+        question: '15 - 7',
+        complement: 8,
+        steps: ['7 + ? = 15', '7 + 8 = 15', 'Donc 15 - 7 = 8'],
+        explanation: 'Je cherche ce qu\'il faut ajouter à 7 pour faire 15'
       }
-    ]
+    },
+    addition: {
+      '16_minus_8': { 
+        question: '16 - 8',
+        addition: '8 + 8 = 16',
+        steps: ['8 + ? = 16', '8 + 8 = 16', 'Donc 16 - 8 = 8'],
+        explanation: 'Je transforme en addition : 8 plus quoi égale 16 ?'
+      },
+      '14_minus_6': { 
+        question: '14 - 6',
+        addition: '6 + 8 = 14',
+        steps: ['6 + ? = 14', '6 + 8 = 14', 'Donc 14 - 6 = 8'],
+        explanation: 'Je transforme en addition : 6 plus quoi égale 14 ?'
+      }
+    },
+    decomposition: {
+      '12_minus_7': { 
+        question: '12 - 7',
+        decompose: '7 = 2 + 5',
+        steps: ['12 - 7', '12 - 2 - 5', '10 - 5 = 5'],
+        explanation: 'Je décompose 7 en 2 + 5 pour passer par 10'
+      },
+      '15_minus_8': { 
+        question: '15 - 8',
+        decompose: '8 = 5 + 3',
+        steps: ['15 - 8', '15 - 5 - 3', '10 - 3 = 7'],
+        explanation: 'Je décompose 8 en 5 + 3 pour passer par 10'
+      }
+    },
+    proximite: {
+      '17_minus_9': { 
+        question: '17 - 9',
+        proche: '17 - 10 = 7',
+        steps: ['17 - 9', '17 - 10 + 1', '7 + 1 = 8'],
+        explanation: '9 est proche de 10, je calcule avec 10 puis j\'ajuste'
+      },
+      '23_minus_19': { 
+        question: '23 - 19',
+        proche: '23 - 20 = 3',
+        steps: ['23 - 19', '23 - 20 + 1', '3 + 1 = 4'],
+        explanation: '19 est proche de 20, je calcule avec 20 puis j\'ajuste'
+      }
+    },
+    cassage: {
+      '100_minus_37': { 
+        question: '100 - 37',
+        cassage: 'Dizaines et unités',
+        steps: ['100 - 37', '100 - 30 - 7', '70 - 7 = 63'],
+        explanation: 'Je casse 37 en dizaines et unités pour calculer séparément'
+      },
+      '50_minus_28': { 
+        question: '50 - 28',
+        cassage: 'Dizaines et unités',
+        steps: ['50 - 28', '50 - 20 - 8', '30 - 8 = 22'],
+        explanation: 'Je casse 28 en dizaines et unités pour calculer séparément'
+      }
+    }
   };
 
-  // Exercices variés (18 exercices)
+  // Exercices variés (25 exercices)
   const exercises = [
-    // Concept de base
-    { 
-      question: 'Que veut dire "soustraire" ?', 
-      visual: '🍎🍎🍎 ➜ 🍎',
-      correctAnswer: 'Enlever, retirer',
-      choices: ['Enlever, retirer', 'Ajouter', 'Compter']
-    },
-    { 
-      question: 'Que fait-on quand on enlève 2 objets à 5 objets ?', 
-      visual: '🚗🚗🚗🚗🚗 ➜ ?',
-      correctAnswer: 'On les retire',
-      choices: ['On les ajoute', 'On les retire', 'On les garde']
-    },
+    // Technique du complément
+    { question: "Utilise la technique du complément : 11 - 8 = ?", answer: 3, technique: "complement", hint: "8 + ? = 11" },
+    { question: "Technique du complément : 14 - 9 = ?", answer: 5, technique: "complement", hint: "9 + ? = 14" },
+    { question: "Complément : 16 - 7 = ?", answer: 9, technique: "complement", hint: "7 + ? = 16" },
+    { question: "Technique du complément : 13 - 6 = ?", answer: 7, technique: "complement", hint: "6 + ? = 13" },
     
-    // Soustractions visuelles simples
-    { 
-      question: 'Il y a 4 pommes. On en mange 1. Combien en reste-t-il ?', 
-      visual: '🍎🍎🍎🍎 ➜ 🍎🍎🍎',
-      correctAnswer: '3',
-      choices: ['2', '3', '4']
-    },
-    { 
-      question: 'Sur la table, 5 crayons. J\'en prends 2. Combien en reste-t-il ?', 
-      visual: '✏️✏️✏️✏️✏️ ➜ ?',
-      correctAnswer: '3',
-      choices: ['3', '4', '5']
-    },
+    // Transformation en addition
+    { question: "Transforme en addition : 12 - 5 = ?", answer: 7, technique: "addition", hint: "5 + ? = 12" },
+    { question: "En addition : 15 - 8 = ?", answer: 7, technique: "addition", hint: "8 + ? = 15" },
+    { question: "Technique de l'addition : 18 - 9 = ?", answer: 9, technique: "addition", hint: "9 + ? = 18" },
+    { question: "Transforme : 17 - 8 = ?", answer: 9, technique: "addition", hint: "8 + ? = 17" },
     
-    // Soustractions numériques
-    { 
-      question: 'Combien font 6 - 2 ?', 
-      visual: '6 - 2 = ?',
-      correctAnswer: '4',
-      choices: ['3', '4', '5']
-    },
-    { 
-      question: 'Combien font 8 - 3 ?', 
-      visual: '8 - 3 = ?',
-      correctAnswer: '5',
-      choices: ['4', '5', '6']
-    },
-    { 
-      question: 'Combien font 7 - 4 ?', 
-      visual: '7 - 4 = ?',
-      correctAnswer: '3',
-      choices: ['2', '3', '4']
-    },
-    { 
-      question: 'Combien font 9 - 5 ?', 
-      visual: '9 - 5 = ?',
-      correctAnswer: '4',
-      choices: ['3', '4', '5']
-    },
+    // Décomposition pour passer par 10
+    { question: "Décompose pour passer par 10 : 13 - 7 = ?", answer: 6, technique: "decomposition", hint: "7 = 3 + 4, donc 13 - 3 - 4" },
+    { question: "Passer par 10 : 14 - 8 = ?", answer: 6, technique: "decomposition", hint: "8 = 4 + 4, donc 14 - 4 - 4" },
+    { question: "Décomposition : 16 - 9 = ?", answer: 7, technique: "decomposition", hint: "9 = 6 + 3, donc 16 - 6 - 3" },
+    { question: "Passer par 10 : 12 - 5 = ?", answer: 7, technique: "decomposition", hint: "5 = 2 + 3, donc 12 - 2 - 3" },
     
-    // Problèmes contextuels
-    { 
-      question: 'Emma a 7 stickers. Elle en colle 3 sur son cahier. Combien lui en reste-t-il ?', 
-      visual: '⭐⭐⭐⭐⭐⭐⭐ ➜ ⭐⭐⭐⭐',
-      correctAnswer: '4',
-      choices: ['3', '4', '5']
-    },
-    { 
-      question: 'Dans le jardin, 6 papillons volent. 2 s\'envolent. Combien en reste-t-il ?', 
-      visual: '🦋🦋🦋🦋🦋🦋 ➜ ?',
-      correctAnswer: '4',
-      choices: ['3', '4', '5']
-    },
-    { 
-      question: 'Lucas a 9 billes. Il en donne 4 à son ami. Combien lui en reste-t-il ?', 
-      visual: '⚪⚪⚪⚪⚪⚪⚪⚪⚪ ➜ ?',
-      correctAnswer: '5',
-      choices: ['4', '5', '6']
-    },
+    // Technique de proximité
+    { question: "Proximité avec 10 : 15 - 9 = ?", answer: 6, technique: "proximite", hint: "15 - 10 + 1" },
+    { question: "Proche de 10 : 17 - 9 = ?", answer: 8, technique: "proximite", hint: "17 - 10 + 1" },
+    { question: "Proximité : 24 - 19 = ?", answer: 5, technique: "proximite", hint: "24 - 20 + 1" },
+    { question: "Proche de 20 : 26 - 19 = ?", answer: 7, technique: "proximite", hint: "26 - 20 + 1" },
     
-    // Soustractions jusqu'à 10
-    { 
-      question: 'Combien font 10 - 3 ?', 
-      visual: '10 - 3 = ?',
-      correctAnswer: '7',
-      choices: ['6', '7', '8']
-    },
-    { 
-      question: 'Combien font 10 - 6 ?', 
-      visual: '10 - 6 = ?',
-      correctAnswer: '4',
-      choices: ['3', '4', '5']
-    },
-    { 
-      question: 'Combien font 10 - 1 ?', 
-      visual: '10 - 1 = ?',
-      correctAnswer: '9',
-      choices: ['8', '9', '10']
-    },
+    // Technique du cassage
+    { question: "Cassage : 30 - 17 = ?", answer: 13, technique: "cassage", hint: "30 - 10 - 7" },
+    { question: "Casse en dizaines : 40 - 23 = ?", answer: 17, technique: "cassage", hint: "40 - 20 - 3" },
+    { question: "Technique du cassage : 50 - 34 = ?", answer: 16, technique: "cassage", hint: "50 - 30 - 4" },
+    { question: "Cassage : 60 - 28 = ?", answer: 32, technique: "cassage", hint: "60 - 20 - 8" },
     
-    // Comparaisons et différences
-    { 
-      question: 'Quelle est la différence entre 8 et 3 ?', 
-      visual: '8 ⬅️➡️ 3',
-      correctAnswer: '5',
-      choices: ['4', '5', '6']
-    },
-    { 
-      question: 'Il y a 7 filles et 4 garçons. Combien y a-t-il de filles en plus ?', 
-      visual: '👧👧👧👧👧👧👧 ➜ 👦👦👦👦',
-      correctAnswer: '3',
-      choices: ['2', '3', '4']
-    },
-    
-    // Situations avancées
-    { 
-      question: 'Maman achète 8 œufs. Elle en casse 2 en cuisinant. Combien d\'œufs entiers reste-t-il ?', 
-      visual: '🥚🥚🥚🥚🥚🥚🥚🥚 ➜ ?',
-      correctAnswer: '6',
-      choices: ['5', '6', '7']
-    },
-    { 
-      question: 'Sur l\'étagère, 10 livres. Emma en emprunte 4. Combien de livres restent sur l\'étagère ?', 
-      visual: '📚📚📚📚📚📚📚📚📚📚 ➜ ?',
-      correctAnswer: '6',
-      choices: ['5', '6', '7']
-    }
+    // Exercices mixtes pour choisir la meilleure technique
+    { question: "Choisis ta technique : 20 - 12 = ?", answer: 8, technique: "mixte", hint: "Quelle technique est la plus rapide ?" },
+    { question: "Libre choix : 25 - 17 = ?", answer: 8, technique: "mixte", hint: "Plusieurs techniques possibles !" },
+    { question: "À toi de voir : 33 - 16 = ?", answer: 17, technique: "mixte", hint: "Quelle est ta technique préférée ?" },
+    { question: "Technique au choix : 42 - 25 = ?", answer: 17, technique: "mixte", hint: "Utilise ta technique favorite !" },
+    { question: "Défi final : 100 - 47 = ?", answer: 53, technique: "mixte", hint: "Combine plusieurs techniques si besoin !" }
   ];
 
-  // Fonction principale d'explication du cours
-  const explainSubtractionConcept = async () => {
+  // Fonction principale d'explication des techniques
+  const explainTechniques = async () => {
     try {
       shouldStopRef.current = false;
       userHasInteractedRef.current = true;
       
-      await playAudioSequence("Salut ! Aujourd'hui, nous allons découvrir le sens de la soustraction !", 1.1);
+      await playAudioSequence("Salut ! Aujourd'hui, tu vas découvrir les techniques secrètes des mathématiciens pour la soustraction !", 1.1);
       await wait(800);
       
       setHighlightedElement('title');
-      await playAudioSequence("Soustraire, c'est enlever, retirer des objets ! C'est le contraire d'additionner !", 1.1);
+      await playAudioSequence("Ce sont des astuces magiques qui vont te faire calculer super vite et sans erreur !", 1.1);
       await wait(800);
       
-      // Expliquer le concept avec un exemple concret
-      setHighlightedElement('demonstration');
-      await playAudioSequence("Regarde bien cette démonstration avec des pommes !", 1.1);
-      await wait(500);
+      // Présenter les 5 techniques
+      setHighlightedElement('techniques');
+      await playAudioSequence("Il y a 5 techniques de ninja ! Chacune a ses super-pouvoirs !", 1.1);
+      await wait(800);
       
-      await demonstrateSubtraction();
-      
-      // Expliquer le symbole moins
-      setHighlightedElement('symbole');
-      await playAudioSequence("Le symbole moins ressemble à un trait horizontal : tiret ! Il veut dire qu'on enlève !", 1.1);
-      await wait(1500);
-      
-      // Encourager à tester les différents modes
-      setHighlightedElement('modes');
-      await playAudioSequence("Tu peux essayer avec des objets, des nombres, ou des situations de la vie quotidienne !", 1.1);
+      // Technique du complément
+      setSelectedTechnique('complement');
+      await playAudioSequence("Première technique : le complément ! Au lieu de soustraire, je cherche ce qui manque !", 1.1);
       await wait(1000);
       
+      await demonstrateTechnique();
+      
+      // Technique de l'addition
+      setSelectedTechnique('addition');
+      await wait(1000);
+      await playAudioSequence("Deuxième technique : transformer en addition ! Plus facile de chercher que d'enlever !", 1.1);
+      await wait(1000);
+      
+      // Technique de décomposition
+      setSelectedTechnique('decomposition');
+      await wait(1000);
+      await playAudioSequence("Troisième technique : la décomposition ! Je casse le nombre pour passer par 10 !", 1.1);
+      await wait(1000);
+      
+      // Technique de proximité
+      setSelectedTechnique('proximite');
+      await wait(1000);
+      await playAudioSequence("Quatrième technique : la proximité ! J'utilise les nombres ronds puis j'ajuste !", 1.1);
+      await wait(1000);
+      
+      // Technique du cassage
+      setSelectedTechnique('cassage');
+      await wait(1000);
+      await playAudioSequence("Cinquième technique : le cassage ! Je sépare dizaines et unités pour des gros nombres !", 1.1);
+      await wait(1500);
+      
       setHighlightedElement('exercise_tab');
-      await playAudioSequence("Maintenant, clique sur l'onglet Exercices pour t'entraîner à comprendre la soustraction !", 1.1);
+      await playAudioSequence("Maintenant, va aux exercices pour maîtriser toutes ces techniques de ninja ! Tu vas devenir imbattable !", 1.1);
       
       setHighlightedElement(null);
       
     } catch (error) {
-      console.error('Erreur dans explainSubtractionConcept:', error);
+      console.error('Erreur dans explainTechniques:', error);
     }
   };
 
-  // Démonstration animée d'une soustraction
-  const demonstrateSubtraction = async () => {
-    const example = examples[selectedConcept as keyof typeof examples][currentExample];
+  // Démonstration d'une technique
+  const demonstrateTechnique = async () => {
+    const examples = techniqueExamples[selectedTechnique];
+    const example = examples[currentExample as keyof typeof examples] as any;
+    
+    if (!example) return;
     
     try {
-      setCurrentStep(0);
-      setShowObjectsStart(0);
-      setShowObjectsRemoved(0);
-      setShowObjectsResult(0);
-      setShowResult(false);
+      setAnimationStep(0);
+      setShowSteps([]);
+      setShowCalculation(null);
       
-      // Étape 1: Montrer tous les objets au début
-      setCurrentStep(1);
-      await playAudioSequence(`D'abord, j'ai ${example.start} ${'description' in example ? example.description : 'objets'} !`, 1.1);
+      // Montrer le problème
+      setAnimationStep(1);
+      await playAudioSequence(`Regardons ${example.question} avec la technique ${getTechniqueName(selectedTechnique)} !`, 1.1);
+      await wait(800);
       
-      for (let i = 1; i <= example.start; i++) {
-        setShowObjectsStart(i);
-        await wait(400);
+      // Expliquer la technique
+      setAnimationStep(2);
+      await playAudioSequence(example.explanation, 1.1);
+      await wait(800);
+      
+      // Montrer les étapes
+      setAnimationStep(3);
+      for (let i = 0; i < example.steps.length; i++) {
+        setShowSteps(prev => [...prev, example.steps[i]]);
+        await playAudioSequence(example.steps[i], 1.0);
+        await wait(1000);
       }
-      await wait(1000);
       
-      // Étape 2: Enlever des objets
-      setCurrentStep(2);
-      await playAudioSequence(`Maintenant, j'en ${'action' in example ? example.action : 'enlève'} ${example.remove} !`, 1.1);
-      
-      for (let i = 1; i <= example.remove; i++) {
-        setShowObjectsRemoved(i);
-        await wait(600);
-      }
-      await wait(1000);
-      
-      // Étape 3: Montrer le résultat
-      setCurrentStep(3);
-      await playAudioSequence(`Il me reste ${example.result} ${'description' in example ? example.description : 'objets'} !`, 1.1);
-      
-      for (let i = 1; i <= example.result; i++) {
-        setShowObjectsResult(i);
-        await wait(400);
-      }
-      await wait(1000);
-      
-      // Étape 4: Montrer l'opération
-      setCurrentStep(4);
-      setShowResult(true);
-      await playAudioSequence(`Donc ${example.start} moins ${example.remove} égale ${example.result} !`, 1.1);
-      await wait(1500);
-      
-      await playAudioSequence("C'est exactement comme ça que fonctionne la soustraction !", 1.1);
+      setAnimationStep(4);
+      await playAudioSequence("Et voilà ! Cette technique rend le calcul beaucoup plus facile !", 1.1);
       
     } catch (error) {
-      console.error('Erreur dans demonstrateSubtraction:', error);
+      console.error('Erreur dans demonstrateTechnique:', error);
     }
   };
 
-  // Changer de concept
-  const switchConcept = async (concept: ConceptType) => {
-    stopVocal();
-    setSelectedConcept(concept);
-    setCurrentExample(0);
-    
-    try {
-      setCurrentStep(0);
-      
-      if (concept === 'objets') {
-        await playAudioSequence("Super ! Avec les objets, on peut vraiment voir ce qu'on enlève !", 1.1);
-      } else if (concept === 'nombres') {
-        await playAudioSequence("Parfait ! Maintenant on travaille directement avec les nombres !", 1.1);
-      } else {
-        await playAudioSequence("Excellent ! Ces situations arrivent tous les jours dans la vraie vie !", 1.1);
-      }
-      
-    } catch (error) {
-      console.error('Erreur dans switchConcept:', error);
+  const getTechniqueName = (technique: TechniqueType): string => {
+    switch (technique) {
+      case 'complement': return 'du complément';
+      case 'addition': return 'de l\'addition';
+      case 'decomposition': return 'de décomposition';
+      case 'proximite': return 'de proximité';
+      case 'cassage': return 'du cassage';
+      default: return '';
     }
-  };
-
-  // Changer d'exemple
-  const changeExample = () => {
-    const maxExamples = examples[selectedConcept as keyof typeof examples].length;
-    setCurrentExample((currentExample + 1) % maxExamples);
   };
 
   // Fonction d'explication des exercices
@@ -401,16 +313,16 @@ export default function SensSoustraction() {
       setExerciseInstructionGiven(true);
       exerciseInstructionGivenRef.current = true;
       
-      await playAudioSequence("Super ! Tu es dans les exercices sur le sens de la soustraction !", 1.0);
+      await playAudioSequence("Fantastique ! Tu es dans les exercices des techniques de calcul !", 1.0);
       await wait(800);
       
-      await playAudioSequence("Tu vas découvrir 18 exercices variés pour bien comprendre ce que veut dire soustraire !", 1.0);
+      await playAudioSequence("Tu vas résoudre 25 soustractions en utilisant les 5 techniques de ninja !", 1.0);
       await wait(1000);
       
-      await playAudioSequence("Il y a des questions sur le concept, des soustractions visuelles, des calculs et des petits problèmes !", 1.0);
+      await playAudioSequence("Chaque exercice te dit quelle technique utiliser, puis à la fin tu choisis librement !", 1.0);
       await wait(1000);
       
-      await playAudioSequence("Pour chaque question, lis bien et choisis la bonne réponse. N'oublie pas : soustraire c'est enlever ! Allez, c'est parti !", 1.0);
+      await playAudioSequence("Souviens-toi : complément, addition, décomposition, proximité et cassage ! À toi de jouer, ninja des maths !", 1.0);
       
     } catch (error) {
       console.error('Erreur dans explainExercisesOnce:', error);
@@ -419,29 +331,28 @@ export default function SensSoustraction() {
 
   const speakText = (text: string) => {
     if (!userHasInteractedRef.current) return;
-    speechSynthesis.cancel();
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.rate = 1.0;
     utterance.lang = 'fr-FR';
-    speechSynthesis.speak(utterance);
   };
 
   // Fonction pour vérifier la réponse
-  const checkAnswer = (selectedAnswer: string) => {
+  const checkAnswer = () => {
     stopVocal();
     const exerciseData = exercises[currentExercise];
+    const userNum = parseInt(userAnswer);
     
-    if (selectedAnswer === exerciseData.correctAnswer) {
+    if (userNum === exerciseData.answer) {
       setIsCorrect(true);
       setScore(score + 1);
-      speakText("Bravo ! C'est la bonne réponse !");
+      speakText("Excellent ! Tu maîtrises cette technique !");
       
       setTimeout(() => {
         nextExercise();
       }, 2000);
     } else {
       setIsCorrect(false);
-      speakText(`Pas tout à fait ! La bonne réponse était : ${exerciseData.correctAnswer}`);
+      speakText(`Pas tout à fait ! ${exerciseData.hint}`);
     }
   };
 
@@ -452,6 +363,7 @@ export default function SensSoustraction() {
       setCurrentExercise(nextIndex);
       setUserAnswer('');
       setIsCorrect(null);
+      setShowHint(false);
     } else {
       setFinalScore(score + (isCorrect ? 1 : 0));
       setShowCompletionModal(true);
@@ -465,6 +377,7 @@ export default function SensSoustraction() {
     setIsCorrect(null);
     setScore(0);
     setShowCompletionModal(false);
+    setShowHint(false);
   };
 
   // Fonction centralisée de reset des boutons
@@ -475,50 +388,6 @@ export default function SensSoustraction() {
     exerciseInstructionGivenRef.current = false;
     hasStartedRef.current = false;
   };
-
-  // 🎵 GESTION VOCALE ULTRA-ROBUSTE - Event Listeners
-  useEffect(() => {
-    // 🎵 FONCTION DE NETTOYAGE VOCAL pour la sortie de page
-    const handlePageExit = () => {
-      console.log("🚪 SORTIE DE PAGE DÉTECTÉE - Arrêt des vocaux");
-      stopAllVocals();
-    };
-    
-    // 🔍 GESTION DE LA VISIBILITÉ (onglet caché/affiché)
-    const handleVisibilityChange = () => {
-      if (document.hidden) {
-        console.log("👁️ PAGE CACHÉE - Arrêt des vocaux");
-        stopAllVocals();
-      }
-    };
-    
-    // 🏠 GESTION DE LA NAVIGATION
-    const handleNavigation = () => {
-      console.log("🔄 NAVIGATION DÉTECTÉE - Arrêt des vocaux");
-      stopAllVocals();
-    };
-    
-    // 🚪 EVENT LISTENERS pour sortie de page
-    window.addEventListener('beforeunload', handlePageExit);
-    window.addEventListener('pagehide', handlePageExit);
-    window.addEventListener('unload', handlePageExit);
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    window.addEventListener('blur', handleNavigation);
-    window.addEventListener('popstate', handleNavigation);
-    
-    return () => {
-      // 🧹 NETTOYAGE COMPLET
-      stopAllVocals();
-      
-      // Retirer les event listeners
-      window.removeEventListener('beforeunload', handlePageExit);
-      window.removeEventListener('pagehide', handlePageExit);
-      window.removeEventListener('unload', handlePageExit);
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-      window.removeEventListener('blur', handleNavigation);
-      window.removeEventListener('popstate', handleNavigation);
-    };
-  }, []);
 
   // Gestion des événements pour persistance des boutons
   useEffect(() => {
@@ -614,22 +483,6 @@ export default function SensSoustraction() {
     };
   }, []);
 
-  // Rendu des objets pour les animations
-  const renderObjects = (count: number, color: string, item: string, opacity: number = 1) => {
-    return Array.from({ length: count }, (_, i) => (
-      <div
-        key={i}
-        className={`w-12 h-12 rounded-lg ${color} border-2 border-white shadow-md animate-bounce flex items-center justify-center text-2xl transition-opacity duration-500`}
-        style={{ 
-          animationDelay: `${i * 100}ms`,
-          opacity: opacity
-        }}
-      >
-        {item}
-      </div>
-    ));
-  };
-
   // Styles CSS intégrés
   const styles = `
     @keyframes float {
@@ -637,20 +490,25 @@ export default function SensSoustraction() {
       50% { transform: translateY(-10px); }
     }
     @keyframes pulse-glow {
-      0%, 100% { box-shadow: 0 0 5px rgba(239, 68, 68, 0.5); }
-      50% { box-shadow: 0 0 20px rgba(239, 68, 68, 0.8); }
+      0%, 100% { box-shadow: 0 0 5px rgba(139, 69, 19, 0.5); }
+      50% { box-shadow: 0 0 20px rgba(139, 69, 19, 0.8); }
     }
-    @keyframes fadeOut {
-      0% { opacity: 1; transform: scale(1); }
-      100% { opacity: 0; transform: scale(0.8); }
+    @keyframes slideIn {
+      0% { transform: translateX(-20px); opacity: 0; }
+      100% { transform: translateX(0); opacity: 1; }
+    }
+    @keyframes ninja {
+      0%, 100% { transform: scale(1) rotate(0deg); }
+      50% { transform: scale(1.1) rotate(5deg); }
     }
     .float { animation: float 3s ease-in-out infinite; }
     .pulse-glow { animation: pulse-glow 2s ease-in-out infinite; }
-    .fade-out { animation: fadeOut 0.8s ease-in-out forwards; }
+    .slide-in { animation: slideIn 0.5s ease-out; }
+    .ninja { animation: ninja 2s ease-in-out infinite; }
   `;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-red-50 to-orange-100">
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 to-yellow-100">
       <style dangerouslySetInnerHTML={{ __html: styles }} />
       
       <div className="max-w-6xl mx-auto px-4 py-6">
@@ -658,18 +516,18 @@ export default function SensSoustraction() {
         <div className="flex items-center justify-between mb-6">
           <button
             onClick={() => window.history.back()}
-            className="flex items-center space-x-2 text-red-600 hover:text-red-800 transition-colors"
+            className="flex items-center space-x-2 text-amber-600 hover:text-amber-800 transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />
             <span>Retour aux soustractions simples</span>
           </button>
           
           <h1 
-            className={`text-3xl font-bold text-center text-red-800 ${
+            className={`text-3xl font-bold text-center text-amber-800 ${
               highlightedElement === 'title' ? 'pulse-glow bg-yellow-200 px-4 py-2 rounded-lg' : ''
             }`}
           >
-            🪣 Le sens de la soustraction
+            🥷 Techniques de calcul
           </h1>
           
           <div className="w-32"></div>
@@ -685,8 +543,8 @@ export default function SensSoustraction() {
             }}
             className={`px-6 py-3 rounded-lg font-semibold transition-all ${
               !showExercises
-                ? 'bg-red-600 text-white shadow-lg'
-                : 'bg-white text-red-600 hover:bg-red-50'
+                ? 'bg-amber-600 text-white shadow-lg'
+                : 'bg-white text-amber-600 hover:bg-amber-50'
             }`}
           >
             📚 Cours
@@ -699,8 +557,8 @@ export default function SensSoustraction() {
             }}
             className={`px-6 py-3 rounded-lg font-semibold transition-all ${
               showExercises
-                ? 'bg-red-600 text-white shadow-lg'
-                : 'bg-white text-red-600 hover:bg-red-50'
+                ? 'bg-amber-600 text-white shadow-lg'
+                : 'bg-white text-amber-600 hover:bg-amber-50'
             } ${highlightedElement === 'exercise_tab' ? 'pulse-glow' : ''}`}
           >
             🎯 Exercices
@@ -717,13 +575,11 @@ export default function SensSoustraction() {
                   onClick={() => {
                     setHasStarted(true);
                     hasStartedRef.current = true;
-                    explainSubtractionConcept();
+                    explainTechniques();
                   }}
-                  className="bg-gradient-to-r from-red-500 to-orange-500 text-white px-8 py-4 rounded-xl text-xl font-bold hover:from-red-600 hover:to-orange-600 transition-all shadow-lg animate-bounce"
                 >
                   <div className="flex items-center space-x-3">
-                    <Volume2 className="w-6 h-6" />
-                    <span>🚀 COMMENCER !</span>
+                    <span>🥷 DEVENIR UN NINJA !</span>
                   </div>
                 </button>
               </div>
@@ -731,265 +587,205 @@ export default function SensSoustraction() {
 
             {/* Introduction visuelle */}
             <div className="bg-white rounded-xl p-6 shadow-lg">
-              <h2 className="text-2xl font-bold text-red-800 mb-4 text-center">
-                ✨ Découvre le sens de la soustraction !
+              <h2 className="text-2xl font-bold text-amber-800 mb-4 text-center">
+                🧠 Les 5 techniques secrètes des ninjas mathématiques !
               </h2>
               
               <div className="text-center text-gray-700 space-y-2">
-                <p>🪣 Apprends ce que veut dire "enlever"</p>
-                <p>➖ Découvre le symbole moins</p>
-                <p>🎯 Comprends avec des exemples concrets !</p>
+                <p>⚡ Calcule plus vite que l'éclair</p>
+                <p>🎯 Zéro erreur, maximum d'efficacité</p>
+                <p>🏆 Impressionne tes amis avec tes super-pouvoirs !</p>
               </div>
             </div>
 
-            {/* Explication du symbole */}
+            {/* Les 5 techniques */}
             <div 
               className={`bg-white rounded-xl p-6 shadow-lg ${
-                highlightedElement === 'symbole' ? 'pulse-glow' : ''
+                highlightedElement === 'techniques' ? 'pulse-glow' : ''
               }`}
             >
-              <h3 className="text-xl font-bold text-red-800 mb-4 text-center">
-                ➖ Le symbole moins
+              <h3 className="text-xl font-bold text-amber-800 mb-4 text-center">
+                🥷 Arsenal des techniques ninja
               </h3>
               
-              <div className="text-center space-y-4">
-                <div className="text-8xl font-bold text-red-600 animate-pulse">
-                  <Minus className="w-24 h-24 mx-auto" />
-                </div>
-                <p className="text-lg text-gray-700">
-                  Le symbole <span className="font-bold text-red-600">moins (-)</span> veut dire qu'on <span className="font-bold">enlève</span> ou qu'on <span className="font-bold">retire</span> !
-                </p>
-              </div>
-            </div>
-
-            {/* Sélecteur de modes */}
-            <div 
-              className={`bg-white rounded-xl p-6 shadow-lg ${
-                highlightedElement === 'modes' ? 'pulse-glow' : ''
-              }`}
-            >
-              <h3 className="text-xl font-bold text-red-800 mb-4 text-center">
-                🎮 Choisis ton mode d'apprentissage
-              </h3>
-              
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
                 <button
-                  onClick={() => switchConcept('objets')}
+                  onClick={() => {
+                    setSelectedTechnique('complement');
+                    setCurrentExample('13_minus_9');
+                  }}
                   className={`p-4 rounded-lg border-2 transition-all ${
-                    selectedConcept === 'objets'
-                      ? 'border-red-500 bg-red-50'
-                      : 'border-gray-200 hover:border-red-300'
+                    selectedTechnique === 'complement'
+                      ? 'border-amber-500 bg-amber-50'
+                      : 'border-gray-200 hover:border-amber-300'
                   }`}
                 >
-                  <div className="text-3xl mb-2">🍎</div>
-                  <h4 className="font-bold text-red-800">Avec des objets</h4>
-                  <p className="text-sm text-gray-600">Voir vraiment ce qu'on enlève</p>
+                  <div className="text-3xl mb-2">🔍</div>
+                  <h4 className="font-bold text-amber-800">Complément</h4>
+                  <p className="text-sm text-gray-600">Chercher ce qui manque</p>
                 </button>
                 
                 <button
-                  onClick={() => switchConcept('nombres')}
+                  onClick={() => {
+                    setSelectedTechnique('addition');
+                    setCurrentExample('16_minus_8');
+                  }}
                   className={`p-4 rounded-lg border-2 transition-all ${
-                    selectedConcept === 'nombres'
-                      ? 'border-red-500 bg-red-50'
-                      : 'border-gray-200 hover:border-red-300'
+                    selectedTechnique === 'addition'
+                      ? 'border-amber-500 bg-amber-50'
+                      : 'border-gray-200 hover:border-amber-300'
                   }`}
                 >
-                  <div className="text-3xl mb-2">🔢</div>
-                  <h4 className="font-bold text-red-800">Avec des nombres</h4>
-                  <p className="text-sm text-gray-600">Calculs directs</p>
+                  <div className="text-3xl mb-2">➕</div>
+                  <h4 className="font-bold text-amber-800">Addition</h4>
+                  <p className="text-sm text-gray-600">Transformer en plus</p>
                 </button>
                 
                 <button
-                  onClick={() => switchConcept('quotidien')}
+                  onClick={() => {
+                    setSelectedTechnique('decomposition');
+                    setCurrentExample('12_minus_7');
+                  }}
                   className={`p-4 rounded-lg border-2 transition-all ${
-                    selectedConcept === 'quotidien'
-                      ? 'border-red-500 bg-red-50'
-                      : 'border-gray-200 hover:border-red-300'
+                    selectedTechnique === 'decomposition'
+                      ? 'border-amber-500 bg-amber-50'
+                      : 'border-gray-200 hover:border-amber-300'
                   }`}
                 >
-                  <div className="text-3xl mb-2">🌟</div>
-                  <h4 className="font-bold text-red-800">Situations réelles</h4>
-                  <p className="text-sm text-gray-600">Dans la vraie vie</p>
+                  <div className="text-3xl mb-2">🧩</div>
+                  <h4 className="font-bold text-amber-800">Décomposition</h4>
+                  <p className="text-sm text-gray-600">Passer par 10</p>
+                </button>
+                
+                <button
+                  onClick={() => {
+                    setSelectedTechnique('proximite');
+                    setCurrentExample('17_minus_9');
+                  }}
+                  className={`p-4 rounded-lg border-2 transition-all ${
+                    selectedTechnique === 'proximite'
+                      ? 'border-amber-500 bg-amber-50'
+                      : 'border-gray-200 hover:border-amber-300'
+                  }`}
+                >
+                  <div className="text-3xl mb-2">🎯</div>
+                  <h4 className="font-bold text-amber-800">Proximité</h4>
+                  <p className="text-sm text-gray-600">Nombres ronds</p>
+                </button>
+                
+                <button
+                  onClick={() => {
+                    setSelectedTechnique('cassage');
+                    setCurrentExample('100_minus_37');
+                  }}
+                  className={`p-4 rounded-lg border-2 transition-all ${
+                    selectedTechnique === 'cassage'
+                      ? 'border-amber-500 bg-amber-50'
+                      : 'border-gray-200 hover:border-amber-300'
+                  }`}
+                >
+                  <div className="text-3xl mb-2">🔨</div>
+                  <h4 className="font-bold text-amber-800">Cassage</h4>
+                  <p className="text-sm text-gray-600">Dizaines/unités</p>
                 </button>
               </div>
             </div>
 
             {/* Zone de démonstration */}
-            <div 
-              className={`bg-white rounded-xl p-6 shadow-lg ${
-                highlightedElement === 'demonstration' ? 'pulse-glow' : ''
-              }`}
-            >
+            <div className="bg-white rounded-xl p-6 shadow-lg">
               <div className="flex justify-between items-center mb-6">
-                <h3 className="text-xl font-bold text-red-800">
-                  {selectedConcept === 'objets' && '🎭 Démonstration avec objets'}
-                  {selectedConcept === 'nombres' && '🧮 Démonstration avec nombres'}
-                  {selectedConcept === 'quotidien' && '🌟 Situation de la vie quotidienne'}
+                <h3 className="text-xl font-bold text-amber-800">
+                  Technique : {selectedTechnique === 'complement' && '🔍 Complément'}
+                  {selectedTechnique === 'addition' && '➕ Addition'}
+                  {selectedTechnique === 'decomposition' && '🧩 Décomposition'}
+                  {selectedTechnique === 'proximite' && '🎯 Proximité'}
+                  {selectedTechnique === 'cassage' && '🔨 Cassage'}
                 </h3>
                 
                 <button
-                  onClick={changeExample}
-                  className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors"
+                  onClick={demonstrateTechnique}
+                  className="bg-amber-500 text-white px-4 py-2 rounded-lg hover:bg-amber-600 transition-colors"
                 >
-                  <RotateCcw className="inline w-4 h-4 mr-2" />
-                  Autre exemple
+                  <Play className="inline w-4 h-4 mr-2" />
+                  Démonstration
                 </button>
               </div>
 
-              {/* Affichage selon le type de concept */}
-              {selectedConcept === 'objets' && (
-                <div className="space-y-8">
-                  
-                  {/* Animation des objets */}
-                  <div className="grid grid-cols-1 gap-8 items-center">
-                    
-                    {/* Étape 1 : Objets de départ */}
-                    {currentStep >= 1 && (
-                      <div className="text-center">
-                        <div className="bg-blue-100 p-6 rounded-lg">
-                          <h4 className="text-lg font-bold text-blue-800 mb-4">Au départ</h4>
-                          <div className="grid grid-cols-5 gap-2 justify-center max-w-md mx-auto">
-                            {renderObjects(showObjectsStart, 'bg-blue-400', (examples[selectedConcept as keyof typeof examples][currentExample] as any).items || '●')}
-                          </div>
-                          <div className="text-xl font-bold text-blue-800 mt-4">
-                            {examples[selectedConcept as keyof typeof examples][currentExample].start}
-                          </div>
-                        </div>
-                      </div>
-                    )}
+              {/* Sélecteur d'exemples */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                {Object.entries(techniqueExamples[selectedTechnique] || {}).map(([key, example]) => (
+                  <button
+                    key={key}
+                    onClick={() => setCurrentExample(key)}
+                    className={`p-3 rounded-lg border-2 transition-all ${
+                      currentExample === key
+                        ? 'border-amber-500 bg-amber-50'
+                        : 'border-gray-200 hover:border-amber-300'
+                    }`}
+                  >
+                    <div className="text-lg font-bold">
+                      {example.question}
+                    </div>
+                    <div className="text-sm text-gray-600">
+                      {example.explanation}
+                    </div>
+                  </button>
+                ))}
+              </div>
 
-                    {/* Flèche vers le bas */}
-                    {currentStep >= 2 && (
-                      <div className="text-center">
-                        <div className="text-4xl animate-bounce">⬇️</div>
-                        <p className="text-lg font-semibold text-red-600 mt-2">
-                          On enlève {examples[selectedConcept as keyof typeof examples][currentExample].remove}
-                        </p>
-                      </div>
-                    )}
-
-                    {/* Étape 2 : Objets enlevés */}
-                    {currentStep >= 2 && (
-                      <div className="text-center">
-                        <div className="bg-red-100 p-6 rounded-lg">
-                          <h4 className="text-lg font-bold text-red-800 mb-4">Ce qu'on enlève</h4>
-                          <div className="grid grid-cols-5 gap-2 justify-center max-w-md mx-auto">
-                            {renderObjects(showObjectsRemoved, 'bg-red-400', (examples[selectedConcept as keyof typeof examples][currentExample] as any).items || '●', 0.6)}
-                          </div>
-                          <div className="text-xl font-bold text-red-800 mt-4">
-                            {showObjectsRemoved}
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Flèche vers le bas */}
-                    {currentStep >= 3 && (
-                      <div className="text-center">
-                        <div className="text-4xl animate-bounce">⬇️</div>
-                        <p className="text-lg font-semibold text-green-600 mt-2">
-                          Il reste...
-                        </p>
-                      </div>
-                    )}
-
-                    {/* Étape 3 : Résultat */}
-                    {currentStep >= 3 && (
-                      <div className="text-center">
-                        <div className="bg-green-100 p-6 rounded-lg">
-                          <h4 className="text-lg font-bold text-green-800 mb-4">Ce qui reste</h4>
-                          <div className="grid grid-cols-5 gap-2 justify-center max-w-md mx-auto">
-                            {renderObjects(showObjectsResult, 'bg-green-400', (examples[selectedConcept as keyof typeof examples][currentExample] as any).items || '●')}
-                          </div>
-                          <div className="text-xl font-bold text-green-800 mt-4">
-                            {examples[selectedConcept as keyof typeof examples][currentExample].result}
-                          </div>
-                        </div>
-                      </div>
-                    )}
+              {/* Zone d'animation */}
+              <div className="bg-gradient-to-r from-yellow-50 to-amber-50 rounded-lg p-6 min-h-64">
+                {/* Problème initial */}
+                {animationStep >= 1 && (
+                  <div className="text-center mb-6">
+                    <h4 className="text-3xl font-bold text-amber-800">
+                      {(techniqueExamples[selectedTechnique]?.[currentExample as keyof typeof techniqueExamples[typeof selectedTechnique]] as any)?.question || ''}
+                    </h4>
                   </div>
-
-                  {/* Opération finale */}
-                  {showResult && (
-                    <div className="text-center">
-                      <div className="bg-purple-100 p-6 rounded-lg">
-                        <h4 className="text-2xl font-bold text-purple-800 mb-4">🎯 L'opération</h4>
-                        <div className="text-4xl font-bold text-purple-800">
-                          {examples[selectedConcept as keyof typeof examples][currentExample].start} - {examples[selectedConcept as keyof typeof examples][currentExample].remove} = {examples[selectedConcept as keyof typeof examples][currentExample].result}
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* Affichage pour les nombres purs */}
-              {selectedConcept === 'nombres' && (
-                <div className="space-y-8">
-                  <div className="grid grid-cols-1 md:grid-cols-5 gap-4 items-center text-center">
-                    <div className="text-8xl font-bold text-blue-600">
-                      {examples.nombres[currentExample].start}
-                    </div>
-                    <div className="text-6xl font-bold text-red-500">-</div>
-                    <div className="text-8xl font-bold text-red-600">
-                      {examples.nombres[currentExample].remove}
-                    </div>
-                    <div className="text-6xl font-bold text-purple-500">=</div>
-                    <div className={`text-8xl font-bold transition-all duration-500 ${
-                      showResult ? 'text-green-600 scale-110' : 'text-gray-300'
-                    }`}>
-                      {showResult ? examples.nombres[currentExample].result : '?'}
+                )}
+                
+                {/* Explication de la technique */}
+                {animationStep >= 2 && (
+                  <div className="text-center mb-6">
+                    <div className="bg-blue-100 p-4 rounded-lg">
+                      <p className="text-blue-800 font-semibold">
+                        {(techniqueExamples[selectedTechnique]?.[currentExample as keyof typeof techniqueExamples[typeof selectedTechnique]] as any)?.explanation || ''}
+                      </p>
                     </div>
                   </div>
-                </div>
-              )}
+                )}
 
-              {/* Affichage pour les situations quotidiennes */}
-              {selectedConcept === 'quotidien' && (
-                <div className="space-y-8">
-                  <div className="bg-yellow-50 p-6 rounded-lg border border-yellow-200">
-                    <p className="text-xl text-gray-800 mb-4">
-                      📖 <strong>Situation :</strong> {examples.quotidien[currentExample].situation}
-                    </p>
+                {/* Étapes de résolution */}
+                {animationStep >= 3 && showSteps.length > 0 && (
+                  <div className="space-y-3">
+                    <h5 className="font-bold text-center text-purple-800 mb-4">🔥 Étapes ninja :</h5>
+                    {showSteps.map((step, index) => (
+                      <div 
+                        key={index}
+                        className="bg-purple-100 p-3 rounded-lg slide-in text-center"
+                        style={{ animationDelay: `${index * 0.2}s` }}
+                      >
+                        <span className="text-purple-700 font-semibold">
+                          {index + 1}. {step}
+                        </span>
+                      </div>
+                    ))}
                   </div>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
-                    <div className="text-center">
-                      <h4 className="text-lg font-bold text-blue-800 mb-4">Au départ</h4>
-                      <div className="text-6xl mb-2">{examples.quotidien[currentExample].item}</div>
-                      <div className="text-4xl font-bold text-blue-600">
-                        {examples.quotidien[currentExample].start}
-                      </div>
-                    </div>
-                    
-                    <div className="text-center">
-                      <div className="text-4xl font-bold text-red-500 mb-2">-</div>
-                      <div className="text-6xl mb-2 opacity-60">{examples.quotidien[currentExample].item}</div>
-                      <div className="text-4xl font-bold text-red-600">
-                        {examples.quotidien[currentExample].remove}
-                      </div>
-                    </div>
-                    
-                    <div className="text-center">
-                      <h4 className="text-lg font-bold text-green-800 mb-4">Il reste</h4>
-                      <div className="text-6xl mb-2">{examples.quotidien[currentExample].item}</div>
-                      <div className={`text-4xl font-bold transition-all duration-500 ${
-                        showResult ? 'text-green-600 scale-110' : 'text-gray-300'
-                      }`}>
-                        {showResult ? examples.quotidien[currentExample].result : '?'}
-                      </div>
+                )}
+
+                {/* Message de succès */}
+                {animationStep >= 4 && (
+                  <div className="text-center mt-6">
+                    <div className="bg-green-100 p-6 rounded-lg">
+                      <h4 className="text-2xl font-bold text-green-800">
+                        🎉 Technique maîtrisée !
+                      </h4>
+                      <p className="text-green-700 mt-2">
+                        Tu calcules maintenant comme un vrai ninja ! 🥷⚡
+                      </p>
                     </div>
                   </div>
-                </div>
-              )}
-              
-              <div className="text-center mt-6">
-                <button
-                  onClick={demonstrateSubtraction}
-                  className="bg-red-500 text-white px-6 py-3 rounded-lg hover:bg-red-600 transition-colors"
-                >
-                  🔄 Voir la démonstration
-                </button>
+                )}
               </div>
             </div>
           </div>
@@ -1004,11 +800,9 @@ export default function SensSoustraction() {
                     userHasInteractedRef.current = true;
                     explainExercisesOnce();
                   }}
-                  className="bg-gradient-to-r from-yellow-500 to-red-500 text-white px-8 py-4 rounded-xl text-xl font-bold hover:from-yellow-600 hover:to-red-600 transition-all shadow-lg animate-bounce"
                 >
                   <div className="flex items-center space-x-3">
-                    <Volume2 className="w-6 h-6" />
-                    <span>🔊 ÉCOUTER LES INSTRUCTIONS !</span>
+                    <span>🔊 INSTRUCTIONS NINJA !</span>
                   </div>
                 </button>
               </div>
@@ -1019,22 +813,22 @@ export default function SensSoustraction() {
               <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                 <div className="bg-white rounded-xl p-8 max-w-md w-full mx-4">
                   <div className="text-center">
-                    <Trophy className="w-16 h-16 text-yellow-500 mx-auto mb-4" />
-                    <h3 className="text-2xl font-bold text-red-800 mb-4">
-                      Félicitations ! 🎉
+                    <div className="text-6xl mb-4">🥷</div>
+                    <h3 className="text-2xl font-bold text-amber-800 mb-4">
+                      Félicitations, Maître Ninja ! 🎉
                     </h3>
                     <p className="text-gray-700 mb-2">
-                      Tu comprends maintenant le sens de la soustraction !
+                      Tu maîtrises maintenant toutes les techniques secrètes !
                     </p>
-                    <p className="text-lg font-semibold text-red-600 mb-6">
+                    <p className="text-lg font-semibold text-amber-600 mb-6">
                       Score : {finalScore} / {exercises.length}
                     </p>
                     <div className="space-y-3">
                       <button
                         onClick={resetExercises}
-                        className="w-full bg-red-600 text-white py-3 rounded-lg hover:bg-red-700 transition-colors"
+                        className="w-full bg-amber-600 text-white py-3 rounded-lg hover:bg-amber-700 transition-colors"
                       >
-                        🔄 Recommencer
+                        🔄 S'entraîner encore
                       </button>
                       <button
                         onClick={() => setShowExercises(false)}
@@ -1053,39 +847,78 @@ export default function SensSoustraction() {
               <div className="bg-white rounded-xl p-6 shadow-lg">
                 <div className="flex justify-between items-center mb-6">
                   <div className="text-sm text-gray-600">
-                    Question {currentExercise + 1} / {exercises.length}
+                    Exercice {currentExercise + 1} / {exercises.length}
                   </div>
-                  <div className="text-sm text-red-600 font-semibold">
+                  <div className="text-sm text-amber-600 font-semibold">
                     Score : {score} / {exercises.length}
                   </div>
                 </div>
 
                 <div className="text-center space-y-6">
-                  {/* Question */}
-                  <h3 className="text-xl font-bold text-red-800">
+                  {/* Badge de la technique */}
+                  <div className="flex justify-center">
+                    <span className={`px-4 py-2 rounded-full text-sm font-semibold ${
+                      exercises[currentExercise].technique === 'complement' ? 'bg-blue-100 text-blue-800' :
+                      exercises[currentExercise].technique === 'addition' ? 'bg-green-100 text-green-800' :
+                      exercises[currentExercise].technique === 'decomposition' ? 'bg-purple-100 text-purple-800' :
+                      exercises[currentExercise].technique === 'proximite' ? 'bg-orange-100 text-orange-800' :
+                      exercises[currentExercise].technique === 'cassage' ? 'bg-red-100 text-red-800' :
+                      'bg-yellow-100 text-yellow-800'
+                    }`}>
+                      {exercises[currentExercise].technique === 'complement' ? '🔍 Complément' :
+                       exercises[currentExercise].technique === 'addition' ? '➕ Addition' :
+                       exercises[currentExercise].technique === 'decomposition' ? '🧩 Décomposition' :
+                       exercises[currentExercise].technique === 'proximite' ? '🎯 Proximité' :
+                       exercises[currentExercise].technique === 'cassage' ? '🔨 Cassage' :
+                       '🥷 Libre choix'}
+                    </span>
+                  </div>
+
+                  <h3 className="text-xl font-bold text-amber-800">
                     {exercises[currentExercise].question}
                   </h3>
-                  
-                  {/* Visuel */}
-                  <div className="bg-gray-50 p-6 rounded-lg">
-                    <div className="text-3xl">
-                      {exercises[currentExercise].visual}
+
+                  <div className="space-y-4">
+                    <input
+                      type="number"
+                      value={userAnswer}
+                      onChange={(e) => setUserAnswer(e.target.value)}
+                      className="w-32 p-3 text-center text-xl border-2 border-amber-300 rounded-lg focus:border-amber-500 focus:outline-none"
+                      placeholder="?"
+                      onKeyPress={(e) => e.key === 'Enter' && checkAnswer()}
+                    />
+                    
+                    <div className="space-x-4">
+                      <button
+                        onClick={checkAnswer}
+                        disabled={!userAnswer}
+                        className="bg-amber-600 text-white px-6 py-3 rounded-lg hover:bg-amber-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+                      >
+                        ✓ Vérifier
+                      </button>
+                      
+                      {!showHint && (
+                        <button
+                          onClick={() => setShowHint(true)}
+                          className="bg-yellow-500 text-white px-6 py-3 rounded-lg hover:bg-yellow-600 transition-colors"
+                        >
+                          <Lightbulb className="inline w-4 h-4 mr-2" />
+                          Aide ninja
+                        </button>
+                      )}
                     </div>
                   </div>
 
-                  {/* Choix de réponses */}
-                  <div className="grid grid-cols-1 gap-3 max-w-md mx-auto">
-                    {exercises[currentExercise].choices.map((choice, index) => (
-                      <button
-                        key={index}
-                        onClick={() => checkAnswer(choice)}
-                        disabled={isCorrect !== null}
-                        className="p-4 bg-white border-2 border-red-200 rounded-lg hover:border-red-400 hover:bg-red-50 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                      >
-                        {choice}
-                      </button>
-                    ))}
-                  </div>
+                  {/* Hint */}
+                  {showHint && (
+                    <div className="bg-yellow-100 p-4 rounded-lg">
+                      <div className="flex items-center justify-center space-x-2 mb-2">
+                        <Lightbulb className="w-5 h-5 text-yellow-600" />
+                        <span className="font-semibold text-yellow-800">Conseil ninja :</span>
+                      </div>
+                      <p className="text-yellow-700">{exercises[currentExercise].hint}</p>
+                    </div>
+                  )}
 
                   {/* Feedback */}
                   {isCorrect !== null && (
@@ -1095,20 +928,19 @@ export default function SensSoustraction() {
                       {isCorrect ? (
                         <div className="flex items-center justify-center space-x-2">
                           <CheckCircle className="w-6 h-6" />
-                          <span className="font-semibold">Excellent ! 🎉</span>
+                          <span className="font-semibold">Technique maîtrisée ! 🥷⚡</span>
                         </div>
                       ) : (
                         <div className="space-y-2">
                           <div className="flex items-center justify-center space-x-2">
                             <XCircle className="w-6 h-6" />
-                            <span className="font-semibold">Pas tout à fait...</span>
+                            <span className="font-semibold">Continue ton entraînement...</span>
                           </div>
-                          <p className="text-sm">La bonne réponse était : {exercises[currentExercise].correctAnswer}</p>
                           <button
                             onClick={nextExercise}
                             className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
                           >
-                            Question suivante →
+                            Exercice suivant →
                           </button>
                         </div>
                       )}
