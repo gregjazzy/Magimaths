@@ -12,6 +12,7 @@ export default function SoustractionsJusqu10() {
   const [highlightedElement, setHighlightedElement] = useState<string | null>(null);
   const [animatingStep, setAnimatingStep] = useState<string | null>(null);
   const [currentExample, setCurrentExample] = useState<number | null>(null);
+  const [currentCountingNumber, setCurrentCountingNumber] = useState<number | null>(null);
 
   // États pour les exercices
   const [currentExercise, setCurrentExercise] = useState(0);
@@ -138,7 +139,7 @@ export default function SoustractionsJusqu10() {
   };
 
   // Fonction pour jouer l'audio avec voix féminine française
-  const playAudio = async (text: string, slowMode = false) => {
+  const playAudio = async (text: string, slowMode: boolean | 'slow' = false) => {
     return new Promise<void>((resolve) => {
       if (stopSignalRef.current) {
         resolve();
@@ -149,7 +150,7 @@ export default function SoustractionsJusqu10() {
       const utterance = new SpeechSynthesisUtterance(text);
       
       utterance.lang = 'fr-FR';
-      utterance.rate = slowMode ? 0.6 : 0.8;
+      utterance.rate = slowMode === 'slow' ? 0.5 : slowMode ? 0.6 : 0.8;
       utterance.pitch = 1.0;
       utterance.volume = 1.0;
 
@@ -318,18 +319,22 @@ export default function SoustractionsJusqu10() {
       await wait(1000);
 
     } finally {
+      // Pause de 1,5 seconde à la fin pour laisser l'élève comprendre
+      await wait(1500);
       setHighlightedElement(null);
       setAnimatingStep(null);
       setCurrentExample(null);
+      setCurrentCountingNumber(null);
     }
   };
 
   // Animation pour la stratégie de comptage
   const animateCountingStrategy = async (example: any) => {
     setAnimatingStep('counting-start');
+    setCurrentCountingNumber(example.start);
     scrollToSection('animation-section');
-    await playAudio(`On part de ${example.start}`, true);
-    await wait(800);
+    await playAudio(`On part de ${example.start}`, 'slow');
+    await wait(1000);
 
     if (stopSignalRef.current) return;
 
@@ -337,59 +342,72 @@ export default function SoustractionsJusqu10() {
     scrollToSection('animation-section');
     for (let i = 1; i <= example.remove; i++) {
       const currentNumber = example.start - i;
-      await playAudio(`${currentNumber}`, true);
-      await wait(600);
+      setCurrentCountingNumber(currentNumber);
+      await playAudio(`${currentNumber}`, 'slow');
+      await wait(800);
       if (stopSignalRef.current) return;
     }
 
     setAnimatingStep('counting-result');
     scrollToSection('animation-section');
-    await playAudio(`On arrive à ${example.result} !`, true);
+    await playAudio(`On arrive à ${example.result} !`, 'slow');
     await wait(500);
+
+    // Pause de 1,5 seconde à la fin pour bien comprendre
+    await wait(1500);
+    
+    // Reset
+    setCurrentCountingNumber(null);
   };
 
   // Animation pour la stratégie visuelle
   const animateVisualStrategy = async (example: any) => {
     setAnimatingStep('visual-start');
     scrollToSection('animation-section');
-    await playAudio(`Voici ${example.start} objets`, true);
+    await playAudio(`Voici ${example.start} objets`, 'slow');
     await wait(1500);
 
     if (stopSignalRef.current) return;
 
     setAnimatingStep('visual-removing');
     scrollToSection('animation-section');
-    await playAudio(`On en enlève ${example.remove}`, true);
+    await playAudio(`On en enlève ${example.remove}`, 'slow');
     await wait(2000);
 
     if (stopSignalRef.current) return;
 
     setAnimatingStep('visual-result');
     scrollToSection('animation-section');
-    await playAudio(`Il en reste ${example.result} !`, true);
+    await playAudio(`Il en reste ${example.result} !`, 'slow');
     await wait(500);
+
+    // Pause de 1,5 seconde à la fin pour bien comprendre
+    await wait(1500);
   };
 
   // Animation pour la stratégie avec les doigts
   const animateFingersStrategy = async (example: any) => {
     setAnimatingStep('fingers-start');
     scrollToSection('animation-section');
-    await playAudio(`Lève ${example.start} doigts !`, true);
+    await playAudio(`Lève ${example.start} doigts !`, 'slow');
     await wait(1500);
 
     if (stopSignalRef.current) return;
 
     setAnimatingStep('fingers-remove');
     scrollToSection('animation-section');
-    await playAudio(`Maintenant, baisse ${example.remove} doigts !`, true);
+    await playAudio(`Maintenant, baisse ${example.remove} doigts !`, 'slow');
     await wait(1500);
 
     if (stopSignalRef.current) return;
 
     setAnimatingStep('fingers-count');
     scrollToSection('animation-section');
-    await playAudio(`Compte ceux qui restent levés : ${example.result} doigts !`, true);
+    await playAudio(`Compte ceux qui restent levés : ${example.result} doigts !`, 'slow');
     await wait(1000);
+
+    // Pause de 1,5 seconde à la fin pour bien comprendre
+    await wait(1500);
   };
 
   // Fonction pour les exercices
@@ -474,7 +492,7 @@ export default function SoustractionsJusqu10() {
       <div
         key={i}
         className={`text-3xl ${colorClass} transition-all duration-1000 transform ${
-          i < fadeOut ? 'opacity-30 scale-75' : 'opacity-100 scale-100'
+          i < fadeOut ? 'opacity-70 scale-75' : 'opacity-100 scale-100'
         } ${
           animatingStep === 'visual-start' || animatingStep === 'visual-removing' ? 'animate-bounce' : ''
         }`}
@@ -742,11 +760,15 @@ export default function SoustractionsJusqu10() {
                                   const num = example.start - i;
                                   const isActive = animatingStep === 'counting-down' || animatingStep === 'counting-result';
                                   const isResult = num === example.result && animatingStep === 'counting-result';
+                                  const isCounted = currentCountingNumber !== null && num > currentCountingNumber;
+                                  const isCurrent = currentCountingNumber === num;
                                   return (
                                     <div
                                       key={num}
-                                      className={`w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold transition-all ${
+                                      className={`w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold transition-all duration-1000 ${
                                         isResult ? 'bg-green-200 ring-4 ring-green-400 animate-pulse text-green-800' :
+                                        isCurrent ? 'bg-yellow-200 ring-2 ring-yellow-400 text-yellow-800 scale-110' :
+                                        isCounted ? 'bg-gray-100 text-gray-400 opacity-50' :
                                         isActive && num > example.result ? 'bg-gray-200 text-gray-800' :
                                         'bg-blue-100 text-blue-800'
                                       }`}
