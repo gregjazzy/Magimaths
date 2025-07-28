@@ -532,16 +532,34 @@ export default function SoustractionsJusqu10() {
           /* Section Cours */
           <div className="space-y-8">
             {/* Bouton COMMENCER */}
-            {!hasStarted && (
-              <div className="text-center mb-8">
-                <button
-                  onClick={explainChapter}
-                  className="bg-gradient-to-r from-green-500 to-blue-500 text-white px-8 py-4 rounded-xl font-bold text-xl shadow-lg hover:shadow-xl transition-all transform hover:scale-105 animate-pulse"
-                >
-                  ▶️ COMMENCER !
-                </button>
-              </div>
-            )}
+            <div className="text-center mb-8">
+              <button
+                onClick={explainChapter}
+                disabled={isPlayingVocal}
+                className={`px-8 py-4 rounded-xl font-bold text-xl shadow-lg transition-all transform ${
+                  isPlayingVocal 
+                    ? 'bg-gray-400 text-gray-600 cursor-not-allowed opacity-75' 
+                    : hasStarted
+                      ? 'bg-gradient-to-r from-purple-500 to-indigo-500 text-white hover:shadow-xl hover:scale-105'
+                      : 'bg-gradient-to-r from-green-500 to-blue-500 text-white hover:shadow-xl hover:scale-105 animate-pulse'
+                }`}
+              >
+                {isPlayingVocal 
+                  ? '🎤 JE PARLE...' 
+                  : hasStarted 
+                    ? '🔄 RECOMMENCER !' 
+                    : '▶️ COMMENCER !'
+                }
+              </button>
+              <p className="text-sm text-gray-600 mt-2">
+                {isPlayingVocal 
+                  ? 'Écoute l\'explication en cours...' 
+                  : hasStarted 
+                    ? 'Relance l\'explication complète'
+                    : 'Lance l\'explication des techniques de soustraction'
+                }
+              </p>
+            </div>
 
             {/* Introduction */}
             <div 
