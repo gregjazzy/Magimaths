@@ -296,6 +296,7 @@ export default function SoustractionsJusqu10() {
 
       // Explication de la stratégie
       setAnimatingStep('strategy-explanation');
+      scrollToSection('animation-section');
       await playAudio(example.explanation, true);
       await wait(1000);
 
@@ -312,6 +313,7 @@ export default function SoustractionsJusqu10() {
 
       // Résultat final
       setAnimatingStep('final-result');
+      scrollToSection('animation-section');
       await playAudio(`Donc ${example.operation} égale ${example.result} ! Bravo !`, true);
       await wait(1000);
 
@@ -325,12 +327,14 @@ export default function SoustractionsJusqu10() {
   // Animation pour la stratégie de comptage
   const animateCountingStrategy = async (example: any) => {
     setAnimatingStep('counting-start');
+    scrollToSection('animation-section');
     await playAudio(`On part de ${example.start}`, true);
     await wait(800);
 
     if (stopSignalRef.current) return;
 
     setAnimatingStep('counting-down');
+    scrollToSection('animation-section');
     for (let i = 1; i <= example.remove; i++) {
       const currentNumber = example.start - i;
       await playAudio(`${currentNumber}`, true);
@@ -339,6 +343,7 @@ export default function SoustractionsJusqu10() {
     }
 
     setAnimatingStep('counting-result');
+    scrollToSection('animation-section');
     await playAudio(`On arrive à ${example.result} !`, true);
     await wait(500);
   };
@@ -346,18 +351,21 @@ export default function SoustractionsJusqu10() {
   // Animation pour la stratégie visuelle
   const animateVisualStrategy = async (example: any) => {
     setAnimatingStep('visual-start');
+    scrollToSection('animation-section');
     await playAudio(`Voici ${example.start} objets`, true);
     await wait(1500);
 
     if (stopSignalRef.current) return;
 
     setAnimatingStep('visual-removing');
+    scrollToSection('animation-section');
     await playAudio(`On en enlève ${example.remove}`, true);
     await wait(2000);
 
     if (stopSignalRef.current) return;
 
     setAnimatingStep('visual-result');
+    scrollToSection('animation-section');
     await playAudio(`Il en reste ${example.result} !`, true);
     await wait(500);
   };
@@ -365,18 +373,21 @@ export default function SoustractionsJusqu10() {
   // Animation pour la stratégie avec les doigts
   const animateFingersStrategy = async (example: any) => {
     setAnimatingStep('fingers-start');
+    scrollToSection('animation-section');
     await playAudio(`Lève ${example.start} doigts !`, true);
     await wait(1500);
 
     if (stopSignalRef.current) return;
 
     setAnimatingStep('fingers-remove');
+    scrollToSection('animation-section');
     await playAudio(`Maintenant, baisse ${example.remove} doigts !`, true);
     await wait(1500);
 
     if (stopSignalRef.current) return;
 
     setAnimatingStep('fingers-count');
+    scrollToSection('animation-section');
     await playAudio(`Compte ceux qui restent levés : ${example.result} doigts !`, true);
     await wait(1000);
   };
