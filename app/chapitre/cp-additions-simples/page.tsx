@@ -364,10 +364,6 @@ export default function CPAdditionsSimplesPage() {
   }, []);
 
   const getSectionPath = (sectionId: string) => {
-    // Chapitres qui restent dans cp-nombres-jusqu-20
-    if (['complements-10', 'decompositions'].includes(sectionId)) {
-      return `/chapitre/cp-nombres-jusqu-20/${sectionId}`;
-    }
     return `/chapitre/cp-additions-simples/${sectionId}`;
   };
 
