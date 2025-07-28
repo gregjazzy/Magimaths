@@ -613,11 +613,11 @@ export default function SoustractionsJusqu10() {
                   <div className="text-center space-y-4">
                     <p className="text-lg font-semibold">Je compte à rebours depuis 6 :</p>
                     <div className="flex justify-center space-x-4 text-2xl">
-                      <span className="bg-blue-100 px-3 py-2 rounded-lg">6</span>
+                      <span className="bg-blue-100 text-blue-800 px-3 py-2 rounded-lg">6</span>
                       <ChevronDown className="w-6 h-6 mt-2" />
-                      <span className="bg-yellow-100 px-3 py-2 rounded-lg">5</span>
+                      <span className="bg-yellow-100 text-yellow-800 px-3 py-2 rounded-lg">5</span>
                       <ChevronDown className="w-6 h-6 mt-2" />
-                      <span className="bg-green-100 px-3 py-2 rounded-lg animate-pulse">4</span>
+                      <span className="bg-green-100 text-green-800 px-3 py-2 rounded-lg animate-pulse">4</span>
                     </div>
                     <p className="text-xl font-bold text-green-600">6 - 2 = 4 !</p>
                   </div>
@@ -696,9 +696,9 @@ export default function SoustractionsJusqu10() {
                                     <div
                                       key={num}
                                       className={`w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold transition-all ${
-                                        isResult ? 'bg-green-200 ring-4 ring-green-400 animate-pulse' :
-                                        isActive && num > example.result ? 'bg-gray-200' :
-                                        'bg-blue-100'
+                                        isResult ? 'bg-green-200 ring-4 ring-green-400 animate-pulse text-green-800' :
+                                        isActive && num > example.result ? 'bg-gray-200 text-gray-800' :
+                                        'bg-blue-100 text-blue-800'
                                       }`}
                                     >
                                       {num}
