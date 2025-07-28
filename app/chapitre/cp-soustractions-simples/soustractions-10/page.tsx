@@ -13,6 +13,7 @@ export default function SoustractionsJusqu10() {
   const [animatingStep, setAnimatingStep] = useState<string | null>(null);
   const [currentExample, setCurrentExample] = useState<number | null>(null);
   const [currentCountingNumber, setCurrentCountingNumber] = useState<number | null>(null);
+  const [highlightedMethod, setHighlightedMethod] = useState<string | null>(null);
 
   // États pour les exercices
   const [currentExercise, setCurrentExercise] = useState(0);
@@ -136,6 +137,8 @@ export default function SoustractionsJusqu10() {
     setHighlightedElement(null);
     setAnimatingStep(null);
     setCurrentExample(null);
+    setCurrentCountingNumber(null);
+    setHighlightedMethod(null);
   };
 
   // Fonction pour jouer l'audio avec voix féminine française
@@ -237,40 +240,62 @@ export default function SoustractionsJusqu10() {
     setHasStarted(true);
 
     try {
-      // Introduction
+      // Introduction - Objectif du chapitre
       setHighlightedElement('intro');
       scrollToSection('intro-section');
-      await playAudio("Bonjour ! Aujourd'hui, nous allons apprendre à faire des soustractions jusqu'à 10. C'est très amusant et pas compliqué !");
-      await wait(500);
-
-      if (stopSignalRef.current) return;
-
-      // Les stratégies
-      setHighlightedElement('strategies');
-      scrollToSection('strategies-section');
-      await playAudio("Il y a plusieurs façons de faire une soustraction. Je vais te montrer les meilleures techniques !");
-      await wait(500);
-
-      if (stopSignalRef.current) return;
-
-      // Démonstration rapide
-      setAnimatingStep('demo');
-      setHighlightedElement('demo');
-      scrollToSection('demo-section');
-      await playAudio("Par exemple, pour 6 moins 2 : je peux compter à rebours 6, 5, 4. La réponse est 4 !");
+      await playAudio("Bonjour ! Aujourd'hui, nous allons apprendre à faire des soustractions jusqu'à 10.", 'slow');
       await wait(1000);
 
       if (stopSignalRef.current) return;
 
-      // Transition vers les exemples
-      setHighlightedElement('examples');
+      await playAudio("L'objectif est simple : savoir enlever des objets ou des nombres pour trouver combien il en reste !", 'slow');
+      await wait(1500);
+
+      if (stopSignalRef.current) return;
+
+      // Présentation des trois méthodes
+      setHighlightedElement('strategies');
+      scrollToSection('strategies-section');
+      await playAudio("Pour y arriver, je vais te montrer trois méthodes magiques !", 'slow');
+      await wait(1000);
+
+      if (stopSignalRef.current) return;
+
+      // Scroll vers les exemples pour voir les cartes
       scrollToSection('examples-section');
-      await playAudio("Maintenant, choisis une stratégie pour voir comment elle fonctionne avec une animation !");
+      await wait(800);
+
+      // Méthode 1 : Compter à rebours
+      setHighlightedMethod('counting');
+      await playAudio("Première méthode : compter à rebours ! On part du grand nombre et on compte en descendant.", 'slow');
+      await wait(2000);
+
+      if (stopSignalRef.current) return;
+
+      // Méthode 2 : Objets visuels
+      setHighlightedMethod('visual');
+      await playAudio("Deuxième méthode : avec des objets ! On voit les objets et on en enlève quelques-uns.", 'slow');
+      await wait(2000);
+
+      if (stopSignalRef.current) return;
+
+      // Méthode 3 : Doigts
+      setHighlightedMethod('fingers');
+      await playAudio("Troisième méthode : avec tes doigts ! Tu lèves des doigts, tu en baisses, et tu comptes ce qui reste.", 'slow');
+      await wait(2000);
+
+      if (stopSignalRef.current) return;
+
+      // Conclusion
+      setHighlightedMethod(null);
+      setHighlightedElement('examples');
+      await playAudio("Maintenant, choisis une méthode pour voir une animation magique qui t'explique tout !", 'slow');
       await wait(500);
 
     } finally {
       setHighlightedElement(null);
       setAnimatingStep(null);
+      setHighlightedMethod(null);
     }
   };
 
@@ -693,12 +718,16 @@ export default function SoustractionsJusqu10() {
                 {subtractionExamples.map((example, index) => (
                   <div 
                     key={index}
-                    className={`bg-gradient-to-br from-green-50 to-blue-50 rounded-lg p-6 transition-all duration-300 ${
+                    className={`bg-gradient-to-br from-green-50 to-blue-50 rounded-lg p-6 transition-all duration-500 ${
                       isPlayingVocal 
                         ? 'opacity-50 cursor-not-allowed' 
                         : 'cursor-pointer hover:scale-105 hover:shadow-lg'
                     } ${
                       currentExample === index ? 'ring-4 ring-green-400 bg-green-100' : ''
+                    } ${
+                      highlightedMethod === example.strategy 
+                        ? 'ring-4 ring-yellow-400 bg-gradient-to-r from-yellow-100 to-orange-100 shadow-2xl animate-pulse scale-110 border-2 border-yellow-300' 
+                        : ''
                     }`}
                     onClick={() => {
                       if (!isPlayingVocal) {
@@ -706,9 +735,32 @@ export default function SoustractionsJusqu10() {
                       }
                     }}
                   >
-                    <div className="text-center">
+                    <div className="text-center relative">
+                      {/* Effet brillant quand la méthode est mise en évidence */}
+                      {highlightedMethod === example.strategy && (
+                        <div className="absolute -top-2 -right-2 text-2xl animate-bounce">
+                          ✨
+                        </div>
+                      )}
+                      {highlightedMethod === example.strategy && (
+                        <div className="absolute -top-1 -left-1 text-xl animate-pulse">
+                          🌟
+                        </div>
+                      )}
+                      {highlightedMethod === example.strategy && (
+                        <div className="absolute -bottom-1 right-2 text-lg animate-bounce delay-75">
+                          ⭐
+                        </div>
+                      )}
+                      
                       <div className="text-4xl mb-2">{example.item}</div>
-                      <h3 className={`font-bold text-lg mb-2 ${isPlayingVocal ? 'text-gray-400' : 'text-gray-800'}`}>{example.title}</h3>
+                      <h3 className={`font-bold text-lg mb-2 ${
+                        highlightedMethod === example.strategy 
+                          ? 'text-orange-800 font-extrabold text-xl' 
+                          : isPlayingVocal 
+                            ? 'text-gray-400' 
+                            : 'text-gray-800'
+                      }`}>{example.title}</h3>
                       <div className={`text-xl font-mono bg-white text-gray-800 px-3 py-1 rounded mb-3 ${isPlayingVocal ? 'opacity-50' : ''}`}>{example.operation}</div>
                       <p className={`text-sm mb-4 ${isPlayingVocal ? 'text-gray-400' : 'text-gray-600'}`}>{example.explanation}</p>
                       <button 
