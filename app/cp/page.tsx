@@ -44,28 +44,7 @@ const chapters = [
     ],
     color: 'purple'
   },
-  {
-    id: 'cp-additions-posees',
-    title: 'Additions posées',
-    description: 'Apprendre à poser les additions en colonnes',
-    sections: [
-      { id: 'poser-addition', title: 'Poser une addition', completed: false },
-      { id: 'additions-sans-retenue', title: 'Additions sans retenue', completed: false },
-      { id: 'additions-avec-retenue', title: 'Additions avec retenue', completed: false }
-    ],
-    color: 'orange'
-  },
-  {
-    id: 'cp-additions-avancees',
-    title: 'Additions jusqu\'à 100',
-    description: 'Additionner avec des nombres plus grands',
-    sections: [
-      { id: 'additions-jusqu-100', title: 'Additions jusqu\'à 100', completed: false },
-      { id: 'strategies-calcul', title: 'Stratégies de calcul', completed: false },
-      { id: 'problemes-complexes', title: 'Problèmes plus complexes', completed: false }
-    ],
-    color: 'teal'
-  },
+
   {
     id: 'cp-soustractions-simples', 
     title: 'Soustractions simples',
