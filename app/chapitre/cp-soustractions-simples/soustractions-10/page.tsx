@@ -14,6 +14,8 @@ export default function SoustractionsJusqu10() {
   const [currentExample, setCurrentExample] = useState<number | null>(null);
   const [currentCountingNumber, setCurrentCountingNumber] = useState<number | null>(null);
   const [highlightedMethod, setHighlightedMethod] = useState<string | null>(null);
+  const [introDemo, setIntroDemo] = useState<string | null>(null);
+  const [introDemoStep, setIntroDemoStep] = useState<number>(0);
 
   // États pour les exercices
   const [currentExercise, setCurrentExercise] = useState(0);
@@ -139,6 +141,8 @@ export default function SoustractionsJusqu10() {
     setCurrentExample(null);
     setCurrentCountingNumber(null);
     setHighlightedMethod(null);
+    setIntroDemo(null);
+    setIntroDemoStep(0);
   };
 
   // Fonction pour jouer l'audio avec voix féminine française
@@ -272,22 +276,51 @@ export default function SoustractionsJusqu10() {
 
       if (stopSignalRef.current) return;
 
-      // Méthode 2 : Objets visuels
+      // Méthode 2 : Objets visuels avec démonstration
       setHighlightedMethod('visual');
-      await playAudio("Deuxième méthode : avec des objets ! On voit les objets et on en enlève quelques-uns.", 'slow');
-      await wait(2000);
+      setIntroDemo('visual');
+      await playAudio("Deuxième méthode : avec des objets ! Regarde bien, on voit les objets et on en enlève quelques-uns.", 'slow');
+      await wait(1000);
 
       if (stopSignalRef.current) return;
 
-      // Méthode 3 : Doigts
+      // Animation progressive des étoiles (5 étoiles, on en enlève 2)
+      for (let i = 0; i < 2; i++) {
+        setIntroDemoStep(i + 1);
+        await playAudio(`On enlève une étoile...`, 'slow');
+        await wait(1500);
+        if (stopSignalRef.current) return;
+      }
+      await playAudio("Il reste 3 étoiles !", 'slow');
+      await wait(1000);
+
+      if (stopSignalRef.current) return;
+
+      // Méthode 3 : Doigts avec démonstration
       setHighlightedMethod('fingers');
-      await playAudio("Troisième méthode : avec tes doigts ! Tu lèves des doigts, tu en baisses, et tu comptes ce qui reste.", 'slow');
-      await wait(2000);
+      setIntroDemo('fingers');
+      setIntroDemoStep(0);
+      await playAudio("Troisième méthode : avec tes doigts ! Regarde, tu lèves tes doigts et tu en baisses quelques-uns.", 'slow');
+      await wait(1000);
+
+      if (stopSignalRef.current) return;
+
+      // Animation progressive des doigts (5 doigts, on en baisse 2)
+      for (let i = 0; i < 2; i++) {
+        setIntroDemoStep(i + 1);
+        await playAudio(`On baisse un doigt...`, 'slow');
+        await wait(1500);
+        if (stopSignalRef.current) return;
+      }
+      await playAudio("Il reste 3 doigts levés !", 'slow');
+      await wait(1000);
 
       if (stopSignalRef.current) return;
 
       // Conclusion
       setHighlightedMethod(null);
+      setIntroDemo(null);
+      setIntroDemoStep(0);
       setHighlightedElement('examples');
       await playAudio("Maintenant, choisis une méthode pour voir une animation magique qui t'explique tout !", 'slow');
       await wait(500);
@@ -296,6 +329,8 @@ export default function SoustractionsJusqu10() {
       setHighlightedElement(null);
       setAnimatingStep(null);
       setHighlightedMethod(null);
+      setIntroDemo(null);
+      setIntroDemoStep(0);
     }
   };
 
@@ -674,6 +709,67 @@ export default function SoustractionsJusqu10() {
                 </div>
               </div>
             </div>
+
+            {/* Démonstrations visuelles pendant l'introduction */}
+            {introDemo && (
+              <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl shadow-lg p-6 border-2 border-purple-200">
+                <h2 className="text-xl font-bold text-purple-800 mb-4 text-center">
+                  ✨ Démonstration en direct !
+                </h2>
+                
+                {introDemo === 'visual' && (
+                  <div className="text-center">
+                    <h3 className="text-lg font-semibold text-yellow-800 mb-4">
+                      🌟 Méthode avec des objets : 5 - 2 = ?
+                    </h3>
+                    <div className="flex justify-center gap-3 mb-4">
+                      {Array.from({ length: 5 }, (_, i) => (
+                        <div
+                          key={i}
+                          className={`text-4xl transition-all duration-1000 ${
+                            i < introDemoStep 
+                              ? 'opacity-30 scale-75 text-gray-400' 
+                              : 'opacity-100 scale-100'
+                          }`}
+                        >
+                          ⭐
+                        </div>
+                      ))}
+                    </div>
+                    <p className="text-center text-yellow-700 font-medium">
+                      {introDemoStep === 0 && "J'ai 5 étoiles"}
+                      {introDemoStep === 1 && "J'en enlève 1... il me reste 4 étoiles"}
+                      {introDemoStep === 2 && "J'en enlève encore 1... il me reste 3 étoiles !"}
+                    </p>
+                  </div>
+                )}
+
+                {introDemo === 'fingers' && (
+                  <div className="text-center">
+                    <h3 className="text-lg font-semibold text-purple-800 mb-4">
+                      🖐️ Méthode avec les doigts : 5 - 2 = ?
+                    </h3>
+                    <div className="flex justify-center gap-2 mb-4">
+                      {Array.from({ length: 5 }, (_, i) => (
+                        <div
+                          key={i}
+                          className={`text-4xl transition-all duration-1000 ${
+                            i < introDemoStep ? 'opacity-50 scale-75' : 'opacity-100 scale-100'
+                          }`}
+                        >
+                          {i < introDemoStep ? '👇' : '👆'}
+                        </div>
+                      ))}
+                    </div>
+                    <p className="text-center text-purple-700 font-medium">
+                      {introDemoStep === 0 && "J'ai 5 doigts levés"}
+                      {introDemoStep === 1 && "Je baisse 1 doigt... il me reste 4 doigts levés"}
+                      {introDemoStep === 2 && "Je baisse encore 1 doigt... il me reste 3 doigts levés !"}
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Démonstration rapide */}
             <div 
