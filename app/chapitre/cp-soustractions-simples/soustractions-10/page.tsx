@@ -51,15 +51,15 @@ export default function SoustractionsJusqu10() {
       color: 'text-yellow-500'
     },
     {
-      id: 'complement',
-      title: 'Complément à 10',
+      id: 'fingers',
+      title: 'Fait avec tes doigts',
       operation: '10 - 6',
       start: 10,
       remove: 6,
       result: 4,
-      strategy: 'complement',
-      explanation: 'Pour aller de 6 à 10, il faut ajouter 4. Donc 10 - 6 = 4 !',
-      item: '🌟',
+      strategy: 'fingers',
+      explanation: 'Lève 10 doigts, baisse-en 6, compte ceux qui restent : 4 !',
+      item: '🖐️',
       color: 'text-purple-500'
     }
   ];
@@ -306,8 +306,8 @@ export default function SoustractionsJusqu10() {
         await animateCountingStrategy(example);
       } else if (example.strategy === 'visual') {
         await animateVisualStrategy(example);
-      } else if (example.strategy === 'complement') {
-        await animateComplementStrategy(example);
+      } else if (example.strategy === 'fingers') {
+        await animateFingersStrategy(example);
       }
 
       // Résultat final
@@ -362,16 +362,22 @@ export default function SoustractionsJusqu10() {
     await wait(500);
   };
 
-  // Animation pour la stratégie de complément
-  const animateComplementStrategy = async (example: any) => {
-    setAnimatingStep('complement-question');
-    await playAudio(`De ${example.remove} à ${example.start}, combien faut-il ajouter ?`);
+  // Animation pour la stratégie avec les doigts
+  const animateFingersStrategy = async (example: any) => {
+    setAnimatingStep('fingers-start');
+    await playAudio(`Lève ${example.start} doigts !`);
     await wait(1500);
 
     if (stopSignalRef.current) return;
 
-    setAnimatingStep('complement-answer');
-    await playAudio(`Il faut ajouter ${example.result} ! Donc ${example.operation} égale ${example.result} !`);
+    setAnimatingStep('fingers-remove');
+    await playAudio(`Maintenant, baisse ${example.remove} doigts !`);
+    await wait(1500);
+
+    if (stopSignalRef.current) return;
+
+    setAnimatingStep('fingers-count');
+    await playAudio(`Compte ceux qui restent levés : ${example.result} doigts !`);
     await wait(1000);
   };
 
@@ -584,9 +590,9 @@ export default function SoustractionsJusqu10() {
                 </div>
                 
                 <div className="p-4 bg-purple-50 rounded-lg text-center">
-                  <div className="text-3xl mb-2">🌟</div>
-                  <h4 className="font-bold text-purple-800">Complément à 10</h4>
-                  <p className="text-sm text-purple-600">Super pour 10 moins...</p>
+                  <div className="text-3xl mb-2">🖐️</div>
+                  <h4 className="font-bold text-purple-800">Fait avec tes doigts</h4>
+                  <p className="text-sm text-purple-600">Lève, baisse, compte !</p>
                 </div>
               </div>
             </div>
@@ -728,22 +734,34 @@ export default function SoustractionsJusqu10() {
                         </div>
                       )}
 
-                      {example.strategy === 'complement' && (
+                      {example.strategy === 'fingers' && (
                         <div className="space-y-4">
-                          {(animatingStep === 'complement-question' || animatingStep === 'complement-answer') && (
+                          {(animatingStep === 'fingers-start' || animatingStep === 'fingers-remove' || animatingStep === 'fingers-count') && (
                             <div className="text-center">
                               <div className="bg-purple-50 p-6 rounded-lg">
-                                <p className="text-lg mb-4">De {example.remove} à {example.start} :</p>
-                                <div className="flex justify-center items-center space-x-4 text-2xl">
-                                  <span className="bg-red-100 px-4 py-2 rounded-lg">{example.remove}</span>
-                                  <span>+</span>
-                                  <span className={`px-4 py-2 rounded-lg ${
-                                    animatingStep === 'complement-answer' ? 'bg-green-200 animate-pulse' : 'bg-gray-100'
-                                  }`}>
-                                    {animatingStep === 'complement-answer' ? example.result : '?'}
-                                  </span>
-                                  <span>=</span>
-                                  <span className="bg-blue-100 px-4 py-2 rounded-lg">{example.start}</span>
+                                <p className="text-lg mb-4">Utilise tes doigts :</p>
+                                <div className="flex justify-center gap-2 mb-4 flex-wrap">
+                                  {Array.from({ length: example.start }, (_, i) => (
+                                    <div
+                                      key={i}
+                                      className={`transform transition-all duration-1000 ${
+                                        (animatingStep === 'fingers-remove' || animatingStep === 'fingers-count') && i < example.remove
+                                          ? 'opacity-50 scale-75 -translate-y-2' 
+                                          : 'opacity-100 scale-100'
+                                      }`}
+                                    >
+                                      <div className="text-3xl">
+                                        {(animatingStep === 'fingers-remove' || animatingStep === 'fingers-count') && i < example.remove ? '👇' : '👆'}
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                                <div className="mt-4 p-3 bg-amber-100 rounded-lg border border-amber-300">
+                                  <p className="text-center text-amber-800 font-bold text-sm">
+                                    {animatingStep === 'fingers-start' && 'Lève tes 10 doigts !'}
+                                    {animatingStep === 'fingers-remove' && `Baisse ${example.remove} doigts !`}
+                                    {animatingStep === 'fingers-count' && `Il reste ${example.result} doigts levés !`}
+                                  </p>
                                 </div>
                               </div>
                             </div>
