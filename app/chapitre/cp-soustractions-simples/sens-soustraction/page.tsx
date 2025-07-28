@@ -236,18 +236,21 @@ export default function SensSoustraction() {
 
       // Animation du concept principal
       setAnimatingStep('demo-start');
+      scrollToSection('concept-section');
       await playAudio("Imagine : j'ai 5 ballons colorés.");
       await wait(1000);
       
       if (stopSignalRef.current) return;
 
       setAnimatingStep('demo-remove');
+      scrollToSection('concept-section');
       await playAudio("Puis, 2 ballons s'envolent dans le ciel !");
       await wait(1500);
       
       if (stopSignalRef.current) return;
 
       setAnimatingStep('demo-result');
+      scrollToSection('concept-section');
       await playAudio("Combien me reste-t-il de ballons ? Il me reste 3 ballons ! Car 5 moins 2 égale 3 !");
       await wait(1000);
 
@@ -281,6 +284,7 @@ export default function SensSoustraction() {
 
       // Lecture du problème
       setHighlightedElement('story');
+      scrollToSection('animation-section');
       await playAudio(example.story);
       await wait(800);
       
@@ -288,6 +292,7 @@ export default function SensSoustraction() {
 
       // Montrer la situation de départ
       setAnimatingStep('start');
+      scrollToSection('animation-section');
       await playAudio(`Au début, il y a ${example.start} ${example.item === '🎈' ? 'ballons' : example.item === '🍎' ? 'pommes' : 'voitures'}.`);
       await wait(1500);
 
@@ -295,6 +300,7 @@ export default function SensSoustraction() {
 
       // Action de soustraction
       setAnimatingStep('removing');
+      scrollToSection('animation-section');
       await playAudio(`Maintenant, ${example.removed} ${example.action} !`);
       await wait(2000);
 
@@ -302,6 +308,7 @@ export default function SensSoustraction() {
 
       // Résultat
       setAnimatingStep('result');
+      scrollToSection('animation-section');
       await playAudio(`Il reste ${example.result} ! Donc ${example.start} moins ${example.removed} égale ${example.result} !`);
       await wait(1500);
 
@@ -309,6 +316,7 @@ export default function SensSoustraction() {
 
       // Calcul écrit
       setAnimatingStep('calculation');
+      scrollToSection('animation-section');
       await playAudio(`On peut l'écrire : ${example.start} moins ${example.removed} égale ${example.result}. Bravo !`);
       await wait(1000);
 
@@ -637,8 +645,8 @@ export default function SensSoustraction() {
                       <div className={`p-4 rounded-lg text-center ${
                         highlightedElement === 'story' ? 'bg-blue-100 ring-2 ring-blue-400' : 'bg-gray-50'
                       }`}>
-                        <p className="text-lg font-semibold">{example.story}</p>
-                    </div>
+                        <p className="text-lg font-semibold text-gray-800">{example.story}</p>
+                      </div>
 
                       {/* Animation des objets */}
                       <div className="flex flex-col items-center space-y-6">
