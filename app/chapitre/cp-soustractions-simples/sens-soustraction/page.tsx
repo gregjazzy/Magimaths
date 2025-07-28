@@ -624,6 +624,35 @@ export default function SensSoustraction() {
                             </div>
                           ))}
                         </div>
+
+                        {/* Compter sur ses doigts */}
+                        <div className="bg-gradient-to-r from-amber-50 to-yellow-50 p-6 rounded-xl border-2 border-amber-200 shadow-lg">
+                          <h3 className="text-lg font-bold text-amber-800 mb-4 flex items-center gap-2">
+                            ✋ Compter sur ses doigts :
+                          </h3>
+                          <div className="flex justify-center gap-2 mb-4">
+                            {Array.from({ length: 5 }, (_, i) => (
+                              <div
+                                key={i}
+                                className={`transform transition-all duration-1000 ${
+                                  (animatingStep === 'demo-remove' || animatingStep === 'demo-result') && i < 2 
+                                    ? 'opacity-50 scale-75 -translate-y-2' 
+                                    : 'opacity-100 scale-100'
+                                }`}
+                              >
+                                <div className="text-4xl">
+                                  {(animatingStep === 'demo-remove' || animatingStep === 'demo-result') && i < 2 ? '👇' : '👆'}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                          <p className="text-center text-amber-700 font-medium">
+                            {animatingStep === 'demo-remove' || animatingStep === 'demo-result' 
+                              ? "J'avais 5 doigts levés, j'en baisse 2, il m'en reste 3 !" 
+                              : "5 doigts levés"
+                            }
+                          </p>
+                        </div>
                       </div>
                     )}
 
@@ -757,6 +786,35 @@ export default function SensSoustraction() {
                                   {example.item}
                                 </div>
                               ))}
+                            </div>
+
+                            {/* Compter sur ses doigts */}
+                            <div className="bg-gradient-to-r from-amber-50 to-yellow-50 p-4 rounded-lg border border-amber-200 mt-4">
+                              <h4 className="text-md font-bold text-amber-800 mb-3 flex items-center gap-2">
+                                ✋ Sur mes doigts :
+                              </h4>
+                              <div className="flex justify-center gap-1 mb-3 flex-wrap">
+                                {Array.from({ length: Math.min(example.start, 10) }, (_, i) => (
+                                  <div
+                                    key={i}
+                                    className={`transform transition-all duration-1000 ${
+                                      (animatingStep === 'removing' || animatingStep === 'result' || animatingStep === 'calculation') && i < example.removed 
+                                        ? 'opacity-50 scale-75 -translate-y-1' 
+                                        : 'opacity-100 scale-100'
+                                    }`}
+                                  >
+                                    <div className="text-2xl">
+                                      {(animatingStep === 'removing' || animatingStep === 'result' || animatingStep === 'calculation') && i < example.removed ? '👇' : '👆'}
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                              <p className="text-center text-amber-700 text-sm font-medium">
+                                {(animatingStep === 'removing' || animatingStep === 'result' || animatingStep === 'calculation')
+                                  ? `${example.start} doigts → j'en baisse ${example.removed} → il reste ${example.start - example.removed} !`
+                                  : `${example.start} doigts levés`
+                                }
+                              </p>
                             </div>
                           </div>
                         )}
