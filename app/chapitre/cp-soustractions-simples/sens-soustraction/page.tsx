@@ -251,7 +251,7 @@ export default function SensSoustraction() {
 
       setAnimatingStep('demo-result');
       scrollToSection('concept-section');
-      await playAudio("Combien me reste-t-il de ballons ? Il me reste 3 ballons ! Car 5 moins 2 égale 3 !", true);
+      await playAudio("Combien me reste-t-il de ballons ? Il me reste 3 ballons ! Car 5 moins 2 égale 3 ! Tu peux aussi utiliser tes doigts pour vérifier : lève 5 doigts, baisse-en 2, et compte ceux qui restent !", true);
       await wait(1000);
 
       if (stopSignalRef.current) return;
@@ -311,7 +311,7 @@ export default function SensSoustraction() {
       // Résultat
       setAnimatingStep('result');
       scrollToSection('animation-section');
-      await playAudio(`Il reste ${example.result} ! Donc ${example.start} moins ${example.removed} égale ${example.result} !`, true);
+      await playAudio(`Il reste ${example.result} ! Donc ${example.start} moins ${example.removed} égale ${example.result} ! N'hésite pas à refaire la même chose avec tes propres doigts !`, true);
       await wait(1500);
 
       if (stopSignalRef.current) return;
@@ -656,6 +656,16 @@ export default function SensSoustraction() {
                               : "5 doigts levés"
                             }
                           </p>
+                          <div className="mt-4 p-3 bg-amber-100 rounded-lg border border-amber-300">
+                            <p className="text-center text-amber-800 font-bold text-sm flex items-center justify-center gap-2">
+                              <span className="text-lg">🖐️</span>
+                              Toi aussi, utilise tes mains pour compter !
+                              <span className="text-lg">🖐️</span>
+                            </p>
+                            <p className="text-center text-amber-700 text-xs mt-1">
+                              Lève 5 doigts, baisse-en 2, compte ceux qui restent !
+                            </p>
+                          </div>
                         </div>
                       </div>
                     )}
@@ -819,6 +829,16 @@ export default function SensSoustraction() {
                                   : `${example.start} doigts levés`
                                 }
                               </p>
+                              <div className="mt-3 p-2 bg-amber-100 rounded-lg border border-amber-300">
+                                <p className="text-center text-amber-800 font-bold text-xs flex items-center justify-center gap-1">
+                                  <span>🖐️</span>
+                                  Fais pareil avec tes mains !
+                                  <span>🖐️</span>
+                                </p>
+                                <p className="text-center text-amber-700 text-xs mt-1">
+                                  Lève {example.start} doigts, baisse-en {example.removed} !
+                                </p>
+                              </div>
                             </div>
                           </div>
                         )}
