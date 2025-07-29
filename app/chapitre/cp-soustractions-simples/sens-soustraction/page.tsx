@@ -492,8 +492,8 @@ export default function SensSoustraction() {
               <button
                 onClick={explainChapter}
                 disabled={isPlayingVocal}
-                className={`bg-gradient-to-r from-purple-500 to-pink-500 text-white px-8 py-4 rounded-xl font-bold text-xl shadow-lg hover:shadow-xl transition-all transform hover:scale-105 ${
-                  isPlayingVocal ? 'opacity-75 cursor-not-allowed animate-pulse' : 'animate-pulse hover:animate-none'
+                className={`bg-gradient-to-r from-purple-400 to-pink-600 text-white px-8 py-4 rounded-xl font-bold text-xl shadow-2xl hover:shadow-purple-500/50 hover:shadow-2xl transition-all transform hover:scale-110 border-2 border-white/30 ${
+                  isPlayingVocal ? 'opacity-75 cursor-not-allowed animate-pulse' : 'animate-pulse hover:animate-none hover:from-purple-300 hover:to-pink-500'
                 }`}
               >
                 {isPlayingVocal ? '🎤 JE PARLE...' : (hasStarted ? '🔄 RECOMMENCER !' : '▶️ COMMENCER !')}

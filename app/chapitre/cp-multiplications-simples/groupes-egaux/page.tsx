@@ -253,10 +253,10 @@ export default function GroupesEgauxCP() {
     } finally {
       setHighlightedElement(null);
       setAnimatingStep(null);
-      setCurrentExample(null);
+      // Ne pas effacer currentExample pour garder l'exemple des poussins affiché
       setShowingProcess(null);
       setAnimatingObjects(false);
-      setGroupingStep(null);
+      // Ne pas remettre groupingStep à null pour garder l'affichage 'result'
       setIsAnimationRunning(false);
     }
   };
@@ -297,7 +297,10 @@ export default function GroupesEgauxCP() {
       await wait(2000);
     } finally {
       setAnimatingObjects(false);
-      setGroupingStep(null);
+      // Garder l'exemple des poussins affiché à l'étape "result"
+      if (index !== 0) {
+        setGroupingStep(null);
+      }
     }
   };
 
@@ -447,10 +450,10 @@ export default function GroupesEgauxCP() {
               <button
                 onClick={explainChapter}
                 disabled={isAnimationRunning}
-                className={`px-8 py-4 rounded-xl font-bold text-xl shadow-lg transition-all transform ${
+                className={`px-8 py-4 rounded-xl font-bold text-xl shadow-2xl transition-all transform ${
                   isAnimationRunning 
                     ? 'bg-gray-400 text-gray-700 cursor-not-allowed' 
-                    : 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white hover:shadow-xl hover:scale-105'
+                    : 'bg-gradient-to-r from-blue-400 to-cyan-600 text-white hover:shadow-blue-500/50 hover:shadow-2xl hover:scale-110 hover:from-blue-300 hover:to-cyan-500 animate-pulse border-2 border-white/30'
                 }`}
               >
                 {isAnimationRunning ? '⏳ Animation en cours...' : '▶️ APPRENDRE LES GROUPES ÉGAUX !'}
@@ -471,43 +474,43 @@ export default function GroupesEgauxCP() {
                 <div className="text-center">
                   <h3 className="text-xl font-bold text-red-600 mb-4">❌ Groupes inégaux</h3>
                   <div className="bg-red-100 rounded-lg p-6">
-                    <div className="text-lg mb-4">Pas bien organisé :</div>
+                    <div className="text-lg mb-4 text-red-800">Pas bien organisé :</div>
                     <div className="space-y-2">
                       <div className="border-2 border-dashed border-red-300 rounded p-2">
                         <span className="text-2xl">🍎🍎🍎🍎🍎</span>
-                        <div className="text-sm text-red-600">5 pommes</div>
+                        <div className="text-sm text-red-800">5 pommes</div>
                       </div>
                       <div className="border-2 border-dashed border-red-300 rounded p-2">
-                        <span className="text-2xl">🍎🍎</span>
-                        <div className="text-sm text-red-600">2 pommes</div>
+                        <span className="text-2xl">🍎🍎🍎</span>
+                        <div className="text-sm text-red-800">3 pommes</div>
                       </div>
                       <div className="border-2 border-dashed border-red-300 rounded p-2">
                         <span className="text-2xl">🍎</span>
-                        <div className="text-sm text-red-600">1 pomme</div>
+                        <div className="text-sm text-red-800">1 pomme</div>
                       </div>
                     </div>
-                    <p className="text-red-600 mt-3 font-semibold">Difficile à compter !</p>
+                    <p className="text-red-800 mt-3 font-semibold">Difficile à compter !</p>
                   </div>
                 </div>
                 <div className="text-center">
                   <h3 className="text-xl font-bold text-green-600 mb-4">✅ Groupes égaux</h3>
                   <div className="bg-green-100 rounded-lg p-6">
-                    <div className="text-lg mb-4">Bien organisé :</div>
+                    <div className="text-lg mb-4 text-green-800">Bien organisé :</div>
                     <div className="space-y-2">
                       <div className="border-2 border-green-300 rounded p-2 bg-white">
                         <span className="text-2xl">🍎🍎🍎</span>
-                        <div className="text-sm text-green-600">3 pommes</div>
+                        <div className="text-sm text-green-800">3 pommes</div>
                       </div>
                       <div className="border-2 border-green-300 rounded p-2 bg-white">
                         <span className="text-2xl">🍎🍎🍎</span>
-                        <div className="text-sm text-green-600">3 pommes</div>
+                        <div className="text-sm text-green-800">3 pommes</div>
                       </div>
                       <div className="border-2 border-green-300 rounded p-2 bg-white">
-                        <span className="text-2xl">🍎🍎</span>
-                        <div className="text-sm text-green-600">2 pommes</div>
+                        <span className="text-2xl">🍎🍎🍎</span>
+                        <div className="text-sm text-green-800">3 pommes</div>
                       </div>
                     </div>
-                    <p className="text-green-600 mt-3 font-semibold">Facile à compter !</p>
+                    <p className="text-green-800 mt-3 font-semibold">Facile à compter !</p>
                   </div>
                 </div>
               </div>
@@ -527,7 +530,7 @@ export default function GroupesEgauxCP() {
                 <div className="text-center bg-blue-100 rounded-xl p-6">
                   <div className="text-4xl mb-4">1️⃣</div>
                   <h3 className="font-bold text-blue-800 mb-3">Décider</h3>
-                  <p className="text-blue-700">
+                  <p className="text-blue-800">
                     On décide combien d'objets on veut dans chaque groupe
                   </p>
                   <div className="mt-4 text-2xl">🤔</div>
@@ -535,7 +538,7 @@ export default function GroupesEgauxCP() {
                 <div className="text-center bg-green-100 rounded-xl p-6">
                   <div className="text-4xl mb-4">2️⃣</div>
                   <h3 className="font-bold text-green-800 mb-3">Organiser</h3>
-                  <p className="text-green-700">
+                  <p className="text-green-800">
                     On range les objets dans des groupes avec le même nombre
                   </p>
                   <div className="mt-4 text-2xl">📦</div>
@@ -543,7 +546,7 @@ export default function GroupesEgauxCP() {
                 <div className="text-center bg-purple-100 rounded-xl p-6">
                   <div className="text-4xl mb-4">3️⃣</div>
                   <h3 className="font-bold text-purple-800 mb-3">Vérifier</h3>
-                  <p className="text-purple-700">
+                  <p className="text-purple-800">
                     On vérifie que chaque groupe a bien le même nombre
                   </p>
                   <div className="mt-4 text-2xl">✅</div>
@@ -652,7 +655,7 @@ export default function GroupesEgauxCP() {
                               <div key={groupIndex} className="text-center">
                                 <div className="bg-green-100 rounded-lg p-4 border-2 border-green-300">
                                   <div className="text-2xl mb-2">{groupExamples[currentExample].container}</div>
-                                  <div className="text-sm text-green-600 mb-3 font-semibold">
+                                  <div className="text-sm text-green-800 mb-3 font-semibold">
                                     Groupe {groupIndex + 1}
                                   </div>
                                   <div className="flex flex-wrap justify-center gap-1 mb-2">
@@ -662,7 +665,7 @@ export default function GroupesEgauxCP() {
                                       </span>
                                     ))}
                                   </div>
-                                  <div className="text-sm font-bold text-green-700">
+                                  <div className="text-sm font-bold text-green-800">
                                     {groupExamples[currentExample].itemsPerGroup} {groupExamples[currentExample].description}
                                   </div>
                                 </div>
@@ -756,26 +759,26 @@ export default function GroupesEgauxCP() {
                 <div className="bg-green-100 rounded-xl p-6 text-center">
                   <div className="text-4xl mb-4">⚡</div>
                   <h3 className="font-bold text-green-800 mb-3">Plus rapide</h3>
-                  <p className="text-green-700">
+                  <p className="text-green-800">
                     On compte plus vite : 3 groupes de 4 = 12
                   </p>
-                  <div className="text-sm text-green-600 mt-2">Au lieu de 1,2,3,4,5,6,7,8,9,10,11,12</div>
+                  <div className="text-sm text-green-700 mt-2">Au lieu de 1,2,3,4,5,6,7,8,9,10,11,12</div>
                 </div>
                 <div className="bg-blue-100 rounded-xl p-6 text-center">
                   <div className="text-4xl mb-4">🎯</div>
                   <h3 className="font-bold text-blue-800 mb-3">Plus précis</h3>
-                  <p className="text-blue-700">
+                  <p className="text-blue-800">
                     On fait moins d'erreurs car c'est bien organisé
                   </p>
-                  <div className="text-sm text-blue-600 mt-2">Moins de risque d'oublier ou de compter 2 fois</div>
+                  <div className="text-sm text-blue-700 mt-2">Moins de risque d'oublier ou de compter 2 fois</div>
                 </div>
                 <div className="bg-purple-100 rounded-xl p-6 text-center">
                   <div className="text-4xl mb-4">✨</div>
                   <h3 className="font-bold text-purple-800 mb-3">Plus joli</h3>
-                  <p className="text-purple-700">
+                  <p className="text-purple-800">
                     C'est bien rangé et agréable à regarder
                   </p>
-                  <div className="text-sm text-purple-600 mt-2">Comme dans un magasin bien organisé</div>
+                  <div className="text-sm text-purple-700 mt-2">Comme dans un magasin bien organisé</div>
                 </div>
               </div>
             </div>
@@ -862,7 +865,7 @@ export default function GroupesEgauxCP() {
                     <button
                       onClick={checkAnswer}
                       disabled={!userAnswer}
-                      className="bg-cyan-500 text-white px-8 py-3 rounded-lg font-semibold hover:bg-cyan-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-8 py-3 rounded-lg font-semibold shadow-xl hover:shadow-cyan-500/50 hover:shadow-2xl hover:scale-105 hover:from-cyan-400 hover:to-blue-500 disabled:opacity-50 disabled:cursor-not-allowed border-2 border-white/20 transition-all transform"
                     >
                       Vérifier ma réponse
                     </button>

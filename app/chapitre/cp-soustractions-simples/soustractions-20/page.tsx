@@ -12,6 +12,9 @@ export default function SoustractionsJusqu20() {
   const [highlightedElement, setHighlightedElement] = useState<string | null>(null);
   const [animatingStep, setAnimatingStep] = useState<string | null>(null);
   const [currentExample, setCurrentExample] = useState<number | null>(null);
+  const [highlightedMethod, setHighlightedMethod] = useState<string | null>(null);
+  const [removedObjectsCount, setRemovedObjectsCount] = useState<number>(0);
+  const [currentStep, setCurrentStep] = useState<string | null>(null);
   
   // États pour les exercices
   const [currentExercise, setCurrentExercise] = useState(0);
@@ -51,18 +54,6 @@ export default function SoustractionsJusqu20() {
       explanation: 'Pour 18 - 9, on peut faire 18 - 10 + 1 = 8 + 1 = 9 !',
       item: '🧮',
       color: 'text-blue-500'
-    },
-    {
-      id: 'counting',
-      title: 'Comptage avancé',
-      operation: '14 - 6',
-      start: 14,
-      remove: 6,
-      result: 8,
-      strategy: 'counting',
-      explanation: 'Pour 14 - 6, on compte à rebours : 13, 12, 11, 10, 9, 8 !',
-      item: '🔢',
-      color: 'text-green-500'
     }
   ];
 
@@ -135,11 +126,17 @@ export default function SoustractionsJusqu20() {
     console.log('🛑 Arrêt de tous les vocaux et animations');
     stopSignalRef.current = true;
     
-    // Arrêter complètement la synthèse vocale
-    if (speechSynthesis.speaking || speechSynthesis.pending) {
-      speechSynthesis.cancel();
-      console.log('🔇 speechSynthesis.cancel() appelé');
-    }
+    // Arrêter AGRESSIVEMENT la synthèse vocale
+    speechSynthesis.cancel();
+    console.log('🔇 speechSynthesis.cancel() appelé');
+    
+    // Double sécurité : réessayer l'arrêt après un délai
+    setTimeout(() => {
+      if (speechSynthesis.speaking || speechSynthesis.pending) {
+        speechSynthesis.cancel();
+        console.log('🔇 Double arrêt speechSynthesis');
+      }
+    }, 50);
     
     if (currentAudioRef.current) {
       currentAudioRef.current = null;
@@ -149,21 +146,35 @@ export default function SoustractionsJusqu20() {
     setHighlightedElement(null);
     setAnimatingStep(null);
     setCurrentExample(null);
+    setHighlightedMethod(null);
+    setRemovedObjectsCount(0);
+    setCurrentStep(null);
   };
 
   // Fonction pour jouer l'audio avec voix féminine française
-  const playAudio = async (text: string, slowMode = false) => {
+  const playAudio = async (text: string, slowMode: boolean | 'slow' = false) => {
     return new Promise<void>((resolve) => {
       if (stopSignalRef.current) {
         resolve();
         return;
       }
       
+      // SÉCURITÉ : S'assurer qu'aucun audio ne joue déjà
+      if (speechSynthesis.speaking || speechSynthesis.pending) {
+        speechSynthesis.cancel();
+        // Attendre que l'arrêt soit effectif puis continuer
+        setTimeout(() => {
+          resolve(); // Simplement résoudre sans rejouer
+        }, 100);
+        return;
+      }
+      
+      console.log(`🎧 Joue audio: "${text}"`);
       setIsPlayingVocal(true);
       const utterance = new SpeechSynthesisUtterance(text);
       
       utterance.lang = 'fr-FR';
-      utterance.rate = slowMode ? 0.6 : 0.8;
+      utterance.rate = slowMode === 'slow' ? 0.5 : slowMode ? 0.6 : 0.8;
       utterance.pitch = 1.0;
       utterance.volume = 1.0;
 
@@ -250,47 +261,70 @@ export default function SoustractionsJusqu20() {
     setHasStarted(true);
 
     try {
-      // Introduction
+      // Introduction - Objectif du chapitre
       setHighlightedElement('intro');
       scrollToSection('intro-section');
-      await playAudio("Bonjour ! Maintenant nous allons apprendre les soustractions jusqu'à 20. C'est plus grand, mais avec les bonnes techniques, c'est facile !");
-      await wait(500);
+      await playAudio("Bonjour ! Maintenant nous allons apprendre les soustractions jusqu'à 20.", true);
+      await wait(1000);
 
       if (stopSignalRef.current) return;
 
-      // Les défis
-      setHighlightedElement('challenges');
-      scrollToSection('challenges-section');
-      await playAudio("Avec des nombres plus grands, on a besoin de nouvelles stratégies intelligentes pour calculer plus vite !");
-      await wait(500);
-      
-      if (stopSignalRef.current) return;
-
-      // Démonstration
-      setAnimatingStep('demo');
-      setHighlightedElement('demo');
-      scrollToSection('demo-section');
-      await playAudio("Par exemple, pour 15 moins 7, on peut passer par 10 : 15 moins 5 égale 10, puis 10 moins 2 égale 8 !");
+      await playAudio("L'objectif est de maîtriser les soustractions avec des nombres plus grands en utilisant des techniques intelligentes !", true);
       await wait(1500);
-      
+
       if (stopSignalRef.current) return;
 
-      // Transition vers les exemples
-      setHighlightedElement('examples');
+      // Présentation des deux méthodes
+      setHighlightedElement('strategies');
+      scrollToSection('strategies-section');
+      await playAudio("Pour y arriver, je vais te montrer deux méthodes super efficaces !", true);
+      await wait(1000);
+
+      if (stopSignalRef.current) return;
+
+      // Scroll vers les exemples pour voir les cartes
       scrollToSection('examples-section');
-      await playAudio("Découvre ces trois super techniques avec des animations détaillées !");
+      await wait(800);
+
+      // Méthode 1 : Passage par 10
+      setHighlightedMethod('complement10');
+      await playAudio("Première méthode : passage par 10 ! On décompose pour passer par la dizaine.", true);
+      await wait(2000);
+
+      if (stopSignalRef.current) return;
+
+      // Méthode 2 : Décomposition
+      setHighlightedMethod('decomposition');
+      await playAudio("Deuxième méthode : décomposition ! On sépare le nombre en parties plus faciles.", true);
+      await wait(2000);
+
+      if (stopSignalRef.current) return;
+
+      // Conclusion
+      setHighlightedMethod(null);
+      setHighlightedElement('examples');
+      await playAudio("Maintenant, choisis une méthode pour voir une animation magique qui t'explique tout !", true);
       await wait(500);
 
     } finally {
       setHighlightedElement(null);
       setAnimatingStep(null);
+      setHighlightedMethod(null);
     }
   };
 
   // Fonction pour expliquer un exemple spécifique
   const explainSpecificExample = async (index: number) => {
+    console.log(`🎯 explainSpecificExample appelé pour index ${index}`);
+    
+    // Protection contre les appels multiples
+    if (isPlayingVocal && currentExample !== null) {
+      console.log('🛑 Animation déjà en cours, ignore le clic');
+      return;
+    }
+    
     stopAllVocalsAndAnimations();
-    await wait(300);
+    await wait(500); // Délai plus long pour éviter les chevauchements audio
     stopSignalRef.current = false;
     
     const example = subtractionExamples[index];
@@ -303,14 +337,14 @@ export default function SoustractionsJusqu20() {
 
       // Présentation de l'exemple
       setHighlightedElement('example-title');
-      await playAudio(`Découvrons la technique : ${example.title} avec ${example.operation} !`);
+      await playAudio(`Découvrons la technique : ${example.title} avec ${example.start} moins ${example.remove} !`);
       await wait(800);
       
       if (stopSignalRef.current) return;
 
       // Explication de la stratégie
       setAnimatingStep('strategy-explanation');
-      await playAudio(example.explanation);
+      await playAudio(example.explanation, 'slow');
       await wait(1000);
 
       if (stopSignalRef.current) return;
@@ -320,32 +354,60 @@ export default function SoustractionsJusqu20() {
         await animateComplement10Strategy(example);
       } else if (example.strategy === 'decomposition') {
         await animateDecompositionStrategy(example);
-      } else if (example.strategy === 'counting') {
-        await animateCountingStrategy(example);
       }
 
       // Résultat final
       setAnimatingStep('final-result');
-      await playAudio(`Parfait ! ${example.operation} égale ${example.result} ! Cette technique est très utile !`);
+      await playAudio(`Parfait ! ${example.start} moins ${example.remove} égale ${example.result} ! Cette technique est très utile !`);
       await wait(1000);
 
     } finally {
+      // Pause de 1,5 seconde à la fin pour laisser l'élève comprendre
+      await wait(1500);
       setHighlightedElement(null);
       setAnimatingStep(null);
       setCurrentExample(null);
+      setRemovedObjectsCount(0);
+      setCurrentStep(null);
     }
   };
 
   // Animation pour la stratégie passage par 10
   const animateComplement10Strategy = async (example: any) => {
+    setCurrentStep('step1');
+    setRemovedObjectsCount(0);
     setAnimatingStep('complement10-step1');
-    await playAudio(`D'abord, on enlève ${example.step1} pour arriver à 10`);
-    await wait(1500);
+    scrollToSection('animation-section');
+    await playAudio(`Voici ${example.start} boules ! D'abord, on enlève ${example.step1} d'un coup pour arriver à 10`, 'slow');
+    await wait(1000);
 
     if (stopSignalRef.current) return;
 
+    // Enlever step1 boules d'un coup (passage par 10)
+    setRemovedObjectsCount(example.step1);
+    await playAudio(`${example.start} moins ${example.step1} égale 10`, 'slow');
+    await wait(1500);
+
+    await playAudio(`Parfait ! Il reste 10 boules`, 'slow');
+    await wait(1000);
+
+    if (stopSignalRef.current) return;
+
+    setCurrentStep('step2');
     setAnimatingStep('complement10-step2');
-    await playAudio(`Maintenant, il reste ${example.step2} à enlever de 10`);
+    scrollToSection('animation-section');
+    await playAudio(`Maintenant, il reste ${example.step2} à enlever de ces 10 boules`, 'slow');
+    await wait(1000);
+
+    if (stopSignalRef.current) return;
+
+    // Enlever step2 boules d'un coup
+    setRemovedObjectsCount(example.remove); // Total enlevé
+    await playAudio(`10 moins ${example.step2} égale ${example.result}`, 'slow');
+    await wait(1500);
+
+    setCurrentStep('result');
+    await playAudio(`Et voilà ! Il reste ${example.result} boules !`, 'slow');
     await wait(1500);
 
     if (stopSignalRef.current) return;
@@ -357,43 +419,40 @@ export default function SoustractionsJusqu20() {
 
   // Animation pour la stratégie de décomposition
   const animateDecompositionStrategy = async (example: any) => {
+    setCurrentStep('step1');
+    setRemovedObjectsCount(0);
     setAnimatingStep('decomposition-step1');
-    await playAudio(`On décompose : ${example.start} moins 10 plus 1`);
-    await wait(1500);
+    scrollToSection('animation-section');
+    await playAudio(`Voici ${example.start} boules ! On va enlever ${example.remove} en décomposant : d'abord on enlève 10 d'un coup, puis on remet 1`, 'slow');
+    await wait(1000);
 
     if (stopSignalRef.current) return;
 
+    // Enlever 10 boules d'un coup
+    setRemovedObjectsCount(10);
+    await playAudio(`${example.start} moins 10 égale ${example.start - 10}`, 'slow');
+    await wait(1500);
+
+    setCurrentStep('step2');
     setAnimatingStep('decomposition-step2');
-    await playAudio(`${example.start} moins 10 égale ${example.start - 10}`);
-      await wait(1000);
+    await playAudio(`J'ai enlevé 10 boules, il reste ${example.start - 10}. Mais je n'en voulais enlever que ${example.remove} !`, 'slow');
+    await wait(1000);
       
     if (stopSignalRef.current) return;
 
+    // Remettre 1 boule d'un coup
+    setRemovedObjectsCount(example.remove); // On remet 1, donc 9 au total
+    setCurrentStep('result');
     setAnimatingStep('decomposition-result');
-    await playAudio(`${example.start - 10} plus 1 égale ${example.result} !`);
+    scrollToSection('animation-section');
+    await playAudio(`Je remets 1 boule ! ${example.start - 10} plus 1 égale ${example.result} boules !`, 'slow');
       await wait(1000);
+      
+    // Pause de 1,5 seconde à la fin pour bien comprendre
+    await wait(1500);
   };
 
-  // Animation pour la stratégie de comptage
-  const animateCountingStrategy = async (example: any) => {
-    setAnimatingStep('counting-start');
-    await playAudio(`On part de ${example.start} et on compte à rebours`);
-    await wait(800);
 
-    if (stopSignalRef.current) return;
-
-    setAnimatingStep('counting-down');
-    for (let i = 1; i <= example.remove; i++) {
-      const currentNumber = example.start - i;
-      await playAudio(`${currentNumber}`);
-      await wait(500);
-      if (stopSignalRef.current) return;
-    }
-
-    setAnimatingStep('counting-result');
-    await playAudio(`On arrive à ${example.result} !`);
-    await wait(500);
-  };
 
   // Fonction pour les exercices
   const checkAnswer = () => {
@@ -502,10 +561,13 @@ export default function SoustractionsJusqu20() {
               stopAllVocalsAndAnimations();
               setShowExercises(false);
             }}
+            disabled={isPlayingVocal}
             className={`px-6 py-3 rounded-lg font-semibold transition-all ${
-              !showExercises
-                ? 'bg-orange-600 text-white shadow-lg'
-                : 'bg-white text-orange-600 hover:bg-orange-50'
+              isPlayingVocal
+                ? 'bg-gray-300 text-gray-500 cursor-not-allowed opacity-50'
+                : !showExercises
+                  ? 'bg-orange-600 text-white shadow-lg'
+                  : 'bg-white text-orange-600 hover:bg-orange-50'
             } ${highlightedElement === 'course_tab' ? 'ring-4 ring-orange-400 animate-pulse' : ''}`}
           >
             📚 Cours
@@ -515,10 +577,13 @@ export default function SoustractionsJusqu20() {
               stopAllVocalsAndAnimations();
               setShowExercises(true);
             }}
+            disabled={isPlayingVocal}
             className={`px-6 py-3 rounded-lg font-semibold transition-all ${
-              showExercises
-                ? 'bg-orange-600 text-white shadow-lg'
-                : 'bg-white text-orange-600 hover:bg-orange-50'
+              isPlayingVocal
+                ? 'bg-gray-300 text-gray-500 cursor-not-allowed opacity-50'
+                : showExercises
+                  ? 'bg-orange-600 text-white shadow-lg'
+                  : 'bg-white text-orange-600 hover:bg-orange-50'
             } ${highlightedElement === 'exercise_tab' ? 'ring-4 ring-orange-400 animate-pulse' : ''}`}
           >
             🎯 Exercices
@@ -529,16 +594,34 @@ export default function SoustractionsJusqu20() {
           /* Section Cours */
           <div className="space-y-8">
             {/* Bouton COMMENCER */}
-            {!hasStarted && (
-              <div className="text-center mb-8">
-                <button
-                  onClick={explainChapter}
-                  className="bg-gradient-to-r from-orange-500 to-red-500 text-white px-8 py-4 rounded-xl font-bold text-xl shadow-lg hover:shadow-xl transition-all transform hover:scale-105 animate-pulse"
-                >
-                  ▶️ COMMENCER !
-                </button>
-              </div>
-            )}
+            <div className="text-center mb-8">
+              <button
+                onClick={explainChapter}
+                disabled={isPlayingVocal}
+                className={`px-8 py-4 rounded-xl font-bold text-xl shadow-lg transition-all transform ${
+                  isPlayingVocal
+                    ? 'bg-gray-400 text-gray-600 cursor-not-allowed opacity-75'
+                    : hasStarted
+                      ? 'bg-gradient-to-r from-purple-500 to-indigo-500 text-white hover:shadow-xl hover:scale-105'
+                      : 'bg-gradient-to-r from-orange-500 to-red-500 text-white hover:shadow-xl hover:scale-105 animate-pulse'
+                }`}
+              >
+                {isPlayingVocal
+                  ? '🎤 JE PARLE...'
+                  : hasStarted
+                    ? '🔄 RECOMMENCER !'
+                    : '▶️ COMMENCER !'
+                }
+              </button>
+              <p className="text-sm text-gray-600 mt-2">
+                {isPlayingVocal
+                  ? 'Écoute l\'explication en cours...'
+                  : hasStarted
+                    ? 'Relance l\'explication complète'
+                    : 'Lance l\'explication des techniques de soustraction'
+                }
+              </p>
+            </div>
 
             {/* Introduction */}
             <div 
@@ -573,7 +656,7 @@ export default function SoustractionsJusqu20() {
                 <h2 className="text-2xl font-bold text-gray-800">Nos techniques de champion</h2>
               </div>
               
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div className="p-4 bg-red-50 rounded-lg text-center">
                   <div className="text-3xl mb-2">🎯</div>
                   <h4 className="font-bold text-red-800">Passage par 10</h4>
@@ -584,12 +667,6 @@ export default function SoustractionsJusqu20() {
                   <div className="text-3xl mb-2">🧮</div>
                   <h4 className="font-bold text-blue-800">Décomposition</h4>
                   <p className="text-sm text-blue-600">18-9 → 18-10+1 = 9</p>
-                </div>
-                
-                <div className="p-4 bg-green-50 rounded-lg text-center">
-                  <div className="text-3xl mb-2">🔢</div>
-                  <h4 className="font-bold text-green-800">Comptage avancé</h4>
-                  <p className="text-sm text-green-600">Plus rapide qu'avant !</p>
                 </div>
               </div>
             </div>
@@ -608,16 +685,16 @@ export default function SoustractionsJusqu20() {
               {animatingStep === 'demo' && (
                 <div className="bg-gradient-to-r from-red-50 to-orange-50 rounded-lg p-6">
                   <div className="text-center space-y-4">
-                    <p className="text-lg font-semibold">Technique du passage par 10 :</p>
+                    <p className="text-lg font-semibold text-gray-800">Technique du passage par 10 :</p>
                     <div className="flex justify-center items-center space-x-4 text-xl">
-                      <span className="bg-red-100 px-4 py-2 rounded-lg">15 - 5</span>
-                      <span>=</span>
-                      <span className="bg-yellow-100 px-4 py-2 rounded-lg">10</span>
+                      <span className="bg-red-100 px-4 py-2 rounded-lg text-gray-800">15 - 5</span>
+                      <span className="text-gray-800">=</span>
+                      <span className="bg-yellow-100 px-4 py-2 rounded-lg text-gray-800">10</span>
               </div>
                     <div className="flex justify-center items-center space-x-4 text-xl">
-                      <span className="bg-yellow-100 px-4 py-2 rounded-lg">10 - 2</span>
-                      <span>=</span>
-                      <span className="bg-green-100 px-4 py-2 rounded-lg animate-pulse">8</span>
+                      <span className="bg-yellow-100 px-4 py-2 rounded-lg text-gray-800">10 - 2</span>
+                      <span className="text-gray-800">=</span>
+                      <span className="bg-green-100 px-4 py-2 rounded-lg animate-pulse text-gray-800">8</span>
                     </div>
                     <p className="text-xl font-bold text-green-600">15 - 7 = 8 !</p>
                   </div>
@@ -633,24 +710,67 @@ export default function SoustractionsJusqu20() {
               }`}
             >
               <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">
-                🎯 Maîtrise les 3 super techniques !
+                                  🎯 Maîtrise les 2 super techniques !
               </h2>
               
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
                 {subtractionExamples.map((example, index) => (
                   <div 
                     key={index}
-                    className={`bg-gradient-to-br from-orange-50 to-red-50 rounded-lg p-6 cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-lg ${
+                    className={`bg-gradient-to-br from-orange-50 to-red-50 rounded-lg p-6 transition-all duration-500 ${
+                      isPlayingVocal 
+                        ? 'opacity-50 cursor-not-allowed' 
+                        : 'cursor-pointer hover:scale-105 hover:shadow-lg'
+                    } ${
                       currentExample === index ? 'ring-4 ring-orange-400 bg-orange-100' : ''
+                    } ${
+                      highlightedMethod === example.strategy 
+                        ? 'ring-4 ring-yellow-400 bg-gradient-to-r from-yellow-100 to-orange-100 shadow-2xl animate-pulse scale-110 border-2 border-yellow-300' 
+                        : ''
                     }`}
-                    onClick={() => explainSpecificExample(index)}
+                    onClick={() => {
+                      if (!isPlayingVocal) {
+                        explainSpecificExample(index);
+                      }
+                    }}
                   >
-                    <div className="text-center">
+                    <div className="text-center relative">
+                      {/* Effet brillant quand la méthode est mise en évidence */}
+                      {highlightedMethod === example.strategy && (
+                        <div className="absolute -top-2 -right-2 text-2xl animate-bounce">
+                          ✨
+                        </div>
+                      )}
+                      {highlightedMethod === example.strategy && (
+                        <div className="absolute -top-1 -left-1 text-xl animate-pulse">
+                          🌟
+                        </div>
+                      )}
+                      {highlightedMethod === example.strategy && (
+                        <div className="absolute -bottom-1 right-2 text-lg animate-bounce delay-75">
+                          ⭐
+                        </div>
+                      )}
+                      
                       <div className="text-4xl mb-2">{example.item}</div>
-                      <h3 className="font-bold text-lg text-gray-800 mb-2">{example.title}</h3>
-                      <div className="text-xl font-mono bg-white px-3 py-1 rounded mb-3">{example.operation}</div>
-                      <p className="text-sm text-gray-600 mb-4">{example.explanation}</p>
-                      <button className="bg-orange-500 text-white px-3 py-1 rounded-lg text-sm hover:bg-orange-600 transition-colors">
+                      <h3 className={`font-bold text-lg mb-2 ${
+                        highlightedMethod === example.strategy 
+                          ? 'text-orange-800 font-extrabold text-xl' 
+                          : isPlayingVocal 
+                            ? 'text-gray-400' 
+                            : 'text-gray-800'
+                      }`}>{example.title}</h3>
+                      <div className={`text-xl font-mono bg-white text-gray-800 px-3 py-1 rounded mb-3 ${isPlayingVocal ? 'opacity-50' : ''}`}>{example.operation}</div>
+                      <p className={`text-sm mb-4 ${isPlayingVocal ? 'text-gray-400' : 'text-gray-600'}`}>{example.explanation}</p>
+                      <button 
+                        disabled={isPlayingVocal}
+                        onClick={() => explainSpecificExample(index)}
+                        className={`px-3 py-1 rounded-lg text-sm transition-colors ${
+                          isPlayingVocal 
+                            ? 'bg-gray-300 text-gray-500 cursor-not-allowed' 
+                            : 'bg-orange-500 text-white hover:bg-orange-600'
+                        }`}
+                      >
                         ▶️ Voir l'animation
                       </button>
                     </div>
@@ -677,109 +797,150 @@ export default function SoustractionsJusqu20() {
                       <div className={`p-4 rounded-lg text-center ${
                         highlightedElement === 'example-title' ? 'bg-blue-100 ring-2 ring-blue-400' : 'bg-gray-50'
                       }`}>
-                        <h3 className="text-xl font-bold">{example.title}</h3>
-                        <div className="text-2xl font-mono mt-2">{example.operation}</div>
+                        <h3 className="text-xl font-bold text-gray-800">{example.title}</h3>
+                        <div className="text-2xl font-mono mt-2 text-gray-800">{example.operation}</div>
                 </div>
                 
                 {/* Animation selon la stratégie */}
                       {example.strategy === 'complement10' && (
                         <div className="space-y-4">
                           {(animatingStep === 'complement10-step1' || animatingStep === 'complement10-step2' || animatingStep === 'complement10-result') && (
-                            <div className="text-center space-y-4">
-                              <p className="text-lg font-semibold">Passage par 10 :</p>
+                            <div className="text-center space-y-6">
+                              <p className="text-lg font-semibold text-gray-800">Passage par 10 :</p>
                               
-                              {/* Étape 1 */}
-                              <div className={`p-4 rounded-lg ${animatingStep === 'complement10-step1' ? 'bg-red-100 ring-2 ring-red-400' : 'bg-gray-50'}`}>
-                                <div className="flex justify-center items-center space-x-4 text-xl">
-                                  <span>{example.start}</span>
-                                  <span>-</span>
-                                  <span className="bg-red-200 px-3 py-1 rounded">{example.step1}</span>
-                                  <span>=</span>
-                                  <span className="bg-yellow-200 px-3 py-1 rounded">10</span>
-                    </div>
-                  </div>
+                              {/* Visualisation avec boules */}
+                              <div className="bg-gradient-to-r from-blue-50 to-purple-50 p-6 rounded-lg">
+                                <h4 className="text-lg font-bold text-gray-800 mb-4">🔵 Les {example.start} boules :</h4>
+                                <div className="grid grid-cols-5 gap-2 justify-items-center max-w-lg mx-auto mb-4">
+                                  {Array.from({ length: example.start }, (_, i) => (
+                                    <div
+                                      key={i}
+                                      className={`text-3xl transition-all duration-1000 ${
+                                        i < removedObjectsCount 
+                                          ? 'opacity-30 scale-75 transform rotate-12' 
+                                          : 'opacity-100 scale-100'
+                                      }`}
+                                    >
+                                      🔵
+                                    </div>
+                                  ))}
+                                </div>
+                                <p className="text-center text-gray-700 font-medium">
+                                  {currentStep === 'step1' && `J'enlève ${example.step1} boules d'un coup pour arriver à 10`}
+                                  {currentStep === 'step2' && `Maintenant j'enlève ${example.step2} boules d'un coup`}
+                                  {currentStep === 'result' && `Il reste ${example.result} boules !`}
+                                </p>
+                              </div>
 
-                              {/* Étape 2 */}
-                              {(animatingStep === 'complement10-step2' || animatingStep === 'complement10-result') && (
-                                <div className={`p-4 rounded-lg ${animatingStep === 'complement10-step2' ? 'bg-blue-100 ring-2 ring-blue-400' : 'bg-gray-50'}`}>
+                              {/* Toutes les étapes de calcul restent visibles */}
+                              <div className="space-y-4">
+                                {/* Étape 1 - toujours visible */}
+                                <div className={`p-4 rounded-lg transition-all ${
+                                  currentStep === 'step1' ? 'bg-red-100 ring-2 ring-red-400' : 'bg-gray-50'
+                                }`}>
                                   <div className="flex justify-center items-center space-x-4 text-xl">
-                                    <span className="bg-yellow-200 px-3 py-1 rounded">10</span>
-                                    <span>-</span>
-                                    <span className="bg-blue-200 px-3 py-1 rounded">{example.step2}</span>
-                                    <span>=</span>
-                                    <span className={`px-3 py-1 rounded ${animatingStep === 'complement10-result' ? 'bg-green-200 animate-pulse' : 'bg-gray-200'}`}>
-                                      {animatingStep === 'complement10-result' ? example.result : '?'}
-                                    </span>
-                    </div>
-                  </div>
-                )}
-                    </div>
+                                    <span className="text-gray-800">{example.start}</span>
+                                    <span className="text-gray-800">-</span>
+                                    <span className="bg-red-200 px-3 py-1 rounded text-gray-800">{example.step1}</span>
+                                    <span className="text-gray-800">=</span>
+                                    <span className="bg-yellow-200 px-3 py-1 rounded text-gray-800">10</span>
+                                  </div>
+                                </div>
+
+                                {/* Étape 2 - visible dès step2 */}
+                                {(currentStep === 'step2' || currentStep === 'result') && (
+                                  <div className={`p-4 rounded-lg transition-all ${
+                                    currentStep === 'step2' ? 'bg-blue-100 ring-2 ring-blue-400' : 'bg-gray-50'
+                                  }`}>
+                                    <div className="flex justify-center items-center space-x-4 text-xl">
+                                      <span className="bg-yellow-200 px-3 py-1 rounded text-gray-800">10</span>
+                                      <span className="text-gray-800">-</span>
+                                      <span className="bg-blue-200 px-3 py-1 rounded text-gray-800">{example.step2}</span>
+                                      <span className="text-gray-800">=</span>
+                                      <span className={`px-3 py-1 rounded text-gray-800 ${
+                                        currentStep === 'result' ? 'bg-green-200 animate-pulse' : 'bg-gray-200'
+                                      }`}>
+                                        {currentStep === 'result' ? example.result : '?'}
+                                      </span>
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
                           )}
-                  </div>
-                )}
+                        </div>
+                      )}
 
                       {example.strategy === 'decomposition' && (
                         <div className="space-y-4">
                           {(animatingStep === 'decomposition-step1' || animatingStep === 'decomposition-step2' || animatingStep === 'decomposition-result') && (
-                            <div className="text-center space-y-4">
-                              <p className="text-lg font-semibold">Décomposition intelligente :</p>
+                            <div className="text-center space-y-6">
+                              <p className="text-lg font-semibold text-gray-800">Décomposition intelligente :</p>
                               
-                              <div className="bg-blue-50 p-6 rounded-lg">
-                                <div className="flex justify-center items-center space-x-4 text-xl mb-4">
-                                  <span>{example.start}</span>
-                                  <span>-</span>
-                                  <span className="bg-red-200 px-3 py-1 rounded">10</span>
-                                  <span>+</span>
-                                  <span className="bg-green-200 px-3 py-1 rounded">1</span>
-                    </div>
-                                
-                                {animatingStep === 'decomposition-step2' && (
-                                  <div className="flex justify-center items-center space-x-4 text-xl mb-4">
-                                    <span className="bg-yellow-200 px-3 py-1 rounded">{example.start - 10}</span>
-                                    <span>+</span>
-                                    <span className="bg-green-200 px-3 py-1 rounded">1</span>
-                  </div>
-                )}
-
-                                {animatingStep === 'decomposition-result' && (
-                                  <div className="text-2xl font-bold text-green-600 animate-pulse">
-                                    = {example.result}
-                  </div>
-                )}
-              </div>
-            </div>
-                          )}
-              </div>
-            )}
-
-                      {example.strategy === 'counting' && (
-                        <div className="space-y-4">
-                          {(animatingStep === 'counting-start' || animatingStep === 'counting-down' || animatingStep === 'counting-result') && (
-                  <div className="text-center">
-                              <p className="text-lg mb-4">Comptage à rebours depuis {example.start} :</p>
-                              <div className="flex justify-center space-x-2 flex-wrap">
-                                {Array.from({ length: example.remove + 1 }, (_, i) => {
-                                  const num = example.start - i;
-                                  const isActive = animatingStep === 'counting-down' || animatingStep === 'counting-result';
-                                  const isResult = num === example.result && animatingStep === 'counting-result';
-                                  return (
+                              {/* Visualisation avec boules */}
+                              <div className="bg-gradient-to-r from-green-50 to-yellow-50 p-6 rounded-lg">
+                                <h4 className="text-lg font-bold text-gray-800 mb-4">🟡 Les {example.start} boules :</h4>
+                                <div className="grid grid-cols-6 gap-2 justify-items-center max-w-2xl mx-auto mb-4">
+                                  {Array.from({ length: example.start }, (_, i) => (
                                     <div
-                                      key={num}
-                                      className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold transition-all ${
-                                        isResult ? 'bg-green-200 ring-4 ring-green-400 animate-pulse' :
-                                        isActive ? 'bg-gray-200' :
-                                        'bg-blue-100'
+                                      key={i}
+                                      className={`text-3xl transition-all duration-1000 ${
+                                        i < removedObjectsCount 
+                                          ? 'opacity-30 scale-75 transform rotate-12' 
+                                          : 'opacity-100 scale-100'
                                       }`}
                                     >
-                                      {num}
-                    </div>
-                                  );
-                                })}
-                  </div>
-                </div>
+                                      🟡
+                                    </div>
+                                  ))}
+                                </div>
+                                <p className="text-center text-gray-700 font-medium">
+                                  {currentStep === 'step1' && `J'enlève 10 boules d'un coup`}
+                                  {currentStep === 'step2' && `J'ai enlevé 10, mais je n'en voulais que ${example.remove}`}
+                                  {currentStep === 'result' && `Je remets 1 boule ! Il reste ${example.result} boules !`}
+                                </p>
+                              </div>
+
+                              {/* Toutes les étapes de calcul restent visibles */}
+                              <div className="space-y-4">
+                                {/* Étape 1 - toujours visible */}
+                                <div className={`p-4 rounded-lg transition-all ${
+                                  currentStep === 'step1' ? 'bg-red-100 ring-2 ring-red-400' : 'bg-gray-50'
+                                }`}>
+                                  <div className="flex justify-center items-center space-x-4 text-xl">
+                                    <span className="text-gray-800">{example.start}</span>
+                                    <span className="text-gray-800">-</span>
+                                    <span className="bg-red-200 px-3 py-1 rounded text-gray-800">10</span>
+                                    <span className="text-gray-800">=</span>
+                                    <span className="bg-yellow-200 px-3 py-1 rounded text-gray-800">{example.start - 10}</span>
+                                  </div>
+                                </div>
+                                
+                                {/* Étape 2 - visible dès step2 */}
+                                {(currentStep === 'step2' || currentStep === 'result') && (
+                                  <div className={`p-4 rounded-lg transition-all ${
+                                    currentStep === 'step2' ? 'bg-blue-100 ring-2 ring-blue-400' : 'bg-gray-50'
+                                  }`}>
+                                    <div className="flex justify-center items-center space-x-4 text-xl">
+                                      <span className="bg-yellow-200 px-3 py-1 rounded text-gray-800">{example.start - 10}</span>
+                                      <span className="text-gray-800">+</span>
+                                      <span className="bg-green-200 px-3 py-1 rounded text-gray-800">1</span>
+                                      <span className="text-gray-800">=</span>
+                                      <span className={`px-3 py-1 rounded text-gray-800 ${
+                                        currentStep === 'result' ? 'bg-green-200 animate-pulse' : 'bg-gray-200'
+                                      }`}>
+                                        {currentStep === 'result' ? example.result : '?'}
+                                      </span>
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
                           )}
-              </div>
-            )}
+                        </div>
+                      )}
+
+
 
                       {/* Résultat final */}
                       {animatingStep === 'final-result' && (

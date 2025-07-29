@@ -42,17 +42,7 @@ const sections = [
     duration: '15 min',
     xp: 18,
     color: 'from-yellow-500 to-orange-500',
-    verified: true
-  },
-  {
-    id: 'techniques',
-    title: 'Techniques de calcul',
-    description: 'Apprendre des astuces pour soustraire plus facilement',
-    icon: '🎯',
-    duration: '12 min',
-    xp: 15,
-    color: 'from-purple-500 to-pink-500',
-    verified: true
+        verified: true
   },
   {
     id: 'problemes',

@@ -14,8 +14,7 @@ export default function SoustractionsJusqu10() {
   const [currentExample, setCurrentExample] = useState<number | null>(null);
   const [currentCountingNumber, setCurrentCountingNumber] = useState<number | null>(null);
   const [highlightedMethod, setHighlightedMethod] = useState<string | null>(null);
-  const [introDemo, setIntroDemo] = useState<string | null>(null);
-  const [introDemoStep, setIntroDemoStep] = useState<number>(0);
+  const [removedObjectsCount, setRemovedObjectsCount] = useState<number>(0);
 
   // États pour les exercices
   const [currentExercise, setCurrentExercise] = useState(0);
@@ -141,8 +140,7 @@ export default function SoustractionsJusqu10() {
     setCurrentExample(null);
     setCurrentCountingNumber(null);
     setHighlightedMethod(null);
-    setIntroDemo(null);
-    setIntroDemoStep(0);
+    setRemovedObjectsCount(0);
   };
 
   // Fonction pour jouer l'audio avec voix féminine française
@@ -247,12 +245,12 @@ export default function SoustractionsJusqu10() {
       // Introduction - Objectif du chapitre
       setHighlightedElement('intro');
       scrollToSection('intro-section');
-      await playAudio("Bonjour ! Aujourd'hui, nous allons apprendre à faire des soustractions jusqu'à 10.", 'slow');
+      await playAudio("Bonjour ! Aujourd'hui, nous allons apprendre à faire des soustractions jusqu'à 10.", true);
       await wait(1000);
 
       if (stopSignalRef.current) return;
 
-      await playAudio("L'objectif est simple : savoir enlever des objets ou des nombres pour trouver combien il en reste !", 'slow');
+      await playAudio("L'objectif est simple : savoir enlever des objets ou des nombres pour trouver combien il en reste !", true);
       await wait(1500);
 
       if (stopSignalRef.current) return;
@@ -260,7 +258,7 @@ export default function SoustractionsJusqu10() {
       // Présentation des trois méthodes
       setHighlightedElement('strategies');
       scrollToSection('strategies-section');
-      await playAudio("Pour y arriver, je vais te montrer trois méthodes magiques !", 'slow');
+      await playAudio("Pour y arriver, je vais te montrer trois méthodes magiques !", true);
       await wait(1000);
 
       if (stopSignalRef.current) return;
@@ -271,66 +269,35 @@ export default function SoustractionsJusqu10() {
 
       // Méthode 1 : Compter à rebours
       setHighlightedMethod('counting');
-      await playAudio("Première méthode : compter à rebours ! On part du grand nombre et on compte en descendant.", 'slow');
+      await playAudio("Première méthode : compter à rebours ! On part du grand nombre et on compte en descendant.", true);
       await wait(2000);
 
       if (stopSignalRef.current) return;
 
-      // Méthode 2 : Objets visuels avec démonstration
+      // Méthode 2 : Objets visuels
       setHighlightedMethod('visual');
-      setIntroDemo('visual');
-      await playAudio("Deuxième méthode : avec des objets ! Regarde bien, on voit les objets et on en enlève quelques-uns.", 'slow');
-      await wait(1000);
+      await playAudio("Deuxième méthode : avec des objets ! On voit les objets et on en enlève quelques-uns.", true);
+      await wait(2000);
 
       if (stopSignalRef.current) return;
 
-      // Animation progressive des étoiles (5 étoiles, on en enlève 2)
-      for (let i = 0; i < 2; i++) {
-        setIntroDemoStep(i + 1);
-        await playAudio(`On enlève une étoile...`, 'slow');
-        await wait(1500);
-        if (stopSignalRef.current) return;
-      }
-      await playAudio("Il reste 3 étoiles !", 'slow');
-      await wait(1000);
-
-      if (stopSignalRef.current) return;
-
-      // Méthode 3 : Doigts avec démonstration
+      // Méthode 3 : Doigts
       setHighlightedMethod('fingers');
-      setIntroDemo('fingers');
-      setIntroDemoStep(0);
-      await playAudio("Troisième méthode : avec tes doigts ! Regarde, tu lèves tes doigts et tu en baisses quelques-uns.", 'slow');
-      await wait(1000);
-
-      if (stopSignalRef.current) return;
-
-      // Animation progressive des doigts (5 doigts, on en baisse 2)
-      for (let i = 0; i < 2; i++) {
-        setIntroDemoStep(i + 1);
-        await playAudio(`On baisse un doigt...`, 'slow');
-        await wait(1500);
-        if (stopSignalRef.current) return;
-      }
-      await playAudio("Il reste 3 doigts levés !", 'slow');
-      await wait(1000);
+      await playAudio("Troisième méthode : avec tes doigts ! Tu lèves tes doigts, tu en baisses, et tu comptes ce qui reste.", true);
+      await wait(2000);
 
       if (stopSignalRef.current) return;
 
       // Conclusion
       setHighlightedMethod(null);
-      setIntroDemo(null);
-      setIntroDemoStep(0);
       setHighlightedElement('examples');
-      await playAudio("Maintenant, choisis une méthode pour voir une animation magique qui t'explique tout !", 'slow');
+      await playAudio("Maintenant, choisis une méthode pour voir une animation magique qui t'explique tout !", true);
       await wait(500);
 
     } finally {
       setHighlightedElement(null);
       setAnimatingStep(null);
       setHighlightedMethod(null);
-      setIntroDemo(null);
-      setIntroDemoStep(0);
     }
   };
 
@@ -350,7 +317,7 @@ export default function SoustractionsJusqu10() {
 
       // Présentation de l'exemple
       setHighlightedElement('example-title');
-      await playAudio(`Regardons la méthode : ${example.title} avec ${example.operation} !`, true);
+      await playAudio(`Regardons la méthode : ${example.title} avec ${example.start} moins ${example.remove} !`, true);
       await wait(800);
 
       if (stopSignalRef.current) return;
@@ -375,7 +342,7 @@ export default function SoustractionsJusqu10() {
       // Résultat final
       setAnimatingStep('final-result');
       scrollToSection('animation-section');
-      await playAudio(`Donc ${example.operation} égale ${example.result} ! Bravo !`, true);
+      await playAudio(`Donc ${example.start} moins ${example.remove} égale ${example.result} ! Bravo !`, true);
       await wait(1000);
 
     } finally {
@@ -423,6 +390,7 @@ export default function SoustractionsJusqu10() {
   // Animation pour la stratégie visuelle
   const animateVisualStrategy = async (example: any) => {
     setAnimatingStep('visual-start');
+    setRemovedObjectsCount(0);
     scrollToSection('animation-section');
     await playAudio(`Voici ${example.start} objets`, 'slow');
     await wait(1500);
@@ -431,10 +399,18 @@ export default function SoustractionsJusqu10() {
 
     setAnimatingStep('visual-removing');
     scrollToSection('animation-section');
-    await playAudio(`On en enlève ${example.remove}`, 'slow');
-    await wait(2000);
+    await playAudio(`On va en enlever ${example.remove} un par un`, 'slow');
+    await wait(1000);
 
     if (stopSignalRef.current) return;
+
+    // Enlever les objets un par un
+    for (let i = 1; i <= example.remove; i++) {
+      setRemovedObjectsCount(i);
+      await playAudio(`J'enlève le ${i === 1 ? 'premier' : i === 2 ? 'deuxième' : i + 'ème'} objet`, 'slow');
+      await wait(1500);
+      if (stopSignalRef.current) return;
+    }
 
     setAnimatingStep('visual-result');
     scrollToSection('animation-section');
@@ -443,11 +419,15 @@ export default function SoustractionsJusqu10() {
 
     // Pause de 1,5 seconde à la fin pour bien comprendre
     await wait(1500);
+    
+    // Reset
+    setRemovedObjectsCount(0);
   };
 
   // Animation pour la stratégie avec les doigts
   const animateFingersStrategy = async (example: any) => {
     setAnimatingStep('fingers-start');
+    setRemovedObjectsCount(0);
     scrollToSection('animation-section');
     await playAudio(`Lève ${example.start} doigts !`, 'slow');
     await wait(1500);
@@ -456,10 +436,18 @@ export default function SoustractionsJusqu10() {
 
     setAnimatingStep('fingers-remove');
     scrollToSection('animation-section');
-    await playAudio(`Maintenant, baisse ${example.remove} doigts !`, 'slow');
-    await wait(1500);
+    await playAudio(`Maintenant, on va baisser ${example.remove} doigts un par un`, 'slow');
+    await wait(1000);
 
     if (stopSignalRef.current) return;
+
+    // Baisser les doigts un par un
+    for (let i = 1; i <= example.remove; i++) {
+      setRemovedObjectsCount(i);
+      await playAudio(`Je baisse le ${i === 1 ? 'premier' : i === 2 ? 'deuxième' : i + 'ème'} doigt`, 'slow');
+      await wait(1500);
+      if (stopSignalRef.current) return;
+    }
 
     setAnimatingStep('fingers-count');
     scrollToSection('animation-section');
@@ -468,6 +456,9 @@ export default function SoustractionsJusqu10() {
 
     // Pause de 1,5 seconde à la fin pour bien comprendre
     await wait(1500);
+    
+    // Reset
+    setRemovedObjectsCount(0);
   };
 
   // Fonction pour les exercices
@@ -631,12 +622,12 @@ export default function SoustractionsJusqu10() {
               <button
                 onClick={explainChapter}
                 disabled={isPlayingVocal}
-                className={`px-8 py-4 rounded-xl font-bold text-xl shadow-lg transition-all transform ${
+                className={`px-8 py-4 rounded-xl font-bold text-xl shadow-2xl transition-all transform border-2 border-white/30 ${
                   isPlayingVocal 
                     ? 'bg-gray-400 text-gray-600 cursor-not-allowed opacity-75' 
                     : hasStarted
-                      ? 'bg-gradient-to-r from-purple-500 to-indigo-500 text-white hover:shadow-xl hover:scale-105'
-                      : 'bg-gradient-to-r from-green-500 to-blue-500 text-white hover:shadow-xl hover:scale-105 animate-pulse'
+                      ? 'bg-gradient-to-r from-purple-400 to-indigo-600 text-white hover:shadow-purple-500/50 hover:shadow-2xl hover:scale-110 hover:from-purple-300 hover:to-indigo-500'
+                      : 'bg-gradient-to-r from-green-400 to-blue-600 text-white hover:shadow-green-500/50 hover:shadow-2xl hover:scale-110 animate-pulse hover:from-green-300 hover:to-blue-500'
                 }`}
               >
                 {isPlayingVocal 
@@ -710,66 +701,7 @@ export default function SoustractionsJusqu10() {
               </div>
             </div>
 
-            {/* Démonstrations visuelles pendant l'introduction */}
-            {introDemo && (
-              <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl shadow-lg p-6 border-2 border-purple-200">
-                <h2 className="text-xl font-bold text-purple-800 mb-4 text-center">
-                  ✨ Démonstration en direct !
-                </h2>
-                
-                {introDemo === 'visual' && (
-                  <div className="text-center">
-                    <h3 className="text-lg font-semibold text-yellow-800 mb-4">
-                      🌟 Méthode avec des objets : 5 - 2 = ?
-                    </h3>
-                    <div className="flex justify-center gap-3 mb-4">
-                      {Array.from({ length: 5 }, (_, i) => (
-                        <div
-                          key={i}
-                          className={`text-4xl transition-all duration-1000 ${
-                            i < introDemoStep 
-                              ? 'opacity-30 scale-75 text-gray-400' 
-                              : 'opacity-100 scale-100'
-                          }`}
-                        >
-                          ⭐
-                        </div>
-                      ))}
-                    </div>
-                    <p className="text-center text-yellow-700 font-medium">
-                      {introDemoStep === 0 && "J'ai 5 étoiles"}
-                      {introDemoStep === 1 && "J'en enlève 1... il me reste 4 étoiles"}
-                      {introDemoStep === 2 && "J'en enlève encore 1... il me reste 3 étoiles !"}
-                    </p>
-                  </div>
-                )}
 
-                {introDemo === 'fingers' && (
-                  <div className="text-center">
-                    <h3 className="text-lg font-semibold text-purple-800 mb-4">
-                      🖐️ Méthode avec les doigts : 5 - 2 = ?
-                    </h3>
-                    <div className="flex justify-center gap-2 mb-4">
-                      {Array.from({ length: 5 }, (_, i) => (
-                        <div
-                          key={i}
-                          className={`text-4xl transition-all duration-1000 ${
-                            i < introDemoStep ? 'opacity-50 scale-75' : 'opacity-100 scale-100'
-                          }`}
-                        >
-                          {i < introDemoStep ? '👇' : '👆'}
-                        </div>
-                      ))}
-                    </div>
-                    <p className="text-center text-purple-700 font-medium">
-                      {introDemoStep === 0 && "J'ai 5 doigts levés"}
-                      {introDemoStep === 1 && "Je baisse 1 doigt... il me reste 4 doigts levés"}
-                      {introDemoStep === 2 && "Je baisse encore 1 doigt... il me reste 3 doigts levés !"}
-                    </p>
-                  </div>
-                )}
-              </div>
-            )}
 
             {/* Démonstration rapide */}
             <div 
@@ -941,7 +873,7 @@ export default function SoustractionsJusqu10() {
                                   example.start, 
                                   example.item, 
                                   example.color,
-                                  animatingStep === 'visual-removing' || animatingStep === 'visual-result' ? example.remove : 0
+                                  animatingStep === 'visual-removing' || animatingStep === 'visual-result' ? removedObjectsCount : 0
                                 )}
                               </div>
                               {animatingStep === 'visual-result' && (
@@ -965,13 +897,13 @@ export default function SoustractionsJusqu10() {
                                     <div
                                       key={i}
                                       className={`transform transition-all duration-1000 ${
-                                        (animatingStep === 'fingers-remove' || animatingStep === 'fingers-count') && i < example.remove
+                                        (animatingStep === 'fingers-remove' || animatingStep === 'fingers-count') && i < removedObjectsCount
                                           ? 'opacity-50 scale-75 -translate-y-2' 
                                           : 'opacity-100 scale-100'
                                       }`}
                                     >
                                       <div className="text-3xl">
-                                        {(animatingStep === 'fingers-remove' || animatingStep === 'fingers-count') && i < example.remove ? '👇' : '👆'}
+                                        {(animatingStep === 'fingers-remove' || animatingStep === 'fingers-count') && i < removedObjectsCount ? '👇' : '👆'}
                                       </div>
                                     </div>
                                   ))}

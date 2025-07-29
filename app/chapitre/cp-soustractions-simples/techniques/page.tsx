@@ -57,8 +57,8 @@ export default function TechniquesCalculSoustraction() {
       color: 'text-green-500',
       steps: [
         { step: 1, text: '15 - 7 = ?', visual: 'Transformons en addition' },
-        { step: 2, text: '7 + ? = 15', visual: 'Que faut-il ajouter à 7 ?' },
-        { step: 3, text: '7 + 8 = 15', visual: 'Donc 15 - 7 = 8 !' }
+        { step: 2, text: '7 + 8 = 15', visual: 'Il faut ajouter 8 à 7 pour obtenir 15' },
+        { step: 3, text: '15 - 7 = 8', visual: 'Donc 15 - 7 = 8 !' }
       ]
     },
     {
@@ -93,23 +93,6 @@ export default function TechniquesCalculSoustraction() {
         { step: 1, text: '16 - 8 = ?', visual: 'Je reconnais un double !' },
         { step: 2, text: '8 + 8 = 16', visual: 'Je connais cette addition' },
         { step: 3, text: '16 ÷ 2 = 8', visual: 'La moitié de 16 est 8 !' }
-      ]
-    },
-    {
-      id: 'cassage',
-      title: 'Casser la dizaine',
-      operation: '12 - 5',
-      start: 12,
-      remove: 5,
-      result: 7,
-      technique: 'cassage',
-      explanation: 'Je décompose 12 en 10 + 2, puis 10 - 5 = 5, et 5 + 2 = 7 !',
-      item: '💥',
-      color: 'text-red-500',
-      steps: [
-        { step: 1, text: '12 - 5 = ?', visual: 'Cassons la dizaine : 12 = 10 + 2' },
-        { step: 2, text: '10 - 5 = 5', visual: 'On enlève 5 de la dizaine' },
-        { step: 3, text: '5 + 2 = 7', visual: 'On ajoute les 2 unités restantes' }
       ]
     }
   ];
@@ -147,14 +130,6 @@ export default function TechniquesCalculSoustraction() {
       hint: '9 + 9 = 18',
       visual: '👯',
       story: 'C\'est un double !'
-    },
-    {
-      operation: '13 - 4',
-      answer: 9,
-      technique: 'cassage',
-      hint: '13 = 10 + 3',
-      visual: '💥',
-      story: 'Casse la dizaine !'
     },
     {
       operation: '12 - 8',
@@ -203,6 +178,24 @@ export default function TechniquesCalculSoustraction() {
     setCurrentExample(null);
   };
 
+  // Fonction pour convertir les symboles mathématiques pour l'audio
+  const convertMathForAudio = (text: string): string => {
+    let result = text;
+    
+    // Convertir les divisions ÷ en "divisé par"
+    result = result.replace(/(\d+)\s*÷\s*(\d+)/g, '$1 divisé par $2');
+    
+    // Convertir les soustractions - en "moins" (récursif pour les cas multiples)
+    let hasChanges = true;
+    while (hasChanges) {
+      const newResult = result.replace(/(\d+)\s*-\s*(\d+)/g, '$1 moins $2');
+      hasChanges = newResult !== result;
+      result = newResult;
+    }
+    
+    return result;
+  };
+
   // Fonction pour jouer l'audio avec voix féminine française
   const playAudio = async (text: string, slowMode = false) => {
     return new Promise<void>((resolve) => {
@@ -212,7 +205,9 @@ export default function TechniquesCalculSoustraction() {
       }
       
       setIsPlayingVocal(true);
-      const utterance = new SpeechSynthesisUtterance(text);
+      // Convertir les symboles mathématiques pour une meilleure prononciation
+      const audioText = convertMathForAudio(text);
+      const utterance = new SpeechSynthesisUtterance(audioText);
       
       utterance.lang = 'fr-FR';
       utterance.rate = slowMode ? 0.6 : 0.8;
@@ -313,7 +308,7 @@ export default function TechniquesCalculSoustraction() {
       // Les techniques
       setHighlightedElement('techniques');
       scrollToSection('techniques-section');
-      await playAudio("Il y a 5 techniques magiques que tous les mathématiciens utilisent ! Chacune a ses super-pouvoirs !");
+      await playAudio("Il y a 4 techniques magiques que tous les mathématiciens utilisent ! Chacune a ses super-pouvoirs !");
       await wait(500);
 
       if (stopSignalRef.current) return;
@@ -330,7 +325,7 @@ export default function TechniquesCalculSoustraction() {
       // Transition vers les exemples
       setHighlightedElement('examples');
       scrollToSection('examples-section');
-      await playAudio("Découvre ces 5 techniques de génie avec des animations détaillées ! Tu vas devenir un super calculateur !");
+      await playAudio("Découvre ces 4 techniques de génie avec des animations détaillées ! Tu vas devenir un super calculateur !");
       await wait(500);
 
     } finally {
@@ -525,16 +520,26 @@ export default function TechniquesCalculSoustraction() {
           /* Section Cours */
           <div className="space-y-8">
             {/* Bouton COMMENCER */}
-            {!hasStarted && (
-              <div className="text-center mb-8">
-                <button
-                  onClick={explainChapter}
-                  className="bg-gradient-to-r from-purple-500 to-indigo-500 text-white px-8 py-4 rounded-xl font-bold text-xl shadow-lg hover:shadow-xl transition-all transform hover:scale-105 animate-pulse"
-                >
-                  ▶️ COMMENCER !
-                </button>
-              </div>
-            )}
+            <div className="text-center mb-8">
+              <button
+                onClick={explainChapter}
+                disabled={isPlayingVocal}
+                className={`px-8 py-4 rounded-xl font-bold text-xl shadow-lg hover:shadow-xl transition-all transform hover:scale-105 ${
+                  isPlayingVocal 
+                    ? 'bg-gray-400 text-gray-600 cursor-not-allowed' 
+                    : hasStarted
+                      ? 'bg-gradient-to-r from-orange-500 to-red-500 text-white animate-bounce'
+                      : 'bg-gradient-to-r from-purple-500 to-indigo-500 text-white animate-pulse'
+                }`}
+              >
+                {isPlayingVocal 
+                  ? '🎤 JE PARLE...' 
+                  : hasStarted 
+                    ? '🔄 RECOMMENCER !' 
+                    : '▶️ COMMENCER !'
+                }
+              </button>
+            </div>
 
             {/* Introduction */}
             <div 
@@ -566,10 +571,10 @@ export default function TechniquesCalculSoustraction() {
                 <div className="p-2 bg-indigo-100 rounded-lg">
                   <Target className="w-6 h-6 text-indigo-600" />
                 </div>
-                <h2 className="text-2xl font-bold text-gray-800">Les 5 techniques de génie</h2>
+                <h2 className="text-2xl font-bold text-gray-800">Les 4 techniques de génie</h2>
               </div>
               
-              <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div className="p-4 bg-blue-50 rounded-lg text-center">
                   <div className="text-3xl mb-2">🎯</div>
                   <h4 className="font-bold text-blue-800 text-sm">Complément</h4>
@@ -593,12 +598,6 @@ export default function TechniquesCalculSoustraction() {
                   <h4 className="font-bold text-orange-800 text-sm">Nombre proche</h4>
                   <p className="text-xs text-orange-600">8 + 8 = 16</p>
                 </div>
-
-                <div className="p-4 bg-red-50 rounded-lg text-center">
-                  <div className="text-3xl mb-2">💥</div>
-                  <h4 className="font-bold text-red-800 text-sm">Casser dizaine</h4>
-                  <p className="text-xs text-red-600">12 = 10 + 2</p>
-              </div>
             </div>
               </div>
 
@@ -618,19 +617,19 @@ export default function TechniquesCalculSoustraction() {
                   <div className="text-center space-y-4">
                     <p className="text-lg font-semibold">Technique du complément :</p>
                     <div className="flex justify-center items-center space-x-4 text-xl">
-                      <span className="bg-red-100 px-4 py-2 rounded-lg">13 - 9</span>
+                      <span className="bg-red-100 text-red-800 px-4 py-2 rounded-lg">13 - 9</span>
                       <span>=</span>
-                      <span className="bg-yellow-100 px-4 py-2 rounded-lg">?</span>
+                      <span className="bg-yellow-100 text-yellow-800 px-4 py-2 rounded-lg">?</span>
                     </div>
                     <div className="flex justify-center items-center space-x-4 text-xl">
-                      <span className="bg-blue-100 px-4 py-2 rounded-lg">9 + ?</span>
+                      <span className="bg-blue-100 text-blue-800 px-4 py-2 rounded-lg">9 + ?</span>
                       <span>=</span>
-                      <span className="bg-yellow-100 px-4 py-2 rounded-lg">13</span>
+                      <span className="bg-yellow-100 text-yellow-800 px-4 py-2 rounded-lg">13</span>
                     </div>
                     <div className="flex justify-center items-center space-x-4 text-xl">
-                      <span className="bg-blue-100 px-4 py-2 rounded-lg">9 + 4</span>
+                      <span className="bg-blue-100 text-blue-800 px-4 py-2 rounded-lg">9 + 4</span>
                       <span>=</span>
-                      <span className="bg-green-100 px-4 py-2 rounded-lg animate-pulse">13</span>
+                      <span className="bg-green-100 text-green-800 px-4 py-2 rounded-lg animate-pulse">13</span>
               </div>
                     <p className="text-xl font-bold text-green-600">Donc 13 - 9 = 4 !</p>
                     </div>
@@ -646,10 +645,10 @@ export default function TechniquesCalculSoustraction() {
               }`}
             >
               <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">
-                🎯 Maîtrise les 5 techniques de génie !
+                🎯 Maîtrise les 4 techniques de génie !
               </h2>
               
-              <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 max-w-6xl mx-auto">
                 {techniqueExamples.map((technique, index) => (
                       <div 
                         key={index}
@@ -661,7 +660,7 @@ export default function TechniquesCalculSoustraction() {
                     <div className="text-center">
                       <div className="text-3xl mb-2">{technique.item}</div>
                       <h3 className="font-bold text-sm text-gray-800 mb-1">{technique.title}</h3>
-                      <div className="text-lg font-mono bg-white px-2 py-1 rounded mb-2">{technique.operation}</div>
+                      <div className="text-lg font-mono bg-white text-gray-800 px-2 py-1 rounded mb-2">{technique.operation}</div>
                       <p className="text-xs text-gray-600 mb-3">{technique.explanation.slice(0, 40)}...</p>
                       <button className="bg-purple-500 text-white px-2 py-1 rounded text-xs hover:bg-purple-600 transition-colors">
                         ▶️ Animation
@@ -690,8 +689,12 @@ export default function TechniquesCalculSoustraction() {
                       <div className={`p-4 rounded-lg text-center ${
                         highlightedElement === 'technique-title' ? 'bg-blue-100 ring-2 ring-blue-400' : 'bg-gray-50'
                       }`}>
-                        <h3 className="text-xl font-bold">{technique.title}</h3>
-                        <div className="text-2xl font-mono mt-2">{technique.operation}</div>
+                        <h3 className={`text-xl font-bold ${
+                          highlightedElement === 'technique-title' ? 'text-blue-800' : 'text-gray-800'
+                        }`}>{technique.title}</h3>
+                        <div className={`text-2xl font-mono mt-2 ${
+                          highlightedElement === 'technique-title' ? 'text-blue-800' : 'text-gray-800'
+                        }`}>{technique.operation}</div>
                     </div>
 
                       {/* Animation des étapes */}
@@ -714,8 +717,12 @@ export default function TechniquesCalculSoustraction() {
                                 {step.step}
                   </div>
                               <div className="flex-1">
-                                <div className="text-lg font-mono mb-1">{step.text}</div>
-                                <div className="text-sm text-gray-600">{step.visual}</div>
+                                <div className={`text-lg font-mono mb-1 ${
+                                  animatingStep === `step-${step.step}` ? 'text-purple-800' : 'text-gray-800'
+                                }`}>{step.text}</div>
+                                <div className={`text-sm ${
+                                  animatingStep === `step-${step.step}` ? 'text-purple-700' : 'text-gray-600'
+                                }`}>{step.visual}</div>
               </div>
             </div>
           </div>

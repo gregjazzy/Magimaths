@@ -762,8 +762,8 @@ export default function PoserAdditionCP() {
                 ⏹️ Arrêter
               </button>
             )}
-          </div>
         </div>
+      </div>
 
         {/* Navigation entre cours et exercices */}
         <div className="flex justify-center mb-6 sm:mb-8">
@@ -895,7 +895,7 @@ export default function PoserAdditionCP() {
                     <div className="text-center">
                       <div className="mb-4">
                         {renderPostedAddition(example)}
-                  </div>
+                    </div>
                       <div className="text-sm text-gray-600 mb-3">
                         Addition {example.description}
                     </div>
@@ -906,11 +906,11 @@ export default function PoserAdditionCP() {
                       }`}>
                         {isAnimationRunning ? '⏳ Attendez...' : '▶️ Voir l\'animation'}
                       </button>
-                    </div>
                   </div>
-                ))}
+                </div>
+              ))}
                     </div>
-                  </div>
+            </div>
 
             {/* Guide pratique */}
             <div className="bg-gradient-to-r from-green-400 to-teal-500 rounded-xl p-6 text-white">
@@ -922,7 +922,7 @@ export default function PoserAdditionCP() {
                   <div className="text-3xl mb-2">1️⃣</div>
                   <div className="font-bold">Aligner</div>
                   <div className="text-sm">Unités sous unités, dizaines sous dizaines</div>
-                </div>
+              </div>
                 <div>
                   <div className="text-3xl mb-2">2️⃣</div>
                   <div className="font-bold">Calculer</div>

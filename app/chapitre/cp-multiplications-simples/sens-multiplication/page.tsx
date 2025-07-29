@@ -16,6 +16,9 @@ export default function SensMultiplicationCP() {
   const [showingProcess, setShowingProcess] = useState<'grouping' | 'counting' | 'repeated' | null>(null);
   const [animatingObjects, setAnimatingObjects] = useState(false);
   const [groupStep, setGroupStep] = useState<'individual' | 'grouping' | 'result' | null>(null);
+  const [highlightedCarExample, setHighlightedCarExample] = useState(false);
+  const [explainCorrespondence, setExplainCorrespondence] = useState(false);
+  const [highlightedCorrespondenceElement, setHighlightedCorrespondenceElement] = useState<string | null>(null);
   
   // États pour les exercices
   const [showExercises, setShowExercises] = useState(false);
@@ -148,6 +151,9 @@ export default function SensMultiplicationCP() {
     setShowingProcess(null);
     setAnimatingObjects(false);
     setGroupStep(null);
+    setHighlightedCarExample(false);
+    // Ne pas remettre explainCorrespondence à false pour garder le bouton visible
+    setHighlightedCorrespondenceElement(null);
   };
 
   // Fonction pour jouer l'audio
@@ -236,22 +242,126 @@ export default function SensMultiplicationCP() {
       await animateExample(0);
       if (stopSignalRef.current) return;
       
-      // 4. Lien avec l'addition
-      await wait(1500);
-      setHighlightedElement('addition-link');
-      scrollToSection('addition-section');
-      await playAudio("La multiplication, c'est aussi additionner le même nombre plusieurs fois ! C'est plus rapide !", true);
+      // 4. Présentation des options disponibles
+      await wait(2000);
+      setHighlightedElement(null);
+      await playAudio("Maintenant, tu as deux possibilités pour approfondir tes connaissances !", true);
       if (stopSignalRef.current) return;
       
-      await wait(800);
+      await wait(1200);
+      
+      // 5. Illumination de l'exemple des voitures
+      setHighlightedCarExample(true);
+      scrollToSection('concept-section');
+      await playAudio("Tu peux essayer avec les voitures en cliquant ici", true);
+      if (stopSignalRef.current) return;
+      
+      await wait(1800);
+      
+      // 6. Illumination de la correspondance addition-multiplication
+      setHighlightedCarExample(false);
+      setHighlightedElement('addition-link');
+      scrollToSection('addition-section');
+      await playAudio("Ou mieux comprendre la correspondance entre addition et multiplication ici", true);
+      if (stopSignalRef.current) return;
+      
+      await wait(1500);
       setHighlightedElement(null);
+      
     } finally {
       setHighlightedElement(null);
       setAnimatingStep(null);
-      setCurrentExample(null);
+      // Ne pas effacer currentExample pour garder l'exemple des pommes affiché
       setShowingProcess(null);
       setAnimatingObjects(false);
-      setGroupStep(null);
+      // setGroupStep(null); // Ne pas remettre à null pour garder l'exemple des pommes affiché
+      setHighlightedCarExample(false);
+      setIsAnimationRunning(false);
+    }
+  };
+
+  // Fonction pour expliquer la correspondance addition-multiplication
+  const explainAdditionCorrespondence = async () => {
+    stopAllVocalsAndAnimations();
+    await wait(300);
+    stopSignalRef.current = false;
+    setIsAnimationRunning(true);
+    setExplainCorrespondence(true);
+    
+    try {
+      // 1. Introduction
+      setHighlightedCorrespondenceElement('intro');
+      scrollToSection('addition-section');
+      await playAudio("Excellente question ! Je vais t'expliquer pourquoi la multiplication et l'addition répétée donnent le même résultat !", true);
+      if (stopSignalRef.current) return;
+      
+      await wait(1500);
+      
+      // 2. Mettre en évidence le côté addition
+      setHighlightedCorrespondenceElement('addition-side');
+      await playAudio("Regardons d'abord le côté gauche : l'addition répétée", true);
+      if (stopSignalRef.current) return;
+      
+      await wait(1200);
+      await playAudio("Nous avons 3 paniers de 2 pommes chacun", true);
+      if (stopSignalRef.current) return;
+      
+      await wait(1000);
+      
+      // 3. Expliquer l'addition étape par étape
+      setHighlightedCorrespondenceElement('addition-operation');
+      await playAudio("Alors on additionne : 2 plus 2 plus 2", true);
+      if (stopSignalRef.current) return;
+      
+      await wait(1200);
+      await playAudio("Cela nous donne 6 pommes au total", true);
+      if (stopSignalRef.current) return;
+      
+      await wait(1500);
+      
+      // 4. Mettre en évidence le côté multiplication
+      setHighlightedCorrespondenceElement('multiplication-side');
+      await playAudio("Maintenant, regardons le côté droit : la multiplication", true);
+      if (stopSignalRef.current) return;
+      
+      await wait(1200);
+      await playAudio("Nous avons toujours 3 paniers de 2 pommes chacun", true);
+      if (stopSignalRef.current) return;
+      
+      await wait(1000);
+      
+      // 5. Expliquer la multiplication
+      setHighlightedCorrespondenceElement('multiplication-operation');
+      await playAudio("Mais au lieu d'additionner, on dit : 3 fois 2", true);
+      if (stopSignalRef.current) return;
+      
+      await wait(1200);
+      await playAudio("3 fois 2 égale 6 ! Le même résultat !", true);
+      if (stopSignalRef.current) return;
+      
+      await wait(1500);
+      
+      // 6. Montrer la correspondance
+      setHighlightedCorrespondenceElement('both-operations');
+      await playAudio("Tu vois ? Les deux méthodes donnent exactement le même résultat : 6 !", true);
+      if (stopSignalRef.current) return;
+      
+      await wait(1500);
+      
+      // 7. Conclusion sur l'avantage
+      setHighlightedCorrespondenceElement('conclusion');
+      await playAudio("La multiplication est juste un raccourci magique pour éviter de faire de longues additions !", true);
+      if (stopSignalRef.current) return;
+      
+      await wait(1200);
+      await playAudio("C'est beaucoup plus rapide et plus facile !", true);
+      if (stopSignalRef.current) return;
+      
+      await wait(1500);
+      
+    } finally {
+      setHighlightedCorrespondenceElement(null);
+      // Ne pas remettre explainCorrespondence à false pour garder le bouton affiché
       setIsAnimationRunning(false);
     }
   };
@@ -289,7 +399,8 @@ export default function SensMultiplicationCP() {
       await wait(1500);
     } finally {
       setAnimatingObjects(false);
-      setGroupStep(null);
+      // Garder tous les exemples affichés à l'étape "result" après l'animation
+      // setGroupStep(null); // On ne remet plus à null pour garder l'affichage
     }
   };
 
@@ -439,10 +550,10 @@ export default function SensMultiplicationCP() {
               <button
                 onClick={explainChapter}
                 disabled={isAnimationRunning}
-                className={`px-8 py-4 rounded-xl font-bold text-xl shadow-lg transition-all transform ${
+                className={`px-8 py-4 rounded-xl font-bold text-xl shadow-2xl transition-all transform ${
                   isAnimationRunning 
                     ? 'bg-gray-400 text-gray-700 cursor-not-allowed' 
-                    : 'bg-gradient-to-r from-pink-500 to-purple-500 text-white hover:shadow-xl hover:scale-105'
+                    : 'bg-gradient-to-r from-pink-400 to-purple-600 text-white hover:shadow-pink-500/50 hover:shadow-2xl hover:scale-110 hover:from-pink-300 hover:to-purple-500 animate-pulse border-2 border-white/30'
                 }`}
               >
                 {isAnimationRunning ? '⏳ Animation en cours...' : '▶️ DÉCOUVRIR LA MULTIPLICATION !'}
@@ -480,10 +591,13 @@ export default function SensMultiplicationCP() {
                 👥 Les groupes égaux
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div className="text-center">
+                <div 
+                  className="text-center transition-all duration-300 cursor-pointer hover:scale-102"
+                  onClick={() => !isAnimationRunning && animateExample(0)}
+                >
                   <h3 className="text-xl font-bold text-purple-600 mb-4">🍎 Exemple des pommes</h3>
                   <div className="bg-purple-100 rounded-lg p-6">
-                    <p className="text-lg mb-4">3 paniers de 2 pommes chacun</p>
+                    <p className="text-lg mb-4 text-gray-800">3 paniers de 2 pommes chacun</p>
                     <div className="flex justify-center space-x-4">
                       <div className="text-center">
                         <div className="text-3xl mb-2">🧺</div>
@@ -498,13 +612,18 @@ export default function SensMultiplicationCP() {
                         <div className="text-2xl">🍎🍎</div>
                       </div>
                     </div>
-                    <p className="text-lg mt-4 font-bold">= 6 pommes en tout !</p>
+                    <p className="text-lg mt-4 font-bold text-gray-800">= 6 pommes en tout !</p>
                   </div>
                 </div>
-                <div className="text-center">
+                <div 
+                  className={`text-center transition-all duration-500 ${
+                    highlightedCarExample ? 'ring-4 ring-pink-400 bg-pink-50 rounded-lg p-4 transform scale-105 cursor-pointer' : 'cursor-pointer hover:scale-102'
+                  }`}
+                  onClick={() => !isAnimationRunning && animateExample(1)}
+                >
                   <h3 className="text-xl font-bold text-pink-600 mb-4">🚗 Exemple des voitures</h3>
                   <div className="bg-pink-100 rounded-lg p-6">
-                    <p className="text-lg mb-4">2 parkings de 4 voitures chacun</p>
+                    <p className="text-lg mb-4 text-gray-800">2 parkings de 4 voitures chacun</p>
                     <div className="flex justify-center space-x-8">
                       <div className="text-center">
                         <div className="text-sm text-gray-600 mb-2">Parking 1</div>
@@ -517,7 +636,7 @@ export default function SensMultiplicationCP() {
                         <div className="text-2xl">🚗🚗</div>
                       </div>
                     </div>
-                    <p className="text-lg mt-4 font-bold">= 8 voitures en tout !</p>
+                    <p className="text-lg mt-4 font-bold text-gray-800">= 8 voitures en tout !</p>
                   </div>
                 </div>
               </div>
@@ -612,25 +731,27 @@ export default function SensMultiplicationCP() {
                     </div>
                   </div>
 
-                  {/* Boutons pour tester d'autres exemples */}
-                  <div className="flex justify-center space-x-4">
-                    {multiplicationExamples.map((example, index) => (
-                      <button
-                        key={index}
-                        onClick={() => !isAnimationRunning && animateExample(index)}
-                        disabled={isAnimationRunning}
-                        className={`px-4 py-2 rounded-lg font-semibold transition-all ${
-                          isAnimationRunning 
-                            ? 'bg-gray-200 text-gray-500 cursor-not-allowed' 
-                            : currentExample === index 
-                              ? 'bg-yellow-400 text-yellow-900 border-2 border-yellow-600' 
-                              : 'bg-white text-gray-700 border-2 border-gray-300 hover:bg-gray-50'
-                        }`}
-                      >
-                        {example.item} {example.description}
-                      </button>
-                    ))}
-                  </div>
+                  {/* Boutons pour tester d'autres exemples - seulement pendant l'animation */}
+                  {isAnimationRunning && (
+                    <div className="flex justify-center space-x-4">
+                      {multiplicationExamples.map((example, index) => (
+                        <button
+                          key={index}
+                          onClick={() => !isAnimationRunning && animateExample(index)}
+                          disabled={isAnimationRunning}
+                          className={`px-4 py-2 rounded-lg font-semibold transition-all ${
+                            isAnimationRunning 
+                              ? 'bg-gray-200 text-gray-500 cursor-not-allowed' 
+                              : currentExample === index 
+                                ? 'bg-yellow-400 text-yellow-900 border-2 border-yellow-600' 
+                                : 'bg-white text-gray-700 border-2 border-gray-300 hover:bg-gray-50'
+                          }`}
+                        >
+                          {example.item} {example.description}
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
               )}
             </div>
@@ -639,37 +760,99 @@ export default function SensMultiplicationCP() {
             <div 
               id="addition-section"
               className={`bg-white rounded-xl p-8 shadow-lg transition-all duration-1000 ${
-                highlightedElement === 'addition-link' ? 'ring-4 ring-green-400 bg-green-50' : ''
+                highlightedElement === 'addition-link' ? 'ring-4 ring-green-400 bg-green-50' : 
+                highlightedCorrespondenceElement === 'intro' ? 'ring-4 ring-blue-400 bg-blue-50' :
+                ''
               }`}
             >
-              <h2 className="text-2xl font-bold text-center mb-6 text-gray-900">
+              <h2 className={`text-2xl font-bold text-center mb-6 transition-all duration-500 ${
+                highlightedCorrespondenceElement === 'intro' ? 'text-blue-800 scale-105' : 'text-gray-900'
+              }`}>
                 ➕ Multiplication = Addition répétée
               </h2>
+              
+              {/* Bouton pour lancer l'explication interactive */}
+              <div className="text-center mb-6">
+                <button
+                  onClick={() => !isAnimationRunning && explainAdditionCorrespondence()}
+                  disabled={isAnimationRunning}
+                  className={`px-6 py-3 rounded-xl font-bold text-lg shadow-2xl hover:shadow-2xl transition-all transform hover:scale-110 ${
+                    isAnimationRunning 
+                      ? 'bg-gray-400 text-gray-600 cursor-not-allowed' 
+                      : explainCorrespondence
+                        ? 'bg-gradient-to-r from-orange-400 to-red-600 text-white animate-bounce hover:from-orange-300 hover:to-red-500 border-2 border-white/40 shadow-orange-500/50'
+                        : 'bg-gradient-to-r from-purple-400 to-indigo-600 text-white animate-pulse hover:from-purple-300 hover:to-indigo-500 border-2 border-white/40 shadow-purple-500/50'
+                  }`}
+                >
+                  {isAnimationRunning 
+                    ? '🎤 JE T\'EXPLIQUE...' 
+                    : explainCorrespondence 
+                      ? '🔄 RECOMMENCER L\'EXPLICATION !' 
+                      : '🎤 EXPLIQUER LA CORRESPONDANCE !'
+                  }
+                </button>
+                <p className="text-sm text-gray-600 mt-2">
+                  {isAnimationRunning 
+                    ? 'Écoute bien l\'explication...' 
+                    : 'Clique pour comprendre pourquoi ça marche !'
+                  }
+                </p>
+              </div>
+              
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div className="bg-blue-100 rounded-xl p-6">
-                  <h3 className="text-xl font-bold text-blue-800 mb-4 text-center">
+                <div className={`rounded-xl p-6 transition-all duration-500 ${
+                  highlightedCorrespondenceElement === 'addition-side' || highlightedCorrespondenceElement === 'both-operations' 
+                    ? 'bg-blue-200 ring-4 ring-blue-400 shadow-lg transform scale-105' 
+                    : 'bg-blue-100'
+                }`}>
+                  <h3 className={`text-xl font-bold mb-4 text-center transition-all duration-500 ${
+                    highlightedCorrespondenceElement === 'addition-side' || highlightedCorrespondenceElement === 'both-operations'
+                      ? 'text-blue-900 scale-110' : 'text-blue-800'
+                  }`}>
                     Avec l'addition (long)
                   </h3>
                   <div className="text-center space-y-3">
-                    <div className="text-lg">3 paniers de 2 pommes :</div>
-                    <div className="text-xl font-mono">2 + 2 + 2 = 6</div>
+                    <div className="text-lg text-gray-800">3 paniers de 2 pommes :</div>
+                    <div className={`text-xl font-mono transition-all duration-500 ${
+                      highlightedCorrespondenceElement === 'addition-operation' || highlightedCorrespondenceElement === 'both-operations'
+                        ? 'text-blue-900 font-black text-2xl bg-blue-300 px-4 py-2 rounded-lg ring-2 ring-blue-500'
+                        : 'text-gray-800'
+                    }`}>2 + 2 + 2 = 6</div>
                     <div className="text-sm text-gray-600">On additionne 3 fois le nombre 2</div>
                   </div>
                 </div>
-                <div className="bg-green-100 rounded-xl p-6">
-                  <h3 className="text-xl font-bold text-green-800 mb-4 text-center">
+                <div className={`rounded-xl p-6 transition-all duration-500 ${
+                  highlightedCorrespondenceElement === 'multiplication-side' || highlightedCorrespondenceElement === 'both-operations'
+                    ? 'bg-green-200 ring-4 ring-green-400 shadow-lg transform scale-105'
+                    : 'bg-green-100'
+                }`}>
+                  <h3 className={`text-xl font-bold mb-4 text-center transition-all duration-500 ${
+                    highlightedCorrespondenceElement === 'multiplication-side' || highlightedCorrespondenceElement === 'both-operations'
+                      ? 'text-green-900 scale-110' : 'text-green-800'
+                  }`}>
                     Avec la multiplication (rapide)
                   </h3>
                   <div className="text-center space-y-3">
-                    <div className="text-lg">3 paniers de 2 pommes :</div>
-                    <div className="text-xl font-mono">3 × 2 = 6</div>
+                    <div className="text-lg text-gray-800">3 paniers de 2 pommes :</div>
+                    <div className={`text-xl font-mono transition-all duration-500 ${
+                      highlightedCorrespondenceElement === 'multiplication-operation' || highlightedCorrespondenceElement === 'both-operations'
+                        ? 'text-green-900 font-black text-2xl bg-green-300 px-4 py-2 rounded-lg ring-2 ring-green-500'
+                        : 'text-gray-800'
+                    }`}>3 × 2 = 6</div>
                     <div className="text-sm text-gray-600">Beaucoup plus rapide !</div>
                   </div>
                 </div>
               </div>
               <div className="text-center mt-6">
-                <div className="bg-gradient-to-r from-purple-100 to-pink-100 rounded-xl p-6 border-2 border-purple-200">
-                  <p className="text-xl font-bold text-purple-800">
+                <div className={`rounded-xl p-6 border-2 transition-all duration-500 ${
+                  highlightedCorrespondenceElement === 'conclusion'
+                    ? 'bg-gradient-to-r from-purple-200 to-pink-200 border-purple-400 ring-4 ring-purple-400 shadow-lg transform scale-105'
+                    : 'bg-gradient-to-r from-purple-100 to-pink-100 border-purple-200'
+                }`}>
+                  <p className={`text-xl font-bold transition-all duration-500 ${
+                    highlightedCorrespondenceElement === 'conclusion'
+                      ? 'text-purple-900 text-2xl animate-pulse' : 'text-purple-800'
+                  }`}>
                     💡 La multiplication est un raccourci pour additionner le même nombre plusieurs fois !
                   </p>
                 </div>
@@ -721,7 +904,7 @@ export default function SensMultiplicationCP() {
                       {exercises[currentExercise].question}
                     </div>
                     {exercises[currentExercise].visual && (
-                      <div className="text-center mt-4 text-2xl bg-white rounded-lg p-4 border border-purple-200">
+                      <div className="text-center mt-4 text-2xl bg-white rounded-lg p-4 border border-purple-200 text-gray-800">
                         {exercises[currentExercise].visual}
                       </div>
                     )}
@@ -758,7 +941,7 @@ export default function SensMultiplicationCP() {
                     <button
                       onClick={checkAnswer}
                       disabled={!userAnswer}
-                      className="bg-purple-500 text-white px-8 py-3 rounded-lg font-semibold hover:bg-purple-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="bg-gradient-to-r from-purple-500 to-indigo-600 text-white px-8 py-3 rounded-lg font-semibold shadow-xl hover:shadow-purple-500/50 hover:shadow-2xl hover:scale-105 hover:from-purple-400 hover:to-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed border-2 border-white/20 transition-all transform"
                     >
                       Vérifier ma réponse
                     </button>

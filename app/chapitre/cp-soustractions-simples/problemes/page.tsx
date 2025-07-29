@@ -12,6 +12,7 @@ export default function ProblemesSoustraction() {
   const [highlightedElement, setHighlightedElement] = useState<string | null>(null);
   const [animatingStep, setAnimatingStep] = useState<string | null>(null);
   const [currentExample, setCurrentExample] = useState<number | null>(null);
+  const [highlightedProblem, setHighlightedProblem] = useState<number | null>(null);
   
   // États pour les exercices
   const [currentExercise, setCurrentExercise] = useState(0);
@@ -184,6 +185,25 @@ export default function ProblemesSoustraction() {
     setHighlightedElement(null);
     setAnimatingStep(null);
     setCurrentExample(null);
+    setHighlightedProblem(null);
+  };
+
+  // Fonction pour convertir les symboles mathématiques pour l'audio
+  const convertMathForAudio = (text: string): string => {
+    let result = text;
+    
+    // Convert divisions ÷ to "divisé par"
+    result = result.replace(/(\d+)\s*÷\s*(\d+)/g, '$1 divisé par $2');
+    
+    // Convert subtractions - to "moins" (recursive for multiple cases)
+    let hasChanges = true;
+    while (hasChanges) {
+      const newResult = result.replace(/(\d+)\s*-\s*(\d+)/g, '$1 moins $2');
+      hasChanges = newResult !== result;
+      result = newResult;
+    }
+    
+    return result;
   };
 
   // Fonction pour jouer l'audio avec voix féminine française
@@ -195,7 +215,9 @@ export default function ProblemesSoustraction() {
       }
       
       setIsPlayingVocal(true);
-      const utterance = new SpeechSynthesisUtterance(text);
+      // Convertir les symboles mathématiques pour une meilleure prononciation
+      const audioText = convertMathForAudio(text);
+      const utterance = new SpeechSynthesisUtterance(audioText);
       
       utterance.lang = 'fr-FR';
       utterance.rate = slowMode ? 0.6 : 0.8;
@@ -296,7 +318,7 @@ export default function ProblemesSoustraction() {
       // La méthode
       setHighlightedElement('method');
       scrollToSection('method-section');
-      await playAudio("Pour résoudre un problème, j'ai une méthode magique en 4 étapes : lire, comprendre, calculer, et vérifier !");
+      await playAudio("Pour résoudre un problème, j'ai une méthode magique en 5 étapes : lire, comprendre, identifier les chiffres, calculer, et vérifier !");
       await wait(500);
 
       if (stopSignalRef.current) return;
@@ -305,7 +327,7 @@ export default function ProblemesSoustraction() {
       setAnimatingStep('demo');
       setHighlightedElement('demo');
       scrollToSection('demo-section');
-      await playAudio("Par exemple : Emma a 12 voitures, elle en donne 5. Je lis, je comprends qu'il faut enlever, je calcule 12 moins 5 égale 7, et je vérifie : 7 plus 5 égale bien 12 !");
+      await playAudio("Par exemple : Emma a 12 voitures, elle en donne 5. Je lis, je comprends qu'il faut enlever, j'identifie les chiffres 12 et 5, je calcule 12 moins 5 égale 7, et je vérifie : 7 plus 5 égale bien 12 !", true);
       await wait(1500);
       
       if (stopSignalRef.current) return;
@@ -314,11 +336,25 @@ export default function ProblemesSoustraction() {
       setHighlightedElement('examples');
       scrollToSection('examples-section');
       await playAudio("Découvre ces histoires passionnantes et résous-les étape par étape avec moi !");
-      await wait(500);
+      await wait(800);
+
+      if (stopSignalRef.current) return;
+
+      // Animation d'illumination des problèmes
+      for (let i = 0; i < problemExamples.length; i++) {
+        if (stopSignalRef.current) return;
+        setHighlightedProblem(i);
+        await wait(600);
+      }
+      
+      // Attendre un peu avant de tout éteindre
+      await wait(800);
+      setHighlightedProblem(null);
 
     } finally {
       setHighlightedElement(null);
-      setAnimatingStep(null);
+      // Ne pas effacer animatingStep pour garder l'exemple Emma affiché
+      setHighlightedProblem(null);
     }
   };
 
@@ -338,41 +374,51 @@ export default function ProblemesSoustraction() {
 
       // Présentation du problème
       setHighlightedElement('problem-title');
-      await playAudio(`Résolvons ensemble : ${problem.title} !`);
+      await playAudio(`Résolvons ensemble : ${problem.title} !`, true);
       await wait(800);
 
       if (stopSignalRef.current) return;
 
       // Lecture du problème
       setAnimatingStep('step-read');
-      await playAudio(`Première étape : je lis le problème. ${problem.story} ${problem.question}`);
+      await playAudio(`Première étape : je lis le problème. ${problem.story} ${problem.question}`, true);
       await wait(1500);
 
       if (stopSignalRef.current) return;
 
       // Compréhension
       setAnimatingStep('step-understand');
-      await playAudio(`Deuxième étape : je comprends. ${problem.steps[1].text}. Il faut faire une soustraction !`);
+      await playAudio(`Deuxième étape : je comprends. ${problem.steps[1].text}. Il faut faire une soustraction !`, true);
+      await wait(1500);
+
+      if (stopSignalRef.current) return;
+
+      // Identification des chiffres
+      setAnimatingStep('step-identify');
+      await playAudio(`Troisième étape : j'identifie les chiffres importants. Je souligne ${problem.operation.split(' - ')[0]} et ${problem.operation.split(' - ')[1]} !`, true);
       await wait(1500);
 
       if (stopSignalRef.current) return;
 
       // Calcul avec animation
       setAnimatingStep('step-calculate');
-      await playAudio(`Troisième étape : je calcule. ${problem.operation} égale ${problem.result} !`);
+      await playAudio(`Quatrième étape : je calcule. ${problem.operation} égale ${problem.result} !`, true);
       await wait(1500);
 
       if (stopSignalRef.current) return;
 
       // Vérification
       setAnimatingStep('step-verify');
-      await playAudio(`Quatrième étape : je vérifie. ${problem.result} plus ${problem.operation.split(' - ')[1]} égale bien ${problem.operation.split(' - ')[0]} ! C'est correct !`);
+      await playAudio(`Cinquième étape : je vérifie. ${problem.result} plus ${problem.operation.split(' - ')[1]} égale bien ${problem.operation.split(' - ')[0]} ! C'est correct !`, true);
       await wait(1500);
 
       // Résultat final
       setAnimatingStep('final-result');
-      await playAudio(`Bravo ! La réponse est ${problem.result}. Cette méthode en 4 étapes fonctionne toujours !`);
+      await playAudio(`Bravo ! La réponse est ${problem.result}. Cette méthode en 5 étapes fonctionne toujours !`, true);
       await wait(1000);
+      
+      // Pause supplémentaire de 1,5 seconde à la fin
+      await wait(1500);
       
     } finally {
       setHighlightedElement(null);
@@ -507,10 +553,13 @@ export default function ProblemesSoustraction() {
               stopAllVocalsAndAnimations();
               setShowExercises(false);
             }}
+            disabled={isPlayingVocal}
             className={`px-6 py-3 rounded-lg font-semibold transition-all ${
-              !showExercises
-                ? 'bg-rose-600 text-white shadow-lg'
-                : 'bg-white text-rose-600 hover:bg-rose-50'
+              isPlayingVocal 
+                ? 'bg-gray-300 text-gray-500 cursor-not-allowed opacity-50'
+                : !showExercises
+                  ? 'bg-rose-600 text-white shadow-lg'
+                  : 'bg-white text-rose-600 hover:bg-rose-50'
             } ${highlightedElement === 'course_tab' ? 'ring-4 ring-rose-400 animate-pulse' : ''}`}
           >
             📚 Cours
@@ -520,10 +569,13 @@ export default function ProblemesSoustraction() {
               stopAllVocalsAndAnimations();
               setShowExercises(true);
             }}
+            disabled={isPlayingVocal}
             className={`px-6 py-3 rounded-lg font-semibold transition-all ${
-              showExercises
-                ? 'bg-rose-600 text-white shadow-lg'
-                : 'bg-white text-rose-600 hover:bg-rose-50'
+              isPlayingVocal 
+                ? 'bg-gray-300 text-gray-500 cursor-not-allowed opacity-50'
+                : showExercises
+                  ? 'bg-rose-600 text-white shadow-lg'
+                  : 'bg-white text-rose-600 hover:bg-rose-50'
             } ${highlightedElement === 'exercise_tab' ? 'ring-4 ring-rose-400 animate-pulse' : ''}`}
           >
             🎯 Exercices
@@ -534,16 +586,34 @@ export default function ProblemesSoustraction() {
           /* Section Cours */
           <div className="space-y-8">
             {/* Bouton COMMENCER */}
-            {!hasStarted && (
-              <div className="text-center mb-8">
-                <button
-                  onClick={explainChapter}
-                  className="bg-gradient-to-r from-rose-500 to-pink-500 text-white px-8 py-4 rounded-xl font-bold text-xl shadow-lg hover:shadow-xl transition-all transform hover:scale-105 animate-pulse"
-                >
-                  ▶️ COMMENCER !
-                </button>
-              </div>
-            )}
+            <div className="text-center mb-8">
+              <button
+                onClick={explainChapter}
+                disabled={isPlayingVocal}
+                className={`px-8 py-4 rounded-xl font-bold text-xl shadow-lg hover:shadow-xl transition-all transform hover:scale-105 ${
+                  isPlayingVocal 
+                    ? 'bg-gray-400 text-gray-600 cursor-not-allowed' 
+                    : hasStarted
+                      ? 'bg-gradient-to-r from-orange-500 to-red-500 text-white animate-bounce'
+                      : 'bg-gradient-to-r from-rose-500 to-pink-500 text-white animate-pulse'
+                }`}
+              >
+                {isPlayingVocal 
+                  ? '🎤 JE PARLE...' 
+                  : hasStarted 
+                    ? '🔄 RECOMMENCER !' 
+                    : '▶️ COMMENCER !'
+                }
+              </button>
+              <p className="text-sm text-gray-600 mt-2">
+                {isPlayingVocal 
+                  ? 'Écoute les explications...' 
+                  : hasStarted 
+                    ? 'Relance l\'explication complète'
+                    : 'Découvre comment résoudre les problèmes'
+                }
+              </p>
+            </div>
 
             {/* Introduction */}
             <div 
@@ -575,10 +645,10 @@ export default function ProblemesSoustraction() {
                 <div className="p-2 bg-pink-100 rounded-lg">
                   <Target className="w-6 h-6 text-pink-600" />
                 </div>
-                <h2 className="text-2xl font-bold text-gray-800">La méthode magique en 4 étapes</h2>
+                <h2 className="text-2xl font-bold text-gray-800">La méthode magique en 5 étapes</h2>
               </div>
               
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
                 <div className="p-4 bg-blue-50 rounded-lg text-center">
                   <div className="p-2 bg-blue-100 rounded-full w-12 h-12 mx-auto mb-2 flex items-center justify-center">
                     <BookOpen className="w-6 h-6 text-blue-600" />
@@ -595,11 +665,19 @@ export default function ProblemesSoustraction() {
                   <p className="text-sm text-green-600">Qu'est-ce qui se passe ?</p>
                   </div>
                   
+                <div className="p-4 bg-yellow-50 rounded-lg text-center">
+                  <div className="p-2 bg-yellow-100 rounded-full w-12 h-12 mx-auto mb-2 flex items-center justify-center">
+                    <Star className="w-6 h-6 text-yellow-600" />
+                  </div>
+                  <h4 className="font-bold text-yellow-800">3. Identifier</h4>
+                  <p className="text-sm text-yellow-600">Je souligne les chiffres</p>
+                </div>
+                  
                 <div className="p-4 bg-purple-50 rounded-lg text-center">
                   <div className="p-2 bg-purple-100 rounded-full w-12 h-12 mx-auto mb-2 flex items-center justify-center">
                     <Calculator className="w-6 h-6 text-purple-600" />
                   </div>
-                  <h4 className="font-bold text-purple-800">3. Calculer</h4>
+                  <h4 className="font-bold text-purple-800">4. Calculer</h4>
                   <p className="text-sm text-purple-600">Je fais l'opération</p>
                 </div>
 
@@ -607,7 +685,7 @@ export default function ProblemesSoustraction() {
                   <div className="p-2 bg-orange-100 rounded-full w-12 h-12 mx-auto mb-2 flex items-center justify-center">
                     <Eye className="w-6 h-6 text-orange-600" />
                   </div>
-                  <h4 className="font-bold text-orange-800">4. Vérifier</h4>
+                  <h4 className="font-bold text-orange-800">5. Vérifier</h4>
                   <p className="text-sm text-orange-600">Je contrôle ma réponse</p>
                 </div>
               </div>
@@ -627,23 +705,27 @@ export default function ProblemesSoustraction() {
               {animatingStep === 'demo' && (
                 <div className="bg-gradient-to-r from-blue-50 to-rose-50 rounded-lg p-6">
                   <div className="text-center space-y-4">
-                    <p className="text-lg font-semibold">Méthode en 4 étapes :</p>
+                    <p className="text-lg font-semibold text-gray-800">Méthode en 5 étapes :</p>
                     <div className="space-y-3">
                       <div className="bg-blue-100 p-3 rounded-lg">
                         <span className="font-bold text-blue-800">1. Lire :</span>
-                        <span className="ml-2">"Emma a 12 voitures, elle en donne 5"</span>
+                        <span className="ml-2 text-gray-800">"Emma a 12 voitures, elle en donne 5"</span>
                       </div>
                       <div className="bg-green-100 p-3 rounded-lg">
                         <span className="font-bold text-green-800">2. Comprendre :</span>
-                        <span className="ml-2">Emma enlève des voitures → soustraction</span>
+                        <span className="ml-2 text-gray-800">Emma enlève des voitures → soustraction</span>
+                      </div>
+                      <div className="bg-yellow-100 p-3 rounded-lg">
+                        <span className="font-bold text-yellow-800">3. Identifier :</span>
+                        <span className="ml-2 text-gray-800">Emma a <span className="bg-yellow-300 px-1 rounded font-bold text-gray-800">12</span> voitures, elle en donne <span className="bg-yellow-300 px-1 rounded font-bold text-gray-800">5</span></span>
                       </div>
                       <div className="bg-purple-100 p-3 rounded-lg">
-                        <span className="font-bold text-purple-800">3. Calculer :</span>
-                        <span className="ml-2">12 - 5 = 7</span>
+                        <span className="font-bold text-purple-800">4. Calculer :</span>
+                        <span className="ml-2 text-gray-800">12 - 5 = 7</span>
                       </div>
                       <div className="bg-orange-100 p-3 rounded-lg">
-                        <span className="font-bold text-orange-800">4. Vérifier :</span>
-                        <span className="ml-2">7 + 5 = 12 ✓</span>
+                        <span className="font-bold text-orange-800">5. Vérifier :</span>
+                        <span className="ml-2 text-gray-800">7 + 5 = 12 ✓</span>
                       </div>
                     </div>
                     <p className="text-xl font-bold text-green-600">Réponse : 7 voitures !</p>
@@ -664,25 +746,70 @@ export default function ProblemesSoustraction() {
               </h2>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {problemExamples.map((problem, index) => (
+                {problemExamples.map((problem, index) => {
+                  const highlightColors = [
+                    'ring-4 ring-blue-400 bg-blue-100 shadow-2xl transform scale-110',      // Problème 1: Bleu
+                    'ring-4 ring-green-400 bg-green-100 shadow-2xl transform scale-110',    // Problème 2: Vert
+                    'ring-4 ring-yellow-400 bg-yellow-100 shadow-2xl transform scale-110',  // Problème 3: Jaune
+                    'ring-4 ring-purple-400 bg-purple-100 shadow-2xl transform scale-110'   // Problème 4: Violet
+                  ];
+                  
+                  return (
                   <div 
                     key={index}
-                    className={`bg-gradient-to-br from-rose-50 to-pink-50 rounded-lg p-6 cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-lg ${
+                    className={`bg-gradient-to-br from-rose-50 to-pink-50 rounded-lg p-6 transition-all duration-500 ${
+                      highlightedProblem === index 
+                        ? highlightColors[index] + ' animate-pulse'
+                        : isPlayingVocal 
+                          ? 'opacity-50 cursor-not-allowed' 
+                          : 'cursor-pointer hover:scale-105 hover:shadow-lg'
+                    } ${
                       currentExample === index ? 'ring-4 ring-rose-400 bg-rose-100' : ''
                     }`}
-                    onClick={() => explainSpecificProblem(index)}
+                    onClick={() => !isPlayingVocal && explainSpecificProblem(index)}
                   >
-                    <div className="text-center">
+                    <div className={`text-center ${
+                      highlightedProblem === index 
+                        ? '' 
+                        : isPlayingVocal 
+                          ? 'text-gray-400' 
+                          : ''
+                    }`}>
                       <div className="text-4xl mb-3">{problem.item}</div>
-                      <h3 className="font-bold text-lg text-gray-800 mb-2">{problem.title}</h3>
-                      <div className="text-sm text-gray-600 mb-3 leading-relaxed">{problem.story}</div>
-                      <div className="text-lg font-mono bg-white px-3 py-1 rounded mb-3">{problem.operation}</div>
-                      <button className="bg-rose-500 text-white px-3 py-1 rounded-lg text-sm hover:bg-rose-600 transition-colors">
+                      <h3 className={`font-bold text-lg mb-2 ${
+                        highlightedProblem === index 
+                          ? 'text-gray-800' 
+                          : isPlayingVocal 
+                            ? 'text-gray-400' 
+                            : 'text-gray-800'
+                      }`}>{problem.title}</h3>
+                      <div className={`text-sm mb-3 leading-relaxed ${
+                        highlightedProblem === index 
+                          ? 'text-gray-700' 
+                          : isPlayingVocal 
+                            ? 'text-gray-400' 
+                            : 'text-gray-600'
+                      }`}>{problem.story}</div>
+                      <div className={`text-lg font-mono bg-white px-3 py-1 rounded mb-3 ${
+                        highlightedProblem === index 
+                          ? 'text-gray-800' 
+                          : isPlayingVocal 
+                            ? 'text-gray-400' 
+                            : 'text-gray-800'
+                      }`}>{problem.operation}</div>
+                      <button className={`px-3 py-1 rounded-lg text-sm transition-colors ${
+                        highlightedProblem === index 
+                          ? 'bg-rose-600 text-white shadow-lg' 
+                          : isPlayingVocal 
+                            ? 'bg-gray-300 text-gray-500 cursor-not-allowed' 
+                            : 'bg-rose-500 text-white hover:bg-rose-600'
+                      }`}>
                         ▶️ Résoudre ensemble
                 </button>
                     </div>
                   </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
 
@@ -704,8 +831,8 @@ export default function ProblemesSoustraction() {
                       <div className={`p-4 rounded-lg text-center ${
                         highlightedElement === 'problem-title' ? 'bg-blue-100 ring-2 ring-blue-400' : 'bg-gray-50'
                       }`}>
-                        <h3 className="text-xl font-bold">{problem.title}</h3>
-                        <p className="text-gray-600 mt-2">{problem.story}</p>
+                        <h3 className="text-xl font-bold text-gray-800">{problem.title}</h3>
+                        <p className="text-gray-700 mt-2">{problem.story}</p>
                         <p className="text-gray-800 font-semibold mt-1">{problem.question}</p>
               </div>
 
@@ -726,7 +853,7 @@ export default function ProblemesSoustraction() {
                                 <BookOpen className="w-5 h-5 text-blue-600" />
                                 <span className="font-bold text-blue-800">LIRE</span>
                   </div>
-                              <div className="text-gray-700">Je lis attentivement le problème</div>
+                              <div className="text-gray-800">Je lis attentivement le problème</div>
                       </div>
                           </div>
                     </div>
@@ -746,12 +873,49 @@ export default function ProblemesSoustraction() {
                                 <Search className="w-5 h-5 text-green-600" />
                                 <span className="font-bold text-green-800">COMPRENDRE</span>
                               </div>
-                              <div className="text-gray-700">{problem.steps[1].text}</div>
+                              <div className="text-gray-800">{problem.steps[1].text}</div>
                             </div>
                           </div>
                     </div>
                     
-                        {/* Étape 3: Calculer */}
+                        {/* Étape 3: Identifier */}
+                        <div className={`p-4 rounded-lg transition-all duration-500 ${
+                          animatingStep === 'step-identify' ? 'bg-yellow-100 ring-2 ring-yellow-400 scale-105' : 'bg-gray-50'
+                        }`}>
+                          <div className="flex items-center gap-4">
+                            <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-bold ${
+                              animatingStep === 'step-identify' ? 'bg-yellow-500 animate-pulse' : 'bg-gray-400'
+                            }`}>
+                              3
+                            </div>
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2 mb-1">
+                                <Star className="w-5 h-5 text-yellow-600" />
+                                <span className="font-bold text-yellow-800">IDENTIFIER LES CHIFFRES</span>
+                              </div>
+                              <div className="text-gray-800">
+                                {animatingStep === 'step-identify' ? (
+                                  <div>
+                                    <p className="mb-2">Les chiffres importants dans ce problème :</p>
+                                    <div className="flex gap-4 justify-center">
+                                      <span className="bg-yellow-300 px-3 py-1 rounded-lg font-bold text-gray-800">
+                                        {problem.operation.split(' - ')[0]}
+                                      </span>
+                                      <span className="text-gray-600">et</span>
+                                      <span className="bg-yellow-300 px-3 py-1 rounded-lg font-bold text-gray-800">
+                                        {problem.operation.split(' - ')[1]}
+                                      </span>
+                                    </div>
+                                  </div>
+                                ) : (
+                                  "Je souligne les chiffres importants"
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Étape 4: Calculer */}
                         <div className={`p-4 rounded-lg transition-all duration-500 ${
                           animatingStep === 'step-calculate' ? 'bg-purple-100 ring-2 ring-purple-400 scale-105' : 'bg-gray-50'
                         }`}>
@@ -759,7 +923,7 @@ export default function ProblemesSoustraction() {
                             <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-bold ${
                               animatingStep === 'step-calculate' ? 'bg-purple-500 animate-pulse' : 'bg-gray-400'
                             }`}>
-                              3
+                              4
                             </div>
                             <div className="flex-1">
                               <div className="flex items-center gap-2 mb-1">
@@ -781,7 +945,7 @@ export default function ProblemesSoustraction() {
                     </div>
                   </div>
 
-                        {/* Étape 4: Vérifier */}
+                        {/* Étape 5: Vérifier */}
                         <div className={`p-4 rounded-lg transition-all duration-500 ${
                           animatingStep === 'step-verify' ? 'bg-orange-100 ring-2 ring-orange-400 scale-105' : 'bg-gray-50'
                         }`}>
@@ -789,14 +953,14 @@ export default function ProblemesSoustraction() {
                             <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-bold ${
                               animatingStep === 'step-verify' ? 'bg-orange-500 animate-pulse' : 'bg-gray-400'
                             }`}>
-                              4
+                              5
                     </div>
                             <div className="flex-1">
                               <div className="flex items-center gap-2 mb-1">
                                 <Eye className="w-5 h-5 text-orange-600" />
                                 <span className="font-bold text-orange-800">VÉRIFIER</span>
                   </div>
-                              <div className="text-orange-700">{problem.result} + {problem.operation.split(' - ')[1]} = {problem.operation.split(' - ')[0]} ✓</div>
+                              <div className="text-gray-800">{problem.result} + {problem.operation.split(' - ')[1]} = {problem.operation.split(' - ')[0]} ✓</div>
               </div>
             </div>
           </div>
@@ -843,7 +1007,7 @@ export default function ProblemesSoustraction() {
                   <div className="p-4 bg-rose-50 rounded-lg text-center">
                     <p className="text-lg mb-3 leading-relaxed">{exercises[currentExercise].story}</p>
                     <p className="text-lg font-semibold mb-2 text-rose-800">{exercises[currentExercise].question}</p>
-                    <div className="text-2xl font-mono font-bold">{exercises[currentExercise].operation} = ?</div>
+                    <div className="text-2xl font-mono font-bold text-gray-800">{exercises[currentExercise].operation} = ?</div>
                   </div>
 
                   {/* Zone de réponse */}

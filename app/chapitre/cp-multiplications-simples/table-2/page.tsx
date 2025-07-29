@@ -37,16 +37,16 @@ export default function Table2CP() {
 
   // Table de 2 complète
   const table2 = [
-    { multiplication: '1 × 2', result: 2, visual: '👫', story: '1 paire = 2 personnes' },
+    { multiplication: '1 × 2', result: 2, visual: '👫', story: 'Une paire = 2 personnes' },
     { multiplication: '2 × 2', result: 4, visual: '👫👫', story: '2 paires = 4 personnes' },
     { multiplication: '3 × 2', result: 6, visual: '👫👫👫', story: '3 paires = 6 personnes' },
     { multiplication: '4 × 2', result: 8, visual: '👫👫👫👫', story: '4 paires = 8 personnes' },
     { multiplication: '5 × 2', result: 10, visual: '👫👫👫👫👫', story: '5 paires = 10 personnes' },
-    { multiplication: '6 × 2', result: 12, visual: '🦶🦶🦶🦶🦶🦶', story: '6 pieds = 12 orteils (2 chacun)' },
+    { multiplication: '6 × 2', result: 12, visual: '🚲🚲🚲🚲🚲🚲', story: '6 vélos = 12 roues' },
     { multiplication: '7 × 2', result: 14, visual: '👁️👁️👁️👁️👁️👁️👁️', story: '7 visages = 14 yeux' },
     { multiplication: '8 × 2', result: 16, visual: '🐕🐕🐕🐕🐕🐕🐕🐕', story: '8 chiens = 16 oreilles' },
-    { multiplication: '9 × 2', result: 18, visual: '🚗🚗🚗🚗🚗🚗🚗🚗🚗', story: '9 vélos = 18 roues' },
-    { multiplication: '10 × 2', result: 20, visual: '🖐️🖐️🖐️🖐️🖐️🖐️🖐️🖐️🖐️🖐️', story: '10 mains = 20 doigts' }
+    { multiplication: '9 × 2', result: 18, visual: '🐰🐰🐰🐰🐰🐰🐰🐰🐰', story: '9 lapins = 18 oreilles' },
+    { multiplication: '10 × 2', result: 20, visual: '🧦🧦🧦🧦🧦🧦🧦🧦🧦🧦', story: '10 paires de chaussettes = 20 chaussettes' }
   ];
 
   // Exercices sur la table de 2
@@ -443,10 +443,10 @@ export default function Table2CP() {
               <button
                 onClick={explainChapter}
                 disabled={isAnimationRunning}
-                className={`px-8 py-4 rounded-xl font-bold text-xl shadow-lg transition-all transform ${
+                className={`px-8 py-4 rounded-xl font-bold text-xl shadow-2xl transition-all transform ${
                   isAnimationRunning 
                     ? 'bg-gray-400 text-gray-700 cursor-not-allowed' 
-                    : 'bg-gradient-to-r from-green-500 to-emerald-500 text-white hover:shadow-xl hover:scale-105'
+                    : 'bg-gradient-to-r from-green-400 to-emerald-600 text-white hover:shadow-green-500/50 hover:shadow-2xl hover:scale-110 hover:from-green-300 hover:to-emerald-500 animate-pulse border-2 border-white/30'
                 }`}
               >
                 {isAnimationRunning ? '⏳ Animation en cours...' : '▶️ APPRENDRE LA TABLE DE 2 !'}
@@ -529,7 +529,7 @@ export default function Table2CP() {
                   <div className="text-sm text-indigo-600">une paire</div>
                 </div>
                 <div className="bg-purple-100 rounded-xl p-4 text-center">
-                  <div className="text-4xl mb-2">🚗</div>
+                  <div className="text-4xl mb-2">🚲</div>
                   <div className="font-bold text-purple-800">2 roues</div>
                   <div className="text-sm text-purple-600">sur un vélo</div>
                 </div>
@@ -558,10 +558,10 @@ export default function Table2CP() {
                   <button
                     onClick={reciteTable}
                     disabled={isAnimationRunning}
-                    className={`px-6 py-3 rounded-lg font-semibold transition-all ${
+                    className={`px-6 py-3 rounded-lg font-semibold shadow-2xl transition-all transform hover:scale-105 border-2 border-white/30 ${
                       isPlayingVocal 
-                        ? 'bg-red-500 text-white hover:bg-red-600' 
-                        : 'bg-green-500 text-white hover:bg-green-600'
+                        ? 'bg-gradient-to-r from-red-400 to-red-600 text-white hover:shadow-red-500/50 hover:shadow-2xl hover:from-red-300 hover:to-red-500' 
+                        : 'bg-gradient-to-r from-green-400 to-emerald-600 text-white hover:shadow-green-500/50 hover:shadow-2xl hover:from-green-300 hover:to-emerald-500 animate-pulse'
                     }`}
                   >
                     <Volume2 className="w-5 h-5 inline mr-2" />

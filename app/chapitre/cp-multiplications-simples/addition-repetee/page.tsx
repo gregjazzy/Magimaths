@@ -154,8 +154,7 @@ export default function AdditionRepeteeCP() {
     setIsAnimationRunning(false);
     setHighlightedElement(null);
     setAnimatingStep(null);
-    setCurrentExample(null);
-    setTransformationStep(null);
+    // Ne pas effacer currentExample et transformationStep pour garder l'animation visible
     setAnimatingNumbers(false);
     setCurrentAdditionStep(0);
   };
@@ -258,8 +257,8 @@ export default function AdditionRepeteeCP() {
     } finally {
       setHighlightedElement(null);
       setAnimatingStep(null);
-      setCurrentExample(null);
-      setTransformationStep(null);
+      // Ne pas effacer currentExample pour garder l'animation de transformation visible
+      // Ne pas remettre transformationStep à null pour garder l'affichage
       setAnimatingNumbers(false);
       setCurrentAdditionStep(0);
       setIsAnimationRunning(false);
@@ -463,10 +462,10 @@ export default function AdditionRepeteeCP() {
               <button
                 onClick={explainChapter}
                 disabled={isAnimationRunning}
-                className={`px-8 py-4 rounded-xl font-bold text-xl shadow-lg transition-all transform ${
+                className={`px-8 py-4 rounded-xl font-bold text-xl shadow-2xl transition-all transform ${
                   isAnimationRunning 
                     ? 'bg-gray-400 text-gray-700 cursor-not-allowed' 
-                    : 'bg-gradient-to-r from-purple-500 to-indigo-500 text-white hover:shadow-xl hover:scale-105'
+                    : 'bg-gradient-to-r from-purple-400 to-indigo-600 text-white hover:shadow-purple-500/50 hover:shadow-2xl hover:scale-110 hover:from-purple-300 hover:to-indigo-500 animate-pulse border-2 border-white/30'
                 }`}
               >
                 {isAnimationRunning ? '⏳ Animation en cours...' : '▶️ DÉCOUVRIR L\'ADDITION RÉPÉTÉE !'}

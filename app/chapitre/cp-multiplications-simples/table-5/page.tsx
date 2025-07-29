@@ -425,10 +425,10 @@ export default function Table5CP() {
           
           <button
             onClick={startLesson}
-            className={`flex items-center space-x-2 px-4 py-2 rounded-xl font-medium transition-all shadow-lg ${
+            className={`flex items-center space-x-2 px-4 py-2 rounded-xl font-medium shadow-2xl transition-all transform hover:scale-110 border-2 border-white/30 ${
               isAnimationRunning 
-                ? 'bg-red-500 hover:bg-red-600 text-white' 
-                : 'bg-orange-500 hover:bg-orange-600 text-white'
+                ? 'bg-gradient-to-r from-red-400 to-red-600 hover:shadow-red-500/50 hover:shadow-2xl hover:from-red-300 hover:to-red-500 text-white' 
+                : 'bg-gradient-to-r from-orange-400 to-orange-600 hover:shadow-orange-500/50 hover:shadow-2xl hover:from-orange-300 hover:to-orange-500 text-white animate-pulse'
             }`}
           >
             {isAnimationRunning ? (
@@ -643,10 +643,10 @@ export default function Table5CP() {
                       <button
                         key={index}
                         onClick={() => setUserAnswer(choice)}
-                        className={`p-4 rounded-xl border-2 transition-all text-center font-medium ${
+                        className={`p-4 rounded-xl border-2 transition-all transform text-center font-medium shadow-lg hover:scale-105 hover:shadow-xl ${
                           userAnswer === choice
-                            ? 'border-orange-400 bg-orange-100 text-orange-800'
-                            : 'border-gray-200 bg-white hover:border-orange-300 text-gray-700 hover:bg-orange-50'
+                            ? 'border-orange-400 bg-orange-100 text-orange-800 shadow-orange-200 scale-105'
+                            : 'border-gray-200 bg-white hover:border-orange-300 text-gray-700 hover:bg-orange-50 hover:shadow-orange-100'
                         }`}
                       >
                         {choice}
@@ -659,7 +659,7 @@ export default function Table5CP() {
                   <button
                     onClick={handleAnswerSubmit}
                     disabled={!userAnswer}
-                    className="bg-orange-500 hover:bg-orange-600 disabled:bg-gray-300 text-white px-6 py-3 rounded-xl font-bold transition-all disabled:cursor-not-allowed"
+                    className="bg-gradient-to-r from-orange-500 to-red-600 hover:shadow-orange-500/50 hover:shadow-2xl hover:scale-105 hover:from-orange-400 hover:to-red-500 disabled:bg-gray-300 text-white px-6 py-3 rounded-xl font-bold shadow-2xl transition-all transform border-2 border-white/20 disabled:cursor-not-allowed"
                   >
                     Valider
                   </button>
@@ -699,14 +699,14 @@ export default function Table5CP() {
                 <div className="flex justify-center space-x-4">
                   <button
                     onClick={resetExercises}
-                    className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 rounded-xl font-bold transition-all"
+                    className="bg-gradient-to-r from-orange-400 to-red-600 hover:shadow-orange-500/50 hover:shadow-2xl hover:scale-105 hover:from-orange-300 hover:to-red-500 text-white px-6 py-3 rounded-xl font-bold shadow-2xl transition-all transform border-2 border-white/20"
                   >
                     <RotateCcw className="inline w-5 h-5 mr-2" />
                     Recommencer
                   </button>
                   <Link
                     href="/chapitre/cp-multiplications-simples"
-                    className="bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded-xl font-bold transition-all"
+                    className="bg-gradient-to-r from-gray-500 to-gray-700 hover:shadow-gray-500/50 hover:shadow-2xl hover:scale-105 hover:from-gray-400 hover:to-gray-600 text-white px-6 py-3 rounded-xl font-bold shadow-2xl transition-all transform border-2 border-white/20"
                   >
                     Retour au chapitre
                   </Link>
