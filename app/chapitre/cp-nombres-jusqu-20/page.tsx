@@ -191,9 +191,9 @@ export default function CPNombresJusqu20Page() {
           
           <div className="bg-white rounded-xl p-4 sm:p-6 shadow-lg text-center">
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
-              🔢 Nombres jusqu'à 20 (1ère partie année)
+              🔢 Nombres jusqu'à 20 <span className="hidden sm:inline">(1ère partie année)</span>
             </h1>
-            <p className="text-base sm:text-lg text-gray-600 mb-4 sm:mb-6 px-2">
+            <p className="hidden sm:block text-base sm:text-lg text-gray-600 mb-4 sm:mb-6 px-2">
               Découvre tes premiers nombres de 0 à 20 et apprends les compléments à 10 !
             </p>
             <div className="text-lg sm:text-xl mb-4 sm:mb-6">
@@ -205,7 +205,7 @@ export default function CPNombresJusqu20Page() {
         </div>
 
         {/* Introduction ludique */}
-        <div className="bg-gradient-to-r from-orange-400 to-red-500 rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 text-white">
+        <div className="hidden sm:block bg-gradient-to-r from-orange-400 to-red-500 rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 text-white">
           <div className="flex flex-col sm:flex-row items-center justify-center text-center sm:text-left space-y-3 sm:space-y-0 sm:space-x-4">
             <div className="text-4xl sm:text-6xl">🎯</div>
             <div>

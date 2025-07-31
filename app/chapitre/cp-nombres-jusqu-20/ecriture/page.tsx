@@ -742,13 +742,7 @@ export default function EcritureNombresCP() {
               </p>
             </div>
 
-            {/* Indicateur audio global */}
-            {hasStarted && isPlayingVocal && (
-              <div className="fixed top-4 right-4 bg-orange-500 text-white px-4 py-2 rounded-lg shadow-lg z-50 animate-pulse">
-                <Volume2 className="inline w-5 h-5 mr-2 animate-spin" />
-                🎤 Audio en cours...
-              </div>
-            )}
+
 
             {/* Introduction */}
             <div 

@@ -819,20 +819,7 @@ export default function OrdonnerComparerCP() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-50 to-purple-100">
-      {/* Indicateur audio global avec bouton d'arrêt */}
-      {isPlayingVocal && (
-        <div className="fixed top-4 right-4 bg-blue-600 text-white px-4 py-2 rounded-full shadow-lg z-50 flex items-center space-x-2">
-          <Volume2 className="w-5 h-5 animate-pulse" />
-          <span className="font-bold">Audio en cours...</span>
-          <button
-            onClick={stopAllVocalsAndAnimations}
-            className="ml-2 bg-red-500 hover:bg-red-600 text-white rounded-full p-1 transition-colors"
-            title="Arrêter l'audio"
-          >
-            <Pause className="w-4 h-4" />
-          </button>
-        </div>
-      )}
+
 
       <div className="max-w-6xl mx-auto px-4 py-8">
         {/* Header */}
