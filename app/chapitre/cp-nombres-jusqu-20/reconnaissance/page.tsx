@@ -1019,10 +1019,10 @@ export default function ReconnaissanceNombresCP() {
         {/* Image de Sam le Pirate */}
         <div className={`relative flex-shrink-0 rounded-full bg-gradient-to-br from-blue-100 to-cyan-100 border-2 border-blue-200 shadow-md transition-all duration-300 ${
           isPlayingVocal
-            ? 'w-16 sm:w-32 h-16 sm:h-32 scale-110 sm:scale-150' // When speaking
+            ? 'w-20 sm:w-32 h-20 sm:h-32 scale-110 sm:scale-150' // When speaking - agrandi mobile
             : pirateIntroStarted
-              ? 'w-12 sm:w-16 h-12 sm:h-16' // After "COMMENCER" clicked (reduced)
-              : 'w-12 sm:w-20 h-12 sm:h-20' // Initial
+              ? 'w-16 sm:w-16 h-16 sm:h-16' // After "COMMENCER" clicked (reduced) - agrandi mobile
+              : 'w-16 sm:w-20 h-16 sm:h-20' // Initial - agrandi mobile
         }`}>
           <img 
             src="/image/pirate.png" 
@@ -1043,7 +1043,7 @@ export default function ReconnaissanceNombresCP() {
         <button
         onClick={startPirateIntro}
         disabled={isPlayingVocal || pirateIntroStarted}
-        className={`relative px-3 sm:px-12 py-2 sm:py-5 rounded-xl font-black text-sm sm:text-2xl transition-all duration-300 transform ${
+        className={`relative px-6 sm:px-12 py-3 sm:py-5 rounded-xl font-black text-base sm:text-2xl transition-all duration-300 transform ${
           isPlayingVocal 
             ? 'bg-gradient-to-r from-gray-400 to-gray-500 text-gray-200 cursor-not-allowed animate-pulse shadow-md' 
             : pirateIntroStarted
@@ -1148,10 +1148,10 @@ export default function ReconnaissanceNombresCP() {
                 {/* Image de Sam le Pirate */}
               <div className={`relative transition-all duration-500 border-2 border-blue-300 rounded-full bg-gradient-to-br from-blue-100 to-cyan-100 ${
                 isPlayingVocal
-                  ? 'w-16 sm:w-24 h-16 sm:h-24' // When speaking
+                  ? 'w-20 sm:w-24 h-20 sm:h-24' // When speaking - agrandi mobile
                   : samSizeExpanded
-                    ? 'w-12 sm:w-32 h-12 sm:h-32' // Enlarged (128px)
-                    : 'w-12 sm:w-20 h-12 sm:h-20' // Initial (80px)
+                    ? 'w-16 sm:w-32 h-16 sm:h-32' // Enlarged - agrandi mobile
+                    : 'w-16 sm:w-20 h-16 sm:h-20' // Initial - agrandi mobile
                 }`}>
                   <img 
                     src="/image/pirate.png" 
@@ -1173,11 +1173,11 @@ export default function ReconnaissanceNombresCP() {
                 <button
                 onClick={explainChapter}
                   disabled={isPlayingVocal}
-                  className={`bg-gradient-to-r from-green-500 to-blue-500 text-white px-3 sm:px-12 py-2 sm:py-6 rounded-xl font-bold text-sm sm:text-3xl shadow-2xl hover:shadow-3xl transition-all transform hover:scale-105 ${
+                  className={`bg-gradient-to-r from-green-500 to-blue-500 text-white px-6 sm:px-12 py-3 sm:py-6 rounded-xl font-bold text-base sm:text-3xl shadow-2xl hover:shadow-3xl transition-all transform hover:scale-105 ${
                   isPlayingVocal ? 'opacity-75 cursor-not-allowed' : 'hover:from-green-600 hover:to-blue-600'
                 }`}
               >
-                  <Play className="inline w-4 h-4 sm:w-8 sm:h-8 mr-1 sm:mr-4" />
+                  <Play className="inline w-5 h-5 sm:w-8 sm:h-8 mr-2 sm:mr-4" />
                   {isPlayingVocal ? '🎤 JE PARLE...' : '🎯 DÉMARRER'}
                 </button>
             </div>
