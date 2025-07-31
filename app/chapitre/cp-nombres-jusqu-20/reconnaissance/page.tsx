@@ -795,7 +795,7 @@ export default function ReconnaissanceNombresCP() {
     setExercises(getRandomExercises());
   }, []);
 
-  // Arrêter les vocaux quand on change d'onglet ou de page
+  // Arrêter les vocaux quand on change d'onglet, de page, ou navigation navigateur (back/forward)
   useEffect(() => {
     const handleVisibilityChange = () => {
       if (document.hidden) {
@@ -807,12 +807,18 @@ export default function ReconnaissanceNombresCP() {
       stopAllVocalsAndAnimations();
     };
 
+    const handlePopState = () => {
+      stopAllVocalsAndAnimations();
+    };
+
     document.addEventListener('visibilitychange', handleVisibilityChange);
     window.addEventListener('beforeunload', handleBeforeUnload);
+    window.addEventListener('popstate', handlePopState);
 
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
       window.removeEventListener('beforeunload', handleBeforeUnload);
+      window.removeEventListener('popstate', handlePopState);
       // TEMPORAIREMENT DÉSACTIVÉ - était la cause de l'interruption audio
       // stopAllVocalsAndAnimations();
     };
@@ -1012,6 +1018,8 @@ export default function ReconnaissanceNombresCP() {
     </button>
   );
 
+
+
   // JSX pour l'introduction de Sam le Pirate dans les exercices
   const SamPirateIntroJSX = () => (
     <div className="flex justify-center p-1 mt-2">
@@ -1025,7 +1033,7 @@ export default function ReconnaissanceNombresCP() {
               : 'w-16 sm:w-20 h-16 sm:h-20' // Initial - agrandi mobile
         }`}>
           <img 
-            src="/image/pirate.png" 
+            src="/image/pirate-small.png" 
             alt="Sam le Pirate" 
             className="w-full h-full rounded-full object-cover"
           />
@@ -1113,26 +1121,36 @@ export default function ReconnaissanceNombresCP() {
           <div className="bg-white rounded-lg p-1 shadow-md">
             <button
               onClick={() => {
-                stopAllVocalsAndAnimations();
-                setShowExercises(false);
+                if (!isPlayingVocal) {
+                  stopAllVocalsAndAnimations();
+                  setShowExercises(false);
+                }
               }}
+              disabled={isPlayingVocal}
               className={`px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-bold transition-all text-sm sm:text-base ${
-                !showExercises 
-                  ? 'bg-orange-500 text-white shadow-md' 
-                  : 'text-gray-600 hover:bg-gray-100'
+                isPlayingVocal
+                  ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  : !showExercises 
+                    ? 'bg-orange-500 text-white shadow-md' 
+                    : 'text-gray-600 hover:bg-gray-100'
               }`}
             >
               📖 Cours
             </button>
             <button
               onClick={() => {
-                stopAllVocalsAndAnimations();
-                setShowExercises(true);
+                if (!isPlayingVocal) {
+                  stopAllVocalsAndAnimations();
+                  setShowExercises(true);
+                }
               }}
+              disabled={isPlayingVocal}
               className={`px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-bold transition-all text-sm sm:text-base ${
-                showExercises 
-                  ? 'bg-orange-500 text-white shadow-md' 
-                  : 'text-gray-600 hover:bg-gray-100'
+                isPlayingVocal
+                  ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  : showExercises 
+                    ? 'bg-orange-500 text-white shadow-md' 
+                    : 'text-gray-600 hover:bg-gray-100'
               }`}
             >
               ✏️ Exercices ({score}/{exercises.length})
@@ -1154,7 +1172,7 @@ export default function ReconnaissanceNombresCP() {
                     : 'w-16 sm:w-20 h-16 sm:h-20' // Initial - agrandi mobile
                 }`}>
                   <img 
-                    src="/image/pirate.png" 
+                    src="/image/pirate-small.png" 
                     alt="Sam le Pirate" 
                     className="w-full h-full rounded-full object-cover"
                   />
@@ -1260,19 +1278,24 @@ export default function ReconnaissanceNombresCP() {
                       key={num}
                       id={`number-${num}`}
                     onClick={() => {
-                        stopAllVocalsAndAnimations();
-                        setSelectedNumber(num);
-                        // Scroll vers l'illustration après une courte pause pour voir le bouton sélectionné
-                        setTimeout(() => {
-                          scrollToIllustration();
-                          explainNumber(num);
-                        }, 300);
+                        if (!isPlayingVocal) {
+                          stopAllVocalsAndAnimations();
+                          setSelectedNumber(num);
+                          // Scroll vers l'illustration après une courte pause pour voir le bouton sélectionné
+                          setTimeout(() => {
+                            scrollToIllustration();
+                            explainNumber(num);
+                          }, 300);
+                        }
                       }}
+                      disabled={isPlayingVocal}
                       className={`p-3 sm:p-2 md:p-3 rounded-lg font-bold text-base sm:text-sm md:text-lg transition-all hover:scale-105 min-h-[44px] min-w-[44px] flex items-center justify-center ${
-                        selectedNumber === num
-                          ? 'bg-blue-500 text-white shadow-lg ring-2 ring-blue-300'
-                          : isExample 
-                            ? 'bg-gradient-to-r from-green-100 to-green-200 text-green-700 hover:from-green-200 hover:to-green-300'
+                        isPlayingVocal
+                          ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                          : selectedNumber === num
+                            ? 'bg-blue-500 text-white shadow-lg ring-2 ring-blue-300'
+                            : isExample 
+                              ? 'bg-gradient-to-r from-green-100 to-green-200 text-green-700 hover:from-green-200 hover:to-green-300'
                             : 'bg-gray-100 text-gray-700 hover:bg-blue-100'
                       } ${
                         highlightedElement === `number-${num}` ? 'ring-4 ring-yellow-400 bg-yellow-200 scale-110' : ''
@@ -1765,7 +1788,7 @@ export default function ReconnaissanceNombresCP() {
                     onChange={(e) => setUserAnswer(e.target.value)}
                     onKeyPress={(e) => e.key === 'Enter' && handleAnswerSubmit(userAnswer)}
                     onClick={() => stopAllVocalsAndAnimations()}
-                    disabled={isCorrect !== null}
+                    disabled={isCorrect !== null || isPlayingVocal}
                     className="w-full px-4 sm:px-6 py-3 sm:py-4 text-xl sm:text-2xl font-bold text-center border-4 border-gray-300 rounded-xl focus:border-blue-500 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed bg-black text-white"
                     placeholder="?"
                     min="1"
@@ -1791,7 +1814,7 @@ export default function ReconnaissanceNombresCP() {
                     <button
                     id="next-exercise-button"
                     onClick={nextExercise}
-                    disabled={!isExplainingError && isCorrect !== false}
+                    disabled={(!isExplainingError && isCorrect !== false) || isPlayingVocal}
                     className={`bg-blue-500 text-white px-6 sm:px-8 py-2 sm:py-3 rounded-lg font-bold text-lg sm:text-xl hover:bg-blue-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
                       highlightedElement === 'next-exercise-button' || highlightNextButton ? 'ring-8 ring-yellow-400 bg-yellow-500 animate-bounce scale-125 shadow-2xl border-4 border-orange-500' : ''
                     } ${
@@ -1851,8 +1874,13 @@ export default function ReconnaissanceNombresCP() {
                     </div>
                     <div className="flex space-x-3">
                       <button
-                        onClick={resetAll}
-                        className="flex-1 bg-blue-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-blue-600 transition-colors"
+                        onClick={() => {
+                          if (!isPlayingVocal) {
+                            resetAll();
+                          }
+                        }}
+                        disabled={isPlayingVocal}
+                        className="flex-1 bg-blue-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         Recommencer
                       </button>
