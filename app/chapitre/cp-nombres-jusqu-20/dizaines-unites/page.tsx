@@ -1515,8 +1515,8 @@ export default function DizainesUnitesCP() {
             {/* Introduction de Sam le Pirate - toujours visible */}
             {SamPirateIntroJSX()}
 
-            {/* Header exercices */}
-            <div className="bg-white rounded-xl p-2 shadow-lg mt-8">
+            {/* Header exercices - caché sur mobile */}
+            <div className="bg-white rounded-xl p-2 shadow-lg mt-8 hidden sm:block">
               <div className="flex justify-between items-center mb-1">
                 <h2 className="text-lg font-bold text-gray-900">
                   Exercice {currentExercise + 1}
