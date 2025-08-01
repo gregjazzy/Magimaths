@@ -356,7 +356,27 @@ export default function DizainesUnitesCP() {
       await playAudio(`Le nombre ${exercise.number} se décompose en ${exercise.correctDizaines} dizaines et ${exercise.correctUnites} unités !`);
       if (stopSignalRef.current) return;
       
-      await wait(1000);
+      await wait(800);
+      if (stopSignalRef.current) return;
+      
+      // Animation positionnelle : chiffre de gauche = dizaines
+      await playAudio("Le chiffre de gauche indique les dizaines");
+      if (stopSignalRef.current) return;
+      
+      setHighlightDigit('left');
+      await wait(1500);
+      if (stopSignalRef.current) return;
+      
+      // Animation positionnelle : chiffre de droite = unités  
+      await playAudio("Le chiffre de droite indique les unités");
+      if (stopSignalRef.current) return;
+      
+      setHighlightDigit('right');
+      await wait(1500);
+      setHighlightDigit(null);
+      if (stopSignalRef.current) return;
+      
+      await wait(500);
       if (stopSignalRef.current) return;
       
       await playAudio("Maintenant appuie sur suivant !");
@@ -1559,9 +1579,59 @@ export default function DizainesUnitesCP() {
                 isExplainingError ? 'border-yellow-400 bg-yellow-50 ring-4 ring-yellow-300' : 'border-purple-200'
               }`}>
                 <div className="py-6 sm:py-8 md:py-10">
-                  {/* Affichage du nombre */}
-                  <div className="text-6xl sm:text-8xl font-bold text-purple-600 mb-4">
-                    {exercises[currentExercise]?.number}
+                  {/* Affichage du nombre avec animation positionnelle */}
+                  <div className="mb-4">
+                    {(() => {
+                      const numberStr = exercises[currentExercise]?.number.toString() || "";
+                      if (numberStr.length === 2) {
+                        return (
+                          <div className="flex justify-center items-center gap-2">
+                            {/* Chiffre de gauche (dizaines) */}
+                            <div className={`text-6xl sm:text-8xl font-bold transition-all duration-500 ${
+                              highlightDigit === 'left' 
+                                ? 'text-blue-600 bg-blue-100 ring-4 ring-blue-400 rounded-lg px-4 py-2 scale-110 shadow-lg' 
+                                : 'text-purple-600'
+                            }`}>
+                              {numberStr[0]}
+                            </div>
+                            {/* Chiffre de droite (unités) */}
+                            <div className={`text-6xl sm:text-8xl font-bold transition-all duration-500 ${
+                              highlightDigit === 'right' 
+                                ? 'text-red-600 bg-red-100 ring-4 ring-red-400 rounded-lg px-4 py-2 scale-110 shadow-lg' 
+                                : 'text-purple-600'
+                            }`}>
+                              {numberStr[1]}
+                            </div>
+                          </div>
+                        );
+                      } else {
+                        return (
+                          <div className="text-6xl sm:text-8xl font-bold text-purple-600">
+                            {exercises[currentExercise]?.number}
+                          </div>
+                        );
+                      }
+                    })()}
+                    
+                    {/* Étiquettes d'explication pendant l'animation */}
+                    {highlightDigit && (
+                      <div className="flex justify-center mt-4">
+                        <div className="grid grid-cols-2 gap-8 max-w-md">
+                          <div className={`text-center transition-all duration-500 ${
+                            highlightDigit === 'left' ? 'opacity-100' : 'opacity-30'
+                          }`}>
+                            <div className="text-blue-800 font-bold text-lg">↑ Chiffre de GAUCHE</div>
+                            <div className="text-blue-600 font-semibold">= DIZAINES</div>
+                          </div>
+                          <div className={`text-center transition-all duration-500 ${
+                            highlightDigit === 'right' ? 'opacity-100' : 'opacity-30'
+                          }`}>
+                            <div className="text-red-800 font-bold text-lg">↑ Chiffre de DROITE</div>
+                            <div className="text-red-600 font-semibold">= UNITÉS</div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
                   
 
@@ -1576,8 +1646,8 @@ export default function DizainesUnitesCP() {
                       <div className="text-lg font-bold text-red-800 mb-2">
                         🏴‍☠️ Explication de Sam le Pirate
                       </div>
-                      <div className="text-red-700 text-xl">
-                        La bonne réponse est <span className="font-bold text-3xl text-red-800">{exercises[currentExercise]?.correctDizaines} dizaines et {exercises[currentExercise]?.correctUnites} unités</span> !
+                      <div className="text-red-700 text-lg">
+                        La bonne réponse est <span className="font-bold text-xl text-red-800">{exercises[currentExercise]?.correctDizaines} dizaines et {exercises[currentExercise]?.correctUnites} unités</span> !
                       </div>
                       <div className="text-sm text-red-600 mt-2">
                         Le nombre {exercises[currentExercise]?.number} se décompose en {exercises[currentExercise]?.correctDizaines} dizaines et {exercises[currentExercise]?.correctUnites} unités !
