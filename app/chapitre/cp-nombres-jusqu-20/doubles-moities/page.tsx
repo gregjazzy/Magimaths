@@ -703,6 +703,46 @@ export default function DoublesMoitiesCP() {
           saveProgress(finalScoreValue, exercises.length);
         }
       }, 1500);
+    } else {
+      // Si mauvaise réponse → scroll automatique vers le bouton "Suivant" (mobile)
+      setTimeout(() => {
+        const nextButton = document.getElementById('next-exercise-button');
+        if (nextButton) {
+          const isMobile = window.innerWidth < 768; // sm breakpoint
+          
+          if (isMobile) {
+            // Pour mobile: scroll pour que le bouton apparaisse en bas de l'écran
+            nextButton.scrollIntoView({ 
+              behavior: 'smooth', 
+              block: 'end', // En bas de l'écran
+              inline: 'nearest' 
+            });
+            
+            // Petit délai supplémentaire puis second scroll pour s'assurer de la visibilité
+            setTimeout(() => {
+              window.scrollTo({
+                top: document.body.scrollHeight,
+                behavior: 'smooth'
+              });
+            }, 600);
+          } else {
+            // Pour desktop: scroll normal
+            nextButton.scrollIntoView({ 
+              behavior: 'smooth', 
+              block: 'center',
+              inline: 'nearest' 
+            });
+          }
+          
+          // Animation d'attention sur le bouton
+          setTimeout(() => {
+            nextButton.classList.add('animate-bounce');
+            setTimeout(() => {
+              nextButton.classList.remove('animate-bounce');
+            }, 2000);
+          }, isMobile ? 1000 : 500);
+        }
+      }, 1000); // Délai pour laisser l'explication s'afficher
     }
   };
 
@@ -730,33 +770,33 @@ export default function DoublesMoitiesCP() {
     
     return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-100">
-      <div className="max-w-6xl mx-auto px-4 py-8">
+      <div className="max-w-6xl mx-auto px-4 py-4 sm:py-8 pb-8 sm:pb-8">
         {/* Header */}
-        <div className="mb-8">
+        <div className="mb-4 sm:mb-8">
           <Link 
             href="/chapitre/cp-nombres-jusqu-20" 
-            className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors mb-4"
+            className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors mb-2 sm:mb-4"
           >
             <ArrowLeft className="w-4 h-4" />
             <span>Retour au chapitre</span>
           </Link>
           
-          <div className="bg-white rounded-xl p-6 shadow-lg text-center">
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">
+          <div className="bg-white rounded-xl p-3 sm:p-6 shadow-lg text-center">
+            <h1 className="text-lg sm:text-2xl lg:text-4xl font-bold text-gray-900 mb-1 sm:mb-4">
               🎯 Doubles et moitiés
             </h1>
-            <p className="text-lg text-gray-600">
+            <p className="text-lg text-gray-600 hidden sm:block">
               Découvre les doubles et les moitiés des nombres !
             </p>
           </div>
         </div>
 
         {/* Navigation entre cours et exercices */}
-        <div className="flex justify-center mb-8">
+        <div className="flex justify-center mb-4 sm:mb-8">
           <div className="bg-white rounded-lg p-1 shadow-md">
             <button
               onClick={() => setShowExercises(false)}
-              className={`px-6 py-3 rounded-lg font-bold transition-all ${
+              className={`px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-bold transition-all ${
                 !showExercises 
                   ? 'bg-green-500 text-white shadow-md' 
                   : 'text-gray-600 hover:bg-gray-100'
@@ -766,7 +806,7 @@ export default function DoublesMoitiesCP() {
             </button>
             <button
               onClick={() => setShowExercises(true)}
-              className={`px-6 py-3 rounded-lg font-bold transition-all ${
+              className={`px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-bold transition-all ${
                 showExercises 
                   ? 'bg-green-500 text-white shadow-md' 
                   : 'text-gray-600 hover:bg-gray-100'
@@ -779,12 +819,12 @@ export default function DoublesMoitiesCP() {
 
         {!showExercises ? (
           /* COURS */
-          <div className="space-y-8">
+          <div className="space-y-4 sm:space-y-8">
             {/* Bouton d'explication vocal principal */}
-            <div className="text-center mb-6">
+            <div className="text-center mb-4 sm:mb-6">
               <button
                 onClick={explainChapter}
-                className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-8 py-4 rounded-xl font-bold text-xl shadow-lg hover:shadow-xl transition-all transform hover:scale-105"
+                className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-bold text-lg sm:text-xl shadow-lg hover:shadow-xl transition-all transform hover:scale-105"
                 style={{
                   animationDuration: !hasStarted ? '2s' : 'none',
                   animationIterationCount: !hasStarted ? 'infinite' : 'none'
@@ -1181,58 +1221,58 @@ export default function DoublesMoitiesCP() {
           </div>
         ) : (
           /* EXERCICES */
-          <div className="space-y-8">
+          <div className="space-y-4 sm:space-y-8">
             {/* Header exercices */}
-            <div className="bg-white rounded-xl p-6 shadow-lg">
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-2xl font-bold text-gray-900">
+            <div className="bg-white rounded-xl p-3 sm:p-6 shadow-lg">
+              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-2 sm:mb-4 gap-2 sm:gap-0">
+                <h2 className="text-lg sm:text-2xl font-bold text-gray-900 text-center sm:text-left">
                   ✏️ Exercice {currentExercise + 1} sur {exercises.length}
                 </h2>
                 <button
                   onClick={resetAll}
-                  className="bg-gray-500 text-white px-4 py-2 rounded-lg font-bold hover:bg-gray-600 transition-colors"
+                  className="bg-gray-500 text-white px-3 sm:px-4 py-2 rounded-lg font-bold hover:bg-gray-600 transition-colors text-sm sm:text-base"
                 >
-                  <RotateCcw className="inline w-4 h-4 mr-2" />
+                  <RotateCcw className="inline w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                   Recommencer
                 </button>
               </div>
               
               {/* Barre de progression */}
-              <div className="w-full bg-gray-200 rounded-full h-4 mb-3">
+              <div className="w-full bg-gray-200 rounded-full h-3 sm:h-4 mb-2 sm:mb-3">
                 <div 
-                  className="bg-green-500 h-4 rounded-full transition-all duration-500"
+                  className="bg-green-500 h-3 sm:h-4 rounded-full transition-all duration-500"
                   style={{ width: `${((currentExercise + 1) / exercises.length) * 100}%` }}
                 ></div>
               </div>
               
               {/* Score */}
               <div className="text-center">
-                <div className="text-xl font-bold text-green-600">
+                <div className="text-lg sm:text-xl font-bold text-green-600">
                   Score : {score}/{exercises.length}
                 </div>
               </div>
             </div>
 
             {/* Question */}
-            <div className="bg-white rounded-xl p-8 shadow-lg text-center">
-              <h3 className="text-2xl font-bold mb-8 text-gray-900">
+            <div className="bg-white rounded-xl p-4 sm:p-8 shadow-lg text-center">
+              <h3 className="text-lg sm:text-2xl font-bold mb-4 sm:mb-8 text-gray-900">
                 {exercises[currentExercise].question}
                     </h3>
                     
               {/* Indication du type */}
-              <div className={`rounded-lg p-6 mb-8 ${
+              <div className={`rounded-lg p-3 sm:p-6 mb-4 sm:mb-8 ${
                 exercises[currentExercise].type === 'double' 
                   ? 'bg-green-50' 
                   : 'bg-blue-50'
                         }`}>
-                <div className={`text-4xl font-bold mb-4 ${
+                <div className={`text-2xl sm:text-4xl font-bold mb-2 sm:mb-4 ${
                   exercises[currentExercise].type === 'double' 
                     ? 'text-green-600' 
                     : 'text-blue-600'
                             }`}>
                   {exercises[currentExercise].type === 'double' ? '🎯' : '✂️'}
                           </div>
-                <p className="text-lg text-gray-700 font-semibold">
+                <p className="text-base sm:text-lg text-gray-700 font-semibold">
                   {exercises[currentExercise].type === 'double' 
                     ? 'Trouve le double !' 
                     : 'Trouve la moitié !'}
@@ -1240,13 +1280,13 @@ export default function DoublesMoitiesCP() {
                           </div>
                     
                     {/* Choix multiples */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-md mx-auto mb-8">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 max-w-sm sm:max-w-md mx-auto mb-4 sm:mb-8">
                       {shuffledChoices.map((choice) => (
                         <button
                           key={choice}
                           onClick={() => handleAnswerClick(choice)}
                           disabled={isCorrect !== null}
-                    className={`p-6 rounded-lg font-bold text-xl transition-all ${
+                    className={`p-4 sm:p-6 rounded-lg font-bold text-lg sm:text-xl transition-all min-h-[50px] ${
                             userAnswer === choice
                               ? isCorrect === true
                                 ? 'bg-green-500 text-white'
@@ -1265,21 +1305,21 @@ export default function DoublesMoitiesCP() {
                     
                     {/* Résultat */}
                     {isCorrect !== null && (
-                <div className={`p-6 rounded-lg mb-6 ${
+                <div className={`p-3 sm:p-6 rounded-lg mb-3 sm:mb-6 ${
                         isCorrect ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
                       }`}>
-                  <div className="flex items-center justify-center space-x-3 mb-4">
+                  <div className="flex items-center justify-center space-x-2 sm:space-x-3 mb-2 sm:mb-4">
                           {isCorrect ? (
                             <>
-                        <CheckCircle className="w-8 h-8" />
-                        <span className="font-bold text-xl">
+                        <CheckCircle className="w-6 h-6 sm:w-8 sm:h-8" />
+                        <span className="font-bold text-base sm:text-xl">
                           Excellent ! La réponse est bien {exercises[currentExercise].correctAnswer} !
                         </span>
                             </>
                           ) : (
                             <>
-                        <XCircle className="w-8 h-8" />
-                        <span className="font-bold text-xl">
+                        <XCircle className="w-6 h-6 sm:w-8 sm:h-8" />
+                        <span className="font-bold text-sm sm:text-xl">
                           Pas tout à fait... La bonne réponse est {exercises[currentExercise].correctAnswer} !
                               </span>
                             </>
@@ -1288,37 +1328,37 @@ export default function DoublesMoitiesCP() {
                     
                   {/* Explication pour les mauvaises réponses */}
                   {!isCorrect && (
-                    <div className="bg-white rounded-lg p-6 border-2 border-blue-300">
-                      <h4 className="text-lg font-bold mb-4 text-blue-800 text-center">
+                    <div className="bg-white rounded-lg p-3 sm:p-6 border border-blue-300 sm:border-2">
+                      <h4 className="text-base sm:text-lg font-bold mb-2 sm:mb-4 text-blue-800 text-center">
                         📚 Explication
                         </h4>
                         
-                          <div className="space-y-4">
-                        <div className="bg-blue-50 rounded-lg p-4 text-center">
+                          <div className="space-y-2 sm:space-y-4">
+                        <div className="bg-blue-50 rounded-lg p-2 sm:p-4 text-center">
                           {exercises[currentExercise].type === 'double' ? (
                             <div>
-                              <div className="text-xl font-bold text-blue-600 mb-2">
+                              <div className="text-lg sm:text-xl font-bold text-blue-600 mb-1 sm:mb-2">
                                 Double de {exercises[currentExercise].question.match(/\d+/)?.[0]} = {exercises[currentExercise].correctAnswer}
                               </div>
-                              <div className="text-lg text-gray-700">
+                              <div className="text-sm sm:text-lg text-gray-700">
                                 {exercises[currentExercise].question.match(/\d+/)?.[0]} + {exercises[currentExercise].question.match(/\d+/)?.[0]} = {exercises[currentExercise].correctAnswer}
                             </div>
                               </div>
                           ) : (
                             <div>
-                              <div className="text-xl font-bold text-blue-600 mb-2">
+                              <div className="text-lg sm:text-xl font-bold text-blue-600 mb-1 sm:mb-2">
                                 Moitié de {exercises[currentExercise].question.match(/\d+/)?.[0]} = {exercises[currentExercise].correctAnswer}
                                 </div>
-                              <div className="text-lg text-gray-700">
+                              <div className="text-sm sm:text-lg text-gray-700">
                                 {exercises[currentExercise].question.match(/\d+/)?.[0]} ÷ 2 = {exercises[currentExercise].correctAnswer}
                                 </div>
                                 </div>
                           )}
                               </div>
                               
-                        <div className="bg-gradient-to-r from-green-100 to-blue-100 rounded-lg p-3 text-center">
-                          <div className="text-lg">🌟</div>
-                          <p className="text-sm font-semibold text-blue-800">
+                        <div className="bg-gradient-to-r from-green-100 to-blue-100 rounded-lg p-2 sm:p-3 text-center">
+                          <div className="text-base sm:text-lg">🌟</div>
+                          <p className="text-xs sm:text-sm font-semibold text-blue-800">
                             Maintenant tu sais !
                           </p>
                               </div>
@@ -1330,10 +1370,11 @@ export default function DoublesMoitiesCP() {
                     
               {/* Navigation */}
               {isCorrect === false && (
-                <div className="flex justify-center">
+                <div className="flex justify-center pb-4 sm:pb-0">
                         <button
+                          id="next-exercise-button"
                           onClick={nextExercise}
-                    className="bg-green-500 text-white px-8 py-4 rounded-lg font-bold text-lg hover:bg-green-600 transition-colors"
+                    className="bg-green-500 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-lg font-bold text-base sm:text-lg hover:bg-green-600 transition-colors shadow-lg hover:shadow-xl transform hover:scale-105 min-h-[50px] sm:min-h-auto"
                         >
                           Suivant →
                         </button>
