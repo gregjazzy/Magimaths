@@ -64,6 +64,13 @@ export default function DizainesCP() {
   const [finalScore, setFinalScore] = useState(0);
   const [shuffledChoices, setShuffledChoices] = useState<string[]>([]);
   const [animationStep, setAnimationStep] = useState(0);
+  
+  // States pour l'animation de décomposition dizaines/unités
+  const [showDecomposition, setShowDecomposition] = useState(false);
+  const [decompositionStep, setDecompositionStep] = useState(0);
+  const [animatingNumber, setAnimatingNumber] = useState<string>('');
+  const [highlightDizaines, setHighlightDizaines] = useState(false);
+  const [highlightUnites, setHighlightUnites] = useState(false);
 
   // States pour audio et animations
   const [isPlayingVocal, setIsPlayingVocal] = useState(false);
@@ -139,6 +146,11 @@ export default function DizainesCP() {
   // Réinitialiser l'animation quand on change de dizaine
   useEffect(() => {
     setAnimationStep(0);
+    setShowDecomposition(false);
+    setDecompositionStep(0);
+    setAnimatingNumber('');
+    setHighlightDizaines(false);
+    setHighlightUnites(false);
   }, [selectedNumber]);
 
   // Effet pour client-side uniquement
@@ -215,6 +227,74 @@ export default function DizainesCP() {
     setAnimationStep(0);
   };
 
+  // Fonctions pour l'animation de décomposition dizaines/unités
+  const startDecomposition = (number: string) => {
+    setAnimatingNumber(number);
+    setShowDecomposition(true);
+    setDecompositionStep(0);
+    setHighlightDizaines(false);
+    setHighlightUnites(false);
+  };
+
+  const nextDecompositionStep = () => {
+    if (decompositionStep < 4) {
+      setDecompositionStep(decompositionStep + 1);
+      
+      // Animer les highlights selon l'étape
+      switch (decompositionStep + 1) {
+        case 2:
+          setHighlightDizaines(true);
+          break;
+        case 3:
+          setHighlightUnites(true);
+          break;
+        case 4:
+          setHighlightDizaines(false);
+          setHighlightUnites(false);
+          break;
+      }
+    }
+  };
+
+  const restartDecomposition = () => {
+    setDecompositionStep(0);
+    setHighlightDizaines(false);
+    setHighlightUnites(false);
+  };
+
+  // Fonction pour expliquer la décomposition d'un exercice
+  const speakDecomposition = async (exercise: any) => {
+    if (stopSignalRef.current) return;
+    
+    stopSignalRef.current = false;
+    setIsPlayingVocal(true);
+    
+    try {
+      const questionText = exercise.question.toLowerCase();
+      if (questionText.includes('combien de groupes de 10') || questionText.includes('combien de dizaines')) {
+        const match = exercise.question.match(/(\d+)/);
+        if (match) {
+          const number = match[1];
+          if (number.length === 2) {
+            const dizaines = number[0];
+            await playAudio(`Pour trouver combien de boîtes de 10 dans ${number}, je décompose le nombre !`);
+            if (stopSignalRef.current) return;
+            
+            await playAudio(`${number} se décompose en ${dizaines} dizaines et ${number[1]} unités`);
+            if (stopSignalRef.current) return;
+            
+            await playAudio(`Le chiffre des dizaines est ${dizaines}, donc il y a ${dizaines} boîtes de 10 !`);
+            if (stopSignalRef.current) return;
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Erreur dans speakDecomposition:', error);
+    } finally {
+      setIsPlayingVocal(false);
+    }
+  };
+
   // Fonction pour convertir les nombres en mots français
   const numberToWords = (num: string): string => {
     const numbers: { [key: string]: string } = {
@@ -226,22 +306,7 @@ export default function DizainesCP() {
     return numbers[num] || num;
   };
 
-  // Fonction pour énoncer la décomposition selon le type de question
-  const speakDecomposition = (exercise: any) => {
-    if (exercise.question.includes('Combien de groupes') || exercise.question.includes('Combien de dizaines')) {
-      // Pour "Combien de groupes/dizaines dans X ?"
-      const visual = exercise.visual;
-      const groupCount = visual.split('📦').length - 1;
-      const text = `${numberToWords(groupCount.toString())} dizaines égale ${numberToWords((groupCount * 10).toString())}`;
-      playAudio(text);
-    } else if (exercise.question.includes('Que vaut') || exercise.question.includes('dizaines =')) {
-      // Pour "X dizaines = ?" ou "Que vaut X groupes de 10 ?"
-      const correctAnswer = exercise.correctAnswer;
-      const groupCount = parseInt(correctAnswer) / 10;
-      const text = `${numberToWords(groupCount.toString())} dizaines égale ${numberToWords(correctAnswer)}`;
-      playAudio(text);
-    }
-  };
+
 
   // Déclencher l'animation au chargement initial
   useEffect(() => {
@@ -532,6 +597,23 @@ export default function DizainesCP() {
       if (stopSignalRef.current) return;
       
       await new Promise(resolve => setTimeout(resolve, 1000));
+      if (stopSignalRef.current) return;
+      
+      // Explication de la méthode de décomposition
+      const questionText = exercise.question.toLowerCase();
+      if (questionText.includes('combien de groupes de 10') || questionText.includes('combien de dizaines')) {
+        const match = questionText.match(/(\d+)/);
+        if (match) {
+          const number = match[1];
+          if (number.length === 2) {
+            const dizaines = number[0];
+            await playAudio(`Pour trouver combien de boîtes de 10 dans ${number}, je regarde le chiffre des dizaines : c'est ${dizaines} !`);
+            if (stopSignalRef.current) return;
+          }
+        }
+      }
+      
+      await new Promise(resolve => setTimeout(resolve, 800));
       if (stopSignalRef.current) return;
       
       await playAudio("Appuie sur le bouton Suivant pour continuer ton aventure !");
@@ -865,6 +947,155 @@ export default function DizainesCP() {
               </div>
             </div>
 
+            {/* Section décomposition dizaines/unités */}
+            <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-8 shadow-lg border-2 border-blue-200">
+              <h2 className="text-2xl font-bold text-center mb-6 text-gray-900">
+                🧮 Comment compter les boîtes de 10 dans un nombre ?
+              </h2>
+              
+              <div className="text-center mb-6">
+                <p className="text-lg text-gray-700 mb-4">
+                  Pour savoir combien de boîtes de 10 il y a dans un nombre, 
+                  je regarde le <strong className="text-blue-600">chiffre des dizaines</strong> !
+                </p>
+                
+                {/* Sélecteur de nombre pour la démo */}
+                <div className="flex flex-wrap justify-center gap-3 mb-6">
+                  {['42', '67', '83', '95'].map((num) => (
+                    <button
+                      key={num}
+                      onClick={() => startDecomposition(num)}
+                      className="bg-purple-500 text-white px-6 py-3 rounded-lg font-bold text-xl hover:bg-purple-600 transition-all shadow-lg transform hover:scale-105"
+                    >
+                      Démontrer avec {num}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Animation de décomposition */}
+              {showDecomposition && (
+                <div className="space-y-6">
+                  {/* Contrôles */}
+                  <div className="flex justify-center space-x-4">
+                    {decompositionStep < 4 && (
+                      <button
+                        onClick={nextDecompositionStep}
+                        className="bg-gradient-to-r from-green-500 to-blue-500 text-white px-8 py-4 rounded-xl font-bold text-xl hover:from-green-600 hover:to-blue-600 transition-all shadow-lg transform hover:scale-105 animate-pulse"
+                      >
+                        ▶️ Étape suivante
+                      </button>
+                    )}
+                    {decompositionStep > 0 && (
+                      <button
+                        onClick={restartDecomposition}
+                        className="bg-gray-500 text-white px-6 py-4 rounded-xl font-bold text-lg hover:bg-gray-600 transition-colors shadow-md"
+                      >
+                        🔄 Recommencer
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Étape 0: Présentation du nombre */}
+                  {decompositionStep >= 0 && (
+                    <div className="text-center">
+                      <div className="text-6xl font-bold text-purple-600 mb-4 animate-bounce-in">
+                        {animatingNumber}
+                      </div>
+                      <p className="text-xl text-gray-700">
+                        Prenons le nombre <strong>{animatingNumber}</strong>
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Étape 1: Animation de glissement dans le tableau */}
+                  {decompositionStep >= 1 && (
+                    <div className="flex justify-center">
+                      <div className="bg-white border-4 border-gray-300 rounded-xl p-6 shadow-lg">
+                        <div className="grid grid-cols-2 gap-8 text-center">
+                          {/* Colonne Dizaines */}
+                          <div className="space-y-4">
+                            <div className={`text-xl font-bold p-3 rounded-lg transition-all duration-1000 ${
+                              highlightDizaines ? 'bg-yellow-300 text-yellow-800 animate-pulse scale-110' : 'bg-blue-100 text-blue-800'
+                            }`}>
+                              DIZAINES
+                            </div>
+                            <div className={`text-6xl font-bold border-4 border-dashed border-blue-300 rounded-lg p-4 transition-all duration-1000 ${
+                              decompositionStep >= 1 ? 'animate-slide-in' : ''
+                            } ${highlightDizaines ? 'bg-yellow-100 border-yellow-400 scale-110' : 'bg-blue-50'}`}>
+                              {decompositionStep >= 1 ? animatingNumber[0] : ''}
+                            </div>
+                          </div>
+
+                          {/* Colonne Unités */}
+                          <div className="space-y-4">
+                            <div className={`text-xl font-bold p-3 rounded-lg transition-all duration-1000 ${
+                              highlightUnites ? 'bg-yellow-300 text-yellow-800 animate-pulse scale-110' : 'bg-green-100 text-green-800'
+                            }`}>
+                              UNITÉS
+                            </div>
+                            <div className={`text-6xl font-bold border-4 border-dashed border-green-300 rounded-lg p-4 transition-all duration-1000 ${
+                              decompositionStep >= 1 ? 'animate-slide-in' : ''
+                            } ${highlightUnites ? 'bg-yellow-100 border-yellow-400 scale-110' : 'bg-green-50'}`}>
+                              {decompositionStep >= 1 ? animatingNumber[1] : ''}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Étape 2: Explication dizaines */}
+                  {decompositionStep >= 2 && (
+                    <div className="text-center animate-fade-in-up">
+                      <div className="bg-yellow-100 border-4 border-yellow-400 rounded-xl p-6 max-w-2xl mx-auto">
+                        <p className="text-2xl font-bold text-yellow-800 mb-2">
+                          Le chiffre des dizaines est <span className="text-4xl">{animatingNumber[0]}</span>
+                        </p>
+                        <p className="text-xl text-yellow-700">
+                          Cela veut dire qu'il y a <strong>{animatingNumber[0]} boîtes de 10</strong> !
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Étape 3: Explication unités */}
+                  {decompositionStep >= 3 && (
+                    <div className="text-center animate-fade-in-up">
+                      <div className="bg-green-100 border-4 border-green-400 rounded-xl p-6 max-w-2xl mx-auto">
+                        <p className="text-2xl font-bold text-green-800 mb-2">
+                          Le chiffre des unités est <span className="text-4xl">{animatingNumber[1]}</span>
+                        </p>
+                        <p className="text-xl text-green-700">
+                          Cela veut dire qu'il y a <strong>{animatingNumber[1]} objets en plus</strong>
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Étape 4: Résumé final */}
+                  {decompositionStep >= 4 && (
+                    <div className="text-center animate-bounce-in">
+                      <div className="bg-gradient-to-r from-purple-100 to-pink-100 border-4 border-purple-400 rounded-xl p-8 max-w-3xl mx-auto">
+                        <h3 className="text-3xl font-bold text-purple-800 mb-4">
+                          🎉 Résultat final !
+                        </h3>
+                        <p className="text-2xl font-bold text-purple-700 mb-2">
+                          Dans {animatingNumber}, il y a <span className="text-4xl text-red-600">{animatingNumber[0]}</span> boîtes de 10
+                        </p>
+                        <p className="text-xl text-purple-600">
+                          + {animatingNumber[1]} objets supplémentaires
+                        </p>
+                        <div className="mt-4 text-lg text-purple-500">
+                          💡 <strong>Astuce :</strong> Le nombre de boîtes de 10 = le chiffre des dizaines !
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
             {/* Affichage détaillé de la dizaine sélectionnée */}
             <div className="bg-white rounded-xl p-8 shadow-lg text-center">
               <h3 className="text-2xl font-bold mb-6 text-gray-900">
@@ -1166,29 +1397,116 @@ export default function DizainesCP() {
               {!isCorrect && isCorrect !== null && (
                 <div className="bg-white rounded-lg p-6 border-2 border-blue-300 mb-6">
                   <h4 className="text-lg font-bold mb-4 text-blue-800 text-center">
-                    🎯 Écoute la bonne réponse !
+                    🎯 Explication avec la méthode !
                   </h4>
-                  <div className="space-y-4">
-                    <div className="bg-blue-50 rounded-lg p-4">
-                      <div className="text-center">
-                        <div className="text-3xl mb-4">
-                          {exercises[currentExercise].visual}
+                  <div className="space-y-6">
+                    {/* Explication visuelle avec décomposition pour les questions sur les groupes de 10 */}
+                    {(() => {
+                      const exercise = exercises[currentExercise];
+                      const questionText = exercise.question.toLowerCase();
+                      const hasNumberToDecompose = questionText.includes('combien de groupes de 10') || questionText.includes('combien de dizaines');
+                      
+                      if (hasNumberToDecompose) {
+                        const match = exercise.question.match(/(\d+)/);
+                        const number = match ? match[1] : '';
+                        
+                        if (number.length === 2) {
+                          const dizaines = number[0];
+                          const unites = number[1];
+                          
+                          return (
+                            <div className="space-y-4">
+                              {/* Titre de la méthode */}
+                              <div className="text-center">
+                                <p className="text-xl font-bold text-purple-800 mb-2">
+                                  💡 Méthode : Je décompose {number} en dizaines et unités
+                                </p>
+                              </div>
+                              
+                              {/* Tableau de décomposition */}
+                              <div className="flex justify-center">
+                                <div className="bg-gradient-to-br from-purple-50 to-blue-50 border-4 border-purple-300 rounded-xl p-6 shadow-lg">
+                                  <div className="grid grid-cols-2 gap-8 text-center">
+                                    {/* Colonne Dizaines */}
+                                    <div className="space-y-4">
+                                      <div className="text-lg font-bold p-3 rounded-lg bg-blue-100 text-blue-800">
+                                        DIZAINES
+                                      </div>
+                                      <div className="text-5xl font-bold border-4 border-dashed border-blue-300 rounded-lg p-4 bg-blue-50 animate-pulse">
+                                        {dizaines}
+                                      </div>
+                                    </div>
+
+                                    {/* Colonne Unités */}
+                                    <div className="space-y-4">
+                                      <div className="text-lg font-bold p-3 rounded-lg bg-green-100 text-green-800">
+                                        UNITÉS
+                                      </div>
+                                      <div className="text-5xl font-bold border-4 border-dashed border-green-300 rounded-lg p-4 bg-green-50">
+                                        {unites}
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                              
+                              {/* Explication */}
+                              <div className="text-center">
+                                <div className="bg-yellow-100 border-4 border-yellow-400 rounded-xl p-4 max-w-xl mx-auto">
+                                  <p className="text-xl font-bold text-yellow-800 mb-2">
+                                    Le chiffre des dizaines est <span className="text-3xl text-red-600">{dizaines}</span>
+                                  </p>
+                                  <p className="text-lg text-yellow-700">
+                                    Donc il y a <strong className="text-2xl text-red-600">{dizaines}</strong> boîtes de 10 !
+                                  </p>
+                                </div>
+                              </div>
+
+                              {/* Vérification visuelle */}
+                              <div className="text-center">
+                                <div className="bg-blue-50 rounded-lg p-4">
+                                  <div className="text-3xl mb-4">
+                                    {exercise.visual}
+                                  </div>
+                                  <p className="text-lg text-blue-700 font-semibold">
+                                    Compte les boîtes 📦 : il y en a bien {exercise.correctAnswer} !
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        }
+                      }
+                      
+                      // Fallback pour les autres types d'exercices
+                      return (
+                        <div className="bg-blue-50 rounded-lg p-4">
+                          <div className="text-center">
+                            <div className="text-3xl mb-4">
+                              {exercise.visual}
+                            </div>
+                            <div className="text-2xl font-bold text-blue-600 mb-2">
+                              {(() => {
+                                if (exercise.question.includes('Que vaut') || exercise.question.includes('dizaines =')) {
+                                  const groupCount = parseInt(exercise.correctAnswer) / 10;
+                                  return `${groupCount} dizaines = ${exercise.correctAnswer}`;
+                                }
+                                return `Réponse : ${exercise.correctAnswer}`;
+                              })()}
+                            </div>
+                            <p className="text-lg text-blue-700 font-semibold">
+                              {(() => {
+                                if (exercise.question.includes('Que vaut') || exercise.question.includes('dizaines =')) {
+                                  const groupCount = parseInt(exercise.correctAnswer) / 10;
+                                  return `${groupCount} × 10 = ${exercise.correctAnswer}`;
+                                }
+                                return `La réponse est ${exercise.correctAnswer} !`;
+                              })()}
+                            </p>
+                          </div>
                         </div>
-                        <div className="text-2xl font-bold text-blue-600 mb-2">
-                          {(() => {
-                            const exercise = exercises[currentExercise];
-                            if (exercise.question.includes('Combien de groupes') || exercise.question.includes('Combien de dizaines')) {
-                              const groupCount = exercise.visual.split('📦').length - 1;
-                              return `${groupCount} dizaines = ${groupCount * 10}`;
-                            } else if (exercise.question.includes('Que vaut') || exercise.question.includes('dizaines =')) {
-                              const groupCount = parseInt(exercise.correctAnswer) / 10;
-                              return `${groupCount} dizaines = ${exercise.correctAnswer}`;
-                            }
-                            return `Réponse : ${exercise.correctAnswer}`;
-                          })()}
-                        </div>
-                      </div>
-                    </div>
+                      );
+                    })()}
                     
                     <div className="text-center">
                       <button 
