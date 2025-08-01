@@ -131,14 +131,27 @@ export default function ReconnaissanceNombresCP() {
     setFingerCount(0);
   };
 
-  // Fonction pour scroller vers l'illustration
+  // Fonction pour scroller vers l'illustration - optimisée pour mobile
   const scrollToIllustration = () => {
     const element = document.getElementById('number-illustration');
     if (element) {
+      const isMobile = window.innerWidth < 768; // sm breakpoint
+      
       element.scrollIntoView({ 
         behavior: 'smooth', 
-        block: 'start'
+        block: isMobile ? 'center' : 'start', // Sur mobile, centrer l'explication
+        inline: 'nearest'
       });
+      
+      // Pour mobile : petit délai supplémentaire pour s'assurer que l'explication est bien visible
+      if (isMobile) {
+        setTimeout(() => {
+          element.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'center'
+          });
+        }, 300);
+      }
     }
   };
 
