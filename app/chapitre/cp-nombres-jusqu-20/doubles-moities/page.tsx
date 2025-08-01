@@ -27,9 +27,30 @@ export default function DoublesMoitiesCP() {
   const [currentExample, setCurrentExample] = useState<number | null>(null);
   const [showingProcess, setShowingProcess] = useState<'addition' | 'division' | null>(null);
 
+  // États pour Sam le Pirate
+  const [samSizeExpanded, setSamSizeExpanded] = useState(false);
+  const [exerciseStarted, setExerciseStarted] = useState(false);
+  const [showNextButton, setShowNextButton] = useState(false);
+  const [highlightNextButton, setHighlightNextButton] = useState(false);
+  const [isExplainingError, setIsExplainingError] = useState(false);
+  const [pirateIntroStarted, setPirateIntroStarted] = useState(false);
+  const [showExercisesList, setShowExercisesList] = useState(false);
+
   // Refs pour gérer l'audio
   const stopSignalRef = useRef(false);
   const currentAudioRef = useRef<SpeechSynthesisUtterance | null>(null);
+
+  // Expressions de pirate aléatoires pour chaque exercice
+  const pirateExpressions = [
+    "Mille sabords", "Tonnerre de Brest", "Sacré matelot", "Par Neptune", "Sang de pirate",
+    "Mille millions de mille sabords", "Ventrebleu", "Sapristi", "Morbleu", "Fichtre"
+  ];
+
+  // Compliments aléatoires pour les bonnes réponses
+  const correctAnswerCompliments = [
+    "Parfait", "Bravo", "Excellent", "Formidable", "Magnifique", 
+    "Super", "Génial", "Fantastique", "Merveilleux", "Extraordinaire"
+  ];
 
   // Fonction pour arrêter toutes les animations et vocaux
   const stopAllVocalsAndAnimations = () => {
@@ -42,6 +63,11 @@ export default function DoublesMoitiesCP() {
     setAnimatingStep(null);
     setCurrentExample(null);
     setShowingProcess(null);
+    
+    // Réinitialiser les états Sam
+    setIsExplainingError(false);
+    setPirateIntroStarted(false);
+    setShowExercisesList(false);
     
     if (currentAudioRef.current) {
       speechSynthesis.cancel();
@@ -111,6 +137,175 @@ export default function DoublesMoitiesCP() {
       currentAudioRef.current = utterance;
       speechSynthesis.speak(utterance);
     });
+  };
+
+  // Fonction pour l'introduction vocale de Sam le Pirate - DÉMARRAGE MANUEL PAR CLIC
+  const startPirateIntro = async () => {
+    if (pirateIntroStarted) return;
+    
+    // FORCER la remise à false pour le démarrage manuel
+    stopSignalRef.current = false;
+    setIsPlayingVocal(true);
+    setPirateIntroStarted(true);
+    
+    try {
+      await playAudio("Bonjour, faisons quelques exercices nom d'une jambe en bois !");
+      if (stopSignalRef.current) return;
+      
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      if (stopSignalRef.current) return;
+      
+      await playAudio("Pour lire l'énoncé appuie sur écouter l'énoncé");
+      if (stopSignalRef.current) return;
+      
+      // Animation sur le bouton "Écouter l'énoncé"
+      setHighlightedElement('listen-question-button');
+      setShowExercisesList(true);
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      setHighlightedElement(null);
+      
+      if (stopSignalRef.current) return;
+      
+      await playAudio("Dès que tu as la réponse, tu peux cliquer sur la bonne réponse");
+      if (stopSignalRef.current) return;
+      
+      // Mettre en évidence la zone des réponses
+      setHighlightedElement('answer-choices');
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      setHighlightedElement(null);
+      
+      if (stopSignalRef.current) return;
+      
+      await playAudio("Si tu te trompes, je t'expliquerai la bonne réponse !");
+      if (stopSignalRef.current) return;
+      
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      if (stopSignalRef.current) return;
+      
+      await playAudio("En avant toutes pour les doubles et moitiés !");
+      if (stopSignalRef.current) return;
+      
+    } catch (error) {
+      console.error('Erreur dans startPirateIntro:', error);
+    } finally {
+      setIsPlayingVocal(false);
+    }
+  };
+
+  // Fonction pour lire l'énoncé de l'exercice
+  const startExerciseExplanation = async () => {
+    if (stopSignalRef.current || isExplainingError || !exercises[currentExercise]) return;
+    
+    stopSignalRef.current = false;
+    setIsPlayingVocal(true);
+    setExerciseStarted(true);
+    
+    try {
+      // Lire seulement l'énoncé de l'exercice
+      await playAudio(exercises[currentExercise].question);
+      if (stopSignalRef.current) return;
+      
+    } catch (error) {
+      console.error('Erreur dans startExerciseExplanation:', error);
+    } finally {
+      setIsPlayingVocal(false);
+    }
+  };
+
+  // Fonction pour féliciter avec audio pour les bonnes réponses
+  const celebrateCorrectAnswer = async () => {
+    if (stopSignalRef.current) return;
+    
+    stopSignalRef.current = false;
+    setIsPlayingVocal(true);
+    
+    try {
+      const randomCompliment = correctAnswerCompliments[Math.floor(Math.random() * correctAnswerCompliments.length)];
+      await playAudio(randomCompliment + " !");
+      if (stopSignalRef.current) return;
+      
+    } catch (error) {
+      console.error('Erreur dans celebrateCorrectAnswer:', error);
+    } finally {
+      setIsPlayingVocal(false);
+    }
+  };
+
+  // Fonction pour animer l'explication d'une mauvaise réponse
+  const explainWrongAnswer = async () => {
+    console.log('❌ Explication mauvaise réponse pour exercice', currentExercise + 1);
+    
+    // FORCER la remise à false pour permettre l'explication
+    stopSignalRef.current = false;
+    setIsExplainingError(true);
+    setIsPlayingVocal(true);
+    
+    try {
+      // Expression de pirate personnalisée
+      const pirateExpression = pirateExpressions[currentExercise] || "Mille sabords";
+      await playAudio(pirateExpression + " !");
+      if (stopSignalRef.current) return;
+      
+      await new Promise(resolve => setTimeout(resolve, 800));
+      if (stopSignalRef.current) return;
+      
+      const exercise = exercises[currentExercise];
+      await playAudio(`La bonne réponse était : ${exercise.correctAnswer} !`);
+      if (stopSignalRef.current) return;
+      
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      if (stopSignalRef.current) return;
+      
+      await playAudio("Appuie sur le bouton Suivant pour continuer ton aventure !");
+      if (stopSignalRef.current) return;
+      
+      // Scroll vers le bouton suivant après l'explication - optimisé pour mobile
+      setTimeout(() => {
+        const nextButton = document.getElementById('next-exercise-button');
+        if (nextButton) {
+          const isMobile = window.innerWidth < 768; // sm breakpoint
+          
+          if (isMobile) {
+            // Pour mobile: scroll pour que le bouton apparaisse en bas de l'écran
+            nextButton.scrollIntoView({ 
+              behavior: 'smooth', 
+              block: 'end', // En bas de l'écran
+              inline: 'nearest' 
+            });
+            
+            // Petit délai supplémentaire puis second scroll pour s'assurer de la visibilité
+            setTimeout(() => {
+              window.scrollTo({
+                top: document.body.scrollHeight,
+                behavior: 'smooth'
+              });
+            }, 600);
+          } else {
+            // Pour desktop: scroll normal
+            nextButton.scrollIntoView({ 
+              behavior: 'smooth', 
+              block: 'center',
+              inline: 'nearest' 
+            });
+          }
+          
+          // Animation d'attention sur le bouton
+          setTimeout(() => {
+            nextButton.classList.add('animate-bounce');
+            setTimeout(() => {
+              nextButton.classList.remove('animate-bounce');
+            }, 2000);
+          }, isMobile ? 1000 : 500);
+        }
+      }, 1000); // Plus de délai pour que tout l'audio se termine
+      
+    } catch (error) {
+      console.error('Erreur dans explainWrongAnswer:', error);
+    } finally {
+      setIsPlayingVocal(false);
+      // Ne PAS remettre setIsExplainingError(false) ici - le bouton Suivant doit rester actif
+      // L'état sera réinitialisé quand l'utilisateur clique sur "Suivant"
+    }
   };
 
   // Fonction utilitaire pour les pauses
@@ -665,6 +860,13 @@ export default function DoublesMoitiesCP() {
   // Effet pour gérer les changements d'onglet interne (cours ↔ exercices)
   useEffect(() => {
     stopAllVocalsAndAnimations();
+    if (!showExercises) {
+      // Quand on revient au cours, réinitialiser les états Sam
+      setPirateIntroStarted(false);
+      setShowExercisesList(false);
+      setSamSizeExpanded(false);
+      setExerciseStarted(false);
+    }
   }, [showExercises]);
 
   // Effet pour mélanger les choix quand on change d'exercice
@@ -674,7 +876,16 @@ export default function DoublesMoitiesCP() {
     }
   }, [currentExercise]);
 
-  const handleAnswerClick = (answer: string) => {
+  // Effet pour réinitialiser les états sur changement d'exercice
+  useEffect(() => {
+    setUserAnswer('');
+    setIsCorrect(null);
+    setIsExplainingError(false);
+    setShowNextButton(false);
+    setHighlightNextButton(false);
+  }, [currentExercise]);
+
+  const handleAnswerClick = async (answer: string) => {
     setUserAnswer(answer);
     const correct = answer === exercises[currentExercise].correctAnswer;
     setIsCorrect(correct);
@@ -703,54 +914,25 @@ export default function DoublesMoitiesCP() {
           saveProgress(finalScoreValue, exercises.length);
         }
       }, 1500);
+      // Célébrer avec Sam le Pirate (mais sans bloquer le passage automatique)
+      celebrateCorrectAnswer(); // Pas de await pour éviter les blocages
     } else {
-      // Si mauvaise réponse → scroll automatique vers le bouton "Suivant" (mobile)
-      setTimeout(() => {
-        const nextButton = document.getElementById('next-exercise-button');
-        if (nextButton) {
-          const isMobile = window.innerWidth < 768; // sm breakpoint
-          
-          if (isMobile) {
-            // Pour mobile: scroll pour que le bouton apparaisse en bas de l'écran
-            nextButton.scrollIntoView({ 
-              behavior: 'smooth', 
-              block: 'end', // En bas de l'écran
-              inline: 'nearest' 
-            });
-            
-            // Petit délai supplémentaire puis second scroll pour s'assurer de la visibilité
-            setTimeout(() => {
-              window.scrollTo({
-                top: document.body.scrollHeight,
-                behavior: 'smooth'
-              });
-            }, 600);
-          } else {
-            // Pour desktop: scroll normal
-            nextButton.scrollIntoView({ 
-              behavior: 'smooth', 
-              block: 'center',
-              inline: 'nearest' 
-            });
-          }
-          
-          // Animation d'attention sur le bouton
-          setTimeout(() => {
-            nextButton.classList.add('animate-bounce');
-            setTimeout(() => {
-              nextButton.classList.remove('animate-bounce');
-            }, 2000);
-          }, isMobile ? 1000 : 500);
-        }
-      }, 1000); // Délai pour laisser l'explication s'afficher
+      // Expliquer l'erreur avec Sam le Pirate
+      await explainWrongAnswer();
     }
   };
 
   const nextExercise = () => {
+    stopAllVocalsAndAnimations(); // Stop any ongoing audio before moving to next
+    
     if (currentExercise < exercises.length - 1) {
       setCurrentExercise(currentExercise + 1);
       setUserAnswer('');
       setIsCorrect(null);
+      // Réinitialiser les états Sam
+      setIsExplainingError(false);
+      setShowNextButton(false);
+      setHighlightNextButton(false);
     } else {
       setFinalScore(score);
       setShowCompletionModal(true);
@@ -759,6 +941,8 @@ export default function DoublesMoitiesCP() {
   };
 
   const resetAll = () => {
+    stopAllVocalsAndAnimations(); // Stop any ongoing audio before reset
+    
     setCurrentExercise(0);
     setUserAnswer('');
     setIsCorrect(null);
@@ -766,7 +950,110 @@ export default function DoublesMoitiesCP() {
     setAnsweredCorrectly(new Set());
     setShowCompletionModal(false);
     setFinalScore(0);
+    
+    // Réinitialiser les états Sam
+    setSamSizeExpanded(false);
+    setExerciseStarted(false);
+    setShowNextButton(false);
+    setHighlightNextButton(false);
+    setIsExplainingError(false);
+    setPirateIntroStarted(false);
+    setShowExercisesList(false);
   };
+
+  // JSX pour l'introduction de Sam le Pirate dans les exercices
+  const SamPirateIntroJSX = () => (
+    <div className="flex justify-center p-1 mt-1 sm:mt-2">
+      <div className="flex items-center gap-2">
+        {/* Image de Sam le Pirate */}
+        <div className={`relative flex-shrink-0 rounded-full bg-gradient-to-br from-blue-100 to-cyan-100 border-2 border-blue-200 shadow-md transition-all duration-300 ${
+          isPlayingVocal
+            ? 'w-20 sm:w-32 h-20 sm:h-32 scale-110 sm:scale-150' // When speaking - agrandi mobile
+            : pirateIntroStarted
+              ? 'w-16 sm:w-16 h-16 sm:h-16' // After "COMMENCER" clicked (reduced) - agrandi mobile
+              : 'w-16 sm:w-20 h-16 sm:h-20' // Initial - agrandi mobile
+        }`}>
+          <img 
+            src="/image/pirate-small.png" 
+            alt="Sam le Pirate" 
+            className="w-full h-full rounded-full object-cover"
+          />
+          {/* Haut-parleur animé quand il parle */}
+          {isPlayingVocal && (
+            <div className="absolute -top-1 -right-1 bg-blue-500 text-white p-2 rounded-full animate-bounce shadow-lg">
+              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.617.77L4.916 14H2a1 1 0 01-1-1V7a1 1 0 011-1h2.916l3.467-2.77a1 1 0 011.617.77zM14.657 2.929a1 1 0 011.414 0A9.972 9.972 0 0119 10a9.972 9.972 0 01-2.929 7.071 1 1 0 01-1.414-1.414A7.971 7.971 0 0017 10c0-2.21-.894-4.208-2.343-5.657a1 1 0 010-1.414zm-2.829 2.828a1 1 0 011.415 0A5.983 5.983 0 0115 10a5.983 5.983 0 01-1.757 4.243 1 1 0 01-1.415-1.414A3.983 3.983 0 0013 10a3.983 3.983 0 00-1.172-2.829 1 1 0 010-1.414z" clipRule="evenodd" />
+              </svg>
+            </div>
+          )}
+        </div>
+        
+        {/* Bouton Start Exercices - AVEC AUDIO */}
+        <button
+        onClick={startPirateIntro}
+        disabled={isPlayingVocal || pirateIntroStarted}
+        className={`relative px-6 sm:px-12 py-3 sm:py-5 rounded-xl font-black text-base sm:text-2xl transition-all duration-300 transform ${
+          isPlayingVocal 
+            ? 'bg-gradient-to-r from-gray-400 to-gray-500 text-gray-200 cursor-not-allowed animate-pulse shadow-md' 
+            : pirateIntroStarted
+              ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white opacity-75 cursor-not-allowed shadow-lg'
+              : 'bg-gradient-to-r from-orange-500 via-red-500 to-pink-500 text-white hover:from-orange-600 hover:via-red-600 hover:to-pink-600 hover:scale-110 shadow-2xl hover:shadow-3xl animate-pulse border-4 border-yellow-300'
+        } ${!isPlayingVocal && !pirateIntroStarted ? 'ring-4 ring-yellow-300 ring-opacity-75' : ''}`}
+        style={{
+          animationDuration: !isPlayingVocal && !pirateIntroStarted ? '1.5s' : '2s',
+          animationIterationCount: isPlayingVocal || pirateIntroStarted ? 'none' : 'infinite',
+          textShadow: '2px 2px 4px rgba(0,0,0,0.3)',
+          boxShadow: !isPlayingVocal && !pirateIntroStarted 
+            ? '0 10px 25px rgba(0,0,0,0.3), 0 0 30px rgba(255,215,0,0.4), inset 0 1px 0 rgba(255,255,255,0.2)' 
+            : ''
+        }}
+      >
+        {/* Effet de brillance */}
+        {!isPlayingVocal && !pirateIntroStarted && (
+          <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-transparent via-white to-transparent opacity-20 animate-pulse"></div>
+        )}
+        
+        {/* Icônes et texte avec plus d'émojis */}
+        <span className="relative z-10 flex items-center justify-center gap-2">
+          {isPlayingVocal 
+            ? <>🎤 <span className="animate-bounce">Sam parle...</span></> 
+            : pirateIntroStarted
+              ? <>✅ <span>Intro terminée</span></>
+              : <>🚀 <span className="animate-bounce">COMMENCER</span> ✨</>
+          }
+        </span>
+        
+        {/* Particules brillantes pour le bouton commencer */}
+        {!isPlayingVocal && !pirateIntroStarted && (
+          <>
+            <div className="absolute -top-1 -right-1 w-3 h-3 bg-yellow-300 rounded-full animate-ping"></div>
+            <div className="absolute -bottom-1 -left-1 w-2 h-2 bg-pink-300 rounded-full animate-ping" style={{animationDelay: '0.5s'}}></div>
+            <div className="absolute top-2 left-2 w-1 h-1 bg-white rounded-full animate-ping" style={{animationDelay: '1s'}}></div>
+          </>
+        )}
+      </button>
+      </div>
+    </div>
+  );
+
+  // Composant JSX pour le bouton "Écouter l'énoncé"
+  const ListenQuestionButtonJSX = () => (
+    <div className="mb-3 sm:mb-6">
+      <button
+        id="listen-question-button"
+        onClick={startExerciseExplanation}
+        disabled={isPlayingVocal || !pirateIntroStarted}
+        className={`bg-blue-500 text-white px-3 sm:px-6 py-2 sm:py-3 rounded-lg font-bold text-xs sm:text-lg hover:bg-blue-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-1 sm:space-x-2 mx-auto shadow-lg ${
+          highlightedElement === 'listen-question-button' ? 'ring-8 ring-yellow-400 bg-yellow-500 animate-bounce scale-125 shadow-2xl border-4 border-orange-500' : ''
+        }`}
+      >
+        <svg className="w-3 h-3 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 20 20">
+          <path fillRule="evenodd" d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.617.77L4.916 14H2a1 1 0 01-1-1V7a1 1 0 011-1h2.916l3.467-2.77a1 1 0 011.617.77zM14.657 2.929a1 1 0 011.414 0A9.972 9.972 0 0119 10a9.972 9.972 0 01-2.929 7.071 1 1 0 01-1.414-1.414A7.971 7.971 0 0017 10c0-2.21-.894-4.208-2.343-5.657a1 1 0 010-1.414zm-2.829 2.828a1 1 0 011.415 0A5.983 5.983 0 0115 10a5.983 5.983 0 01-1.757 4.243 1 1 0 01-1.415-1.414A3.983 3.983 0 0013 10a3.983 3.983 0 00-1.172-2.829 1 1 0 010-1.414z" clipRule="evenodd" />
+        </svg>
+        <span>🎧 Écouter l'énoncé</span>
+      </button>
+    </div>
+  );
     
     return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-100">
@@ -1222,6 +1509,8 @@ export default function DoublesMoitiesCP() {
         ) : (
           /* EXERCICES */
           <div className="space-y-4 sm:space-y-8">
+            {/* Introduction de Sam le Pirate - toujours visible */}
+            {SamPirateIntroJSX()}
             {/* Header exercices */}
             <div className="bg-white rounded-xl p-3 sm:p-6 shadow-lg">
               <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-2 sm:mb-4 gap-2 sm:gap-0">
@@ -1255,9 +1544,12 @@ export default function DoublesMoitiesCP() {
 
             {/* Question */}
             <div className="bg-white rounded-xl p-4 sm:p-8 shadow-lg text-center">
-              <h3 className="text-lg sm:text-2xl font-bold mb-4 sm:mb-8 text-gray-900">
-                {exercises[currentExercise].question}
-                    </h3>
+              <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-2 sm:mb-6 md:mb-8 gap-2 sm:gap-4">
+                <h3 className="text-lg sm:text-2xl font-bold text-gray-900 flex-1">
+                  {exercises[currentExercise].question}
+                </h3>
+                {ListenQuestionButtonJSX()}
+              </div>
                     
               {/* Indication du type */}
               <div className={`rounded-lg p-3 sm:p-6 mb-4 sm:mb-8 ${
@@ -1280,7 +1572,12 @@ export default function DoublesMoitiesCP() {
                           </div>
                     
                     {/* Choix multiples */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 max-w-sm sm:max-w-md mx-auto mb-4 sm:mb-8">
+              <div 
+                id="answer-choices"
+                className={`grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 max-w-sm sm:max-w-md mx-auto mb-4 sm:mb-8 transition-all duration-500 ${
+                  highlightedElement === 'answer-choices' ? 'ring-8 ring-yellow-400 bg-yellow-50 rounded-lg p-4 scale-105 shadow-2xl animate-pulse' : ''
+                }`}
+              >
                       {shuffledChoices.map((choice) => (
                         <button
                           key={choice}
