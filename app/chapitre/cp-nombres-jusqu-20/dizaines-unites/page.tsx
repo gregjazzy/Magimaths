@@ -421,18 +421,29 @@ export default function DizainesUnitesCP() {
       await playAudio(randomCompliment + " !");
       if (stopSignalRef.current) return;
       
-      await wait(500);
-      if (stopSignalRef.current) return;
-      
-      const exercise = exercises[currentExercise];
-      await playAudio(`C'est bien ${exercise.correctDizaines} dizaines et ${exercise.correctUnites} unités !`);
-      if (stopSignalRef.current) return;
-      
     } catch (error) {
       console.error('Erreur dans celebrateCorrectAnswer:', error);
     } finally {
       setIsPlayingVocal(false);
     }
+    
+    // Passage automatique au prochain exercice après 1.5s (en dehors du try/catch)
+    const currentScore = score;
+    const nextExerciseIndex = currentExercise + 1;
+    
+    setTimeout(() => {
+      if (nextExerciseIndex < exercises.length) {
+        // Prochain exercice
+        setCurrentExercise(nextExerciseIndex);
+        setUserAnswer('');
+        setIsCorrect(null);
+      } else {
+        // Dernier exercice terminé
+        setFinalScore(currentScore + 1);
+        setShowCompletionModal(true);
+        saveProgress(currentScore + 1, exercises.length);
+      }
+    }, 1500);
   };
 
   // Fonction pour expliquer le chapitre au démarrage avec animations
@@ -680,24 +691,22 @@ export default function DizainesUnitesCP() {
     };
   });
 
-  // Exercices sur les dizaines et unités - champs séparés pour validation
-  const exercises = [
-    { question: 'Décompose ce nombre en dizaines et unités', number: 13, correctDizaines: 1, correctUnites: 3 },
-    { question: 'Décompose ce nombre en dizaines et unités', number: 17, correctDizaines: 1, correctUnites: 7 },
-    { question: 'Décompose ce nombre en dizaines et unités', number: 15, correctDizaines: 1, correctUnites: 5 },
-    { question: 'Décompose ce nombre en dizaines et unités', number: 19, correctDizaines: 1, correctUnites: 9 },
-    { question: 'Décompose ce nombre en dizaines et unités', number: 12, correctDizaines: 1, correctUnites: 2 },
-    { question: 'Décompose ce nombre en dizaines et unités', number: 16, correctDizaines: 1, correctUnites: 6 },
-    { question: 'Décompose ce nombre en dizaines et unités', number: 18, correctDizaines: 1, correctUnites: 8 },
-    { question: 'Décompose ce nombre en dizaines et unités', number: 14, correctDizaines: 1, correctUnites: 4 },
-    { question: 'Décompose ce nombre en dizaines et unités', number: 11, correctDizaines: 1, correctUnites: 1 },
-    { question: 'Décompose ce nombre en dizaines et unités', number: 20, correctDizaines: 2, correctUnites: 0 },
-    { question: 'Décompose ce nombre en dizaines et unités', number: 13, correctDizaines: 1, correctUnites: 3 },
-    { question: 'Décompose ce nombre en dizaines et unités', number: 16, correctDizaines: 1, correctUnites: 6 },
-    { question: 'Décompose ce nombre en dizaines et unités', number: 19, correctDizaines: 1, correctUnites: 9 },
-    { question: 'Décompose ce nombre en dizaines et unités', number: 15, correctDizaines: 1, correctUnites: 5 },
-    { question: 'Décompose ce nombre en dizaines et unités', number: 12, correctDizaines: 1, correctUnites: 2 }
-  ];
+  // Fonction pour générer 9 exercices aléatoires uniques (nombres de 11 à 20)
+  const generateRandomExercises = () => {
+    const allNumbers = [11, 12, 13, 14, 15, 16, 17, 18, 19, 20]; // Tous les nombres possibles
+    const shuffled = [...allNumbers].sort(() => Math.random() - 0.5); // Mélange aléatoire
+    const selectedNumbers = shuffled.slice(0, 9); // Prendre 9 nombres uniques
+    
+    return selectedNumbers.map(number => ({
+      question: 'Décompose ce nombre en dizaines et unités',
+      number: number,
+      correctDizaines: Math.floor(number / 10), // Calcul automatique des dizaines
+      correctUnites: number % 10 // Calcul automatique des unités
+    }));
+  };
+
+  // Exercices générés aléatoirement à chaque session
+  const [exercises] = useState(() => generateRandomExercises());
 
   // Fonction pour rendre les cercles visuels - dizaines = groupes de 10
   const renderCircles = (dizaines: number, unites: number) => {
@@ -910,7 +919,7 @@ export default function DizainesUnitesCP() {
   }, []);
 
   // Nouvelle fonction pour gérer la soumission de réponse - Dizaines/Unités
-  const handleAnswerSubmit = (answer: string) => {
+  const handleAnswerSubmit = async (answer: string) => {
     if (!answer.trim() || answer.split(',').length !== 2) return;
     
     stopAllVocalsAndAnimations(); // Stop any ongoing audio first
@@ -931,11 +940,27 @@ export default function DizainesUnitesCP() {
         newSet.add(currentExercise);
         return newSet;
       });
-      // Célébrer avec Sam le Pirate
-      celebrateCorrectAnswer();
+      
+      // Passage automatique direct sans attendre Sam (évite les conflits avec stopAllVocalsAndAnimations)
+      setTimeout(() => {
+        if (currentExercise + 1 < exercises.length) {
+          // Prochain exercice
+          setCurrentExercise(currentExercise + 1);
+          setUserAnswer('');
+          setIsCorrect(null);
+        } else {
+          // Dernier exercice terminé
+          setFinalScore(score + 1);
+          setShowCompletionModal(true);
+          saveProgress(score + 1, exercises.length);
+        }
+      }, 1500);
+      
+      // Célébrer avec Sam le Pirate (mais sans bloquer le passage automatique)
+      celebrateCorrectAnswer(); // Pas de await pour éviter les blocages
     } else if (!correct) {
       // Expliquer l'erreur avec Sam le Pirate
-      explainWrongAnswer();
+      await explainWrongAnswer();
     }
   };
 
