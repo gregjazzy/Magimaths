@@ -695,9 +695,7 @@ export default function DizainesUnitesCP() {
           }`}
         >
           {group}
-          <div className="col-span-5 text-center text-xs font-bold text-blue-700 mt-1">
-            1 dizaine = 10
-          </div>
+
         </div>
       );
     }
