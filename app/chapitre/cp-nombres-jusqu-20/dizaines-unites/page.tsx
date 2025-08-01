@@ -587,17 +587,9 @@ export default function DizainesUnitesCP() {
     }
   };
 
-  // Fonction pour mélanger un tableau
-  const shuffleArray = (array: string[]) => {
-    const shuffled = [...array];
-    for (let i = shuffled.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-    }
-    return shuffled;
-  };
 
-  const [shuffledChoices, setShuffledChoices] = useState<string[]>([]);
+
+
 
   // Sauvegarder les progrès
   const saveProgress = (score: number, maxScore: number) => {
@@ -656,23 +648,23 @@ export default function DizainesUnitesCP() {
     };
   });
 
-  // Exercices sur les dizaines et unités - avec propriétés séparées
+  // Exercices sur les dizaines et unités - champs séparés pour validation
   const exercises = [
-    { question: 'Décompose ce nombre en dizaines et unités', number: 13, correctAnswer: '1 dizaine + 3 unités', correctDizaines: 1, correctUnites: 3, choices: ['1 dizaine + 3 unités', '3 dizaines + 1 unité', '1 dizaine + 2 unités'] },
-    { question: 'Décompose ce nombre en dizaines et unités', number: 17, correctAnswer: '1 dizaine + 7 unités', correctDizaines: 1, correctUnites: 7, choices: ['1 dizaine + 7 unités', '7 dizaines + 1 unité', '1 dizaine + 6 unités'] },
-    { question: 'Décompose ce nombre en dizaines et unités', number: 15, correctAnswer: '1 dizaine + 5 unités', correctDizaines: 1, correctUnites: 5, choices: ['1 dizaine + 5 unités', '5 dizaines + 1 unité', '1 dizaine + 4 unités'] },
-    { question: 'Décompose ce nombre en dizaines et unités', number: 19, correctAnswer: '1 dizaine + 9 unités', correctDizaines: 1, correctUnites: 9, choices: ['1 dizaine + 9 unités', '9 dizaines + 1 unité', '1 dizaine + 8 unités'] },
-    { question: 'Décompose ce nombre en dizaines et unités', number: 12, correctAnswer: '1 dizaine + 2 unités', correctDizaines: 1, correctUnites: 2, choices: ['1 dizaine + 2 unités', '2 dizaines + 1 unité', '1 dizaine + 1 unité'] },
-    { question: 'Décompose ce nombre en dizaines et unités', number: 16, correctAnswer: '1 dizaine + 6 unités', correctDizaines: 1, correctUnites: 6, choices: ['1 dizaine + 6 unités', '6 dizaines + 1 unité', '1 dizaine + 5 unités'] },
-    { question: 'Décompose ce nombre en dizaines et unités', number: 18, correctAnswer: '1 dizaine + 8 unités', correctDizaines: 1, correctUnites: 8, choices: ['1 dizaine + 8 unités', '8 dizaines + 1 unité', '1 dizaine + 7 unités'] },
-    { question: 'Décompose ce nombre en dizaines et unités', number: 14, correctAnswer: '1 dizaine + 4 unités', correctDizaines: 1, correctUnites: 4, choices: ['1 dizaine + 4 unités', '4 dizaines + 1 unité', '1 dizaine + 3 unités'] },
-    { question: 'Décompose ce nombre en dizaines et unités', number: 11, correctAnswer: '1 dizaine + 1 unité', correctDizaines: 1, correctUnites: 1, choices: ['1 dizaine + 1 unité', '1 dizaine + 0 unité', '0 dizaine + 11 unités'] },
-    { question: 'Décompose ce nombre en dizaines et unités', number: 20, correctAnswer: '2 dizaines + 0 unité', correctDizaines: 2, correctUnites: 0, choices: ['2 dizaines + 0 unité', '1 dizaine + 10 unités', '0 dizaine + 20 unités'] },
-    { question: 'Décompose ce nombre en dizaines et unités', number: 13, correctAnswer: '1 dizaine + 3 unités', correctDizaines: 1, correctUnites: 3, choices: ['1 dizaine + 3 unités', '2 dizaines + 3 unités', '0 dizaine + 13 unités'] },
-    { question: 'Décompose ce nombre en dizaines et unités', number: 16, correctAnswer: '1 dizaine + 6 unités', correctDizaines: 1, correctUnites: 6, choices: ['1 dizaine + 6 unités', '1 dizaine + 5 unités', '2 dizaines + 6 unités'] },
-    { question: 'Décompose ce nombre en dizaines et unités', number: 19, correctAnswer: '1 dizaine + 9 unités', correctDizaines: 1, correctUnites: 9, choices: ['1 dizaine + 9 unités', '1 dizaine + 8 unités', '9 dizaines + 1 unité'] },
-    { question: 'Décompose ce nombre en dizaines et unités', number: 15, correctAnswer: '1 dizaine + 5 unités', correctDizaines: 1, correctUnites: 5, choices: ['1 dizaine + 5 unités', '5 dizaines + 1 unité', '1 dizaine + 4 unités'] },
-    { question: 'Décompose ce nombre en dizaines et unités', number: 12, correctAnswer: '1 dizaine + 2 unités', correctDizaines: 1, correctUnites: 2, choices: ['1 dizaine + 2 unités', '1 dizaine + 1 unité', '2 dizaines + 2 unités'] }
+    { question: 'Décompose ce nombre en dizaines et unités', number: 13, correctDizaines: 1, correctUnites: 3 },
+    { question: 'Décompose ce nombre en dizaines et unités', number: 17, correctDizaines: 1, correctUnites: 7 },
+    { question: 'Décompose ce nombre en dizaines et unités', number: 15, correctDizaines: 1, correctUnites: 5 },
+    { question: 'Décompose ce nombre en dizaines et unités', number: 19, correctDizaines: 1, correctUnites: 9 },
+    { question: 'Décompose ce nombre en dizaines et unités', number: 12, correctDizaines: 1, correctUnites: 2 },
+    { question: 'Décompose ce nombre en dizaines et unités', number: 16, correctDizaines: 1, correctUnites: 6 },
+    { question: 'Décompose ce nombre en dizaines et unités', number: 18, correctDizaines: 1, correctUnites: 8 },
+    { question: 'Décompose ce nombre en dizaines et unités', number: 14, correctDizaines: 1, correctUnites: 4 },
+    { question: 'Décompose ce nombre en dizaines et unités', number: 11, correctDizaines: 1, correctUnites: 1 },
+    { question: 'Décompose ce nombre en dizaines et unités', number: 20, correctDizaines: 2, correctUnites: 0 },
+    { question: 'Décompose ce nombre en dizaines et unités', number: 13, correctDizaines: 1, correctUnites: 3 },
+    { question: 'Décompose ce nombre en dizaines et unités', number: 16, correctDizaines: 1, correctUnites: 6 },
+    { question: 'Décompose ce nombre en dizaines et unités', number: 19, correctDizaines: 1, correctUnites: 9 },
+    { question: 'Décompose ce nombre en dizaines et unités', number: 15, correctDizaines: 1, correctUnites: 5 },
+    { question: 'Décompose ce nombre en dizaines et unités', number: 12, correctDizaines: 1, correctUnites: 2 }
   ];
 
   // Fonction pour rendre les cercles visuels - dizaines = groupes de 10
@@ -727,12 +719,7 @@ export default function DizainesUnitesCP() {
     return elements;
   };
 
-  // Initialiser les choix mélangés pour l'exercice actuel
-  const initializeShuffledChoices = () => {
-    const currentChoices = exercises[currentExercise].choices;
-    const shuffled = shuffleArray(currentChoices);
-    setShuffledChoices(shuffled);
-  };
+
 
   // Effet pour gérer les changements cours ↔ exercices - reset pirate intro
   useEffect(() => {
@@ -853,12 +840,7 @@ export default function DizainesUnitesCP() {
     stopAllVocalsAndAnimations();
   }, [showExercises]);
 
-  // Effet pour mélanger les choix quand on change d'exercice
-  useEffect(() => {
-    if (exercises.length > 0) {
-      initializeShuffledChoices();
-    }
-  }, [currentExercise]);
+
 
   // Effet pour arrêter l'audio lors de la navigation (bouton back)
   useEffect(() => {
@@ -927,37 +909,7 @@ export default function DizainesUnitesCP() {
     }
   };
 
-  const handleAnswerClick = (answer: string) => {
-    setUserAnswer(answer);
-    const correct = answer === exercises[currentExercise].correctAnswer;
-    setIsCorrect(correct);
-    
-    if (correct && !answeredCorrectly.has(currentExercise)) {
-      setScore(prevScore => prevScore + 1);
-      setAnsweredCorrectly(prev => {
-        const newSet = new Set(prev);
-        newSet.add(currentExercise);
-        return newSet;
-      });
-    }
 
-    // Si bonne réponse → passage automatique après 1.5s
-    if (correct) {
-      setTimeout(() => {
-        if (currentExercise + 1 < exercises.length) {
-          setCurrentExercise(currentExercise + 1);
-          setUserAnswer('');
-          setIsCorrect(null);
-      } else {
-          // Dernier exercice terminé
-          const finalScoreValue = score + (!answeredCorrectly.has(currentExercise) ? 1 : 0);
-          setFinalScore(finalScoreValue);
-          setShowCompletionModal(true);
-          saveProgress(finalScoreValue, exercises.length);
-        }
-      }, 1500);
-    }
-  };
 
   const nextExercise = () => {
     stopAllVocalsAndAnimations(); // Stop any ongoing audio before moving to next
