@@ -62,7 +62,6 @@ export default function DizainesCP() {
   const [answeredCorrectly, setAnsweredCorrectly] = useState<Set<number>>(new Set());
   const [showCompletionModal, setShowCompletionModal] = useState(false);
   const [finalScore, setFinalScore] = useState(0);
-  const [shuffledChoices, setShuffledChoices] = useState<string[]>([]);
   const [animationStep, setAnimationStep] = useState(0);
   
   // States pour l'animation de décomposition dizaines/unités
@@ -86,6 +85,7 @@ export default function DizainesCP() {
   const [isExplainingError, setIsExplainingError] = useState(false);
   const [pirateIntroStarted, setPirateIntroStarted] = useState(false);
   const [showExercisesList, setShowExercisesList] = useState(false);
+  const [highlightDigit, setHighlightDigit] = useState<'left' | 'right' | null>(null);
 
   // Refs pour contrôler les vocaux et animations
   const stopSignalRef = useRef(false);
@@ -119,29 +119,7 @@ export default function DizainesCP() {
     "Superbe"
   ];
 
-  // Fonction pour mélanger un tableau
-  const shuffleArray = (array: string[]) => {
-    const shuffled = [...array];
-    for (let i = shuffled.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-    }
-    return shuffled;
-  };
-
-  // Initialiser les choix mélangés pour l'exercice actuel
-  const initializeShuffledChoices = () => {
-    const currentChoices = exercises[currentExercise].choices;
-    const shuffled = shuffleArray(currentChoices);
-    setShuffledChoices(shuffled);
-  };
-
-  // Effet pour mélanger les choix quand on change d'exercice
-  useEffect(() => {
-    if (exercises.length > 0) {
-      initializeShuffledChoices();
-    }
-  }, [currentExercise]);
+  // Plus besoin de mélanger les choix pour la saisie libre
 
   // Réinitialiser l'animation quand on change de dizaine
   useEffect(() => {
@@ -170,13 +148,12 @@ export default function DizainesCP() {
     }
   }, [showExercises]);
 
-  // Effet pour réinitialiser les états sur changement d'exercice
+  // Effet pour reset les états d'erreur lors d'un nouvel exercice
   useEffect(() => {
     setUserAnswer('');
     setIsCorrect(null);
     setIsExplainingError(false);
-    setShowNextButton(false);
-    setHighlightNextButton(false);
+    setHighlightDigit(null);
   }, [currentExercise]);
 
   // Effet pour détecter la navigation et stopper les vocaux
@@ -271,22 +248,29 @@ export default function DizainesCP() {
     
     try {
       const questionText = exercise.question.toLowerCase();
-      if (questionText.includes('combien de groupes de 10') || questionText.includes('combien de dizaines')) {
+      if (questionText.includes('combien de dizaines')) {
         const match = exercise.question.match(/(\d+)/);
         if (match) {
           const number = match[1];
           if (number.length === 2) {
             const dizaines = number[0];
-            await playAudio(`Pour trouver combien de boîtes de 10 dans ${number}, je décompose le nombre !`);
+            await playAudio(`Pour trouver combien de dizaines dans ${number}, je décompose le nombre !`);
             if (stopSignalRef.current) return;
             
             await playAudio(`${number} se décompose en ${dizaines} dizaines et ${number[1]} unités`);
             if (stopSignalRef.current) return;
             
-            await playAudio(`Le chiffre des dizaines est ${dizaines}, donc il y a ${dizaines} boîtes de 10 !`);
+            await playAudio(`Le chiffre des dizaines est ${dizaines}, donc il y a ${dizaines} dizaines !`);
+            if (stopSignalRef.current) return;
+          } else if (number === '100') {
+            await playAudio(`Pour 100, c'est spécial ! 100 égale 10 dizaines !`);
             if (stopSignalRef.current) return;
           }
         }
+      } else if (questionText.includes('que vaut') || questionText.includes('dizaines =')) {
+        const dizainesCount = parseInt(exercise.correctAnswer) / 10;
+        await playAudio(`${dizainesCount} dizaine${dizainesCount > 1 ? 's' : ''} égale ${dizainesCount} fois 10, soit ${exercise.correctAnswer} !`);
+        if (stopSignalRef.current) return;
       }
     } catch (error) {
       console.error('Erreur dans speakDecomposition:', error);
@@ -370,18 +354,18 @@ export default function DizainesCP() {
     { value: '80', label: '80', reading: 'quatre-vingts', visual: '📦📦📦📦📦📦📦📦', groups: 8 }
   ];
 
-  // Exercices sur les dizaines - positions des bonnes réponses variées
+  // Exercices sur les dizaines - avec saisie libre
   const exercises = [
-    { question: 'Combien de groupes de 10 dans 40 ?', visual: '📦📦📦📦', correctAnswer: '4', choices: ['4', '3', '5'] },
-    { question: 'Que vaut 3 groupes de 10 ?', visual: '📦📦📦', correctAnswer: '30', choices: ['40', '20', '30'] },
-    { question: 'Combien de dizaines dans 70 ?', visual: '📦📦📦📦📦📦📦', correctAnswer: '7', choices: ['6', '8', '7'] },
-    { question: '2 dizaines = ?', visual: '📦📦', correctAnswer: '20', choices: ['10', '30', '20'] },
-    { question: 'Combien de groupes de 10 dans 60 ?', visual: '📦📦📦📦📦📦', correctAnswer: '6', choices: ['5', '6', '7'] },
-    { question: 'Que vaut 5 groupes de 10 ?', visual: '📦📦📦📦📦', correctAnswer: '50', choices: ['50', '40', '60'] },
-    { question: '8 dizaines = ?', visual: '📦📦📦📦📦📦📦📦', correctAnswer: '80', choices: ['70', '90', '80'] },
-    { question: 'Combien de dizaines dans 90 ?', visual: '📦📦📦📦📦📦📦📦📦', correctAnswer: '9', choices: ['8', '9', '10'] },
-    { question: 'Que vaut 1 groupe de 10 ?', visual: '📦', correctAnswer: '10', choices: ['10', '1', '20'] },
-    { question: 'Combien de groupes de 10 dans 100 ?', visual: '📦📦📦📦📦📦📦📦📦📦', correctAnswer: '10', choices: ['9', '10', '11'] }
+    { question: 'Combien de dizaines dans 40 ?', visual: '', correctAnswer: '4' },
+    { question: 'Que vaut 3 dizaines ?', visual: '', correctAnswer: '30' },
+    { question: 'Combien de dizaines dans 70 ?', visual: '', correctAnswer: '7' },
+    { question: '2 dizaines = ?', visual: '', correctAnswer: '20' },
+    { question: 'Combien de dizaines dans 60 ?', visual: '', correctAnswer: '6' },
+    { question: 'Que vaut 5 dizaines ?', visual: '', correctAnswer: '50' },
+    { question: '8 dizaines = ?', visual: '', correctAnswer: '80' },
+    { question: 'Combien de dizaines dans 90 ?', visual: '', correctAnswer: '9' },
+    { question: 'Que vaut 1 dizaine ?', visual: '', correctAnswer: '10' },
+    { question: 'Combien de dizaines dans 100 ?', visual: '', correctAnswer: '10' }
   ];
 
   // Fonction pour arrêter tous les vocaux et animations
@@ -417,6 +401,7 @@ export default function DizainesCP() {
     setIsExplainingError(false);
     setPirateIntroStarted(false);
     setShowExercisesList(false);
+    setHighlightDigit(null);
     
     // Double-cancel après un petit délai pour être vraiment sûr
     setTimeout(() => {
@@ -509,23 +494,27 @@ export default function DizainesCP() {
       
       if (stopSignalRef.current) return;
       
-      await playAudio("Dès que tu as la réponse, tu peux cliquer sur la bonne réponse");
+      await playAudio("Dès que tu as trouvé combien de dizaines, tu peux l'écrire dans la case");
       if (stopSignalRef.current) return;
       
-      // Mettre en évidence la zone des réponses
-      setHighlightedElement('answer-choices');
+      // Mettre beaucoup en évidence la zone de réponse
+      setHighlightedElement('answer-input');
       await new Promise(resolve => setTimeout(resolve, 2000));
       setHighlightedElement(null);
       
       if (stopSignalRef.current) return;
       
-      await playAudio("Si tu te trompes, je t'expliquerai la bonne réponse !");
+      await playAudio("et appuie ensuite sur valider");
       if (stopSignalRef.current) return;
       
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Animation sur le bouton valider
+      setHighlightedElement('validate-button');
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      setHighlightedElement(null);
+      
       if (stopSignalRef.current) return;
       
-      await playAudio("En avant toutes pour les dizaines !");
+      await playAudio("en cas de mauvaise réponse, je serai là pour t'aider. En avant toutes !");
       if (stopSignalRef.current) return;
       
     } catch (error) {
@@ -592,72 +581,71 @@ export default function DizainesCP() {
       await new Promise(resolve => setTimeout(resolve, 800));
       if (stopSignalRef.current) return;
       
+      // Extraire le nombre de la question
       const exercise = exercises[currentExercise];
-      await playAudio(`La bonne réponse était : ${exercise.correctAnswer} !`);
-      if (stopSignalRef.current) return;
+      const match = exercise.question.match(/(\d+)/);
+      const number = match ? match[1] : '';
       
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      if (stopSignalRef.current) return;
-      
-      // Explication de la méthode de décomposition
+      // Adapter la réponse selon le type de question
       const questionText = exercise.question.toLowerCase();
-      if (questionText.includes('combien de groupes de 10') || questionText.includes('combien de dizaines')) {
-        const match = questionText.match(/(\d+)/);
-        if (match) {
-          const number = match[1];
-          if (number.length === 2) {
-            const dizaines = number[0];
-            await playAudio(`Pour trouver combien de boîtes de 10 dans ${number}, je regarde le chiffre des dizaines : c'est ${dizaines} !`);
-            if (stopSignalRef.current) return;
-          }
-        }
-      }
+      const responseText = questionText.includes('combien de dizaines') 
+        ? `La bonne réponse est ${exercise.correctAnswer} dizaines !`
+        : `La bonne réponse est ${exercise.correctAnswer} !`;
+      
+      await playAudio(responseText); 
+      if (stopSignalRef.current) return;
       
       await new Promise(resolve => setTimeout(resolve, 800));
       if (stopSignalRef.current) return;
       
-      await playAudio("Appuie sur le bouton Suivant pour continuer ton aventure !");
+      if (number && number.length >= 2) {
+        await playAudio(`Le nombre ${number} se décompose en ${number[0]} dizaines et ${number[1] || '0'} unités !`);
+        if (stopSignalRef.current) return;
+        
+        await new Promise(resolve => setTimeout(resolve, 800));
+        if (stopSignalRef.current) return;
+        
+        // Animation positionnelle : chiffre de gauche = dizaines
+        await playAudio("Le chiffre de gauche indique les dizaines");
+        if (stopSignalRef.current) return;
+        
+        setHighlightDigit('left');
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        if (stopSignalRef.current) return;
+        
+        // Animation positionnelle : chiffre de droite = unités  
+        await playAudio("Le chiffre de droite indique les unités");
+        if (stopSignalRef.current) return;
+        
+        setHighlightDigit('right');
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        setHighlightDigit(null);
+        if (stopSignalRef.current) return;
+        
+        await new Promise(resolve => setTimeout(resolve, 500));
+        if (stopSignalRef.current) return;
+      }
+      
+      await playAudio("Maintenant appuie sur suivant !");
       if (stopSignalRef.current) return;
       
-      // Scroll vers le bouton suivant après l'explication - optimisé pour mobile
+      // Illuminer le bouton suivant
+      setHighlightedElement('next-exercise-button');
+      
+      await new Promise(resolve => setTimeout(resolve, 300)); // Laisser l'animation se voir
+      if (stopSignalRef.current) return;
+      
+      // Scroll automatique vers le bouton "Suivant" 
       setTimeout(() => {
         const nextButton = document.getElementById('next-exercise-button');
         if (nextButton) {
-          const isMobile = window.innerWidth < 768; // sm breakpoint
-          
-          if (isMobile) {
-            // Pour mobile: scroll pour que le bouton apparaisse en bas de l'écran
-            nextButton.scrollIntoView({ 
-              behavior: 'smooth', 
-              block: 'end', // En bas de l'écran
-              inline: 'nearest' 
-            });
-            
-            // Petit délai supplémentaire puis second scroll pour s'assurer de la visibilité
-            setTimeout(() => {
-              window.scrollTo({
-                top: document.body.scrollHeight,
-                behavior: 'smooth'
-              });
-            }, 600);
-          } else {
-            // Pour desktop: scroll normal
-            nextButton.scrollIntoView({ 
-              behavior: 'smooth', 
-              block: 'center',
-              inline: 'nearest' 
-            });
-          }
-          
-          // Animation d'attention sur le bouton
-          setTimeout(() => {
-            nextButton.classList.add('animate-bounce');
-            setTimeout(() => {
-              nextButton.classList.remove('animate-bounce');
-            }, 2000);
-          }, isMobile ? 1000 : 500);
+          nextButton.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'center',
+            inline: 'nearest'
+          });
         }
-      }, 1000); // Plus de délai pour que tout l'audio se termine
+      }, 500); // Petit délai pour que l'highlight soit visible
       
     } catch (error) {
       console.error('Erreur dans explainWrongAnswer:', error);
@@ -668,9 +656,45 @@ export default function DizainesCP() {
     }
   };
 
-  const handleAnswerClick = async (answer: string) => {
-    setUserAnswer(answer);
-    const correct = answer === exercises[currentExercise].correctAnswer;
+  // Fonction pour valider la réponse saisie
+  const handleAnswerSubmit = async () => {
+    if (!userAnswer.trim()) return; // Ne pas valider si vide
+    
+    // Vérifier si la réponse est correcte (en acceptant différentes variantes)
+    const userAnswerCleaned = userAnswer.trim().toLowerCase();
+    const correctAnswer = exercises[currentExercise].correctAnswer;
+    
+    // Accepter la réponse numérique exacte
+    let correct = userAnswerCleaned === correctAnswer.toLowerCase();
+    
+    // Pour certains nombres, accepter aussi la forme écrite
+    const numberWords: { [key: string]: string[] } = {
+      '1': ['1', 'un', 'une'],
+      '2': ['2', 'deux'],
+      '3': ['3', 'trois'],
+      '4': ['4', 'quatre'],
+      '5': ['5', 'cinq'],
+      '6': ['6', 'six'],
+      '7': ['7', 'sept'],
+      '8': ['8', 'huit'],
+      '9': ['9', 'neuf'],
+      '10': ['10', 'dix'],
+      '20': ['20', 'vingt'],
+      '30': ['30', 'trente'],
+      '40': ['40', 'quarante'],
+      '50': ['50', 'cinquante'],
+      '60': ['60', 'soixante'],
+      '70': ['70', 'soixante-dix'],
+      '80': ['80', 'quatre-vingts', 'quatre vingts'],
+      '90': ['90', 'quatre-vingt-dix', 'quatre vingt dix'],
+      '100': ['100', 'cent']
+    };
+    
+    // Vérifier si une des variantes correspond
+    if (numberWords[correctAnswer]) {
+      correct = numberWords[correctAnswer].includes(userAnswerCleaned);
+    }
+    
     setIsCorrect(correct);
     
     if (correct && !answeredCorrectly.has(currentExercise)) {
@@ -709,14 +733,16 @@ export default function DizainesCP() {
   const nextExercise = () => {
     stopAllVocalsAndAnimations(); // Stop any ongoing audio before moving to next
     
+    setIsExplainingError(false); // Reset Sam's error state
+    setHighlightedElement(null);
+    setShowNextButton(false);
+    setHighlightNextButton(false);
+    setHighlightDigit(null);
+    
     if (currentExercise < exercises.length - 1) {
       setCurrentExercise(currentExercise + 1);
       setUserAnswer('');
       setIsCorrect(null);
-      // Réinitialiser les états Sam
-      setIsExplainingError(false);
-      setShowNextButton(false);
-      setHighlightNextButton(false);
     } else {
       setFinalScore(score);
       setShowCompletionModal(true);
@@ -725,7 +751,7 @@ export default function DizainesCP() {
   };
 
   const resetAll = () => {
-    stopAllVocalsAndAnimations(); // Stop any ongoing audio before reset
+    stopAllVocalsAndAnimations(); // Arrêter tous les audios avant reset
     
     setCurrentExercise(0);
     setUserAnswer('');
@@ -735,19 +761,19 @@ export default function DizainesCP() {
     setShowCompletionModal(false);
     setFinalScore(0);
     
-    // Réinitialiser les états Sam
-    setSamSizeExpanded(false);
-    setExerciseStarted(false);
-    setShowNextButton(false);
-    setHighlightNextButton(false);
+    // Reset des états Sam le Pirate
     setIsExplainingError(false);
     setPirateIntroStarted(false);
     setShowExercisesList(false);
+    setExerciseStarted(false);
+    setShowNextButton(false);
+    setHighlightNextButton(false);
+    setHighlightDigit(null);
   };
 
   // JSX pour l'introduction de Sam le Pirate dans les exercices
   const SamPirateIntroJSX = () => (
-    <div className="flex justify-center p-1 mt-1 sm:mt-2">
+    <div className="flex justify-center p-1 mt-0 sm:mt-2">
       <div className="flex items-center gap-2">
         {/* Image de Sam le Pirate */}
         <div className={`relative flex-shrink-0 rounded-full bg-gradient-to-br from-blue-100 to-cyan-100 border-2 border-blue-200 shadow-md transition-all duration-300 ${
@@ -843,24 +869,27 @@ export default function DizainesCP() {
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-100">
       <div className="max-w-6xl mx-auto px-4 py-8">
         {/* Header */}
-        <div className="mb-8">
+        <div className={showExercises ? 'mb-3 sm:mb-6' : 'mb-8'}>
           <Link href="/chapitre/cp-nombres-jusqu-100" className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors mb-4">
             <ArrowLeft className="w-4 h-4" />
             <span>Retour au chapitre</span>
           </Link>
           
-          <div className="bg-white rounded-xl p-6 shadow-lg text-center">
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">
+          <div className="bg-white rounded-xl shadow-lg text-center" style={{
+            padding: showExercises ? 'clamp(0.5rem, 2vw, 1rem) clamp(0.5rem, 2vw, 1rem)' : '1.5rem'
+          }}>
+            <h1 className={`font-bold text-gray-900 ${
+              showExercises 
+                ? 'text-lg sm:text-2xl lg:text-3xl mb-1 sm:mb-2' 
+                : 'text-4xl mb-4'
+            }`}>
               📦 Les dizaines jusqu'à 100
             </h1>
-            <p className="text-lg text-gray-600">
-              Découvre les groupes de 10 : 10, 20, 30... jusqu'à 100 !
-            </p>
           </div>
         </div>
 
         {/* Navigation entre cours et exercices */}
-        <div className="flex justify-center mb-8">
+        <div className={`flex justify-center ${showExercises ? 'mb-3 sm:mb-6' : 'mb-8'}`}>
           <div className="bg-white rounded-lg p-1 shadow-md flex">
             <button
               onClick={() => setShowExercises(false)}
@@ -1288,266 +1317,232 @@ export default function DizainesCP() {
             </div>
           </div>
         ) : (
-          /* EXERCICES */
-          <div className="space-y-8">
+          /* EXERCICES - RESPONSIVE MOBILE OPTIMISÉ (HISTORIQUE) */
+          <div className="space-y-3 sm:space-y-6">
             {/* Introduction de Sam le Pirate - toujours visible */}
             {SamPirateIntroJSX()}
-            {/* Header exercices */}
-            <div className="bg-white rounded-xl p-6 shadow-lg">
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-2xl font-bold text-gray-900">
-                  ✏️ Exercice {currentExercise + 1} sur {exercises.length}
+
+            {/* Header exercices - caché sur mobile */}
+            <div className="bg-white rounded-xl p-2 shadow-lg mt-4 sm:mt-8 hidden sm:block">
+              <div className="flex justify-between items-center mb-1">
+                <h2 className="text-lg font-bold text-gray-900">
+                  Exercice {currentExercise + 1}
                 </h2>
-                <button
-                  onClick={resetAll}
-                  className="bg-gray-500 text-white px-4 py-2 rounded-lg font-bold hover:bg-gray-600 transition-colors"
-                >
-                  <RotateCcw className="inline w-4 h-4 mr-2" />
-                  Recommencer
-                </button>
+                
+                <div className="flex items-center gap-2">
+                  <div className="text-sm font-bold text-green-600">
+                    Score : {score}/{exercises.length}
+                  </div>
+                  <button
+                    onClick={resetAll}
+                    className="bg-gray-500 text-white px-3 py-1 rounded-lg font-bold hover:bg-gray-600 transition-colors text-xs"
+                  >
+                    <RotateCcw className="inline w-3 h-3 mr-1" />
+                    Reset
+                  </button>
+                </div>
               </div>
               
               {/* Barre de progression */}
-              <div className="w-full bg-gray-200 rounded-full h-4 mb-3">
+              <div className="w-full bg-gray-200 rounded-full h-3">
                 <div 
-                  className="bg-green-500 h-4 rounded-full transition-all duration-500"
+                  className="bg-green-500 h-3 rounded-full transition-all duration-500"
                   style={{ width: `${((currentExercise + 1) / exercises.length) * 100}%` }}
                 ></div>
               </div>
               
-              {/* Score sous la barre */}
-              <div className="text-center">
-                <div className="text-xl font-bold text-green-600">
-                  Score : {score}/{exercises.length}
-                </div>
+            </div>
+
+            {/* Indicateur de progression mobile - sticky sur la page */}
+            <div className="sticky top-0 bg-white z-10 px-3 py-2 border-b border-gray-200 sm:hidden mb-2">
+              <div className="flex justify-between items-center text-sm">
+                <span className="font-bold text-gray-700">Exercice {currentExercise + 1}/{exercises.length}</span>
+                <span className="font-bold text-green-600">Score : {score}/{exercises.length}</span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
+                <div 
+                  className="bg-green-500 h-2 rounded-full transition-all duration-500"
+                  style={{ width: `${((currentExercise + 1) / exercises.length) * 100}%` }}
+                ></div>
               </div>
             </div>
 
-            {/* Question */}
-            <div className="bg-white rounded-xl p-3 sm:p-6 md:p-8 shadow-lg text-center">
-              <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-2 sm:mb-6 md:mb-8 gap-2 sm:gap-4">
+            {/* Question - LAYOUT NORMAL AVEC SCROLL DE PAGE */}
+            <div className="bg-white rounded-xl shadow-lg text-center p-4 sm:p-6 md:p-8 mt-2 sm:mt-8">
+              <div className="space-y-3 sm:space-y-6 md:space-y-8">
+              <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-2 sm:mb-6 md:mb-8 gap-3 sm:gap-4">
                 <h3 className="text-base sm:text-xl md:text-2xl font-bold text-gray-900 flex-1">
-                {exercises[currentExercise].question}
-              </h3>
+                  {exercises[currentExercise]?.question || "Combien de dizaines ?"}
+                </h3>
                 {ListenQuestionButtonJSX()}
               </div>
               
-              {/* Affichage visuel de la question */}
-              <div className="bg-green-50 rounded-lg p-2 sm:p-4 md:p-8 mb-3 sm:mb-6 md:mb-8">
-                <div className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl mb-3 sm:mb-4 md:mb-6">
-                  {exercises[currentExercise].visual}
-                </div>
-              </div>
-              
-              {/* Choix multiples avec gros boutons */}
-              <div 
-                id="answer-choices"
-                className={`grid grid-cols-1 md:grid-cols-3 gap-2 sm:gap-3 md:gap-4 max-w-sm sm:max-w-md mx-auto mb-4 sm:mb-6 md:mb-8 transition-all duration-500 ${
-                  highlightedElement === 'answer-choices' ? 'ring-8 ring-yellow-400 bg-yellow-50 rounded-lg p-4 scale-105 shadow-2xl animate-pulse' : ''
-                }`}
-              >
-                {shuffledChoices.map((choice) => (
-                  <button
-                    key={choice}
-                    onClick={() => handleAnswerClick(choice)}
-                    disabled={isCorrect !== null}
-                    className={`p-3 sm:p-4 md:p-6 rounded-lg font-bold text-xl sm:text-2xl md:text-3xl lg:text-4xl transition-all ${
-                      userAnswer === choice
-                        ? isCorrect === true
-                          ? 'bg-green-500 text-white'
-                          : isCorrect === false
-                            ? 'bg-red-500 text-white'
-                            : 'bg-blue-500 text-white'
-                        : exercises[currentExercise].correctAnswer === choice && isCorrect === false
-                          ? 'bg-green-200 text-green-800 border-2 border-green-500'
-                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200 disabled:opacity-50'
-                    } disabled:cursor-not-allowed`}
-                  >
-                    {choice}
-                  </button>
-                ))}
-              </div>
-              
-              {/* Résultat */}
-              {isCorrect !== null && (
-                <div className={`p-6 rounded-lg mb-6 ${
-                  isCorrect ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                }`}>
-                  <div className="flex items-center justify-center space-x-3">
-                    {isCorrect ? (
-                      <>
-                        <CheckCircle className="w-8 h-8" />
-                        <span className="font-bold text-xl">
-                          Parfait ! C'est bien {exercises[currentExercise].correctAnswer} !
-                        </span>
-                      </>
-                    ) : (
-                      <>
-                        <XCircle className="w-8 h-8" />
-                        <span className="font-bold text-xl">
-                          Pas tout à fait... C'était {exercises[currentExercise].correctAnswer} !
-                        </span>
-                      </>
-                    )}
-                  </div>
-                </div>
-              )}
-
-              {/* Feedback détaillé pour les réponses incorrectes */}
-              {!isCorrect && isCorrect !== null && (
-                <div className="bg-white rounded-lg p-6 border-2 border-blue-300 mb-6">
-                  <h4 className="text-lg font-bold mb-4 text-blue-800 text-center">
-                    🎯 Explication avec la méthode !
-                  </h4>
-                  <div className="space-y-6">
-                    {/* Explication visuelle avec décomposition pour les questions sur les groupes de 10 */}
+              {/* Affichage du nombre avec explication si erreur */}
+              <div className={`bg-white border-2 rounded-lg p-3 sm:p-6 md:p-8 mb-3 sm:mb-6 transition-all duration-500 ${
+                isExplainingError ? 'border-yellow-400 bg-yellow-50 ring-4 ring-yellow-300' : 'border-green-200'
+              }`}>
+                <div className="py-3 sm:py-8 md:py-10">
+                  {/* Affichage du nombre avec animation positionnelle */}
+                  <div className="mb-4">
                     {(() => {
-                      const exercise = exercises[currentExercise];
-                      const questionText = exercise.question.toLowerCase();
-                      const hasNumberToDecompose = questionText.includes('combien de groupes de 10') || questionText.includes('combien de dizaines');
+                      // Extraire le nombre de la question
+                      const match = exercises[currentExercise]?.question.match(/(\d+)/);
+                      const numberStr = match ? match[1] : "";
                       
-                      if (hasNumberToDecompose) {
-                        const match = exercise.question.match(/(\d+)/);
-                        const number = match ? match[1] : '';
-                        
-                        if (number.length === 2) {
-                          const dizaines = number[0];
-                          const unites = number[1];
-                          
-                          return (
-                            <div className="space-y-4">
-                              {/* Titre de la méthode */}
-                              <div className="text-center">
-                                <p className="text-xl font-bold text-purple-800 mb-2">
-                                  💡 Méthode : Je décompose {number} en dizaines et unités
-                                </p>
-                              </div>
-                              
-                              {/* Tableau de décomposition */}
-                              <div className="flex justify-center">
-                                <div className="bg-gradient-to-br from-purple-50 to-blue-50 border-4 border-purple-300 rounded-xl p-6 shadow-lg">
-                                  <div className="grid grid-cols-2 gap-8 text-center">
-                                    {/* Colonne Dizaines */}
-                                    <div className="space-y-4">
-                                      <div className="text-lg font-bold p-3 rounded-lg bg-blue-100 text-blue-800">
-                                        DIZAINES
-                                      </div>
-                                      <div className="text-5xl font-bold border-4 border-dashed border-blue-300 rounded-lg p-4 bg-blue-50 animate-pulse">
-                                        {dizaines}
-                                      </div>
-                                    </div>
-
-                                    {/* Colonne Unités */}
-                                    <div className="space-y-4">
-                                      <div className="text-lg font-bold p-3 rounded-lg bg-green-100 text-green-800">
-                                        UNITÉS
-                                      </div>
-                                      <div className="text-5xl font-bold border-4 border-dashed border-green-300 rounded-lg p-4 bg-green-50">
-                                        {unites}
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                              
-                              {/* Explication */}
-                              <div className="text-center">
-                                <div className="bg-yellow-100 border-4 border-yellow-400 rounded-xl p-4 max-w-xl mx-auto">
-                                  <p className="text-xl font-bold text-yellow-800 mb-2">
-                                    Le chiffre des dizaines est <span className="text-3xl text-red-600">{dizaines}</span>
-                                  </p>
-                                  <p className="text-lg text-yellow-700">
-                                    Donc il y a <strong className="text-2xl text-red-600">{dizaines}</strong> boîtes de 10 !
-                                  </p>
-                                </div>
-                              </div>
-
-                              {/* Vérification visuelle */}
-                              <div className="text-center">
-                                <div className="bg-blue-50 rounded-lg p-4">
-                                  <div className="text-3xl mb-4">
-                                    {exercise.visual}
-                                  </div>
-                                  <p className="text-lg text-blue-700 font-semibold">
-                                    Compte les boîtes 📦 : il y en a bien {exercise.correctAnswer} !
-                                  </p>
-                                </div>
-                              </div>
+                      if (numberStr && numberStr.length >= 2) {
+                        return (
+                          <div className="flex justify-center items-center gap-2">
+                            {/* Chiffre de gauche (dizaines) */}
+                            <div className={`text-6xl sm:text-8xl font-bold transition-all duration-500 ${
+                              highlightDigit === 'left' 
+                                ? 'text-blue-600 bg-blue-100 ring-4 ring-blue-400 rounded-lg px-4 py-2 scale-110 shadow-lg' 
+                                : 'text-green-600'
+                            }`}>
+                              {numberStr[0]}
                             </div>
-                          );
-                        }
-                      }
-                      
-                      // Fallback pour les autres types d'exercices
-                      return (
-                        <div className="bg-blue-50 rounded-lg p-4">
-                          <div className="text-center">
-                            <div className="text-3xl mb-4">
-                              {exercise.visual}
+                            {/* Chiffre de droite (unités) */}
+                            <div className={`text-6xl sm:text-8xl font-bold transition-all duration-500 ${
+                              highlightDigit === 'right' 
+                                ? 'text-red-600 bg-red-100 ring-4 ring-red-400 rounded-lg px-4 py-2 scale-110 shadow-lg' 
+                                : 'text-green-600'
+                            }`}>
+                              {numberStr[1] || '0'}
                             </div>
-                            <div className="text-2xl font-bold text-blue-600 mb-2">
-                              {(() => {
-                                if (exercise.question.includes('Que vaut') || exercise.question.includes('dizaines =')) {
-                                  const groupCount = parseInt(exercise.correctAnswer) / 10;
-                                  return `${groupCount} dizaines = ${exercise.correctAnswer}`;
-                                }
-                                return `Réponse : ${exercise.correctAnswer}`;
-                              })()}
-                            </div>
-                            <p className="text-lg text-blue-700 font-semibold">
-                              {(() => {
-                                if (exercise.question.includes('Que vaut') || exercise.question.includes('dizaines =')) {
-                                  const groupCount = parseInt(exercise.correctAnswer) / 10;
-                                  return `${groupCount} × 10 = ${exercise.correctAnswer}`;
-                                }
-                                return `La réponse est ${exercise.correctAnswer} !`;
-                              })()}
-                            </p>
                           </div>
-                        </div>
-                      );
+                        );
+                      } else if (numberStr) {
+                        return (
+                          <div className="text-6xl sm:text-8xl font-bold text-green-600">
+                            {numberStr}
+                          </div>
+                        );
+                      }
+                      return null;
                     })()}
                     
-                    <div className="text-center">
-                      <button 
-                        onClick={() => speakDecomposition(exercises[currentExercise])}
-                        className="bg-blue-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-blue-600 transition-colors inline-flex items-center space-x-2"
-                      >
-                        <Volume2 className="w-4 h-4" />
-                        <span>Écouter la décomposition</span>
-                      </button>
-                    </div>
-                    
-                    <div className="bg-gradient-to-r from-purple-100 to-pink-100 rounded-lg p-3 text-center">
-                      <p className="text-sm font-semibold text-purple-800">
-                        Maintenant tu sais ! {(() => {
-                          const exercise = exercises[currentExercise];
-                          if (exercise.question.includes('Combien de groupes') || exercise.question.includes('Combien de dizaines')) {
-                            const groupCount = exercise.visual.split('📦').length - 1;
-                            return `${groupCount} groupes de 10 font ${groupCount * 10} !`;
-                          } else {
-                            const groupCount = parseInt(exercise.correctAnswer) / 10;
-                            return `${groupCount} dizaines font ${exercise.correctAnswer} !`;
+                    {/* Étiquettes d'explication pendant l'animation */}
+                    {highlightDigit && (
+                      <div className="flex justify-center mt-4">
+                        <div className="grid grid-cols-2 gap-8 max-w-md">
+                          <div className={`text-center transition-all duration-500 ${
+                            highlightDigit === 'left' ? 'opacity-100' : 'opacity-30'
+                          }`}>
+                            <div className="text-blue-800 font-bold text-lg">↑ Chiffre de GAUCHE</div>
+                            <div className="text-blue-600 font-semibold">= DIZAINES</div>
+                          </div>
+                          <div className={`text-center transition-all duration-500 ${
+                            highlightDigit === 'right' ? 'opacity-100' : 'opacity-30'
+                          }`}>
+                            <div className="text-red-800 font-bold text-lg">↑ Chiffre de DROITE</div>
+                            <div className="text-red-600 font-semibold">= UNITÉS</div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                  
+                  <p className="text-sm sm:text-lg text-gray-700 font-semibold mb-6 hidden sm:block">
+                    Trouve le nombre de dizaines !
+                  </p>
+                  
+                  {/* Message d'explication avec la bonne réponse en rouge */}
+                  {isExplainingError && (
+                    <div className="bg-red-100 border-2 border-red-400 rounded-lg p-4 mb-4">
+                      <div className="text-lg font-bold text-red-800 mb-2">
+                        🏴‍☠️ Explication de Sam le Pirate
+                      </div>
+                      <div className="text-red-700 text-lg">
+                        La bonne réponse est <span className="font-bold text-xl text-red-800">{exercises[currentExercise]?.correctAnswer}{(() => {
+                          const questionText = exercises[currentExercise]?.question.toLowerCase() || "";
+                          // Si la question demande "Combien de dizaines", on ajoute "dizaines"
+                          // Si la question demande "X dizaines = ?", on n'ajoute rien
+                          return questionText.includes('combien de dizaines') ? ' dizaines' : '';
+                        })()}</span> !
+                      </div>
+                      <div className="text-sm text-red-600 mt-2">
+                        {(() => {
+                          const match = exercises[currentExercise]?.question.match(/(\d+)/);
+                          const number = match ? match[1] : "";
+                          if (number && number.length >= 2) {
+                            return `Le nombre ${number} a ${number[0]} dizaines et ${number[1] || '0'} unités !`;
                           }
+                          return `La réponse est ${exercises[currentExercise]?.correctAnswer} !`;
                         })()}
-                      </p>
+                      </div>
                     </div>
+                  )}
+                </div>
+              </div>
+              
+              {/* Champ de réponse - Dizaines uniquement */}
+              <div className="mb-4 sm:mb-12">
+                <div className="max-w-sm mx-auto">
+                  <div className={`transition-all duration-500 ${
+                    highlightedElement === 'answer-input' ? 'ring-8 ring-yellow-400 bg-yellow-100 rounded-lg p-4 scale-110 shadow-2xl animate-pulse' : ''
+                  }`}>
+                    <label className="block text-sm font-bold text-gray-700 mb-2">Ta réponse :</label>
+                    <input
+                      id="dizaines-input"
+                      type="text"
+                      value={userAnswer}
+                      onChange={(e) => setUserAnswer(e.target.value)}
+                      onKeyPress={(e) => {
+                        if (e.key === 'Enter' && userAnswer.trim() && isCorrect === null) {
+                          handleAnswerSubmit();
+                        }
+                      }}
+                      onClick={() => stopAllVocalsAndAnimations()}
+                      disabled={isCorrect !== null || isPlayingVocal}
+                      className="w-full px-4 py-3 text-xl font-bold text-center border-4 border-gray-300 rounded-xl focus:border-green-500 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
+                      placeholder="?"
+                    />
+                    <p className="text-xs text-gray-500 mt-1 text-center">
+                      Tu peux écrire en chiffres (4) ou en lettres (quatre)
+                    </p>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Boutons Valider et Suivant */}
+              <div className="flex gap-4 justify-center mt-6">
+                <button
+                  id="validate-button"
+                  onClick={handleAnswerSubmit}
+                  disabled={!userAnswer.trim() || isCorrect !== null || isPlayingVocal}
+                  className={`bg-green-500 text-white px-6 sm:px-8 py-2 sm:py-3 rounded-lg font-bold text-lg sm:text-xl hover:bg-green-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
+                    highlightedElement === 'validate-button' ? 'ring-8 ring-yellow-400 bg-yellow-500 animate-bounce scale-125 shadow-2xl border-4 border-orange-500' : ''
+                  }`}
+                >
+                  Valider
+                </button>
+
+                <button
+                  id="next-exercise-button"
+                  onClick={nextExercise}
+                  disabled={(!isExplainingError && isCorrect !== false) || isPlayingVocal}
+                  className={`bg-blue-500 text-white px-6 sm:px-8 py-2 sm:py-3 rounded-lg font-bold text-lg sm:text-xl hover:bg-blue-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
+                    highlightedElement === 'next-exercise-button' || highlightNextButton ? 'ring-8 ring-yellow-400 bg-yellow-500 animate-bounce scale-125 shadow-2xl border-4 border-orange-500' : ''
+                  } ${
+                    isExplainingError || isCorrect === false ? 'opacity-100' : 'opacity-50'
+                  }`}
+                >
+                  Suivant →
+                </button>
+              </div>
+
+              {/* Résultat - Simplifié */}
+              {isCorrect !== null && isCorrect && (
+                <div className="p-4 sm:p-6 rounded-lg mt-6 bg-green-100 text-green-800">
+                  <div className="flex items-center justify-center space-x-3">
+                    <CheckCircle className="w-6 h-6 sm:w-8 sm:h-8" />
+                    <span className="font-bold text-lg sm:text-xl">
+                      Bravo ! La réponse est bien {exercises[currentExercise].correctAnswer} !
+                    </span>
                   </div>
                 </div>
               )}
               
-              {/* Navigation */}
-              {isCorrect === false && (
-                <div className="flex justify-center">
-                  <button
-                    id="next-exercise-button"
-                    onClick={nextExercise}
-                    className="bg-green-500 text-white px-8 py-4 rounded-lg font-bold text-lg hover:bg-green-600 transition-colors min-h-[50px] pb-4 sm:pb-0"
-                  >
-                    Suivant →
-                  </button>
-                </div>
-              )}
+              </div>
             </div>
           </div>
         )}
