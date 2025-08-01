@@ -388,6 +388,18 @@ export default function DizainesUnitesCP() {
       await wait(300); // Laisser l'animation se voir
       if (stopSignalRef.current) return;
       
+      // Scroll automatique vers le bouton "Suivant" 
+      setTimeout(() => {
+        const nextButton = document.getElementById('next-exercise-button');
+        if (nextButton) {
+          nextButton.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'center',
+            inline: 'nearest'
+          });
+        }
+      }, 500); // Petit délai pour que l'highlight soit visible
+      
     } catch (error) {
       console.error('Erreur dans explainWrongAnswer:', error);
     } finally {
