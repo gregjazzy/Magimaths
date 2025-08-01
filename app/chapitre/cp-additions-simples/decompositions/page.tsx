@@ -28,9 +28,49 @@ export default function DecompositionsCP() {
   const [showCompletionModal, setShowCompletionModal] = useState(false);
   const [finalScore, setFinalScore] = useState(0);
 
-  // Refs pour gérer l'audio
+  // États pour Sam le Pirate
+  const [pirateIntroStarted, setPirateIntroStarted] = useState(false);
+  const [samSizeExpanded, setSamSizeExpanded] = useState(false);
+  const [imageError, setImageError] = useState(false);
+  const [isPlayingEnonce, setIsPlayingEnonce] = useState(false);
+
+  // État pour l'animation de correction
+  const [showAnimatedCorrection, setShowAnimatedCorrection] = useState(false);
+  const [correctionStep, setCorrectionStep] = useState<'group1' | 'group2' | 'counting' | 'result' | 'complete' | null>(null);
+  const [highlightNextButton, setHighlightNextButton] = useState(false);
+
+  // État pour la détection mobile
+  const [isMobile, setIsMobile] = useState(false);
+  const [animatedObjects, setAnimatedObjects] = useState<string[]>([]);
+
+  // État pour stocker les nombres de la correction en cours
+  const [correctionNumbers, setCorrectionNumbers] = useState<{
+    num1: number;
+    num2: number;
+    result: number;
+    objectEmoji: string;
+    objectName: string;
+  } | null>(null);
+
+  // État pour l'animation de comptage objet par objet
+  const [countingIndex, setCountingIndex] = useState<number>(-1);
+
+  // Refs pour gérer l'audio et scroll
   const stopSignalRef = useRef(false);
   const currentAudioRef = useRef<SpeechSynthesisUtterance | null>(null);
+  const nextButtonRef = useRef<HTMLButtonElement>(null);
+
+  // Expressions de pirate aléatoires pour chaque exercice
+  const pirateExpressions = [
+    "Mille sabords", "Tonnerre de Brest", "Sacré matelot", "Par Neptune", "Sang de pirate",
+    "Mille millions de mille sabords", "Ventrebleu", "Sapristi", "Morbleu", "Fichtre"
+  ];
+
+  // Compliments aléatoires pour les bonnes réponses
+  const correctAnswerCompliments = [
+    "Parfait", "Bravo", "Excellent", "Formidable", "Magnifique", 
+    "Super", "Génial", "Fantastique", "Merveilleux", "Extraordinaire"
+  ];
 
   // Données des décompositions avec animations
   const decompositionExamples = [
@@ -111,6 +151,7 @@ export default function DecompositionsCP() {
     
     // Reset de tous les états d'animation et de vocal
     setIsPlayingVocal(false);
+    setIsPlayingEnonce(false);
     setIsAnimationRunning(false);
     setHighlightedElement(null);
     setAnimatingStep(null);
@@ -119,104 +160,118 @@ export default function DecompositionsCP() {
     setShowingProcess(null);
     setDecompositionStep(null);
     setSelectedDecomposition(0);
+    setSamSizeExpanded(false);
+    
+    // Nouveaux états pour la correction animée
+    setShowAnimatedCorrection(false);
+    setCorrectionStep(null);
+    setHighlightNextButton(false);
+    setAnimatedObjects([]);
+    setCorrectionNumbers(null);
+    setCountingIndex(-1);
   };
 
-  // Fonction pour jouer l'audio avec voix féminine française
-  const playAudio = async (text: string, slowMode = false) => {
-    return new Promise<void>((resolve) => {
+  const playAudio = (text: string): Promise<void> => {
+    return new Promise((resolve, reject) => {
+      console.log('playAudio appelée avec:', text);
+      
       if (stopSignalRef.current) {
+        console.log('stopSignalRef.current est true, resolve immédiat');
         resolve();
         return;
       }
-      
-      setIsPlayingVocal(true);
-      const utterance = new SpeechSynthesisUtterance(text);
-      
-      utterance.lang = 'fr-FR';
-      utterance.rate = slowMode ? 0.6 : 0.8;
-      utterance.pitch = 1.0;
-      utterance.volume = 1.0;
 
-      const voices = speechSynthesis.getVoices();
-      
-      // 🍎 FORCE APPLE SYSTEM VOICES ONLY - Diagnostic logs
-      console.log('🔍 Toutes les voix disponibles:');
-      voices.forEach(voice => {
-        console.log(`  ${voice.name} (${voice.lang}) [Local: ${voice.localService}] [Default: ${voice.default}]`);
-      });
-      
-      // 🎯 PRIORITÉ ABSOLUE: Voix système Apple françaises uniquement
-      const appleVoices = voices.filter(voice => 
-        voice.localService === true && 
-        (voice.lang === 'fr-FR' || voice.lang === 'fr')
-      );
-      
-      console.log('🍎 Voix Apple système françaises trouvées:', appleVoices.map(v => v.name));
-      
-      const femaleVoiceNames = ['Amélie', 'Audrey', 'Marie', 'Julie', 'Céline', 'Virginie', 'Pauline', 'Lucie'];
-      
-      // 1. Recherche voix féminine Apple française
-      let selectedVoice = appleVoices.find(voice => 
-        femaleVoiceNames.some(name => voice.name.includes(name))
-      );
-      
-      // 2. Fallback: N'importe quelle voix Apple française
-      if (!selectedVoice) {
-        selectedVoice = appleVoices.find(voice => 
-          voice.lang === 'fr-FR' || voice.lang === 'fr'
-        );
-      }
-      
-      // 3. Fallback: Voix Apple par défaut (même si pas française)
-      if (!selectedVoice) {
-        const defaultAppleVoice = voices.find(voice => 
-          voice.localService === true && voice.default === true
-        );
-        if (defaultAppleVoice) {
-          selectedVoice = defaultAppleVoice;
-          console.log('⚠️ Utilisation voix Apple par défaut (non française):', defaultAppleVoice.name);
-        }
-      }
-      
-      // 4. Dernier recours: Première voix Apple disponible
-      if (!selectedVoice && appleVoices.length > 0) {
-        selectedVoice = appleVoices[0];
-        console.log('⚠️ Utilisation première voix Apple disponible:', selectedVoice.name);
+      // Vérifications de base
+      if (!text || text.trim() === '') {
+        console.log('Texte vide, resolve immédiat');
+        resolve();
+        return;
       }
 
-    if (selectedVoice) {
-      utterance.voice = selectedVoice;
-        console.log('✅ Voix sélectionnée (Apple système):', selectedVoice.name, '(', selectedVoice.lang, ')');
-      } else {
-        console.log('❌ AUCUNE VOIX APPLE SYSTÈME TROUVÉE - TTS peut échouer');
+      if (typeof speechSynthesis === 'undefined') {
+        console.error('speechSynthesis non disponible');
+        reject(new Error('speechSynthesis non disponible'));
+        return;
       }
 
+      try {
+        const utterance = new SpeechSynthesisUtterance(text.trim());
+        utterance.rate = 0.9;
+        utterance.pitch = 1.1;
+        utterance.volume = 1;
+        utterance.lang = 'fr-FR';
+        
+        console.log('Configuration utterance:', {
+          text: utterance.text,
+          rate: utterance.rate,
+          pitch: utterance.pitch,
+          volume: utterance.volume,
+          lang: utterance.lang
+        });
+        
+        utterance.onstart = () => {
+          console.log('Audio démarré');
+        };
+      
       utterance.onend = () => {
-        setIsPlayingVocal(false);
+          console.log('Audio terminé');
+          if (!stopSignalRef.current) {
         currentAudioRef.current = null;
         resolve();
+          }
       };
-
-      utterance.onerror = () => {
-        setIsPlayingVocal(false);
+      
+        utterance.onerror = (event) => {
+          console.error('Erreur synthèse vocale:', event.error);
         currentAudioRef.current = null;
-        resolve();
+          reject(new Error(`Erreur synthèse vocale: ${event.error}`));
       };
-
+      
       currentAudioRef.current = utterance;
+        console.log('speechSynthesis.speak appelée');
       speechSynthesis.speak(utterance);
+        
+      } catch (error) {
+        console.error('Erreur lors de la création de l\'utterance:', error);
+        reject(error);
+      }
     });
   };
 
-  // Fonction utilitaire pour les pauses
-  const wait = (ms: number) => {
-    return new Promise(resolve => {
-      if (stopSignalRef.current) {
-        resolve(undefined);
-        return;
+  const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
+  // Fonction pour scroller vers le bouton Suivant
+  const scrollToNextButton = () => {
+    if (nextButtonRef.current) {
+      nextButtonRef.current.scrollIntoView({
+        behavior: 'smooth',
+        block: 'end',
+        inline: 'nearest'
+      });
+    }
+  };
+
+  // Fonction pour parser les nombres d'un exercice de décomposition
+  const parseExerciseNumbers = (exercise: any) => {
+    let num1 = 0, num2 = 0, result = 0;
+    let objectEmoji = '🟡';
+    let objectName = 'pièces d\'or';
+    
+    // Pour les décompositions, on parse la réponse correcte qui est toujours de la forme "X + Y"
+    if (exercise.correctAnswer && exercise.correctAnswer.includes('+')) {
+      console.log('Parsing décomposition:', exercise.correctAnswer);
+      const match = exercise.correctAnswer.match(/(\d+)\s*\+\s*(\d+)/);
+      if (match) {
+        num1 = parseInt(match[1]);
+        num2 = parseInt(match[2]);
+        result = num1 + num2;
+        objectEmoji = '🟡'; // Pièces d'or jaunes
+        objectName = 'pièces d\'or';
       }
-      setTimeout(resolve, ms);
-    });
+    }
+    
+    console.log('Nombres parsés pour décomposition:', { num1, num2, result, objectEmoji, objectName });
+    return { num1, num2, result, objectEmoji, objectName };
   };
 
   // Fonction pour scroller vers une section
@@ -268,17 +323,17 @@ export default function DecompositionsCP() {
     
     try {
       // 1. Objet du chapitre
-      await playAudio("Bonjour ! Aujourd'hui, nous allons apprendre à décomposer les nombres !", true);
+      await playAudio("Bonjour ! Aujourd'hui, nous allons apprendre à décomposer les nombres !");
       if (stopSignalRef.current) return;
       
       await wait(1200);
-      await playAudio("Décomposer, c'est séparer un nombre en plusieurs parties qui s'additionnent !", true);
+      await playAudio("Décomposer, c'est séparer un nombre en plusieurs parties qui s'additionnent !");
       if (stopSignalRef.current) return;
       
       // 2. Explication du concept avec animations
       await wait(1800);
       setHighlightedElement('concept-section');
-      await playAudio("Regardons ensemble comment décomposer le nombre 5 !", true);
+      await playAudio("Regardons ensemble comment décomposer le nombre 5 !");
       if (stopSignalRef.current) return;
       
       await wait(1500);
@@ -286,38 +341,38 @@ export default function DecompositionsCP() {
       setAnimatingStep('introduction');
       const example = decompositionExamples[0];
       
-      await playAudio(`D'abord, voici ${example.description} représenté par ${example.number} objets.`, true);
+      await playAudio(`D'abord, voici ${example.description} représenté par ${example.number} objets.`);
       if (stopSignalRef.current) return;
       
       await wait(1200);
       setDecompositionStep('number');
       setHighlightedNumber(example.number);
-      await playAudio(`Je vois ${example.number} objets en tout.`, true);
+      await playAudio(`Je vois ${example.number} objets en tout.`);
       if (stopSignalRef.current) return;
       
       await wait(1500);
       setShowingProcess('separating');
-      await playAudio("Maintenant, je vais séparer ces objets en deux groupes !", true);
+      await playAudio("Maintenant, je vais séparer ces objets en deux groupes !");
       if (stopSignalRef.current) return;
       
       await wait(1200);
       setDecompositionStep('parts');
-      await playAudio(`Je peux faire un groupe de ${example.parts[0]} et un groupe de ${example.parts[1]}.`, true);
+      await playAudio(`Je peux faire un groupe de ${example.parts[0]} et un groupe de ${example.parts[1]}.`);
       if (stopSignalRef.current) return;
       
       await wait(1500);
       setShowingProcess('grouping');
-      await playAudio("C'est ça, décomposer ! Séparer en groupes qui s'additionnent !", true);
+      await playAudio("C'est ça, décomposer ! Séparer en groupes qui s'additionnent !");
       if (stopSignalRef.current) return;
       
       await wait(1800);
       setDecompositionStep('result');
       setShowingProcess('result');
-      await playAudio(`${example.parts[0]} plus ${example.parts[1]} égale ${example.number} ! C'est une décomposition !`, true);
+      await playAudio(`${example.parts[0]} plus ${example.parts[1]} égale ${example.number} ! C'est une décomposition !`);
       if (stopSignalRef.current) return;
       
       await wait(1500);
-      await playAudio(`En mathématiques, on écrit : ${example.number} = ${example.parts[0]} + ${example.parts[1]} !`, true);
+      await playAudio(`En mathématiques, on écrit : ${example.number} = ${example.parts[0]} + ${example.parts[1]} !`);
       if (stopSignalRef.current) return;
       
       // 3. Présentation des autres exemples
@@ -327,21 +382,21 @@ export default function DecompositionsCP() {
       setDecompositionStep(null);
       setCurrentExample(null);
       setHighlightedElement(null);
-      await playAudio("Excellent ! Maintenant tu comprends ce qu'est une décomposition !", true);
+      await playAudio("Excellent ! Maintenant tu comprends ce qu'est une décomposition !");
       if (stopSignalRef.current) return;
       
       await wait(1200);
-      await playAudio("Il y a d'autres nombres et d'autres décompositions à découvrir !", true);
+      await playAudio("Il y a d'autres nombres et d'autres décompositions à découvrir !");
       if (stopSignalRef.current) return;
       
       await wait(1500);
       setHighlightedElement('examples-section');
       scrollToSection('examples-section');
-      await playAudio("Regarde ! Tu peux essayer avec d'autres nombres !", true);
+      await playAudio("Regarde ! Tu peux essayer avec d'autres nombres !");
       if (stopSignalRef.current) return;
       
       await wait(1200);
-      await playAudio("Clique sur les exemples pour voir d'autres décompositions !", true);
+      await playAudio("Clique sur les exemples pour voir d'autres décompositions !");
       if (stopSignalRef.current) return;
 
       await wait(800);
@@ -371,29 +426,29 @@ export default function DecompositionsCP() {
       setAnimatingStep('introduction');
       scrollToSection('concept-section');
       
-      await playAudio(`Je vais te montrer comment décomposer ${example.description}.`, true);
+      await playAudio(`Je vais te montrer comment décomposer ${example.description}.`);
       if (stopSignalRef.current) return;
       
       await wait(1500);
       setDecompositionStep('number');
       setHighlightedNumber(example.number);
-      await playAudio(`Voici ${example.number} objets.`, true);
+      await playAudio(`Voici ${example.number} objets.`);
       if (stopSignalRef.current) return;
       
       await wait(1200);
       setShowingProcess('separating');
-      await playAudio("Je vais les séparer en deux groupes.", true);
+      await playAudio("Je vais les séparer en deux groupes.");
       if (stopSignalRef.current) return;
       
       await wait(1500);
       setDecompositionStep('parts');
-      await playAudio(`Un groupe de ${example.parts[0]} et un groupe de ${example.parts[1]}.`, true);
+      await playAudio(`Un groupe de ${example.parts[0]} et un groupe de ${example.parts[1]}.`);
       if (stopSignalRef.current) return;
       
       await wait(1200);
       setShowingProcess('result');
       setDecompositionStep('result');
-      await playAudio(`${example.parts[0]} plus ${example.parts[1]} égale ${example.number} !`, true);
+      await playAudio(`${example.parts[0]} plus ${example.parts[1]} égale ${example.number} !`);
       if (stopSignalRef.current) return;
       
       await wait(2000);
@@ -412,9 +467,157 @@ export default function DecompositionsCP() {
     }
   };
 
-  // Gestion des exercices
-  const handleAnswerClick = (answer: string) => {
-    stopAllVocalsAndAnimations();
+  // Fonction pour créer une correction animée avec des objets visuels pour les décompositions
+  const createAnimatedCorrection = async (exercise: any) => {
+    if (stopSignalRef.current) return;
+    
+    console.log('Début correction animée pour décomposition:', exercise);
+    
+    const { num1, num2, result, objectEmoji, objectName } = parseExerciseNumbers(exercise);
+    
+    // Stocker les nombres pour l'affichage
+    setCorrectionNumbers({ num1, num2, result, objectEmoji, objectName });
+    
+    // Démarrer l'affichage de correction
+    setShowAnimatedCorrection(true);
+    setCorrectionStep('group1');
+    
+    // Scroller pour garder la correction visible
+    setTimeout(() => {
+      const correctionElement = document.getElementById('animated-correction');
+      if (correctionElement) {
+        correctionElement.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center'
+        });
+      }
+    }, 100);
+    
+    // Étape 1: Présentation du problème
+    await playAudio(`Je vais t'expliquer cette décomposition avec des ${objectName} !`);
+    if (stopSignalRef.current) return;
+    await wait(1000);
+    
+    // Étape 2: Affichage du premier groupe
+    await playAudio(`Regarde ! D'abord, nous avons ${num1} ${objectName}.`);
+    if (stopSignalRef.current) return;
+    
+    const objects1 = Array(num1).fill('🟡');
+    setAnimatedObjects(objects1);
+    await wait(1500);
+    
+    // Étape 3: Affichage du deuxième groupe
+    setCorrectionStep('group2');
+    await playAudio(`Ensuite, nous avons ${num2} ${objectName} de plus.`);
+    if (stopSignalRef.current) return;
+    
+    const objects2 = Array(num2).fill('🟠');
+    setAnimatedObjects([...objects1, ...objects2]);
+    await wait(1500);
+    
+    // Étape 4: Explication de la décomposition
+    await playAudio(`${num1} plus ${num2}, c'est bien une façon de décomposer ${result} !`);
+    if (stopSignalRef.current) return;
+    await wait(1000);
+    
+    // Étape 5: Comptage interactif
+    setCorrectionStep('counting');
+    await playAudio(`Comptons ensemble toutes les ${objectName} !`);
+    if (stopSignalRef.current) return;
+    await wait(500);
+    
+    // Animation de comptage nombre par nombre avec objets qui bougent
+    for (let i = 1; i <= result; i++) {
+      if (stopSignalRef.current) return;
+      
+      // Mettre en évidence l'objet en cours de comptage
+      setCountingIndex(i - 1);
+      
+      // Dire le nombre
+      await playAudio(`${i}`);
+      await wait(600);
+    }
+    
+    // Remettre tous les objets en position normale
+    setCountingIndex(-1);
+    
+    // Étape 6: Résultat final
+    setCorrectionStep('result');
+    await playAudio(`Parfait ! ${num1} plus ${num2} égale bien ${result} !`);
+    if (stopSignalRef.current) return;
+    await wait(1000);
+    
+    await playAudio(`Donc ${result} = ${num1} + ${num2} est une bonne décomposition !`);
+    if (stopSignalRef.current) return;
+    await wait(1500);
+    
+    // Étape 7: Terminé
+    setCorrectionStep('complete');
+    await playAudio(`Maintenant tu peux cliquer sur suivant pour continuer !`);
+    
+    // Illuminer le bouton et scroller
+    setHighlightNextButton(true);
+    setTimeout(() => {
+      scrollToNextButton();
+    }, 500);
+  };
+
+  // Fonction pour féliciter avec audio pour les bonnes réponses
+  const celebrateCorrectAnswer = async () => {
+    if (stopSignalRef.current) return;
+    
+    stopSignalRef.current = false;
+    setIsPlayingVocal(true);
+    setSamSizeExpanded(true);
+    
+    try {
+      const randomCompliment = correctAnswerCompliments[Math.floor(Math.random() * correctAnswerCompliments.length)];
+      await playAudio(randomCompliment + " !");
+      if (stopSignalRef.current) return;
+      
+    } catch (error) {
+      console.error('Erreur dans celebrateCorrectAnswer:', error);
+    } finally {
+      setIsPlayingVocal(false);
+      setSamSizeExpanded(false);
+    }
+  };
+
+  // Fonction pour expliquer une mauvaise réponse avec animation
+  const explainWrongAnswer = async () => {
+    stopSignalRef.current = false;
+    setIsPlayingVocal(true);
+    setSamSizeExpanded(true);
+    
+    try {
+      const pirateExpression = pirateExpressions[currentExercise % pirateExpressions.length];
+      await playAudio(pirateExpression + " !");
+      if (stopSignalRef.current) return;
+      
+      await wait(800);
+      if (stopSignalRef.current) return;
+      
+      const exercise = exercises[currentExercise];
+      await playAudio(`Pas de problème ! Regarde bien...`);
+      if (stopSignalRef.current) return;
+      
+      await wait(1000);
+      if (stopSignalRef.current) return;
+      
+      // Lancer l'animation de correction pour décompositions
+      await createAnimatedCorrection(exercise);
+      if (stopSignalRef.current) return;
+      
+    } catch (error) {
+      console.error('Erreur dans explainWrongAnswer:', error);
+    } finally {
+      setIsPlayingVocal(false);
+      setSamSizeExpanded(false);
+    }
+  };
+
+  // Gestion des exercices avec Sam le Pirate
+  const handleAnswerClick = async (answer: string) => {
     setUserAnswer(answer);
     const correct = answer === exercises[currentExercise].correctAnswer;
     setIsCorrect(correct);
@@ -426,25 +629,44 @@ export default function DecompositionsCP() {
         newSet.add(currentExercise);
         return newSet;
       });
-    }
-
-    if (correct) {
+      
+      // Célébrer avec Sam
+      celebrateCorrectAnswer();
+      
+      // Passage automatique après célébration
       setTimeout(() => {
         if (currentExercise + 1 < exercises.length) {
           setCurrentExercise(currentExercise + 1);
           setUserAnswer('');
           setIsCorrect(null);
         } else {
-          const finalScoreValue = score + (!answeredCorrectly.has(currentExercise) ? 1 : 0);
+          const finalScoreValue = score + 1;
           setFinalScore(finalScoreValue);
           setShowCompletionModal(true);
         }
       }, 1500);
+    } else if (!correct) {
+      // Expliquer l'erreur avec Sam
+      await explainWrongAnswer();
     }
   };
 
   const nextExercise = () => {
     stopAllVocalsAndAnimations();
+    
+    // Réinitialiser les états de correction
+    setShowAnimatedCorrection(false);
+    setCorrectionStep(null);
+    setHighlightNextButton(false);
+    setAnimatedObjects([]);
+    setCorrectionNumbers(null);
+    setCountingIndex(-1);
+    
+    // Réactiver les fonctions audio après un court délai
+    setTimeout(() => {
+      stopSignalRef.current = false;
+    }, 100);
+    
     if (currentExercise < exercises.length - 1) {
       setCurrentExercise(currentExercise + 1);
       setUserAnswer('');
@@ -464,6 +686,128 @@ export default function DecompositionsCP() {
     setAnsweredCorrectly(new Set());
     setShowCompletionModal(false);
     setFinalScore(0);
+    setPirateIntroStarted(false);
+    setCorrectionNumbers(null);
+    setCountingIndex(-1);
+    
+    // Réactiver les fonctions audio après un court délai
+    setTimeout(() => {
+      stopSignalRef.current = false;
+    }, 100);
+  };
+
+  // Fonction pour l'introduction vocale de Sam le Pirate
+  const startPirateIntro = async () => {
+    stopSignalRef.current = false;
+    setIsPlayingVocal(true);
+    
+    const isReplay = pirateIntroStarted;
+    setPirateIntroStarted(true);
+    
+    try {
+      if (isReplay) {
+        // Messages pour rejouer l'intro
+        await playAudio("Eh bien, nom d'un sabre ! Tu veux que je répète mes instructions ?");
+        if (stopSignalRef.current) return;
+        
+        await wait(1000);
+        if (stopSignalRef.current) return;
+        
+        await playAudio("Très bien moussaillon ! Rappel des consignes !");
+        if (stopSignalRef.current) return;
+      } else {
+        // Messages pour la première fois
+        await playAudio("Bonjour, faisons quelques exercices de décomposition nom d'une jambe en bois !");
+        if (stopSignalRef.current) return;
+      }
+      
+      await wait(1000);
+      if (stopSignalRef.current) return;
+      
+      // Mettre en surbrillance le bouton "Écouter l'énoncé"
+      setHighlightedElement('listen-question-button');
+      await playAudio("Pour lire l'énoncé appuie sur écouter l'énoncé");
+      if (stopSignalRef.current) return;
+      await wait(1500);
+      setHighlightedElement(null);
+      
+      if (stopSignalRef.current) return;
+      
+      // Mettre en surbrillance la zone de réponse
+      setHighlightedElement('answer-zone');
+      await playAudio("Dès que tu as la réponse, tu peux cliquer sur la bonne décomposition");
+      if (stopSignalRef.current) return;
+      
+      await wait(1500);
+      setHighlightedElement(null);
+      if (stopSignalRef.current) return;
+      
+      // Mettre en surbrillance Sam lui-même pour les explications
+      setHighlightedElement('sam-pirate');
+      await playAudio("Si tu te trompes, je t'expliquerai la bonne réponse !");
+      if (stopSignalRef.current) return;
+      await wait(1500);
+      setHighlightedElement(null);
+      
+      await wait(1000);
+      if (stopSignalRef.current) return;
+      
+      if (isReplay) {
+        await playAudio("Et voilà ! C'est reparti pour l'aventure !");
+      } else {
+        await playAudio("En avant toutes pour les décompositions !");
+      }
+      if (stopSignalRef.current) return;
+      
+    } catch (error) {
+      console.error('Erreur dans startPirateIntro:', error);
+    } finally {
+      setIsPlayingVocal(false);
+    }
+  };
+
+  // Fonction pour lire l'énoncé de l'exercice
+  const startExerciseExplanation = async () => {
+    console.log('startExerciseExplanation appelée');
+    
+    if (isPlayingEnonce) {
+      console.log('isPlayingEnonce est true, sortie');
+      return;
+    }
+    
+    if (!exercises[currentExercise]) {
+      console.log('Pas d\'exercice courant, sortie');
+      return;
+    }
+    
+    console.log('Début lecture énoncé:', exercises[currentExercise].question);
+    
+    // Réinitialiser le signal d'arrêt pour permettre la lecture
+    stopSignalRef.current = false;
+    setIsPlayingEnonce(true);
+    
+    try {
+      // Vérifier si speechSynthesis est disponible
+      if (typeof speechSynthesis === 'undefined') {
+        throw new Error('speechSynthesis non disponible');
+      }
+      
+      // Arrêter toute synthèse en cours
+      if (speechSynthesis.speaking) {
+        speechSynthesis.cancel();
+        await new Promise(resolve => setTimeout(resolve, 100));
+      }
+      
+      await playAudio(exercises[currentExercise].question);
+      console.log('Lecture terminée avec succès');
+      
+    } catch (error) {
+      console.error('Erreur dans startExerciseExplanation:', error);
+      alert('Erreur audio: ' + (error instanceof Error ? error.message : String(error)));
+    } finally {
+      setIsPlayingEnonce(false);
+      console.log('isPlayingEnonce mis à false');
+    }
   };
 
   // Fonction helper pour les messages de fin
@@ -559,10 +903,276 @@ export default function DecompositionsCP() {
     };
   }, []);
 
+  // Effet pour initialiser speechSynthesis
+  useEffect(() => {
+    if (typeof window !== 'undefined' && typeof speechSynthesis !== 'undefined') {
+      console.log('Initialisation de speechSynthesis');
+      
+      // Forcer le chargement des voix
+      const loadVoices = () => {
+        const voices = speechSynthesis.getVoices();
+        console.log('Voix disponibles:', voices.length);
+        console.log('Voix françaises:', voices.filter(voice => voice.lang.startsWith('fr')));
+      };
+      
+      // Les voix peuvent être chargées de manière asynchrone
+      if (speechSynthesis.getVoices().length > 0) {
+        loadVoices();
+      } else {
+        speechSynthesis.onvoiceschanged = loadVoices;
+      }
+      
+      // Test simple de synthèse vocale
+      console.log('Test speechSynthesis...');
+      try {
+        const testUtterance = new SpeechSynthesisUtterance('');
+        testUtterance.volume = 0; // Silencieux pour le test
+        speechSynthesis.speak(testUtterance);
+        speechSynthesis.cancel(); // Annuler immédiatement
+        console.log('speechSynthesis fonctionne');
+      } catch (error) {
+        console.error('Erreur lors du test speechSynthesis:', error);
+      }
+    } else {
+      console.error('speechSynthesis non disponible dans ce navigateur');
+    }
+  }, []);
+
+  // Effet pour gérer les changements de visibilité de la page et navigation
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        console.log('Page cachée - arrêt du vocal');
+        stopAllVocalsAndAnimations();
+      }
+    };
+    
+    const handleBeforeUnload = () => {
+      console.log('Avant déchargement - arrêt du vocal');
+      stopAllVocalsAndAnimations();
+    };
+    
+    const handlePopState = () => {
+      console.log('Navigation back/forward - arrêt du vocal');
+      stopAllVocalsAndAnimations();
+    };
+
+    const handlePageHide = () => {
+      console.log('Page masquée - arrêt du vocal');
+      stopAllVocalsAndAnimations();
+    };
+
+    const handleUnload = () => {
+      console.log('Déchargement - arrêt du vocal');
+      stopAllVocalsAndAnimations();
+    };
+
+    const handleHashChange = () => {
+      console.log('Changement de hash - arrêt du vocal');
+      stopAllVocalsAndAnimations();
+    };
+
+    const handleBlur = () => {
+      // Sur mobile, on ignore les événements blur car ils sont trop fréquents
+      if (isMobile) {
+        console.log('Événement blur ignoré sur mobile');
+        return;
+      }
+      console.log('Perte de focus fenêtre - arrêt du vocal');
+      stopAllVocalsAndAnimations();
+    };
+
+    // Event listeners standard
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    window.addEventListener('popstate', handlePopState);
+    window.addEventListener('pagehide', handlePageHide);
+    window.addEventListener('unload', handleUnload);
+    window.addEventListener('hashchange', handleHashChange);
+    window.addEventListener('blur', handleBlur);
+
+    // Override des méthodes history pour détecter navigation programmatique
+    const originalPushState = history.pushState;
+    const originalReplaceState = history.replaceState;
+
+    history.pushState = function(...args) {
+      console.log('Navigation programmatique pushState - arrêt du vocal');
+      stopAllVocalsAndAnimations();
+      return originalPushState.apply(this, args);
+    };
+
+    history.replaceState = function(...args) {
+      console.log('Navigation programmatique replaceState - arrêt du vocal');
+      stopAllVocalsAndAnimations();
+      return originalReplaceState.apply(this, args);
+    };
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+      window.removeEventListener('popstate', handlePopState);
+      window.removeEventListener('pagehide', handlePageHide);
+      window.removeEventListener('unload', handleUnload);
+      window.removeEventListener('hashchange', handleHashChange);
+      window.removeEventListener('blur', handleBlur);
+      
+      // Restaurer les méthodes originales
+      history.pushState = originalPushState;
+      history.replaceState = originalReplaceState;
+    };
+  }, [isMobile]);
+
   // Effet pour gérer les changements d'onglet interne (cours ↔ exercices)
   useEffect(() => {
     stopAllVocalsAndAnimations();
+    // Réactiver les fonctions quand on passe aux exercices
+    if (showExercises) {
+      setTimeout(() => {
+        stopSignalRef.current = false;
+      }, 100);
+    }
   }, [showExercises]);
+
+  // Effet pour la détection mobile et réinitialisation
+  useEffect(() => {
+    const checkIfMobile = () => {
+      setIsMobile(window.innerWidth < 640); // sm breakpoint
+    };
+    
+    checkIfMobile();
+    window.addEventListener('resize', checkIfMobile);
+    
+    // Réinitialiser stopSignalRef au chargement de la page
+    stopSignalRef.current = false;
+    
+    return () => window.removeEventListener('resize', checkIfMobile);
+  }, []);
+
+  // Composant JSX pour le bouton "Écouter l'énoncé" - Toujours actif
+  const ListenQuestionButtonJSX = () => {
+    // Toujours actif sauf pendant la lecture
+    const isButtonDisabled = isPlayingEnonce;
+
+    return (
+      <div className="mb-2 sm:mb-6">
+        <button
+          id="listen-question-button"
+          onClick={startExerciseExplanation}
+          disabled={isButtonDisabled}
+          className={`${
+            isPlayingEnonce 
+              ? 'bg-blue-600 text-white animate-pulse' 
+              : 'bg-blue-500 text-white hover:bg-blue-600'
+          } px-2 sm:px-6 py-1 sm:py-3 rounded-lg font-bold text-xs sm:text-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-1 sm:space-x-2 mx-auto shadow-lg ${
+            highlightedElement === 'listen-question-button' ? 'ring-4 ring-yellow-400 ring-opacity-75 animate-pulse scale-110 shadow-2xl bg-blue-600' : ''
+          }`}
+        >
+          <svg className="w-3 h-3 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 20 20">
+            <path fillRule="evenodd" d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.617.77L4.916 14H2a1 1 0 01-1-1V7a1 1 0 011-1h2.916l3.467-2.77a1 1 0 011.617.77zM14.657 2.929a1 1 0 011.414 0A9.972 9.972 0 0119 10a9.972 9.972 0 01-2.929 7.071 1 1 0 01-1.414-1.414A7.971 7.971 0 0017 10c0-2.21-.894-4.208-2.343-5.657a1 1 0 010-1.414zm-2.829 2.828a1 1 0 011.415 0A5.983 5.983 0 0115 10a5.983 5.983 0 01-1.757 4.243 1 1 0 01-1.415-1.414A3.983 3.983 0 0013 10a3.983 3.983 0 00-1.172-2.829 1 1 0 010-1.414z" clipRule="evenodd" />
+          </svg>
+          <span>🎧 Écouter l'énoncé</span>
+        </button>
+      </div>
+    );
+  };
+
+  // JSX pour l'introduction de Sam le Pirate dans les exercices
+  const SamPirateIntroJSX = () => (
+    <div className="flex justify-center p-0 sm:p-1 mt-0 sm:mt-2">
+      <div className="flex items-center gap-1 sm:gap-2">
+        {/* Image de Sam le Pirate */}
+        <div 
+          id="sam-pirate"
+          className={`relative flex-shrink-0 rounded-full bg-gradient-to-br from-purple-100 to-blue-100 border-1 sm:border-2 border-purple-200 shadow-md transition-all duration-300 ${
+          isPlayingVocal
+            ? 'w-12 sm:w-32 h-12 sm:h-32 scale-110 sm:scale-150'
+            : pirateIntroStarted
+              ? 'w-10 sm:w-16 h-10 sm:h-16'
+              : 'w-12 sm:w-20 h-12 sm:h-20'
+        } ${highlightedElement === 'sam-pirate' ? 'ring-4 ring-yellow-400 ring-opacity-75 animate-bounce scale-125' : ''}`}>
+          {!imageError ? (
+            <img 
+              src="/image/pirate-small.png" 
+              alt="Sam le Pirate" 
+              className="w-full h-full rounded-full object-cover"
+              onError={() => setImageError(true)}
+            />
+          ) : (
+            <div className="w-full h-full rounded-full flex items-center justify-center text-sm sm:text-2xl">
+              🏴‍☠️
+            </div>
+          )}
+          {/* Haut-parleur animé quand il parle */}
+          {isPlayingVocal && (
+            <div className="absolute -top-1 -right-1 bg-purple-500 text-white p-1 sm:p-2 rounded-full animate-bounce shadow-lg">
+              <svg className="w-2 sm:w-4 h-2 sm:h-4" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.617.77L4.916 14H2a1 1 0 01-1-1V7a1 1 0 011-1h2.916l3.467-2.77a1 1 0 011.617.77zM14.657 2.929a1 1 0 011.414 0A9.972 9.972 0 0119 10a9.972 9.972 0 01-2.929 7.071 1 1 0 01-1.414-1.414A7.971 7.971 0 0017 10c0-2.21-.894-4.208-2.343-5.657a1 1 0 010-1.414zm-2.829 2.828a1 1 0 011.415 0A5.983 5.983 0 0115 10a5.983 5.983 0 01-1.757 4.243 1 1 0 01-1.415-1.414A3.983 3.983 0 0013 10a3.983 3.983 0 00-1.172-2.829 1 1 0 010-1.414z" clipRule="evenodd" />
+              </svg>
+            </div>
+          )}
+        </div>
+        
+        {/* Bouton Start Exercices */}
+        <button
+        onClick={startPirateIntro}
+        disabled={isPlayingVocal}
+        className={`relative transition-all duration-300 transform ${
+          isPlayingVocal 
+            ? 'px-3 sm:px-12 py-1 sm:py-5 rounded-lg sm:rounded-xl font-black text-sm sm:text-2xl bg-gradient-to-r from-gray-400 to-gray-500 text-gray-200 cursor-not-allowed animate-pulse shadow-md' 
+            : pirateIntroStarted
+              ? 'px-2 sm:px-8 py-2 sm:py-3 rounded-md sm:rounded-lg font-bold text-xs sm:text-lg bg-gradient-to-r from-purple-500 to-blue-600 text-white hover:from-purple-600 hover:to-blue-700 hover:scale-105 shadow-lg border-1 sm:border-2 border-purple-300'
+              : 'px-3 sm:px-12 py-1 sm:py-5 rounded-lg sm:rounded-xl font-black text-sm sm:text-2xl bg-gradient-to-r from-orange-500 via-red-500 to-pink-500 text-white hover:from-orange-600 hover:via-red-600 hover:to-pink-600 hover:scale-110 shadow-2xl hover:shadow-3xl animate-pulse border-2 sm:border-4 border-yellow-300'
+        } ${!isPlayingVocal && !pirateIntroStarted ? 'ring-4 ring-yellow-300 ring-opacity-75' : ''} ${pirateIntroStarted && !isPlayingVocal ? 'ring-2 ring-purple-300 ring-opacity-75' : ''}`}
+        style={{
+          animationDuration: !isPlayingVocal && !pirateIntroStarted ? '1.5s' : '2s',
+          animationIterationCount: isPlayingVocal ? 'none' : 'infinite',
+          textShadow: '2px 2px 4px rgba(0,0,0,0.3)',
+          boxShadow: !isPlayingVocal && !pirateIntroStarted 
+            ? '0 10px 25px rgba(0,0,0,0.3), 0 0 30px rgba(255,215,0,0.4), inset 0 1px 0 rgba(255,255,255,0.2)' 
+            : pirateIntroStarted && !isPlayingVocal
+              ? '0 8px 20px rgba(0,0,0,0.2), 0 0 15px rgba(147,51,234,0.3), inset 0 1px 0 rgba(255,255,255,0.1)'
+              : ''
+        }}
+      >
+        {/* Effet de brillance */}
+        {!isPlayingVocal && !pirateIntroStarted && (
+          <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-transparent via-white to-transparent opacity-20 animate-pulse"></div>
+        )}
+        
+        {/* Icônes et texte */}
+        <span className="relative z-10 flex items-center justify-center gap-2">
+          {isPlayingVocal 
+            ? <>🎤 <span>Sam parle...</span></> 
+            : pirateIntroStarted
+              ? <>🔄 <span>REJOUER L'INTRO</span> 🏴‍☠️</>
+              : <>🚀 <span>COMMENCER</span> ✨</>
+          }
+        </span>
+        
+        {/* Particules brillantes */}
+        {!isPlayingVocal && (
+          <>
+            {!pirateIntroStarted ? (
+              /* Particules initiales - dorées */
+              <>
+                <div className="absolute -top-1 -right-1 w-3 h-3 bg-yellow-300 rounded-full animate-ping"></div>
+                <div className="absolute -bottom-1 -left-1 w-2 h-2 bg-pink-300 rounded-full animate-ping" style={{animationDelay: '0.5s'}}></div>
+                <div className="absolute top-2 left-2 w-1 h-1 bg-white rounded-full animate-ping" style={{animationDelay: '1s'}}></div>
+              </>
+            ) : (
+              /* Particules de replay - violettes */
+              <>
+                <div className="absolute -top-1 -right-1 w-2 h-2 bg-purple-300 rounded-full animate-ping"></div>
+                <div className="absolute -bottom-1 -left-1 w-2 h-2 bg-blue-300 rounded-full animate-ping" style={{animationDelay: '0.7s'}}></div>
+                <div className="absolute top-2 right-2 w-1 h-1 bg-cyan-300 rounded-full animate-ping" style={{animationDelay: '1.2s'}}></div>
+              </>
+            )}
+          </>
+        )}
+      </button>
+      </div>
+    </div>
+  );
 
   if (!isClient) {
     return <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-100 flex items-center justify-center">
@@ -594,15 +1204,15 @@ export default function DecompositionsCP() {
           </div>
         </div>
 
-        {/* Navigation entre cours et exercices */}
-        <div className="flex justify-center mb-8">
-          <div className="bg-white rounded-lg p-1 shadow-md">
+        {/* Navigation entre cours et exercices - MOBILE OPTIMISÉE */}
+        <div className={`flex justify-center ${showExercises ? 'mb-2 sm:mb-6' : 'mb-8'}`}>
+          <div className="bg-white rounded-lg p-0.5 sm:p-1 shadow-md flex">
             <button
               onClick={() => {
                 stopAllVocalsAndAnimations();
                 setShowExercises(false);
               }}
-              className={`px-6 py-3 rounded-lg font-bold transition-all ${
+              className={`px-3 sm:px-6 py-1.5 sm:py-3 rounded-lg font-bold transition-all text-sm sm:text-base min-h-[44px] sm:min-h-[68px] flex items-center justify-center ${
                 !showExercises 
                   ? 'bg-purple-500 text-white shadow-md' 
                   : 'text-gray-600 hover:bg-gray-100'
@@ -615,13 +1225,14 @@ export default function DecompositionsCP() {
                 stopAllVocalsAndAnimations();
                 setShowExercises(true);
               }}
-              className={`px-6 py-3 rounded-lg font-bold transition-all ${
+              className={`px-3 sm:px-6 py-1.5 sm:py-3 rounded-lg font-bold transition-all text-sm sm:text-base min-h-[44px] sm:min-h-[68px] flex flex-col items-center justify-center ${
                 showExercises 
                   ? 'bg-purple-500 text-white shadow-md' 
                   : 'text-gray-600 hover:bg-gray-100'
               }`}
             >
-              ✏️ Exercices ({score}/{exercises.length})
+              <span>✏️ Exercices</span>
+              <span className="text-xs sm:text-sm opacity-90">({score}/{exercises.length})</span>
             </button>
           </div>
         </div>
@@ -853,99 +1464,140 @@ export default function DecompositionsCP() {
             </div>
           </div>
         ) : (
-          /* EXERCICES */
-          <div className="space-y-8">
-            {/* Header exercices */}
-            <div className="bg-white rounded-xl p-6 shadow-lg">
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-2xl font-bold text-gray-900">
-                  ✏️ Exercice {currentExercise + 1} sur {exercises.length}
+          /* EXERCICES - RESPONSIVE MOBILE OPTIMISÉ */
+          <div className="pb-12 sm:pb-0">
+            {/* Introduction de Sam le Pirate - toujours visible */}
+            <div className="mb-6 sm:mb-4 mt-4">
+              {SamPirateIntroJSX()}
+            </div>
+
+            {/* Header exercices - caché sur mobile */}
+            <div className="bg-white rounded-xl p-2 shadow-lg mt-8 hidden sm:block">
+              <div className="flex justify-between items-center mb-1">
+                <h2 className="text-lg font-bold text-gray-900">
+                  Exercice {currentExercise + 1}
                 </h2>
-                <button
-                  onClick={resetAll}
-                  className="bg-gray-500 text-white px-4 py-2 rounded-lg font-bold hover:bg-gray-600 transition-colors"
-                >
-                  🔄 Recommencer
-                </button>
+                
+                <div className="flex items-center space-x-4">
+                  <div className="text-sm font-bold text-purple-600">
+                    Score : {score}/{exercises.length}
+                  </div>
+                  
+                  <button
+                    onClick={resetAll}
+                    className="bg-gray-500 text-white px-3 py-1 rounded-lg font-bold text-sm hover:bg-gray-600 transition-colors flex items-center space-x-1"
+                  >
+                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clipRule="evenodd" />
+                    </svg>
+                    <span>🔄 Recommencer</span>
+                  </button>
+                </div>
               </div>
               
               {/* Barre de progression */}
-              <div className="w-full bg-gray-200 rounded-full h-4 mb-3">
+              <div className="w-full bg-gray-200 rounded-full h-3">
                 <div 
-                  className="bg-purple-500 h-4 rounded-full transition-all duration-500"
+                  className="bg-purple-500 h-3 rounded-full transition-all duration-500"
                   style={{ width: `${((currentExercise + 1) / exercises.length) * 100}%` }}
                 ></div>
               </div>
+            </div>
               
-              {/* Score */}
-              <div className="text-center">
-                <div className="text-xl font-bold text-purple-600">
-                  Score : {score}/{exercises.length}
+            {/* Indicateur de progression mobile - sticky sur la page */}
+            <div className="sticky top-2 bg-white z-10 px-2 py-2 border-b border-gray-200 sm:hidden mb-6 mt-4">
+              <div className="flex justify-between items-center text-sm">
+                <span className="font-bold text-gray-700">Exercice {currentExercise + 1}/{exercises.length}</span>
+                <div className="flex items-center space-x-2">
+                  <span className="font-bold text-purple-600">Score : {score}/{exercises.length}</span>
+                  <button
+                    onClick={resetAll}
+                    className="bg-gray-500 text-white px-2 py-1 rounded font-bold text-xs hover:bg-gray-600 transition-colors flex items-center space-x-1 min-h-[28px]"
+                  >
+                    <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clipRule="evenodd" />
+                    </svg>
+                    <span>Reset</span>
+                  </button>
                 </div>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-1 sm:h-2 mt-1">
+                <div 
+                  className="bg-purple-500 h-1 sm:h-2 rounded-full transition-all duration-500"
+                  style={{ width: `${((currentExercise + 1) / exercises.length) * 100}%` }}
+                ></div>
               </div>
             </div>
 
-            {/* Question */}
-            <div className="bg-white rounded-xl p-8 shadow-lg text-center">
-              <h3 className="text-2xl font-bold mb-8 text-gray-900">
-                {exercises[currentExercise].question}
-              </h3>
+            {/* Question - AVEC BOUTON ÉCOUTER */}
+            <div className="bg-white rounded-xl shadow-lg text-center p-3 sm:p-6 md:p-8 mt-4 sm:mt-8">
+              <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-1 sm:mb-6 md:mb-8 gap-2 sm:gap-4">
+                <h3 className="text-sm sm:text-xl md:text-2xl font-bold text-gray-900 flex-1">
+                  {exercises[currentExercise]?.question || "Question..."}
+                </h3>
+                {ListenQuestionButtonJSX()}
+              </div>
               
               {/* Affichage du nombre à décomposer */}
-              <div className="bg-purple-50 rounded-lg p-6 mb-8">
-                <div className="text-6xl font-bold text-purple-600 mb-4">
+              <div className="bg-purple-50 rounded-lg p-2 sm:p-6 mb-2 sm:mb-8">
+                <div className="text-3xl sm:text-6xl font-bold text-purple-600 mb-2 sm:mb-4">
                   {exercises[currentExercise].number}
                 </div>
-                <div className="mb-4">
+                <div className="mb-2 sm:mb-4">
                   {renderCircles(exercises[currentExercise].number, '🔴')}
-                    </div>
-                <p className="text-lg text-gray-700 font-semibold">
+                </div>
+                <p className="text-sm sm:text-lg text-gray-700 font-semibold">
                   Sépare ce nombre en deux parties !
                 </p>
               </div>
-              
-              {/* Choix multiples */}
-              <div className="grid grid-cols-1 gap-4 max-w-md mx-auto mb-8">
-                {exercises[currentExercise].choices.map((choice) => (
-                  <button
-                    key={choice}
-                    onClick={() => handleAnswerClick(choice)}
-                    disabled={isCorrect !== null}
-                    className={`p-6 rounded-lg font-bold text-xl transition-all ${
-                      userAnswer === choice
-                        ? isCorrect === true
-                          ? 'bg-green-500 text-white'
-                          : isCorrect === false
-                            ? 'bg-red-500 text-white'
-                          : 'bg-purple-500 text-white'
-                        : exercises[currentExercise].correctAnswer === choice && isCorrect === false
-                          ? 'bg-green-200 text-green-800 border-2 border-green-500'
-                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200 disabled:opacity-50'
-                    } disabled:cursor-not-allowed`}
-                  >
-                    {choice}
-                  </button>
-                ))}
+
+              {/* Zone de réponse - Choix multiples */}
+              <div 
+                id="answer-zone" 
+                className={`${highlightedElement === 'answer-zone' ? 'ring-4 ring-yellow-400 ring-opacity-75 animate-pulse rounded-xl p-4 bg-yellow-50' : ''} transition-all duration-300`}
+              >
+                <div className="grid grid-cols-1 gap-2 sm:gap-4 max-w-sm sm:max-w-md mx-auto mb-4 sm:mb-8">
+                  {exercises[currentExercise].choices?.map((choice) => (
+                    <button
+                      key={choice}
+                      onClick={() => handleAnswerClick(choice)}
+                      disabled={isCorrect !== null || isPlayingVocal}
+                      className={`p-2 sm:p-4 md:p-6 rounded-lg font-bold text-sm sm:text-base md:text-xl transition-all min-h-[40px] sm:min-h-[56px] md:min-h-auto ${
+                        userAnswer === choice
+                          ? isCorrect === true
+                            ? 'bg-green-500 text-white'
+                            : isCorrect === false
+                              ? 'bg-red-500 text-white'
+                            : 'bg-purple-500 text-white'
+                          : exercises[currentExercise].correctAnswer === choice && isCorrect === false
+                            ? 'bg-green-200 text-green-800 border-2 border-green-500'
+                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200 disabled:opacity-50'
+                      } disabled:cursor-not-allowed`}
+                    >
+                      {choice}
+                    </button>
+                  ))}
+                </div>
               </div>
-              
+
               {/* Résultat */}
               {isCorrect !== null && (
-                <div className={`p-6 rounded-lg mb-6 ${
+                <div className={`p-2 sm:p-4 md:p-6 rounded-lg mb-3 sm:mb-6 ${
                   isCorrect ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
                 }`}>
-                  <div className="flex items-center justify-center space-x-3">
+                  <div className="flex items-center justify-center space-x-1 sm:space-x-3">
                     {isCorrect ? (
                       <>
-                        <span className="text-2xl">✅</span>
-                        <span className="font-bold text-xl">
+                        <span className="text-base sm:text-xl md:text-2xl">✅</span>
+                        <span className="font-bold text-xs sm:text-base md:text-xl">
                           Excellent ! {exercises[currentExercise].correctAnswer} est bien une décomposition de {exercises[currentExercise].number} !
                         </span>
                       </>
                     ) : (
                       <>
-                        <span className="text-2xl">❌</span>
-                        <span className="font-bold text-xl">
-                          Pas tout à fait... La bonne réponse est : {exercises[currentExercise].correctAnswer}
+                        <span className="text-base sm:text-xl md:text-2xl">❌</span>
+                        <span className="font-bold text-xs sm:text-sm md:text-xl">
+                          Pas tout à fait... Je vais t'expliquer !
                         </span>
                       </>
                     )}
@@ -953,12 +1605,94 @@ export default function DecompositionsCP() {
                 </div>
               )}
 
+              {/* Animation de correction pour les mauvaises réponses */}
+              {showAnimatedCorrection && (
+                <div 
+                  id="animated-correction"
+                  className="bg-gradient-to-br from-purple-50 to-blue-50 rounded-xl p-3 sm:p-6 md:p-8 mb-4 border-2 border-purple-200 shadow-lg"
+                >
+                  {/* Titre de section adaptatif */}
+                  <div className="text-center mb-4 sm:mb-6">
+                    <div className="text-xs sm:text-base text-purple-600">
+                      {correctionStep === 'group1' && "Observons le premier groupe..."}
+                      {correctionStep === 'group2' && "Ajoutons le deuxième groupe..."}
+                      {correctionStep === 'counting' && "Comptons ensemble !"}
+                      {correctionStep === 'result' && "Voici le résultat !"}
+                    </div>
+                  </div>
+
+                  {/* Affichage des objets animés */}
+                  {animatedObjects.length > 0 && (
+                    <div className="flex justify-center mb-3 sm:mb-6">
+                      <div className="grid grid-cols-5 sm:grid-cols-6 md:grid-cols-8 gap-1 sm:gap-2 max-w-xs sm:max-w-md">
+                        {animatedObjects.map((obj, index) => (
+                          <div
+                            key={index}
+                            className={`text-lg sm:text-3xl md:text-4xl transition-all duration-300 transform ${
+                              // Animation spéciale pour l'objet en cours de comptage
+                              correctionStep === 'counting' && countingIndex === index
+                                ? 'animate-pulse scale-150 rotate-12 text-yellow-400 drop-shadow-lg' 
+                                : correctionStep === 'counting' 
+                                  ? 'hover:scale-110 opacity-60'
+                                  : 'hover:scale-110'
+                            } ${
+                              // Animation pour les groupes
+                              correctionStep === 'group1' && correctionNumbers && index < correctionNumbers.num1
+                                ? 'animate-bounce scale-110 text-red-500'
+                                : correctionStep === 'group2' && correctionNumbers && index >= correctionNumbers.num1
+                                  ? 'animate-bounce scale-110 text-blue-500'
+                                  : ''
+                            }`}
+                            style={{
+                              animationDuration: correctionStep === 'counting' && countingIndex === index ? '0.5s' : '1s',
+                              transformOrigin: 'center'
+                            }}
+                          >
+                            {obj}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Équation mathématique */}
+                  {correctionStep && correctionStep !== 'group1' && correctionNumbers && animatedObjects.length > 0 && (
+                    <div className="text-center bg-white rounded-lg p-2 sm:p-4 mb-3 sm:mb-4">
+                      <div className="text-lg sm:text-3xl md:text-4xl font-bold text-purple-800">
+                        {correctionNumbers.num1} + {correctionNumbers.num2} = {correctionStep === 'result' || correctionStep === 'complete' ? (
+                          <span className="text-green-600 bg-yellow-200 px-2 py-1 rounded-lg animate-pulse border-2 border-green-400 shadow-lg">
+                            {correctionNumbers.result}
+                          </span>
+                        ) : '?'}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Message final */}
+                  {correctionStep === 'complete' && (
+                    <div className="text-center bg-green-100 rounded-lg p-2 sm:p-4">
+                      <div className="text-base sm:text-xl font-bold text-green-800 mb-1 sm:mb-2">
+                        🎉 Maintenant tu comprends !
+                      </div>
+                      <div className="text-xs sm:text-base text-green-700">
+                        Les décompositions, c'est séparer un nombre en parties !
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
               {/* Navigation */}
               {isCorrect === false && (
-                <div className="flex justify-center">
-                      <button 
+                <div className="flex justify-center pb-3 sm:pb-0">
+                  <button
+                    ref={nextButtonRef}
                     onClick={nextExercise}
-                    className="bg-purple-500 text-white px-8 py-4 rounded-lg font-bold text-lg hover:bg-purple-600 transition-colors"
+                    className={`bg-purple-500 text-white px-3 sm:px-6 md:px-8 py-2 sm:py-4 rounded-lg font-bold text-sm sm:text-base md:text-lg hover:bg-purple-600 transition-colors shadow-lg hover:shadow-xl transform hover:scale-105 min-h-[40px] sm:min-h-[56px] md:min-h-auto ${
+                      highlightNextButton 
+                        ? 'ring-4 ring-yellow-400 ring-opacity-75 animate-pulse scale-110 bg-purple-600 shadow-2xl' 
+                        : ''
+                    }`}
                   >
                     Suivant →
                   </button>
