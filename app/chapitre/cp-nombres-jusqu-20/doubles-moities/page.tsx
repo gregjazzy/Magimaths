@@ -1574,7 +1574,7 @@ export default function DoublesMoitiesCP() {
                     {/* Choix multiples */}
               <div 
                 id="answer-choices"
-                className={`grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 max-w-sm sm:max-w-md mx-auto mb-4 sm:mb-8 transition-all duration-500 ${
+                className={`grid grid-cols-3 gap-2 sm:gap-4 max-w-sm sm:max-w-md mx-auto mb-4 sm:mb-8 transition-all duration-500 ${
                   highlightedElement === 'answer-choices' ? 'ring-8 ring-yellow-400 bg-yellow-50 rounded-lg p-4 scale-105 shadow-2xl animate-pulse' : ''
                 }`}
               >
