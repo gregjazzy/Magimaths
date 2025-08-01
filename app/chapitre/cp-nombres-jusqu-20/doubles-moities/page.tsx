@@ -1230,9 +1230,9 @@ export default function DoublesMoitiesCP() {
                 </h2>
                 <button
                   onClick={resetAll}
-                  className="bg-gray-500 text-white px-3 sm:px-4 py-2 rounded-lg font-bold hover:bg-gray-600 transition-colors text-sm sm:text-base"
+                  className="hidden sm:block bg-gray-500 text-white px-4 py-2 rounded-lg font-bold hover:bg-gray-600 transition-colors"
                 >
-                  <RotateCcw className="inline w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                  <RotateCcw className="inline w-4 h-4 mr-2" />
                   Recommencer
                 </button>
               </div>
