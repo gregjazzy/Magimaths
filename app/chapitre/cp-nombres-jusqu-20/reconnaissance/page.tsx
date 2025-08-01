@@ -1832,6 +1832,20 @@ export default function ReconnaissanceNombresCP() {
 
             {/* Question - MOBILE ULTRA-OPTIMISÉ - AVEC BOUTON ÉCOUTER */}
             <div className="fixed inset-x-4 bottom-4 top-72 bg-white rounded-xl shadow-lg text-center overflow-y-auto flex flex-col sm:relative sm:inset-x-auto sm:bottom-auto sm:top-auto sm:p-6 md:p-8 sm:mt-8 sm:flex-none sm:overflow-visible">
+              {/* Indicateur de progression mobile - toujours visible en haut */}
+              <div className="sticky top-0 bg-white z-10 px-3 py-2 border-b border-gray-200 sm:hidden">
+                <div className="flex justify-between items-center text-sm">
+                  <span className="font-bold text-gray-700">Exercice {currentExercise + 1}/{exercises.length}</span>
+                  <span className="font-bold text-blue-600">Score : {score}/{exercises.length}</span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
+                  <div 
+                    className="bg-blue-500 h-2 rounded-full transition-all duration-500"
+                    style={{ width: `${((currentExercise + 1) / exercises.length) * 100}%` }}
+                  ></div>
+                </div>
+              </div>
+              
               <div className="flex-1 p-3 overflow-y-auto sm:p-0 sm:overflow-visible">
               <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-3 sm:mb-6 md:mb-8 gap-4">
                 <h3 className="text-base sm:text-xl md:text-2xl font-bold text-gray-900 flex-1">

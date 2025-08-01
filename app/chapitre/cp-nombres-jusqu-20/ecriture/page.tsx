@@ -27,10 +27,52 @@ export default function EcritureNombresCP() {
   const [currentLetterIndex, setCurrentLetterIndex] = useState<number>(-1);
   const [exampleAnimating, setExampleAnimating] = useState(false);
   const [exampleLetterIndex, setExampleLetterIndex] = useState<number>(-1);
+  
+  // États pour Sam le Pirate
+  const [samSizeExpanded, setSamSizeExpanded] = useState(false);
+  const [exerciseStarted, setExerciseStarted] = useState(false);
+  const [showNextButton, setShowNextButton] = useState(false);
+  const [highlightNextButton, setHighlightNextButton] = useState(false);
+  const [isExplainingError, setIsExplainingError] = useState(false);
+  const [pirateIntroStarted, setPirateIntroStarted] = useState(false);
+  const [showExercisesList, setShowExercisesList] = useState(false);
 
   // Refs pour contrôler les vocaux et animations
   const stopSignalRef = useRef(false);
   const currentAudioRef = useRef<SpeechSynthesisUtterance | null>(null);
+
+  // Expressions de pirate personnalisées pour chaque exercice incorrect
+  const pirateExpressions = [
+    "Par ma barbe de pirate", // exercice 1
+    "Humm ça n'est pas vraiment ça", // exercice 2  
+    "Nom d'un alligator", // exercice 3
+    "Saperlipopette", // exercice 4
+    "Mille sabords", // exercice 5
+    "Morbleu", // exercice 6
+    "Tonnerre de Brest", // exercice 7
+    "Par tous les diables des mers", // exercice 8
+    "Sacré mille tonnerres", // exercice 9
+    "Bigre et bigre", // exercice 10
+    "Nom d'une jambe en bois", // exercice 11
+    "Sacrés mille tonnerres", // exercice 12
+    "Par Neptune", // exercice 13
+    "Bon sang de bonsoir", // exercice 14
+    "Fichtre et refichtre" // exercice 15
+  ];
+
+  // Compliments variés pour les bonnes réponses
+  const correctAnswerCompliments = [
+    "Bravo",
+    "Magnifique", 
+    "Parfait",
+    "Époustouflant",
+    "Formidable",
+    "Incroyable",
+    "Fantastique",
+    "Génial",
+    "Excellent",
+    "Superbe"
+  ];
   
   // Fonction pour mélanger un tableau
   const shuffleArray = (array: string[]) => {
@@ -42,7 +84,7 @@ export default function EcritureNombresCP() {
     return shuffled;
   };
 
-  const [shuffledChoices, setShuffledChoices] = useState<string[]>([]);
+  // Plus besoin de shuffledChoices pour saisie libre
 
   // Fonction pour arrêter tous les vocaux et animations
   const stopAllVocalsAndAnimations = () => {
@@ -68,6 +110,9 @@ export default function EcritureNombresCP() {
     setCurrentLetterIndex(-1);
     setExampleAnimating(false);
     setExampleLetterIndex(-1);
+    setIsExplainingError(false);
+    setPirateIntroStarted(false);
+    setShowExercisesList(false);
   };
 
   // Fonction pour scroller vers l'illustration
@@ -89,6 +134,156 @@ export default function EcritureNombresCP() {
         behavior: 'smooth',
         block: 'center'
       });
+    }
+  };
+
+  // Fonction pour l'introduction vocale de Sam le Pirate - DÉMARRAGE MANUEL PAR CLIC
+  const startPirateIntro = async () => {
+    if (pirateIntroStarted) return;
+    
+    // FORCER la remise à false pour le démarrage manuel
+    stopSignalRef.current = false;
+    setIsPlayingVocal(true);
+    setPirateIntroStarted(true);
+    
+    try {
+      await playAudio("Bonjour, faisons quelques exercices nom d'une jambe en bois !");
+      if (stopSignalRef.current) return;
+      
+      await wait(1000);
+      if (stopSignalRef.current) return;
+      
+      await playAudio("Pour lire l'énoncé appuie sur écouter l'énoncé");
+      if (stopSignalRef.current) return;
+      
+      // Animation sur le bouton "Écouter l'énoncé"
+      setHighlightedElement('listen-question-button');
+      setShowExercisesList(true);
+      await wait(2000);
+      setHighlightedElement(null);
+      
+      if (stopSignalRef.current) return;
+      
+      await playAudio("Dès que tu as la réponse, tu peux la saisir ici");
+      if (stopSignalRef.current) return;
+      
+      // Mettre beaucoup en évidence la zone de réponse
+      setHighlightedElement('answer-input');
+      await wait(2000);
+      setHighlightedElement(null);
+      
+      if (stopSignalRef.current) return;
+      
+      await playAudio("et appuie ensuite sur valider");
+      if (stopSignalRef.current) return;
+      
+      // Animation sur le bouton valider
+      setHighlightedElement('validate-button');
+      await wait(2000);
+      setHighlightedElement(null);
+      
+      if (stopSignalRef.current) return;
+      
+      await playAudio("en cas de mauvaise réponse, je serai là pour t'aider. En avant toutes !");
+      if (stopSignalRef.current) return;
+      
+    } catch (error) {
+      console.error('Erreur dans startPirateIntro:', error);
+    } finally {
+      setIsPlayingVocal(false);
+    }
+  };
+
+  // Fonction pour lire l'énoncé de l'exercice - LECTURE SIMPLE DE LA QUESTION
+  const startExerciseExplanation = async () => {
+    if (stopSignalRef.current || isExplainingError || !exercises[currentExercise]) return;
+    
+    stopSignalRef.current = false;
+    setIsPlayingVocal(true);
+    setExerciseStarted(true);
+    
+    try {
+      // Lire seulement l'énoncé de l'exercice
+      await playAudio(exercises[currentExercise].question);
+      if (stopSignalRef.current) return;
+      
+    } catch (error) {
+      console.error('Erreur dans startExerciseExplanation:', error);
+    } finally {
+      setIsPlayingVocal(false);
+    }
+  };
+
+  // Fonction pour animer l'explication d'une mauvaise réponse
+  const explainWrongAnswer = async () => {
+    console.log('❌ Explication mauvaise réponse pour exercice', currentExercise + 1);
+    
+    // FORCER la remise à false pour permettre l'explication
+    stopSignalRef.current = false;
+    setIsExplainingError(true);
+    setIsPlayingVocal(true);
+    
+    try {
+      // Expression de pirate personnalisée
+      const pirateExpression = pirateExpressions[currentExercise] || "Mille sabords";
+      await playAudio(pirateExpression + " !");
+      if (stopSignalRef.current) return;
+      
+      await wait(800);
+      if (stopSignalRef.current) return;
+      
+      await playAudio(`La bonne réponse est ${exercises[currentExercise].correctAnswer} !`);
+      if (stopSignalRef.current) return;
+      
+      await wait(800);
+      if (stopSignalRef.current) return;
+      
+      await playAudio(`Le nombre ${exercises[currentExercise].number} s'écrit "${exercises[currentExercise].correctAnswer}" en lettres !`);
+      if (stopSignalRef.current) return;
+      
+      await wait(1000);
+      if (stopSignalRef.current) return;
+      
+      await playAudio("Maintenant appuie sur suivant !");
+      if (stopSignalRef.current) return;
+      
+      // Illuminer le bouton suivant
+      setHighlightedElement('next-exercise-button');
+      
+      await wait(300); // Laisser l'animation se voir
+      if (stopSignalRef.current) return;
+      
+    } catch (error) {
+      console.error('Erreur dans explainWrongAnswer:', error);
+    } finally {
+      setIsPlayingVocal(false);
+      // Ne PAS remettre setIsExplainingError(false) ici - le bouton Suivant doit rester actif
+      // L'état sera réinitialisé quand l'utilisateur clique sur "Suivant"
+    }
+  };
+
+  // Fonction pour féliciter avec audio pour les bonnes réponses
+  const celebrateCorrectAnswer = async () => {
+    if (stopSignalRef.current) return;
+    
+    stopSignalRef.current = false;
+    setIsPlayingVocal(true);
+    
+    try {
+      const randomCompliment = correctAnswerCompliments[Math.floor(Math.random() * correctAnswerCompliments.length)];
+      await playAudio(randomCompliment + " !");
+      if (stopSignalRef.current) return;
+      
+      await wait(500);
+      if (stopSignalRef.current) return;
+      
+      await playAudio(`C'est bien "${exercises[currentExercise].correctAnswer}" !`);
+      if (stopSignalRef.current) return;
+      
+    } catch (error) {
+      console.error('Erreur dans celebrateCorrectAnswer:', error);
+    } finally {
+      setIsPlayingVocal(false);
     }
   };
 
@@ -523,9 +718,36 @@ export default function EcritureNombresCP() {
 
   // EFFET pour gérer les changements d'onglet interne (cours ↔ exercices)
   useEffect(() => {
-    stopAllVocalsAndAnimations();
-    setHasStarted(false);
+    if (showExercises) {
+      stopAllVocalsAndAnimations();
+      // IMPORTANT : Réinitialiser l'état de l'intro pirate pour qu'elle puisse redémarrer
+      setPirateIntroStarted(false);
+      setShowExercisesList(false);
+      // Réinitialiser l'exercice en cours
+      if (exercises.length > 0) {
+        setCurrentExercise(0);
+        setUserAnswer('');
+        setIsCorrect(null);
+      }
+      // CRITIQUE : Remettre stopSignalRef à false après avoir arrêté les animations
+      setTimeout(() => {
+        stopSignalRef.current = false;
+      }, 100);
+    } else {
+      // Quand on revient dans la section cours, remettre le bouton DÉMARRER
+      setHasStarted(false);
+      stopSignalRef.current = false;
+    }
   }, [showExercises]);
+
+  // UseEffect pour forcer la remise à zéro du champ de réponse quand on change d'exercice
+  useEffect(() => {
+    console.log('🔄 Nouvel exercice:', currentExercise + 1, '- Remise à zéro du champ');
+    setUserAnswer('');
+    setIsCorrect(null);
+    setIsExplainingError(false);
+    setHighlightedElement(null);
+  }, [currentExercise]);
 
   // Sauvegarder les progrès
   const saveProgress = (score: number, maxScore: number) => {
@@ -572,42 +794,39 @@ export default function EcritureNombresCP() {
     16: 'seize', 17: 'dix-sept', 18: 'dix-huit', 19: 'dix-neuf', 20: 'vingt'
   };
 
-  // Exercices d'écriture
+  // Exercices d'écriture - INVERSE : du chiffre vers le mot
   const exercises = [
-    { question: 'Écris en chiffres : cinq', correctAnswer: '5', choices: ['5', '4', '6'], word: 'cinq' },
-    { question: 'Écris en chiffres : huit', correctAnswer: '8', choices: ['8', '7', '9'], word: 'huit' },
-    { question: 'Écris en chiffres : douze', correctAnswer: '12', choices: ['12', '11', '13'], word: 'douze' },
-    { question: 'Écris en chiffres : quinze', correctAnswer: '15', choices: ['15', '14', '16'], word: 'quinze' },
-    { question: 'Écris en chiffres : trois', correctAnswer: '3', choices: ['3', '2', '4'], word: 'trois' },
-    { question: 'Écris en chiffres : dix-sept', correctAnswer: '17', choices: ['17', '16', '18'], word: 'dix-sept' },
-    { question: 'Écris en chiffres : neuf', correctAnswer: '9', choices: ['9', '8', '10'], word: 'neuf' },
-    { question: 'Écris en chiffres : onze', correctAnswer: '11', choices: ['11', '10', '12'], word: 'onze' },
-    { question: 'Écris en chiffres : six', correctAnswer: '6', choices: ['6', '5', '7'], word: 'six' },
-    { question: 'Écris en chiffres : quatorze', correctAnswer: '14', choices: ['14', '13', '15'], word: 'quatorze' },
-    { question: 'Écris en chiffres : vingt', correctAnswer: '20', choices: ['20', '19', '21'], word: 'vingt' },
-    { question: 'Écris en chiffres : treize', correctAnswer: '13', choices: ['13', '12', '14'], word: 'treize' },
-    { question: 'Écris en chiffres : dix-huit', correctAnswer: '18', choices: ['18', '17', '19'], word: 'dix-huit' },
-    { question: 'Écris en chiffres : sept', correctAnswer: '7', choices: ['7', '6', '8'], word: 'sept' },
-    { question: 'Écris en chiffres : seize', correctAnswer: '16', choices: ['16', '15', '17'], word: 'seize' }
+    { question: 'Écris en lettres le nombre :', number: '5', correctAnswer: 'cinq', word: 'cinq' },
+    { question: 'Écris en lettres le nombre :', number: '8', correctAnswer: 'huit', word: 'huit' },
+    { question: 'Écris en lettres le nombre :', number: '12', correctAnswer: 'douze', word: 'douze' },
+    { question: 'Écris en lettres le nombre :', number: '15', correctAnswer: 'quinze', word: 'quinze' },
+    { question: 'Écris en lettres le nombre :', number: '3', correctAnswer: 'trois', word: 'trois' },
+    { question: 'Écris en lettres le nombre :', number: '17', correctAnswer: 'dix-sept', word: 'dix-sept' },
+    { question: 'Écris en lettres le nombre :', number: '9', correctAnswer: 'neuf', word: 'neuf' },
+    { question: 'Écris en lettres le nombre :', number: '11', correctAnswer: 'onze', word: 'onze' },
+    { question: 'Écris en lettres le nombre :', number: '6', correctAnswer: 'six', word: 'six' },
+    { question: 'Écris en lettres le nombre :', number: '14', correctAnswer: 'quatorze', word: 'quatorze' },
+    { question: 'Écris en lettres le nombre :', number: '20', correctAnswer: 'vingt', word: 'vingt' },
+    { question: 'Écris en lettres le nombre :', number: '13', correctAnswer: 'treize', word: 'treize' },
+    { question: 'Écris en lettres le nombre :', number: '18', correctAnswer: 'dix-huit', word: 'dix-huit' },
+    { question: 'Écris en lettres le nombre :', number: '7', correctAnswer: 'sept', word: 'sept' },
+    { question: 'Écris en lettres le nombre :', number: '16', correctAnswer: 'seize', word: 'seize' }
   ];
 
-  // Initialiser les choix mélangés pour l'exercice actuel
-  const initializeShuffledChoices = () => {
-    const currentChoices = exercises[currentExercise].choices;
-    const shuffled = shuffleArray(currentChoices);
-    setShuffledChoices(shuffled);
-  };
-
-  // Effet pour mélanger les choix quand on change d'exercice
+  // Plus besoin des choix multiples - gardé pour compatibilité
   useEffect(() => {
-    if (exercises.length > 0) {
-      initializeShuffledChoices();
-    }
+    // Exercices utilisant saisie libre maintenant
   }, [currentExercise]);
 
-  const handleAnswerClick = (answer: string) => {
+  // handleAnswerSubmit modifiée avec la même gestion d'interruption que le cours
+  const handleAnswerSubmit = async (answer: string) => {
+    if (!answer.trim() || isPlayingVocal) return;
+    
+    const correctAnswer = exercises[currentExercise].correctAnswer;
+    // Comparaison insensible à la casse et aux espaces pour les mots
+    const correct = answer.trim().toLowerCase() === correctAnswer.toLowerCase();
+    
     setUserAnswer(answer);
-    const correct = answer === exercises[currentExercise].correctAnswer;
     setIsCorrect(correct);
     
     if (correct && !answeredCorrectly.has(currentExercise)) {
@@ -619,29 +838,37 @@ export default function EcritureNombresCP() {
       });
     }
 
-    // Si bonne réponse → passage automatique après 1.5s
+    // Réaction vocale avec même gestion que le cours
     if (correct) {
+      await celebrateCorrectAnswer();
+      
+      // Passage automatique à l'exercice suivant après 1.5s
       setTimeout(() => {
         if (currentExercise + 1 < exercises.length) {
+          // Le useEffect va s'occuper de réinitialiser les états quand currentExercise change
           setCurrentExercise(currentExercise + 1);
-          setUserAnswer('');
-          setIsCorrect(null);
         } else {
-          // Dernier exercice terminé
           const finalScoreValue = score + (!answeredCorrectly.has(currentExercise) ? 1 : 0);
           setFinalScore(finalScoreValue);
           setShowCompletionModal(true);
           saveProgress(finalScoreValue, exercises.length);
         }
       }, 1500);
+    } else {
+      // Mauvaise réponse → Explication avec Sam le Pirate
+      setTimeout(async () => {
+        await explainWrongAnswer();
+      }, 500);
     }
   };
 
+  // nextExercise modifiée pour réinitialiser les boutons Sam le Pirate
   const nextExercise = () => {
+    stopAllVocalsAndAnimations();
+    
     if (currentExercise < exercises.length - 1) {
+      // Le useEffect va s'occuper de réinitialiser les états quand currentExercise change
       setCurrentExercise(currentExercise + 1);
-      setUserAnswer('');
-      setIsCorrect(null);
     } else {
       setFinalScore(score);
       setShowCompletionModal(true);
@@ -649,15 +876,121 @@ export default function EcritureNombresCP() {
     }
   };
 
+  // resetAll modifiée pour inclure les états Sam le Pirate
   const resetAll = () => {
+    stopAllVocalsAndAnimations();
     setCurrentExercise(0);
-    setUserAnswer('');
-    setIsCorrect(null);
+    // Le useEffect va s'occuper de réinitialiser userAnswer, isCorrect, etc. quand currentExercise change
     setScore(0);
     setAnsweredCorrectly(new Set());
     setShowCompletionModal(false);
     setFinalScore(0);
+    setExerciseStarted(false);
+    setShowNextButton(false);
+    setHighlightNextButton(false);
+    setIsExplainingError(false);
+    setPirateIntroStarted(false);
+    setShowExercisesList(false);
+    // Forcer le redémarrage de l'intro après un court délai
+    setTimeout(() => {
+      stopSignalRef.current = false;
+    }, 100);
   };
+
+  // JSX pour le bouton "Écouter l'énoncé"
+  const ListenQuestionButtonJSX = () => (
+    <button
+      id="listen-question-button"
+      onClick={startExerciseExplanation}
+      disabled={isPlayingVocal}
+      className={`px-3 sm:px-6 py-1.5 sm:py-3 rounded-lg font-bold text-sm sm:text-lg transition-all shadow-lg ${
+        highlightedElement === 'listen-question-button'
+          ? 'bg-yellow-400 text-black ring-8 ring-yellow-300 animate-bounce scale-125 shadow-2xl border-4 border-orange-500'
+          : isPlayingVocal
+            ? 'bg-gray-400 text-gray-200 cursor-not-allowed'
+            : exerciseStarted
+              ? 'bg-green-500 text-white hover:bg-green-600 hover:shadow-xl hover:scale-105'
+              : 'bg-blue-500 text-white hover:bg-blue-600 hover:shadow-xl hover:scale-105'
+      } disabled:opacity-50`}
+    >
+      {isPlayingVocal ? '🎤 Énoncé en cours...' : exerciseStarted ? '🔄 Réécouter l\'énoncé' : '🎤 Écouter l\'énoncé'}
+    </button>
+  );
+
+  // JSX pour l'introduction de Sam le Pirate dans les exercices
+  const SamPirateIntroJSX = () => (
+    <div className="flex justify-center p-1 mt-2">
+      <div className="flex items-center gap-2">
+        {/* Image de Sam le Pirate */}
+        <div className={`relative flex-shrink-0 rounded-full bg-gradient-to-br from-blue-100 to-cyan-100 border-2 border-blue-200 shadow-md transition-all duration-300 ${
+          isPlayingVocal
+            ? 'w-20 sm:w-32 h-20 sm:h-32 scale-110 sm:scale-150' // When speaking - agrandi mobile
+            : pirateIntroStarted
+              ? 'w-16 sm:w-16 h-16 sm:h-16' // After "COMMENCER" clicked (reduced) - agrandi mobile
+              : 'w-16 sm:w-20 h-16 sm:h-20' // Initial - agrandi mobile
+        }`}>
+          <img 
+            src="/image/pirate-small.png" 
+            alt="Sam le Pirate" 
+            className="w-full h-full rounded-full object-cover"
+          />
+          {/* Haut-parleur animé quand il parle */}
+          {isPlayingVocal && (
+            <div className="absolute -top-1 -right-1 bg-blue-500 text-white p-2 rounded-full animate-bounce shadow-lg">
+              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.617.77L4.916 14H2a1 1 0 01-1-1V7a1 1 0 011-1h2.916l3.467-2.77a1 1 0 011.617.77zM14.657 2.929a1 1 0 011.414 0A9.972 9.972 0 0119 10a9.972 9.972 0 01-2.929 7.071 1 1 0 01-1.414-1.414A7.971 7.971 0 0017 10c0-2.21-.894-4.208-2.343-5.657a1 1 0 010-1.414zm-2.829 2.828a1 1 0 011.415 0A5.983 5.983 0 0115 10a5.983 5.983 0 01-1.757 4.243 1 1 0 01-1.415-1.414A3.983 3.983 0 0013 10a3.983 3.983 0 00-1.172-2.829 1 1 0 010-1.414z" clipRule="evenodd" />
+              </svg>
+            </div>
+          )}
+        </div>
+        
+        {/* Bouton Start Exercices - AVEC AUDIO */}
+        <button
+        onClick={startPirateIntro}
+        disabled={isPlayingVocal || pirateIntroStarted}
+        className={`relative px-6 sm:px-12 py-3 sm:py-5 rounded-xl font-black text-base sm:text-2xl transition-all duration-300 transform ${
+          isPlayingVocal 
+            ? 'bg-gradient-to-r from-gray-400 to-gray-500 text-gray-200 cursor-not-allowed animate-pulse shadow-md' 
+            : pirateIntroStarted
+              ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white opacity-75 cursor-not-allowed shadow-lg'
+              : 'bg-gradient-to-r from-orange-500 via-red-500 to-pink-500 text-white hover:from-orange-600 hover:via-red-600 hover:to-pink-600 hover:scale-110 shadow-2xl hover:shadow-3xl animate-pulse border-4 border-yellow-300'
+        } ${!isPlayingVocal && !pirateIntroStarted ? 'ring-4 ring-yellow-300 ring-opacity-75' : ''}`}
+        style={{
+          animationDuration: !isPlayingVocal && !pirateIntroStarted ? '1.5s' : '2s',
+          animationIterationCount: isPlayingVocal || pirateIntroStarted ? 'none' : 'infinite',
+          textShadow: '2px 2px 4px rgba(0,0,0,0.3)',
+          boxShadow: !isPlayingVocal && !pirateIntroStarted 
+            ? '0 10px 25px rgba(0,0,0,0.3), 0 0 30px rgba(255,215,0,0.4), inset 0 1px 0 rgba(255,255,255,0.2)' 
+            : ''
+        }}
+      >
+        {/* Effet de brillance */}
+        {!isPlayingVocal && !pirateIntroStarted && (
+          <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-transparent via-white to-transparent opacity-20 animate-pulse"></div>
+        )}
+        
+        {/* Icônes et texte avec plus d'émojis */}
+        <span className="relative z-10 flex items-center justify-center gap-2">
+          {isPlayingVocal 
+            ? <>🎤 <span className="animate-bounce">Sam parle...</span></> 
+            : pirateIntroStarted
+              ? <>✅ <span>Intro terminée</span></>
+              : <>🚀 <span className="animate-bounce">COMMENCER</span> ✨</>
+          }
+        </span>
+        
+        {/* Particules brillantes pour le bouton commencer */}
+        {!isPlayingVocal && !pirateIntroStarted && (
+          <>
+            <div className="absolute -top-1 -right-1 w-3 h-3 bg-yellow-300 rounded-full animate-ping"></div>
+            <div className="absolute -bottom-1 -left-1 w-2 h-2 bg-pink-300 rounded-full animate-ping" style={{animationDelay: '0.5s'}}></div>
+            <div className="absolute top-2 left-2 w-1 h-1 bg-white rounded-full animate-ping" style={{animationDelay: '1s'}}></div>
+          </>
+        )}
+      </button>
+      </div>
+    </div>
+  );
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-yellow-100">
@@ -672,41 +1005,51 @@ export default function EcritureNombresCP() {
             <span>Retour au chapitre</span>
           </Link>
           
-          <div className="bg-white rounded-xl p-6 shadow-lg text-center">
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">
+          <div className="bg-white rounded-xl p-2 sm:p-4 shadow-lg text-center">
+            <h1 className="text-lg sm:text-2xl lg:text-3xl font-bold text-gray-900 mb-1 sm:mb-2">
               ✍️ Écrire les nombres
             </h1>
-            <p className="text-lg text-gray-600">
+            <p className="text-lg text-gray-600 hidden sm:block">
               Apprends à écrire les nombres en chiffres !
             </p>
           </div>
         </div>
 
         {/* Navigation entre cours et exercices */}
-        <div className="flex justify-center mb-8">
+        <div className="flex justify-center mb-3 sm:mb-2">
           <div className="bg-white rounded-lg p-1 shadow-md">
             <button
               onClick={() => {
-                stopAllVocalsAndAnimations();
-                setShowExercises(false);
+                if (!isPlayingVocal) {
+                  stopAllVocalsAndAnimations();
+                  setShowExercises(false);
+                }
               }}
-              className={`px-6 py-3 rounded-lg font-bold transition-all ${
-                !showExercises 
-                  ? 'bg-orange-500 text-white shadow-md' 
-                  : 'text-gray-600 hover:bg-gray-100'
+              disabled={isPlayingVocal}
+              className={`px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-bold transition-all text-sm sm:text-base ${
+                isPlayingVocal
+                  ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  : !showExercises 
+                    ? 'bg-orange-500 text-white shadow-md' 
+                    : 'text-gray-600 hover:bg-gray-100'
               }`}
             >
               📖 Cours
             </button>
             <button
               onClick={() => {
-                stopAllVocalsAndAnimations();
-                setShowExercises(true);
+                if (!isPlayingVocal) {
+                  stopAllVocalsAndAnimations();
+                  setShowExercises(true);
+                }
               }}
-              className={`px-6 py-3 rounded-lg font-bold transition-all ${
-                showExercises 
-                  ? 'bg-orange-500 text-white shadow-md' 
-                  : 'text-gray-600 hover:bg-gray-100'
+              disabled={isPlayingVocal}
+              className={`px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-bold transition-all text-sm sm:text-base ${
+                isPlayingVocal
+                  ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  : showExercises 
+                    ? 'bg-orange-500 text-white shadow-md' 
+                    : 'text-gray-600 hover:bg-gray-100'
               }`}
             >
               ✏️ Exercices ({score}/{exercises.length})
@@ -747,13 +1090,62 @@ export default function EcritureNombresCP() {
             {/* Introduction */}
             <div 
               id="example-section"
-              className={`bg-white rounded-xl p-8 shadow-lg transition-all duration-500 ${
+              className={`bg-white rounded-xl p-8 shadow-lg transition-all duration-500 relative ${
                 highlightedElement === 'example-section' ? 'ring-4 ring-yellow-400 bg-yellow-50 scale-105' : ''
               }`}
             >
-              <h2 className="text-2xl font-bold text-center mb-6 text-gray-900">
-                🤔 Pourquoi apprendre à écrire les nombres ?
-              </h2>
+              <div className="flex items-center justify-center gap-3 mb-6">
+                <h2 className="text-2xl font-bold text-gray-900">
+                  🤔 Pourquoi apprendre à écrire les nombres ?
+                </h2>
+                {/* Bouton d'animation à côté du titre */}
+                <div className="bg-gradient-to-r from-orange-500 to-red-600 text-white rounded-full w-12 h-12 flex items-center justify-center text-xl font-bold shadow-lg hover:scale-110 cursor-pointer transition-transform duration-300 ring-2 ring-orange-300 ring-opacity-40" 
+                     title="✍️ Animation d'écriture disponible ! Cliquez pour voir comment 'cinq' devient '5'."
+                     onClick={async () => {
+                       if (!isPlayingVocal) {
+                         stopAllVocalsAndAnimations();
+                         await new Promise(resolve => setTimeout(resolve, 100));
+                         
+                         stopSignalRef.current = false;
+                         setIsPlayingVocal(true);
+                         setExampleAnimating(true);
+                         
+                         try {
+                           await playAudio("Regardez bien ! Je vais vous montrer comment 'cinq' s'écrit '5' !");
+                           await wait(800);
+                           
+                           // Animation lettre par lettre
+                           const word = "cinq";
+                           for (let i = 0; i < word.length; i++) {
+                             setExampleLetterIndex(i);
+                             await playAudio(word[i]);
+                             await wait(600);
+                           }
+                           
+                           await playAudio("Et maintenant, ça devient le chiffre 5 !");
+                           await wait(1500);
+                           
+                         } catch (error) {
+                           console.error('Erreur animation exemple:', error);
+                         } finally {
+                           setExampleAnimating(false);
+                           setExampleLetterIndex(-1);
+                           setIsPlayingVocal(false);
+                         }
+                       }
+                     }}
+                     style={{
+                       animation: 'gentle-pulse 3s ease-in-out infinite'
+                     }}>
+                  ✍️
+                </div>
+              </div>
+              <style jsx>{`
+                @keyframes gentle-pulse {
+                  0%, 100% { opacity: 1; transform: scale(1); }
+                  50% { opacity: 0.8; transform: scale(1.05); }
+                }
+              `}</style>
               
               <div className="bg-orange-50 rounded-lg p-6 mb-6">
                 <p className="text-lg text-center text-orange-800 font-semibold mb-4">
@@ -1016,153 +1408,150 @@ export default function EcritureNombresCP() {
             </div>
           </div>
         ) : (
-          /* EXERCICES */
-          <div className="space-y-8">
+          /* EXERCICES - RESPONSIVE MOBILE OPTIMISÉ (HISTORIQUE) */
+          <div className="pb-20 sm:pb-0">
+            {/* Introduction de Sam le Pirate - toujours visible */}
+            {SamPirateIntroJSX()}
+
             {/* Header exercices */}
-            <div className="bg-white rounded-xl p-6 shadow-lg">
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-2xl font-bold text-gray-900">
-                  ✏️ Exercice {currentExercise + 1} sur {exercises.length}
+            <div className="bg-white rounded-xl p-2 shadow-lg mt-8">
+              <div className="flex justify-between items-center mb-1">
+                <h2 className="text-lg font-bold text-gray-900">
+                  Exercice {currentExercise + 1}
                 </h2>
-                <button
-                  onClick={resetAll}
-                  className="bg-gray-500 text-white px-4 py-2 rounded-lg font-bold hover:bg-gray-600 transition-colors"
-                >
-                  <RotateCcw className="inline w-4 h-4 mr-2" />
-                  Recommencer
-                </button>
+                
+                <div className="text-sm font-bold text-blue-600">
+                  Score : {score}/{exercises.length}
+                </div>
               </div>
               
               {/* Barre de progression */}
-              <div className="w-full bg-gray-200 rounded-full h-4 mb-3">
+              <div className="w-full bg-gray-200 rounded-full h-3">
                 <div 
-                  className="bg-orange-500 h-4 rounded-full transition-all duration-500"
+                  className="bg-orange-500 h-3 rounded-full transition-all duration-500"
                   style={{ width: `${((currentExercise + 1) / exercises.length) * 100}%` }}
                 ></div>
               </div>
               
-              {/* Score */}
-              <div className="text-center">
-                <div className="text-xl font-bold text-orange-600">
-                  Score : {score}/{exercises.length}
-                </div>
-              </div>
             </div>
 
-            {/* Question */}
-            <div className="bg-white rounded-xl p-8 shadow-lg text-center">
-              <h3 className="text-2xl font-bold mb-8 text-gray-900">
-                {exercises[currentExercise].question}
-              </h3>
-              
-              {/* Affichage du mot */}
-              <div className="bg-orange-50 rounded-lg p-6 mb-8">
-                <div className="text-6xl font-bold text-orange-600 mb-4">
-                  {exercises[currentExercise].word}
+            {/* Question - MOBILE ULTRA-OPTIMISÉ - AVEC BOUTON ÉCOUTER */}
+            <div className="fixed inset-x-4 bottom-4 top-72 bg-white rounded-xl shadow-lg text-center overflow-y-auto flex flex-col sm:relative sm:inset-x-auto sm:bottom-auto sm:top-auto sm:p-6 md:p-8 sm:mt-8 sm:flex-none sm:overflow-visible">
+              {/* Indicateur de progression mobile - toujours visible en haut */}
+              <div className="sticky top-0 bg-white z-10 px-3 py-2 border-b border-gray-200 sm:hidden">
+                <div className="flex justify-between items-center text-sm">
+                  <span className="font-bold text-gray-700">Exercice {currentExercise + 1}/{exercises.length}</span>
+                  <span className="font-bold text-orange-600">Score : {score}/{exercises.length}</span>
                 </div>
-                <p className="text-lg text-gray-700 font-semibold">
-                  Écris ce nombre en chiffres !
-                </p>
+                <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
+                  <div 
+                    className="bg-orange-500 h-2 rounded-full transition-all duration-500"
+                    style={{ width: `${((currentExercise + 1) / exercises.length) * 100}%` }}
+                  ></div>
+                </div>
               </div>
               
-              {/* Choix multiples */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-md mx-auto mb-8">
-                {shuffledChoices.map((choice) => (
-                  <button
-                    key={choice}
-                    onClick={() => handleAnswerClick(choice)}
-                    disabled={isCorrect !== null}
-                    className={`p-6 rounded-lg font-bold text-3xl transition-all ${
-                      userAnswer === choice
-                        ? isCorrect === true
-                          ? 'bg-green-500 text-white'
-                          : isCorrect === false
-                            ? 'bg-red-500 text-white'
-                            : 'bg-orange-500 text-white'
-                        : exercises[currentExercise].correctAnswer === choice && isCorrect === false
-                          ? 'bg-green-200 text-green-800 border-2 border-green-500'
-                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200 disabled:opacity-50'
-                    } disabled:cursor-not-allowed`}
-                  >
-                    {choice}
-                  </button>
-                ))}
+              <div className="flex-1 p-3 overflow-y-auto sm:p-0 sm:overflow-visible">
+              <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-3 sm:mb-6 md:mb-8 gap-4">
+                <h3 className="text-base sm:text-xl md:text-2xl font-bold text-gray-900 flex-1">
+                  {exercises[currentExercise]?.question || "Écris en lettres"}
+                </h3>
+                {ListenQuestionButtonJSX()}
               </div>
               
-              {/* Résultat */}
-              {isCorrect !== null && (
-                <div className={`p-6 rounded-lg mb-6 ${
-                  isCorrect ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                }`}>
-                  <div className="flex items-center justify-center space-x-3 mb-4">
-                    {isCorrect ? (
-                      <>
-                        <CheckCircle className="w-8 h-8" />
-                        <span className="font-bold text-xl">
-                          Excellent ! "{exercises[currentExercise].word}" = {exercises[currentExercise].correctAnswer} !
-                        </span>
-                      </>
-                    ) : (
-                      <>
-                        <XCircle className="w-8 h-8" />
-                        <span className="font-bold text-xl">
-                          Pas tout à fait... "{exercises[currentExercise].word}" = {exercises[currentExercise].correctAnswer} !
-                        </span>
-                      </>
-                    )}
+              {/* Affichage du chiffre avec explication si erreur */}
+              <div className={`bg-white border-2 rounded-lg p-4 sm:p-6 md:p-8 mb-4 sm:mb-6 transition-all duration-500 ${
+                isExplainingError ? 'border-yellow-400 bg-yellow-50 ring-4 ring-yellow-300' : 'border-orange-200'
+              }`}>
+                <div className="py-6 sm:py-8 md:py-10">
+                  {/* Affichage du chiffre */}
+                  <div className="text-6xl sm:text-8xl font-bold text-blue-600 mb-4">
+                    {exercises[currentExercise]?.number}
                   </div>
+                  <p className="text-sm sm:text-lg text-gray-700 font-semibold mb-6 hidden sm:block">
+                    Écris ce nombre en lettres !
+                  </p>
                   
-                  {/* Explication pour les mauvaises réponses */}
-                  {!isCorrect && (
-                    <div className="bg-white rounded-lg p-6 border-2 border-blue-300">
-                  <h4 className="text-lg font-bold mb-4 text-blue-800 text-center">
-                        📚 Explication
-                  </h4>
-                      
-                  <div className="space-y-4">
-                                                  <div className="bg-blue-50 rounded-lg p-4 text-center">
-                            <div className="text-xl font-bold text-blue-600 mb-2">
-                              "{exercises[currentExercise].word}" s'écrit {exercises[currentExercise].correctAnswer}
-                        </div>
-                            <div className="mb-4 flex justify-center items-center min-h-[40px]">
-                              {parseInt(exercises[currentExercise].correctAnswer) <= 10 ? (
-                                <div className="flex flex-wrap justify-center gap-1">
-                                  {renderCircles(parseInt(exercises[currentExercise].correctAnswer))}
-                        </div>
-                              ) : (
-                                <div className="text-2xl font-bold text-gray-600">
-                                  {exercises[currentExercise].correctAnswer} objets
+                  {/* Message d'explication avec la bonne réponse en rouge */}
+                  {isExplainingError && (
+                    <div className="bg-red-100 border-2 border-red-400 rounded-lg p-4 mb-4">
+                      <div className="text-lg font-bold text-red-800 mb-2">
+                        🏴‍☠️ Explication de Sam le Pirate
                       </div>
-                              )}
-                    </div>
-                            <div className="text-lg text-gray-700">
-                              Vois-tu la correspondance entre le mot et le chiffre ?
-                          </div>
-                        </div>
-                        
-                        <div className="bg-gradient-to-r from-orange-100 to-yellow-100 rounded-lg p-3 text-center">
-                          <div className="text-lg">🌟</div>
-                          <p className="text-sm font-semibold text-orange-800">
-                            Maintenant tu sais écrire "{exercises[currentExercise].word}" !
-                      </p>
-                    </div>
-                  </div>
+                      <div className="text-red-700 text-xl">
+                        La bonne réponse est <span className="font-bold text-3xl text-red-800">{exercises[currentExercise]?.correctAnswer}</span> !
+                      </div>
+                      <div className="text-sm text-red-600 mt-2">
+                        Le nombre "{exercises[currentExercise]?.number}" s'écrit "{exercises[currentExercise]?.correctAnswer}" en lettres !
+                      </div>
                     </div>
                   )}
                 </div>
-              )}
+              </div>
               
-              {/* Navigation */}
-              {isCorrect === false && (
-                <div className="flex justify-center">
-                  <button
+              {/* Champ de réponse */}
+              <div className="mb-8 sm:mb-12">
+                <div className={`relative max-w-xs mx-auto transition-all duration-500 ${
+                  highlightedElement === 'answer-input' ? 'ring-8 ring-yellow-400 bg-yellow-100 rounded-lg p-4 scale-110 shadow-2xl animate-pulse' : ''
+                }`}>
+                  <input
+                    id="answer-input"
+                    type="text"
+                    value={userAnswer}
+                    onChange={(e) => setUserAnswer(e.target.value)}
+                    onKeyPress={(e) => e.key === 'Enter' && handleAnswerSubmit(userAnswer)}
+                    onClick={() => stopAllVocalsAndAnimations()}
+                    disabled={isCorrect !== null || isPlayingVocal}
+                    className="w-full px-4 sm:px-6 py-3 sm:py-4 text-xl sm:text-2xl font-bold text-center border-4 border-gray-300 rounded-xl focus:border-orange-500 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed bg-black text-white"
+                    placeholder="Ex: cinq"
+                    autoComplete="off"
+                    spellCheck="false"
+                  />
+                </div>
+              </div>
+              
+              {/* Boutons Valider et Suivant */}
+              <div className="sticky bottom-0 bg-white pt-4 mt-auto sm:mb-6 sm:static sm:pt-0">
+                  <div className="flex gap-4 justify-center">
+                    <button
+                    id="validate-button"
+                    onClick={() => handleAnswerSubmit(userAnswer)}
+                    disabled={!userAnswer.trim() || isCorrect !== null || isPlayingVocal}
+                    className={`bg-green-500 text-white px-6 sm:px-8 py-2 sm:py-3 rounded-lg font-bold text-lg sm:text-xl hover:bg-green-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
+                      highlightedElement === 'validate-button' ? 'ring-8 ring-yellow-400 bg-yellow-500 animate-bounce scale-125 shadow-2xl border-4 border-orange-500' : ''
+                    }`}
+                  >
+                    Valider
+                    </button>
+
+                    <button
+                    id="next-exercise-button"
                     onClick={nextExercise}
-                    className="bg-orange-500 text-white px-8 py-4 rounded-lg font-bold text-lg hover:bg-orange-600 transition-colors"
+                    disabled={(!isExplainingError && isCorrect !== false) || isPlayingVocal}
+                    className={`bg-blue-500 text-white px-6 sm:px-8 py-2 sm:py-3 rounded-lg font-bold text-lg sm:text-xl hover:bg-blue-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
+                      highlightedElement === 'next-exercise-button' || highlightNextButton ? 'ring-8 ring-yellow-400 bg-yellow-500 animate-bounce scale-125 shadow-2xl border-4 border-orange-500' : ''
+                    } ${
+                      isExplainingError || isCorrect === false ? 'opacity-100' : 'opacity-50'
+                    }`}
                   >
                     Suivant →
-                  </button>
+                    </button>
+                  </div>
+              </div>
+              </div>
+              
+              {/* Résultat - Simplifié */}
+              {isCorrect !== null && isCorrect && (
+                <div className="p-4 sm:p-6 rounded-lg mb-6 bg-green-100 text-green-800">
+                  <div className="flex items-center justify-center space-x-3">
+                    <CheckCircle className="w-6 h-6 sm:w-8 sm:h-8" />
+                    <span className="font-bold text-lg sm:text-xl">
+                      Bravo ! {exercises[currentExercise].number} = "{exercises[currentExercise].correctAnswer}" !
+                    </span>
+                  </div>
                 </div>
               )}
+              
             </div>
           </div>
         )}
