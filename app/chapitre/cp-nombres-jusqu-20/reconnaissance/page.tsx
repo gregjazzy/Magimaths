@@ -486,29 +486,34 @@ export default function ReconnaissanceNombresCP() {
 
 
 
-  // Fonction pour créer l'affichage des boules responsive (HISTORIQUE MOBILE)
+  // Fonction pour créer l'affichage des boules responsive AVEC ANIMATION DE SAUT
   const renderVisualDots = (visual: string, isCourse = false) => {
     // Compter le nombre de boules bleues ou pièces d'or
     const dotCount = (visual.match(/🟡|🔵/g) || []).length;
-    const dots = Array(dotCount).fill('🟡');
     
     // Diviser en groupes de 5 maximum
     const groups = [];
-    for (let i = 0; i < dots.length; i += 5) {
-      groups.push(dots.slice(i, i + 5));
+    for (let i = 0; i < dotCount; i += 5) {
+      const groupSize = Math.min(5, dotCount - i);
+      groups.push(Array(groupSize).fill(null).map((_, idx) => i + idx + 1));
     }
     
     return (
-      <div className="flex flex-col items-center space-y-1 sm:space-y-2">
+      <div className="flex flex-col items-center space-y-2 sm:space-y-3">
         {groups.map((group, groupIndex) => (
-          <div key={groupIndex} className="flex justify-center space-x-1 sm:space-x-2">
-            {group.map((dot, dotIndex) => (
-              <span 
-                key={dotIndex} 
-                className={`${isCourse ? 'text-2xl sm:text-3xl' : 'text-lg sm:text-2xl md:text-3xl lg:text-4xl'} text-blue-600`}
-              >
-                {dot}
-              </span>
+          <div key={groupIndex} className="flex justify-center space-x-2 sm:space-x-3">
+            {group.map((dotNumber) => (
+              <div
+                key={dotNumber} 
+                className={`w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 bg-yellow-500 rounded-full border-2 border-yellow-600 shadow-md transition-all duration-300 ${
+                  animatingPoints.includes(dotNumber) 
+                    ? 'ring-4 ring-orange-400 bg-orange-400 animate-bounce scale-125 shadow-lg' 
+                    : 'hover:scale-105'
+                }`}
+                style={{
+                  animationDuration: animatingPoints.includes(dotNumber) ? '0.6s' : undefined
+                }}
+              />
             ))}
           </div>
         ))}
@@ -1207,9 +1212,70 @@ export default function ReconnaissanceNombresCP() {
                 highlightedElement === 'introduction-section' ? 'ring-4 ring-yellow-400 bg-yellow-50 scale-105' : ''
               }`}
             >
-              <h2 className="text-xl sm:text-2xl font-bold text-center mb-3 sm:mb-6 text-gray-900">
-                🤔 Qu'est-ce que reconnaître un nombre ?
-              </h2>
+              <div className="flex items-center justify-center gap-3 mb-3 sm:mb-6">
+                <h2 className="text-xl sm:text-2xl font-bold text-gray-900">
+                  🤔 Qu'est-ce que reconnaître un nombre ?
+                </h2>
+                {/* Bouton d'animation à côté du titre */}
+                <div className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-full w-12 h-12 flex items-center justify-center text-xl font-bold shadow-lg hover:scale-110 cursor-pointer transition-transform duration-300 ring-2 ring-blue-300 ring-opacity-40" 
+                     title="🎬 Animation de comptage disponible ! Cliquez pour voir les points s'animer."
+                     onClick={async () => {
+                       if (!isPlayingVocal) {
+                         stopAllVocalsAndAnimations();
+                         await new Promise(resolve => setTimeout(resolve, 100));
+                         
+                         stopSignalRef.current = false;
+                         setIsPlayingVocal(true);
+                         
+                         try {
+                           await playAudio("Regardez bien ! Je vais compter ces 3 points avec vous !");
+                           if (stopSignalRef.current) return;
+                           await wait(800);
+                           
+                           setAnimatingPoints([]);
+                           await wait(300);
+                           
+                           setAnimatingPoints([1]);
+                           await playAudio("Un !");
+                           if (stopSignalRef.current) return;
+                           await wait(800);
+                           
+                           setAnimatingPoints([1, 2]);
+                           await playAudio("Deux !");
+                           if (stopSignalRef.current) return;
+                           await wait(800);
+                           
+                           setAnimatingPoints([1, 2, 3]);
+                           await playAudio("Trois !");
+                           if (stopSignalRef.current) return;
+                           await wait(1000);
+                           
+                           setHighlightNumber3(true);
+                           await playAudio("Et voilà ! Le résultat est 3 !");
+                           if (stopSignalRef.current) return;
+                           await wait(1500);
+                           
+                         } catch (error) {
+                           console.error('Erreur animation:', error);
+                         } finally {
+                           setAnimatingPoints([]);
+                           setHighlightNumber3(false);
+                           setIsPlayingVocal(false);
+                         }
+                       }
+                     }}
+                     style={{
+                       animation: 'gentle-pulse 3s ease-in-out infinite'
+                     }}>
+                  🎬
+                </div>
+              </div>
+              <style jsx>{`
+                @keyframes gentle-pulse {
+                  0%, 100% { opacity: 1; transform: scale(1); }
+                  50% { opacity: 0.8; transform: scale(1.05); }
+                }
+              `}</style>
               
               <div 
                 className={`bg-blue-50 rounded-lg p-3 sm:p-6 mb-3 sm:mb-6 transition-all duration-500 ${
@@ -1221,10 +1287,11 @@ export default function ReconnaissanceNombresCP() {
                 </p>
                 
                 <div 
-                  className={`bg-white rounded-lg p-2 sm:p-4 transition-all duration-500 ${
+                  className={`bg-white rounded-lg p-2 sm:p-4 transition-all duration-500 relative ${
                     highlightedElement === 'example-box' ? 'ring-4 ring-yellow-400 bg-yellow-50' : ''
                   }`}
                 >
+
                   <div className="text-center">
                     <div className="text-base sm:text-xl font-bold text-blue-600 mb-2 sm:mb-4">
                       <div className="mb-1 sm:mb-2">Exemple :</div>
@@ -1261,13 +1328,32 @@ export default function ReconnaissanceNombresCP() {
             {/* UN SEUL tableau unifié */}
             <div 
               id="number-choice-table"
-              className={`bg-white rounded-xl p-4 md:p-8 shadow-lg transition-all duration-500 ${
+              className={`bg-white rounded-xl p-4 md:p-8 shadow-lg transition-all duration-500 relative ${
                 highlightedElement === 'choice-list' ? 'ring-4 ring-yellow-400 bg-yellow-50 scale-105' : ''
               }`}
             >
-              <h2 className="text-xl md:text-2xl font-bold text-center mb-6 text-gray-900">
-                🎯 Choisis un nombre
-              </h2>
+
+              <div className="flex items-center justify-center gap-3 mb-6">
+                <h2 className="text-xl md:text-2xl font-bold text-gray-900">
+                  🎯 Choisis un nombre
+                </h2>
+                <div className="relative group">
+                  <div className="bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-full w-12 h-12 flex items-center justify-center text-xl font-bold shadow-lg hover:scale-110 transition-transform duration-300 ring-2 ring-green-300 ring-opacity-40" 
+                       style={{
+                         animation: 'gentle-pulse 3s ease-in-out infinite'
+                       }}>
+                    🔢
+                  </div>
+                  
+                  {/* Tooltip au survol */}
+                  <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50">
+                    <div className="bg-gray-800 text-white text-sm rounded-lg py-2 px-3 whitespace-nowrap shadow-lg">
+                      👆 Clique sur un nombre ci-dessous pour voir l'animation !
+                      <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-gray-800"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
               
               {/* Grille responsive optimisée mobile */}
               <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-10 gap-3 md:gap-3 max-w-4xl mx-auto">
@@ -1370,6 +1456,11 @@ export default function ReconnaissanceNombresCP() {
                 {/* Avec les doigts */}
                 <div 
                   id="fingers-method"
+                  className={`bg-pink-50 rounded-lg p-3 sm:p-6 cursor-pointer hover:bg-pink-100 transition-all duration-300 relative ${
+                    highlightedElement === 'fingers-section' ? 'ring-4 ring-yellow-400 bg-yellow-100 scale-105' : ''
+                  } ${
+                    animatingFingers ? 'ring-2 ring-pink-400 bg-pink-100' : ''
+                  }`}
                   onClick={async () => {
                     if (!isPlayingVocal) {
                       // Arrêter toutes les animations et voix en cours
@@ -1433,12 +1524,16 @@ export default function ReconnaissanceNombresCP() {
                       }
                     }
                   }}
-                  className={`bg-pink-50 rounded-lg p-3 sm:p-6 cursor-pointer hover:bg-pink-100 transition-all duration-300 ${
-                    highlightedElement === 'fingers-section' ? 'ring-4 ring-yellow-400 bg-yellow-100 scale-105' : ''
-                  } ${
-                    animatingFingers ? 'ring-2 ring-pink-400 bg-pink-100' : ''
-                  }`}
                 >
+                  {/* Bouton d'animation sur la box */}
+                  <div className="absolute top-2 left-2 bg-gradient-to-r from-pink-500 to-rose-600 text-white rounded-full w-10 h-10 flex items-center justify-center text-lg font-bold shadow-md hover:scale-110 cursor-pointer transition-transform duration-300" 
+                       title="✋ Animation avec les doigts !"
+                       style={{
+                         animation: 'gentle-pulse 3s ease-in-out infinite'
+                       }}>
+                    ✋
+                  </div>
+
                   <h3 className="text-base sm:text-xl font-bold mb-2 sm:mb-4 text-pink-800 text-center">
                     ✋ Avec tes doigts (jusqu'à 10)
                   </h3>
@@ -1488,6 +1583,11 @@ export default function ReconnaissanceNombresCP() {
                 {/* Avec des groupes de 5 */}
                 <div 
                   id="groups-method"
+                  className={`bg-purple-50 rounded-lg p-3 sm:p-6 cursor-pointer hover:bg-purple-100 transition-all duration-300 relative ${
+                    highlightedElement === 'groups-section' ? 'ring-4 ring-yellow-400 bg-yellow-100 scale-105' : ''
+                  } ${
+                    animatingGroups ? 'ring-2 ring-purple-400 bg-purple-100' : ''
+                  }`}
                   onClick={async () => {
                     if (!isPlayingVocal) {
                       // Arrêter toutes les animations et voix en cours
@@ -1554,12 +1654,16 @@ export default function ReconnaissanceNombresCP() {
                       }
                     }
                   }}
-                  className={`bg-purple-50 rounded-lg p-3 sm:p-6 cursor-pointer hover:bg-purple-100 transition-all duration-300 ${
-                    highlightedElement === 'groups-section' ? 'ring-4 ring-yellow-400 bg-yellow-100 scale-105' : ''
-                  } ${
-                    animatingGroups ? 'ring-2 ring-purple-400 bg-purple-100' : ''
-                  }`}
                 >
+                  {/* Bouton d'animation sur la box */}
+                  <div className="absolute top-2 left-2 bg-gradient-to-r from-purple-500 to-indigo-600 text-white rounded-full w-10 h-10 flex items-center justify-center text-lg font-bold shadow-md hover:scale-110 cursor-pointer transition-transform duration-300" 
+                       title="📦 Animation par groupes de 5 !"
+                       style={{
+                         animation: 'gentle-pulse 3s ease-in-out infinite'
+                       }}>
+                    📦
+                  </div>
+
                   <h3 className="text-base sm:text-xl font-bold mb-2 sm:mb-4 text-purple-800 text-center">
                     📦 Avec des groupes de 5
                   </h3>

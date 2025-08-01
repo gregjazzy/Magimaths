@@ -128,11 +128,145 @@ const playPreGeneratedAudio = (audioPath: string, resolve: () => void): void => 
   });
 };
 
+// 🔍 DÉTECTION DE COMPATIBILITÉ VOCALE
+const checkVoiceCompatibility = (): { supported: boolean, reason?: string } => {
+  // 🧪 SIMULATION : Force le fallback pour tester
+  // Décommentez la ligne suivante pour forcer le mode fallback
+  // return { supported: false, reason: '🧪 SIMULATION : Audio désactivé pour test' };
+  
+  if (typeof window === 'undefined') {
+    return { supported: false, reason: 'Côté serveur' };
+  }
+  
+  if (!('speechSynthesis' in window)) {
+    return { supported: false, reason: 'Speech Synthesis non disponible dans ce navigateur' };
+  }
+  
+  // Test si des voix sont disponibles
+  const voices = speechSynthesis.getVoices();
+  if (voices.length === 0) {
+    return { supported: false, reason: 'Aucune voix disponible' };
+  }
+  
+  return { supported: true };
+};
+
+// 📖 AFFICHAGE TEXTE VISIBLE (FALLBACK VISUEL)
+const showTextFallback = (text: string) => {
+  // Supprimer ancien texte si existant
+  const existingText = document.getElementById('text-fallback');
+  if (existingText) {
+    existingText.remove();
+  }
+  
+  // Créer zone de texte visible
+  const textDiv = document.createElement('div');
+  textDiv.id = 'text-fallback';
+  textDiv.style.cssText = `
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #4a90e2;
+    color: white;
+    padding: 15px 25px;
+    border-radius: 25px;
+    z-index: 9998;
+    max-width: 80%;
+    text-align: center;
+    font-family: system-ui;
+    font-size: 16px;
+    box-shadow: 0 4px 20px rgba(74, 144, 226, 0.3);
+    animation: fadeInUp 0.3s ease-out;
+  `;
+  
+  // Ajouter animation CSS
+  if (!document.getElementById('text-fallback-styles')) {
+    const styles = document.createElement('style');
+    styles.id = 'text-fallback-styles';
+    styles.textContent = `
+      @keyframes fadeInUp {
+        from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+        to { opacity: 1; transform: translateX(-50%) translateY(0); }
+      }
+      @keyframes fadeOut {
+        from { opacity: 1; }
+        to { opacity: 0; }
+      }
+    `;
+    document.head.appendChild(styles);
+  }
+  
+  textDiv.innerHTML = `
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <span>📖</span>
+      <span>${text}</span>
+      <button onclick="this.parentElement.parentElement.remove()" 
+              style="background: none; border: none; color: white; cursor: pointer; font-size: 18px;">✖</button>
+    </div>
+  `;
+  
+  document.body.appendChild(textDiv);
+  
+  // Auto-suppression après la durée de lecture estimée
+  const readingTime = Math.max(3000, text.length * 50); // ~50ms par caractère
+  setTimeout(() => {
+    if (textDiv.parentElement) {
+      textDiv.style.animation = 'fadeOut 0.3s ease-out';
+      setTimeout(() => textDiv.remove(), 300);
+    }
+  }, readingTime);
+};
+
+// 🚨 AFFICHAGE ALERTE NAVIGATEUR NON COMPATIBLE
+const showVoiceCompatibilityAlert = (reason: string) => {
+  // Vérifier si l'alerte existe déjà
+  if (document.getElementById('voice-compatibility-alert')) {
+    return; // Ne pas créer plusieurs alertes
+  }
+  
+  // Créer une notification visuelle
+  const alertDiv = document.createElement('div');
+  alertDiv.id = 'voice-compatibility-alert';
+  alertDiv.style.cssText = `
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: #ff6b6b;
+    color: white;
+    padding: 15px;
+    border-radius: 8px;
+    z-index: 9999;
+    max-width: 320px;
+    font-family: system-ui;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  `;
+  alertDiv.innerHTML = `
+    <strong>🔊 Audio non disponible</strong><br>
+    ${reason}<br>
+    <small>💡 Essayez Chrome ou Edge pour l'audio</small><br>
+    <small>📖 Le texte s'affichera à l'écran</small>
+    <button onclick="this.parentElement.remove()" style="float: right; background: none; border: none; color: white; cursor: pointer; margin-top: -5px;">✖</button>
+  `;
+  document.body.appendChild(alertDiv);
+  
+  // Auto-suppression après 10 secondes
+  setTimeout(() => {
+    if (alertDiv.parentElement) {
+      alertDiv.remove();
+    }
+  }, 10000);
+};
+
 // 🔄 LECTURE WEB SPEECH API AVEC CONFIGURATION FIXE (FALLBACK)
 const playConfiguredWebSpeechAudio = (text: string, customRate: number, resolve: () => void): void => {
-  // 🔒 Vérification côté client uniquement
-  if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
-    console.log("🚫 BLOQUÉ : speechSynthesis non disponible");
+  // 🔍 VÉRIFICATION COMPATIBILITÉ COMPLÈTE
+  const compatibility = checkVoiceCompatibility();
+  if (!compatibility.supported) {
+    console.log(`🚫 AUDIO BLOQUÉ : ${compatibility.reason}`);
+    showVoiceCompatibilityAlert(compatibility.reason || 'Navigateur non compatible');
+    // 📖 FALLBACK VISUEL : Afficher le texte à l'écran
+    showTextFallback(text);
     resolve();
     return;
   }
@@ -173,12 +307,71 @@ const playConfiguredWebSpeechAudio = (text: string, customRate: number, resolve:
   utterance.onerror = () => {
     console.log("❌ ERREUR WEB SPEECH CONFIGURÉ :", text.substring(0, 30) + "...");
     audioState.isPlaying = false;
+    // 📖 FALLBACK VISUEL en cas d'erreur audio
+    showTextFallback(text);
     resolve();
   };
   
   console.log("🔄 DÉMARRAGE WEB SPEECH CONFIGURÉ :", text.substring(0, 30) + "...");
   audioState.isPlaying = true;
   speechSynthesis.speak(utterance);
+};
+
+// 🧪 FONCTION DE TEST DE COMPATIBILITÉ VOCALE
+export const testVoiceCompatibility = (): Promise<{success: boolean, message: string}> => {
+  return new Promise((resolve) => {
+    const compatibility = checkVoiceCompatibility();
+    
+    if (!compatibility.supported) {
+      resolve({
+        success: false,
+        message: `❌ ${compatibility.reason}`
+      });
+      return;
+    }
+    
+    // Test pratique avec un court texte
+    const testText = "Test audio réussi !";
+    const utterance = new SpeechSynthesisUtterance(testText);
+    utterance.lang = 'fr-FR';
+    utterance.rate = 1.0;
+    utterance.volume = 0.7; // Volume réduit pour le test
+    
+    let resolved = false;
+    
+    utterance.onend = () => {
+      if (!resolved) {
+        resolved = true;
+        resolve({
+          success: true,
+          message: "✅ Audio fonctionnel dans ce navigateur"
+        });
+      }
+    };
+    
+    utterance.onerror = (error) => {
+      if (!resolved) {
+        resolved = true;
+        resolve({
+          success: false,
+          message: `❌ Erreur audio: ${error.error || 'Inconnue'}`
+        });
+      }
+    };
+    
+    // Timeout si pas de réponse en 3 secondes
+    setTimeout(() => {
+      if (!resolved) {
+        resolved = true;
+        resolve({
+          success: false,
+          message: "❌ Timeout: Le navigateur ne répond pas"
+        });
+      }
+    }, 3000);
+    
+    speechSynthesis.speak(utterance);
+  });
 };
 
 // 🛑 FONCTION D'ARRÊT ULTRA-AGRESSIVE HYBRIDE
