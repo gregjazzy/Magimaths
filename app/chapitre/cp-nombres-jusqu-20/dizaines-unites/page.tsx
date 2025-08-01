@@ -1511,7 +1511,7 @@ export default function DizainesUnitesCP() {
           </div>
         ) : (
           /* EXERCICES - RESPONSIVE MOBILE OPTIMISÉ (HISTORIQUE) */
-          <div className="pb-20 sm:pb-0">
+          <div className="space-y-6">
             {/* Introduction de Sam le Pirate - toujours visible */}
             {SamPirateIntroJSX()}
 
@@ -1537,23 +1537,23 @@ export default function DizainesUnitesCP() {
               
             </div>
 
-            {/* Question - MOBILE ULTRA-OPTIMISÉ - AVEC BOUTON ÉCOUTER */}
-            <div className="fixed inset-x-4 bottom-4 top-72 bg-white rounded-xl shadow-lg text-center overflow-y-auto flex flex-col sm:relative sm:inset-x-auto sm:bottom-auto sm:top-auto sm:p-6 md:p-8 sm:mt-8 sm:flex-none sm:overflow-visible">
-              {/* Indicateur de progression mobile - toujours visible en haut */}
-              <div className="sticky top-0 bg-white z-10 px-3 py-2 border-b border-gray-200 sm:hidden">
-                <div className="flex justify-between items-center text-sm">
-                  <span className="font-bold text-gray-700">Exercice {currentExercise + 1}/{exercises.length}</span>
-                  <span className="font-bold text-purple-600">Score : {score}/{exercises.length}</span>
-                </div>
-                <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
-                  <div 
-                    className="bg-purple-500 h-2 rounded-full transition-all duration-500"
-                    style={{ width: `${((currentExercise + 1) / exercises.length) * 100}%` }}
-                  ></div>
-                </div>
+            {/* Indicateur de progression mobile - sticky sur la page */}
+            <div className="sticky top-0 bg-white z-10 px-3 py-2 border-b border-gray-200 sm:hidden mb-4">
+              <div className="flex justify-between items-center text-sm">
+                <span className="font-bold text-gray-700">Exercice {currentExercise + 1}/{exercises.length}</span>
+                <span className="font-bold text-purple-600">Score : {score}/{exercises.length}</span>
               </div>
-              
-              <div className="flex-1 p-3 overflow-y-auto sm:p-0 sm:overflow-visible">
+              <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
+                <div 
+                  className="bg-purple-500 h-2 rounded-full transition-all duration-500"
+                  style={{ width: `${((currentExercise + 1) / exercises.length) * 100}%` }}
+                ></div>
+              </div>
+            </div>
+
+            {/* Question - LAYOUT NORMAL AVEC SCROLL DE PAGE */}
+            <div className="bg-white rounded-xl shadow-lg text-center p-4 sm:p-6 md:p-8 mt-4 sm:mt-8">
+              <div className="space-y-4 sm:space-y-6 md:space-y-8">
               <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-3 sm:mb-6 md:mb-8 gap-4">
                 <h3 className="text-base sm:text-xl md:text-2xl font-bold text-gray-900 flex-1">
                   {exercises[currentExercise]?.question || "Décompose en dizaines et unités"}
@@ -1650,38 +1650,35 @@ export default function DizainesUnitesCP() {
               </div>
               
               {/* Boutons Valider et Suivant */}
-              <div className="sticky bottom-0 bg-white pt-4 mt-auto sm:mb-6 sm:static sm:pt-0">
-                  <div className="flex gap-4 justify-center">
-                    <button
-                    id="validate-button"
-                    onClick={() => handleAnswerSubmit(userAnswer)}
-                    disabled={!userAnswer.trim() || userAnswer.split(',').length !== 2 || isCorrect !== null || isPlayingVocal}
-                    className={`bg-green-500 text-white px-6 sm:px-8 py-2 sm:py-3 rounded-lg font-bold text-lg sm:text-xl hover:bg-green-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
-                      highlightedElement === 'validate-button' ? 'ring-8 ring-yellow-400 bg-yellow-500 animate-bounce scale-125 shadow-2xl border-4 border-orange-500' : ''
-                    }`}
-                  >
-                    Valider
-                    </button>
+              <div className="flex gap-4 justify-center mt-6">
+                <button
+                  id="validate-button"
+                  onClick={() => handleAnswerSubmit(userAnswer)}
+                  disabled={!userAnswer.trim() || userAnswer.split(',').length !== 2 || isCorrect !== null || isPlayingVocal}
+                  className={`bg-green-500 text-white px-6 sm:px-8 py-2 sm:py-3 rounded-lg font-bold text-lg sm:text-xl hover:bg-green-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
+                    highlightedElement === 'validate-button' ? 'ring-8 ring-yellow-400 bg-yellow-500 animate-bounce scale-125 shadow-2xl border-4 border-orange-500' : ''
+                  }`}
+                >
+                  Valider
+                </button>
 
-                    <button
-                    id="next-exercise-button"
-                    onClick={nextExercise}
-                    disabled={(!isExplainingError && isCorrect !== false) || isPlayingVocal}
-                    className={`bg-blue-500 text-white px-6 sm:px-8 py-2 sm:py-3 rounded-lg font-bold text-lg sm:text-xl hover:bg-blue-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
-                      highlightedElement === 'next-exercise-button' || highlightNextButton ? 'ring-8 ring-yellow-400 bg-yellow-500 animate-bounce scale-125 shadow-2xl border-4 border-orange-500' : ''
-                    } ${
-                      isExplainingError || isCorrect === false ? 'opacity-100' : 'opacity-50'
-                    }`}
-                  >
-                    Suivant →
-                    </button>
-                  </div>
+                <button
+                  id="next-exercise-button"
+                  onClick={nextExercise}
+                  disabled={(!isExplainingError && isCorrect !== false) || isPlayingVocal}
+                  className={`bg-blue-500 text-white px-6 sm:px-8 py-2 sm:py-3 rounded-lg font-bold text-lg sm:text-xl hover:bg-blue-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
+                    highlightedElement === 'next-exercise-button' || highlightNextButton ? 'ring-8 ring-yellow-400 bg-yellow-500 animate-bounce scale-125 shadow-2xl border-4 border-orange-500' : ''
+                  } ${
+                    isExplainingError || isCorrect === false ? 'opacity-100' : 'opacity-50'
+                  }`}
+                >
+                  Suivant →
+                </button>
               </div>
-              </div>
-              
+
               {/* Résultat - Simplifié */}
               {isCorrect !== null && isCorrect && (
-                <div className="p-4 sm:p-6 rounded-lg mb-6 bg-green-100 text-green-800">
+                <div className="p-4 sm:p-6 rounded-lg mt-6 bg-green-100 text-green-800">
                   <div className="flex items-center justify-center space-x-3">
                     <CheckCircle className="w-6 h-6 sm:w-8 sm:h-8" />
                     <span className="font-bold text-lg sm:text-xl">
@@ -1691,6 +1688,7 @@ export default function DizainesUnitesCP() {
                 </div>
               )}
               
+              </div>
             </div>
           </div>
         )}
