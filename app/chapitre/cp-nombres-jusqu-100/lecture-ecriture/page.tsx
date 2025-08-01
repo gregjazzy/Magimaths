@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, CheckCircle, XCircle, RotateCcw, Volume2, Eye, Edit } from 'lucide-react';
 
@@ -20,29 +20,90 @@ export default function LectureEcritureCP100() {
   const [animationStep, setAnimationStep] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
 
-  // Fonction pour mélanger un tableau
-  const shuffleArray = (array: string[]) => {
-    const shuffled = [...array];
-    for (let i = shuffled.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-    }
-    return shuffled;
+  // États pour Sam le Pirate et audio
+  const [highlightDigit, setHighlightDigit] = useState<'left' | 'right' | null>(null);
+  const [isExplainingError, setIsExplainingError] = useState(false);
+  const [isPlayingVocal, setIsPlayingVocal] = useState(false);
+  const [highlightedElement, setHighlightedElement] = useState<string | null>(null);
+  const [exerciseStarted, setExerciseStarted] = useState(false);
+  const [imageError, setImageError] = useState(false);
+  const [pirateIntroStarted, setPirateIntroStarted] = useState(false);
+  const [showExercisesList, setShowExercisesList] = useState(false);
+  const [showNextButton, setShowNextButton] = useState(false);
+  const [highlightNextButton, setHighlightNextButton] = useState(false);
+  const [samSizeExpanded, setSamSizeExpanded] = useState(false);
+  const stopSignalRef = useRef(false);
+
+  // Fonction pour lire l'énoncé de l'exercice - LECTURE SIMPLE DE LA QUESTION
+  const startExerciseExplanation = async () => {
+    if (isExplainingError || !exercises[currentExercise]) return;
+    
+    setIsPlayingVocal(true);
+    setExerciseStarted(true);
+    
+    await playAudio(exercises[currentExercise].question);
+    
+    setIsPlayingVocal(false);
   };
 
-  // Initialiser les choix mélangés pour l'exercice actuel
-  const initializeShuffledChoices = () => {
-    const currentChoices = exercises[currentExercise].choices;
-    const shuffled = shuffleArray(currentChoices);
-    setShuffledChoices(shuffled);
-  };
-
-  // Effet pour mélanger les choix quand on change d'exercice
+  // Réinitialiser les états sur changement d'exercice
   useEffect(() => {
-    if (exercises.length > 0) {
-      initializeShuffledChoices();
-    }
+    setHighlightDigit(null);
+    setIsExplainingError(false);
+    setIsPlayingVocal(false);
+    setHighlightedElement(null);
+    setExerciseStarted(false);
+    setImageError(false);
+    setShowNextButton(false);
+    setHighlightNextButton(false);
   }, [currentExercise]);
+
+  // Fonction pour stopper tous les vocaux et animations
+  const stopAllVocalsAndAnimations = () => {
+    stopSignalRef.current = true;
+    speechSynthesis.cancel();
+    setIsPlayingVocal(false);
+    setIsExplainingError(false);
+    setHighlightDigit(null);
+    setHighlightedElement(null);
+  };
+
+  // Effet pour détecter la navigation et stopper les vocaux
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      stopAllVocalsAndAnimations();
+    };
+
+    const handlePopState = () => {
+      stopAllVocalsAndAnimations();
+    };
+
+    // Intercepter les changements de route Next.js
+    const originalPushState = history.pushState;
+    const originalReplaceState = history.replaceState;
+
+    history.pushState = function(state, title, url) {
+      stopAllVocalsAndAnimations();
+      return originalPushState.call(history, state, title, url);
+    };
+
+    history.replaceState = function(state, title, url) {
+      stopAllVocalsAndAnimations();
+      return originalReplaceState.call(history, state, title, url);
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    window.addEventListener('popstate', handlePopState);
+
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+      window.removeEventListener('popstate', handlePopState);
+      
+      // Restaurer les fonctions originales
+      history.pushState = originalPushState;
+      history.replaceState = originalReplaceState;
+    };
+  }, []);
 
   // Sauvegarder les progrès dans localStorage
   const saveProgress = (score: number, maxScore: number) => {
@@ -89,18 +150,18 @@ export default function LectureEcritureCP100() {
     { chiffre: '100', lettres: 'cent', pronunciation: 'cent', visual: '🏠' }
   ];
 
-  // Exercices mixtes lecture/écriture - positions des bonnes réponses variées
+  // Exercices mixtes lecture/écriture - format input text
   const exercises = [
-    { type: 'lecture', question: 'Comment dit-on ce nombre ?', display: '42', correctAnswer: 'quarante-deux', choices: ['cinquante-deux', 'quarante-deux', 'trente-deux'] },
-    { type: 'ecriture', question: 'Comment écrit-on ce nombre en chiffres ?', display: 'cinquante-huit', correctAnswer: '58', choices: ['58', '48', '85'] },
-    { type: 'lecture', question: 'Comment dit-on ce nombre ?', display: '70', correctAnswer: 'soixante-dix', choices: ['soixante-dix', 'septante', 'soixante'] },
-    { type: 'ecriture', question: 'Comment écrit-on ce nombre en chiffres ?', display: 'quatre-vingts', correctAnswer: '80', choices: ['80', '40', '8'] },
-    { type: 'lecture', question: 'Comment dit-on ce nombre ?', display: '34', correctAnswer: 'trente-quatre', choices: ['vingt-quatre', 'trente-quatre', 'quarante-trois'] },
-    { type: 'ecriture', question: 'Comment écrit-on ce nombre en chiffres ?', display: 'soixante-quinze', correctAnswer: '75', choices: ['65', '75', '57'] },
-    { type: 'lecture', question: 'Comment dit-on ce nombre ?', display: '96', correctAnswer: 'quatre-vingt-seize', choices: ['quatre-vingt-seize', 'quatre-vingt-six', 'quatre-vingt-dix-six'] },
-    { type: 'ecriture', question: 'Comment écrit-on ce nombre en chiffres ?', display: 'trente-sept', correctAnswer: '37', choices: ['37', '73', '27'] },
-    { type: 'lecture', question: 'Comment dit-on ce nombre ?', display: '63', correctAnswer: 'soixante-trois', choices: ['soixante-treize', 'soixante-trois', 'cinquante-trois'] },
-    { type: 'ecriture', question: 'Comment écrit-on ce nombre en chiffres ?', display: 'quatre-vingt-douze', correctAnswer: '92', choices: ['92', '82', '29'] }
+    { type: 'lecture', question: 'Comment dit-on ce nombre ?', display: '42', correctAnswer: 'quarante-deux' },
+    { type: 'ecriture', question: 'Comment écrit-on ce nombre en chiffres ?', display: 'cinquante-huit', correctAnswer: '58' },
+    { type: 'lecture', question: 'Comment dit-on ce nombre ?', display: '70', correctAnswer: 'soixante-dix' },
+    { type: 'ecriture', question: 'Comment écrit-on ce nombre en chiffres ?', display: 'quatre-vingts', correctAnswer: '80' },
+    { type: 'lecture', question: 'Comment dit-on ce nombre ?', display: '34', correctAnswer: 'trente-quatre' },
+    { type: 'ecriture', question: 'Comment écrit-on ce nombre en chiffres ?', display: 'soixante-quinze', correctAnswer: '75' },
+    { type: 'lecture', question: 'Comment dit-on ce nombre ?', display: '96', correctAnswer: 'quatre-vingt-seize' },
+    { type: 'ecriture', question: 'Comment écrit-on ce nombre en chiffres ?', display: 'trente-sept', correctAnswer: '37' },
+    { type: 'lecture', question: 'Comment dit-on ce nombre ?', display: '63', correctAnswer: 'soixante-trois' },
+    { type: 'ecriture', question: 'Comment écrit-on ce nombre en chiffres ?', display: 'quatre-vingt-douze', correctAnswer: '92' }
   ];
 
   const speakText = (text: string) => {
@@ -109,6 +170,180 @@ export default function LectureEcritureCP100() {
       utterance.lang = 'fr-FR';
       utterance.rate = 0.9;
       speechSynthesis.speak(utterance);
+    }
+  };
+
+  // Composant JSX pour le bouton "Écouter l'énoncé"
+  const ListenQuestionButtonJSX = () => (
+    <button 
+      id="listen-question-button"
+      onClick={startExerciseExplanation}
+      disabled={isPlayingVocal}
+      className={`px-3 sm:px-6 py-1.5 sm:py-3 rounded-lg font-bold text-sm sm:text-lg transition-all shadow-lg ${
+        highlightedElement === 'listen-question-button'
+          ? 'bg-yellow-400 text-black ring-8 ring-yellow-300 animate-bounce scale-125 shadow-2xl border-4 border-orange-500'
+          : isPlayingVocal
+            ? 'bg-gray-400 text-gray-200 cursor-not-allowed'
+            : exerciseStarted
+              ? 'bg-green-500 text-white hover:bg-green-600 hover:shadow-xl hover:scale-105'
+              : 'bg-blue-500 text-white hover:bg-blue-600 hover:shadow-xl hover:scale-105'
+      } disabled:opacity-50`}
+    >
+      {isPlayingVocal ? '🎤 Énoncé en cours...' : exerciseStarted ? '🔄 Réécouter l\'énoncé' : '🎤 Écouter l\'énoncé'}
+    </button>
+  );
+
+  // JSX pour l'introduction de Sam le Pirate dans les exercices
+  const SamPirateIntroJSX = () => (
+    <div className="flex justify-center p-1 mt-0 sm:mt-2">
+      <div className="flex items-center gap-2">
+        {/* Image de Sam le Pirate */}
+        <div className={`relative flex-shrink-0 rounded-full bg-gradient-to-br from-blue-100 to-cyan-100 border-2 border-blue-200 shadow-md transition-all duration-300 ${
+          isPlayingVocal
+            ? 'w-20 sm:w-32 h-20 sm:h-32 scale-110 sm:scale-150' // When speaking - agrandi mobile
+            : pirateIntroStarted
+              ? 'w-16 sm:w-16 h-16 sm:h-16' // After "COMMENCER" clicked (reduced) - agrandi mobile
+              : 'w-16 sm:w-20 h-16 sm:h-20' // Initial - agrandi mobile
+        }`}>
+          {!imageError ? (
+            <img 
+              src="/image/pirate-small.png" 
+              alt="Sam le Pirate" 
+              className="w-full h-full rounded-full object-cover"
+              onError={() => setImageError(true)}
+            />
+          ) : (
+            <div className="absolute inset-0 flex items-center justify-center text-2xl sm:text-4xl font-bold">🏴‍☠️</div>
+          )}
+          {/* Haut-parleur animé quand il parle */}
+          {isPlayingVocal && (
+            <div className="absolute -top-1 -right-1 bg-blue-500 text-white p-2 rounded-full animate-bounce shadow-lg">
+              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.617.77L4.916 14H2a1 1 0 01-1-1V7a1 1 0 011-1h2.916l3.467-2.77a1 1 0 011.617.77zM14.657 2.929a1 1 0 011.414 0A9.972 9.972 0 0119 10a9.972 9.972 0 01-2.929 7.071 1 1 0 01-1.414-1.414A7.971 7.971 0 0017 10c0-2.21-.894-4.208-2.343-5.657a1 1 0 010-1.414zm-2.829 2.828a1 1 0 011.415 0A5.983 5.983 0 0115 10a5.983 5.983 0 01-1.757 4.243 1 1 0 01-1.415-1.414A3.983 3.983 0 0013 10a3.983 3.983 0 00-1.172-2.829 1 1 0 010-1.414z" clipRule="evenodd" />
+              </svg>
+            </div>
+          )}
+        </div>
+        
+        {/* Bouton Start Exercices - AVEC AUDIO */}
+        <button
+        onClick={startPirateIntro}
+        disabled={isPlayingVocal || pirateIntroStarted}
+        className={`relative px-6 sm:px-12 py-3 sm:py-5 rounded-xl font-black text-base sm:text-2xl transition-all duration-300 transform ${
+          isPlayingVocal 
+            ? 'bg-gradient-to-r from-gray-400 to-gray-500 text-gray-200 cursor-not-allowed animate-pulse shadow-md' 
+            : pirateIntroStarted
+              ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white opacity-75 cursor-not-allowed shadow-lg'
+              : 'bg-gradient-to-r from-orange-500 via-red-500 to-pink-500 text-white hover:from-orange-600 hover:via-red-600 hover:to-pink-600 hover:scale-110 shadow-2xl hover:shadow-3xl animate-pulse border-4 border-yellow-300'
+        } ${!isPlayingVocal && !pirateIntroStarted ? 'ring-4 ring-yellow-300 ring-opacity-75' : ''}`}
+        style={{
+          animationDuration: !isPlayingVocal && !pirateIntroStarted ? '1.5s' : '2s',
+          animationIterationCount: isPlayingVocal || pirateIntroStarted ? 'none' : 'infinite',
+          textShadow: '2px 2px 4px rgba(0,0,0,0.3)',
+          boxShadow: !isPlayingVocal && !pirateIntroStarted 
+            ? '0 10px 25px rgba(0,0,0,0.3), 0 0 30px rgba(255,215,0,0.4), inset 0 1px 0 rgba(255,255,255,0.2)' 
+            : ''
+        }}
+      >
+        {/* Effet de brillance */}
+        {!isPlayingVocal && !pirateIntroStarted && (
+          <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-transparent via-white to-transparent opacity-20 animate-pulse"></div>
+        )}
+        
+        {/* Icônes et texte avec plus d'émojis */}
+        <span className="relative z-10 flex items-center justify-center gap-2">
+          {isPlayingVocal 
+            ? <>🎤 <span className="animate-bounce">Sam parle...</span></> 
+            : pirateIntroStarted
+              ? <>✅ <span>Intro terminée</span></>
+              : <>🚀 <span className="animate-bounce">COMMENCER</span> ✨</>
+          }
+        </span>
+        
+        {/* Particules brillantes pour le bouton commencer */}
+        {!isPlayingVocal && !pirateIntroStarted && (
+          <>
+            <div className="absolute -top-1 -right-1 w-3 h-3 bg-yellow-300 rounded-full animate-ping"></div>
+            <div className="absolute -bottom-1 -left-1 w-2 h-2 bg-pink-300 rounded-full animate-ping" style={{animationDelay: '0.5s'}}></div>
+            <div className="absolute top-2 left-2 w-1 h-1 bg-white rounded-full animate-ping" style={{animationDelay: '1s'}}></div>
+          </>
+        )}
+      </button>
+      </div>
+    </div>
+  );
+
+  // Fonction pour jouer un audio
+  const playAudio = (text: string): Promise<void> => {
+    return new Promise((resolve) => {
+      if ('speechSynthesis' in window) {
+        speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'fr-FR';
+        utterance.rate = 0.9;
+        utterance.onend = () => resolve();
+        utterance.onerror = () => resolve();
+        speechSynthesis.speak(utterance);
+      } else {
+        resolve();
+      }
+    });
+  };
+
+  // Fonction pour l'introduction vocale de Sam le Pirate - DÉMARRAGE MANUEL PAR CLIC
+  const startPirateIntro = async () => {
+    if (pirateIntroStarted) return;
+    
+    // FORCER la remise à false pour le démarrage manuel
+    stopSignalRef.current = false;
+    setIsPlayingVocal(true);
+    setPirateIntroStarted(true);
+    
+    try {
+      await playAudio("Bonjour matelot ! Je vais t'aider avec la lecture et l'écriture des nombres, nom d'une jambe en bois !");
+      if (stopSignalRef.current) return;
+      
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      if (stopSignalRef.current) return;
+      
+      await playAudio("Pour lire l'énoncé appuie sur écouter l'énoncé");
+      if (stopSignalRef.current) return;
+      
+      // Animation sur le bouton "Écouter l'énoncé"
+      setHighlightedElement('listen-question-button');
+      setShowExercisesList(true);
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      setHighlightedElement(null);
+      
+      if (stopSignalRef.current) return;
+      
+      await playAudio("Dès que tu as trouvé la réponse, tu peux l'écrire dans la case");
+      if (stopSignalRef.current) return;
+      
+      // Mettre beaucoup en évidence la zone de réponse
+      setHighlightedElement('answer-input');
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      setHighlightedElement(null);
+      
+      if (stopSignalRef.current) return;
+      
+      await playAudio("et appuie ensuite sur valider");
+      if (stopSignalRef.current) return;
+      
+      // Animation sur le bouton valider
+      setHighlightedElement('validate-button');
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      setHighlightedElement(null);
+      
+      if (stopSignalRef.current) return;
+      
+      await playAudio("En cas de mauvaise réponse, je serai là pour t'expliquer. En avant toutes !");
+      if (stopSignalRef.current) return;
+      
+    } catch (error) {
+      console.error('Erreur dans startPirateIntro:', error);
+    } finally {
+      setIsPlayingVocal(false);
     }
   };
 
@@ -200,9 +435,96 @@ export default function LectureEcritureCP100() {
     }, 7500);
   };
 
-  const handleAnswerClick = (answer: string) => {
-    setUserAnswer(answer);
-    const correct = answer === exercises[currentExercise].correctAnswer;
+  // Fonction pour faire défiler vers le bouton Suivant
+  const scrollToNextButton = () => {
+    setTimeout(() => {
+      const nextButton = document.getElementById('next-exercise-button');
+      if (nextButton) {
+        nextButton.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'center' 
+        });
+      }
+    }, 500);
+  };
+
+  // Fonction pour célébrer une bonne réponse
+  const celebrateCorrectAnswer = async () => {
+    setIsPlayingVocal(true);
+    await playAudio('Bravo ! C\'est la bonne réponse !');
+    
+    // Mettre en évidence le bouton Suivant
+    setHighlightedElement('next-exercise-button');
+    
+    // Faire défiler vers le bouton Suivant
+    scrollToNextButton();
+    
+    await playAudio('Tu peux appuyer sur suivant');
+    
+    setIsPlayingVocal(false);
+  };
+
+  // Explication détaillée pour les réponses incorrectes
+  const explainWrongAnswer = async () => {
+    setIsExplainingError(true);
+    setIsPlayingVocal(true);
+    
+    const exercise = exercises[currentExercise];
+    
+    await playAudio('Ce n\'est pas la bonne réponse. Regardons ensemble !');
+    
+    if (exercise.type === 'lecture') {
+      await playAudio(`Le nombre ${exercise.display} se dit ${exercise.correctAnswer}.`);
+    } else {
+      await playAudio(`${exercise.display} s'écrit ${exercise.correctAnswer}.`);
+    }
+    
+    await playAudio(`La bonne réponse est ${exercise.correctAnswer} !`);
+    
+    // Mettre en évidence le bouton Suivant
+    setHighlightedElement('next-exercise-button');
+    
+    // Faire défiler vers le bouton Suivant
+    scrollToNextButton();
+    
+    await playAudio('Tu peux appuyer sur suivant');
+    
+    setIsExplainingError(false);
+    setIsPlayingVocal(false);
+  };
+
+  // Validation flexible des réponses (chiffres et lettres)
+  const handleAnswerSubmit = async () => {
+    if (!userAnswer.trim()) return;
+    
+    const userAnswerCleaned = userAnswer.trim().toLowerCase();
+    const correctAnswer = exercises[currentExercise].correctAnswer;
+    
+    // Mapping des nombres en mots français pour validation flexible
+    const numberWords: { [key: string]: string[] } = {
+      '21': ['21', 'vingt-et-un', 'vingt et un', 'vingt-un'],
+      '22': ['22', 'vingt-deux', 'vingt deux'],
+      '23': ['23', 'vingt-trois', 'vingt trois'],
+      '30': ['30', 'trente'],
+      '34': ['34', 'trente-quatre', 'trente quatre'],
+      '37': ['37', 'trente-sept', 'trente sept'],
+      '42': ['42', 'quarante-deux', 'quarante deux'],
+      '58': ['58', 'cinquante-huit', 'cinquante huit'],
+      '63': ['63', 'soixante-trois', 'soixante trois'],
+      '70': ['70', 'soixante-dix'],
+      '75': ['75', 'soixante-quinze'],
+      '80': ['80', 'quatre-vingts', 'quatre vingts'],
+      '92': ['92', 'quatre-vingt-douze', 'quatre vingt douze'],
+      '96': ['96', 'quatre-vingt-seize', 'quatre vingt seize'],
+      '100': ['100', 'cent']
+    };
+    
+    // Vérifier si la réponse est correcte
+    let correct = userAnswerCleaned === correctAnswer.toLowerCase();
+    if (numberWords[correctAnswer]) {
+      correct = numberWords[correctAnswer].includes(userAnswerCleaned);
+    }
+    
     setIsCorrect(correct);
     
     if (correct && !answeredCorrectly.has(currentExercise)) {
@@ -214,21 +536,10 @@ export default function LectureEcritureCP100() {
       });
     }
 
-    // Si bonne réponse → passage automatique après 1.5s
     if (correct) {
-      setTimeout(() => {
-        if (currentExercise + 1 < exercises.length) {
-          setCurrentExercise(currentExercise + 1);
-          setUserAnswer('');
-          setIsCorrect(null);
-        } else {
-          // Dernier exercice terminé
-          const finalScoreValue = score + (!answeredCorrectly.has(currentExercise) ? 1 : 0);
-          setFinalScore(finalScoreValue);
-          setShowCompletionModal(true);
-          saveProgress(finalScoreValue, exercises.length);
-        }
-      }, 1800);
+      await celebrateCorrectAnswer();
+    } else {
+      await explainWrongAnswer();
     }
   };
 
@@ -237,6 +548,10 @@ export default function LectureEcritureCP100() {
       setCurrentExercise(currentExercise + 1);
       setUserAnswer('');
       setIsCorrect(null);
+      setHighlightDigit(null);
+      setIsExplainingError(false);
+      setIsPlayingVocal(false);
+      setHighlightedElement(null); // Réinitialiser l'élément en évidence
     } else {
       setFinalScore(score);
       setShowCompletionModal(true);
@@ -245,6 +560,8 @@ export default function LectureEcritureCP100() {
   };
 
   const resetAll = () => {
+    stopAllVocalsAndAnimations(); // Arrêter tous les audios avant reset
+    
     setCurrentExercise(0);
     setUserAnswer('');
     setIsCorrect(null);
@@ -252,34 +569,57 @@ export default function LectureEcritureCP100() {
     setAnsweredCorrectly(new Set());
     setShowCompletionModal(false);
     setFinalScore(0);
+    setHighlightDigit(null);
+    setIsExplainingError(false);
+    setIsPlayingVocal(false);
+    setHighlightedElement(null);
+    setExerciseStarted(false);
+    setImageError(false);
+    setPirateIntroStarted(false);
+    setShowExercisesList(false);
+    setShowNextButton(false);
+    setHighlightNextButton(false);
+    setSamSizeExpanded(false);
+    stopSignalRef.current = false;
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-100">
       <div className="max-w-6xl mx-auto px-3 sm:px-4 py-4 sm:py-8">
         {/* Header */}
-        <div className="mb-6 sm:mb-8">
-          <Link href="/chapitre/cp-nombres-jusqu-100" className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors mb-3 sm:mb-4">
+        <div className={showExercises ? 'mb-4 sm:mb-6' : 'mb-8'}>
+          <Link href="/chapitre/cp-nombres-jusqu-100" className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors mb-4">
             <ArrowLeft className="w-4 h-4" />
-            <span className="text-sm sm:text-base">Retour au chapitre</span>
+            <span>Retour au chapitre</span>
           </Link>
           
-          <div className="bg-white rounded-xl p-4 sm:p-6 shadow-lg text-center">
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-2 sm:mb-4">
+          <div className="bg-white rounded-xl shadow-lg text-center" style={{
+            padding: showExercises ? 'clamp(0.5rem, 2vw, 1rem) clamp(0.5rem, 2vw, 1rem)' : '1.5rem'
+          }}>
+            <h1 className={`font-bold text-gray-900 ${
+              showExercises 
+                ? 'text-lg sm:text-2xl lg:text-3xl mb-1 sm:mb-2' 
+                : 'text-4xl mb-4'
+            }`}>
               ✏️ Lire et écrire jusqu'à 100
             </h1>
-            <p className="text-base sm:text-lg text-gray-600 px-2">
+            {!showExercises && (
+            <p className="text-lg text-gray-600">
               Apprends à lire et écrire tous les nombres de 21 à 100 en chiffres et en lettres !
             </p>
+            )}
           </div>
         </div>
 
         {/* Navigation entre cours et exercices */}
         <div className="flex justify-center mb-4 sm:mb-8">
-          <div className="bg-white rounded-lg p-1 shadow-md">
+          <div className="bg-white rounded-lg p-1 shadow-md flex">
             <button
-              onClick={() => setShowExercises(false)}
-              className={`px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-bold transition-all text-sm sm:text-base ${
+              onClick={() => {
+                stopAllVocalsAndAnimations();
+                setShowExercises(false);
+              }}
+              className={`px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-bold transition-all text-sm sm:text-base min-h-[48px] sm:min-h-[68px] flex items-center justify-center ${
                 !showExercises 
                   ? 'bg-purple-500 text-white shadow-md' 
                   : 'text-gray-600 hover:bg-gray-100'
@@ -288,14 +628,18 @@ export default function LectureEcritureCP100() {
               📖 Cours
             </button>
             <button
-              onClick={() => setShowExercises(true)}
-              className={`px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-bold transition-all text-sm sm:text-base ${
+              onClick={() => {
+                stopAllVocalsAndAnimations();
+                setShowExercises(true);
+              }}
+              className={`px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-bold transition-all text-sm sm:text-base min-h-[48px] sm:min-h-[68px] flex items-center justify-center gap-2 ${
                 showExercises 
                   ? 'bg-purple-500 text-white shadow-md' 
                   : 'text-gray-600 hover:bg-gray-100'
               }`}
             >
-              ✏️ Exercices ({score}/{exercises.length})
+              <span>✏️ Exercices</span>
+              <span className="text-xs sm:text-sm opacity-90">({score}/{exercises.length})</span>
             </button>
           </div>
         </div>
@@ -507,266 +851,197 @@ export default function LectureEcritureCP100() {
             </div>
           </div>
         ) : (
-          /* EXERCICES */
-          <div className="space-y-4 sm:space-y-8">
-            {/* Header exercices */}
-            <div className="bg-white rounded-xl p-4 sm:p-6 shadow-lg">
-              <div className="flex justify-between items-center mb-3 sm:mb-4">
-                <h2 className="text-xl sm:text-2xl font-bold text-gray-900">
-                  ✏️ Exercice {currentExercise + 1} sur {exercises.length}
+          /* EXERCICES - RESPONSIVE MOBILE OPTIMISÉ */
+          <div className="pb-20 sm:pb-0">
+            {/* Introduction de Sam le Pirate - toujours visible */}
+            <div className="mb-6 sm:mb-4">
+              {SamPirateIntroJSX()}
+            </div>
+            {/* Header exercices - caché sur mobile */}
+            <div className="bg-white rounded-xl p-2 shadow-lg mt-8 hidden sm:block">
+              <div className="flex justify-between items-center mb-1">
+                <h2 className="text-lg font-bold text-gray-900">
+                  Exercice {currentExercise + 1}
                 </h2>
-                <button
-                  onClick={resetAll}
-                  className="bg-gray-500 text-white px-3 sm:px-4 py-1 sm:py-2 rounded-lg font-bold hover:bg-gray-600 transition-colors text-sm sm:text-base"
-                >
-                  <RotateCcw className="inline w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-                  Recommencer
-                </button>
-              </div>
-              
-              {/* Barre de progression */}
-              <div className="w-full bg-gray-200 rounded-full h-3 sm:h-4 mb-2 sm:mb-3">
-                <div 
-                  className="bg-purple-500 h-3 sm:h-4 rounded-full transition-all duration-500"
-                  style={{ width: `${((currentExercise + 1) / exercises.length) * 100}%` }}
-                ></div>
-              </div>
-              
-              {/* Score sous la barre */}
-              <div className="text-center">
-                <div className="text-lg sm:text-xl font-bold text-purple-600">
+                
+                <div className="text-sm font-bold text-purple-600">
                   Score : {score}/{exercises.length}
                 </div>
               </div>
+              
+              {/* Barre de progression */}
+              <div className="w-full bg-gray-200 rounded-full h-3">
+                <div 
+                  className="bg-purple-500 h-3 rounded-full transition-all duration-500"
+                  style={{ width: `${((currentExercise + 1) / exercises.length) * 100}%` }}
+                ></div>
+              </div>
+              </div>
+              
+            {/* Indicateur de progression mobile - sticky sur la page */}
+            <div className="sticky top-0 bg-white z-10 px-3 py-2 border-b border-gray-200 sm:hidden mb-6">
+              <div className="flex justify-between items-center text-sm">
+                <span className="font-bold text-gray-700">Exercice {currentExercise + 1}/{exercises.length}</span>
+                <span className="font-bold text-purple-600">Score : {score}/{exercises.length}</span>
+                </div>
+              <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
+                <div 
+                  className="bg-purple-500 h-2 rounded-full transition-all duration-500"
+                  style={{ width: `${((currentExercise + 1) / exercises.length) * 100}%` }}
+                ></div>
+              </div>
             </div>
 
-            {/* Question */}
-            <div className="bg-white rounded-xl p-3 sm:p-6 md:p-8 shadow-lg text-center">
-              <h3 className="text-base sm:text-xl md:text-2xl font-bold mb-3 sm:mb-6 md:mb-8 text-gray-900">
-                {exercises[currentExercise].question}
+            {/* Question - AVEC BOUTON ÉCOUTER */}
+            <div className="bg-white rounded-xl shadow-lg text-center p-4 sm:p-6 md:p-8 mt-6 sm:mt-8">
+              <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-3 sm:mb-6 md:mb-8 gap-4">
+                <h3 className="text-base sm:text-xl md:text-2xl font-bold text-gray-900 flex-1">
+                  {exercises[currentExercise]?.question || "Question..."}
               </h3>
+                {ListenQuestionButtonJSX()}
+              </div>
               
-              {/* Affichage de la question */}
-              <div className={`rounded-lg p-3 sm:p-4 md:p-8 mb-3 sm:mb-6 md:mb-8 ${
-                exercises[currentExercise].type === 'lecture' ? 'bg-blue-50' : 'bg-green-50'
+              {/* Affichage du nombre ou expression avec correction intégrée */}
+              <div className={`bg-white border-2 rounded-lg p-4 sm:p-6 md:p-8 mb-4 sm:mb-6 transition-all duration-500 ${
+                isCorrect === true ? 'border-green-400 bg-green-50' :
+                isCorrect === false ? 'border-red-400 bg-red-50' :
+                isExplainingError ? 'border-yellow-400 bg-yellow-50 ring-4 ring-yellow-300' : 'border-purple-200'
               }`}>
-                <div className="flex items-center justify-center mb-2 sm:mb-3 md:mb-4">
-                  {exercises[currentExercise].type === 'lecture' ? (
-                    <Eye className="w-4 h-4 sm:w-6 sm:h-6 md:w-8 md:h-8 text-blue-600 mr-2 sm:mr-3" />
-                  ) : (
-                    <Edit className="w-4 h-4 sm:w-6 sm:h-6 md:w-8 md:h-8 text-green-600 mr-2 sm:mr-3" />
-                  )}
-                  <span className="text-sm sm:text-base md:text-lg font-semibold text-gray-700">
-                    {exercises[currentExercise].type === 'lecture' ? 'Je lis :' : 'J\'écris :'}
-                  </span>
-                </div>
-                <div className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-gray-800 mb-2 sm:mb-3 md:mb-4">
-                  {exercises[currentExercise].display}
-                </div>
-              </div>
-              
-              {/* Choix multiples avec design amélioré */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4 md:gap-6 max-w-2xl mx-auto mb-6 sm:mb-8">
-                {shuffledChoices.map((choice) => (
-                  <button
-                    key={choice}
-                    onClick={() => handleAnswerClick(choice)}
-                    disabled={isCorrect !== null}
-                    className={`group relative p-4 sm:p-6 md:p-8 rounded-2xl font-bold text-lg sm:text-xl md:text-2xl transition-all duration-300 min-h-[80px] sm:min-h-[90px] md:min-h-[100px] border-3 transform hover:scale-105 ${
-                      userAnswer === choice
-                        ? isCorrect === true
-                          ? 'bg-gradient-to-br from-green-400 to-green-600 text-white shadow-2xl scale-105 border-green-300'
-                          : isCorrect === false
-                            ? 'bg-gradient-to-br from-red-400 to-red-600 text-white shadow-2xl scale-105 border-red-300'
-                            : 'bg-gradient-to-br from-blue-400 to-blue-600 text-white shadow-2xl scale-105 border-blue-300'
-                        : exercises[currentExercise].correctAnswer === choice && isCorrect === false
-                          ? 'bg-gradient-to-br from-green-100 to-green-200 text-green-800 border-4 border-green-500 shadow-xl animate-pulse'
-                          : 'bg-gradient-to-br from-gray-50 to-gray-100 text-gray-800 border-2 border-gray-200 hover:border-purple-300 hover:shadow-lg hover:bg-gradient-to-br hover:from-purple-50 hover:to-purple-100 disabled:opacity-50 disabled:transform-none'
-                    } disabled:cursor-not-allowed flex items-center justify-center shadow-lg`}
-                  >
-                    <span className="text-center leading-tight">{choice}</span>
-                    {userAnswer === choice && isCorrect === true && (
-                      <div className="absolute -top-2 -right-2 text-2xl">✨</div>
-                    )}
-                    {userAnswer === choice && isCorrect === false && (
-                      <div className="absolute -top-2 -right-2 text-2xl">❌</div>
-                    )}
-                    {exercises[currentExercise].correctAnswer === choice && isCorrect === false && (
-                      <div className="absolute -top-2 -right-2 text-2xl">✅</div>
-                    )}
-                  </button>
-                ))}
-              </div>
-              
-              {/* Résultat */}
-              {isCorrect !== null && (
-                <div className={`p-4 sm:p-6 rounded-xl mb-6 shadow-lg ${
-                  isCorrect ? 'bg-gradient-to-r from-green-100 to-green-200 text-green-800 border-2 border-green-300' : 'bg-gradient-to-r from-red-100 to-red-200 text-red-800 border-2 border-red-300'
-                }`}>
-                  <div className="flex items-center justify-center space-x-3">
-                    {isCorrect ? (
-                      <>
-                        <CheckCircle className="w-8 h-8" />
-                        <span className="font-bold text-xl">
-                          Parfait ! C'est bien "{exercises[currentExercise].correctAnswer}" !
-                        </span>
-                      </>
+                <div className="py-4 sm:py-6 md:py-8">
+                  <div className="flex items-center justify-center mb-4">
+                    {exercises[currentExercise]?.type === 'lecture' ? (
+                      <Eye className="w-6 h-6 sm:w-8 sm:h-8 text-blue-600 mr-3" />
                     ) : (
-                      <>
-                        <XCircle className="w-8 h-8" />
-                        <span className="font-bold text-xl">
-                          Pas tout à fait... C'était "{exercises[currentExercise].correctAnswer}" !
-                        </span>
-                      </>
+                      <Edit className="w-6 h-6 sm:w-8 sm:h-8 text-green-600 mr-3" />
                     )}
+                    <span className="text-lg sm:text-xl font-semibold text-gray-700">
+                      {exercises[currentExercise]?.type === 'lecture' ? 'Je lis :' : 'J\'écris :'}
+                    </span>
                   </div>
-                </div>
-              )}
+                  
+                  <div className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-gray-800 mb-4">
+                    {exercises[currentExercise]?.display}
+                  </div>
 
-              {/* Feedback détaillé pour les réponses incorrectes */}
-              {!isCorrect && isCorrect !== null && (
-                <div className="bg-white rounded-xl p-6 border-3 border-blue-400 mb-6 shadow-2xl">
-                  <h4 className="text-xl font-bold mb-6 text-blue-800 text-center">
-                    🎯 Regarde la bonne réponse !
-                  </h4>
-                  <div className="space-y-6">
-                    {(() => {
-                      const exercise = exercises[currentExercise];
-                      const numberToExplain = exercise.type === 'lecture' ? exercise.display : exercise.correctAnswer;
-                      const visualization = createNumberVisualization(numberToExplain);
-                      const correctWord = exercise.type === 'lecture' ? exercise.correctAnswer : numberToWords(exercise.correctAnswer);
-                      
-                      return (
-                        <div className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl p-6">
-                          {/* Nombre à expliquer */}
-                          <div className="text-center mb-6">
-                            <div className="text-6xl font-bold text-gray-800 mb-4">
-                              {numberToExplain}
-                            </div>
-                            <div className="text-2xl font-bold text-blue-600 mb-4">
-                              se dit : <span className="text-purple-600">{correctWord}</span>
-                            </div>
-                          </div>
+                  {/* Correction intégrée - Bonne réponse */}
+                  {isCorrect !== null && isCorrect && (
+                    <div className="mt-6 p-4 sm:p-8 lg:p-12 bg-green-100 rounded-lg border-2 border-green-300">
+                      <div className="flex items-center justify-center space-x-3 sm:space-x-4">
+                        <CheckCircle className="w-6 h-6 sm:w-10 sm:h-10 lg:w-12 lg:h-12 text-green-600" />
+                        <span className="font-bold text-lg sm:text-2xl lg:text-3xl text-green-800">
+                          Bravo ! C'est bien {exercises[currentExercise]?.correctAnswer} !
+                        </span>
+                      </div>
+                    </div>
+                  )}
 
-                          {/* Illustration avec boîtes et unités animée */}
-                          <div className="bg-white rounded-lg p-6 shadow-md mb-6">
-                            <h5 className="text-lg font-bold mb-4 text-center text-gray-800">
-                              👀 Avec des paquets et des objets :
-                            </h5>
+                  {/* Correction intégrée - Mauvaise réponse */}
+                  {isCorrect !== null && !isCorrect && (
+                    <div className="mt-6 space-y-4 sm:space-y-6">
+                      <div className="p-4 sm:p-8 lg:p-12 bg-red-100 rounded-lg border-2 border-red-300">
+                        <div className="flex items-center justify-center space-x-3 sm:space-x-4 mb-4 sm:mb-6">
+                          <XCircle className="w-6 h-6 sm:w-10 sm:h-10 lg:w-12 lg:h-12 text-red-600" />
+                          <span className="font-bold text-lg sm:text-2xl lg:text-3xl text-red-800">
+                            Ce n'est pas la bonne réponse
+                          </span>
+                        </div>
+                        
+                        <div className="bg-white rounded-lg p-3 sm:p-6 lg:p-8 mb-3 sm:mb-4">
+                          <div className="text-center">
+                            <div className="text-2xl sm:text-4xl lg:text-5xl font-bold mb-3 sm:mb-4 text-gray-800">
+                              {exercises[currentExercise]?.display}
+                            </div>
                             
-                            <div className="grid md:grid-cols-3 gap-4 items-center min-h-[120px]">
-                              {/* Dizaines */}
-                              {visualization.dizaines > 0 && (
-                                <div className={`text-center transition-all duration-1000 ${
-                                  !isAnimating || animationStep >= 1 
-                                    ? 'opacity-100 transform scale-100' 
-                                    : 'opacity-0 transform scale-50'
-                                }`}>
-                                  <div className="text-4xl mb-2 transition-all duration-500">
-                                    {(!isAnimating || animationStep >= 1) ? visualization.dizainesBoxes : ''}
-                                  </div>
-                                  <div className={`text-lg font-semibold text-blue-600 transition-all duration-500 ${
-                                    !isAnimating || animationStep >= 1 ? 'opacity-100' : 'opacity-0'
-                                  }`}>
-                                    {visualization.dizaines} dizaine{visualization.dizaines > 1 ? 's' : ''}
-                                  </div>
-                                  <div className={`text-sm text-gray-600 transition-all duration-500 ${
-                                    !isAnimating || animationStep >= 1 ? 'opacity-100' : 'opacity-0'
-                                  }`}>
-                                    = {visualization.dizaines * 10}
-                                  </div>
-                                </div>
-                              )}
-                              
-                              {/* Plus */}
-                              {visualization.dizaines > 0 && visualization.unites > 0 && (
-                                <div className={`text-center transition-all duration-500 ${
-                                  !isAnimating || animationStep >= 2 
-                                    ? 'opacity-100' 
-                                    : 'opacity-0'
-                                }`}>
-                                  <div className="text-3xl font-bold text-purple-600">+</div>
-                                </div>
-                              )}
-                              
-                              {/* Unités */}
-                              {visualization.unites > 0 && (
-                                <div className={`text-center transition-all duration-1000 ${
-                                  !isAnimating || animationStep >= 2 
-                                    ? 'opacity-100 transform scale-100' 
-                                    : 'opacity-0 transform scale-50'
-                                }`}>
-                                  <div className="text-4xl mb-2 transition-all duration-500">
-                                    {(!isAnimating || animationStep >= 2) ? visualization.unitesCircles : ''}
-                                  </div>
-                                  <div className={`text-lg font-semibold text-red-600 transition-all duration-500 ${
-                                    !isAnimating || animationStep >= 2 ? 'opacity-100' : 'opacity-0'
-                                  }`}>
-                                    {visualization.unites} unité{visualization.unites > 1 ? 's' : ''}
-                                  </div>
-                                  <div className={`text-sm text-gray-600 transition-all duration-500 ${
-                                    !isAnimating || animationStep >= 2 ? 'opacity-100' : 'opacity-0'
-                                  }`}>
-                                    = {visualization.unites}
-                                  </div>
-                                </div>
-                              )}
+                            <div className="bg-blue-50 rounded-lg p-3 sm:p-6 lg:p-8 mb-3 sm:mb-4">
+                              <div className="text-sm sm:text-lg lg:text-xl font-bold text-blue-800 mb-2 sm:mb-3">
+                                💡 Explication :
+                              </div>
+                              <div className="text-sm sm:text-lg lg:text-xl text-blue-700">
+                                {exercises[currentExercise]?.type === 'lecture' 
+                                  ? `Le nombre ${exercises[currentExercise]?.display} se dit "${exercises[currentExercise]?.correctAnswer}"`
+                                  : `${exercises[currentExercise]?.display} s'écrit "${exercises[currentExercise]?.correctAnswer}"`
+                                }
+                              </div>
                             </div>
-
-                            {/* Égal */}
-                            <div className={`text-center mt-4 pt-4 border-t-2 border-gray-200 transition-all duration-1000 ${
-                              !isAnimating || animationStep >= 3 
-                                ? 'opacity-100 transform translate-y-0' 
-                                : 'opacity-0 transform translate-y-4'
-                            }`}>
-                              <div className="text-2xl font-bold text-gray-800">
-                                = {numberToExplain} = {correctWord}
+                            
+                            <div className="bg-orange-100 rounded-lg p-3 sm:p-6 lg:p-8">
+                              <div className="font-bold text-sm sm:text-lg lg:text-xl text-orange-800">
+                                ✅ La bonne réponse est : {exercises[currentExercise]?.correctAnswer}
                               </div>
                             </div>
                           </div>
-
-                          {/* Bouton audio */}
-                          <div className="text-center">
-                            <button 
-                              onClick={() => speakNumberExplanation(numberToExplain)}
-                              disabled={isAnimating}
-                              className={`bg-gradient-to-r from-blue-500 to-purple-500 text-white px-8 py-4 rounded-xl font-bold text-lg hover:from-blue-600 hover:to-purple-600 transition-all shadow-lg transform hover:scale-105 inline-flex items-center space-x-3 ${
-                                isAnimating ? 'opacity-50 cursor-not-allowed' : ''
-                              }`}
-                            >
-                              <Volume2 className="w-5 h-5" />
-                              <span>{isAnimating ? 'Animation en cours...' : 'Voir l\'animation'}</span>
-                            </button>
-                          </div>
-
-                          {/* Message d'encouragement */}
-                          <div className="bg-gradient-to-r from-purple-100 to-pink-100 rounded-lg p-4 text-center mt-4">
-                            <p className="text-lg font-semibold text-purple-800">
-                              🌟 Maintenant tu sais ! {numberToExplain} se dit "{correctWord}" ! 🌟
-                            </p>
-                          </div>
                         </div>
-                      );
-                    })()}
-                  </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
-              )}
+              </div>
               
-              {/* Navigation */}
-              {isCorrect === false && (
-                <div className="flex justify-center">
+              {/* Zone de saisie de réponse */}
+              <div className="mb-8 sm:mb-12">
+                <div className="flex flex-col items-center space-y-6">
+                  <label className="text-lg sm:text-xl font-bold text-gray-700 text-center">
+                    ✏️ Écris ta réponse :
+                  </label>
+                  
+                  <input
+                    type="text"
+                    value={userAnswer}
+                    onChange={(e) => setUserAnswer(e.target.value)}
+                    onKeyPress={(e) => {
+                      if (e.key === 'Enter') {
+                        handleAnswerSubmit();
+                      }
+                    }}
+                    placeholder="Ta réponse..."
+                    className={`text-center text-xl sm:text-2xl font-bold border-2 rounded-lg px-6 py-4 w-full max-w-md transition-all ${
+                      highlightedElement === 'answer-input' ? 'ring-8 ring-yellow-400 bg-yellow-100 rounded-lg p-4 scale-110 shadow-2xl animate-pulse' : ''
+                    } ${
+                      isCorrect === true ? 'border-green-500 bg-green-50 text-green-800' :
+                      isCorrect === false ? 'border-red-500 bg-red-50 text-red-800' :
+                      'border-gray-300 bg-white text-black focus:border-purple-500 focus:ring-2 focus:ring-purple-200'
+                    }`}
+                    disabled={isCorrect !== null || isPlayingVocal}
+                    id="answer-input"
+                    maxLength={50}
+                    autoComplete="off"
+                    spellCheck="false"
+                  />
+                </div>
+              </div>
+                    
+              {/* Boutons Valider et Suivant */}
+              <div className="flex gap-4 justify-center mt-8 mb-8">
                   <button
+                  id="validate-button"
+                  onClick={() => handleAnswerSubmit()}
+                  disabled={!userAnswer.trim() || isCorrect !== null || isPlayingVocal}
+                  className={`bg-green-500 text-white px-6 sm:px-8 py-2 sm:py-3 rounded-lg font-bold text-lg sm:text-xl hover:bg-green-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
+                    highlightedElement === 'validate-button' ? 'ring-8 ring-yellow-400 bg-yellow-500 animate-bounce scale-125 shadow-2xl border-4 border-orange-500' : ''
+                  }`}
+                >
+                  Valider
+                  </button>
+
+                  <button
+                  id="next-exercise-button"
                     onClick={nextExercise}
-                    className="bg-purple-500 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-lg font-bold text-base sm:text-lg hover:bg-purple-600 transition-colors"
+                  disabled={isCorrect === null || isPlayingVocal}
+                  className={`bg-blue-500 text-white px-6 sm:px-8 py-2 sm:py-3 rounded-lg font-bold text-lg sm:text-xl hover:bg-blue-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
+                    highlightedElement === 'next-exercise-button' ? 'ring-8 ring-yellow-400 bg-yellow-500 animate-bounce scale-125 shadow-2xl border-4 border-orange-500' : ''
+                  } ${
+                    isCorrect !== null ? 'opacity-100' : 'opacity-50'
+                  }`}
                   >
                     Suivant →
                   </button>
-                </div>
-              )}
+              </div>
+              
+
             </div>
           </div>
         )}
-
+              
         {/* Modale de fin d'exercices */}
         {showCompletionModal && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
@@ -780,31 +1055,42 @@ export default function LectureEcritureCP100() {
                   return { title: "💪 Continue !", message: "Les nombres jusqu'à 100, ça s'apprend petit à petit !", emoji: "📚" };
                 };
                 const result = getMessage();
+
                 return (
                   <>
-                    <div className="text-4xl sm:text-6xl mb-4">{result.emoji}</div>
-                    <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3">{result.title}</h3>
-                    <p className="text-base sm:text-lg text-gray-700 mb-6">{result.message}</p>
-                    <div className="bg-purple-100 rounded-lg p-4 mb-6">
-                      <p className="text-lg sm:text-xl font-bold text-gray-900">
-                        Tu as trouvé {finalScore} bonnes réponses sur {exercises.length} !
-                      </p>
-                      <div className="text-2xl sm:text-4xl mt-2">
-                        {finalScore >= 12 ? '⭐⭐⭐' : finalScore >= 8 ? '⭐⭐' : '⭐'}
+                    <h2 className="text-2xl sm:text-3xl font-bold mb-4 text-gray-900">
+                      {result.title}
+                    </h2>
+                    <div className="text-6xl mb-4">{result.emoji}</div>
+                    <p className="text-lg sm:text-xl text-gray-700 mb-6">
+                      {result.message}
+                    </p>
+                    <div className="bg-purple-50 rounded-xl p-4 mb-6">
+                      <div className="text-3xl sm:text-4xl font-bold text-purple-600 mb-2">
+                        {finalScore} / {exercises.length}
+                      </div>
+                      <div className="text-lg text-purple-700">
+                        {percentage}% de réussite
                       </div>
                     </div>
-                    <div className="flex space-x-3">
+                    <div className="flex gap-3">
                       <button
-                        onClick={resetAll}
-                        className="flex-1 bg-purple-500 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-bold hover:bg-purple-600 transition-colors text-sm sm:text-base"
+                        onClick={() => {
+                          setShowCompletionModal(false);
+                          resetAll();
+                        }}
+                        className="flex-1 bg-purple-500 text-white px-4 py-3 rounded-xl font-bold hover:bg-purple-600 transition-colors"
                       >
-                        Recommencer
+                        🔄 Recommencer
                       </button>
                       <button
-                        onClick={() => setShowCompletionModal(false)}
-                        className="flex-1 bg-gray-500 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-bold hover:bg-gray-600 transition-colors text-sm sm:text-base"
+                        onClick={() => {
+                          setShowCompletionModal(false);
+                          setShowExercises(false);
+                        }}
+                        className="flex-1 bg-gray-500 text-white px-4 py-3 rounded-xl font-bold hover:bg-gray-600 transition-colors"
                       >
-                        Fermer
+                        📖 Retour cours
                       </button>
                     </div>
                   </>
@@ -816,4 +1102,4 @@ export default function LectureEcritureCP100() {
       </div>
     </div>
   );
-} 
+}
