@@ -34,21 +34,34 @@ export default function OrdonnerComparerCP() {
   const [highlightedNumber, setHighlightedNumber] = useState<number | null>(null);
   const [orderingStep, setOrderingStep] = useState<string | null>(null);
 
+  // États pour Sam le Pirate
+  const [samSizeExpanded, setSamSizeExpanded] = useState(false);
+  const [exerciseStarted, setExerciseStarted] = useState(false);
+  const [showNextButton, setShowNextButton] = useState(false);
+  const [highlightNextButton, setHighlightNextButton] = useState(false);
+  const [isExplainingError, setIsExplainingError] = useState(false);
+  const [pirateIntroStarted, setPirateIntroStarted] = useState(false);
+  const [showExercisesList, setShowExercisesList] = useState(false);
+
   // Refs pour gérer l'audio
   const stopSignalRef = useRef(false);
   const currentAudioRef = useRef<SpeechSynthesisUtterance | null>(null);
 
-  // Fonction pour mélanger un tableau
-  const shuffleArray = (array: string[]) => {
-    const shuffled = [...array];
-    for (let i = shuffled.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-    }
-    return shuffled;
-  };
 
-  const [shuffledChoices, setShuffledChoices] = useState<string[]>([]);
+
+  // Expressions de pirate aléatoires pour chaque exercice
+  const pirateExpressions = [
+    "Mille sabords", "Tonnerre de Brest", "Sacré matelot", "Par Neptune", "Sang de pirate",
+    "Mille millions de mille sabords", "Ventrebleu", "Sapristi", "Morbleu", "Fichtre"
+  ];
+
+  // Compliments aléatoires pour les bonnes réponses
+  const correctAnswerCompliments = [
+    "Parfait", "Bravo", "Excellent", "Formidable", "Magnifique", 
+    "Super", "Génial", "Fantastique", "Merveilleux", "Extraordinaire"
+  ];
+
+
 
   // Sauvegarder les progrès
   const saveProgress = (score: number, maxScore: number) => {
@@ -104,29 +117,7 @@ export default function OrdonnerComparerCP() {
     }
   };
 
-  const stopAllVocalsAndAnimations = () => {
-    stopSignalRef.current = true;
-    setIsPlayingVocal(false);
-    setHighlightedElement(null);
-    setAnimatingComparison(false);
-    setAnimatingRangement(false);
-    setAnimatingStep(null);
-    setHighlightedSymbol(null);
-    setAnimatingExample(null);
-    setExampleStep(null);
-    setZoomingSymbolPart(null);
-    setHighlightedNumber(null);
-    setOrderingStep(null);
-    
-    if (currentAudioRef.current) {
-      speechSynthesis.cancel();
-      currentAudioRef.current = null;
-    }
-    
-    setTimeout(() => {
-      speechSynthesis.cancel();
-    }, 100);
-  };
+
 
   const playAudio = async (text: string, slowMode = false) => {
     return new Promise<void>((resolve) => {
@@ -552,6 +543,218 @@ export default function OrdonnerComparerCP() {
     }
   };
 
+  // Fonction pour l'introduction vocale de Sam le Pirate - DÉMARRAGE MANUEL PAR CLIC
+  const startPirateIntro = async () => {
+    if (pirateIntroStarted) return;
+    
+    // FORCER la remise à false pour le démarrage manuel
+    stopSignalRef.current = false;
+    setIsPlayingVocal(true);
+    setPirateIntroStarted(true);
+    
+    try {
+      await playAudio("Bonjour, faisons quelques exercices nom d'une jambe en bois !");
+      if (stopSignalRef.current) return;
+      
+      await wait(1000);
+      if (stopSignalRef.current) return;
+      
+      await playAudio("Pour lire l'énoncé appuie sur écouter l'énoncé");
+      if (stopSignalRef.current) return;
+      
+      // Animation sur le bouton "Écouter l'énoncé"
+      setHighlightedElement('listen-question-button');
+      setShowExercisesList(true);
+      await wait(2000);
+      setHighlightedElement(null);
+      
+      if (stopSignalRef.current) return;
+      
+      await playAudio("Dès que tu as la réponse, tu peux cliquer sur la bonne réponse");
+      if (stopSignalRef.current) return;
+      
+      // Mettre en évidence la zone des réponses
+      setHighlightedElement('answer-choices');
+      await wait(2000);
+      setHighlightedElement(null);
+      
+      if (stopSignalRef.current) return;
+      
+      await playAudio("Si tu te trompes, je t'expliquerai la bonne réponse !");
+      if (stopSignalRef.current) return;
+      
+      await wait(1000);
+      if (stopSignalRef.current) return;
+      
+      await playAudio("En avant toutes pour les comparaisons et rangements !");
+      if (stopSignalRef.current) return;
+      
+    } catch (error) {
+      console.error('Erreur dans startPirateIntro:', error);
+    } finally {
+      setIsPlayingVocal(false);
+    }
+  };
+
+  // Fonction pour lire l'énoncé de l'exercice
+  const startExerciseExplanation = async () => {
+    if (stopSignalRef.current || isExplainingError || !exercises[currentExercise]) return;
+    
+    stopSignalRef.current = false;
+    setIsPlayingVocal(true);
+    setExerciseStarted(true);
+    
+    try {
+      // Lire seulement l'énoncé de l'exercice
+      await playAudio(exercises[currentExercise].question);
+      if (stopSignalRef.current) return;
+      
+    } catch (error) {
+      console.error('Erreur dans startExerciseExplanation:', error);
+    } finally {
+      setIsPlayingVocal(false);
+    }
+  };
+
+  // Fonction pour féliciter avec audio pour les bonnes réponses
+  const celebrateCorrectAnswer = async () => {
+    if (stopSignalRef.current) return;
+    
+    stopSignalRef.current = false;
+    setIsPlayingVocal(true);
+    
+    try {
+      const randomCompliment = correctAnswerCompliments[Math.floor(Math.random() * correctAnswerCompliments.length)];
+      await playAudio(randomCompliment + " !");
+      if (stopSignalRef.current) return;
+      
+    } catch (error) {
+      console.error('Erreur dans celebrateCorrectAnswer:', error);
+    } finally {
+      setIsPlayingVocal(false);
+    }
+  };
+
+  // Fonction pour animer l'explication d'une mauvaise réponse
+  const explainWrongAnswer = async () => {
+    console.log('❌ Explication mauvaise réponse pour exercice', currentExercise + 1);
+    
+    // FORCER la remise à false pour permettre l'explication
+    stopSignalRef.current = false;
+    setIsExplainingError(true);
+    setIsPlayingVocal(true);
+    
+    try {
+      // Expression de pirate personnalisée
+      const pirateExpression = pirateExpressions[currentExercise] || "Mille sabords";
+      await playAudio(pirateExpression + " !");
+      if (stopSignalRef.current) return;
+      
+      await wait(800);
+      if (stopSignalRef.current) return;
+      
+      const exercise = exercises[currentExercise];
+      await playAudio(`L'ordre correct était : ${exercise.correctAnswer} !`);
+      if (stopSignalRef.current) return;
+      
+      await wait(1000);
+      if (stopSignalRef.current) return;
+      
+      await playAudio("Appuie sur le bouton Suivant pour continuer ton aventure !");
+      if (stopSignalRef.current) return;
+      
+      // Scroll vers le bouton suivant après l'explication - optimisé pour mobile
+      setTimeout(() => {
+        const nextButton = document.getElementById('next-exercise-button');
+        if (nextButton) {
+          const isMobile = window.innerWidth < 768; // sm breakpoint
+          
+          if (isMobile) {
+            // Pour mobile: scroll plus agressif pour s'assurer que le bouton est visible
+            nextButton.scrollIntoView({ 
+              behavior: 'smooth', 
+              block: 'end', // En bas de l'écran
+              inline: 'nearest' 
+            });
+            
+            // Petit délai supplémentaire puis second scroll pour s'assurer de la visibilité
+            setTimeout(() => {
+              window.scrollTo({
+                top: document.body.scrollHeight,
+                behavior: 'smooth'
+              });
+            }, 600);
+          } else {
+            // Pour desktop: scroll normal
+            nextButton.scrollIntoView({ 
+              behavior: 'smooth', 
+              block: 'center',
+              inline: 'nearest' 
+            });
+          }
+          
+          // Animation d'attention sur le bouton
+          setTimeout(() => {
+            nextButton.classList.add('animate-bounce');
+            setTimeout(() => {
+              nextButton.classList.remove('animate-bounce');
+            }, 2000);
+          }, isMobile ? 1000 : 500);
+        }
+      }, 1000); // Plus de délai pour que tout l'audio se termine
+      
+    } catch (error) {
+      console.error('Erreur dans explainWrongAnswer:', error);
+    } finally {
+      setIsPlayingVocal(false);
+      // Ne PAS remettre setIsExplainingError(false) ici - le bouton Suivant doit rester actif
+      // L'état sera réinitialisé quand l'utilisateur clique sur "Suivant"
+    }
+  };
+
+  // Fonction modifiée pour arrêter tous les vocaux et animations
+  const stopAllVocalsAndAnimations = () => {
+    console.log('🛑 Arrêt FORCÉ de tous les vocaux et animations (navigation détectée)');
+    
+    stopSignalRef.current = true;
+    
+    if (window.speechSynthesis) {
+      window.speechSynthesis.cancel();
+      console.log('🔇 speechSynthesis.cancel() forcé');
+    }
+    
+    setTimeout(() => {
+      if (window.speechSynthesis && window.speechSynthesis.speaking) {
+        window.speechSynthesis.cancel();
+        console.log('🔇 speechSynthesis.cancel() appelé (2e tentative)');
+      }
+    }, 100);
+    
+    setTimeout(() => {
+      if (window.speechSynthesis && window.speechSynthesis.speaking) {
+        window.speechSynthesis.cancel();
+        console.log('🔇 speechSynthesis.cancel() appelé (3e tentative)');
+      }
+    }, 200);
+    
+    setIsPlayingVocal(false);
+    setAnimatingComparison(false);
+    setAnimatingRangement(false);
+    setAnimatingStep(null);
+    setHighlightedElement(null);
+    setHighlightedSymbol(null);
+    setAnimatingExample(null);
+    setExampleStep(null);
+    setZoomingSymbolPart(null);
+    setHighlightedNumber(null);
+    setOrderingStep(null);
+    
+    // Réinitialiser les états Sam
+    setIsExplainingError(false);
+    setPirateIntroStarted(false);
+    setShowExercisesList(false);
+  };
+
   // Effet pour initialiser le client
   useEffect(() => {
     setIsClient(true);
@@ -673,42 +876,66 @@ export default function OrdonnerComparerCP() {
     { numbers: [15, 9, 12], ordered: [9, 12, 15] }
   ];
 
-  // Exercices mixtes (comparaison et rangement)
-  const exercises = [
-    { type: 'comparaison', question: 'Compare 7 et 4', num1: 7, num2: 4, correctAnswer: '7 > 4', choices: ['7 > 4', '7 < 4', '7 = 4'] },
-    { type: 'comparaison', question: 'Compare 3 et 9', num1: 3, num2: 9, correctAnswer: '3 < 9', choices: ['3 > 9', '3 < 9', '3 = 9'] },
-    { type: 'rangement', question: 'Classe du plus petit au plus grand : 5, 2, 8', numbers: [5, 2, 8], correctAnswer: '2, 5, 8', choices: ['2, 5, 8', '8, 5, 2', '5, 2, 8'] },
-    { type: 'comparaison', question: 'Compare 12 et 12', num1: 12, num2: 12, correctAnswer: '12 = 12', choices: ['12 > 12', '12 < 12', '12 = 12'] },
-    { type: 'rangement', question: 'Classe du plus grand au plus petit : 3, 7, 1', numbers: [3, 7, 1], correctAnswer: '7, 3, 1', choices: ['1, 3, 7', '7, 3, 1', '3, 7, 1'] },
-    { type: 'comparaison', question: 'Compare 15 et 10', num1: 15, num2: 10, correctAnswer: '15 > 10', choices: ['15 > 10', '15 < 10', '15 = 10'] },
-    { type: 'rangement', question: 'Classe du plus petit au plus grand : 14, 6, 11', numbers: [14, 6, 11], correctAnswer: '6, 11, 14', choices: ['6, 11, 14', '14, 11, 6', '11, 6, 14'] },
-    { type: 'comparaison', question: 'Compare 8 et 13', num1: 8, num2: 13, correctAnswer: '8 < 13', choices: ['8 > 13', '8 < 13', '8 = 13'] },
-    { type: 'rangement', question: 'Classe du plus grand au plus petit : 9, 4, 16', numbers: [9, 4, 16], correctAnswer: '16, 9, 4', choices: ['4, 9, 16', '16, 9, 4', '9, 16, 4'] },
-    { type: 'comparaison', question: 'Compare 6 et 6', num1: 6, num2: 6, correctAnswer: '6 = 6', choices: ['6 > 6', '6 < 6', '6 = 6'] },
-    { type: 'rangement', question: 'Classe du plus petit au plus grand : 18, 10, 15', numbers: [18, 10, 15], correctAnswer: '10, 15, 18', choices: ['10, 15, 18', '18, 15, 10', '15, 10, 18'] },
-    { type: 'comparaison', question: 'Compare 20 et 17', num1: 20, num2: 17, correctAnswer: '20 > 17', choices: ['20 > 17', '20 < 17', '20 = 17'] },
-    { type: 'rangement', question: 'Classe du plus grand au plus petit : 2, 19, 8', numbers: [2, 19, 8], correctAnswer: '19, 8, 2', choices: ['2, 8, 19', '19, 8, 2', '8, 19, 2'] },
-    { type: 'comparaison', question: 'Compare 11 et 14', num1: 11, num2: 14, correctAnswer: '11 < 14', choices: ['11 > 14', '11 < 14', '11 = 14'] },
-    { type: 'rangement', question: 'Classe du plus petit au plus grand : 7, 13, 4', numbers: [7, 13, 4], correctAnswer: '4, 7, 13', choices: ['4, 7, 13', '13, 7, 4', '7, 4, 13'] }
-  ];
+  // Fonction pour générer 9 exercices de rangement uniquement (2 types de questions)
+  const generateRandomExercises = () => {
+    const allExercises = [
+      { type: 'rangement', question: 'Classe du plus petit au plus grand', numbers: [5, 2, 8], correctAnswer: '2, 5, 8', choices: ['2, 5, 8', '8, 5, 2', '5, 2, 8'] },
+      { type: 'rangement', question: 'Classe du plus grand au plus petit', numbers: [3, 7, 1], correctAnswer: '7, 3, 1', choices: ['1, 3, 7', '7, 3, 1', '3, 7, 1'] },
+      { type: 'rangement', question: 'Classe du plus petit au plus grand', numbers: [14, 6, 11], correctAnswer: '6, 11, 14', choices: ['6, 11, 14', '14, 11, 6', '11, 6, 14'] },
+      { type: 'rangement', question: 'Classe du plus grand au plus petit', numbers: [9, 4, 16], correctAnswer: '16, 9, 4', choices: ['4, 9, 16', '16, 9, 4', '9, 16, 4'] },
+      { type: 'rangement', question: 'Classe du plus petit au plus grand', numbers: [18, 10, 15], correctAnswer: '10, 15, 18', choices: ['10, 15, 18', '18, 15, 10', '15, 10, 18'] },
+      { type: 'rangement', question: 'Classe du plus grand au plus petit', numbers: [2, 19, 8], correctAnswer: '19, 8, 2', choices: ['2, 8, 19', '19, 8, 2', '8, 19, 2'] },
+      { type: 'rangement', question: 'Classe du plus petit au plus grand', numbers: [7, 13, 4], correctAnswer: '4, 7, 13', choices: ['4, 7, 13', '13, 7, 4', '7, 4, 13'] },
+      { type: 'rangement', question: 'Classe du plus grand au plus petit', numbers: [12, 5, 17], correctAnswer: '17, 12, 5', choices: ['5, 12, 17', '17, 12, 5', '12, 17, 5'] },
+      { type: 'rangement', question: 'Classe du plus petit au plus grand', numbers: [3, 20, 9], correctAnswer: '3, 9, 20', choices: ['3, 9, 20', '20, 9, 3', '9, 3, 20'] },
+      { type: 'rangement', question: 'Classe du plus grand au plus petit', numbers: [6, 14, 11], correctAnswer: '14, 11, 6', choices: ['6, 11, 14', '14, 11, 6', '11, 14, 6'] },
+      { type: 'rangement', question: 'Classe du plus petit au plus grand', numbers: [1, 12, 8], correctAnswer: '1, 8, 12', choices: ['1, 8, 12', '12, 8, 1', '8, 1, 12'] },
+      { type: 'rangement', question: 'Classe du plus grand au plus petit', numbers: [15, 7, 18], correctAnswer: '18, 15, 7', choices: ['7, 15, 18', '18, 15, 7', '15, 18, 7'] }
+    ];
 
-  // Initialiser les choix mélangés pour l'exercice actuel
-  const initializeShuffledChoices = () => {
-    const currentChoices = exercises[currentExercise].choices;
-    const shuffled = shuffleArray(currentChoices);
-    setShuffledChoices(shuffled);
+    // Mélanger et prendre 9 exercices aléatoires
+    const shuffled = [...allExercises].sort(() => Math.random() - 0.5);
+    return shuffled.slice(0, 9);
   };
 
-  // Effet pour mélanger les choix quand on change d'exercice
+  // Exercices générés aléatoirement à chaque session
+  const [exercises] = useState(() => generateRandomExercises());
+
+
+
+  // Effet pour réinitialiser les états Sam quand on change entre cours et exercices
   useEffect(() => {
-    if (exercises.length > 0) {
-      initializeShuffledChoices();
+    if (!showExercises) {
+      // Quand on revient au cours, réinitialiser les états Sam
+      setPirateIntroStarted(false);
+      setShowExercisesList(false);
+      setSamSizeExpanded(false);
+      setExerciseStarted(false);
     }
+  }, [showExercises]);
+
+  // Effet pour réinitialiser les états sur changement d'exercice
+  useEffect(() => {
+    setUserAnswer('');
+    setIsCorrect(null);
+    setIsExplainingError(false);
+    setShowNextButton(false);
+    setHighlightNextButton(false);
   }, [currentExercise]);
 
-  const handleAnswerClick = (answer: string) => {
+  const handleAnswerClick = async (answer: string) => {
+    stopAllVocalsAndAnimations(); // Stop any ongoing audio first
+    
     setUserAnswer(answer);
-    const correct = answer === exercises[currentExercise].correctAnswer;
+    
+    // Nouvelle logique de validation pour les exercices de rangement
+    let correct = false;
+    const exercise = exercises[currentExercise];
+    
+    // Pour les rangements : vérifier l'ordre des nombres
+    const userNumbers = answer.split(',').map(n => n.trim()).join(', ');
+    correct = userNumbers === exercise.correctAnswer;
+    
     setIsCorrect(correct);
     
     if (correct && !answeredCorrectly.has(currentExercise)) {
@@ -718,31 +945,41 @@ export default function OrdonnerComparerCP() {
         newSet.add(currentExercise);
         return newSet;
       });
-    }
-
-    // Si bonne réponse → passage automatique après 1.5s
-    if (correct) {
+      
+      // Passage automatique direct sans attendre Sam (évite les conflits avec stopAllVocalsAndAnimations)
       setTimeout(() => {
         if (currentExercise + 1 < exercises.length) {
+          // Prochain exercice
           setCurrentExercise(currentExercise + 1);
           setUserAnswer('');
           setIsCorrect(null);
         } else {
           // Dernier exercice terminé
-          const finalScoreValue = score + (!answeredCorrectly.has(currentExercise) ? 1 : 0);
-          setFinalScore(finalScoreValue);
+          setFinalScore(score + 1);
           setShowCompletionModal(true);
-          saveProgress(finalScoreValue, exercises.length);
+          saveProgress(score + 1, exercises.length);
         }
       }, 1500);
+      
+      // Célébrer avec Sam le Pirate (mais sans bloquer le passage automatique)
+      celebrateCorrectAnswer(); // Pas de await pour éviter les blocages
+    } else if (!correct) {
+      // Expliquer l'erreur avec Sam le Pirate
+      await explainWrongAnswer();
     }
   };
 
   const nextExercise = () => {
+    stopAllVocalsAndAnimations(); // Stop any ongoing audio before moving to next
+    
     if (currentExercise < exercises.length - 1) {
       setCurrentExercise(currentExercise + 1);
       setUserAnswer('');
       setIsCorrect(null);
+      // Réinitialiser les états Sam
+      setIsExplainingError(false);
+      setShowNextButton(false);
+      setHighlightNextButton(false);
     } else {
       setFinalScore(score);
       setShowCompletionModal(true);
@@ -751,6 +988,8 @@ export default function OrdonnerComparerCP() {
   };
 
   const resetAll = () => {
+    stopAllVocalsAndAnimations(); // Stop any ongoing audio before reset
+    
     setCurrentExercise(0);
     setUserAnswer('');
     setIsCorrect(null);
@@ -758,6 +997,15 @@ export default function OrdonnerComparerCP() {
     setAnsweredCorrectly(new Set());
     setShowCompletionModal(false);
     setFinalScore(0);
+    
+    // Réinitialiser les états Sam
+    setSamSizeExpanded(false);
+    setExerciseStarted(false);
+    setShowNextButton(false);
+    setHighlightNextButton(false);
+    setIsExplainingError(false);
+    setPirateIntroStarted(false);
+    setShowExercisesList(false);
   };
 
   // Fonction pour créer la représentation visuelle d'un nombre avec des cercles
@@ -817,41 +1065,133 @@ export default function OrdonnerComparerCP() {
     return '🔴'.repeat(num);
   };
 
+  // JSX pour l'introduction de Sam le Pirate dans les exercices
+  const SamPirateIntroJSX = () => (
+    <div className="flex justify-center p-1 mt-1 sm:mt-2">
+      <div className="flex items-center gap-2">
+        {/* Image de Sam le Pirate */}
+        <div className={`relative flex-shrink-0 rounded-full bg-gradient-to-br from-blue-100 to-cyan-100 border-2 border-blue-200 shadow-md transition-all duration-300 ${
+          isPlayingVocal
+            ? 'w-20 sm:w-32 h-20 sm:h-32 scale-110 sm:scale-150' // When speaking - agrandi mobile
+            : pirateIntroStarted
+              ? 'w-16 sm:w-16 h-16 sm:h-16' // After "COMMENCER" clicked (reduced) - agrandi mobile
+              : 'w-16 sm:w-20 h-16 sm:h-20' // Initial - agrandi mobile
+        }`}>
+          <img 
+            src="/image/pirate-small.png" 
+            alt="Sam le Pirate" 
+            className="w-full h-full rounded-full object-cover"
+          />
+          {/* Haut-parleur animé quand il parle */}
+          {isPlayingVocal && (
+            <div className="absolute -top-1 -right-1 bg-blue-500 text-white p-2 rounded-full animate-bounce shadow-lg">
+              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.617.77L4.916 14H2a1 1 0 01-1-1V7a1 1 0 011-1h2.916l3.467-2.77a1 1 0 011.617.77zM14.657 2.929a1 1 0 011.414 0A9.972 9.972 0 0119 10a9.972 9.972 0 01-2.929 7.071 1 1 0 01-1.414-1.414A7.971 7.971 0 0017 10c0-2.21-.894-4.208-2.343-5.657a1 1 0 010-1.414zm-2.829 2.828a1 1 0 011.415 0A5.983 5.983 0 0115 10a5.983 5.983 0 01-1.757 4.243 1 1 0 01-1.415-1.414A3.983 3.983 0 0013 10a3.983 3.983 0 00-1.172-2.829 1 1 0 010-1.414z" clipRule="evenodd" />
+              </svg>
+            </div>
+          )}
+        </div>
+        
+        {/* Bouton Start Exercices - AVEC AUDIO */}
+        <button
+        onClick={startPirateIntro}
+        disabled={isPlayingVocal || pirateIntroStarted}
+        className={`relative px-6 sm:px-12 py-3 sm:py-5 rounded-xl font-black text-base sm:text-2xl transition-all duration-300 transform ${
+          isPlayingVocal 
+            ? 'bg-gradient-to-r from-gray-400 to-gray-500 text-gray-200 cursor-not-allowed animate-pulse shadow-md' 
+            : pirateIntroStarted
+              ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white opacity-75 cursor-not-allowed shadow-lg'
+              : 'bg-gradient-to-r from-orange-500 via-red-500 to-pink-500 text-white hover:from-orange-600 hover:via-red-600 hover:to-pink-600 hover:scale-110 shadow-2xl hover:shadow-3xl animate-pulse border-4 border-yellow-300'
+        } ${!isPlayingVocal && !pirateIntroStarted ? 'ring-4 ring-yellow-300 ring-opacity-75' : ''}`}
+        style={{
+          animationDuration: !isPlayingVocal && !pirateIntroStarted ? '1.5s' : '2s',
+          animationIterationCount: isPlayingVocal || pirateIntroStarted ? 'none' : 'infinite',
+          textShadow: '2px 2px 4px rgba(0,0,0,0.3)',
+          boxShadow: !isPlayingVocal && !pirateIntroStarted 
+            ? '0 10px 25px rgba(0,0,0,0.3), 0 0 30px rgba(255,215,0,0.4), inset 0 1px 0 rgba(255,255,255,0.2)' 
+            : ''
+        }}
+      >
+        {/* Effet de brillance */}
+        {!isPlayingVocal && !pirateIntroStarted && (
+          <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-transparent via-white to-transparent opacity-20 animate-pulse"></div>
+        )}
+        
+        {/* Icônes et texte avec plus d'émojis */}
+        <span className="relative z-10 flex items-center justify-center gap-2">
+          {isPlayingVocal 
+            ? <>🎤 <span className="animate-bounce">Sam parle...</span></> 
+            : pirateIntroStarted
+              ? <>✅ <span>Intro terminée</span></>
+              : <>🚀 <span className="animate-bounce">COMMENCER</span> ✨</>
+          }
+        </span>
+        
+        {/* Particules brillantes pour le bouton commencer */}
+        {!isPlayingVocal && !pirateIntroStarted && (
+          <>
+            <div className="absolute -top-1 -right-1 w-3 h-3 bg-yellow-300 rounded-full animate-ping"></div>
+            <div className="absolute -bottom-1 -left-1 w-2 h-2 bg-pink-300 rounded-full animate-ping" style={{animationDelay: '0.5s'}}></div>
+            <div className="absolute top-2 left-2 w-1 h-1 bg-white rounded-full animate-ping" style={{animationDelay: '1s'}}></div>
+          </>
+        )}
+      </button>
+      </div>
+    </div>
+  );
+
+  // Composant JSX pour le bouton "Écouter l'énoncé"
+  const ListenQuestionButtonJSX = () => (
+    <div className="mb-3 sm:mb-6">
+      <button
+        id="listen-question-button"
+        onClick={startExerciseExplanation}
+        disabled={isPlayingVocal || !pirateIntroStarted}
+        className={`bg-blue-500 text-white px-3 sm:px-6 py-2 sm:py-3 rounded-lg font-bold text-xs sm:text-lg hover:bg-blue-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-1 sm:space-x-2 mx-auto shadow-lg ${
+          highlightedElement === 'listen-question-button' ? 'ring-8 ring-yellow-400 bg-yellow-500 animate-bounce scale-125 shadow-2xl border-4 border-orange-500' : ''
+        }`}
+      >
+        <Volume2 className="w-3 h-3 sm:w-5 sm:h-5" />
+        <span>🎧 Écouter l'énoncé</span>
+      </button>
+    </div>
+  );
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-50 to-purple-100">
 
 
-      <div className="max-w-6xl mx-auto px-4 py-8">
+      <div className="max-w-6xl mx-auto px-4 py-4 sm:py-8 pb-8 sm:pb-8">
         {/* Header */}
-        <div className="mb-8">
+        <div className="mb-4 sm:mb-8">
           <Link 
             href="/chapitre/cp-nombres-jusqu-20" 
-            className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors mb-4"
+            className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors mb-2 sm:mb-4"
             onClick={stopAllVocalsAndAnimations}
           >
             <ArrowLeft className="w-4 h-4" />
             <span>Retour au chapitre</span>
           </Link>
           
-          <div className="bg-white rounded-xl p-6 shadow-lg text-center">
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">
-              📊 Ordonner et comparer
+          <div className="bg-white rounded-xl p-2 sm:p-6 shadow-lg text-center">
+            <h1 className="text-lg sm:text-2xl lg:text-4xl font-bold text-gray-900 mb-1 sm:mb-4">
+              📊 Mettre dans l'ordre et comparer
             </h1>
-            <p className="text-lg text-gray-600">
-              Apprends à comparer et ordonner les nombres !
+            <p className="text-lg text-gray-600 hidden sm:block">
+              Apprends à comparer et mettre les nombres dans l'ordre !
             </p>
           </div>
         </div>
 
         {/* Navigation entre cours et exercices */}
-        <div className="flex justify-center mb-8">
+        <div className="flex justify-center mb-4 sm:mb-8">
           <div className="bg-white rounded-lg p-1 shadow-md">
             <button
               onClick={() => {
                 stopAllVocalsAndAnimations();
                 setShowExercises(false);
               }}
-              className={`px-6 py-3 rounded-lg font-bold transition-all ${
+              className={`px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-bold transition-all ${
                 !showExercises 
                   ? 'bg-pink-500 text-white shadow-md' 
                   : 'text-gray-600 hover:bg-gray-100'
@@ -864,7 +1204,7 @@ export default function OrdonnerComparerCP() {
                 stopAllVocalsAndAnimations();
                 setShowExercises(true);
               }}
-              className={`px-6 py-3 rounded-lg font-bold transition-all ${
+              className={`px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-bold transition-all ${
                 showExercises 
                   ? 'bg-pink-500 text-white shadow-md' 
                   : 'text-gray-600 hover:bg-gray-100'
@@ -877,13 +1217,13 @@ export default function OrdonnerComparerCP() {
 
         {/* Bouton Démarrer - visible uniquement dans la section cours */}
         {!showExercises && (
-          <div className="flex justify-center mb-8">
+          <div className="flex justify-center mb-4 sm:mb-8">
               <button
               onClick={explainChapter}
               disabled={isPlayingVocal}
-              className="bg-gradient-to-r from-green-500 to-blue-500 text-white px-8 py-4 rounded-full text-xl font-bold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-3"
+              className="bg-gradient-to-r from-green-500 to-blue-500 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-full text-lg sm:text-xl font-bold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2 sm:space-x-3"
               >
-              <Play className="w-6 h-6" />
+              <Play className="w-5 h-5 sm:w-6 sm:h-6" />
               <span>🎯 Démarrer l'explication</span>
               </button>
             </div>
@@ -891,11 +1231,11 @@ export default function OrdonnerComparerCP() {
 
         {!showExercises ? (
           /* COURS */
-          <div className="space-y-8">
+          <div className="space-y-4 sm:space-y-8">
             {/* Introduction */}
             <div className="bg-white rounded-xl p-8 shadow-lg">
               <h2 className="text-2xl font-bold text-center mb-6 text-gray-900">
-                🤔 Pourquoi comparer et ordonner ?
+                🤔 Pourquoi comparer et mettre dans l'ordre ?
               </h2>
               
               <div className="bg-pink-50 rounded-lg p-6 mb-6">
@@ -1056,7 +1396,7 @@ export default function OrdonnerComparerCP() {
                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                     }`}
                   >
-                  📊 Ordonner plusieurs nombres
+                  📊 Mettre plusieurs nombres dans l'ordre
                   </button>
                             </div>
                           </div>
@@ -1129,7 +1469,7 @@ export default function OrdonnerComparerCP() {
                 }`}
               >
                 <h2 className="text-2xl font-bold text-center mb-6 text-gray-900">
-                  📊 Comment ordonner les nombres
+                  📊 Comment mettre les nombres dans l'ordre
                 </h2>
                 
                 <div className="space-y-6">
@@ -1146,7 +1486,7 @@ export default function OrdonnerComparerCP() {
                           <h3 className={`text-xl font-bold text-purple-800 transition-all duration-500 ${
                             animatingExample === index && (exampleStep === 'before' || exampleStep === 'after') ? 'animate-pulse text-2xl text-orange-600' : ''
                           }`}>
-                            Nombres à ordonner : {example.numbers.join(', ')}
+                            Nombres à mettre dans l'ordre : {example.numbers.join(', ')}
                           </h3>
                         
                         {/* Indicateur d'étape */}
@@ -1256,7 +1596,7 @@ export default function OrdonnerComparerCP() {
 
                 <div className="bg-purple-50 rounded-lg p-6">
                   <h3 className="text-xl font-bold mb-4 text-purple-800">
-                    📊 Pour ordonner
+                    📊 Pour mettre dans l'ordre
                   </h3>
                   <ul className="space-y-2 text-purple-700">
                     <li>• Commence par le plus petit</li>
@@ -1287,146 +1627,135 @@ export default function OrdonnerComparerCP() {
             </div>
           </div>
         ) : (
-          /* EXERCICES */
-          <div className="space-y-8">
-            {/* Header exercices */}
-            <div className="bg-white rounded-xl p-6 shadow-lg">
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-2xl font-bold text-gray-900">
-                  ✏️ Exercice {currentExercise + 1} sur {exercises.length}
-                </h2>
-                <button
-                  onClick={resetAll}
-                  className="bg-gray-500 text-white px-4 py-2 rounded-lg font-bold hover:bg-gray-600 transition-colors"
-                >
-                  <RotateCcw className="inline w-4 h-4 mr-2" />
-                  Recommencer
-                </button>
-              </div>
-              
-              {/* Barre de progression */}
-              <div className="w-full bg-gray-200 rounded-full h-4 mb-3">
-                <div 
-                  className="bg-pink-500 h-4 rounded-full transition-all duration-500"
-                  style={{ width: `${((currentExercise + 1) / exercises.length) * 100}%` }}
-                ></div>
-              </div>
-              
-              {/* Score */}
-              <div className="text-center">
-                <div className="text-xl font-bold text-pink-600">
+          /* EXERCICES - FLOW NORMAL */
+          <div className="space-y-4 sm:space-y-8">
+            {/* Introduction de Sam le Pirate - toujours visible */}
+            {SamPirateIntroJSX()}
+
+            {/* Indicateur de progression mobile - sticky en haut */}
+            <div className="sticky top-0 z-10 bg-white/95 backdrop-blur-sm border-b border-gray-200 p-3 sm:hidden">
+              <div className="text-center mb-2">
+                <div className="text-sm font-bold text-gray-700 mb-1">
+                  Exercice {currentExercise + 1}/{exercises.length}
+                </div>
+                <div className="text-sm font-bold text-pink-600 mb-2">
                   Score : {score}/{exercises.length}
                 </div>
               </div>
+              <div className="w-full bg-gray-200 rounded-full h-2">
+                <div 
+                  className="bg-pink-500 h-2 rounded-full transition-all duration-500"
+                  style={{ width: `${((currentExercise + 1) / exercises.length) * 100}%` }}
+                ></div>
+              </div>
             </div>
 
-            {/* Question */}
-            <div className="bg-white rounded-xl p-8 shadow-lg text-center">
-              <h3 className="text-2xl font-bold mb-8 text-gray-900">
-                {exercises[currentExercise].question}
-              </h3>
-              
+            {/* Question - NORMAL FLOW */}
+            <div className="bg-white rounded-xl shadow-lg text-center p-4 sm:p-6 md:p-8 mt-4 sm:mt-8">
+              <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-2 sm:mb-6 md:mb-8 gap-2 sm:gap-4">
+                <h3 className="text-base sm:text-xl md:text-2xl font-bold text-gray-900 flex-1">
+                  {exercises[currentExercise]?.question || "Compare les nombres suivants"}
+                </h3>
+                {ListenQuestionButtonJSX()}
+              </div>
+
               {/* Affichage selon le type d'exercice */}
-              <div className={`rounded-lg p-6 mb-8 ${
-                exercises[currentExercise].type === 'comparaison' ? 'bg-blue-50' : 'bg-purple-50'
-              }`}>
-                <div className={`text-4xl font-bold mb-4 ${
-                  exercises[currentExercise].type === 'comparaison' ? 'text-blue-600' : 'text-purple-600'
-                }`}>
-                  {exercises[currentExercise].type === 'comparaison' ? '⚖️' : '📊'}
+              <div className="rounded-lg p-3 sm:p-6 mb-4 sm:mb-8 bg-purple-50">
+                <div className="space-y-2 sm:space-y-4">
+                  <div className="text-xl sm:text-4xl font-bold text-purple-600">
+                    {exercises[currentExercise].numbers?.join(' , ')}
+                  </div>
                 </div>
-                
-                {exercises[currentExercise].type === 'comparaison' ? (
-                  <div className="space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
-                      <div className="text-center">
-                        <div className="text-4xl font-bold text-blue-600 mb-2">
-                          {exercises[currentExercise].num1}
-                        </div>
-                        <div className="flex justify-center">
-                          {renderCircles(exercises[currentExercise].num1!)}
-                        </div>
-                      </div>
-                      
-                      <div className="text-6xl text-gray-400">?</div>
-                      
-                      <div className="text-center">
-                        <div className="text-4xl font-bold text-blue-600 mb-2">
-                          {exercises[currentExercise].num2}
-                        </div>
-                        <div className="flex justify-center">
-                          {renderCircles(exercises[currentExercise].num2!)}
-                        </div>
-                      </div>
-                    </div>
-                    <p className="text-lg text-gray-700 font-semibold">
-                      Trouve le bon symbole : &gt;, &lt; ou =
-                    </p>
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    <div className="text-3xl font-bold text-purple-600">
-                      {exercises[currentExercise].numbers?.join(' , ')}
-                    </div>
-                    <div className="flex justify-center space-x-6">
-                      {exercises[currentExercise].numbers?.map((num, index) => (
-                        <div key={index} className="text-center">
-                          <div className="text-xl font-bold mb-2">{num}</div>
-                          <div className="flex justify-center">
-                            {renderCircles(num)}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                    <p className="text-lg text-gray-700 font-semibold">
-                      Classe ces nombres !
-                    </p>
-                  </div>
-                )}
               </div>
               
-              {/* Choix multiples */}
-              <div className="grid grid-cols-1 gap-4 max-w-lg mx-auto mb-8">
-                {shuffledChoices.map((choice) => (
+              {/* Zone de saisie */}
+              <div 
+                id="answer-choices"
+                className={`max-w-sm sm:max-w-lg mx-auto mb-4 sm:mb-8 transition-all duration-500 ${
+                  highlightedElement === 'answer-choices' ? 'ring-8 ring-yellow-400 bg-yellow-50 rounded-lg p-4 scale-105 shadow-2xl animate-pulse' : ''
+                }`}
+              >
+                {/* RANGEMENT : [?] , [?] , [?] */}
+                <div className="space-y-2 sm:space-y-4">
+                  <p className="text-base sm:text-lg text-gray-600 font-semibold hidden sm:block text-center">
+                    Classe les nombres dans l'ordre demandé
+                  </p>
+                  <div className="flex items-center justify-center space-x-1 sm:space-x-4">
+                    <input
+                      type="number"
+                      value={userAnswer.split(',')[0] || ''}
+                      onChange={(e) => {
+                        const parts = userAnswer.split(',');
+                        parts[0] = e.target.value;
+                        setUserAnswer(parts.join(','));
+                      }}
+                      disabled={isCorrect !== null}
+                      placeholder="?"
+                      className="w-12 sm:w-20 h-10 sm:h-16 text-center text-base sm:text-2xl font-bold border-2 sm:border-4 border-gray-300 rounded-lg sm:rounded-xl focus:border-pink-500 focus:outline-none disabled:opacity-50"
+                    />
+                    <span className="text-base sm:text-2xl font-bold text-gray-500">,</span>
+                    <input
+                      type="number"
+                      value={userAnswer.split(',')[1] || ''}
+                      onChange={(e) => {
+                        const parts = userAnswer.split(',');
+                        parts[1] = e.target.value;
+                        setUserAnswer(parts.join(','));
+                      }}
+                      disabled={isCorrect !== null}
+                      placeholder="?"
+                      className="w-12 sm:w-20 h-10 sm:h-16 text-center text-base sm:text-2xl font-bold border-2 sm:border-4 border-gray-300 rounded-lg sm:rounded-xl focus:border-pink-500 focus:outline-none disabled:opacity-50"
+                    />
+                    <span className="text-base sm:text-2xl font-bold text-gray-500">,</span>
+                    <input
+                      type="number"
+                      value={userAnswer.split(',')[2] || ''}
+                      onChange={(e) => {
+                        const parts = userAnswer.split(',');
+                        parts[2] = e.target.value;
+                        setUserAnswer(parts.join(','));
+                      }}
+                      disabled={isCorrect !== null}
+                      placeholder="?"
+                      className="w-12 sm:w-20 h-10 sm:h-16 text-center text-base sm:text-2xl font-bold border-2 sm:border-4 border-gray-300 rounded-lg sm:rounded-xl focus:border-pink-500 focus:outline-none disabled:opacity-50"
+                    />
+                  </div>
+                </div>
+                
+                {/* Bouton Valider */}
+                <div className="flex justify-center mt-3 sm:mt-6">
                   <button
-                    key={choice}
-                    onClick={() => handleAnswerClick(choice)}
-                    disabled={isCorrect !== null}
-                    className={`p-6 rounded-lg font-bold text-lg transition-all ${
-                      userAnswer === choice
-                        ? isCorrect === true
-                          ? 'bg-green-500 text-white'
-                          : isCorrect === false
-                            ? 'bg-red-500 text-white'
-                            : 'bg-pink-500 text-white'
-                        : exercises[currentExercise].correctAnswer === choice && isCorrect === false
-                          ? 'bg-green-200 text-green-800 border-2 border-green-500'
-                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200 disabled:opacity-50'
-                    } disabled:cursor-not-allowed`}
+                    onClick={() => handleAnswerClick(userAnswer)}
+                    disabled={(() => {
+                      if (isCorrect !== null) return true;
+                      const parts = userAnswer.split(',');
+                      return !parts[0]?.trim() || !parts[1]?.trim() || !parts[2]?.trim(); // Les 3 nombres doivent être remplis
+                    })()}
+                    className="bg-green-500 text-white px-4 sm:px-8 py-2 sm:py-4 rounded-lg font-bold text-sm sm:text-lg hover:bg-green-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    {choice}
+                    Valider
                   </button>
-                ))}
+                </div>
               </div>
               
               {/* Résultat */}
               {isCorrect !== null && (
-                <div className={`p-6 rounded-lg mb-6 ${
+                <div className={`p-3 sm:p-6 rounded-lg mb-3 sm:mb-6 ${
                   isCorrect ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
                 }`}>
-                  <div className="flex items-center justify-center space-x-3 mb-4">
+                  <div className="flex items-center justify-center space-x-2 sm:space-x-3 mb-2 sm:mb-4">
                     {isCorrect ? (
                       <>
-                        <CheckCircle className="w-8 h-8" />
-                        <span className="font-bold text-xl">
-                          Excellent ! La réponse est bien : {exercises[currentExercise].correctAnswer} !
+                        <CheckCircle className="w-6 h-6 sm:w-8 sm:h-8" />
+                        <span className="font-bold text-base sm:text-xl">
+                          Excellent ! Tu as bien dit : {userAnswer} !
                         </span>
                       </>
                     ) : (
                       <>
-                        <XCircle className="w-8 h-8" />
-                        <span className="font-bold text-xl">
-                          Pas tout à fait... La bonne réponse est : {exercises[currentExercise].correctAnswer} !
+                        <XCircle className="w-6 h-6 sm:w-8 sm:h-8" />
+                        <span className="font-bold text-sm sm:text-xl">
+                          Pas tout à fait... Il fallait dire : {exercises[currentExercise].correctAnswer} !
                         </span>
                       </>
                     )}
@@ -1434,55 +1763,32 @@ export default function OrdonnerComparerCP() {
                   
                   {/* Explication pour les mauvaises réponses */}
                   {!isCorrect && (
-                    <div className="bg-white rounded-lg p-6 border-2 border-blue-300">
-                      <h4 className="text-lg font-bold mb-4 text-blue-800 text-center">
+                    <div className="bg-white rounded-lg p-3 sm:p-6 border border-blue-300 sm:border-2">
+                      <h4 className="text-base sm:text-lg font-bold mb-2 sm:mb-4 text-blue-800 text-center">
                         📚 Explication
                       </h4>
                       
-                        <div className="space-y-4">
-                        <div className="bg-blue-50 rounded-lg p-4 text-center">
-                          <div className="text-xl font-bold text-blue-600 mb-2">
+                        <div className="space-y-2 sm:space-y-4">
+                        <div className="bg-blue-50 rounded-lg p-2 sm:p-4 text-center">
+                          <div className="text-lg sm:text-xl font-bold text-blue-600 mb-1 sm:mb-2">
                               {exercises[currentExercise].correctAnswer}
                           </div>
                           
-                          {exercises[currentExercise].type === 'comparaison' ? (
-                            <div className="space-y-2">
-                              <div className="grid grid-cols-3 gap-4 items-center">
-                              <div className="text-center">
-                                  <div className="text-2xl font-bold">{exercises[currentExercise].num1}</div>
-                                  <div className="flex justify-center mt-2">
-                                    {renderCircles(exercises[currentExercise].num1!)}
-                                     </div>
-                                 </div>
-                                <div className="text-3xl font-bold text-blue-600 text-center">
-                                  {exercises[currentExercise].correctAnswer?.split(' ')[1]}
-                              </div>
-                              <div className="text-center">
-                                  <div className="text-2xl font-bold">{exercises[currentExercise].num2}</div>
-                                  <div className="flex justify-center mt-2">
-                                    {renderCircles(exercises[currentExercise].num2!)}
-                              </div>
-                                     </div>
-                                 </div>
-                              <div className="text-lg text-gray-700">
-                                Compare en comptant les objets !
+                          <div className="space-y-1 sm:space-y-2">
+                            <div className="text-sm sm:text-lg text-gray-700">
+                              {exercises[currentExercise].question.includes('plus petit au plus grand') ? 
+                                'Ordre croissant :' : 'Ordre décroissant :'} {exercises[currentExercise].correctAnswer}
                           </div>
+                            <div className="text-xs sm:text-sm text-gray-600">
+                              {exercises[currentExercise].question.includes('plus petit au plus grand') ? 
+                                'Du plus petit au plus grand !' : 'Du plus grand au plus petit !'}
                         </div>
-                      ) : (
-                            <div className="space-y-2">
-                              <div className="text-lg text-gray-700">
-                                Ordre croissant : {exercises[currentExercise].correctAnswer}
-                            </div>
-                              <div className="text-sm text-gray-600">
-                                Du plus petit au plus grand !
-                          </div>
-                        </div>
-                      )}
+                      </div>
                       </div>
                       
-                        <div className="bg-gradient-to-r from-pink-100 to-purple-100 rounded-lg p-3 text-center">
-                        <div className="text-lg">🌟</div>
-                        <p className="text-sm font-semibold text-purple-800">
+                        <div className="bg-gradient-to-r from-pink-100 to-purple-100 rounded-lg p-2 sm:p-3 text-center">
+                        <div className="text-base sm:text-lg">🌟</div>
+                        <p className="text-xs sm:text-sm font-semibold text-purple-800">
                             Maintenant tu sais !
                         </p>
                         </div>
@@ -1494,10 +1800,11 @@ export default function OrdonnerComparerCP() {
               
               {/* Navigation */}
               {isCorrect === false && (
-                <div className="flex justify-center">
+                <div className="flex justify-center pb-4 sm:pb-0">
                   <button
+                    id="next-exercise-button"
                     onClick={nextExercise}
-                    className="bg-pink-500 text-white px-8 py-4 rounded-lg font-bold text-lg hover:bg-pink-600 transition-colors"
+                    className="bg-pink-500 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-lg font-bold text-base sm:text-lg hover:bg-pink-600 transition-colors shadow-lg hover:shadow-xl transform hover:scale-105 min-h-[50px] sm:min-h-auto"
                   >
                     Suivant →
                   </button>
@@ -1533,7 +1840,7 @@ export default function OrdonnerComparerCP() {
                         {finalScore >= 12 ? '⭐⭐⭐' : finalScore >= 8 ? '⭐⭐' : '⭐'}
                       </div>
                       <p className="text-sm text-gray-600 mt-2">
-                        Savoir comparer et ordonner est très utile !
+                        Savoir comparer et mettre dans l'ordre est très utile !
                       </p>
                     </div>
                     <div className="flex space-x-3">
