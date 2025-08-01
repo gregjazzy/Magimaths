@@ -1107,11 +1107,11 @@ export default function DizainesUnitesCP() {
             <span>Retour au chapitre</span>
           </Link>
           
-          <div className="bg-white rounded-xl p-6 shadow-lg text-center">
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">
+          <div className="bg-white rounded-xl p-2 sm:p-4 shadow-lg text-center">
+            <h1 className="text-lg sm:text-2xl lg:text-3xl font-bold text-gray-900 mb-1 sm:mb-2">
               🔢 Dizaines et unités
             </h1>
-            <p className="text-lg text-gray-600">
+            <p className="text-lg text-gray-600 hidden sm:block">
               Apprends à décomposer les nombres en dizaines et unités !
             </p>
           </div>
@@ -1127,7 +1127,7 @@ export default function DizainesUnitesCP() {
         )}
 
         {/* Navigation entre cours et exercices */}
-        <div className="flex justify-center mb-8">
+        <div className="flex justify-center mb-3 sm:mb-2">
           <div className="bg-white rounded-lg p-1 shadow-md">
             <button
               onClick={() => {
