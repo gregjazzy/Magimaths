@@ -1069,12 +1069,7 @@ export default function DizainesUnitesCP() {
 
 
 
-        {/* Message de debug temporaire (visible en mode développement) */}
-        {process.env.NODE_ENV === 'development' && (
-          <div className="fixed bottom-4 left-4 bg-green-600 text-white px-3 py-1 rounded text-xs opacity-75 z-40">
-            🔍 Navigation surveillance: ON
-          </div>
-        )}
+
 
         {/* Navigation entre cours et exercices */}
         <div className="flex justify-center mb-3 sm:mb-2">
