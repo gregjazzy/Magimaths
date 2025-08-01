@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, CheckCircle, XCircle, RotateCcw, Volume2 } from 'lucide-react';
 
@@ -14,17 +14,32 @@ export default function OrdonnerComparerCP100() {
   const [answeredCorrectly, setAnsweredCorrectly] = useState<Set<number>>(new Set());
   const [showCompletionModal, setShowCompletionModal] = useState(false);
   const [finalScore, setFinalScore] = useState(0);
-  const [shuffledChoices, setShuffledChoices] = useState<string[]>([]);
 
-  // Fonction pour mélanger un tableau
-  const shuffleArray = (array: string[]) => {
-    const shuffled = [...array];
-    for (let i = shuffled.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-    }
-    return shuffled;
-  };
+  // États pour Sam le Pirate et les nouvelles fonctionnalités
+  const [isPlayingVocal, setIsPlayingVocal] = useState(false);
+  const [highlightedElement, setHighlightedElement] = useState<string | null>(null);
+  const [imageError, setImageError] = useState(false);
+  const [pirateIntroStarted, setPirateIntroStarted] = useState(false);
+  const [showExercisesList, setShowExercisesList] = useState(false);
+  const [samSizeExpanded, setSamSizeExpanded] = useState(false);
+  const stopSignalRef = useRef(false);
+
+  // Expressions de Sam et compliments
+  const pirateExpressions = [
+    "Ahoy matelot ! 🏴‍☠️",
+    "Nom d'une jambe de bois ! ⚓",
+    "Bien joué corsaire ! 🦜",
+    "Mille sabords ! ⚔️",
+    "En avant toutes ! 🚢"
+  ];
+
+  const correctAnswerCompliments = [
+    "Bravo matelot !",
+    "Excellent ! Tu es un vrai pirate des maths !",
+    "Parfait ! Nom d'une jambe de bois !",
+    "Magnifique ! Tu navigues comme un chef !",
+    "Formidable ! Mille sabords !"
+  ];
 
   // Comparaisons pour le cours
   const comparisons = [
@@ -38,54 +53,35 @@ export default function OrdonnerComparerCP100() {
     { id: '28_63', num1: 28, num2: 63, symbol: '<', explanation: '28 est plus petit que 63', visual: '📦📦🔴🔴🔴🔴🔴🔴🔴🔴 < 📦📦📦📦📦📦🔴🔴🔴' }
   ];
 
-  // Exercices de comparaison et rangement - 25 exercices au total (20 + 5 nouveaux)
-  const exercises = [
-    { question: 'Compare 34 et 27', num1: 34, num2: 27, correctAnswer: '>', choices: ['>', '<', '='] },
-    { question: 'Compare 19 et 58', num1: 19, num2: 58, correctAnswer: '<', choices: ['=', '<', '>'] },
-    { question: 'Compare 46 et 46', num1: 46, num2: 46, correctAnswer: '=', choices: ['<', '=', '>'] },
-    { question: 'Compare 73 et 29', num1: 73, num2: 29, correctAnswer: '>', choices: ['>', '<', '='] },
-    { question: 'Compare 25 et 84', num1: 25, num2: 84, correctAnswer: '<', choices: ['=', '>', '<'] },
-    { question: 'Compare 92 et 92', num1: 92, num2: 92, correctAnswer: '=', choices: ['>', '=', '<'] },
-    { question: 'Compare 67 et 41', num1: 67, num2: 41, correctAnswer: '>', choices: ['>', '<', '='] },
-    { question: 'Compare 38 et 95', num1: 38, num2: 95, correctAnswer: '<', choices: ['<', '>', '='] },
-    { question: 'Compare 100 et 76', num1: 100, num2: 76, correctAnswer: '>', choices: ['=', '<', '>'] },
-    { question: 'Compare 55 et 55', num1: 55, num2: 55, correctAnswer: '=', choices: ['=', '>', '<'] },
-    
-    // Exercices de rangement (plus petit au plus grand)
-    { question: 'Range du plus petit au plus grand : 47, 23, 61', type: 'ordre', correctAnswer: '23, 47, 61', choices: ['23, 47, 61', '61, 47, 23', '47, 23, 61'] },
-    { question: 'Range du plus petit au plus grand : 88, 35, 52', type: 'ordre', correctAnswer: '35, 52, 88', choices: ['88, 52, 35', '35, 52, 88', '52, 35, 88'] },
-    { question: 'Range du plus petit au plus grand : 94, 29, 73', type: 'ordre', correctAnswer: '29, 73, 94', choices: ['29, 73, 94', '94, 73, 29', '73, 29, 94'] },
-    { question: 'Range du plus petit au plus grand : 16, 82, 45', type: 'ordre', correctAnswer: '16, 45, 82', choices: ['16, 45, 82', '82, 45, 16', '45, 16, 82'] },
-    { question: 'Range du plus petit au plus grand : 100, 37, 69', type: 'ordre', correctAnswer: '37, 69, 100', choices: ['100, 69, 37', '37, 69, 100', '69, 37, 100'] },
-    
-    // Exercices avec dizaines proches
-    { question: 'Compare 64 et 68', num1: 64, num2: 68, correctAnswer: '<', choices: ['<', '>', '='] },
-    { question: 'Compare 87 et 83', num1: 87, num2: 83, correctAnswer: '>', choices: ['>', '=', '<'] },
-    { question: 'Compare 72 et 79', num1: 72, num2: 79, correctAnswer: '<', choices: ['=', '<', '>'] },
-    { question: 'Compare 91 et 95', num1: 91, num2: 95, correctAnswer: '<', choices: ['<', '>', '='] },
-    { question: 'Compare 48 et 42', num1: 48, num2: 42, correctAnswer: '>', choices: ['>', '<', '='] },
-    
-    // 5 nouveaux exercices
-    { question: 'Compare 56 et 89', num1: 56, num2: 89, correctAnswer: '<', choices: ['<', '>', '='] },
-    { question: 'Compare 74 et 74', num1: 74, num2: 74, correctAnswer: '=', choices: ['>', '=', '<'] },
-    { question: 'Compare 93 et 51', num1: 93, num2: 51, correctAnswer: '>', choices: ['>', '<', '='] },
-    { question: 'Range du plus petit au plus grand : 85, 12, 60', type: 'ordre', correctAnswer: '12, 60, 85', choices: ['12, 60, 85', '85, 60, 12', '60, 12, 85'] },
-    { question: 'Compare 39 et 43', num1: 39, num2: 43, correctAnswer: '<', choices: ['=', '<', '>'] }
-  ];
+  // Fonction pour générer des exercices de rangement uniquement (comme cp-nombres-jusqu-20)
+  const generateRandomExercises = () => {
+    const allExercises = [
+      { type: 'rangement', question: 'Classe du plus petit au plus grand', numbers: [45, 23, 78], correctAnswer: '23, 45, 78' },
+      { type: 'rangement', question: 'Classe du plus grand au plus petit', numbers: [67, 91, 34], correctAnswer: '91, 67, 34' },
+      { type: 'rangement', question: 'Classe du plus petit au plus grand', numbers: [89, 56, 72], correctAnswer: '56, 72, 89' },
+      { type: 'rangement', question: 'Classe du plus grand au plus petit', numbers: [38, 95, 61], correctAnswer: '95, 61, 38' },
+      { type: 'rangement', question: 'Classe du plus petit au plus grand', numbers: [100, 47, 83], correctAnswer: '47, 83, 100' },
+      { type: 'rangement', question: 'Classe du plus grand au plus petit', numbers: [29, 74, 52], correctAnswer: '74, 52, 29' },
+      { type: 'rangement', question: 'Classe du plus petit au plus grand', numbers: [68, 41, 96], correctAnswer: '41, 68, 96' },
+      { type: 'rangement', question: 'Classe du plus grand au plus petit', numbers: [75, 33, 88], correctAnswer: '88, 75, 33' },
+      { type: 'rangement', question: 'Classe du plus petit au plus grand', numbers: [57, 84, 26], correctAnswer: '26, 57, 84' },
+      { type: 'rangement', question: 'Classe du plus grand au plus petit', numbers: [93, 49, 71], correctAnswer: '93, 71, 49' },
+      { type: 'rangement', question: 'Classe du plus petit au plus grand', numbers: [36, 82, 54], correctAnswer: '36, 54, 82' },
+      { type: 'rangement', question: 'Classe du plus grand au plus petit', numbers: [64, 27, 90], correctAnswer: '90, 64, 27' },
+      { type: 'rangement', question: 'Classe du plus petit au plus grand', numbers: [48, 76, 19], correctAnswer: '19, 48, 76' },
+      { type: 'rangement', question: 'Classe du plus grand au plus petit', numbers: [85, 42, 69], correctAnswer: '85, 69, 42' },
+      { type: 'rangement', question: 'Classe du plus petit au plus grand', numbers: [31, 87, 55], correctAnswer: '31, 55, 87' }
+    ];
 
-  // Initialiser les choix mélangés pour l'exercice actuel
-  const initializeShuffledChoices = () => {
-    const currentChoices = exercises[currentExercise].choices;
-    const shuffled = shuffleArray(currentChoices);
-    setShuffledChoices(shuffled);
+    // Mélanger et prendre 12 exercices aléatoires
+    const shuffled = [...allExercises].sort(() => Math.random() - 0.5);
+    return shuffled.slice(0, 12);
   };
 
-  // Effet pour mélanger les choix quand on change d'exercice
-  useEffect(() => {
-    if (exercises.length > 0) {
-      initializeShuffledChoices();
-    }
-  }, [currentExercise]);
+  // Exercices générés aléatoirement à chaque session
+  const [exercises] = useState(() => generateRandomExercises());
+
+
 
   // Sauvegarder les progrès dans localStorage
   const saveProgress = (score: number, maxScore: number) => {
@@ -133,9 +129,174 @@ export default function OrdonnerComparerCP100() {
     }
   };
 
-  const handleAnswerClick = (answer: string) => {
-    setUserAnswer(answer);
-    const correct = answer === exercises[currentExercise].correctAnswer;
+  // Fonctions pour la gestion audio et Sam le Pirate
+  const stopAllVocalsAndAnimations = () => {
+    stopSignalRef.current = true;
+    if ('speechSynthesis' in window) {
+      speechSynthesis.cancel();
+    }
+    setIsPlayingVocal(false);
+    setHighlightedElement(null);
+  };
+
+  const playAudio = (text: string) => {
+    return new Promise<void>((resolve) => {
+      if (stopSignalRef.current) {
+        resolve();
+        return;
+      }
+
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'fr-FR';
+      utterance.rate = 0.9;
+      utterance.onend = () => resolve();
+      utterance.onerror = () => resolve();
+      speechSynthesis.speak(utterance);
+    });
+  };
+
+  const startPirateIntro = async () => {
+    setIsPlayingVocal(true);
+    setPirateIntroStarted(true);
+    stopSignalRef.current = false;
+
+    try {
+      await playAudio("Ahoy matelot ! Je suis Sam le Pirate et je vais t'aider avec les comparaisons jusqu'à 100 !");
+      if (stopSignalRef.current) return;
+      
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      if (stopSignalRef.current) return;
+      
+      await playAudio("Pour écouter l'énoncé, appuie sur écouter l'énoncé");
+      if (stopSignalRef.current) return;
+      
+      // Animation sur le bouton "Écouter l'énoncé"
+      setHighlightedElement('listen-question-button');
+      setShowExercisesList(true);
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      setHighlightedElement(null);
+      
+      if (stopSignalRef.current) return;
+      
+      await playAudio("Dès que tu as trouvé la réponse, tu peux l'écrire dans la case");
+      if (stopSignalRef.current) return;
+      
+      // Mettre beaucoup en évidence la zone de réponse
+      setHighlightedElement('answer-input');
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      setHighlightedElement(null);
+      
+      if (stopSignalRef.current) return;
+      
+      await playAudio("et appuie ensuite sur valider");
+      if (stopSignalRef.current) return;
+      
+      // Animation sur le bouton valider
+      setHighlightedElement('validate-button');
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      setHighlightedElement(null);
+      
+      if (stopSignalRef.current) return;
+      
+      await playAudio("En cas de mauvaise réponse, je serai là pour t'expliquer. En avant toutes !");
+      if (stopSignalRef.current) return;
+      
+    } catch (error) {
+      console.error('Erreur dans startPirateIntro:', error);
+    } finally {
+      setIsPlayingVocal(false);
+    }
+  };
+
+  const startExerciseExplanation = async () => {
+    const question = exercises[currentExercise]?.question;
+    if (question) {
+      setIsPlayingVocal(true);
+      setSamSizeExpanded(true);
+      
+      // Expression d'encouragement de Sam
+      const randomExpression = pirateExpressions[Math.floor(Math.random() * pirateExpressions.length)];
+      await playAudio(randomExpression);
+      
+      // Énoncé de la question
+      await playAudio(question);
+      
+      // Conseil de Sam selon le type de question
+      const currentEx = exercises[currentExercise];
+      if (currentEx?.type === 'rangement') {
+        await playAudio("Pour ranger les nombres, commence par regarder les dizaines !");
+      } else {
+        await playAudio("Regarde bien les dizaines d'abord, puis les unités si nécessaire !");
+      }
+      
+      setIsPlayingVocal(false);
+      setSamSizeExpanded(false);
+    }
+  };
+
+  const scrollToNextButton = () => {
+    setTimeout(() => {
+      const nextButton = document.getElementById('next-exercise-button');
+      if (nextButton) {
+        nextButton.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }, 100);
+  };
+
+  const celebrateCorrectAnswer = async () => {
+    setIsPlayingVocal(true);
+    setSamSizeExpanded(true);
+    
+    // Compliment aléatoire de Sam
+    const randomCompliment = correctAnswerCompliments[Math.floor(Math.random() * correctAnswerCompliments.length)];
+    await playAudio(randomCompliment);
+    
+    setHighlightedElement('next-exercise-button');
+    scrollToNextButton();
+    await playAudio("Tu peux appuyer sur suivant pour continuer ton aventure !");
+    setIsPlayingVocal(false);
+    setSamSizeExpanded(false);
+  };
+
+  const explainWrongAnswer = async () => {
+    setIsPlayingVocal(true);
+    setSamSizeExpanded(true);
+    
+    const currentEx = exercises[currentExercise];
+    const correctAnswer = currentEx?.correctAnswer;
+    
+    // Expression de Sam pour encourager
+    const randomExpression = pirateExpressions[Math.floor(Math.random() * pirateExpressions.length)];
+    await playAudio(`${randomExpression} Pas de souci matelot, on apprend ensemble !`);
+    
+    if (currentEx?.type === 'rangement') {
+      await playAudio(`La bonne réponse est : ${correctAnswer}`);
+      if (currentEx.question.includes('plus petit au plus grand')) {
+        await playAudio("Rappelle-toi, on range toujours du plus petit au plus grand !");
+      } else {
+        await playAudio("Pour du plus grand au plus petit, c'est l'inverse !");
+      }
+      await playAudio("Compare d'abord les dizaines, puis les unités si nécessaire !");
+    }
+    
+    setHighlightedElement('next-exercise-button');
+    scrollToNextButton();
+    await playAudio("Tu peux appuyer sur suivant pour continuer l'aventure !");
+    setIsPlayingVocal(false);
+    setSamSizeExpanded(false);
+  };
+
+  const handleAnswerSubmit = async () => {
+    stopAllVocalsAndAnimations(); // Stop any ongoing audio first
+    
+    // Nouvelle logique de validation pour les exercices de rangement
+    let correct = false;
+    const exercise = exercises[currentExercise];
+    
+    // Pour les rangements : vérifier l'ordre des nombres
+    const userNumbers = userAnswer.split(',').map(n => n.trim()).join(', ');
+    correct = userNumbers === exercise.correctAnswer;
+    
     setIsCorrect(correct);
     
     if (correct && !answeredCorrectly.has(currentExercise)) {
@@ -145,27 +306,32 @@ export default function OrdonnerComparerCP100() {
         newSet.add(currentExercise);
         return newSet;
       });
-    }
 
-    // Si bonne réponse → passage automatique après 1.5s
-    if (correct) {
+      // Passage automatique direct sans attendre Sam (évite les conflits avec stopAllVocalsAndAnimations)
       setTimeout(() => {
         if (currentExercise + 1 < exercises.length) {
+          // Prochain exercice
           setCurrentExercise(currentExercise + 1);
           setUserAnswer('');
           setIsCorrect(null);
         } else {
           // Dernier exercice terminé
-          const finalScoreValue = score + (!answeredCorrectly.has(currentExercise) ? 1 : 0);
-          setFinalScore(finalScoreValue);
+          setFinalScore(score + 1);
           setShowCompletionModal(true);
-          saveProgress(finalScoreValue, exercises.length);
+          saveProgress(score + 1, exercises.length);
         }
       }, 1500);
+      
+      // Célébrer avec Sam le Pirate (mais sans bloquer le passage automatique)
+      celebrateCorrectAnswer(); // Pas de await pour éviter les blocages
+    } else if (!correct) {
+      // Expliquer l'erreur avec Sam le Pirate
+      await explainWrongAnswer();
     }
   };
 
   const nextExercise = () => {
+    setHighlightedElement(null);
     if (currentExercise < exercises.length - 1) {
       setCurrentExercise(currentExercise + 1);
       setUserAnswer('');
@@ -178,6 +344,7 @@ export default function OrdonnerComparerCP100() {
   };
 
   const resetAll = () => {
+    stopAllVocalsAndAnimations();
     setCurrentExercise(0);
     setUserAnswer('');
     setIsCorrect(null);
@@ -185,51 +352,225 @@ export default function OrdonnerComparerCP100() {
     setAnsweredCorrectly(new Set());
     setShowCompletionModal(false);
     setFinalScore(0);
+    setImageError(false);
+    setPirateIntroStarted(false);
+    setShowExercisesList(false);
+    setSamSizeExpanded(false);
+    stopSignalRef.current = false;
   };
 
+  // Effet pour réinitialiser les états Sam quand on change entre cours et exercices
+  useEffect(() => {
+    if (!showExercises) {
+      // Quand on revient au cours, réinitialiser les états Sam
+      setPirateIntroStarted(false);
+      setShowExercisesList(false);
+      setSamSizeExpanded(false);
+    }
+  }, [showExercises]);
+
+  // Effet pour réinitialiser les états sur changement d'exercice
+  useEffect(() => {
+    setUserAnswer('');
+    setIsCorrect(null);
+  }, [currentExercise]);
+
+  // useEffect pour nettoyer l'audio lors des changements de navigation
+  useEffect(() => {
+    const handleBeforeUnload = () => stopAllVocalsAndAnimations();
+    const handlePopState = () => stopAllVocalsAndAnimations();
+    
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    window.addEventListener('popstate', handlePopState);
+    
+    const originalPushState = history.pushState;
+    const originalReplaceState = history.replaceState;
+    
+    history.pushState = function(...args) {
+      stopAllVocalsAndAnimations();
+      return originalPushState.apply(history, args);
+    };
+    
+    history.replaceState = function(...args) {
+      stopAllVocalsAndAnimations();
+      return originalReplaceState.apply(history, args);
+    };
+    
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+      window.removeEventListener('popstate', handlePopState);
+      history.pushState = originalPushState;
+      history.replaceState = originalReplaceState;
+    };
+  }, []);
+
+  // Composant JSX pour le bouton "Écouter l'énoncé" (style cp-nombres-jusqu-20)
+  const ListenQuestionButtonJSX = () => (
+    <div className="mb-3 sm:mb-6">
+      <button
+        id="listen-question-button"
+        onClick={startExerciseExplanation}
+        disabled={isPlayingVocal}
+        className={`bg-blue-500 text-white px-3 sm:px-6 py-2 sm:py-3 rounded-lg font-bold text-xs sm:text-lg hover:bg-blue-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-1 sm:space-x-2 mx-auto shadow-lg ${
+          highlightedElement === 'listen-question-button' ? 'ring-8 ring-yellow-400 bg-yellow-500 animate-bounce scale-125 shadow-2xl border-4 border-orange-500' : ''
+        }`}
+      >
+        <Volume2 className="w-3 h-3 sm:w-5 sm:h-5" />
+        <span>🎧 Écouter l'énoncé</span>
+      </button>
+    </div>
+  );
+
+  // JSX pour l'introduction de Sam le Pirate dans les exercices (style cp-nombres-jusqu-20)
+  const SamPirateIntroJSX = () => (
+    <div className="flex justify-center p-1 mt-1 sm:mt-2">
+      <div className="flex items-center gap-2">
+        {/* Image de Sam le Pirate */}
+        <div className={`relative flex-shrink-0 rounded-full bg-gradient-to-br from-blue-100 to-cyan-100 border-2 border-blue-200 shadow-md transition-all duration-300 ${
+          isPlayingVocal
+            ? 'w-20 sm:w-32 h-20 sm:h-32 scale-110 sm:scale-150' // When speaking - agrandi mobile
+            : pirateIntroStarted
+              ? 'w-16 sm:w-16 h-16 sm:h-16' // After "COMMENCER" clicked (reduced) - agrandi mobile
+              : 'w-16 sm:w-20 h-16 sm:h-20' // Initial - agrandi mobile
+        }`}>
+          {!imageError ? (
+            <img 
+              src="/image/pirate-small.png" 
+              alt="Sam le Pirate" 
+              className="w-full h-full rounded-full object-cover"
+              onError={() => setImageError(true)}
+            />
+          ) : (
+            <div className="w-full h-full rounded-full flex items-center justify-center text-2xl">
+              🏴‍☠️
+            </div>
+          )}
+          {/* Haut-parleur animé quand il parle */}
+          {isPlayingVocal && (
+            <div className="absolute -top-1 -right-1 bg-blue-500 text-white p-2 rounded-full animate-bounce shadow-lg">
+              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.617.77L4.916 14H2a1 1 0 01-1-1V7a1 1 0 011-1h2.916l3.467-2.77a1 1 0 011.617.77zM14.657 2.929a1 1 0 011.414 0A9.972 9.972 0 0119 10a9.972 9.972 0 01-2.929 7.071 1 1 0 01-1.414-1.414A7.971 7.971 0 0017 10c0-2.21-.894-4.208-2.343-5.657a1 1 0 010-1.414zm-2.829 2.828a1 1 0 011.415 0A5.983 5.983 0 0115 10a5.983 5.983 0 01-1.757 4.243 1 1 0 01-1.415-1.414A3.983 3.983 0 0013 10a3.983 3.983 0 00-1.172-2.829 1 1 0 010-1.414z" clipRule="evenodd" />
+              </svg>
+            </div>
+          )}
+        </div>
+        
+        {/* Bouton Start Exercices - AVEC AUDIO */}
+        <button
+        onClick={startPirateIntro}
+        disabled={isPlayingVocal || pirateIntroStarted}
+        className={`relative px-6 sm:px-12 py-3 sm:py-5 rounded-xl font-black text-base sm:text-2xl transition-all duration-300 transform ${
+          isPlayingVocal 
+            ? 'bg-gradient-to-r from-gray-400 to-gray-500 text-gray-200 cursor-not-allowed animate-pulse shadow-md' 
+            : pirateIntroStarted
+              ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white opacity-75 cursor-not-allowed shadow-lg'
+              : 'bg-gradient-to-r from-orange-500 via-red-500 to-pink-500 text-white hover:from-orange-600 hover:via-red-600 hover:to-pink-600 hover:scale-110 shadow-2xl hover:shadow-3xl animate-pulse border-4 border-yellow-300'
+        } ${!isPlayingVocal && !pirateIntroStarted ? 'ring-4 ring-yellow-300 ring-opacity-75' : ''}`}
+        style={{
+          animationDuration: !isPlayingVocal && !pirateIntroStarted ? '1.5s' : '2s',
+          animationIterationCount: isPlayingVocal || pirateIntroStarted ? 'none' : 'infinite',
+          textShadow: '2px 2px 4px rgba(0,0,0,0.3)',
+          boxShadow: !isPlayingVocal && !pirateIntroStarted 
+            ? '0 10px 25px rgba(0,0,0,0.3), 0 0 30px rgba(255,215,0,0.4), inset 0 1px 0 rgba(255,255,255,0.2)' 
+            : ''
+        }}
+      >
+        {/* Effet de brillance */}
+        {!isPlayingVocal && !pirateIntroStarted && (
+          <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-transparent via-white to-transparent opacity-20 animate-pulse"></div>
+        )}
+        
+        {/* Icônes et texte avec plus d'émojis */}
+        <span className="relative z-10 flex items-center justify-center gap-2">
+          {isPlayingVocal 
+            ? <>🎤 <span className="animate-bounce">Sam parle...</span></> 
+            : pirateIntroStarted
+              ? <>✅ <span>Intro terminée</span></>
+              : <>🚀 <span className="animate-bounce">COMMENCER</span> ✨</>
+          }
+        </span>
+        
+        {/* Particules brillantes pour le bouton commencer */}
+        {!isPlayingVocal && !pirateIntroStarted && (
+          <>
+            <div className="absolute -top-1 -right-1 w-3 h-3 bg-yellow-300 rounded-full animate-ping"></div>
+            <div className="absolute -bottom-1 -left-1 w-2 h-2 bg-pink-300 rounded-full animate-ping" style={{animationDelay: '0.5s'}}></div>
+            <div className="absolute top-2 left-2 w-1 h-1 bg-white rounded-full animate-ping" style={{animationDelay: '1s'}}></div>
+          </>
+        )}
+      </button>
+      </div>
+    </div>
+  );
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-red-100">
+    <div className="min-h-screen bg-gradient-to-br from-pink-50 to-purple-100">
+      <style dangerouslySetInnerHTML={{
+        __html: `
+          @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+          }
+          .animate-shimmer {
+            animation: shimmer 2s infinite;
+          }
+        `
+      }} />
       <div className="max-w-6xl mx-auto px-3 sm:px-4 py-4 sm:py-8">
         {/* Header */}
-        <div className="mb-6 sm:mb-8">
+        <div className={`${showExercises ? 'mb-4' : 'mb-6 sm:mb-8'}`}>
           <Link href="/chapitre/cp-nombres-jusqu-100" className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors mb-3 sm:mb-4">
             <ArrowLeft className="w-4 h-4" />
             <span className="text-sm sm:text-base">Retour au chapitre</span>
           </Link>
           
-          <div className="bg-white rounded-xl p-4 sm:p-6 shadow-lg text-center">
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-2 sm:mb-4">
-              📊 Ordonner et comparer jusqu'à 100
+          <div className={`bg-white rounded-xl shadow-lg text-center ${
+            showExercises ? 'p-3 sm:p-6' : 'p-4 sm:p-6'
+          }`}>
+                        <h1 className={`font-bold text-gray-900 ${
+              showExercises 
+                ? 'text-lg sm:text-2xl lg:text-4xl mb-1 sm:mb-4' 
+                : 'text-lg sm:text-2xl lg:text-4xl mb-1 sm:mb-4'
+            }`}>
+              📊 Mettre dans l'ordre et comparer
             </h1>
-            <p className="text-base sm:text-lg text-gray-600 px-2">
-              Maîtrise les signes &lt;, &gt; et = pour comparer tous les nombres jusqu'à 100 !
+            {!showExercises && (
+              <p className="text-lg text-gray-600 hidden sm:block">
+                Apprends à comparer et mettre les nombres dans l'ordre !
             </p>
+            )}
           </div>
         </div>
 
         {/* Navigation entre cours et exercices */}
         <div className="flex justify-center mb-4 sm:mb-8">
-          <div className="bg-white rounded-lg p-1 shadow-md flex h-auto">
+          <div className="bg-white rounded-lg p-1 shadow-md flex">
             <button
-              onClick={() => setShowExercises(false)}
-              className={`px-4 sm:px-6 py-3 sm:py-4 rounded-lg font-bold transition-all text-sm sm:text-base h-full flex items-center justify-center ${
+              onClick={() => {
+                stopAllVocalsAndAnimations();
+                setShowExercises(false);
+              }}
+              className={`px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-bold transition-all text-sm sm:text-base min-h-[48px] sm:min-h-[68px] flex items-center justify-center ${
                 !showExercises 
-                  ? 'bg-orange-500 text-white shadow-md' 
+                  ? 'bg-pink-500 text-white shadow-md' 
                   : 'text-gray-600 hover:bg-gray-100'
               }`}
             >
               📖 Cours
             </button>
             <button
-              onClick={() => setShowExercises(true)}
-              className={`px-4 sm:px-6 py-3 sm:py-4 rounded-lg font-bold transition-all text-sm sm:text-base h-full flex flex-col items-center justify-center ${
+              onClick={() => {
+                stopAllVocalsAndAnimations();
+                setShowExercises(true);
+              }}
+              className={`px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-bold transition-all text-sm sm:text-base min-h-[48px] sm:min-h-[68px] flex flex-col items-center justify-center ${
                 showExercises 
-                  ? 'bg-orange-500 text-white shadow-md' 
+                  ? 'bg-pink-500 text-white shadow-md' 
                   : 'text-gray-600 hover:bg-gray-100'
               }`}
             >
               <span>✏️ Exercices</span>
-              <span className="text-xs">({score}/{exercises.length})</span>
+              <span className="text-xs sm:text-sm">({score}/{exercises.length})</span>
             </button>
           </div>
         </div>
@@ -381,121 +722,184 @@ export default function OrdonnerComparerCP100() {
             </div>
           </div>
         ) : (
-          /* EXERCICES */
+          /* EXERCICES - FLOW NORMAL COMME CP-NOMBRES-JUSQU-20 */
           <div className="space-y-4 sm:space-y-8">
-            {/* Header exercices */}
-            <div className="bg-white rounded-xl p-4 sm:p-6 shadow-lg">
-              <div className="flex justify-between items-center mb-3 sm:mb-4">
-                <h2 className="text-xl sm:text-2xl font-bold text-gray-900">
-                  ✏️ Exercice {currentExercise + 1} sur {exercises.length}
-                </h2>
-                <button
-                  onClick={resetAll}
-                  className="bg-gray-500 text-white px-3 sm:px-4 py-1 sm:py-2 rounded-lg font-bold hover:bg-gray-600 transition-colors text-sm sm:text-base"
-                >
-                  <RotateCcw className="inline w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-                  Recommencer
-                </button>
+            {/* Introduction de Sam le Pirate - toujours visible */}
+            <SamPirateIntroJSX />
+
+            {/* Indicateur de progression mobile - sticky en haut */}
+            <div className="sticky top-0 z-10 bg-white/95 backdrop-blur-sm border-b border-gray-200 p-3 sm:hidden">
+              <div className="text-center mb-2">
+                <div className="text-sm font-bold text-gray-700 mb-1">
+                  Exercice {currentExercise + 1}/{exercises.length}
+                </div>
+                <div className="text-sm font-bold text-pink-600 mb-2">
+                  Score : {score}/{exercises.length}
+                </div>
               </div>
-              
-              {/* Barre de progression */}
-              <div className="w-full bg-gray-200 rounded-full h-3 sm:h-4 mb-2 sm:mb-3">
+              <div className="w-full bg-gray-200 rounded-full h-2">
                 <div 
-                  className="bg-orange-500 h-3 sm:h-4 rounded-full transition-all duration-500"
+                  className="bg-pink-500 h-2 rounded-full transition-all duration-500"
                   style={{ width: `${((currentExercise + 1) / exercises.length) * 100}%` }}
                 ></div>
               </div>
+              </div>
               
-              {/* Score sous la barre */}
-              <div className="text-center">
-                <div className="text-lg sm:text-xl font-bold text-orange-600">
-                  Score : {score}/{exercises.length}
+            {/* Question - NORMAL FLOW */}
+            <div className="bg-white rounded-xl shadow-lg text-center p-4 sm:p-6 md:p-8 mt-4 sm:mt-8">
+                <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-2 sm:mb-6 md:mb-8 gap-2 sm:gap-4">
+                  <h3 className="text-base sm:text-xl md:text-2xl font-bold text-gray-900 flex-1">
+                    {exercises[currentExercise]?.question || "Classe les nombres dans l'ordre"}
+                  </h3>
+                  <ListenQuestionButtonJSX />
+                </div>
+
+                {/* Affichage selon le type d'exercice */}
+                <div className="rounded-lg p-3 sm:p-6 mb-4 sm:mb-8 bg-purple-50">
+                  <div className="space-y-2 sm:space-y-4">
+                    <div className="text-xl sm:text-4xl font-bold text-purple-600">
+                      {exercises[currentExercise]?.numbers?.join(' , ')}
                 </div>
               </div>
             </div>
 
-            {/* Question */}
-            <div className="bg-white rounded-xl p-3 sm:p-6 md:p-8 shadow-lg text-center">
-              <h3 className="text-base sm:text-xl md:text-2xl font-bold mb-3 sm:mb-6 md:mb-8 text-gray-900">
-                {exercises[currentExercise].question}
-              </h3>
-              
-              {/* Affichage de la question */}
-              <div className="bg-orange-50 rounded-lg p-3 sm:p-4 md:p-8 mb-3 sm:mb-6 md:mb-8">
-                {exercises[currentExercise].type === 'ordre' ? (
-                  <div className="text-lg sm:text-2xl md:text-3xl lg:text-4xl font-bold text-orange-600">
-                    Trouve le bon ordre !
+                {/* Zone de saisie */}
+                <div 
+                  id="answer-choices"
+                  className={`max-w-sm sm:max-w-lg mx-auto mb-4 sm:mb-8 transition-all duration-500 ${
+                    highlightedElement === 'answer-choices' ? 'ring-8 ring-yellow-400 bg-yellow-50 rounded-lg p-4 scale-105 shadow-2xl animate-pulse' : ''
+                  }`}
+                >
+                  {/* RANGEMENT : [?] , [?] , [?] */}
+                  <div className="space-y-2 sm:space-y-4">
+                    <p className="text-base sm:text-lg text-gray-600 font-semibold hidden sm:block text-center">
+                      Classe les nombres dans l'ordre demandé
+                    </p>
+                    <div className="flex items-center justify-center space-x-1 sm:space-x-4">
+                      <input
+                        type="number"
+                        value={userAnswer.split(',')[0] || ''}
+                        onChange={(e) => {
+                          const parts = userAnswer.split(',');
+                          parts[0] = e.target.value;
+                          setUserAnswer(parts.join(','));
+                        }}
+                        disabled={isCorrect !== null}
+                        placeholder="?"
+                        className="w-12 sm:w-20 h-10 sm:h-16 text-center text-base sm:text-2xl font-bold border-2 sm:border-4 border-gray-300 rounded-lg sm:rounded-xl focus:border-pink-500 focus:outline-none disabled:opacity-50"
+                      />
+                      <span className="text-base sm:text-2xl font-bold text-gray-500">,</span>
+                      <input
+                        type="number"
+                        value={userAnswer.split(',')[1] || ''}
+                        onChange={(e) => {
+                          const parts = userAnswer.split(',');
+                          parts[1] = e.target.value;
+                          setUserAnswer(parts.join(','));
+                        }}
+                        disabled={isCorrect !== null}
+                        placeholder="?"
+                        className="w-12 sm:w-20 h-10 sm:h-16 text-center text-base sm:text-2xl font-bold border-2 sm:border-4 border-gray-300 rounded-lg sm:rounded-xl focus:border-pink-500 focus:outline-none disabled:opacity-50"
+                      />
+                      <span className="text-base sm:text-2xl font-bold text-gray-500">,</span>
+                      <input
+                        type="number"
+                        value={userAnswer.split(',')[2] || ''}
+                        onChange={(e) => {
+                          const parts = userAnswer.split(',');
+                          parts[2] = e.target.value;
+                          setUserAnswer(parts.join(','));
+                        }}
+                        disabled={isCorrect !== null}
+                        placeholder="?"
+                        className="w-12 sm:w-20 h-10 sm:h-16 text-center text-base sm:text-2xl font-bold border-2 sm:border-4 border-gray-300 rounded-lg sm:rounded-xl focus:border-pink-500 focus:outline-none disabled:opacity-50"
+                      />
                   </div>
-                ) : (
-                  <div className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-orange-600 flex items-center justify-center space-x-2 sm:space-x-4">
-                    <span>{exercises[currentExercise].num1}</span>
-                    <span className="text-gray-400">?</span>
-                    <span>{exercises[currentExercise].num2}</span>
-                  </div>
-                )}
               </div>
               
-              {/* Choix multiples */}
-              <div className={`grid gap-2 sm:gap-3 md:gap-4 mx-auto mb-4 sm:mb-6 md:mb-8 ${
-                exercises[currentExercise].type === 'ordre' 
-                  ? 'grid-cols-1 max-w-sm sm:max-w-md' 
-                  : 'grid-cols-1 md:grid-cols-3 max-w-sm sm:max-w-md'
-              }`}>
-                {shuffledChoices.map((choice) => (
+                  {/* Bouton Valider */}
+                  <div className="flex justify-center mt-3 sm:mt-6">
                   <button
-                    key={choice}
-                    onClick={() => handleAnswerClick(choice)}
-                    disabled={isCorrect !== null}
-                    className={`p-3 sm:p-4 md:p-6 rounded-lg font-bold transition-all ${
-                      exercises[currentExercise].type === 'ordre' 
-                        ? 'text-base sm:text-lg md:text-xl'
-                        : 'text-xl sm:text-2xl md:text-3xl lg:text-4xl'
-                    } ${
-                      userAnswer === choice
-                        ? isCorrect === true
-                          ? 'bg-green-500 text-white'
-                          : isCorrect === false
-                            ? 'bg-red-500 text-white'
-                            : 'bg-blue-500 text-white'
-                        : exercises[currentExercise].correctAnswer === choice && isCorrect === false
-                          ? 'bg-green-200 text-green-800 border-2 border-green-500'
-                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200 disabled:opacity-50'
-                    } disabled:cursor-not-allowed`}
-                  >
-                    {choice}
+                      onClick={handleAnswerSubmit}
+                      disabled={(() => {
+                        if (isCorrect !== null) return true;
+                        const parts = userAnswer.split(',');
+                        return !parts[0]?.trim() || !parts[1]?.trim() || !parts[2]?.trim(); // Les 3 nombres doivent être remplis
+                      })()}
+                      className="bg-green-500 text-white px-4 sm:px-8 py-2 sm:py-4 rounded-lg font-bold text-sm sm:text-lg hover:bg-green-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      Valider
                   </button>
-                ))}
+                  </div>
               </div>
               
               {/* Résultat */}
               {isCorrect !== null && (
-                <div className={`p-4 sm:p-6 rounded-lg mb-4 sm:mb-6 ${
+                  <div className={`p-3 sm:p-6 rounded-lg mb-3 sm:mb-6 ${
                   isCorrect ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
                 }`}>
-                  <div className="flex items-center justify-center space-x-3">
+                    <div className="flex items-center justify-center space-x-2 sm:space-x-3 mb-2 sm:mb-4">
                     {isCorrect ? (
                       <>
                         <CheckCircle className="w-6 h-6 sm:w-8 sm:h-8" />
-                        <span className="font-bold text-lg sm:text-xl">Excellent ! C'est bien {exercises[currentExercise].correctAnswer} !</span>
+                          <span className="font-bold text-base sm:text-xl">
+                            Excellent ! Tu as bien dit : {userAnswer} !
+                          </span>
                       </>
                     ) : (
                       <>
                         <XCircle className="w-6 h-6 sm:w-8 sm:h-8" />
-                        <span className="font-bold text-lg sm:text-xl">
-                          Pas tout à fait... C'était {exercises[currentExercise].correctAnswer} !
+                          <span className="font-bold text-sm sm:text-xl">
+                            Pas tout à fait... Il fallait dire : {exercises[currentExercise]?.correctAnswer} !
                         </span>
                       </>
                     )}
                   </div>
+                    
+                    {/* Explication pour les mauvaises réponses */}
+                    {!isCorrect && (
+                      <div className="bg-white rounded-lg p-3 sm:p-6 border border-blue-300 sm:border-2">
+                        <h4 className="text-base sm:text-lg font-bold mb-2 sm:mb-4 text-blue-800 text-center">
+                          📚 Explication
+                        </h4>
+                        
+                        <div className="space-y-2 sm:space-y-4">
+                          <div className="bg-blue-50 rounded-lg p-2 sm:p-4 text-center">
+                            <div className="text-lg sm:text-xl font-bold text-blue-600 mb-1 sm:mb-2">
+                              {exercises[currentExercise]?.correctAnswer}
+                            </div>
+                            
+                            <div className="space-y-1 sm:space-y-2">
+                              <div className="text-sm sm:text-lg text-gray-700">
+                                {exercises[currentExercise]?.question.includes('plus petit au plus grand') ? 
+                                  'Ordre croissant :' : 'Ordre décroissant :'} {exercises[currentExercise]?.correctAnswer}
+                              </div>
+                              <div className="text-xs sm:text-sm text-gray-600">
+                                {exercises[currentExercise]?.question.includes('plus petit au plus grand') ? 
+                                  'Du plus petit au plus grand !' : 'Du plus grand au plus petit !'}
+                              </div>
+                            </div>
+                          </div>
+                          
+                          <div className="bg-gradient-to-r from-pink-100 to-purple-100 rounded-lg p-2 sm:p-3 text-center">
+                            <div className="text-base sm:text-lg">🌟</div>
+                            <p className="text-xs sm:text-sm font-semibold text-purple-800">
+                              Maintenant tu sais !
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                 </div>
               )}
               
               {/* Navigation */}
               {isCorrect === false && (
-                <div className="flex justify-center">
+                  <div className="flex justify-center pb-4 sm:pb-0">
                   <button
+                      id="next-exercise-button"
                     onClick={nextExercise}
-                    className="bg-orange-500 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-lg font-bold text-base sm:text-lg hover:bg-orange-600 transition-colors"
+                      className="bg-pink-500 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-lg font-bold text-base sm:text-lg hover:bg-pink-600 transition-colors shadow-lg hover:shadow-xl transform hover:scale-105 min-h-[50px] sm:min-h-auto"
                   >
                     Suivant →
                   </button>
