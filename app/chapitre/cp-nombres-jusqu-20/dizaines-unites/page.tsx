@@ -1569,15 +1569,7 @@ export default function DizainesUnitesCP() {
                     {exercises[currentExercise]?.number}
                   </div>
                   
-                  {/* Représentation visuelle */}
-                  <div className="flex justify-center gap-2 mb-4 flex-wrap">
-                    {(() => {
-                      const exercise = exercises[currentExercise];
-                      if (!exercise) return null;
-                      const { dizaines, unites } = analyzeNumber(exercise.number);
-                      return renderCircles(dizaines, unites);
-                    })()}
-                  </div>
+
                   
                   <p className="text-sm sm:text-lg text-gray-700 font-semibold mb-6 hidden sm:block">
                     Décompose ce nombre en dizaines et unités !
