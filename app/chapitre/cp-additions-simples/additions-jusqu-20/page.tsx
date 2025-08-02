@@ -1743,15 +1743,15 @@ export default function AdditionsJusqu20CP() {
                   <label className="block text-lg font-bold text-gray-800 mb-2">
                     Écris le résultat :
                   </label>
-                  <div className="flex justify-center items-center space-x-2">
-                    <span className="text-xl font-bold">{exercises[currentExercise].firstNumber} + {exercises[currentExercise].secondNumber} = </span>
+                  <div className="flex justify-center items-center space-x-2 px-4">
+                    <span className="text-lg sm:text-xl font-bold">{exercises[currentExercise].firstNumber} + {exercises[currentExercise].secondNumber} = </span>
                     <input
                       type="number"
                       value={userAnswer}
                       onChange={(e) => setUserAnswer(e.target.value)}
                       placeholder="?"
                       disabled={isCorrect !== null}
-                      className={`w-20 h-12 text-xl font-bold text-center border-2 rounded-lg ${
+                      className={`w-16 sm:w-20 h-12 text-lg sm:text-xl font-bold text-center border-2 rounded-lg ${
                         isCorrect === true 
                           ? 'border-green-500 bg-green-50 text-green-800' 
                           : isCorrect === false 
