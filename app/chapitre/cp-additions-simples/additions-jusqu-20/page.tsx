@@ -543,7 +543,7 @@ export default function AdditionsJusqu20CP() {
       
       // Mettre en surbrillance la zone de réponse
       setHighlightedElement('answer-zone');
-      await playAudio("Écris le résultat de l'addition dans la case, puis clique sur vérifier");
+      await playAudio("Écris le résultat de l'addition dans la case, puis clique sur valider");
       if (stopSignalRef.current) return;
       
       await wait(1500);
