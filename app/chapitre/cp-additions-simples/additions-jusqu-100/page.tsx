@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, Calculator, Target, Star, CheckCircle, XCircle, Trophy, Brain, Zap, BookOpen, Eye } from 'lucide-react';
+import { ArrowLeft, Calculator, Target, Star, CheckCircle, XCircle, Trophy, Brain, Zap, BookOpen, Eye, RotateCcw } from 'lucide-react';
 
 export default function AdditionsJusqua100() {
   // États pour l'audio et animations
@@ -18,7 +18,7 @@ export default function AdditionsJusqua100() {
   const [showingCarry, setShowingCarry] = useState(false);
   const [highlightedDigits, setHighlightedDigits] = useState<string[]>([]);
 
-  // États pour les exercices
+  // États pour les exercices  
   const [showExercises, setShowExercises] = useState(false);
   const [currentExercise, setCurrentExercise] = useState(0);
   const [userAnswer, setUserAnswer] = useState('');
@@ -28,9 +28,53 @@ export default function AdditionsJusqua100() {
   const [showCompletionModal, setShowCompletionModal] = useState(false);
   const [finalScore, setFinalScore] = useState(0);
 
-  // Refs pour gérer l'audio
+  // États pour Sam le Pirate
+  const [pirateIntroStarted, setPirateIntroStarted] = useState(false);
+  const [samSizeExpanded, setSamSizeExpanded] = useState(false);
+  const [imageError, setImageError] = useState(false);
+  const [isPlayingEnonce, setIsPlayingEnonce] = useState(false);
+
+  // État pour l'animation de correction
+  const [showAnimatedCorrection, setShowAnimatedCorrection] = useState(false);
+  const [correctionStep, setCorrectionStep] = useState<'numbers' | 'adding' | 'counting' | 'result' | 'complete' | 'carry-step' | 'final-sum' | null>(null);
+  const [highlightNextButton, setHighlightNextButton] = useState(false);
+
+  // État pour la détection mobile
+  const [isMobile, setIsMobile] = useState(false);
+  const [animatedObjects, setAnimatedObjects] = useState<string[]>([]);
+
+  // État pour stocker les nombres de la correction en cours
+  const [correctionNumbers, setCorrectionNumbers] = useState<{
+    first: number;
+    second: number;
+    result: number;
+    objectEmoji1: string;
+    objectEmoji2: string;
+    objectName: string;
+  } | null>(null);
+
+  // État pour l'animation de comptage objet par objet
+  const [countingIndex, setCountingIndex] = useState<number>(-1);
+
+  // Refs pour gérer l'audio et scroll
   const stopSignalRef = useRef(false);
   const currentAudioRef = useRef<SpeechSynthesisUtterance | null>(null);
+  const nextButtonRef = useRef<HTMLButtonElement>(null);
+
+  // Expressions de pirate aléatoires pour chaque exercice
+  const pirateExpressions = [
+    "Mille sabords", "Tonnerre de Brest", "Sacré matelot", "Par Neptune", "Sang de pirate",
+    "Mille millions de mille sabords", "Ventrebleu", "Sapristi", "Morbleu", "Fichtre"
+  ];
+
+  // Compliments aléatoires pour les bonnes réponses
+  const correctAnswerCompliments = [
+    "Parfait", "Bravo", "Excellent", "Formidable", "Magnifique", 
+    "Super", "Génial", "Fantastique", "Merveilleux", "Extraordinaire",
+    "Très bien", "C'est ça", "Tu as trouvé", "Bien joué", "Félicitations",
+    "Tu es un champion", "Quelle belle réussite", "Continue comme ça", 
+    "Tu progresses bien", "C'est exact", "Impeccable", "Remarquable"
+  ];
 
   // Données des techniques d'addition avec animations
   const additionTechniques = [
@@ -164,21 +208,25 @@ export default function AdditionsJusqua100() {
     }
   ];
 
-  // Exercices progressifs
+  // Exercices sur les additions jusqu'à 100 - saisie libre
   const exercises = [
-    { question: '24 + 35', answer: 59, type: 'sans-retenue', hint: 'Additionne d\'abord les unités : 4 + 5' },
-    { question: '51 + 23', answer: 74, type: 'sans-retenue', hint: 'Puis les dizaines : 5 + 2' },
-    { question: '16 + 29', answer: 45, type: 'avec-retenue', hint: '6 + 9 = 15, écris 5 et retiens 1' },
-    { question: '38 + 47', answer: 85, type: 'avec-retenue', hint: 'N\'oublie pas la retenue !' },
-    { question: '42 + 26', answer: 68, type: 'calcul-mental', hint: '40 + 20 = 60, puis 2 + 6 = 8' },
-    { question: '33 + 45', answer: 78, type: 'calcul-mental', hint: 'Décompose par dizaines et unités' },
-    { question: '37 + 8', answer: 45, type: 'complement-10', hint: 'Complète à 40 d\'abord' },
-    { question: '54 + 9', answer: 63, type: 'complement-10', hint: 'Va jusqu\'à 60 puis ajoute le reste' }
+    { question: 'Calcule 23 + 45', firstNumber: 23, secondNumber: 45, correctAnswer: 68, type: 'sans-retenue', hint: 'Additionne d\'abord les unités : 3 + 5, puis les dizaines : 2 + 4' },
+    { question: 'Calcule 41 + 37', firstNumber: 41, secondNumber: 37, correctAnswer: 78, type: 'avec-retenue', hint: '1 + 7 = 8, puis 4 + 3 = 7, donc 78' },
+    { question: 'Calcule 36 + 28', firstNumber: 36, secondNumber: 28, correctAnswer: 64, type: 'avec-retenue', hint: '6 + 8 = 14, écris 4 et retiens 1' },
+    { question: 'Calcule 52 + 33', firstNumber: 52, secondNumber: 33, correctAnswer: 85, type: 'sans-retenue', hint: '2 + 3 = 5, puis 5 + 3 = 8' },
+    { question: 'Calcule 47 + 26', firstNumber: 47, secondNumber: 26, correctAnswer: 73, type: 'avec-retenue', hint: '7 + 6 = 13, écris 3 et retiens 1' },
+    { question: 'Calcule 34 + 25', firstNumber: 34, secondNumber: 25, correctAnswer: 59, type: 'sans-retenue', hint: 'Technique simple : 4 + 5 = 9, puis 3 + 2 = 5' },
+    { question: 'Calcule 58 + 19', firstNumber: 58, secondNumber: 19, correctAnswer: 77, type: 'avec-retenue', hint: '8 + 9 = 17, écris 7 et retiens 1' },
+    { question: 'Calcule 62 + 24', firstNumber: 62, secondNumber: 24, correctAnswer: 86, type: 'sans-retenue', hint: 'Addition simple : 2 + 4 = 6, puis 6 + 2 = 8' },
+    { question: 'Calcule 39 + 45', firstNumber: 39, secondNumber: 45, correctAnswer: 84, type: 'avec-retenue', hint: '9 + 5 = 14, écris 4 et retiens 1' },
+    { question: 'Calcule 56 + 32', firstNumber: 56, secondNumber: 32, correctAnswer: 88, type: 'sans-retenue', hint: 'Dernière addition : 6 + 2 = 8, puis 5 + 3 = 8' }
   ];
 
   // Mount check
   useEffect(() => {
     setIsClient(true);
+
+    // Pas de manipulation forcée du scroll - laissons le navigateur gérer naturellement
 
     // Gestionnaires d'événements pour arrêter les animations lors de navigation
     const handleVisibilityChange = () => {
@@ -222,6 +270,9 @@ export default function AdditionsJusqua100() {
       window.removeEventListener('popstate', handlePopState);
       history.pushState = originalPushState;
       history.replaceState = originalReplaceState;
+      
+      // Plus de nettoyage de styles puisqu'on n'en force plus
+      
       stopAllVocalsAndAnimations();
     };
   }, []);
@@ -230,6 +281,21 @@ export default function AdditionsJusqua100() {
   useEffect(() => {
     stopAllVocalsAndAnimations();
   }, [showExercises]);
+
+  // Effet pour la détection mobile et réinitialisation
+  useEffect(() => {
+    const checkIfMobile = () => {
+      setIsMobile(window.innerWidth < 640); // sm breakpoint
+    };
+    
+    checkIfMobile();
+    window.addEventListener('resize', checkIfMobile);
+    
+    // Réinitialiser stopSignalRef au chargement de la page
+    stopSignalRef.current = false;
+    
+    return () => window.removeEventListener('resize', checkIfMobile);
+  }, []);
 
   // Fonction pour arrêter tous les vocaux et animations
   const stopAllVocalsAndAnimations = () => {
@@ -248,6 +314,7 @@ export default function AdditionsJusqua100() {
     
     // Reset de tous les états d'animation et de vocal
     setIsPlayingVocal(false);
+    setIsPlayingEnonce(false);
     setIsAnimationRunning(false);
     setHighlightedElement(null);
     setAnimatingStep(null);
@@ -256,6 +323,15 @@ export default function AdditionsJusqua100() {
     setCalculationStep(null);
     setShowingCarry(false);
     setHighlightedDigits([]);
+    setSamSizeExpanded(false);
+    
+    // Nouveaux états pour la correction animée
+    setShowAnimatedCorrection(false);
+    setCorrectionStep(null);
+    setHighlightNextButton(false);
+    setAnimatedObjects([]);
+    setCorrectionNumbers(null);
+    setCountingIndex(-1);
   };
 
   // Fonction pour jouer l'audio avec voix féminine française
@@ -351,16 +427,14 @@ export default function AdditionsJusqua100() {
     });
   };
 
-  // Fonction pour attendre
-  const wait = async (ms: number) => {
-    return new Promise<void>((resolve) => {
-      setTimeout(() => {
-        if (stopSignalRef.current) {
-          resolve();
-          return;
-        }
-        resolve();
-      }, ms);
+  // Fonction utilitaire pour les pauses
+  const wait = (ms: number) => {
+    return new Promise(resolve => {
+      if (stopSignalRef.current) {
+        resolve(undefined);
+        return;
+      }
+      setTimeout(resolve, ms);
     });
   };
 
@@ -376,6 +450,170 @@ export default function AdditionsJusqua100() {
         });
       }
     }, 300);
+  };
+
+  // Fonction pour scroller vers le bouton Suivant
+  const scrollToNextButton = () => {
+    if (nextButtonRef.current) {
+      nextButtonRef.current.scrollIntoView({
+        behavior: 'smooth',
+        block: 'end',
+        inline: 'nearest'
+      });
+    }
+  };
+
+  // Fonction pour vérifier si une addition est correcte
+  const isValidAddition = (userAnswer: string, exercise: any) => {
+    const answer = parseInt(userAnswer);
+    if (isNaN(answer) || answer < 0) return false;
+    
+    return answer === exercise.correctAnswer;
+  };
+
+  // Fonction pour parser les nombres d'un exercice d'addition
+  const parseAdditionNumbers = (exercise: any) => {
+    return {
+      first: exercise.firstNumber,
+      second: exercise.secondNumber,
+      result: exercise.correctAnswer,
+      objectEmoji1: '🔴',
+      objectEmoji2: '🔵',
+      objectName: 'objets'
+    };
+  };
+
+  // Fonction pour créer une correction animée avec des objets visuels pour les additions jusqu'à 100
+  const createAnimatedCorrection = async (exercise: any, userAnswer?: string) => {
+    if (stopSignalRef.current) return;
+    
+    console.log('Début correction animée pour addition jusqu\'à 100:', exercise, 'avec réponse:', userAnswer);
+    
+    const { first, second, result, objectEmoji1, objectEmoji2, objectName } = parseAdditionNumbers(exercise);
+    
+    // Stocker les nombres pour l'affichage
+    setCorrectionNumbers({ first, second, result, objectEmoji1, objectEmoji2, objectName });
+    
+    // Démarrer l'affichage de correction
+    setShowAnimatedCorrection(true);
+    setCorrectionStep('numbers');
+    
+    // Scroller pour garder la correction visible
+    setTimeout(() => {
+      const correctionElement = document.getElementById('animated-correction');
+      if (correctionElement) {
+        correctionElement.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center'
+        });
+      }
+    }, 100);
+    
+    // Étape 1: Présentation du problème
+    const hasUserAnswer = userAnswer && userAnswer.trim();
+    if (hasUserAnswer) {
+      const userNum = parseInt(userAnswer);
+      if (userNum === result) {
+        await playAudio(`Je vais te montrer que ${first} plus ${second} égale bien ${result} !`);
+      } else {
+        await playAudio(`Tu as répondu ${userAnswer}, mais regardons le bon calcul !`);
+      }
+    } else {
+      await playAudio(`Je vais t'expliquer cette addition avec des ${objectName} !`);
+    }
+    if (stopSignalRef.current) return;
+    await wait(1000);
+    
+    // Étape 2: Affichage des deux nombres
+    await playAudio(`Regarde ! Voici ${first} ${objectName} rouges et ${second} ${objectName} bleus.`);
+    if (stopSignalRef.current) return;
+    
+    // Montrer les objets des deux nombres (utilisation d'objets visuels simples)
+    const allObjects = [
+      ...Array(Math.min(first, 20)).fill('🔴'), // Limiter à 20 pour l'affichage
+      ...Array(Math.min(second, 20)).fill('🔵')
+    ];
+    setAnimatedObjects(allObjects);
+    await wait(1500);
+    
+    // Étape 3: Technique d'addition selon le type
+    const hasCarry = (first % 10) + (second % 10) >= 10;
+    
+    if (hasCarry) {
+      // Addition avec retenue
+      setCorrectionStep('carry-step');
+      await wait(800);
+      await playAudio(`Attention ! Cette addition nécessite une retenue car les unités dépassent 10 !`);
+      if (stopSignalRef.current) return;
+      await wait(1200);
+      
+      const unitsSum = (first % 10) + (second % 10);
+      await playAudio(`Les unités : ${first % 10} plus ${second % 10} égale ${unitsSum}.`);
+      if (stopSignalRef.current) return;
+      await wait(1000);
+      
+      await playAudio(`${unitsSum} c'est plus que 10, donc j'écris ${unitsSum % 10} et je retiens 1 !`);
+      if (stopSignalRef.current) return;
+      await wait(1500);
+      
+      const tensSum = Math.floor(first / 10) + Math.floor(second / 10) + 1;
+      await playAudio(`Les dizaines : ${Math.floor(first / 10)} plus ${Math.floor(second / 10)} plus 1 de retenue égale ${tensSum}.`);
+      if (stopSignalRef.current) return;
+      await wait(1500);
+    } else {
+      // Addition sans retenue
+      setCorrectionStep('adding');
+      await playAudio(`Cette addition est simple car il n'y a pas de retenue !`);
+      if (stopSignalRef.current) return;
+      await wait(1000);
+      
+      await playAudio(`Les unités : ${first % 10} plus ${second % 10} égale ${(first % 10) + (second % 10)}.`);
+      if (stopSignalRef.current) return;
+      await wait(1200);
+      
+      await playAudio(`Les dizaines : ${Math.floor(first / 10)} plus ${Math.floor(second / 10)} égale ${Math.floor(first / 10) + Math.floor(second / 10)}.`);
+      if (stopSignalRef.current) return;
+      await wait(1200);
+    }
+    
+    // Étape 4: Résultat final
+    setCorrectionStep('final-sum');
+    await playAudio(`En regroupant tout : ${result} !`);
+    if (stopSignalRef.current) return;
+    await wait(1500);
+    
+    await playAudio(`Donc ${first} + ${second} = ${result} ! C'est ça, une addition jusqu'à 100 !`);
+    if (stopSignalRef.current) return;
+    await wait(1500);
+    
+    // Étape 5: Terminé
+    setCorrectionStep('complete');
+    
+    // Messages différents selon mobile/desktop
+    if (isMobile) {
+      await playAudio(`Appuie sur suivant pour un autre exercice !`);
+    } else {
+      await playAudio(`Maintenant tu peux cliquer sur suivant pour continuer !`);
+    }
+    
+    // Illuminer le bouton et scroller
+    setHighlightNextButton(true);
+    
+    if (isMobile) {
+      setTimeout(() => {
+        if (nextButtonRef.current) {
+          nextButtonRef.current.scrollIntoView({
+            behavior: 'smooth',
+            block: 'center',
+            inline: 'nearest'
+          });
+        }
+      }, 800);
+    } else {
+      setTimeout(() => {
+        scrollToNextButton();
+      }, 500);
+    }
   };
 
   // Fonction pour expliquer le chapitre principal
@@ -767,10 +1005,198 @@ export default function AdditionsJusqua100() {
     await wait(3000);
   };
 
+  // Fonction pour féliciter avec audio pour les bonnes réponses
+  const celebrateCorrectAnswer = async () => {
+    if (stopSignalRef.current) return;
+    
+    stopSignalRef.current = false;
+    setIsPlayingVocal(true);
+    setSamSizeExpanded(true);
+    
+    try {
+      const randomCompliment = correctAnswerCompliments[Math.floor(Math.random() * correctAnswerCompliments.length)];
+      await playAudio(randomCompliment + " !");
+      if (stopSignalRef.current) return;
+      
+      await wait(800);
+      if (stopSignalRef.current) return;
+      
+      // Phrases d'encouragement supplémentaires variées
+      const encouragements = [
+        "Tu maîtrises bien les additions jusqu'à 100 !",
+        "Tu es doué en calcul !",
+        "Les mathématiques n'ont plus de secret pour toi !",
+        "Tu deviens un vrai expert !",
+        "Quel talent pour les nombres !",
+        "Tu as l'œil pour les bonnes réponses !",
+        "Tu progresses à grands pas !"
+      ];
+      
+      const randomEncouragement = encouragements[Math.floor(Math.random() * encouragements.length)];
+      await playAudio(randomEncouragement);
+      if (stopSignalRef.current) return;
+      
+    } catch (error) {
+      console.error('Erreur dans celebrateCorrectAnswer:', error);
+    } finally {
+      setIsPlayingVocal(false);
+      setSamSizeExpanded(false);
+    }
+  };
+
+  // Fonction pour expliquer une mauvaise réponse avec animation
+  const explainWrongAnswer = async () => {
+    stopSignalRef.current = false;
+    setIsPlayingVocal(true);
+    setSamSizeExpanded(true);
+    
+    try {
+      const pirateExpression = pirateExpressions[currentExercise % pirateExpressions.length];
+      await playAudio(pirateExpression + " !");
+      if (stopSignalRef.current) return;
+      
+      await wait(800);
+      if (stopSignalRef.current) return;
+      
+      const exercise = exercises[currentExercise];
+      await playAudio(`Pas de problème ! Regarde bien...`);
+      if (stopSignalRef.current) return;
+      
+      await wait(1000);
+      if (stopSignalRef.current) return;
+      
+      // Lancer l'animation de correction pour additions avec la réponse utilisateur si incorrecte
+      if (isCorrect === false && userAnswer) {
+        await createAnimatedCorrection(exercise, userAnswer);
+      } else {
+        await createAnimatedCorrection(exercise);
+      }
+      if (stopSignalRef.current) return;
+      
+    } catch (error) {
+      console.error('Erreur dans explainWrongAnswer:', error);
+    } finally {
+      setIsPlayingVocal(false);
+      setSamSizeExpanded(false);
+    }
+  };
+
+  // Fonction pour l'introduction vocale de Sam le Pirate
+  const startPirateIntro = async () => {
+    stopSignalRef.current = false;
+    setIsPlayingVocal(true);
+    
+    const isReplay = pirateIntroStarted;
+    setPirateIntroStarted(true);
+    
+    try {
+      if (isReplay) {
+        await playAudio("Eh bien, nom d'un sabre ! Tu veux que je répète mes instructions ?");
+        if (stopSignalRef.current) return;
+        
+        await wait(1000);
+        if (stopSignalRef.current) return;
+        
+        await playAudio("Très bien moussaillon ! Rappel des consignes !");
+        if (stopSignalRef.current) return;
+      } else {
+        await playAudio("Bonjour, faisons quelques exercices d'additions jusqu'à 100 nom d'une jambe en bois !");
+        if (stopSignalRef.current) return;
+      }
+      
+      await wait(1000);
+      if (stopSignalRef.current) return;
+      
+      // Mettre en surbrillance le bouton "Écouter l'énoncé"
+      setHighlightedElement('listen-question-button');
+      await playAudio("Pour lire l'énoncé appuie sur écouter l'énoncé");
+      if (stopSignalRef.current) return;
+      await wait(1500);
+      setHighlightedElement(null);
+      
+      if (stopSignalRef.current) return;
+      
+      // Mettre en surbrillance la zone de réponse
+      setHighlightedElement('answer-zone');
+      await playAudio("Écris le résultat de l'addition dans la case, puis clique sur valider");
+      if (stopSignalRef.current) return;
+      
+      await wait(1500);
+      setHighlightedElement(null);
+      if (stopSignalRef.current) return;
+      
+      // Mettre en surbrillance Sam lui-même pour les explications
+      setHighlightedElement('sam-pirate');
+      await playAudio("Si tu te trompes, je t'expliquerai la bonne réponse !");
+      if (stopSignalRef.current) return;
+      await wait(1500);
+      setHighlightedElement(null);
+      
+      await wait(1000);
+      if (stopSignalRef.current) return;
+      
+      if (isReplay) {
+        await playAudio("Et voilà ! C'est reparti pour l'aventure !");
+      } else {
+        await playAudio("En avant toutes pour les additions jusqu'à 100 !");
+      }
+      if (stopSignalRef.current) return;
+      
+    } catch (error) {
+      console.error('Erreur dans startPirateIntro:', error);
+    } finally {
+      setIsPlayingVocal(false);
+    }
+  };
+
+  // Fonction pour lire l'énoncé de l'exercice
+  const startExerciseExplanation = async () => {
+    console.log('startExerciseExplanation appelée');
+    
+    if (isPlayingEnonce) {
+      console.log('isPlayingEnonce est true, sortie');
+      return;
+    }
+    
+    if (!exercises[currentExercise]) {
+      console.log('Pas d\'exercice courant, sortie');
+      return;
+    }
+    
+    console.log('Début lecture énoncé:', exercises[currentExercise].question);
+    
+    // Réinitialiser le signal d'arrêt pour permettre la lecture
+    stopSignalRef.current = false;
+    setIsPlayingEnonce(true);
+    
+    try {
+      // Vérifier si speechSynthesis est disponible
+      if (typeof speechSynthesis === 'undefined') {
+        throw new Error('speechSynthesis non disponible');
+      }
+      
+      // Arrêter toute synthèse en cours
+      if (speechSynthesis.speaking) {
+        speechSynthesis.cancel();
+        await new Promise(resolve => setTimeout(resolve, 100));
+      }
+      
+      await playAudio(exercises[currentExercise].question);
+      console.log('Lecture terminée avec succès');
+      
+    } catch (error) {
+      console.error('Erreur dans startExerciseExplanation:', error);
+      alert('Erreur audio: ' + (error instanceof Error ? error.message : String(error)));
+    } finally {
+      setIsPlayingEnonce(false);
+      console.log('isPlayingEnonce mis à false');
+    }
+  };
+
   // Fonctions pour les exercices
   const checkAnswer = () => {
     const userNum = parseInt(userAnswer);
-    const correct = userNum === exercises[currentExercise].answer;
+    const correct = userNum === exercises[currentExercise].correctAnswer;
     setIsCorrect(correct);
     
     if (correct) {
@@ -779,11 +1205,66 @@ export default function AdditionsJusqua100() {
     }
   };
 
+  // Gestion des exercices avec validation et correction animée
+  const handleAnswerSubmit = async () => {
+    stopAllVocalsAndAnimations();
+    
+    if (!userAnswer.trim()) {
+      alert('Veuillez entrer une réponse');
+      return;
+    }
+
+    const correct = isValidAddition(userAnswer, exercises[currentExercise]);
+    setIsCorrect(correct);
+    
+    if (correct && !answeredCorrectly.has(currentExercise)) {
+      setScore(prevScore => prevScore + 1);
+      setAnsweredCorrectly(prev => {
+        const newSet = new Set(prev);
+        newSet.add(currentExercise);
+        return newSet;
+      });
+    }
+
+    if (correct) {
+      // Féliciter l'utilisateur
+      await celebrateCorrectAnswer();
+      
+      setTimeout(() => {
+        if (currentExercise + 1 < exercises.length) {
+          setCurrentExercise(currentExercise + 1);
+          setUserAnswer('');
+          setIsCorrect(null);
+          setShowAnimatedCorrection(false);
+          setCorrectionStep(null);
+          setCorrectionNumbers(null);
+          setAnimatedObjects([]);
+          setCountingIndex(-1);
+        } else {
+          const finalScoreValue = score + (!answeredCorrectly.has(currentExercise) ? 1 : 0);
+          setFinalScore(finalScoreValue);
+          setShowCompletionModal(true);
+        }
+      }, 1500);
+    } else {
+      // Expliquer la mauvaise réponse avec correction animée
+      await explainWrongAnswer();
+    }
+  };
+
   const nextExercise = () => {
+    stopAllVocalsAndAnimations();
+    setHighlightNextButton(false);
+    
     if (currentExercise < exercises.length - 1) {
       setCurrentExercise(currentExercise + 1);
       setUserAnswer('');
       setIsCorrect(null);
+      setShowAnimatedCorrection(false);
+      setCorrectionStep(null);
+      setCorrectionNumbers(null);
+      setAnimatedObjects([]);
+      setCountingIndex(-1);
     } else {
       setFinalScore(score);
       setShowCompletionModal(true);
@@ -791,12 +1272,30 @@ export default function AdditionsJusqua100() {
   };
 
   const resetExercises = () => {
+    stopAllVocalsAndAnimations();
     setCurrentExercise(0);
     setUserAnswer('');
     setIsCorrect(null);
     setScore(0);
     setAnsweredCorrectly(new Set());
     setShowCompletionModal(false);
+    setFinalScore(0);
+    setPirateIntroStarted(false);
+    setHighlightNextButton(false);
+    setShowAnimatedCorrection(false);
+    setCorrectionStep(null);
+    setCorrectionNumbers(null);
+    setAnimatedObjects([]);
+    setCountingIndex(-1);
+  };
+
+  // Fonction helper pour les messages de fin
+  const getCompletionMessage = (score: number, total: number) => {
+    const percentage = Math.round((score / total) * 100);
+    if (percentage >= 90) return { title: "🎉 Champion des additions jusqu'à 100 !", message: "Tu maîtrises parfaitement les grandes additions !", emoji: "🎉" };
+    if (percentage >= 70) return { title: "👏 Très bien !", message: "Tu progresses super bien !", emoji: "👏" };
+    if (percentage >= 50) return { title: "👍 C'est bien !", message: "Continue, tu apprends bien !", emoji: "😊" };
+    return { title: "💪 Continue !", message: "Recommence pour mieux comprendre les additions jusqu'à 100 !", emoji: "📚" };
   };
 
   // Gestion des événements pour arrêter les vocaux
@@ -1961,123 +2460,423 @@ export default function AdditionsJusqua100() {
             )}
           </div>
         ) : (
-          /* Section Exercices */
-          <div className="space-y-6">
-            <div className="bg-white rounded-xl shadow-lg p-6">
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold text-gray-800">
-                  Exercice {currentExercise + 1} / {exercises.length}
-                </h2>
-                <div className="text-lg font-semibold text-blue-600">
-                  Score : {score} / {exercises.length}
+          /* EXERCICES - RESPONSIVE MOBILE OPTIMISÉ */
+          <div className="pb-20 sm:pb-8">
+            {/* Introduction de Sam le Pirate - toujours visible */}
+            <div className="mb-6 sm:mb-4 mt-4">
+              {/* JSX pour l'introduction de Sam le Pirate dans les exercices */}
+              <div className="flex justify-center p-0 sm:p-1 mt-0 sm:mt-2">
+                <div className="flex items-center gap-1 sm:gap-2">
+                  {/* Image de Sam le Pirate */}
+                  <div 
+                    id="sam-pirate"
+                    className={`relative flex-shrink-0 rounded-full bg-gradient-to-br from-blue-100 to-purple-100 border-1 sm:border-2 border-blue-200 shadow-md transition-all duration-300 ${
+                    isPlayingVocal
+                      ? 'w-12 sm:w-32 h-12 sm:h-32 scale-110 sm:scale-150'
+                      : pirateIntroStarted
+                        ? 'w-10 sm:w-16 h-10 sm:h-16'
+                        : 'w-12 sm:w-20 h-12 sm:h-20'
+                  } ${highlightedElement === 'sam-pirate' ? 'ring-4 ring-yellow-400 ring-opacity-75 animate-bounce scale-125' : ''}`}>
+                    {!imageError ? (
+                      <img 
+                        src="/image/pirate-small.png" 
+                        alt="Sam le Pirate" 
+                        className="w-full h-full rounded-full object-cover"
+                        onError={() => setImageError(true)}
+                      />
+                    ) : (
+                      <div className="w-full h-full rounded-full flex items-center justify-center text-sm sm:text-2xl">
+                        🏴‍☠️
+                      </div>
+                    )}
+                    {/* Haut-parleur animé quand il parle */}
+                    {isPlayingVocal && (
+                      <div className="absolute -top-1 -right-1 bg-blue-500 text-white p-1 sm:p-2 rounded-full animate-bounce shadow-lg">
+                        <svg className="w-2 sm:w-4 h-2 sm:h-4" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.617.77L4.916 14H2a1 1 0 01-1-1V7a1 1 0 011-1h2.916l3.467-2.77a1 1 0 011.617.77zM14.657 2.929a1 1 0 011.414 0A9.972 9.972 0 0119 10a9.972 9.972 0 01-2.929 7.071 1 1 0 01-1.414-1.414A7.971 7.971 0 0017 10c0-2.21-.894-4.208-2.343-5.657a1 1 0 010-1.414zm-2.829 2.828a1 1 0 011.415 0A5.983 5.983 0 0115 10a5.983 5.983 0 01-1.757 4.243 1 1 0 01-1.415-1.414A3.983 3.983 0 0013 10a3.983 3.983 0 00-1.172-2.829 1 1 0 010-1.414z" clipRule="evenodd" />
+                        </svg>
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* Bouton Start Exercices */}
+                  <button
+                  onClick={startPirateIntro}
+                  disabled={isPlayingVocal}
+                  className={`relative transition-all duration-300 transform ${
+                    isPlayingVocal 
+                      ? 'px-3 sm:px-12 py-1 sm:py-5 rounded-lg sm:rounded-xl font-black text-sm sm:text-2xl bg-gradient-to-r from-gray-400 to-gray-500 text-gray-200 cursor-not-allowed animate-pulse shadow-md' 
+                      : pirateIntroStarted
+                        ? 'px-2 sm:px-8 py-2 sm:py-3 rounded-md sm:rounded-lg font-bold text-xs sm:text-lg bg-gradient-to-r from-blue-500 to-purple-600 text-white hover:from-blue-600 hover:to-purple-700 hover:scale-105 shadow-lg border-1 sm:border-2 border-blue-300'
+                        : 'px-3 sm:px-12 py-1 sm:py-5 rounded-lg sm:rounded-xl font-black text-sm sm:text-2xl bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 text-white hover:from-blue-600 hover:via-indigo-600 hover:to-purple-600 hover:scale-110 shadow-2xl hover:shadow-3xl animate-pulse border-2 sm:border-4 border-yellow-300'
+                  } ${!isPlayingVocal && !pirateIntroStarted ? 'ring-4 ring-yellow-300 ring-opacity-75' : ''} ${pirateIntroStarted && !isPlayingVocal ? 'ring-2 ring-blue-300 ring-opacity-75' : ''}`}
+                  style={{
+                    animationDuration: !isPlayingVocal && !pirateIntroStarted ? '1.5s' : '2s',
+                    animationIterationCount: isPlayingVocal ? 'none' : 'infinite',
+                    textShadow: '2px 2px 4px rgba(0,0,0,0.3)',
+                    boxShadow: !isPlayingVocal && !pirateIntroStarted 
+                      ? '0 10px 25px rgba(0,0,0,0.3), 0 0 30px rgba(255,215,0,0.4), inset 0 1px 0 rgba(255,255,255,0.2)' 
+                      : pirateIntroStarted && !isPlayingVocal
+                        ? '0 8px 20px rgba(0,0,0,0.2), 0 0 15px rgba(59,130,246,0.3), inset 0 1px 0 rgba(255,255,255,0.1)'
+                        : ''
+                  }}
+                >
+                  {/* Effet de brillance */}
+                  {!isPlayingVocal && !pirateIntroStarted && (
+                    <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-transparent via-white to-transparent opacity-20 animate-pulse"></div>
+                  )}
+                  
+                  {/* Icônes et texte */}
+                  <span className="relative z-10 flex items-center justify-center gap-2">
+                    {isPlayingVocal 
+                      ? <>🎤 <span>Sam parle...</span></> 
+                      : pirateIntroStarted
+                        ? <>🔄 <span>REJOUER L'INTRO</span> 🏴‍☠️</>
+                        : <>🚀 <span>COMMENCER</span> ✨</>
+                    }
+                  </span>
+                  
+                  {/* Particules brillantes */}
+                  {!isPlayingVocal && (
+                    <>
+                      {!pirateIntroStarted ? (
+                        /* Particules initiales - dorées */
+                        <>
+                          <div className="absolute -top-1 -right-1 w-3 h-3 bg-yellow-300 rounded-full animate-ping"></div>
+                          <div className="absolute -bottom-1 -left-1 w-2 h-2 bg-pink-300 rounded-full animate-ping" style={{animationDelay: '0.5s'}}></div>
+                          <div className="absolute top-2 left-2 w-1 h-1 bg-white rounded-full animate-ping" style={{animationDelay: '1s'}}></div>
+                        </>
+                      ) : (
+                        /* Particules de replay - bleues */
+                        <>
+                          <div className="absolute -top-1 -right-1 w-2 h-2 bg-blue-300 rounded-full animate-ping"></div>
+                          <div className="absolute -bottom-1 -left-1 w-2 h-2 bg-purple-300 rounded-full animate-ping" style={{animationDelay: '0.7s'}}></div>
+                          <div className="absolute top-2 right-2 w-1 h-1 bg-indigo-300 rounded-full animate-ping" style={{animationDelay: '1.2s'}}></div>
+                        </>
+                      )}
+                    </>
+                  )}
+                </button>
                 </div>
               </div>
+            </div>
 
-              {!showCompletionModal ? (
-                <div className="space-y-6">
-                  {/* Type de technique */}
-                  <div className="text-center">
-                    <span className={`px-4 py-2 rounded-full text-sm font-semibold ${
-                      exercises[currentExercise].type === 'sans-retenue' ? 'bg-green-100 text-green-800' :
-                      exercises[currentExercise].type === 'avec-retenue' ? 'bg-orange-100 text-orange-800' :
-                      exercises[currentExercise].type === 'calcul-mental' ? 'bg-purple-100 text-purple-800' :
-                      'bg-blue-100 text-blue-800'
-                    }`}>
-                      {exercises[currentExercise].type === 'sans-retenue' ? '✨ Sans retenue' :
-                       exercises[currentExercise].type === 'avec-retenue' ? '🔄 Avec retenue' :
-                       exercises[currentExercise].type === 'calcul-mental' ? '🧠 Calcul mental' :
-                       '🎯 Complément à 10'}
-                    </span>
+            {/* Header exercices - caché sur mobile */}
+            <div className="bg-white rounded-xl p-2 shadow-lg mt-8 hidden sm:block">
+              <div className="flex justify-between items-center mb-1">
+                <h2 className="text-lg font-bold text-gray-900">
+                  Exercice {currentExercise + 1}
+                </h2>
+                
+                <div className="flex items-center space-x-4">
+                  <div className="text-sm font-bold text-blue-600">
+                    Score : {score}/{exercises.length}
                   </div>
+                  <button
+                    onClick={resetExercises}
+                    className="bg-gray-500 text-white px-3 py-1 rounded-lg font-bold text-sm hover:bg-gray-600 transition-colors"
+                  >
+                    <RotateCcw className="inline w-3 h-3 mr-1" />
+                    Reset
+                  </button>
+                </div>
+              </div>
+              
+              {/* Barre de progression */}
+              <div className="w-full bg-gray-200 rounded-full h-2">
+                <div 
+                  className="bg-blue-500 h-2 rounded-full transition-all duration-500"
+                  style={{ width: `${((currentExercise + 1) / exercises.length) * 100}%` }}
+                ></div>
+              </div>
+            </div>
 
-                  {/* Question */}
-                  <div className="p-4 bg-blue-200 rounded-lg text-center">
-                    <div className="text-3xl font-mono font-bold mb-4 text-blue-900">
-                      {exercises[currentExercise].question} = ?
-                    </div>
+            {/* Header exercices mobile - visible uniquement sur mobile */}
+            <div className="bg-white rounded-xl p-3 shadow-lg mt-2 block sm:hidden">
+              <div className="flex justify-between items-center mb-2">
+                <h2 className="text-base font-bold text-gray-900">
+                  Exercice {currentExercise + 1}/{exercises.length}
+                </h2>
+                
+                <div className="text-xs font-bold text-blue-600">
+                  Score: {score}/{exercises.length}
+                </div>
+              </div>
+              
+              {/* Barre de progression mobile */}
+              <div className="w-full bg-gray-200 rounded-full h-2">
+                <div 
+                  className="bg-blue-500 h-2 rounded-full transition-all duration-500"
+                  style={{ width: `${((currentExercise + 1) / exercises.length) * 100}%` }}
+                ></div>
+              </div>
+            </div>
+
+            {/* Question principale */}
+            <div className="bg-white rounded-xl p-4 sm:p-8 shadow-lg mt-4">
+              {/* Question et bouton lecture */}
+              <div className="text-center mb-6">
+                <h3 className="text-xl sm:text-2xl font-bold mb-4 text-gray-900">
+                  {exercises[currentExercise].question}
+                </h3>
+                
+                {/* Badge du type */}
+                <div className="flex justify-center mb-4">
+                  <span className={`px-3 py-1 rounded-full text-sm font-semibold ${
+                    exercises[currentExercise].type === 'sans-retenue' ? 'bg-green-100 text-green-800' :
+                    exercises[currentExercise].type === 'avec-retenue' ? 'bg-orange-100 text-orange-800' :
+                    exercises[currentExercise].type === 'calcul-mental' ? 'bg-purple-100 text-purple-800' :
+                    'bg-blue-100 text-blue-800'
+                  }`}>
+                    {exercises[currentExercise].type === 'sans-retenue' ? '✨ Sans retenue' :
+                     exercises[currentExercise].type === 'avec-retenue' ? '🔄 Avec retenue' :
+                     exercises[currentExercise].type === 'calcul-mental' ? '🧠 Calcul mental' :
+                     '🎯 Technique spéciale'}
+                  </span>
+                </div>
+
+                {/* Bouton écouter l'énoncé */}
+                <button
+                  id="listen-question-button"
+                  onClick={startExerciseExplanation}
+                  disabled={isPlayingEnonce}
+                  className={`px-4 py-2 sm:px-6 sm:py-3 rounded-lg font-bold text-sm sm:text-base transition-all ${
+                    isPlayingEnonce 
+                      ? 'bg-gray-400 text-white cursor-not-allowed' 
+                      : highlightedElement === 'listen-question-button'
+                        ? 'bg-yellow-500 text-white ring-4 ring-yellow-300 animate-pulse scale-105'
+                        : 'bg-blue-500 text-white hover:bg-blue-600 hover:scale-105'
+                  }`}
+                >
+                  {isPlayingEnonce ? '🎤 Écoute...' : '🎧 Écouter l\'énoncé'}
+                </button>
+              </div>
+
+              {/* Zone de réponse */}
+              <div 
+                id="answer-zone"
+                className={`max-w-md mx-auto mb-6 transition-all duration-300 ${
+                  highlightedElement === 'answer-zone' ? 'ring-4 ring-blue-400 rounded-lg scale-105' : ''
+                }`}
+              >
+                <div className="text-center mb-4">
+                  <label className="block text-lg font-bold text-gray-800 mb-2">
+                    Écris le résultat :
+                  </label>
+                  
+                  {/* Équation centrée */}
+                  <div className="text-center mb-3">
+                    <span className="text-lg sm:text-xl font-bold">{exercises[currentExercise].firstNumber} + {exercises[currentExercise].secondNumber} = ?</span>
                   </div>
-
-                  {/* Zone de réponse */}
-                  <div className="text-center space-y-4">
+                  
+                  {/* Input parfaitement centré */}
+                  <div className="flex justify-center">
                     <input
                       type="number"
                       value={userAnswer}
                       onChange={(e) => setUserAnswer(e.target.value)}
-                      placeholder="Ta réponse..."
-                      className="text-center text-xl font-bold border-2 border-gray-300 rounded-lg px-4 py-2 w-32"
-                      onKeyPress={(e) => e.key === 'Enter' && checkAnswer()}
+                      placeholder="?"
+                      disabled={isCorrect !== null}
+                      className={`w-16 sm:w-20 h-12 text-lg sm:text-xl font-bold text-center border-2 rounded-lg ${
+                        isCorrect === true 
+                          ? 'border-green-500 bg-green-50 text-green-800' 
+                          : isCorrect === false 
+                            ? 'border-red-500 bg-red-50 text-red-800'
+                            : 'border-gray-300 focus:border-blue-500 focus:outline-none'
+                      }`}
+                      min="0"
+                      max="100"
                     />
-                    <div className="flex justify-center space-x-3">
-                      <button
-                        onClick={checkAnswer}
-                        disabled={!userAnswer}
-                        className="bg-blue-500 text-white px-6 py-2 rounded-lg font-semibold hover:bg-blue-600 disabled:opacity-50"
-                      >
-                        Vérifier
-                      </button>
-                    </div>
                   </div>
-
-                  {/* Indice */}
-                  <div className="p-4 bg-yellow-100 rounded-lg text-center border-2 border-yellow-300">
-                    <div className="flex items-center justify-center gap-2 mb-2">
-                      <Zap className="w-5 h-5 text-yellow-700" />
-                      <span className="font-bold text-yellow-800">Astuce :</span>
-                    </div>
-                    <p className="text-yellow-800">{exercises[currentExercise].hint}</p>
-                  </div>
-
-                  {/* Feedback */}
-                  {isCorrect !== null && (
-                    <div className={`p-4 rounded-lg text-center ${
-                      isCorrect ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                    }`}>
-                      <div className="flex items-center justify-center gap-2 mb-2">
-                        {isCorrect ? (
-                          <CheckCircle className="w-6 h-6" />
-                        ) : (
-                          <XCircle className="w-6 h-6" />
-                        )}
-                        <span className="font-bold">
-                          {isCorrect ? 'Excellent ! Tu maîtrises cette technique !' : `Pas tout à fait... La réponse était ${exercises[currentExercise].answer}`}
-                        </span>
-                      </div>
-                      
-                      <button
-                        onClick={nextExercise}
-                        className="bg-blue-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-600 mt-2"
-                      >
-                        {currentExercise < exercises.length - 1 ? 'Exercice suivant' : 'Voir mes résultats'}
-                      </button>
-                    </div>
-                  )}
                 </div>
-              ) : (
-                /* Modal de fin */
-                <div className="text-center space-y-6">
-                  <div className="text-6xl">🏆</div>
-                  <h2 className="text-3xl font-bold text-gray-800">
-                    Bravo ! Tu maîtrises les additions jusqu'à 100 !
-                  </h2>
-                  <div className="text-2xl font-bold text-blue-600">
-                    Score : {finalScore} / {exercises.length}
+
+                {/* Bouton vérifier */}
+                {isCorrect === null && (
+                  <div className="text-center">
+                    <button
+                      onClick={handleAnswerSubmit}
+                      disabled={!userAnswer.trim() || isPlayingVocal}
+                      className={`px-6 py-3 rounded-lg font-bold text-lg transition-all ${
+                        !userAnswer.trim() || isPlayingVocal
+                          ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                          : 'bg-green-500 text-white hover:bg-green-600 hover:scale-105 shadow-lg'
+                      }`}
+                    >
+                      ✅ Valider
+                    </button>
                   </div>
-                  <div className="flex justify-center space-x-4">
-                    <button
-                      onClick={resetExercises}
-                      className="bg-blue-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-600"
-                    >
-                      Recommencer
-                    </button>
-                    <button
-                      onClick={() => setShowExercises(false)}
-                      className="bg-indigo-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-indigo-600"
-                    >
-                      Retour au cours
-                    </button>
+                )}
+              </div>
+
+              {/* Résultat */}
+              {isCorrect !== null && (
+                <div className={`p-4 sm:p-6 rounded-lg mb-6 text-center ${
+                  isCorrect ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                }`}>
+                  <div className="flex items-center justify-center space-x-3">
+                    {isCorrect ? (
+                      <>
+                        <CheckCircle className="w-6 h-6 sm:w-8 sm:h-8" />
+                        <span className="font-bold text-lg sm:text-xl">
+                          Excellent ! {exercises[currentExercise].firstNumber} + {exercises[currentExercise].secondNumber} = {exercises[currentExercise].correctAnswer} !
+                        </span>
+                      </>
+                    ) : (
+                      <>
+                        <XCircle className="w-6 h-6 sm:w-8 sm:h-8" />
+                        <span className="font-bold text-lg sm:text-xl">
+                          Pas tout à fait... La bonne réponse est : {exercises[currentExercise].correctAnswer}
+                        </span>
+                      </>
+                    )}
                   </div>
                 </div>
               )}
+
+              {/* Correction animée avec objets visuels */}
+              {showAnimatedCorrection && correctionNumbers && (
+                <div id="animated-correction" className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-3 sm:p-6 mb-4 sm:mb-8 border-2 border-blue-200">
+                  <h4 className="text-base sm:text-2xl font-bold text-center text-blue-800 mb-3 sm:mb-6">
+                    🎯 Regardons ensemble !
+                  </h4>
+                  
+                  {/* Affichage des objets animés */}
+                  <div className="text-center mb-3 sm:mb-6">
+                    <div className="mb-3 sm:mb-4">
+                      <div className="flex flex-wrap gap-1 sm:gap-2 justify-center items-center">
+                        {animatedObjects.map((obj, index) => {
+                          // Déterminer la couleur et l'état de l'objet selon l'étape
+                          let objectDisplay = obj; // Par défaut l'objet tel que défini
+                          let className = 'text-lg sm:text-3xl md:text-4xl transition-all duration-500 transform hover:scale-110';
+                          
+                          // Animation pour le comptage
+                          if (correctionStep === 'counting' && countingIndex === index) {
+                            className += ' animate-pulse scale-150 rotate-12 text-orange-400 drop-shadow-lg';
+                          } else if (correctionStep === 'counting') {
+                            className += ' opacity-60';
+                          }
+                          
+                          return (
+                            <span
+                              key={index}
+                              className={className}
+                              style={{ 
+                                animationDelay: `${index * 100}ms`
+                              }}
+                            >
+                              {objectDisplay}
+                            </span>
+                          );
+                        })}
+                      </div>
+                    </div>
+                    
+                    {/* Étapes de la correction */}
+                    {correctionStep === 'numbers' && (
+                      <p className="text-sm sm:text-lg text-blue-700 font-semibold">
+                        Voici {correctionNumbers.first} {correctionNumbers.objectEmoji1} et {correctionNumbers.second} {correctionNumbers.objectEmoji2}
+                      </p>
+                    )}
+                    
+                    {correctionStep === 'carry-step' && (
+                      <div className="space-y-2">
+                        <p className="text-sm sm:text-lg text-orange-700 font-semibold">
+                          🔄 Addition avec retenue !
+                        </p>
+                        <p className="text-xs sm:text-base text-orange-600">
+                          Les unités dépassent 10, je fais une retenue
+                        </p>
+                      </div>
+                    )}
+                    
+                    {correctionStep === 'adding' && (
+                      <p className="text-sm sm:text-lg text-blue-700 font-semibold">
+                        Je rassemble tous les {correctionNumbers.objectName} !
+                      </p>
+                    )}
+                    
+                    {correctionStep === 'final-sum' && (
+                      <p className="text-sm sm:text-lg text-green-700 font-semibold">
+                        En regroupant tout : {correctionNumbers.result} !
+                      </p>
+                    )}
+                    
+                    {correctionStep === 'complete' && (
+                      <div className="bg-green-100 rounded-lg p-3 sm:p-4">
+                        <p className="text-lg sm:text-xl font-bold text-green-800 mb-2">
+                          🎉 Parfait ! Tu as appris une nouvelle addition !
+                        </p>
+                        <p className="text-sm sm:text-base text-green-700">
+                          {correctionNumbers.first} + {correctionNumbers.second} = {correctionNumbers.result}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Navigation */}
+              {isCorrect === false && (
+                <div className="flex justify-center pb-3 sm:pb-0">
+                  <button
+                    ref={nextButtonRef}
+                    onClick={nextExercise}
+                    className={`bg-orange-500 text-white px-3 sm:px-6 md:px-8 py-2 sm:py-4 rounded-lg font-bold text-sm sm:text-base md:text-lg hover:bg-orange-600 transition-colors shadow-lg hover:shadow-xl transform hover:scale-105 min-h-[40px] sm:min-h-[56px] md:min-h-auto ${
+                      highlightNextButton 
+                        ? `ring-4 ring-yellow-400 ring-opacity-75 animate-pulse scale-110 bg-orange-600 shadow-2xl ${isMobile ? 'scale-125 py-3 text-base' : ''}` 
+                        : ''
+                    }`}
+                  >
+                    {isMobile && highlightNextButton ? '👆 Suivant →' : 'Suivant →'}
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Modale de fin */}
+        {showCompletionModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-2xl p-8 max-w-md w-full text-center shadow-2xl">
+              {(() => {
+                const result = getCompletionMessage(finalScore, exercises.length);
+                return (
+                  <>
+                    <div className="text-6xl mb-4">{result.emoji}</div>
+                    <h3 className="text-2xl font-bold text-gray-900 mb-3">{result.title}</h3>
+                    <p className="text-lg text-gray-700 mb-6">{result.message}</p>
+                    <div className="bg-blue-100 rounded-lg p-4 mb-6">
+                      <p className="text-xl font-bold text-gray-900">
+                        Score : {finalScore}/{exercises.length}
+                      </p>
+                      <div className="text-4xl mt-2">
+                        {finalScore >= 8 ? '⭐⭐⭐' : finalScore >= 6 ? '⭐⭐' : '⭐'}
+                      </div>
+                      <p className="text-sm text-gray-600 mt-2">
+                        Bravo ! Tu maîtrises les additions jusqu'à 100 !
+                      </p>
+                    </div>
+                    <div className="flex space-x-3">
+                      <button
+                        onClick={resetExercises}
+                        className="flex-1 bg-blue-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-blue-600 transition-colors"
+                      >
+                        Recommencer
+                      </button>
+                      <button
+                        onClick={() => {
+                          stopAllVocalsAndAnimations();
+                          setShowCompletionModal(false);
+                        }}
+                        className="flex-1 bg-gray-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-gray-600 transition-colors"
+                      >
+                        Fermer
+                      </button>
+                    </div>
+                  </>
+                );
+              })()}
             </div>
           </div>
         )}
