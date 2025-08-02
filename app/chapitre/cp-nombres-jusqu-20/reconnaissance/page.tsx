@@ -38,6 +38,7 @@ export default function ReconnaissanceNombresCP() {
   const [pirateIntroStarted, setPirateIntroStarted] = useState(false);
   const [showExercisesList, setShowExercisesList] = useState(false);
   const [highlightNumber3, setHighlightNumber3] = useState(false);
+  const [showStopButton, setShowStopButton] = useState(false);
   const [showFinalNumber, setShowFinalNumber] = useState(false);
   const [finalNumber, setFinalNumber] = useState<string | null>(null);
   
@@ -2027,6 +2028,22 @@ export default function ReconnaissanceNombresCP() {
               })()}
             </div>
           </div>
+        )}
+
+        {/* Bouton Stop flottant pour toutes les animations vocales */}
+        {isPlayingVocal && (
+          <button
+            onClick={() => {
+              console.log('🛑 Bouton stop flottant cliqué');
+              stopAllVocalsAndAnimations();
+            }}
+            className="fixed top-4 right-4 z-50 bg-red-500 hover:bg-red-600 text-white p-3 rounded-full shadow-lg transition-all hover:scale-110 animate-pulse"
+            title="Arrêter la lecture de Sam"
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
+              <rect x="6" y="6" width="12" height="12" />
+            </svg>
+          </button>
         )}
       </div>
     </div>

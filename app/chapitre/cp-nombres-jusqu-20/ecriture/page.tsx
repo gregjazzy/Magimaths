@@ -27,6 +27,8 @@ export default function EcritureNombresCP() {
   const [currentLetterIndex, setCurrentLetterIndex] = useState<number>(-1);
   const [exampleAnimating, setExampleAnimating] = useState(false);
   const [exampleLetterIndex, setExampleLetterIndex] = useState<number>(-1);
+  const [exerciseAnimating, setExerciseAnimating] = useState(false);
+  const [exerciseLetterIndex, setExerciseLetterIndex] = useState<number>(-1);
   
   // États pour Sam le Pirate
   const [samSizeExpanded, setSamSizeExpanded] = useState(false);
@@ -36,6 +38,7 @@ export default function EcritureNombresCP() {
   const [isExplainingError, setIsExplainingError] = useState(false);
   const [pirateIntroStarted, setPirateIntroStarted] = useState(false);
   const [showExercisesList, setShowExercisesList] = useState(false);
+  const [showStopButton, setShowStopButton] = useState(false);
 
   // Refs pour contrôler les vocaux et animations
   const stopSignalRef = useRef(false);
@@ -110,6 +113,8 @@ export default function EcritureNombresCP() {
     setCurrentLetterIndex(-1);
     setExampleAnimating(false);
     setExampleLetterIndex(-1);
+    setExerciseAnimating(false);
+    setExerciseLetterIndex(-1);
     setIsExplainingError(false);
     setPirateIntroStarted(false);
     setShowExercisesList(false);
@@ -147,6 +152,38 @@ export default function EcritureNombresCP() {
         behavior: 'smooth',
         block: 'center'
       });
+    }
+  };
+
+  // Fonction pour scroller vers l'animation d'épellation
+  const scrollToSpelling = () => {
+    console.log('🎯 scrollToSpelling appelé');
+    const attemptScroll = () => {
+      const element = document.getElementById('spelling-animation');
+      console.log('📍 Tentative de scroll - élément trouvé:', !!element);
+      if (element) {
+        const isMobile = window.innerWidth < 768; // sm breakpoint
+        
+        element.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: isMobile ? 'center' : 'center', // Centrer sur tous les écrans
+          inline: 'nearest'
+        });
+        console.log('✅ Scroll vers animation réussi');
+        return true;
+      }
+      return false;
+    };
+
+    // Essayer immédiatement
+    if (!attemptScroll()) {
+      // Si l'élément n'existe pas encore, réessayer après un délai
+      setTimeout(() => {
+        if (!attemptScroll()) {
+          // Dernier essai après un délai plus long
+          setTimeout(attemptScroll, 300);
+        }
+      }, 100);
     }
   };
 
@@ -209,13 +246,26 @@ export default function EcritureNombresCP() {
 
   // Fonction pour lire l'énoncé de l'exercice - LECTURE SIMPLE DE LA QUESTION
   const startExerciseExplanation = async () => {
-    if (stopSignalRef.current || isExplainingError || !exercises[currentExercise]) return;
+    console.log('🎤 startExerciseExplanation appelé');
+    console.log('⚠️ Conditions:', {
+      stopSignalRef: stopSignalRef.current,
+      isExplainingError,
+      exerciseExists: !!exercises[currentExercise],
+      currentExercise,
+      exerciseQuestion: exercises[currentExercise]?.question
+    });
+    
+    if (stopSignalRef.current || isExplainingError || !exercises[currentExercise]) {
+      console.log('❌ Sortie prématurée de startExerciseExplanation');
+      return;
+    }
     
     stopSignalRef.current = false;
     setIsPlayingVocal(true);
     setExerciseStarted(true);
     
     try {
+      console.log('🔊 Lecture de l\'énoncé:', exercises[currentExercise].question);
       // Lire seulement l'énoncé de l'exercice
       await playAudio(exercises[currentExercise].question);
       if (stopSignalRef.current) return;
@@ -224,6 +274,7 @@ export default function EcritureNombresCP() {
       console.error('Erreur dans startExerciseExplanation:', error);
     } finally {
       setIsPlayingVocal(false);
+      console.log('✅ startExerciseExplanation terminé');
     }
   };
 
@@ -254,7 +305,38 @@ export default function EcritureNombresCP() {
       await playAudio(`Le nombre ${exercises[currentExercise].number} s'écrit "${exercises[currentExercise].correctAnswer}" en lettres !`);
       if (stopSignalRef.current) return;
       
-      await wait(1000);
+      await wait(800);
+      if (stopSignalRef.current) return;
+      
+      // Animation d'épellation lettre par lettre
+      setExerciseAnimating(true);
+      setExerciseLetterIndex(-1);
+      
+      await playAudio("Épelons ensemble :");
+      if (stopSignalRef.current) return;
+      await wait(600);
+      
+      // Épeller le mot lettre par lettre
+      const letters = exercises[currentExercise].correctAnswer.split('');
+      for (let i = 0; i < letters.length; i++) {
+        if (stopSignalRef.current) break;
+        
+        setExerciseLetterIndex(i);
+        await playAudio(letters[i]);
+        
+        if (stopSignalRef.current) break;
+        await wait(600);
+      }
+      
+      // Marquer l'animation comme terminée
+      setExerciseLetterIndex(letters.length);
+      await wait(500);
+      if (stopSignalRef.current) return;
+      
+      await playAudio(`Parfait ! Le nombre ${exercises[currentExercise].number} s'épelle "${exercises[currentExercise].correctAnswer}" !`);
+      if (stopSignalRef.current) return;
+      
+      await wait(800);
       if (stopSignalRef.current) return;
       
       await playAudio("Maintenant appuie sur suivant !");
@@ -270,6 +352,8 @@ export default function EcritureNombresCP() {
       console.error('Erreur dans explainWrongAnswer:', error);
     } finally {
       setIsPlayingVocal(false);
+      setExerciseAnimating(false);
+      setExerciseLetterIndex(-1);
       // Ne PAS remettre setIsExplainingError(false) ici - le bouton Suivant doit rester actif
       // L'état sera réinitialisé quand l'utilisateur clique sur "Suivant"
     }
@@ -477,7 +561,7 @@ export default function EcritureNombresCP() {
     const desktopConfig = getDesktopConfig();
     
     return (
-      <div className="w-full max-w-full overflow-hidden">
+      <div className="w-full max-w-full overflow-visible">
         {/* Version Mobile */}
         <div className={`flex sm:hidden justify-center items-center ${mobileConfig.gap} ${mobileConfig.textSize} font-bold`}>
           {letters.map((letter, index) => {
@@ -774,6 +858,13 @@ export default function EcritureNombresCP() {
       // ÉPELLATION lettre par lettre
       setWritingStep('spelling');
       setCurrentLetterIndex(-1);  // Commencer sans aucune lettre en surbrillance
+      
+      // Attendre que l'élément d'épellation soit affiché, puis scroller vers lui
+      setTimeout(() => {
+        console.log('⏰ setTimeout pour scroll vers animation déclenché');
+        scrollToSpelling();
+      }, 500);
+      
       await playAudio(`Maintenant, épelons ensemble :`);
       if (stopSignalRef.current) return;
       await wait(500);
@@ -1062,7 +1153,10 @@ export default function EcritureNombresCP() {
   const ListenQuestionButtonJSX = () => (
     <button
       id="listen-question-button"
-      onClick={startExerciseExplanation}
+      onClick={() => {
+        console.log('🔘 Bouton "Écouter l\'énoncé" cliqué');
+        startExerciseExplanation();
+      }}
       disabled={isPlayingVocal}
       className={`px-3 sm:px-6 py-1.5 sm:py-3 rounded-lg font-bold text-sm sm:text-lg transition-all shadow-lg ${
         highlightedElement === 'listen-question-button'
@@ -1117,7 +1211,7 @@ export default function EcritureNombresCP() {
               : 'bg-gradient-to-r from-orange-500 via-red-500 to-pink-500 text-white hover:from-orange-600 hover:via-red-600 hover:to-pink-600 hover:scale-110 shadow-2xl hover:shadow-3xl animate-pulse border-4 border-yellow-300'
         } ${!isPlayingVocal && !pirateIntroStarted ? 'ring-4 ring-yellow-300 ring-opacity-75' : ''}`}
         style={{
-          animationDuration: !isPlayingVocal && !pirateIntroStarted ? '1.5s' : '2s',
+          animationDuration: !isPlayingVocal && !pirateIntroStarted ? '1.2s' : '2s',
           animationIterationCount: isPlayingVocal || pirateIntroStarted ? 'none' : 'infinite',
           textShadow: '2px 2px 4px rgba(0,0,0,0.3)',
           boxShadow: !isPlayingVocal && !pirateIntroStarted 
@@ -1127,7 +1221,12 @@ export default function EcritureNombresCP() {
       >
         {/* Effet de brillance */}
         {!isPlayingVocal && !pirateIntroStarted && (
-          <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-transparent via-white to-transparent opacity-20 animate-pulse"></div>
+          <div 
+            className="absolute inset-0 rounded-xl bg-gradient-to-r from-transparent via-white to-transparent opacity-20"
+            style={{
+              animation: 'pulse 1.2s cubic-bezier(0.4, 0, 0.6, 1) infinite'
+            }}
+          ></div>
         )}
         
         {/* Icônes et texte avec plus d'émojis */}
@@ -1317,7 +1416,7 @@ export default function EcritureNombresCP() {
                        }
                      }}
                      style={{
-                       animation: 'gentle-pulse 3s ease-in-out infinite'
+                       animation: 'gentle-pulse 2.5s ease-in-out infinite'
                      }}>
                   ✍️
                 </div>
@@ -1325,7 +1424,7 @@ export default function EcritureNombresCP() {
               <style jsx>{`
                 @keyframes gentle-pulse {
                   0%, 100% { opacity: 1; transform: scale(1); }
-                  50% { opacity: 0.8; transform: scale(1.05); }
+                  50% { opacity: 0.75; transform: scale(1.08); }
                 }
                 .scrollbar-hide {
                   -ms-overflow-style: none;
@@ -1352,10 +1451,10 @@ export default function EcritureNombresCP() {
                       <div className="flex justify-center items-center gap-1 sm:gap-2 mb-1 sm:mb-2">
                         <span className="text-lg sm:text-2xl font-bold text-blue-600">5</span>
                         <span className="text-lg sm:text-2xl font-bold mx-1 sm:mx-2">→</span>
-                        <div className="flex gap-1 sm:gap-2">
+                        <div className="flex gap-1 sm:gap-2 overflow-visible">
                           {/* Animation des lettres pour l'exemple */}
                           {exampleAnimating ? (
-                            <div className="mb-2 sm:mb-4">
+                            <div className="mb-2 sm:mb-4 py-4 overflow-visible">
                               {renderWordWithHighlight("cinq", exampleLetterIndex)}
                             </div>
                           ) : (
@@ -1392,7 +1491,7 @@ export default function EcritureNombresCP() {
                 <div className="relative group">
                   <div className="bg-gradient-to-r from-orange-500 to-red-600 text-white rounded-full w-12 h-12 flex items-center justify-center text-xl font-bold shadow-lg hover:scale-110 transition-transform duration-300 ring-2 ring-orange-300 ring-opacity-40" 
                        style={{
-                         animation: 'gentle-pulse 3s ease-in-out infinite'
+                         animation: 'gentle-pulse 2.5s ease-in-out infinite'
                        }}>
                     ✍️
                   </div>
@@ -1491,11 +1590,11 @@ export default function EcritureNombresCP() {
                         </div>
 
                     {writingStep === 'spelling' && (
-                      <div className="mb-4 p-4 bg-purple-100 rounded-lg">
+                      <div id="spelling-animation" className="mb-4 p-4 bg-purple-100 rounded-lg">
                         <div className="text-lg font-bold text-purple-600 mb-3 text-center">
                           📝 Épelons lettre par lettre :
                         </div>
-                        <div className="px-2">
+                        <div className="px-2 py-6 overflow-visible">
                           {renderWordWithHighlight(numberWords[selectedNumber as keyof typeof numberWords], currentLetterIndex)}
                         </div>
                       </div>
@@ -1744,9 +1843,23 @@ export default function EcritureNombresCP() {
                       <div className="text-lg font-bold text-red-800 mb-2">
                         🏴‍☠️ Explication de Sam le Pirate
                       </div>
-                      <div className="text-red-700 text-xl">
-                        La bonne réponse est <span className="font-bold text-3xl text-red-800">{exercises[currentExercise]?.correctAnswer}</span> !
-                      </div>
+                      
+                      {/* Animation d'épellation lettre par lettre */}
+                      {exerciseAnimating ? (
+                        <div className="mb-4">
+                          <div className="text-red-700 text-xl mb-3">
+                            La bonne réponse est :
+                          </div>
+                          <div className="py-4 overflow-visible">
+                            {renderWordWithHighlight(exercises[currentExercise]?.correctAnswer || "", exerciseLetterIndex)}
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="text-red-700 text-xl">
+                          La bonne réponse est <span className="font-bold text-3xl text-red-800">{exercises[currentExercise]?.correctAnswer}</span> !
+                        </div>
+                      )}
+                      
                       <div className="text-sm text-red-600 mt-2">
                         Le nombre "{exercises[currentExercise]?.number}" s'écrit "{exercises[currentExercise]?.correctAnswer}" en lettres !
                       </div>
@@ -1870,6 +1983,22 @@ export default function EcritureNombresCP() {
               })()}
             </div>
           </div>
+        )}
+
+        {/* Bouton Stop flottant pour toutes les animations vocales */}
+        {isPlayingVocal && (
+          <button
+            onClick={() => {
+              console.log('🛑 Bouton stop flottant cliqué');
+              stopAllVocalsAndAnimations();
+            }}
+            className="fixed top-4 right-4 z-50 bg-red-500 hover:bg-red-600 text-white p-3 rounded-full shadow-lg transition-all hover:scale-110 animate-pulse"
+            title="Arrêter la lecture de Sam"
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
+              <rect x="6" y="6" width="12" height="12" />
+            </svg>
+          </button>
         )}
       </div>
     </div>
