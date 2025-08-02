@@ -1074,11 +1074,6 @@ export default function AdditionsJusqu20CP() {
     };
 
     const handleBlur = () => {
-      // Sur mobile, on ignore les événements blur car ils sont trop fréquents
-      if (isMobile) {
-        console.log('Événement blur ignoré sur mobile');
-        return;
-      }
       console.log('Perte de focus fenêtre - arrêt du vocal');
       stopAllVocalsAndAnimations();
     };
