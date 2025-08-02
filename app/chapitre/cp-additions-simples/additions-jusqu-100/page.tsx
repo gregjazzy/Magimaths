@@ -483,7 +483,7 @@ export default function AdditionsJusqua100() {
     };
   };
 
-  // Fonction pour créer une correction animée avec des objets visuels pour les additions jusqu'à 100
+  // Fonction pour créer une correction animée avec addition posée en colonnes
   const createAnimatedCorrection = async (exercise: any, userAnswer?: string) => {
     if (stopSignalRef.current) return;
     
@@ -497,6 +497,7 @@ export default function AdditionsJusqua100() {
     // Démarrer l'affichage de correction
     setShowAnimatedCorrection(true);
     setCorrectionStep('numbers');
+    setHighlightedDigits([]);
     
     // Scroller pour garder la correction visible
     setTimeout(() => {
@@ -514,79 +515,81 @@ export default function AdditionsJusqua100() {
     if (hasUserAnswer) {
       const userNum = parseInt(userAnswer);
       if (userNum === result) {
-        await playAudio(`Je vais te montrer que ${first} plus ${second} égale bien ${result} !`);
+        await playAudio(`Je vais te montrer que ${first} plus ${second} égale bien ${result} avec une addition posée !`);
       } else {
-        await playAudio(`Tu as répondu ${userAnswer}, mais regardons le bon calcul !`);
+        await playAudio(`Tu as répondu ${userAnswer}, mais regardons le bon calcul avec une addition posée !`);
       }
     } else {
-      await playAudio(`Je vais t'expliquer cette addition avec des ${objectName} !`);
+      await playAudio(`Je vais t'expliquer cette addition avec la technique de l'addition posée !`);
     }
     if (stopSignalRef.current) return;
-    await wait(1000);
-    
-    // Étape 2: Affichage des deux nombres
-    await playAudio(`Regarde ! Voici ${first} ${objectName} rouges et ${second} ${objectName} bleus.`);
-    if (stopSignalRef.current) return;
-    
-    // Montrer les objets des deux nombres (utilisation d'objets visuels simples)
-    const allObjects = [
-      ...Array(Math.min(first, 20)).fill('🔴'), // Limiter à 20 pour l'affichage
-      ...Array(Math.min(second, 20)).fill('🔵')
-    ];
-    setAnimatedObjects(allObjects);
     await wait(1500);
     
-    // Étape 3: Technique d'addition selon le type
+    // Étape 2: Placement en colonnes
+    await playAudio(`D'abord, je place les nombres en colonnes : dizaines sous dizaines, unités sous unités.`);
+    if (stopSignalRef.current) return;
+    await wait(2500);
+    
+    // Déterminer s'il y a une retenue
     const hasCarry = (first % 10) + (second % 10) >= 10;
     
     if (hasCarry) {
       // Addition avec retenue
       setCorrectionStep('carry-step');
-      await wait(800);
-      await playAudio(`Attention ! Cette addition nécessite une retenue car les unités dépassent 10 !`);
-      if (stopSignalRef.current) return;
-      await wait(1200);
       
+      // Étape 3: Focus sur les unités
+      setHighlightedDigits(['units']);
+      await playAudio(`Commençons par les unités : ${first % 10} plus ${second % 10}.`);
+      if (stopSignalRef.current) return;
+      await wait(2000);
+      
+      // Étape 4: Calcul des unités avec retenue
       const unitsSum = (first % 10) + (second % 10);
-      await playAudio(`Les unités : ${first % 10} plus ${second % 10} égale ${unitsSum}.`);
+      await playAudio(`${first % 10} plus ${second % 10} égale ${unitsSum}. Comme c'est plus que 9, j'écris ${unitsSum % 10} et je retiens 1 !`);
       if (stopSignalRef.current) return;
-      await wait(1000);
+      await wait(3000);
       
-      await playAudio(`${unitsSum} c'est plus que 10, donc j'écris ${unitsSum % 10} et je retiens 1 !`);
+      // Étape 5: Montrer la retenue
+      await playAudio(`Regardez ! J'écris 1 au-dessus des dizaines pour me rappeler de l'ajouter.`);
       if (stopSignalRef.current) return;
-      await wait(1500);
+      await wait(2500);
       
+      // Étape 6: Focus sur les dizaines
+      setHighlightedDigits(['tens']);
       const tensSum = Math.floor(first / 10) + Math.floor(second / 10) + 1;
-      await playAudio(`Les dizaines : ${Math.floor(first / 10)} plus ${Math.floor(second / 10)} plus 1 de retenue égale ${tensSum}.`);
+      await playAudio(`Maintenant les dizaines : ${Math.floor(first / 10)} plus ${Math.floor(second / 10)} plus 1 de retenue égale ${tensSum}.`);
       if (stopSignalRef.current) return;
-      await wait(1500);
+      await wait(3000);
+      
     } else {
       // Addition sans retenue
       setCorrectionStep('adding');
-      await playAudio(`Cette addition est simple car il n'y a pas de retenue !`);
-      if (stopSignalRef.current) return;
-      await wait(1000);
       
-      await playAudio(`Les unités : ${first % 10} plus ${second % 10} égale ${(first % 10) + (second % 10)}.`);
+      // Étape 3: Focus sur les unités
+      setHighlightedDigits(['units']);
+      await playAudio(`Commençons par les unités : ${first % 10} plus ${second % 10} égale ${(first % 10) + (second % 10)}.`);
       if (stopSignalRef.current) return;
-      await wait(1200);
+      await wait(2500);
       
-      await playAudio(`Les dizaines : ${Math.floor(first / 10)} plus ${Math.floor(second / 10)} égale ${Math.floor(first / 10) + Math.floor(second / 10)}.`);
+      // Étape 4: Focus sur les dizaines
+      setHighlightedDigits(['tens']);
+      await playAudio(`Maintenant les dizaines : ${Math.floor(first / 10)} plus ${Math.floor(second / 10)} égale ${Math.floor(first / 10) + Math.floor(second / 10)}.`);
       if (stopSignalRef.current) return;
-      await wait(1200);
+      await wait(2500);
     }
     
-    // Étape 4: Résultat final
+    // Étape finale: Résultat complet
     setCorrectionStep('final-sum');
-    await playAudio(`En regroupant tout : ${result} !`);
+    setHighlightedDigits([]);
+    await playAudio(`Et voilà le résultat complet : ${result} !`);
     if (stopSignalRef.current) return;
-    await wait(1500);
+    await wait(2000);
     
-    await playAudio(`Donc ${first} + ${second} = ${result} ! C'est ça, une addition jusqu'à 100 !`);
+    await playAudio(`Donc ${first} + ${second} = ${result} ! C'est comme ça qu'on fait une addition posée !`);
     if (stopSignalRef.current) return;
-    await wait(1500);
+    await wait(2000);
     
-    // Étape 5: Terminé
+    // Étape terminée
     setCorrectionStep('complete');
     
     // Messages différents selon mobile/desktop
@@ -2733,48 +2736,109 @@ export default function AdditionsJusqua100() {
                 </div>
               )}
 
-              {/* Correction animée avec objets visuels */}
+              {/* Correction animée avec addition posée */}
               {showAnimatedCorrection && correctionNumbers && (
                 <div id="animated-correction" className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-3 sm:p-6 mb-4 sm:mb-8 border-2 border-blue-200">
                   <h4 className="text-base sm:text-2xl font-bold text-center text-blue-800 mb-3 sm:mb-6">
-                    🎯 Regardons ensemble !
+                    🎯 Addition posée : {correctionNumbers.first} + {correctionNumbers.second}
                   </h4>
                   
-                  {/* Affichage des objets animés */}
-                  <div className="text-center mb-3 sm:mb-6">
-                    <div className="mb-3 sm:mb-4">
-                      <div className="flex flex-wrap gap-1 sm:gap-2 justify-center items-center">
-                        {animatedObjects.map((obj, index) => {
-                          // Déterminer la couleur et l'état de l'objet selon l'étape
-                          let objectDisplay = obj; // Par défaut l'objet tel que défini
-                          let className = 'text-lg sm:text-3xl md:text-4xl transition-all duration-500 transform hover:scale-110';
-                          
-                          // Animation pour le comptage
-                          if (correctionStep === 'counting' && countingIndex === index) {
-                            className += ' animate-pulse scale-150 rotate-12 text-orange-400 drop-shadow-lg';
-                          } else if (correctionStep === 'counting') {
-                            className += ' opacity-60';
-                          }
-                          
-                          return (
-                            <span
-                              key={index}
-                              className={className}
-                              style={{ 
-                                animationDelay: `${index * 100}ms`
-                              }}
-                            >
-                              {objectDisplay}
-                            </span>
-                          );
-                        })}
+                  {/* Addition posée en colonnes */}
+                  <div className="bg-white rounded-lg p-4 sm:p-6 shadow-lg max-w-lg mx-auto mb-4">
+                    <div className="text-center mb-4">
+                      <div className="text-base sm:text-lg font-bold text-gray-700">📊 Addition en colonnes</div>
+                    </div>
+                    
+                    {/* Retenue (visible avec retenue uniquement) */}
+                    {((correctionNumbers.first % 10) + (correctionNumbers.second % 10)) >= 10 && (
+                      <div className="flex justify-center mb-2">
+                        <div className="w-6 sm:w-8"></div>
+                        <div className="w-12 sm:w-16 text-center">
+                          {(correctionStep === 'carry-step' || correctionStep === 'final-sum' || correctionStep === 'complete') && (
+                            <div className="text-base sm:text-lg font-bold text-red-700 animate-bounce border-2 border-red-400 bg-red-100 rounded-full px-2 py-1">
+                              1
+                            </div>
+                          )}
+                        </div>
+                        <div className="w-12 sm:w-16"></div>
+                      </div>
+                    )}
+                    
+                    {/* En-têtes de colonnes */}
+                    <div className="flex justify-center mb-3">
+                      <div className="w-6 sm:w-8"></div>
+                      <div className="w-12 sm:w-16 text-center text-sm sm:text-lg font-bold text-gray-600 border-b-2 border-gray-400 pb-1">D</div>
+                      <div className="w-12 sm:w-16 text-center text-sm sm:text-lg font-bold text-gray-600 border-b-2 border-gray-400 pb-1">U</div>
+                    </div>
+                    
+                    {/* Premier nombre */}
+                    <div className="flex justify-center py-3">
+                      <div className="w-6 sm:w-8"></div>
+                      <div className={`w-12 sm:w-16 text-xl sm:text-3xl font-bold text-center transition-all ${
+                        highlightedDigits.includes('tens') ? 'bg-yellow-200 text-yellow-900 rounded-lg px-2 py-1 ring-2 ring-yellow-400' : 'text-gray-900'
+                      }`}>
+                        {Math.floor(correctionNumbers.first / 10)}
+                      </div>
+                      <div className={`w-12 sm:w-16 text-xl sm:text-3xl font-bold text-center transition-all ${
+                        highlightedDigits.includes('units') ? 'bg-blue-200 text-blue-900 rounded-lg px-2 py-1 ring-2 ring-blue-400' : 'text-gray-900'
+                      }`}>
+                        {correctionNumbers.first % 10}
                       </div>
                     </div>
                     
-                    {/* Étapes de la correction */}
+                    {/* Ligne avec le signe + et le deuxième nombre */}
+                    <div className="flex justify-center py-3">
+                      <div className="w-6 sm:w-8 text-xl sm:text-3xl font-bold text-orange-700 text-center">+</div>
+                      <div className={`w-12 sm:w-16 text-xl sm:text-3xl font-bold text-center transition-all ${
+                        highlightedDigits.includes('tens') ? 'bg-yellow-200 text-yellow-900 rounded-lg px-2 py-1 ring-2 ring-yellow-400' : 'text-gray-900'
+                      }`}>
+                        {Math.floor(correctionNumbers.second / 10)}
+                      </div>
+                      <div className={`w-12 sm:w-16 text-xl sm:text-3xl font-bold text-center transition-all ${
+                        highlightedDigits.includes('units') ? 'bg-blue-200 text-blue-900 rounded-lg px-2 py-1 ring-2 ring-blue-400' : 'text-gray-900'
+                      }`}>
+                        {correctionNumbers.second % 10}
+                      </div>
+                    </div>
+                    
+                    {/* Ligne de séparation */}
+                    <div className="border-b-4 border-gray-600 my-4 w-32 sm:w-40 mx-auto"></div>
+                    
+                    {/* Résultat progressif */}
+                    {(correctionStep === 'adding' || correctionStep === 'carry-step' || correctionStep === 'final-sum' || correctionStep === 'complete') && (
+                      <div className="flex justify-center py-3">
+                        <div className="w-6 sm:w-8"></div>
+                        
+                        {/* Chiffre des dizaines */}
+                        <div className={`w-12 sm:w-16 text-xl sm:text-3xl font-bold text-center transition-all ${
+                          (correctionStep === 'final-sum' || correctionStep === 'complete')
+                            ? 'text-green-700 animate-pulse bg-green-100 rounded-lg px-2 py-1' 
+                            : 'text-gray-300'
+                        }`}>
+                          {(correctionStep === 'final-sum' || correctionStep === 'complete')
+                            ? Math.floor(correctionNumbers.result / 10) 
+                            : '?'}
+                        </div>
+                        
+                        {/* Chiffre des unités */}
+                        <div className={`w-12 sm:w-16 text-xl sm:text-3xl font-bold text-center transition-all ${
+                          (correctionStep === 'adding' || correctionStep === 'carry-step' || correctionStep === 'final-sum' || correctionStep === 'complete')
+                            ? 'text-green-700 animate-pulse bg-green-100 rounded-lg px-2 py-1' 
+                            : 'text-gray-300'
+                        }`}>
+                          {(correctionStep === 'adding' || correctionStep === 'carry-step' || correctionStep === 'final-sum' || correctionStep === 'complete')
+                            ? correctionNumbers.result % 10
+                            : '?'}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* Explications textuelles selon l'étape */}
+                  <div className="text-center">
                     {correctionStep === 'numbers' && (
                       <p className="text-sm sm:text-lg text-blue-700 font-semibold">
-                        Voici {correctionNumbers.first} {correctionNumbers.objectEmoji1} et {correctionNumbers.second} {correctionNumbers.objectEmoji2}
+                        Je place les nombres en colonnes : dizaines sous dizaines, unités sous unités
                       </p>
                     )}
                     
@@ -2784,27 +2848,27 @@ export default function AdditionsJusqua100() {
                           🔄 Addition avec retenue !
                         </p>
                         <p className="text-xs sm:text-base text-orange-600">
-                          Les unités dépassent 10, je fais une retenue
+                          Les unités ({correctionNumbers.first % 10} + {correctionNumbers.second % 10} = {(correctionNumbers.first % 10) + (correctionNumbers.second % 10)}) dépassent 9
                         </p>
                       </div>
                     )}
                     
                     {correctionStep === 'adding' && (
                       <p className="text-sm sm:text-lg text-blue-700 font-semibold">
-                        Je rassemble tous les {correctionNumbers.objectName} !
+                        Addition simple : pas de retenue nécessaire !
                       </p>
                     )}
                     
                     {correctionStep === 'final-sum' && (
                       <p className="text-sm sm:text-lg text-green-700 font-semibold">
-                        En regroupant tout : {correctionNumbers.result} !
+                        🎯 Résultat final : {correctionNumbers.result} !
                       </p>
                     )}
                     
                     {correctionStep === 'complete' && (
                       <div className="bg-green-100 rounded-lg p-3 sm:p-4">
                         <p className="text-lg sm:text-xl font-bold text-green-800 mb-2">
-                          🎉 Parfait ! Tu as appris une nouvelle addition !
+                          🎉 Parfait ! Addition posée réussie !
                         </p>
                         <p className="text-sm sm:text-base text-green-700">
                           {correctionNumbers.first} + {correctionNumbers.second} = {correctionNumbers.result}
