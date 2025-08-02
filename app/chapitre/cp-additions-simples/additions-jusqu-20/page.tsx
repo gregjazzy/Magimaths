@@ -1693,7 +1693,7 @@ export default function AdditionsJusqu20CP() {
             </div>
 
             {/* Question principale */}
-            <div className="bg-white rounded-xl p-4 sm:p-8 shadow-lg">
+            <div className="bg-white rounded-xl p-4 sm:p-8 shadow-lg mt-4">
               {/* Question et bouton lecture */}
               <div className="text-center mb-6">
                 <h3 className="text-xl sm:text-2xl font-bold mb-4 text-gray-900">
