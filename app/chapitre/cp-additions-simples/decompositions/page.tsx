@@ -1234,7 +1234,7 @@ export default function DecompositionsCP() {
           </Link>
           
           <div className="bg-white rounded-xl p-6 shadow-lg text-center">
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">
+            <h1 className="text-xl sm:text-4xl font-bold text-gray-900 mb-4">
               🧩 Décomposer les nombres
             </h1>
           </div>
