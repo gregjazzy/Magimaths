@@ -115,14 +115,27 @@ export default function EcritureNombresCP() {
     setShowExercisesList(false);
   };
 
-  // Fonction pour scroller vers l'illustration
+  // Fonction pour scroller vers l'illustration - optimisée pour mobile
   const scrollToIllustration = () => {
     const element = document.getElementById('number-illustration');
     if (element) {
+      const isMobile = window.innerWidth < 768; // sm breakpoint
+      
       element.scrollIntoView({ 
-        behavior: 'smooth',
-        block: 'start'
+        behavior: 'smooth', 
+        block: isMobile ? 'center' : 'start', // Sur mobile, centrer l'explication
+        inline: 'nearest'
       });
+      
+      // Pour mobile : petit délai supplémentaire pour s'assurer que l'explication est bien visible
+      if (isMobile) {
+        setTimeout(() => {
+          element.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'center'
+          });
+        }, 300);
+      }
     }
   };
 
@@ -290,96 +303,84 @@ export default function EcritureNombresCP() {
 
 
   // Fonction pour jouer un audio avec gestion d'interruption
-  const playAudio = async (text: string): Promise<void> => {
-    return new Promise((resolve, reject) => {
-      try {
-        if (stopSignalRef.current) {
-          console.log('🚫 playAudio annulé par stopSignalRef');
-          resolve();
-          return;
-        }
+  const playAudio = (text: string): Promise<void> => {
+    return new Promise((resolve) => {
+      if (stopSignalRef.current) {
+        resolve();
+        return;
+      }
 
-        // S'assurer que la synthèse précédente est bien arrêtée
-        if (speechSynthesis.speaking || speechSynthesis.pending) {
-          speechSynthesis.cancel();
-          console.log('🔇 Audio précédent annulé dans playAudio');
-        }
-        
-        if (!('speechSynthesis' in window)) {
-          console.warn('Speech synthesis not supported');
-          resolve();
-          return;
-        }
-
+      // Vérifier si l'API est disponible
+      if (typeof speechSynthesis === 'undefined') {
+        console.warn('SpeechSynthesis API non disponible');
+        resolve();
+        return;
+      }
+      
+      speechSynthesis.cancel();
+      
+      // Fonction pour créer et jouer l'utterance
+      const createAndPlayUtterance = () => {
         const utterance = new SpeechSynthesisUtterance(text);
         utterance.lang = 'fr-FR';
-        utterance.rate = 1.05; // Débit optimisé
-        utterance.pitch = 1.0; // Pitch normal, plus naturel
+        utterance.rate = 0.85;  // Vitesse légèrement plus rapide pour voix par défaut
+        utterance.pitch = 1.1;  // Ton légèrement plus aigu pour enfants
         utterance.volume = 1.0;
         
-        // Sélectionner la MEILLEURE voix française disponible
+        // Sélectionner la voix par DÉFAUT française (plus simple et stable)
         const voices = speechSynthesis.getVoices();
         console.log('Voix disponibles:', voices.map(v => `${v.name} (${v.lang}) ${v.default ? '✓' : ''}`));
         
-        // Priorité aux voix FÉMININES françaises de qualité
-        const bestFrenchVoice = voices.find(voice => 
-          (voice.lang === 'fr-FR' || voice.lang === 'fr') && 
-          (voice.name.toLowerCase().includes('audrey') ||    // Voix féminine française courante  
-           voice.name.toLowerCase().includes('marie') ||     // Voix féminine française
-           voice.name.toLowerCase().includes('amélie') ||    // Voix féminine française
-           voice.name.toLowerCase().includes('virginie') ||  // Voix féminine française
-           voice.name.toLowerCase().includes('julie') ||     // Voix féminine française
-           voice.name.toLowerCase().includes('celine') ||    // Voix féminine française
-           voice.name.toLowerCase().includes('léa') ||       // Voix féminine française
-           voice.name.toLowerCase().includes('charlotte'))   // Voix féminine française
+        // VOIX PAR DÉFAUT SIMPLIFIÉE pour Écriture Nombres jusqu'à 20
+        const defaultVoice = voices.find(voice => 
+          voice.lang === 'fr-FR' && voice.default    // Voix française par défaut système
         ) || voices.find(voice => 
-          (voice.lang === 'fr-FR' || voice.lang === 'fr') && 
-          (voice.name.toLowerCase().includes('thomas') ||    // Voix masculine en fallback
-           voice.name.toLowerCase().includes('daniel'))      // Voix masculine en fallback
+          voice.lang === 'fr-FR' && voice.localService // Voix locale française
         ) || voices.find(voice => 
-          voice.lang === 'fr-FR' && voice.localService    // Voix système française
+          voice.lang === 'fr-FR'                     // Première voix fr-FR disponible
         ) || voices.find(voice => 
-          voice.lang === 'fr-FR'                          // N'importe quelle voix fr-FR
-        ) || voices.find(voice => 
-          voice.lang.startsWith('fr')                     // N'importe quelle voix française
-        );
+          voice.lang.startsWith('fr')                // Fallback voix française
+        ) || voices[0];                               // Dernière option : première voix disponible
         
-        if (bestFrenchVoice) {
-          utterance.voice = bestFrenchVoice;
-          console.log('Voix sélectionnée:', bestFrenchVoice.name, '(', bestFrenchVoice.lang, ')');
+        if (defaultVoice) {
+          utterance.voice = defaultVoice;
+          console.log('🎤 Voix par défaut sélectionnée:', defaultVoice.name, '(', defaultVoice.lang, ')');
         } else {
-          console.warn('Aucune voix française trouvée, utilisation voix par défaut');
+          console.warn('⚠️ Aucune voix trouvée, utilisation système par défaut');
         }
         
         currentAudioRef.current = utterance;
-
+        
+        utterance.onstart = () => {
+          console.log('Audio démarré:', text);
+        };
+        
         utterance.onend = () => {
-          currentAudioRef.current = null;
+          console.log('Audio terminé:', text);
           if (!stopSignalRef.current) {
-            resolve();
+            currentAudioRef.current = null;
+          resolve();
           }
         };
-
+        
         utterance.onerror = (event) => {
-          console.error('Erreur speech synthesis:', event);
+          console.error('Erreur audio:', event);
           currentAudioRef.current = null;
-          reject(event);
+          resolve();
         };
-
-        if (voices.length === 0) {
-          speechSynthesis.addEventListener('voiceschanged', () => {
-            if (!stopSignalRef.current) {
-              speechSynthesis.speak(utterance);
-            }
-          }, { once: true });
-        } else {
+        
+        console.log('Lancement audio:', text);
           speechSynthesis.speak(utterance);
-        }
+      };
 
-      } catch (error) {
-        console.error('Erreur playAudio:', error);
-        currentAudioRef.current = null;
-        reject(error);
+      // Attendre que les voix soient chargées
+      if (speechSynthesis.getVoices().length === 0) {
+        speechSynthesis.addEventListener('voiceschanged', function handler() {
+          speechSynthesis.removeEventListener('voiceschanged', handler);
+          createAndPlayUtterance();
+        });
+            } else {
+        createAndPlayUtterance();
       }
     });
   };
@@ -399,45 +400,190 @@ export default function EcritureNombresCP() {
     });
   };
 
-  // Fonction pour afficher les lettres avec épellation progressive
+  // Fonction pour afficher les lettres avec épellation progressive - MOBILE/DESKTOP ADAPTATIF
   const renderWordWithHighlight = (word: string, currentIndex: number) => {
     const letters = word.split('');
+    
+    // Configuration mobile ultra-compacte vs desktop normale
+    const getMobileConfig = () => {
+      const len = letters.length;
+      
+      if (len <= 4) {
+        return {
+          textSize: "text-lg",
+          gap: "gap-1",
+          padding: "px-2 py-1",
+          minWidth: "min-w-[28px]",
+          scale: { normal: "scale-100", active: "scale-110", done: "scale-105" }
+        };
+      } else if (len <= 6) {
+        return {
+          textSize: "text-base",
+          gap: "gap-0.5",
+          padding: "px-1.5 py-0.5",
+          minWidth: "min-w-[22px]",
+          scale: { normal: "scale-95", active: "scale-105", done: "scale-100" }
+        };
+      } else if (len <= 8) {
+        return {
+          textSize: "text-sm",
+          gap: "gap-0",
+          padding: "px-1 py-0.5",
+          minWidth: "min-w-[18px]",
+          scale: { normal: "scale-90", active: "scale-100", done: "scale-95" }
+        };
+      } else {
+        return {
+          textSize: "text-xs",
+          gap: "gap-0",
+          padding: "px-0.5 py-0.5",
+          minWidth: "min-w-[14px]",
+          scale: { normal: "scale-85", active: "scale-95", done: "scale-90" }
+        };
+      }
+    };
+    
+    const getDesktopConfig = () => {
+      const len = letters.length;
+      
+      if (len <= 6) {
+        return {
+          textSize: "text-3xl",
+          gap: "gap-2",
+          padding: "px-3 py-2",
+          minWidth: "min-w-[50px]",
+          scale: { normal: "scale-100", active: "scale-125", done: "scale-110" }
+        };
+      } else if (len <= 8) {
+        return {
+          textSize: "text-2xl",
+          gap: "gap-1.5",
+          padding: "px-2.5 py-1.5",
+          minWidth: "min-w-[45px]",
+          scale: { normal: "scale-100", active: "scale-125", done: "scale-110" }
+        };
+      } else {
+        return {
+          textSize: "text-xl",
+          gap: "gap-1",
+          padding: "px-2 py-1",
+          minWidth: "min-w-[40px]",
+          scale: { normal: "scale-100", active: "scale-125", done: "scale-110" }
+        };
+      }
+    };
+    
+    const mobileConfig = getMobileConfig();
+    const desktopConfig = getDesktopConfig();
+    
     return (
-      <div className="flex flex-wrap justify-center gap-2 text-4xl font-bold">
-        {letters.map((letter, index) => {
-          let className = "px-3 py-2 rounded-lg transition-all duration-500 min-w-[50px] text-center ";
-          
-          if (index < currentIndex || currentIndex >= letters.length) {
-            // Lettres déjà épelées (ou toutes finies) - en vert
-            className += "bg-green-500 text-white scale-110 shadow-md";
-          } else if (index === currentIndex) {
-            // Lettre en cours d'épellation - en orange brillant (ou bleu pour le trait d'union)
-            if (letter === '-') {
-              className += "bg-blue-500 text-white scale-125 animate-pulse ring-4 ring-blue-300 shadow-lg";
-            } else {
-              className += "bg-orange-500 text-white scale-125 animate-bounce ring-4 ring-orange-300 shadow-lg";
+      <div className="w-full max-w-full overflow-hidden">
+        {/* Version Mobile */}
+        <div className={`flex sm:hidden justify-center items-center ${mobileConfig.gap} ${mobileConfig.textSize} font-bold`}>
+          {letters.map((letter, index) => {
+            let scaleClass = mobileConfig.scale.normal;
+            let colorClass = "bg-gray-300 text-gray-600";
+            let shadowClass = "";
+            let ringClass = "";
+            
+            if (index < currentIndex || currentIndex >= letters.length) {
+              scaleClass = mobileConfig.scale.done;
+              colorClass = "bg-green-500 text-white";
+              shadowClass = "shadow-sm";
+            } else if (index === currentIndex) {
+              scaleClass = mobileConfig.scale.active;
+              if (letter === '-') {
+                colorClass = "bg-blue-500 text-white";
+                ringClass = "ring-1 ring-blue-300";
+                shadowClass = "shadow-md animate-pulse";
+              } else {
+                colorClass = "bg-orange-500 text-white";
+                ringClass = "ring-1 ring-orange-300";
+                shadowClass = "shadow-md animate-bounce";
+              }
             }
-          } else {
-            // Lettres pas encore épelées - en gris clair
-            className += "bg-gray-300 text-gray-600 scale-95";
-          }
-          
-          return (
-            <span key={index} className={className}>
-              {letter === '-' ? '–' : letter.toUpperCase()}
-            </span>
-          );
-        })}
+            
+            return (
+              <span 
+                key={`mobile-${index}`}
+                className={`
+                  ${mobileConfig.padding} 
+                  ${mobileConfig.minWidth} 
+                  ${scaleClass}
+                  ${colorClass}
+                  ${shadowClass}
+                  ${ringClass}
+                  rounded-md 
+                  transition-all 
+                  duration-500 
+                  text-center 
+                  flex-shrink-0
+                  leading-tight
+                `}
+              >
+                {letter === '-' ? '–' : letter.toUpperCase()}
+              </span>
+            );
+          })}
+        </div>
+        
+        {/* Version Desktop */}
+        <div className={`hidden sm:flex justify-center items-center ${desktopConfig.gap} ${desktopConfig.textSize} font-bold`}>
+          {letters.map((letter, index) => {
+            let scaleClass = desktopConfig.scale.normal;
+            let colorClass = "bg-gray-300 text-gray-600";
+            let shadowClass = "";
+            let ringClass = "";
+            
+            if (index < currentIndex || currentIndex >= letters.length) {
+              scaleClass = desktopConfig.scale.done;
+              colorClass = "bg-green-500 text-white";
+              shadowClass = "shadow-md";
+            } else if (index === currentIndex) {
+              scaleClass = desktopConfig.scale.active;
+              if (letter === '-') {
+                colorClass = "bg-blue-500 text-white";
+                ringClass = "ring-4 ring-blue-300";
+                shadowClass = "shadow-lg animate-pulse";
+              } else {
+                colorClass = "bg-orange-500 text-white";
+                ringClass = "ring-4 ring-orange-300";
+                shadowClass = "shadow-lg animate-bounce";
+              }
+            }
+            
+            return (
+              <span 
+                key={`desktop-${index}`}
+                className={`
+                  ${desktopConfig.padding} 
+                  ${desktopConfig.minWidth} 
+                  ${scaleClass}
+                  ${colorClass}
+                  ${shadowClass}
+                  ${ringClass}
+                  rounded-lg 
+                  transition-all 
+                  duration-500 
+                  text-center 
+                  flex-shrink-0
+                `}
+              >
+                {letter === '-' ? '–' : letter.toUpperCase()}
+              </span>
+            );
+          })}
+        </div>
       </div>
     );
   };
 
-  // Fonction pour animer l'exemple "cinq"
+  // Fonction pour animer l'exemple "5 → cinq"
   const animateExample = async () => {
     setExampleAnimating(true);
     setExampleLetterIndex(-1);
     
-    await playAudio("Regardons bien comment on épelle cinq :");
+    await playAudio("Le chiffre 5 s'écrit en lettres comme ça :");
     if (stopSignalRef.current) return;
     await wait(800);
     
@@ -459,7 +605,7 @@ export default function EcritureNombresCP() {
     if (stopSignalRef.current) return;
     await wait(800);
     
-    await playAudio("CINQ ! Ça donne le chiffre 5 !");
+    await playAudio("CINQ ! Le chiffre 5 s'écrit 'cinq' en lettres !");
     if (stopSignalRef.current) return;
     await wait(1500);
     
@@ -475,90 +621,105 @@ export default function EcritureNombresCP() {
     stopSignalRef.current = false;
     setIsPlayingVocal(true);
     setHasStarted(true);
+    setSamSizeExpanded(true); // Agrandir Sam de façon permanente
 
     try {
-      console.log('Début explainChapter - Écriture');
+      // Détection Chrome locale pour l'audio
+      const isChrome = /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor);
+      console.log('Début explainChapter - Chrome:', isChrome);
       
-      await playAudio("Bonjour ! Bienvenue dans le chapitre sur l'écriture des nombres !");
-      if (stopSignalRef.current) return;
-      await wait(1200);
+      if (isChrome) {
+        // Pour Chrome : activation plus agressive
+        speechSynthesis.cancel();
+        await new Promise(resolve => setTimeout(resolve, 200));
+        
+        // Vérification des voix pour Chrome
+        let voices = speechSynthesis.getVoices();
+        if (voices.length === 0) {
+          console.log('Attente des voix Chrome...');
+          await new Promise((resolve) => {
+            const checkVoices = () => {
+              voices = speechSynthesis.getVoices();
+              if (voices.length > 0) {
+                console.log('Voix Chrome chargées:', voices.length);
+                resolve(voices);
+              } else {
+                setTimeout(checkVoices, 100);
+              }
+            };
+            checkVoices();
+          });
+        }
+      } else {
+        // Test silencieux pour Safari et autres
+        const testUtterance = new SpeechSynthesisUtterance(' ');
+        testUtterance.volume = 0.01;
+        speechSynthesis.speak(testUtterance);
+        await wait(100);
+      }
       
-      await playAudio("Dans ce chapitre, tu vas apprendre quelque chose de très important !");
+      // Nouveau message d'accueil
+      await playAudio("Hello, c'est Sam le Pirate et mon ami Robotek !");
       if (stopSignalRef.current) return;
       await wait(1000);
       
-      await playAudio("Tu vas apprendre à transformer les mots en chiffres, et les chiffres en mots !");
+      await playAudio("Aujourd'hui nous allons apprendre à écrire les chiffres en lettres !");
       if (stopSignalRef.current) return;
-      await wait(1500);
+      await wait(1200);
       
-      await playAudio("Par exemple, si je dis le mot 'huit', tu devras savoir l'écrire avec le chiffre 8 !");
-      if (stopSignalRef.current) return;
-      await wait(1800);
-      
-      await playAudio("Et si tu vois le chiffre 12, tu devras savoir que ça s'écrit 'douze' !");
-      if (stopSignalRef.current) return;
-      await wait(1800);
-      
-      // Démonstration avec l'exemple
+      // Mettre en surbrillance la grande box d'exemple
       setHighlightedElement('example-section');
-      await playAudio("Regarde bien cet exemple : le mot 'cinq' devient le chiffre 5 !");
+      await playAudio("Voici un exemple !");
       if (stopSignalRef.current) return;
-      await wait(1500);
+      await wait(1000);
+      
+      // Animation synchronisée avec comptage vocal - exemple avec le chiffre 5
+      await playAudio("Regardez bien ! Le chiffre 5 s'écrit 'cinq' en lettres !");
+      if (stopSignalRef.current) return;
+      await wait(800);
       
       // Animer l'exemple avec épellation
       await animateExample();
       if (stopSignalRef.current) return;
       
-      await playAudio("C'est exactement ce que tu vas apprendre à faire !");
-      if (stopSignalRef.current) return;
-      await wait(1200);
-      
-      await playAudio("Je vais même t'aider en épelant chaque mot lettre par lettre !");
-      if (stopSignalRef.current) return;
-      await wait(1500);
-      
-      await playAudio("Comme ça, tu retiendras bien comment écrire chaque nombre !");
-      if (stopSignalRef.current) return;
-      await wait(1500);
-      
-      // Transition vers les choix
+      // Fin de l'animation exemple
       setHighlightedElement(null);
+      await wait(500);
+      
+      // Nouvelle séquence : présentation de la grille des nombres
+      await playAudio("Tu pourras voir de nombreux exemples en cliquant sur ces chiffres !");
+      if (stopSignalRef.current) return;
       await wait(800);
       
-      await playAudio("Maintenant, on va passer à la pratique !");
-      if (stopSignalRef.current) return;
+      // Scroll vers la grille des nombres
+      const numberChoiceElement = document.getElementById('number-choice-grid');
+      if (numberChoiceElement) {
+        numberChoiceElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
       await wait(1000);
       
-      scrollToNumberChoice();
+      // Éclairer la grande box avec tous les chiffres
       setHighlightedElement('number-choice');
-      await playAudio("Voici tous les nombres que tu peux explorer !");
-      if (stopSignalRef.current) return;
-      await wait(1200);
+      await wait(1000);
       
-      await playAudio("Tu peux choisir n'importe quel nombre de 1 à 20 !");
+      await playAudio("Pour chaque chiffre que tu choisis, je vais te montrer comment l'écrire en lettres !");
       if (stopSignalRef.current) return;
       await wait(1500);
       
-      await playAudio("Pour chaque nombre que tu choisis, je vais faire 3 choses :");
-      if (stopSignalRef.current) return;
-      await wait(1500);
-      
-      await playAudio("D'abord, je te dirai comment ça s'écrit en lettres !");
-      if (stopSignalRef.current) return;
-      await wait(1500);
-      
-      await playAudio("Ensuite, je vais épeler le mot lettre par lettre pour que tu retiennes bien !");
+      await playAudio("Je vais épeler chaque mot lettre par lettre pour que tu retiennes bien !");
       if (stopSignalRef.current) return;
       await wait(1800);
       
-      await playAudio("Et enfin, je te montrerai le chiffre qui correspond !");
+      await playAudio("amuse toi bien nom d'une jambe en bois !");
       if (stopSignalRef.current) return;
-      await wait(1500);
-      
       setHighlightedElement(null);
-      await playAudio("Alors, quel nombre veux-tu découvrir en premier ?");
-      if (stopSignalRef.current) return;
-      await wait(2000);
+      await wait(800);
+      
+      // Scroller sur tous les nombres à tester dans la zone précédente
+      if (numberChoiceElement) {
+        numberChoiceElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+      await wait(1000);
 
     } catch (error) {
       console.error('Erreur dans explainChapter:', error);
@@ -571,7 +732,7 @@ export default function EcritureNombresCP() {
     }
   };
 
-  // Fonction pour expliquer un nombre spécifique (focus sur l'écriture)
+  // Fonction pour expliquer un nombre spécifique (du chiffre vers les lettres)
   const explainNumber = async (number: number) => {
     console.log(`🔢 explainNumber(${number}) - Début, arrêt des animations précédentes`);
     
@@ -596,19 +757,24 @@ export default function EcritureNombresCP() {
       scrollToIllustration();
       
       const word = numberWords[number as keyof typeof numberWords];
-      await playAudio(`Le nombre ${number} !`);
+      await playAudio(`Très bien ! Tu as choisi le chiffre ${number} !`);
+      if (stopSignalRef.current) return;
+      await wait(800);
+      
+      setWritingStep('digit');
+      await playAudio(`Le chiffre ${number} s'écrit en lettres comme ça :`);
       if (stopSignalRef.current) return;
       await wait(800);
       
       setWritingStep('word');
-      await playAudio(`En lettres, ça s'écrit : ${word} !`);
+      await playAudio(`${word} !`);
       if (stopSignalRef.current) return;
       await wait(800);
       
       // ÉPELLATION lettre par lettre
       setWritingStep('spelling');
       setCurrentLetterIndex(-1);  // Commencer sans aucune lettre en surbrillance
-      await playAudio(`Épelons ensemble :`);
+      await playAudio(`Maintenant, épelons ensemble :`);
       if (stopSignalRef.current) return;
       await wait(500);
 
@@ -637,21 +803,16 @@ export default function EcritureNombresCP() {
       if (stopSignalRef.current) return;
       await wait(1000);  // Plus long pour admirer le mot complet
       
-      await playAudio(`Parfait ! Tu as appris à épeler ${word} !`);
+      await playAudio(`Parfait ! Le chiffre ${number} s'épelle ${word} !`);
       if (stopSignalRef.current) return;
       await wait(1200);
-      
-      setWritingStep('digit');
-      await playAudio(`En chiffres, ça s'écrit : ${number} !`);
-      if (stopSignalRef.current) return;
-      await wait(1000);
       
       setWritingStep('final');
-      await playAudio(`Parfait ! ${word} correspond au chiffre ${number} !`);
+      await playAudio(`Maintenant tu sais que ${number} s'écrit "${word}" en lettres !`);
       if (stopSignalRef.current) return;
       await wait(1200);
       
-      await playAudio("Tu peux choisir un autre nombre pour continuer à apprendre l'écriture !");
+      await playAudio("Tu peux choisir un autre chiffre pour continuer à apprendre !");
       
     } catch (error) {
       console.error('Erreur dans explainNumber:', error);
@@ -1058,49 +1219,64 @@ export default function EcritureNombresCP() {
         </div>
 
         {!showExercises ? (
-          /* COURS */
-          <div className="space-y-8">
-            {/* Bouton Démarrer toujours visible */}
-            <div className="text-center mb-8">
-              <button
+          /* COURS - MOBILE OPTIMISÉ */
+          <div className="space-y-3 sm:space-y-6">
+            {/* Image de Sam le Pirate avec bouton DÉMARRER */}
+            <div className="flex items-center justify-center gap-4 p-4 mb-6">
+                {/* Image de Sam le Pirate */}
+              <div className={`relative transition-all duration-500 border-2 border-blue-300 rounded-full bg-gradient-to-br from-blue-100 to-cyan-100 ${
+                isPlayingVocal
+                  ? 'w-20 sm:w-24 h-20 sm:h-24' // When speaking - agrandi mobile
+                  : samSizeExpanded
+                    ? 'w-16 sm:w-32 h-16 sm:h-32' // Enlarged - agrandi mobile
+                    : 'w-16 sm:w-20 h-16 sm:h-20' // Initial - agrandi mobile
+                }`}>
+                  <img 
+                    src="/image/pirate-small.png" 
+                    alt="Sam le Pirate" 
+                    className="w-full h-full rounded-full object-cover"
+                  />
+                {/* Megaphone animé quand il parle */}
+                  {isPlayingVocal && (
+                  <div className="absolute -top-1 -right-1 bg-red-500 text-white p-1 rounded-full shadow-lg">
+                    <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.617.77L4.916 14H2a1 1 0 01-1-1V7a1 1 0 011-1h2.916l3.467-2.77a1 1 0 011.617.77zM14.657 2.929a1 1 0 011.414 0A9.972 9.972 0 0119 10a9.972 9.972 0 01-2.929 7.071 1 1 0 01-1.414-1.414A7.971 7.971 0 0017 10c0-2.21-.894-4.208-2.343-5.657a1 1 0 010-1.414zm-2.829 2.828a1 1 0 011.415 0A5.983 5.983 0 0115 10a5.983 5.983 0 01-1.757 4.243 1 1 0 01-1.415-1.414A3.983 3.983 0 0013 10a3.983 3.983 0 00-1.172-2.829 1 1 0 010-1.414z" clipRule="evenodd" />
+                    </svg>
+                    </div>
+                  )}
+                </div>
+                
+              {/* Bouton Démarrer */}
+              <div className="text-center">
+                <button
                 onClick={explainChapter}
-                disabled={isPlayingVocal}
-                className={`bg-gradient-to-r from-orange-500 to-red-500 text-white px-12 py-6 rounded-2xl font-bold text-3xl shadow-2xl hover:shadow-3xl transition-all transform hover:scale-105 ${
-                  isPlayingVocal ? 'opacity-75 cursor-not-allowed animate-pulse' : 'hover:from-orange-600 hover:to-red-600 animate-bounce'
+                  disabled={isPlayingVocal}
+                  className={`bg-gradient-to-r from-green-500 to-blue-500 text-white px-6 sm:px-12 py-3 sm:py-6 rounded-xl font-bold text-base sm:text-3xl shadow-2xl hover:shadow-3xl transition-all transform hover:scale-105 ${
+                  isPlayingVocal ? 'opacity-75 cursor-not-allowed' : 'hover:from-green-600 hover:to-blue-600'
                 }`}
-                style={{
-                  animationDuration: isPlayingVocal ? '1s' : '2s',
-                  animationIterationCount: 'infinite'
-                }}
               >
-                <Volume2 className={`inline w-8 h-8 mr-4 ${isPlayingVocal ? 'animate-spin' : ''}`} />
-                {isPlayingVocal ? '🎤 JE PARLE...' : (hasStarted ? '🔄 RECOMMENCER !' : '🎉 DÉMARRER !')}
-              </button>
-              <p className="text-lg text-gray-600 mt-4 font-semibold">
-                {isPlayingVocal 
-                  ? "🔊 Écoute bien l'explication..." 
-                  : (hasStarted 
-                    ? "Clique pour réécouter l'explication !" 
-                    : "Clique ici pour commencer ton aventure avec l'écriture des nombres !")}
-              </p>
+                  <Play className="inline w-5 h-5 sm:w-8 sm:h-8 mr-2 sm:mr-4" />
+                  {isPlayingVocal ? '🎤 JE PARLE...' : '🎯 DÉMARRER'}
+                </button>
             </div>
+              </div>
 
 
 
-            {/* Introduction */}
+            {/* Introduction - RESPONSIVE MOBILE OPTIMISÉE */}
             <div 
               id="example-section"
-              className={`bg-white rounded-xl p-8 shadow-lg transition-all duration-500 relative ${
+              className={`bg-white rounded-xl p-4 sm:p-8 shadow-lg transition-all duration-500 relative ${
                 highlightedElement === 'example-section' ? 'ring-4 ring-yellow-400 bg-yellow-50 scale-105' : ''
               }`}
             >
-              <div className="flex items-center justify-center gap-3 mb-6">
-                <h2 className="text-2xl font-bold text-gray-900">
-                  🤔 Pourquoi apprendre à écrire les nombres ?
+              <div className="flex items-center justify-center gap-3 mb-3 sm:mb-6">
+                <h2 className="text-xl sm:text-2xl font-bold text-gray-900">
+                  🤔 Comment écrire un chiffre en lettres ?
                 </h2>
                 {/* Bouton d'animation à côté du titre */}
                 <div className="bg-gradient-to-r from-orange-500 to-red-600 text-white rounded-full w-12 h-12 flex items-center justify-center text-xl font-bold shadow-lg hover:scale-110 cursor-pointer transition-transform duration-300 ring-2 ring-orange-300 ring-opacity-40" 
-                     title="✍️ Animation d'écriture disponible ! Cliquez pour voir comment 'cinq' devient '5'."
+                     title="✍️ Animation d'écriture disponible ! Cliquez pour voir comment le chiffre 5 s'écrit en lettres."
                      onClick={async () => {
                        if (!isPlayingVocal) {
                          stopAllVocalsAndAnimations();
@@ -1111,18 +1287,24 @@ export default function EcritureNombresCP() {
                          setExampleAnimating(true);
                          
                          try {
-                           await playAudio("Regardez bien ! Je vais vous montrer comment 'cinq' s'écrit '5' !");
+                           await playAudio("Regardez bien ! Le chiffre 5 s'écrit 'cinq' en lettres !");
+                           if (stopSignalRef.current) return;
                            await wait(800);
                            
                            // Animation lettre par lettre
                            const word = "cinq";
+                           setExampleLetterIndex(-1);
                            for (let i = 0; i < word.length; i++) {
+                             if (stopSignalRef.current) break;
                              setExampleLetterIndex(i);
                              await playAudio(word[i]);
+                             if (stopSignalRef.current) break;
                              await wait(600);
                            }
                            
-                           await playAudio("Et maintenant, ça devient le chiffre 5 !");
+                           setExampleLetterIndex(word.length);
+                           await playAudio("Et voilà ! Le chiffre 5 s'épelle c-i-n-q !");
+                           if (stopSignalRef.current) return;
                            await wait(1500);
                            
                          } catch (error) {
@@ -1145,69 +1327,119 @@ export default function EcritureNombresCP() {
                   0%, 100% { opacity: 1; transform: scale(1); }
                   50% { opacity: 0.8; transform: scale(1.05); }
                 }
+                .scrollbar-hide {
+                  -ms-overflow-style: none;
+                  scrollbar-width: none;
+                }
+                .scrollbar-hide::-webkit-scrollbar {
+                  display: none;
+                }
               `}</style>
               
-              <div className="bg-orange-50 rounded-lg p-6 mb-6">
-                <p className="text-lg text-center text-orange-800 font-semibold mb-4">
-                  Savoir écrire les nombres en chiffres, c'est très important pour les maths !
+              <div className="bg-orange-50 rounded-lg p-3 sm:p-6 mb-3 sm:mb-6">
+                <p className="text-sm sm:text-lg text-center text-orange-800 font-semibold mb-2 sm:mb-4">
+                  Écrire un chiffre en lettres, c'est transformer le symbole en mot !
                 </p>
                 
-                <div className="bg-white rounded-lg p-4">
+                <div 
+                  className={`bg-white rounded-lg p-2 sm:p-4 transition-all duration-500 relative ${
+                    highlightedElement === 'example-box' ? 'ring-4 ring-yellow-400 bg-yellow-50' : ''
+                  }`}
+                >
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-orange-600 mb-2">
-                      Exemple : "cinq" → 5
-                  </div>
-                    <div className="text-xl text-gray-700 mb-4">
-                      Le mot devient un chiffre
-                </div>
-
-                    {/* Animation des lettres pour l'exemple */}
-                    {exampleAnimating ? (
-                      <div className="mb-4">
-                        {renderWordWithHighlight("cinq", exampleLetterIndex)}
-                  </div>
-                    ) : (
-                      <div className="text-2xl font-bold text-purple-600 mb-4">
-                        CINQ
-                </div>
-                    )}
-                    
-                    <div className="text-lg text-gray-600">
-                      {renderCircles(5)} = 5
+                    <div className="text-base sm:text-xl font-bold text-orange-600 mb-2 sm:mb-4">
+                      <div className="mb-1 sm:mb-2">Exemple :</div>
+                      <div className="flex justify-center items-center gap-1 sm:gap-2 mb-1 sm:mb-2">
+                        <span className="text-lg sm:text-2xl font-bold text-blue-600">5</span>
+                        <span className="text-lg sm:text-2xl font-bold mx-1 sm:mx-2">→</span>
+                        <div className="flex gap-1 sm:gap-2">
+                          {/* Animation des lettres pour l'exemple */}
+                          {exampleAnimating ? (
+                            <div className="mb-2 sm:mb-4">
+                              {renderWordWithHighlight("cinq", exampleLetterIndex)}
+                            </div>
+                          ) : (
+                            <div className="text-lg sm:text-2xl font-bold text-purple-600 mb-2 sm:mb-4 whitespace-nowrap">
+                              CINQ
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                    <div 
+                      className={`text-sm sm:text-xl text-gray-700 mb-2 sm:mb-4 transition-all duration-500 ${
+                        highlightedElement === 'writing-explanation' ? 'bg-yellow-200 rounded-lg p-2 scale-110' : ''
+                      }`}
+                    >
+                      Le chiffre "5" s'écrit "cinq" en lettres !
                     </div>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Sélecteur de nombre */}
+            {/* Sélecteur de nombre principal */}
             <div 
               id="number-choice-grid"
-              className={`bg-white rounded-xl p-8 shadow-lg transition-all duration-500 ${
+              className={`bg-white rounded-xl p-4 md:p-8 shadow-lg transition-all duration-500 relative ${
                 highlightedElement === 'number-choice' ? 'ring-4 ring-yellow-400 bg-yellow-50 scale-105' : ''
               }`}
             >
-              <h2 className="text-2xl font-bold text-center mb-6 text-gray-900">
-                🎯 Choisis un nombre pour voir son écriture
-              </h2>
+              <div className="flex items-center justify-center gap-3 mb-6">
+                <h2 className="text-xl md:text-2xl font-bold text-gray-900">
+                  🎯 Choisis un chiffre
+                </h2>
+                <div className="relative group">
+                  <div className="bg-gradient-to-r from-orange-500 to-red-600 text-white rounded-full w-12 h-12 flex items-center justify-center text-xl font-bold shadow-lg hover:scale-110 transition-transform duration-300 ring-2 ring-orange-300 ring-opacity-40" 
+                       style={{
+                         animation: 'gentle-pulse 3s ease-in-out infinite'
+                       }}>
+                    ✍️
+                  </div>
+                  
+                  {/* Tooltip au survol */}
+                  <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50">
+                    <div className="bg-gray-800 text-white text-sm rounded-lg py-2 px-3 whitespace-nowrap shadow-lg">
+                      👆 Clique sur un chiffre ci-dessous pour voir comment l'écrire en lettres !
+                      <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-gray-800"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
               
-              <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-10 gap-3 mb-6">
-                {Array.from({ length: 20 }, (_, i) => i + 1).map((num) => (
+              {/* Grille responsive optimisée mobile */}
+              <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-10 gap-3 md:gap-3 max-w-4xl mx-auto">
+                {['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20'].map((num) => {
+                  return (
                   <button
-                    key={num}
+                      key={num}
+                      id={`number-${num}`}
                     onClick={() => {
-                      setSelectedNumber(num);
-                      explainNumber(num);
-                    }}
-                    className={`p-3 rounded-lg font-bold text-lg transition-all min-h-[44px] min-w-[44px] ${
-                      selectedNumber === num
-                        ? 'bg-orange-500 text-white shadow-lg scale-105'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                    }`}
-                  >
-                    {num}
+                        if (!isPlayingVocal) {
+                          stopAllVocalsAndAnimations();
+                          setSelectedNumber(parseInt(num));
+                          // Scroll vers l'illustration après une courte pause pour voir le bouton sélectionné
+                          setTimeout(() => {
+                            scrollToIllustration();
+                            explainNumber(parseInt(num));
+                          }, 300);
+                        }
+                      }}
+                      disabled={isPlayingVocal}
+                      className={`p-3 sm:p-2 md:p-3 rounded-lg font-bold text-base sm:text-sm md:text-lg transition-all hover:scale-105 min-h-[44px] min-w-[44px] flex items-center justify-center ${
+                        isPlayingVocal
+                          ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                          : selectedNumber === parseInt(num)
+                            ? 'bg-orange-500 text-white shadow-lg ring-2 ring-orange-300'
+                            : 'bg-gray-100 text-gray-700 hover:bg-orange-100'
+                      } ${
+                        highlightedElement === `number-${num}` ? 'ring-4 ring-yellow-400 bg-yellow-200 scale-110' : ''
+                      }`}
+                    >
+                      {num}
                   </button>
-                ))}
+                  );
+                })}
               </div>
             </div>
 
@@ -1219,7 +1451,7 @@ export default function EcritureNombresCP() {
               }`}
             >
               <h2 className="text-2xl font-bold text-center mb-6 text-gray-900">
-                🔍 Analyse du nombre {selectedNumber}
+                🔍 Comment écrire le chiffre {selectedNumber}
               </h2>
               
               <div className="bg-yellow-50 rounded-lg p-6">
@@ -1230,8 +1462,17 @@ export default function EcritureNombresCP() {
                     {selectedNumber}
                   </div>
                   
-                  <div className={`text-4xl font-bold text-orange-600 transition-all duration-500 ${
+                  <div className={`font-bold text-orange-600 transition-all duration-500 whitespace-nowrap ${
                     writingStep === 'word' ? 'ring-4 ring-orange-400 bg-orange-200 rounded-lg p-4 scale-110' : ''
+                  } ${
+                    // Adapter la taille selon la longueur du mot
+                    (() => {
+                      const word = numberWords[selectedNumber as keyof typeof numberWords] || '';
+                      if (word.length <= 4) return 'text-4xl sm:text-5xl';
+                      if (word.length <= 6) return 'text-3xl sm:text-4xl';
+                      if (word.length <= 8) return 'text-2xl sm:text-3xl';
+                      return 'text-xl sm:text-2xl';
+                    })()
                   }`}>
                     {numberWords[selectedNumber as keyof typeof numberWords]}
                             </div>
@@ -1254,23 +1495,34 @@ export default function EcritureNombresCP() {
                         <div className="text-lg font-bold text-purple-600 mb-3 text-center">
                           📝 Épelons lettre par lettre :
                         </div>
-                        {renderWordWithHighlight(numberWords[selectedNumber as keyof typeof numberWords], currentLetterIndex)}
+                        <div className="px-2">
+                          {renderWordWithHighlight(numberWords[selectedNumber as keyof typeof numberWords], currentLetterIndex)}
+                        </div>
                       </div>
                     )}
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className={`bg-orange-100 rounded-lg p-4 transition-all duration-500 ${
-                        writingStep === 'digit' || writingStep === 'final' ? 'ring-2 ring-orange-400 scale-105' : ''
+                      <div className={`bg-blue-100 rounded-lg p-4 transition-all duration-500 ${
+                        writingStep === 'digit' || writingStep === 'showing' ? 'ring-2 ring-blue-400 scale-105' : ''
                       }`}>
-                        <div className="font-bold text-orange-800 mb-2">En chiffres :</div>
-                        <div className="text-3xl font-bold text-orange-600">{selectedNumber}</div>
+                        <div className="font-bold text-blue-800 mb-2">Le chiffre :</div>
+                        <div className="text-3xl font-bold text-blue-600">{selectedNumber}</div>
                             </div>
                       
-                      <div className={`bg-yellow-100 rounded-lg p-4 transition-all duration-500 ${
-                        writingStep === 'word' || writingStep === 'final' ? 'ring-2 ring-yellow-400 scale-105' : ''
+                      <div className={`bg-orange-100 rounded-lg p-4 transition-all duration-500 ${
+                        writingStep === 'word' || writingStep === 'final' ? 'ring-2 ring-orange-400 scale-105' : ''
                       }`}>
-                        <div className="font-bold text-yellow-800 mb-2">En lettres :</div>
-                        <div className="text-2xl font-bold text-yellow-600">
+                        <div className="font-bold text-orange-800 mb-2">S'écrit en lettres :</div>
+                        <div className={`font-bold text-orange-600 whitespace-nowrap ${
+                          // Adapter la taille selon la longueur du mot
+                          (() => {
+                            const word = numberWords[selectedNumber as keyof typeof numberWords] || '';
+                            if (word.length <= 4) return 'text-2xl sm:text-3xl';
+                            if (word.length <= 6) return 'text-xl sm:text-2xl';
+                            if (word.length <= 8) return 'text-lg sm:text-xl';
+                            return 'text-base sm:text-lg';
+                          })()
+                        }`}>
                           {numberWords[selectedNumber as keyof typeof numberWords]}
                         </div>
                       </div>
@@ -1279,7 +1531,7 @@ export default function EcritureNombresCP() {
                     {writingStep === 'final' && (
                       <div className="mt-4 p-3 bg-green-100 rounded-lg border-2 border-green-300 animate-pulse">
                         <p className="text-lg font-bold text-green-800 text-center">
-                          ✅ Parfait ! {numberWords[selectedNumber as keyof typeof numberWords]} = {selectedNumber} !
+                          ✅ Parfait ! Le chiffre {selectedNumber} s'écrit "{numberWords[selectedNumber as keyof typeof numberWords]}" !
                         </p>
                       </div>
                     )}
@@ -1289,18 +1541,24 @@ export default function EcritureNombresCP() {
             </div>
 
             {/* Tableau de correspondance */}
-            <div className="bg-white rounded-xl p-8 shadow-lg">
-              <h2 className="text-2xl font-bold text-center mb-6 text-gray-900">
+            <div className="bg-white rounded-xl p-4 sm:p-8 shadow-lg">
+              <h2 className="text-lg sm:text-2xl font-bold text-center mb-4 sm:mb-6 text-gray-900">
                 📊 Tableau de correspondance
               </h2>
               
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2 sm:gap-4">
                 {Object.entries(numberWords).map(([num, word]) => (
-                  <div key={num} className="bg-gradient-to-r from-orange-100 to-yellow-100 rounded-lg p-4 text-center">
-                    <div className="text-2xl font-bold text-orange-600 mb-2">
+                  <div key={num} className="bg-gradient-to-r from-orange-100 to-yellow-100 rounded-lg p-2 sm:p-4 text-center">
+                    <div className="text-lg sm:text-2xl font-bold text-orange-600 mb-1 sm:mb-2">
                       {num}
                     </div>
-                    <div className="text-lg font-semibold text-yellow-700">
+                    <div className={`font-semibold text-yellow-700 whitespace-nowrap ${
+                      // Adapter la taille selon la longueur du mot - Version mobile optimisée
+                      word.length <= 4 ? 'text-sm sm:text-lg' :
+                      word.length <= 6 ? 'text-xs sm:text-base' :
+                      word.length <= 8 ? 'text-xs sm:text-sm' :
+                      'text-xs'
+                    }`}>
                       {word}
                     </div>
                   </div>
@@ -1328,9 +1586,12 @@ export default function EcritureNombresCP() {
                       { num: '15', word: 'quinze' },
                       { num: '16', word: 'seize' }
                     ].map((item, index) => (
-                      <div key={index} className="bg-white rounded-lg p-3 flex justify-between">
+                      <div key={index} className="bg-white rounded-lg p-3 flex justify-between items-center">
                         <span className="font-bold text-red-600">{item.num}</span>
-                        <span className="text-gray-700">{item.word}</span>
+                        <span className={`text-gray-700 whitespace-nowrap ${
+                          item.word.length <= 6 ? 'text-base' : 
+                          item.word.length <= 8 ? 'text-sm' : 'text-xs'
+                        }`}>{item.word}</span>
                       </div>
                       ))}
                     </div>
@@ -1346,9 +1607,12 @@ export default function EcritureNombresCP() {
                       { num: '18', word: 'dix-huit' },
                       { num: '19', word: 'dix-neuf' }
                     ].map((item, index) => (
-                      <div key={index} className="bg-white rounded-lg p-3 flex justify-between">
+                      <div key={index} className="bg-white rounded-lg p-3 flex justify-between items-center">
                         <span className="font-bold text-blue-600">{item.num}</span>
-                        <span className="text-gray-700">{item.word}</span>
+                        <span className={`text-gray-700 whitespace-nowrap ${
+                          item.word.length <= 6 ? 'text-base' : 
+                          item.word.length <= 8 ? 'text-sm' : 'text-xs'
+                        }`}>{item.word}</span>
                       </div>
                     ))}
                   </div>
@@ -1391,17 +1655,19 @@ export default function EcritureNombresCP() {
 
             {/* Mini-jeu */}
             <div className="bg-gradient-to-r from-orange-400 to-yellow-400 rounded-xl p-6 text-white">
-              <h3 className="text-xl font-bold mb-3">🎮 Mini-jeu : Écris en chiffres !</h3>
+              <h3 className="text-xl font-bold mb-3">🎮 Mini-jeu : Écris en lettres !</h3>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {[
-                  { word: 'trois', answer: '3' },
-                  { word: 'huit', answer: '8' },
-                  { word: 'douze', answer: '12' },
-                  { word: 'seize', answer: '16' }
+                  { number: '3', answer: 'trois' },
+                  { number: '8', answer: 'huit' },
+                  { number: '12', answer: 'douze' },
+                  { number: '16', answer: 'seize' }
                 ].map((item, index) => (
                   <div key={index} className="bg-white bg-opacity-20 rounded-lg p-3 text-center">
-                    <div className="font-bold mb-2">{item.word}</div>
-                    <div className="text-2xl font-bold">{item.answer}</div>
+                    <div className="text-2xl font-bold mb-2">{item.number}</div>
+                    <div className={`font-bold whitespace-nowrap ${
+                      item.answer.length <= 6 ? 'text-base' : 'text-sm'
+                    }`}>{item.answer}</div>
                   </div>
                 ))}
               </div>
