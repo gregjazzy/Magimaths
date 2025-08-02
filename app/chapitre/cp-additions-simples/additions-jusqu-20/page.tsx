@@ -1197,35 +1197,36 @@ export default function AdditionsJusqu20CP() {
           </div>
         </div>
 
-        {/* Navigation entre cours et exercices */}
-        <div className="flex justify-center mb-8">
-          <div className="bg-white rounded-lg p-1 shadow-md">
-          <button
-            onClick={() => {
+        {/* Navigation entre cours et exercices - MOBILE OPTIMISÉE */}
+        <div className={`flex justify-center ${showExercises ? 'mb-2 sm:mb-6' : 'mb-8'}`}>
+          <div className="bg-white rounded-lg p-0.5 sm:p-1 shadow-md flex">
+            <button
+              onClick={() => {
                 stopAllVocalsAndAnimations();
-              setShowExercises(false);
-            }}
-              className={`px-6 py-3 rounded-lg font-bold transition-all ${
-              !showExercises
-                  ? 'bg-blue-500 text-white shadow-md' 
-                  : 'text-gray-600 hover:bg-gray-100'
-            }`}
-          >
-              📖 Cours
-          </button>
-          <button
-            onClick={() => {
-                stopAllVocalsAndAnimations();
-              setShowExercises(true);
-            }}
-              className={`px-6 py-3 rounded-lg font-bold transition-all ${
-              showExercises
+                setShowExercises(false);
+              }}
+              className={`px-3 sm:px-6 py-1.5 sm:py-3 rounded-lg font-bold transition-all text-sm sm:text-base min-h-[44px] sm:min-h-[68px] flex items-center justify-center ${
+                !showExercises 
                   ? 'bg-blue-500 text-white shadow-md' 
                   : 'text-gray-600 hover:bg-gray-100'
               }`}
             >
-              ✏️ Exercices ({score}/{exercises.length})
-          </button>
+              📖 Cours
+            </button>
+            <button
+              onClick={() => {
+                stopAllVocalsAndAnimations();
+                setShowExercises(true);
+              }}
+              className={`px-3 sm:px-6 py-1.5 sm:py-3 rounded-lg font-bold transition-all text-sm sm:text-base min-h-[44px] sm:min-h-[68px] flex flex-col items-center justify-center ${
+                showExercises 
+                  ? 'bg-green-500 text-white shadow-md' 
+                  : 'text-gray-600 hover:bg-gray-100'
+              }`}
+            >
+              <span>✏️ Exercices</span>
+              <span className="text-xs">({score}/{exercises.length})</span>
+            </button>
           </div>
         </div>
 
