@@ -575,15 +575,41 @@ export default function DecompositionsCP() {
     if (stopSignalRef.current) return;
     await wait(1500);
     
-    // Étape 8: Terminé
-    setCorrectionStep('complete');
-    await playAudio(`Maintenant tu peux cliquer sur suivant pour continuer !`);
+    // Étape 8: Vérification finale (répéter l'opération)
+    await playAudio(`Vérifions ensemble : ${num1} plus ${num2} égale ${result} !`);
+    if (stopSignalRef.current) return;
+    await wait(1500);
     
-    // Illuminer le bouton et scroller
+    // Étape 9: Terminé
+    setCorrectionStep('complete');
+    
+    // Messages différents selon mobile/desktop
+    if (isMobile) {
+      await playAudio(`Appuie sur suivant pour un autre exercice !`);
+    } else {
+      await playAudio(`Maintenant tu peux cliquer sur suivant pour continuer !`);
+    }
+    
+    // Illuminer le bouton et scroller (plus prononcé sur mobile)
     setHighlightNextButton(true);
-    setTimeout(() => {
-      scrollToNextButton();
-    }, 500);
+    
+    // Sur mobile, attendre un peu plus puis scroller vers le bouton
+    if (isMobile) {
+      setTimeout(() => {
+        // Scroll plus visible sur mobile
+        if (nextButtonRef.current) {
+          nextButtonRef.current.scrollIntoView({
+            behavior: 'smooth',
+            block: 'center',
+            inline: 'nearest'
+          });
+        }
+      }, 800);
+    } else {
+      setTimeout(() => {
+        scrollToNextButton();
+      }, 500);
+    }
   };
 
   // Fonction pour féliciter avec audio pour les bonnes réponses
@@ -695,7 +721,7 @@ export default function DecompositionsCP() {
   const nextExercise = () => {
     stopAllVocalsAndAnimations();
     
-    // Réinitialiser les états de correction
+    // Réinitialiser les états de correction seulement au passage à l'exercice suivant
     setShowAnimatedCorrection(false);
     setCorrectionStep(null);
     setHighlightNextButton(false);
@@ -1752,9 +1778,15 @@ export default function DecompositionsCP() {
                       <div className="text-base sm:text-xl font-bold text-green-800 mb-1 sm:mb-2">
                         🎉 Maintenant tu comprends !
                       </div>
-                      <div className="text-xs sm:text-base text-green-700">
+                      <div className="text-xs sm:text-base text-green-700 mb-2">
                         Les décompositions, c'est séparer un nombre en parties !
                       </div>
+                      {/* Message spécifique mobile */}
+                      {isMobile && (
+                        <div className="text-xs sm:text-sm text-purple-600 font-semibold animate-pulse">
+                          👆 Appuie sur le bouton "Suivant" ci-dessous
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
@@ -1763,16 +1795,16 @@ export default function DecompositionsCP() {
               {/* Navigation */}
               {isCorrect === false && (
                 <div className="flex justify-center pb-3 sm:pb-0">
-                      <button 
+                                        <button
                     ref={nextButtonRef}
                     onClick={nextExercise}
                     className={`bg-purple-500 text-white px-3 sm:px-6 md:px-8 py-2 sm:py-4 rounded-lg font-bold text-sm sm:text-base md:text-lg hover:bg-purple-600 transition-colors shadow-lg hover:shadow-xl transform hover:scale-105 min-h-[40px] sm:min-h-[56px] md:min-h-auto ${
                       highlightNextButton 
-                        ? 'ring-4 ring-yellow-400 ring-opacity-75 animate-pulse scale-110 bg-purple-600 shadow-2xl' 
+                        ? `ring-4 ring-yellow-400 ring-opacity-75 animate-pulse scale-110 bg-purple-600 shadow-2xl ${isMobile ? 'scale-125 py-3 text-base' : ''}` 
                         : ''
                     }`}
                   >
-                    Suivant →
+                    {isMobile && highlightNextButton ? '👆 Suivant →' : 'Suivant →'}
                   </button>
                 </div>
               )}
