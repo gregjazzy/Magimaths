@@ -36,7 +36,7 @@ export default function AdditionsJusqua100() {
 
   // État pour l'animation de correction
   const [showAnimatedCorrection, setShowAnimatedCorrection] = useState(false);
-  const [correctionStep, setCorrectionStep] = useState<'numbers' | 'adding' | 'counting' | 'result' | 'complete' | 'carry-step' | 'final-sum' | null>(null);
+  const [correctionStep, setCorrectionStep] = useState<'numbers' | 'adding' | 'counting' | 'result' | 'complete' | 'carry-step' | 'decomposition' | 'final-sum' | null>(null);
   const [highlightNextButton, setHighlightNextButton] = useState(false);
 
   // État pour la détection mobile
@@ -543,18 +543,32 @@ export default function AdditionsJusqua100() {
       if (stopSignalRef.current) return;
       await wait(2000);
       
-      // Étape 4: Calcul des unités avec retenue
+      // Étape 4: Calcul des unités avec retenue - résultat brut
       const unitsSum = (first % 10) + (second % 10);
-      await playAudio(`${first % 10} plus ${second % 10} égale ${unitsSum}. Comme c'est plus que 9, j'écris ${unitsSum % 10} et je retiens 1 !`);
+      await playAudio(`${first % 10} plus ${second % 10} égale ${unitsSum}.`);
       if (stopSignalRef.current) return;
-      await wait(3000);
+      await wait(2000);
       
-      // Étape 5: Montrer la retenue
+      // Étape 5: Explication de la décomposition
+      setCorrectionStep('decomposition');
+      await playAudio(`Attention ! ${unitsSum} est plus grand que 9, donc je dois le décomposer !`);
+      if (stopSignalRef.current) return;
+      await wait(2500);
+      
+      await playAudio(`${unitsSum} égale ${Math.floor(unitsSum / 10)} dizaine plus ${unitsSum % 10} unités.`);
+      if (stopSignalRef.current) return;
+      await wait(3500);
+      
+      await playAudio(`J'écris ${unitsSum % 10} en bas dans les unités, et je retiens ${Math.floor(unitsSum / 10)} en haut pour les dizaines !`);
+      if (stopSignalRef.current) return;
+      await wait(3500);
+      
+      // Étape 6: Montrer la retenue
       await playAudio(`Regardez ! J'écris 1 au-dessus des dizaines pour me rappeler de l'ajouter.`);
       if (stopSignalRef.current) return;
       await wait(2500);
       
-      // Étape 6: Focus sur les dizaines
+      // Étape 7: Focus sur les dizaines
       setHighlightedDigits(['tens']);
       const tensSum = Math.floor(first / 10) + Math.floor(second / 10) + 1;
       await playAudio(`Maintenant les dizaines : ${Math.floor(first / 10)} plus ${Math.floor(second / 10)} plus 1 de retenue égale ${tensSum}.`);
@@ -2754,7 +2768,7 @@ export default function AdditionsJusqua100() {
                       <div className="flex justify-center mb-2">
                         <div className="w-6 sm:w-8"></div>
                         <div className="w-12 sm:w-16 text-center">
-                          {(correctionStep === 'carry-step' || correctionStep === 'final-sum' || correctionStep === 'complete') && (
+                          {(correctionStep === 'carry-step' || correctionStep === 'decomposition' || correctionStep === 'final-sum' || correctionStep === 'complete') && (
                             <div className="text-base sm:text-lg font-bold text-red-700 animate-bounce border-2 border-red-400 bg-red-100 rounded-full px-2 py-1">
                               1
                             </div>
@@ -2805,7 +2819,7 @@ export default function AdditionsJusqua100() {
                     <div className="border-b-4 border-gray-600 my-4 w-32 sm:w-40 mx-auto"></div>
                     
                     {/* Résultat progressif */}
-                    {(correctionStep === 'adding' || correctionStep === 'carry-step' || correctionStep === 'final-sum' || correctionStep === 'complete') && (
+                    {(correctionStep === 'adding' || correctionStep === 'carry-step' || correctionStep === 'decomposition' || correctionStep === 'final-sum' || correctionStep === 'complete') && (
                       <div className="flex justify-center py-3">
                         <div className="w-6 sm:w-8"></div>
                         
@@ -2822,11 +2836,11 @@ export default function AdditionsJusqua100() {
                         
                         {/* Chiffre des unités */}
                         <div className={`w-12 sm:w-16 text-xl sm:text-3xl font-bold text-center transition-all ${
-                          (correctionStep === 'adding' || correctionStep === 'carry-step' || correctionStep === 'final-sum' || correctionStep === 'complete')
+                          (correctionStep === 'adding' || correctionStep === 'carry-step' || correctionStep === 'decomposition' || correctionStep === 'final-sum' || correctionStep === 'complete')
                             ? 'text-green-700 animate-pulse bg-green-100 rounded-lg px-2 py-1' 
                             : 'text-gray-300'
                         }`}>
-                          {(correctionStep === 'adding' || correctionStep === 'carry-step' || correctionStep === 'final-sum' || correctionStep === 'complete')
+                          {(correctionStep === 'adding' || correctionStep === 'carry-step' || correctionStep === 'decomposition' || correctionStep === 'final-sum' || correctionStep === 'complete')
                             ? correctionNumbers.result % 10
                             : '?'}
                         </div>
@@ -2850,6 +2864,38 @@ export default function AdditionsJusqua100() {
                         <p className="text-xs sm:text-base text-orange-600">
                           Les unités ({correctionNumbers.first % 10} + {correctionNumbers.second % 10} = {(correctionNumbers.first % 10) + (correctionNumbers.second % 10)}) dépassent 9
                         </p>
+                      </div>
+                    )}
+                    
+                    {correctionStep === 'decomposition' && (
+                      <div className="bg-orange-50 rounded-lg p-4 border-2 border-orange-200">
+                        <p className="text-sm sm:text-lg text-orange-700 font-semibold mb-3">
+                          🔧 Décomposition de {(correctionNumbers.first % 10) + (correctionNumbers.second % 10)}
+                        </p>
+                        <div className="flex items-center justify-center space-x-4 text-lg sm:text-2xl font-bold">
+                          <span className="bg-orange-200 px-3 py-2 rounded-lg text-orange-800">
+                            {(correctionNumbers.first % 10) + (correctionNumbers.second % 10)}
+                          </span>
+                          <span className="text-orange-600">=</span>
+                          <div className="bg-yellow-100 px-3 py-2 rounded-lg border-2 border-yellow-400">
+                            <span className="text-yellow-800 text-sm block">dizaine</span>
+                            <span className="text-yellow-900 font-bold text-xl">
+                              {Math.floor(((correctionNumbers.first % 10) + (correctionNumbers.second % 10)) / 10)}
+                            </span>
+                          </div>
+                          <span className="text-orange-600">+</span>
+                          <div className="bg-blue-100 px-3 py-2 rounded-lg border-2 border-blue-400">
+                            <span className="text-blue-800 text-sm block">unités</span>
+                            <span className="text-blue-900 font-bold text-xl">
+                              {((correctionNumbers.first % 10) + (correctionNumbers.second % 10)) % 10}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="mt-3 text-xs sm:text-sm text-orange-600 text-center">
+                          <span className="text-yellow-700">↑ retenue</span>
+                          <span className="mx-4">|</span>
+                          <span className="text-blue-700">↑ résultat unités</span>
+                        </div>
                       </div>
                     )}
                     
