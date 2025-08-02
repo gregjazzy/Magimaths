@@ -2825,11 +2825,11 @@ export default function AdditionsJusqua100() {
                         
                         {/* Chiffre des dizaines */}
                         <div className={`w-12 sm:w-16 text-xl sm:text-3xl font-bold text-center transition-all ${
-                          (correctionStep === 'final-sum' || correctionStep === 'complete')
+                          (correctionStep === 'decomposition' || correctionStep === 'final-sum' || correctionStep === 'complete')
                             ? 'text-green-700 animate-pulse bg-green-100 rounded-lg px-2 py-1' 
                             : 'text-gray-300'
                         }`}>
-                          {(correctionStep === 'final-sum' || correctionStep === 'complete')
+                          {(correctionStep === 'decomposition' || correctionStep === 'final-sum' || correctionStep === 'complete')
                             ? Math.floor(correctionNumbers.result / 10) 
                             : '?'}
                         </div>
@@ -2850,14 +2850,16 @@ export default function AdditionsJusqua100() {
                   
                   {/* Explications textuelles selon l'étape */}
                   <div className="text-center">
-                    {correctionStep === 'numbers' && (
-                      <p className="text-sm sm:text-lg text-blue-700 font-semibold">
-                        Je place les nombres en colonnes : dizaines sous dizaines, unités sous unités
+                    {/* Explication placement - toujours visible une fois affichée */}
+                    {(correctionStep === 'numbers' || correctionStep === 'carry-step' || correctionStep === 'decomposition' || correctionStep === 'adding' || correctionStep === 'final-sum' || correctionStep === 'complete') && (
+                      <p className="text-sm sm:text-lg text-blue-700 font-semibold mb-3">
+                        📋 Je place les nombres en colonnes : dizaines sous dizaines, unités sous unités
                       </p>
                     )}
                     
-                    {correctionStep === 'carry-step' && (
-                      <div className="space-y-2">
+                    {/* Explication retenue - reste visible une fois affichée */}
+                    {((correctionNumbers.first % 10) + (correctionNumbers.second % 10)) >= 10 && (correctionStep === 'carry-step' || correctionStep === 'decomposition' || correctionStep === 'final-sum' || correctionStep === 'complete') && (
+                      <div className="space-y-2 mb-3">
                         <p className="text-sm sm:text-lg text-orange-700 font-semibold">
                           🔄 Addition avec retenue !
                         </p>
@@ -2867,8 +2869,9 @@ export default function AdditionsJusqua100() {
                       </div>
                     )}
                     
-                    {correctionStep === 'decomposition' && (
-                      <div className="bg-orange-50 rounded-lg p-4 border-2 border-orange-200">
+                    {/* Décomposition - reste visible une fois affichée avec retenue */}
+                    {((correctionNumbers.first % 10) + (correctionNumbers.second % 10)) >= 10 && (correctionStep === 'decomposition' || correctionStep === 'final-sum' || correctionStep === 'complete') && (
+                      <div className="bg-orange-50 rounded-lg p-4 border-2 border-orange-200 mb-4">
                         <p className="text-sm sm:text-lg text-orange-700 font-semibold mb-3">
                           🔧 Décomposition de {(correctionNumbers.first % 10) + (correctionNumbers.second % 10)}
                         </p>
@@ -2899,14 +2902,15 @@ export default function AdditionsJusqua100() {
                       </div>
                     )}
                     
-                    {correctionStep === 'adding' && (
-                      <p className="text-sm sm:text-lg text-blue-700 font-semibold">
-                        Addition simple : pas de retenue nécessaire !
+                    {/* Explication pour addition sans retenue - reste visible */}
+                    {((correctionNumbers.first % 10) + (correctionNumbers.second % 10)) < 10 && (correctionStep === 'adding' || correctionStep === 'final-sum' || correctionStep === 'complete') && (
+                      <p className="text-sm sm:text-lg text-blue-700 font-semibold mb-3">
+                        ✨ Addition simple : pas de retenue nécessaire !
                       </p>
                     )}
                     
-                    {correctionStep === 'final-sum' && (
-                      <p className="text-sm sm:text-lg text-green-700 font-semibold">
+                    {(correctionStep === 'final-sum' || correctionStep === 'complete') && (
+                      <p className="text-sm sm:text-lg text-green-700 font-semibold mb-3">
                         🎯 Résultat final : {correctionNumbers.result} !
                       </p>
                     )}
