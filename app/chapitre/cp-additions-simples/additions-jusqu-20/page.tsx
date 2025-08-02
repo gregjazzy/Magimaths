@@ -1784,7 +1784,7 @@ export default function AdditionsJusqu20CP() {
                           : 'bg-green-500 text-white hover:bg-green-600 hover:scale-105 shadow-lg'
                       }`}
                     >
-                      ✅ Vérifier mon addition
+                      ✅ Valider
                     </button>
                   </div>
                 )}
