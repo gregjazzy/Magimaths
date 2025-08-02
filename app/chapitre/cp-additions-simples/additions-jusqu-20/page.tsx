@@ -1069,6 +1069,104 @@ export default function AdditionsJusqu20CP() {
     };
   }, []);
 
+  // JSX pour l'introduction de Sam le Pirate dans les exercices (identique à complements-10)
+  const SamPirateIntroJSX = () => (
+    <div className="flex justify-center p-0 sm:p-1 mt-0 sm:mt-2">
+      <div className="flex items-center gap-1 sm:gap-2">
+        {/* Image de Sam le Pirate */}
+        <div 
+          id="sam-pirate"
+          className={`relative flex-shrink-0 rounded-full bg-gradient-to-br from-blue-100 to-purple-100 border-1 sm:border-2 border-blue-200 shadow-md transition-all duration-300 ${
+          isPlayingVocal
+            ? 'w-12 sm:w-32 h-12 sm:h-32 scale-110 sm:scale-150'
+            : pirateIntroStarted
+              ? 'w-10 sm:w-16 h-10 sm:h-16'
+              : 'w-12 sm:w-20 h-12 sm:h-20'
+        } ${highlightedElement === 'sam-pirate' ? 'ring-4 ring-yellow-400 ring-opacity-75 animate-bounce scale-125' : ''}`}>
+          {!imageError ? (
+            <img 
+              src="/image/pirate-small.png" 
+              alt="Sam le Pirate" 
+              className="w-full h-full rounded-full object-cover"
+              onError={() => setImageError(true)}
+            />
+          ) : (
+            <div className="w-full h-full rounded-full flex items-center justify-center text-sm sm:text-2xl">
+              🏴‍☠️
+            </div>
+          )}
+          {/* Haut-parleur animé quand il parle */}
+          {isPlayingVocal && (
+            <div className="absolute -top-1 -right-1 bg-blue-500 text-white p-1 sm:p-2 rounded-full animate-bounce shadow-lg">
+              <svg className="w-2 sm:w-4 h-2 sm:h-4" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.617.77L4.916 14H2a1 1 0 01-1-1V7a1 1 0 011-1h2.916l3.467-2.77a1 1 0 011.617.77zM14.657 2.929a1 1 0 011.414 0A9.972 9.972 0 0119 10a9.972 9.972 0 01-2.929 7.071 1 1 0 01-1.414-1.414A7.971 7.971 0 0017 10c0-2.21-.894-4.208-2.343-5.657a1 1 0 010-1.414zm-2.829 2.828a1 1 0 011.415 0A5.983 5.983 0 0115 10a5.983 5.983 0 01-1.757 4.243 1 1 0 01-1.415-1.414A3.983 3.983 0 0013 10a3.983 3.983 0 00-1.172-2.829 1 1 0 010-1.414z" clipRule="evenodd" />
+              </svg>
+            </div>
+          )}
+        </div>
+        
+        {/* Bouton Start Exercices */}
+        <button
+        onClick={startPirateIntro}
+        disabled={isPlayingVocal}
+        className={`relative transition-all duration-300 transform ${
+          isPlayingVocal 
+            ? 'px-3 sm:px-12 py-1 sm:py-5 rounded-lg sm:rounded-xl font-black text-sm sm:text-2xl bg-gradient-to-r from-gray-400 to-gray-500 text-gray-200 cursor-not-allowed animate-pulse shadow-md' 
+            : pirateIntroStarted
+              ? 'px-2 sm:px-8 py-2 sm:py-3 rounded-md sm:rounded-lg font-bold text-xs sm:text-lg bg-gradient-to-r from-blue-500 to-purple-600 text-white hover:from-blue-600 hover:to-purple-700 hover:scale-105 shadow-lg border-1 sm:border-2 border-blue-300'
+              : 'px-3 sm:px-12 py-1 sm:py-5 rounded-lg sm:rounded-xl font-black text-sm sm:text-2xl bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 text-white hover:from-blue-600 hover:via-indigo-600 hover:to-purple-600 hover:scale-110 shadow-2xl hover:shadow-3xl animate-pulse border-2 sm:border-4 border-yellow-300'
+        } ${!isPlayingVocal && !pirateIntroStarted ? 'ring-4 ring-yellow-300 ring-opacity-75' : ''} ${pirateIntroStarted && !isPlayingVocal ? 'ring-2 ring-blue-300 ring-opacity-75' : ''}`}
+        style={{
+          animationDuration: !isPlayingVocal && !pirateIntroStarted ? '1.5s' : '2s',
+          animationIterationCount: isPlayingVocal ? 'none' : 'infinite',
+          textShadow: '2px 2px 4px rgba(0,0,0,0.3)',
+          boxShadow: !isPlayingVocal && !pirateIntroStarted 
+            ? '0 10px 25px rgba(0,0,0,0.3), 0 0 30px rgba(255,215,0,0.4), inset 0 1px 0 rgba(255,255,255,0.2)' 
+            : pirateIntroStarted && !isPlayingVocal
+              ? '0 8px 20px rgba(0,0,0,0.2), 0 0 15px rgba(59,130,246,0.3), inset 0 1px 0 rgba(255,255,255,0.1)'
+              : ''
+        }}
+      >
+        {/* Effet de brillance */}
+        {!isPlayingVocal && !pirateIntroStarted && (
+          <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-transparent via-white to-transparent opacity-20 animate-pulse"></div>
+        )}
+        
+        {/* Icônes et texte */}
+        <span className="relative z-10 flex items-center justify-center gap-2">
+          {isPlayingVocal 
+            ? <>🎤 <span>Sam parle...</span></> 
+            : pirateIntroStarted
+              ? <>🔄 <span>REJOUER L'INTRO</span> 🏴‍☠️</>
+              : <>🚀 <span>COMMENCER</span> ✨</>
+          }
+        </span>
+        
+        {/* Particules brillantes */}
+        {!isPlayingVocal && (
+          <>
+            {!pirateIntroStarted ? (
+              /* Particules initiales - dorées */
+              <>
+                <div className="absolute -top-1 -right-1 w-3 h-3 bg-yellow-300 rounded-full animate-ping"></div>
+                <div className="absolute -bottom-1 -left-1 w-2 h-2 bg-pink-300 rounded-full animate-ping" style={{animationDelay: '0.5s'}}></div>
+                <div className="absolute top-2 left-2 w-1 h-1 bg-white rounded-full animate-ping" style={{animationDelay: '1s'}}></div>
+              </>
+            ) : (
+              /* Particules de replay - bleues */
+              <>
+                <div className="absolute -top-1 -right-1 w-2 h-2 bg-blue-300 rounded-full animate-ping"></div>
+                <div className="absolute -bottom-1 -left-1 w-2 h-2 bg-purple-300 rounded-full animate-ping" style={{animationDelay: '0.7s'}}></div>
+                <div className="absolute top-2 right-2 w-1 h-1 bg-indigo-300 rounded-full animate-ping" style={{animationDelay: '1.2s'}}></div>
+              </>
+            )}
+          </>
+        )}
+      </button>
+      </div>
+    </div>
+  );
+
   if (!isClient) {
     return <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-100 flex items-center justify-center">
       <div className="text-xl">Chargement...</div>
@@ -1539,77 +1637,7 @@ export default function AdditionsJusqu20CP() {
           <div className="pb-12 sm:pb-0">
             {/* Introduction de Sam le Pirate - toujours visible */}
             <div className="mb-6 sm:mb-4 mt-4">
-              {/* JSX pour l'introduction de Sam le Pirate dans les exercices */}
-              <div 
-                id="sam-pirate"
-                className={`bg-gradient-to-r from-red-500 to-pink-500 rounded-xl p-3 sm:p-6 text-white relative overflow-hidden transition-all duration-300 ${
-                  highlightedElement === 'sam-pirate' ? 'ring-4 ring-yellow-400 scale-105' : ''
-                }`}
-              >
-                <div className="absolute inset-0 bg-gradient-to-r from-red-600/20 to-pink-600/20"></div>
-                <div className="relative flex flex-col sm:flex-row items-center space-y-3 sm:space-y-0 sm:space-x-4">
-                  {/* Image de Sam le Pirate */}
-                  <div className="relative">
-                    <div 
-                      className={`w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-white flex items-center justify-center text-xl sm:text-2xl transition-transform duration-300 ${
-                        samSizeExpanded ? 'scale-110' : ''
-                      }`}
-                    >
-                      {imageError ? (
-                        <span className="text-red-500 font-bold">🏴‍☠️</span>
-                      ) : (
-                        <img 
-                          src="/images/pirate-small.png" 
-                          alt="Sam le Pirate"
-                          className="w-full h-full rounded-full object-cover"
-                          onError={() => setImageError(true)}
-                        />
-                      )}
-                    </div>
-                    
-                    {/* Particules brillantes autour de Sam */}
-                    <div className="absolute -inset-2 pointer-events-none">
-                      {[...Array(6)].map((_, i) => (
-                        <div
-                          key={i}
-                          className={`absolute w-1 h-1 bg-yellow-300 rounded-full animate-pulse ${
-                            samSizeExpanded ? 'opacity-100' : 'opacity-60'
-                          }`}
-                          style={{
-                            top: `${Math.sin(i * Math.PI / 3) * 30 + 50}%`,
-                            left: `${Math.cos(i * Math.PI / 3) * 30 + 50}%`,
-                            animationDelay: `${i * 0.2}s`,
-                            animationDuration: '1.5s'
-                          }}
-                        />
-                      ))}
-                    </div>
-                  </div>
-                  
-                  {/* Contenu principal */}
-                  <div className="flex-1 text-center sm:text-left">
-                    <h3 className="text-lg sm:text-xl font-bold mb-1 sm:mb-2">Sam le Pirate 🏴‍☠️</h3>
-                    <p className="text-sm sm:text-base opacity-90">
-                      Votre assistant pour les exercices d'additions
-                    </p>
-                  </div>
-                  
-                  {/* Bouton interactif */}
-                  <div className="flex-shrink-0">
-                    <button
-                      onClick={startPirateIntro}
-                      disabled={isPlayingVocal}
-                      className={`px-3 py-2 sm:px-4 sm:py-2 rounded-lg font-bold text-xs sm:text-sm transition-all ${
-                        isPlayingVocal 
-                          ? 'bg-white/20 text-white/60 cursor-not-allowed' 
-                          : 'bg-white text-red-500 hover:bg-red-50 hover:scale-105'
-                      }`}
-                    >
-                      {isPlayingVocal ? '🎤 Parle...' : '💬 Instructions'}
-                    </button>
-                  </div>
-                </div>
-              </div>
+              {SamPirateIntroJSX()}
             </div>
 
             {/* Header exercices - caché sur mobile */}
@@ -1620,7 +1648,7 @@ export default function AdditionsJusqu20CP() {
                 </h2>
                 
                 <div className="flex items-center space-x-4">
-                  <div className="text-sm font-bold text-purple-600">
+                  <div className="text-sm font-bold text-blue-600">
                     Score : {score}/{exercises.length}
                   </div>
                   <button
@@ -1650,7 +1678,7 @@ export default function AdditionsJusqu20CP() {
                 </h2>
                 
                 <div className="flex items-center space-x-2">
-                  <div className="text-xs font-bold text-purple-600">
+                  <div className="text-xs font-bold text-blue-600">
                     Score: {score}/{exercises.length}
                   </div>
                   <button
