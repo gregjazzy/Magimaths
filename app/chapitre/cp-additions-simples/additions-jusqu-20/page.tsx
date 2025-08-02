@@ -72,7 +72,10 @@ export default function AdditionsJusqu20CP() {
   // Compliments aléatoires pour les bonnes réponses
   const correctAnswerCompliments = [
     "Parfait", "Bravo", "Excellent", "Formidable", "Magnifique", 
-    "Super", "Génial", "Fantastique", "Merveilleux", "Extraordinaire"
+    "Super", "Génial", "Fantastique", "Merveilleux", "Extraordinaire",
+    "Très bien", "C'est ça", "Tu as trouvé", "Bien joué", "Félicitations",
+    "Tu es un champion", "Quelle belle réussite", "Continue comme ça", 
+    "Tu progresses bien", "C'est exact", "Impeccable", "Remarquable"
   ];
 
   // Données des additions jusqu'à 20 avec animations
@@ -499,6 +502,24 @@ export default function AdditionsJusqu20CP() {
     try {
       const randomCompliment = correctAnswerCompliments[Math.floor(Math.random() * correctAnswerCompliments.length)];
       await playAudio(randomCompliment + " !");
+      if (stopSignalRef.current) return;
+      
+      await wait(800);
+      if (stopSignalRef.current) return;
+      
+      // Phrases d'encouragement supplémentaires variées
+      const encouragements = [
+        "Tu maîtrises bien les additions !",
+        "Tu es doué en calcul !",
+        "Les mathématiques n'ont plus de secret pour toi !",
+        "Tu deviens un vrai expert !",
+        "Quel talent pour les nombres !",
+        "Tu as l'œil pour les bonnes réponses !",
+        "Tu progresses à grands pas !"
+      ];
+      
+      const randomEncouragement = encouragements[Math.floor(Math.random() * encouragements.length)];
+      await playAudio(randomEncouragement);
       if (stopSignalRef.current) return;
       
     } catch (error) {
