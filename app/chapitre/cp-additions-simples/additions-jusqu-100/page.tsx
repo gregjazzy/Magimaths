@@ -1380,11 +1380,11 @@ export default function AdditionsJusqua100() {
             <span>Retour au chapitre</span>
           </Link>
           
-          <div className="bg-white rounded-xl p-6 shadow-lg text-center">
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">
+          <div className="bg-white rounded-xl p-4 sm:p-6 shadow-lg text-center">
+            <h1 className="text-xl sm:text-4xl font-bold text-gray-900 mb-2 sm:mb-4">
               💯 Additions jusqu'à 100
             </h1>
-            <p className="text-lg text-gray-800">
+            <p className="text-lg text-gray-600 hidden sm:block">
               Maîtrise les additions avec des nombres plus grands ! Découvre 4 techniques incroyables.
             </p>
           </div>
