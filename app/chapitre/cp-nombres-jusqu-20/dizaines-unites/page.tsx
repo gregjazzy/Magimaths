@@ -1,5 +1,17 @@
 'use client';
 
+// 🎙️ SYSTÈME AUDIO HYBRIDE AVEC ENREGISTREMENTS PERSONNALISÉS
+// Ce chapitre utilise un système audio hybride qui :
+// 1. Recherche d'abord des enregistrements personnalisés via manifest.json
+// 2. Utilise la synthèse vocale (TTS) en fallback si pas d'enregistrement
+// 3. Permet une expérience audio optimisée avec la voix de Sam le Pirate
+//
+// Structure des fichiers audio attendue :
+// /public/audio/cp-nombres-jusqu-20/dizaines-unites/
+// ├── manifest.json (contient le mapping texte -> fichier)
+// ├── cours_1.mp3, cours_2.mp3, etc. (enregistrements du cours)
+// └── exercices_1.mp3, exercices_2.mp3, etc. (enregistrements des exercices)
+
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -7,7 +19,7 @@ import { ArrowLeft, CheckCircle, XCircle, RotateCcw, Volume2, Play, Pause } from
 
 export default function DizainesUnitesCP() {
   const router = useRouter();
-  const [selectedNumber, setSelectedNumber] = useState(15);
+  const [selectedNumber, setSelectedNumber] = useState(7);
   const [currentExercise, setCurrentExercise] = useState(0);
   const [userAnswer, setUserAnswer] = useState('');
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
@@ -35,6 +47,9 @@ export default function DizainesUnitesCP() {
   const [isExplainingError, setIsExplainingError] = useState(false);
   const [pirateIntroStarted, setPirateIntroStarted] = useState(false);
   const [showExercisesList, setShowExercisesList] = useState(false);
+  
+  // États pour le mini-jeu
+  const [revealedAnswers, setRevealedAnswers] = useState<Set<number>>(new Set());
 
   // Refs pour contrôler les vocaux et animations
   const stopSignalRef = useRef(false);
@@ -162,93 +177,169 @@ export default function DizainesUnitesCP() {
     });
   };
 
-  // Fonction pour jouer un audio avec gestion d'interruption
-  const playAudio = async (text: string): Promise<void> => {
-    return new Promise((resolve, reject) => {
-      try {
-        if (stopSignalRef.current) {
-          console.log('🚫 playAudio annulé par stopSignalRef');
+  // Fonction pour jouer un audio avec gestion d'interruption et support des enregistrements personnalisés
+  const playAudio = async (text: string, slowMode = false): Promise<void> => {
+    return new Promise<void>((resolve) => {
+      if (stopSignalRef.current) {
         resolve();
         return;
       }
       
-        // S'assurer que la synthèse précédente est bien arrêtée
-        if (speechSynthesis.speaking || speechSynthesis.pending) {
-          speechSynthesis.cancel();
-          console.log('🔇 Audio précédent annulé dans playAudio');
-        }
+      setIsPlayingVocal(true);
+      
+      // 🎙️ RECHERCHE DANS LES ENREGISTREMENTS PERSONNALISÉS
+      const audioFile = findAudioFileForText(text);
+      
+      if (audioFile) {
+        // ✅ Utiliser l'enregistrement personnalisé
+        console.log('🎵 Lecture enregistrement personnalisé:', audioFile);
         
-        if (!('speechSynthesis' in window)) {
-          console.warn('SpeechSynthesis API non disponible');
+        const audio = new Audio(`/audio/cp-nombres-jusqu-20/dizaines-unites/${audioFile}`);
+        
+        audio.onended = () => {
+          setIsPlayingVocal(false);
           resolve();
-          return;
-        }
-      
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = 'fr-FR';
-        utterance.rate = 1.05; // Débit optimisé
-        utterance.pitch = 1.0; // Pitch normal, plus naturel
-        utterance.volume = 1.0;
+        };
         
-        // Sélectionner la MEILLEURE voix française disponible
-        const voices = speechSynthesis.getVoices();
-        console.log('Voix disponibles:', voices.map(v => `${v.name} (${v.lang}) ${v.default ? '✓' : ''}`));
+        audio.onerror = (error) => {
+          console.error('❌ Erreur lecture audio:', error);
+          // Fallback vers TTS
+          fallbackToTTS(text, slowMode, resolve);
+        };
         
-        // Priorité aux voix FÉMININES françaises de qualité
-        const bestFrenchVoice = voices.find(voice => 
-          (voice.lang === 'fr-FR' || voice.lang === 'fr') && 
-          (voice.name.toLowerCase().includes('audrey') ||    // Voix féminine française courante  
-           voice.name.toLowerCase().includes('marie') ||     // Voix féminine française
-           voice.name.toLowerCase().includes('amélie') ||    // Voix féminine française
-           voice.name.toLowerCase().includes('virginie') ||  // Voix féminine française
-           voice.name.toLowerCase().includes('julie') ||     // Voix féminine française
-           voice.name.toLowerCase().includes('celine') ||    // Voix féminine française
-           voice.name.toLowerCase().includes('léa') ||       // Voix féminine française
-           voice.name.toLowerCase().includes('charlotte'))   // Voix féminine française
-        ) || voices.find(voice => 
-          (voice.lang === 'fr-FR' || voice.lang === 'fr') && 
-          (voice.name.toLowerCase().includes('thomas') ||    // Voix masculine en fallback
-           voice.name.toLowerCase().includes('daniel'))      // Voix masculine en fallback
-        ) || voices.find(voice => 
-          voice.lang === 'fr-FR' && voice.localService    // Voix système française
-        ) || voices.find(voice => 
-          voice.lang === 'fr-FR'                          // N'importe quelle voix fr-FR
-        ) || voices.find(voice => 
-          voice.lang.startsWith('fr')                     // N'importe quelle voix française
-        );
+        audio.play().catch((error) => {
+          console.error('❌ Erreur play audio:', error);
+          // Fallback vers TTS  
+          fallbackToTTS(text, slowMode, resolve);
+        });
         
-        if (bestFrenchVoice) {
-          utterance.voice = bestFrenchVoice;
-          console.log('Voix sélectionnée:', bestFrenchVoice.name, '(', bestFrenchVoice.lang, ')');
-        } else {
-          console.warn('Aucune voix française trouvée, utilisation voix par défaut');
-        }
-        
-        currentAudioRef.current = utterance;
-      
-      utterance.onend = () => {
-          currentAudioRef.current = null;
-        resolve();
-      };
-      
-        utterance.onerror = (event) => {
-          console.error('Erreur synthèse vocale:', event);
-          currentAudioRef.current = null;
-        resolve();
-      };
-      
-        if (stopSignalRef.current) {
-          resolve();
-          return;
-        }
-
-        speechSynthesis.speak(utterance);
-      } catch (error) {
-        console.error('Erreur dans playAudio:', error);
-        currentAudioRef.current = null;
-        resolve();
+      } else {
+        // 🤖 Fallback vers TTS si pas d'enregistrement
+        console.log('🤖 Fallback TTS pour:', text.substring(0, 50));
+        fallbackToTTS(text, slowMode, resolve);
       }
     });
+  };
+  
+  // État pour stocker le manifest des enregistrements audio
+  const [audioManifest, setAudioManifest] = useState<any>(null);
+
+  // Fonction pour charger le manifest des enregistrements audio
+  const loadAudioManifest = async () => {
+    try {
+      const response = await fetch('/audio/cp-nombres-jusqu-20/dizaines-unites/manifest.json');
+      if (response.ok) {
+        const manifest = await response.json();
+        setAudioManifest(manifest);
+        console.log('📋 Manifest audio chargé:', manifest);
+      } else {
+        console.log('📋 Pas de manifest audio trouvé, utilisation TTS uniquement');
+      }
+    } catch (error) {
+      console.log('📋 Erreur chargement manifest audio:', error);
+    }
+  };
+
+  // Fonction pour trouver le fichier audio correspondant au texte
+  const findAudioFileForText = (text: string): string | null => {
+    if (!audioManifest || !audioManifest.segments) {
+      return null; // Pas de manifest = pas d'enregistrements disponibles
+    }
+    
+    // Rechercher dans tous les segments du manifest
+    for (const [groupId, segments] of Object.entries(audioManifest.segments)) {
+      for (const segment of segments as any[]) {
+        if (segment.text && segment.file) {
+          // Recherche par correspondance de texte (flexible)
+          const cleanText = text.toLowerCase().trim();
+          const segmentText = segment.text.toLowerCase().trim();
+          
+          // Plusieurs méthodes de correspondance
+          if (cleanText === segmentText || // Correspondance exacte
+              cleanText.includes(segmentText) || // Le texte contient le segment
+              segmentText.includes(cleanText) || // Le segment contient le texte
+              cleanText.includes(segmentText.substring(0, 20))) { // Correspondance partielle
+            console.log(`🎯 Audio trouvé pour "${text}" -> ${segment.file}`);
+            return segment.file;
+          }
+        }
+      }
+    }
+    
+    return null; // Aucun enregistrement trouvé
+  };
+  
+  // Fonction fallback vers TTS (ancien système)
+  const fallbackToTTS = (text: string, slowMode: boolean, resolve: () => void) => {
+    try {
+      if (stopSignalRef.current) {
+        setIsPlayingVocal(false);
+        resolve();
+        return;
+      }
+      
+      // S'assurer que la synthèse précédente est bien arrêtée
+      if (speechSynthesis.speaking || speechSynthesis.pending) {
+        speechSynthesis.cancel();
+        console.log('🔇 Audio précédent annulé dans fallbackToTTS');
+      }
+      
+      if (!('speechSynthesis' in window)) {
+        console.warn('SpeechSynthesis API non disponible');
+        setIsPlayingVocal(false);
+        resolve();
+        return;
+      }
+    
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'fr-FR';
+      utterance.rate = slowMode ? 0.6 : 0.8;
+      utterance.pitch = 1.0;
+      utterance.volume = 1.0;
+
+      const voices = speechSynthesis.getVoices();
+      const appleVoices = voices.filter(voice => 
+        voice.localService === true && 
+        (voice.lang === 'fr-FR' || voice.lang === 'fr')
+      );
+      
+      const femaleVoiceNames = ['Amélie', 'Audrey', 'Marie', 'Julie', 'Céline'];
+      let selectedVoice = appleVoices.find(voice => 
+        femaleVoiceNames.some(name => voice.name.includes(name))
+      ) || appleVoices[0];
+      
+      if (selectedVoice) {
+        utterance.voice = selectedVoice;
+      }
+      
+      currentAudioRef.current = utterance;
+      
+      utterance.onend = () => {
+        currentAudioRef.current = null;
+        setIsPlayingVocal(false);
+        resolve();
+      };
+      
+      utterance.onerror = (event) => {
+        console.error('Erreur synthèse vocale:', event);
+        currentAudioRef.current = null;
+        setIsPlayingVocal(false);
+        resolve();
+      };
+      
+      if (stopSignalRef.current) {
+        setIsPlayingVocal(false);
+        resolve();
+        return;
+      }
+
+      speechSynthesis.speak(utterance);
+    } catch (error) {
+      console.error('Erreur dans fallbackToTTS:', error);
+      currentAudioRef.current = null;
+      setIsPlayingVocal(false);
+      resolve();
+    }
   };
 
   // Fonction pour l'introduction vocale de Sam le Pirate - DÉMARRAGE MANUEL PAR CLIC
@@ -525,7 +616,15 @@ export default function DizainesUnitesCP() {
       if (stopSignalRef.current) return;
       await wait(1500);
       
-      await playAudio("Tu verras toujours : chiffre de gauche égale dizaines, chiffre de droite égale unités !");
+      await playAudio("J'ai ajouté des exemples spéciaux : 7 et 8 qui n'ont pas de dizaines !");
+      if (stopSignalRef.current) return;
+      await wait(2000);
+      
+      await playAudio("Pour les nombres à 2 chiffres : gauche égale dizaines, droite égale unités !");
+      if (stopSignalRef.current) return;
+      await wait(2000);
+      
+      await playAudio("Pour les nombres à 1 chiffre : zéro dizaine, que des unités !");
       if (stopSignalRef.current) return;
       await wait(2000);
       
@@ -585,6 +684,14 @@ export default function DizainesUnitesCP() {
         await playAudio(`Souviens-toi : gauche égale dizaines, droite égale unités !`);
         if (stopSignalRef.current) return;
         await wait(1500);
+      } else if (numberStr.length === 1) {
+        await playAudio(`Voici un cas spécial ! ${number} n'a qu'un seul chiffre !`);
+        if (stopSignalRef.current) return;
+        await wait(1800);
+        
+        await playAudio(`Quand il n'y a qu'un chiffre, il n'y a pas de dizaines, que des unités !`);
+        if (stopSignalRef.current) return;
+        await wait(2000);
       }
       
       setAnimatingCircles('dizaines');
@@ -596,11 +703,19 @@ export default function DizainesUnitesCP() {
         await playAudio(`Regarde le${dizaines > 1 ? 's' : ''} groupe${dizaines > 1 ? 's' : ''} de 10 cercles bleus ! ${dizaines} fois 10 égale ${dizaines * 10} !`);
         if (stopSignalRef.current) return;
         await wait(1800);
+      } else {
+        await playAudio(`Il n'y a aucune dizaine ! Donc 0 groupe de 10 !`);
+        if (stopSignalRef.current) return;
+        await wait(1500);
       }
       
       setAnimatingCircles('unites');
       if (unites > 0) {
-        await playAudio(`Le ${numberStr[1] || '0'} de droite donne ${unites} unité${unites > 1 ? 's' : ''} !`);
+        if (numberStr.length === 1) {
+          await playAudio(`Le ${numberStr[0]} représente ${unites} unité${unites > 1 ? 's' : ''} !`);
+        } else {
+          await playAudio(`Le ${numberStr[1] || '0'} de droite donne ${unites} unité${unites > 1 ? 's' : ''} !`);
+        }
         if (stopSignalRef.current) return;
         await wait(1500);
         
@@ -773,6 +888,8 @@ export default function DizainesUnitesCP() {
       setExerciseStarted(false);
       setShowNextButton(false);
       setHighlightNextButton(false);
+      // Reset du mini-jeu quand on revient au cours
+      setRevealedAnswers(new Set());
     }
   }, [showExercises]);
 
@@ -783,10 +900,13 @@ export default function DizainesUnitesCP() {
     setIsExplainingError(false);
   }, [currentExercise]);
 
-  // Effet pour initialiser le client
+  // Effet pour initialiser le client et charger le manifest audio
   useEffect(() => {
     setIsClient(true);
     console.log('✅ Composant DizainesUnites initialisé avec surveillance navigation renforcée');
+    
+    // Charger le manifest des enregistrements audio si disponible
+    loadAudioManifest();
   }, []);
 
   // Effet pour gérer les changements de visibilité de la page et navigation
@@ -1003,6 +1123,9 @@ export default function DizainesUnitesCP() {
     setExerciseStarted(false);
     setShowNextButton(false);
     setHighlightNextButton(false);
+    
+    // Reset du mini-jeu
+    setRevealedAnswers(new Set());
   };
 
   // JSX pour le bouton "Écouter l'énoncé"
@@ -1102,6 +1225,37 @@ export default function DizainesUnitesCP() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-indigo-100">
+      {/* Animation CSS personnalisée pour les icônes */}
+      <style dangerouslySetInnerHTML={{
+        __html: `
+          @keyframes subtle-glow {
+            0%, 100% {
+              opacity: 0.8;
+              transform: scale(1);
+              filter: brightness(1);
+            }
+            50% {
+              opacity: 1;
+              transform: scale(1.05);
+              filter: brightness(1.1);
+            }
+          }
+        `
+      }} />
+      
+      {/* Bouton STOP flottant - apparaît quand Sam parle OU pendant les animations */}
+      {(isPlayingVocal || animatingDecomposition || animatingExample || animatingCircles || highlightedElement) && (
+        <button
+          onClick={stopAllVocalsAndAnimations}
+          className="fixed top-4 right-4 z-50 bg-red-500 hover:bg-red-600 text-white rounded-full w-14 h-14 flex items-center justify-center shadow-2xl transition-all duration-300 hover:scale-110 animate-pulse"
+          title="🛑 Arrêter Sam le Pirate et les animations"
+        >
+          <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M6 6h12v12H6z"/>
+          </svg>
+        </button>
+      )}
+      
       <div className="max-w-6xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8">
@@ -1128,31 +1282,41 @@ export default function DizainesUnitesCP() {
 
 
 
-        {/* Navigation entre cours et exercices */}
+        {/* Navigation entre cours et exercices - MOBILE OPTIMISÉE */}
         <div className="flex justify-center mb-3 sm:mb-2">
           <div className="bg-white rounded-lg p-1 shadow-md">
             <button
               onClick={() => {
-                stopAllVocalsAndAnimations();
-                setShowExercises(false);
+                if (!isPlayingVocal) {
+                  stopAllVocalsAndAnimations();
+                  setShowExercises(false);
+                }
               }}
-              className={`px-6 py-3 rounded-lg font-bold transition-all ${
-                !showExercises 
-                  ? 'bg-purple-500 text-white shadow-md' 
-                  : 'text-gray-600 hover:bg-gray-100'
+              disabled={isPlayingVocal}
+              className={`px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-bold transition-all text-sm sm:text-base ${
+                isPlayingVocal
+                  ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  : !showExercises 
+                    ? 'bg-purple-500 text-white shadow-md' 
+                    : 'text-gray-600 hover:bg-gray-100'
               }`}
             >
               📖 Cours
             </button>
             <button
               onClick={() => {
-                stopAllVocalsAndAnimations();
-                setShowExercises(true);
+                if (!isPlayingVocal) {
+                  stopAllVocalsAndAnimations();
+                  setShowExercises(true);
+                }
               }}
-              className={`px-6 py-3 rounded-lg font-bold transition-all ${
-                showExercises 
-                  ? 'bg-purple-500 text-white shadow-md' 
-                  : 'text-gray-600 hover:bg-gray-100'
+              disabled={isPlayingVocal}
+              className={`px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-bold transition-all text-sm sm:text-base ${
+                isPlayingVocal
+                  ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  : showExercises 
+                    ? 'bg-purple-500 text-white shadow-md' 
+                    : 'text-gray-600 hover:bg-gray-100'
               }`}
             >
               ✏️ Exercices ({score}/{exercises.length})
@@ -1161,51 +1325,139 @@ export default function DizainesUnitesCP() {
         </div>
 
         {!showExercises ? (
-          /* COURS */
-          <div className="space-y-8">
-            {/* Bouton Démarrer */}
-            <div className="flex justify-center mb-8">
-              <button
+          /* COURS - MOBILE OPTIMISÉ */
+          <div className="space-y-3 sm:space-y-6">
+            {/* Image de Sam le Pirate avec bouton DÉMARRER */}
+            <div className="flex items-center justify-center gap-4 p-4 mb-6">
+                {/* Image de Sam le Pirate */}
+              <div className={`relative transition-all duration-500 border-2 border-blue-300 rounded-full bg-gradient-to-br from-blue-100 to-cyan-100 ${
+                isPlayingVocal
+                  ? 'w-20 sm:w-24 h-20 sm:h-24' // When speaking - agrandi mobile
+                  : samSizeExpanded
+                    ? 'w-16 sm:w-32 h-16 sm:h-32' // Enlarged - agrandi mobile
+                    : 'w-16 sm:w-20 h-16 sm:h-20' // Initial - agrandi mobile
+                }`}>
+                  <img 
+                    src="/image/pirate-small.png" 
+                    alt="Sam le Pirate" 
+                    className="w-full h-full rounded-full object-cover"
+                  />
+                {/* Megaphone animé quand il parle */}
+                  {isPlayingVocal && (
+                  <div className="absolute -top-1 -right-1 bg-red-500 text-white p-1 rounded-full shadow-lg">
+                    <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.617.77L4.916 14H2a1 1 0 01-1-1V7a1 1 0 011-1h2.916l3.467-2.77a1 1 0 011.617.77zM14.657 2.929a1 1 0 011.414 0A9.972 9.972 0 0119 10a9.972 9.972 0 01-2.929 7.071 1 1 0 01-1.414-1.414A7.971 7.971 0 0017 10c0-2.21-.894-4.208-2.343-5.657a1 1 0 010-1.414zm-2.829 2.828a1 1 0 011.415 0A5.983 5.983 0 0115 10a5.983 5.983 0 01-1.757 4.243 1 1 0 01-1.415-1.414A3.983 3.983 0 0013 10a3.983 3.983 0 00-1.172-2.829 1 1 0 010-1.414z" clipRule="evenodd" />
+                    </svg>
+                    </div>
+                  )}
+                </div>
+                
+              {/* Bouton Démarrer */}
+              <div className="text-center">
+                <button
                 onClick={explainChapter}
-                disabled={isPlayingVocal}
-                className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-12 py-6 rounded-2xl font-bold text-2xl shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed animate-pulse"
+                  disabled={isPlayingVocal}
+                  className={`bg-gradient-to-r from-green-500 to-blue-500 text-white px-6 sm:px-12 py-3 sm:py-6 rounded-xl font-bold text-base sm:text-3xl shadow-2xl hover:shadow-3xl transition-all transform hover:scale-105 ${
+                  isPlayingVocal ? 'opacity-75 cursor-not-allowed' : 'hover:from-green-600 hover:to-blue-600'
+                }`}
               >
-                <Play className="inline w-8 h-8 mr-3" />
-                🎯 Démarrer l'explication !
-              </button>
+                  <Play className="inline w-5 h-5 sm:w-8 sm:h-8 mr-2 sm:mr-4" />
+                  {isPlayingVocal ? '🎤 JE PARLE...' : '🎯 DÉMARRER'}
+                </button>
             </div>
+              </div>
 
             {/* Qu'est-ce que les dizaines et unités ? */}
             <div 
               id="example-section"
-              className={`bg-white rounded-xl p-8 shadow-lg transition-all duration-500 ${
+              className={`bg-white rounded-xl p-3 sm:p-8 shadow-lg transition-all duration-500 ${
                 highlightedElement === 'example-section' ? 'ring-4 ring-blue-400 bg-blue-50' : ''
               }`}
             >
-              <h2 className="text-2xl font-bold text-center mb-6 text-gray-900">
-                🤔 Qu'est-ce que les dizaines et unités ?
-              </h2>
+              <div className="flex items-center justify-center gap-2 mb-2 sm:mb-6">
+                <h2 className="text-lg sm:text-2xl font-bold text-gray-900">
+                  🤔 Qu'est-ce que les dizaines et unités ?
+                </h2>
+                {/* Bouton d'animation à côté du titre */}
+                <div className="bg-gradient-to-r from-purple-500 to-indigo-600 text-white rounded-full w-12 h-12 flex items-center justify-center text-xl font-bold shadow-lg hover:scale-110 cursor-pointer transition-all duration-300 ring-2 ring-purple-300 ring-opacity-40 hover:shadow-xl hover:ring-4 hover:ring-purple-200"
+                     style={{
+                       animation: 'subtle-glow 3s ease-in-out infinite',
+                       animationPlayState: 'running'
+                     }} 
+                     title="🎬 Animation des dizaines et unités ! Cliquez pour voir l'explication animée."
+                     onClick={async () => {
+                       if (!isPlayingVocal) {
+                         stopAllVocalsAndAnimations();
+                         await new Promise(resolve => setTimeout(resolve, 100));
+                         
+                         stopSignalRef.current = false;
+                         setIsPlayingVocal(true);
+                         setHighlightedElement('example-section');
+                         setAnimatingExample(true);
+                         
+                         try {
+                           await playAudio("Regardez bien ! Je vais vous expliquer les dizaines et unités avec le nombre 15 !");
+                           if (stopSignalRef.current) return;
+                           await wait(1000);
+                           
+                           setHighlightDigit('left');
+                           await playAudio("Le chiffre de gauche, le 1, représente les dizaines !");
+                           if (stopSignalRef.current) return;
+                           await wait(1500);
+                           
+                           setAnimatingCircles('dizaines');
+                           await playAudio("Une dizaine, c'est un groupe de 10 objets !");
+                           if (stopSignalRef.current) return;
+                           await wait(1500);
+                           
+                           setHighlightDigit('right');
+                           setAnimatingCircles('unites');
+                           await playAudio("Le chiffre de droite, le 5, représente les unités !");
+                           if (stopSignalRef.current) return;
+                           await wait(1500);
+                           
+                           setHighlightDigit(null);
+                           setAnimatingCircles('all');
+                           await playAudio("Donc 15 égale 1 dizaine plus 5 unités !");
+                           if (stopSignalRef.current) return;
+                           await wait(1500);
+                           
+                         } catch (error) {
+                           console.error('Erreur animation titre:', error);
+                         } finally {
+                           setIsPlayingVocal(false);
+                           setHighlightedElement(null);
+                           setAnimatingExample(false);
+                           setHighlightDigit(null);
+                           setAnimatingCircles(null);
+                         }
+                       }
+                     }}
+                >
+                  🎬
+                </div>
+              </div>
               
-              <div className="bg-purple-50 rounded-lg p-6 mb-6">
-                <p className="text-lg text-center text-purple-800 font-semibold mb-4">
+              <div className="bg-purple-50 rounded-lg p-3 sm:p-6 mb-3 sm:mb-6">
+                <p className="text-sm sm:text-lg text-center text-purple-800 font-semibold mb-2 sm:mb-4">
                   Chaque nombre a des dizaines (groupes de 10) et des unités (ce qui reste) !
                 </p>
                 
-                <div className="bg-white rounded-lg p-4">
+                <div className="bg-white rounded-lg p-2 sm:p-4">
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-purple-600 mb-4">
+                    <div className="text-lg sm:text-2xl font-bold text-purple-600 mb-2 sm:mb-4">
                       Exemple avec le nombre :
                 </div>
                     
                     {/* Affichage animé du nombre 15 */}
-                    <div className="flex justify-center items-center mb-6">
-                      <div className={`text-8xl font-bold transition-all duration-700 ${
+                    <div className="flex justify-center items-center mb-3 sm:mb-6">
+                      <div className={`text-5xl sm:text-8xl font-bold transition-all duration-700 ${
                         highlightDigit === 'left' ? 'text-blue-500 scale-125 animate-bounce' : 
                         animatingExample ? 'text-purple-600' : 'text-gray-600'
                       }`}>
                         1
                       </div>
-                      <div className={`text-8xl font-bold transition-all duration-700 ${
+                      <div className={`text-5xl sm:text-8xl font-bold transition-all duration-700 ${
                         highlightDigit === 'right' ? 'text-red-500 scale-125 animate-bounce' : 
                         animatingExample ? 'text-purple-600' : 'text-gray-600'
                       }`}>
@@ -1214,36 +1466,36 @@ export default function DizainesUnitesCP() {
             </div>
 
                     {/* Explications positionnelles */}
-                    <div className="grid grid-cols-2 gap-4 mb-4">
-                      <div className={`p-3 rounded-lg transition-all duration-500 ${
+                    <div className="grid grid-cols-2 gap-2 sm:gap-4 mb-2 sm:mb-4">
+                      <div className={`p-2 sm:p-3 rounded-lg transition-all duration-500 ${
                         highlightDigit === 'left' ? 'bg-blue-200 ring-4 ring-blue-400' : 'bg-blue-50'
                       }`}>
-                        <div className="text-blue-800 font-bold">↑ Chiffre de GAUCHE</div>
-                        <div className="text-blue-600">= DIZAINES</div>
+                        <div className="text-xs sm:text-sm text-blue-800 font-bold">↑ Chiffre de GAUCHE</div>
+                        <div className="text-xs sm:text-sm text-blue-600">= DIZAINES</div>
                       </div>
-                      <div className={`p-3 rounded-lg transition-all duration-500 ${
+                      <div className={`p-2 sm:p-3 rounded-lg transition-all duration-500 ${
                         highlightDigit === 'right' ? 'bg-red-200 ring-4 ring-red-400' : 'bg-red-50'
                       }`}>
-                        <div className="text-red-800 font-bold">↑ Chiffre de DROITE</div>
-                        <div className="text-red-600">= UNITÉS</div>
+                        <div className="text-xs sm:text-sm text-red-800 font-bold">↑ Chiffre de DROITE</div>
+                        <div className="text-xs sm:text-sm text-red-600">= UNITÉS</div>
                       </div>
                     </div>
                     
                     {/* Représentation réaliste */}
-                    <div className="flex justify-center gap-4 mb-4 flex-wrap">
+                    <div className="flex justify-center gap-2 sm:gap-4 mb-2 sm:mb-4 flex-wrap">
                       {/* Dizaine = groupe de 10 */}
                       <div className={`transition-all duration-700 ${
                         animatingCircles === 'dizaines' || animatingCircles === 'all' ? 
                         'scale-110 ring-4 ring-blue-400' : ''
                       }`}>
-                        <div className="grid grid-cols-5 gap-1 p-3 rounded-lg border-2 border-blue-400 bg-blue-100">
+                        <div className="grid grid-cols-5 gap-1 p-2 sm:p-3 rounded-lg border-2 border-blue-400 bg-blue-100">
                           {Array.from({ length: 10 }, (_, i) => (
                             <div
                               key={i}
-                              className="w-5 h-5 rounded-full bg-blue-600"
+                              className="w-3 sm:w-5 h-3 sm:h-5 rounded-full bg-blue-600"
                             />
                           ))}
-                          <div className="col-span-5 text-center text-sm font-bold text-blue-700 mt-2">
+                          <div className="col-span-5 text-center text-xs sm:text-sm font-bold text-blue-700 mt-1 sm:mt-2">
                             1 dizaine = 10
                           </div>
                         </div>
@@ -1252,21 +1504,21 @@ export default function DizainesUnitesCP() {
                       {/* Unités individuelles */}
                       <div className={`flex gap-1 items-center transition-all duration-700 ${
                         animatingCircles === 'unites' || animatingCircles === 'all' ? 
-                        'scale-125 ring-4 ring-red-300 rounded-lg p-2' : ''
+                        'scale-125 ring-4 ring-red-300 rounded-lg p-1 sm:p-2' : ''
                       }`}>
                         {Array.from({ length: 5 }, (_, i) => (
                           <div
                             key={i}
-                            className="w-6 h-6 rounded-full bg-red-600"
+                            className="w-4 sm:w-6 h-4 sm:h-6 rounded-full bg-red-600"
                           />
                         ))}
-                        <div className="ml-2 text-sm font-bold text-red-700">
+                        <div className="ml-1 sm:ml-2 text-xs sm:text-sm font-bold text-red-700">
                           5 unités
                         </div>
                       </div>
                 </div>
                 
-                    <div className="text-xl font-bold text-gray-700">
+                    <div className="text-base sm:text-xl font-bold text-gray-700">
                       1 dizaine + 5 unités = 15
                     </div>
                   </div>
@@ -1275,10 +1527,50 @@ export default function DizainesUnitesCP() {
                 </div>
                 
             {/* Comprendre avec les objets */}
-            <div className="bg-white rounded-xl p-8 shadow-lg">
-              <h2 className="text-2xl font-bold text-center mb-6 text-gray-900">
-                🎯 Comprendre avec des objets
-              </h2>
+            <div className="bg-white rounded-xl p-4 sm:p-8 shadow-lg">
+              <div className="flex items-center justify-center gap-3 mb-3 sm:mb-6">
+                <h2 className="text-xl sm:text-2xl font-bold text-gray-900">
+                  🎯 Comprendre avec des objets
+                </h2>
+                {/* Bouton d'animation pour les objets */}
+                <div className="bg-gradient-to-r from-orange-500 to-red-600 text-white rounded-full w-12 h-12 flex items-center justify-center text-xl font-bold shadow-lg hover:scale-110 cursor-pointer transition-all duration-300 ring-2 ring-orange-300 ring-opacity-40 hover:shadow-xl hover:ring-4 hover:ring-orange-200"
+                     style={{
+                       animation: 'subtle-glow 3s ease-in-out infinite',
+                       animationPlayState: 'running'
+                     }} 
+                     title="🎯 Animation des objets ! Cliquez pour voir les groupes de 10 s'animer."
+                     onClick={async () => {
+                       if (!isPlayingVocal) {
+                         stopAllVocalsAndAnimations();
+                         await new Promise(resolve => setTimeout(resolve, 100));
+                         
+                         stopSignalRef.current = false;
+                         setIsPlayingVocal(true);
+                         
+                         try {
+                           await playAudio("Regardez ! Une dizaine, c'est toujours 10 objets groupés ensemble !");
+                           if (stopSignalRef.current) return;
+                           await wait(1500);
+                           
+                           await playAudio("Et les unités, ce sont les objets tout seuls, pas dans un groupe !");
+                           if (stopSignalRef.current) return;
+                           await wait(1500);
+                           
+                           await playAudio("C'est comme ça qu'on comprend tous les nombres !");
+                           if (stopSignalRef.current) return;
+                           await wait(1000);
+                           
+                         } catch (error) {
+                           console.error('Erreur animation objets:', error);
+                         } finally {
+                           setIsPlayingVocal(false);
+                         }
+                       }
+                     }}
+                >
+                  🎯
+                </div>
+              </div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="bg-blue-50 rounded-lg p-6">
@@ -1349,32 +1641,105 @@ export default function DizainesUnitesCP() {
             {/* Sélecteur de nombre */}
             <div 
               id="number-choice"
-              className={`bg-white rounded-xl p-8 shadow-lg transition-all duration-500 ${
+              className={`bg-white rounded-xl p-4 sm:p-8 shadow-lg transition-all duration-500 ${
                 highlightedElement === 'number-choice' ? 'ring-4 ring-green-400 bg-green-50' : ''
               }`}
             >
-              <h2 className="text-2xl font-bold text-center mb-6 text-gray-900">
-                🎯 Choisis un nombre à analyser
-              </h2>
+              <div className="flex items-center justify-center gap-3 mb-3 sm:mb-6">
+                <h2 className="text-xl sm:text-2xl font-bold text-gray-900">
+                  🎯 Choisis un nombre à analyser
+                </h2>
+                {/* Bouton d'animation pour le choix de nombre */}
+                <div className="bg-gradient-to-r from-green-500 to-teal-600 text-white rounded-full w-12 h-12 flex items-center justify-center text-xl font-bold shadow-lg hover:scale-110 cursor-pointer transition-all duration-300 ring-2 ring-green-300 ring-opacity-40 hover:shadow-xl hover:ring-4 hover:ring-green-200"
+                     style={{
+                       animation: 'subtle-glow 3s ease-in-out infinite',
+                       animationPlayState: 'running'
+                     }} 
+                     title="🔢 Animation du choix ! Cliquez pour une démonstration rapide."
+                     onClick={async () => {
+                       if (!isPlayingVocal) {
+                         stopAllVocalsAndAnimations();
+                         await new Promise(resolve => setTimeout(resolve, 100));
+                         
+                         stopSignalRef.current = false;
+                         setIsPlayingVocal(true);
+                         setHighlightedElement('number-choice');
+                         
+                         try {
+                           await playAudio("Clique sur n'importe quel nombre et je te montrerai sa décomposition !");
+                           if (stopSignalRef.current) return;
+                           await wait(1500);
+                           
+                           await playAudio("Les nombres orange 7 et 8 sont spéciaux : ils n'ont que des unités !");
+                           if (stopSignalRef.current) return;
+                           await wait(2000);
+                           
+                           await playAudio("Les nombres gris ont des dizaines ET des unités !");
+                           if (stopSignalRef.current) return;
+                           await wait(1500);
+                           
+                         } catch (error) {
+                           console.error('Erreur animation choix:', error);
+                         } finally {
+                           setIsPlayingVocal(false);
+                           setHighlightedElement(null);
+                         }
+                       }
+                     }}
+                >
+                  🔢
+                </div>
+              </div>
               
-              <div className="grid grid-cols-5 gap-4 mb-6">
-                {Array.from({ length: 10 }, (_, i) => i + 11).map((num) => (
-                    <button
+              <div className="grid grid-cols-6 gap-3 mb-6">
+                {/* Nombres à 1 chiffre (exemples spéciaux) */}
+                {[7, 8].map((num) => (
+                  <button
                     key={num}
-                      onClick={() => {
+                    onClick={() => {
                       setSelectedNumber(num);
                       explainNumber(num);
                     }}
-                    className={`p-4 rounded-lg font-bold text-2xl transition-all ${
+                    className={`p-3 rounded-lg font-bold text-xl transition-all border-2 border-orange-300 ${
+                      selectedNumber === num
+                        ? 'bg-orange-500 text-white shadow-lg scale-105'
+                        : 'bg-orange-100 text-orange-700 hover:bg-orange-200'
+                    }`}
+                  >
+                    {num}
+                  </button>
+                ))}
+                
+                {/* Nombres à 2 chiffres */}
+                {Array.from({ length: 10 }, (_, i) => i + 11).map((num) => (
+                  <button
+                    key={num}
+                    onClick={() => {
+                      setSelectedNumber(num);
+                      explainNumber(num);
+                    }}
+                    className={`p-3 rounded-lg font-bold text-xl transition-all ${
                       selectedNumber === num
                         ? 'bg-purple-500 text-white shadow-lg scale-105'
                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                      }`}
-                    >
+                    }`}
+                  >
                     {num}
-                    </button>
+                  </button>
                 ))}
-                  </div>
+              </div>
+              
+              {/* Légende pour expliquer les couleurs */}
+              <div className="flex justify-center gap-6 mb-4 text-sm">
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 bg-orange-100 border-2 border-orange-300 rounded"></div>
+                  <span className="text-orange-700 font-semibold">Nombres à 1 chiffre (0 dizaine)</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 bg-gray-100 rounded"></div>
+                  <span className="text-gray-700 font-semibold">Nombres à 2 chiffres</span>
+                </div>
+              </div>
                 </div>
 
             {/* Affichage de l'analyse */}
@@ -1396,24 +1761,47 @@ export default function DizainesUnitesCP() {
                     <div className="text-center space-y-6">
                       {/* Affichage du nombre avec position des chiffres */}
                       <div className="flex justify-center items-center mb-6">
-                        <div className="text-6xl font-bold text-blue-500 mr-2">
-                          {numberStr[0]}
-                    </div>
-                        <div className="text-6xl font-bold text-red-500">
-                          {numberStr[1] || '0'}
-                  </div>
-                </div>
-
-                      <div className="grid grid-cols-2 gap-4 mb-6">
-                        <div className="bg-blue-100 rounded-lg p-3">
-                          <div className="text-blue-800 font-bold">↑ GAUCHE = DIZAINES</div>
-                          <div className="text-3xl font-bold text-blue-600">{numberStr[0]}</div>
-                        </div>
-                        <div className="bg-red-100 rounded-lg p-3">
-                          <div className="text-red-800 font-bold">↑ DROITE = UNITÉS</div>
-                          <div className="text-3xl font-bold text-red-600">{numberStr[1] || '0'}</div>
+                        {numberStr.length === 2 ? (
+                          <>
+                            <div className="text-6xl font-bold text-blue-500 mr-2">
+                              {numberStr[0]}
+                            </div>
+                            <div className="text-6xl font-bold text-red-500">
+                              {numberStr[1]}
+                            </div>
+                          </>
+                        ) : (
+                          <div className="text-6xl font-bold text-red-500">
+                            {numberStr[0]}
+                          </div>
+                        )}
                       </div>
-                    </div>
+
+                      {numberStr.length === 2 ? (
+                        <div className="grid grid-cols-2 gap-4 mb-6">
+                          <div className="bg-blue-100 rounded-lg p-3">
+                            <div className="text-blue-800 font-bold">↑ GAUCHE = DIZAINES</div>
+                            <div className="text-3xl font-bold text-blue-600">{numberStr[0]}</div>
+                          </div>
+                          <div className="bg-red-100 rounded-lg p-3">
+                            <div className="text-red-800 font-bold">↑ DROITE = UNITÉS</div>
+                            <div className="text-3xl font-bold text-red-600">{numberStr[1]}</div>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="grid grid-cols-2 gap-4 mb-6">
+                          <div className="bg-blue-100 rounded-lg p-3 opacity-50">
+                            <div className="text-blue-800 font-bold">DIZAINES</div>
+                            <div className="text-3xl font-bold text-blue-600">0</div>
+                            <div className="text-xs text-blue-600">Aucune dizaine</div>
+                          </div>
+                          <div className="bg-red-100 rounded-lg p-3 ring-4 ring-red-300">
+                            <div className="text-red-800 font-bold">UNITÉS</div>
+                            <div className="text-3xl font-bold text-red-600">{numberStr[0]}</div>
+                            <div className="text-xs text-red-600">Le chiffre unique</div>
+                          </div>
+                        </div>
+                      )}
                       
                       <div className="text-2xl font-bold text-indigo-600 mb-4">
                         {selectedNumber} = {dizaines} dizaine{dizaines > 1 ? 's' : ''} + {unites} unité{unites > 1 ? 's' : ''}
@@ -1478,41 +1866,61 @@ export default function DizainesUnitesCP() {
               })()}
                   </div>
                   
-            {/* Exemples */}
-            <div className="bg-white rounded-xl p-8 shadow-lg">
-              <h2 className="text-2xl font-bold text-center mb-6 text-gray-900">
-                📚 Exemples
-              </h2>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {[
-                  { number: 12, dizaines: 1, unites: 2 },
-                  { number: 17, dizaines: 1, unites: 7 },
-                  { number: 20, dizaines: 2, unites: 0 },
-                  { number: 19, dizaines: 1, unites: 9 }
-                ].map((item, index) => (
-                  <div key={index} className="bg-gray-50 rounded-lg p-4">
-                    <div className="text-center">
-                      <div className="text-2xl font-bold text-purple-600 mb-2">
-                        {item.number}
-                        </div>
-                      <div className="flex justify-center gap-2 mb-2 flex-wrap">
-                        {renderCircles(item.dizaines, item.unites)}
-                      </div>
-                      <div className="text-lg text-gray-700">
-                        {item.dizaines} dizaine{item.dizaines > 1 ? 's' : ''} + {item.unites} unité{item.unites > 1 ? 's' : ''}
-                    </div>
-                  </div>
-                </div>
-                ))}
-              </div>
-            </div>
+
 
             {/* Conseils */}
-            <div className="bg-white rounded-xl p-8 shadow-lg">
-              <h2 className="text-2xl font-bold text-center mb-6 text-gray-900">
-                💡 Trucs pour retenir
-              </h2>
+            <div className="bg-white rounded-xl p-4 sm:p-8 shadow-lg">
+              <div className="flex items-center justify-center gap-3 mb-3 sm:mb-6">
+                <h2 className="text-xl sm:text-2xl font-bold text-gray-900">
+                  💡 Trucs pour retenir
+                </h2>
+                {/* Bouton d'animation pour les conseils */}
+                <div className="bg-gradient-to-r from-yellow-500 to-orange-600 text-white rounded-full w-12 h-12 flex items-center justify-center text-xl font-bold shadow-lg hover:scale-110 cursor-pointer transition-all duration-300 ring-2 ring-yellow-300 ring-opacity-40 hover:shadow-xl hover:ring-4 hover:ring-yellow-200"
+                     style={{
+                       animation: 'subtle-glow 3s ease-in-out infinite',
+                       animationPlayState: 'running'
+                     }} 
+                     title="💡 Animation des conseils ! Cliquez pour entendre les astuces."
+                     onClick={async () => {
+                       if (!isPlayingVocal) {
+                         stopAllVocalsAndAnimations();
+                         await new Promise(resolve => setTimeout(resolve, 100));
+                         
+                         stopSignalRef.current = false;
+                         setIsPlayingVocal(true);
+                         
+                         try {
+                           await playAudio("Voici mes conseils de pirate pour retenir les dizaines et unités !");
+                           if (stopSignalRef.current) return;
+                           await wait(1500);
+                           
+                           await playAudio("Pour les dizaines : compte par groupes de 10, comme tes 10 doigts !");
+                           if (stopSignalRef.current) return;
+                           await wait(2000);
+                           
+                           await playAudio("Pour les unités : ce qui reste après avoir fait les groupes de 10 !");
+                           if (stopSignalRef.current) return;
+                           await wait(2000);
+                           
+                           await playAudio("Retiens bien : chiffre de gauche égale dizaines, chiffre de droite égale unités !");
+                           if (stopSignalRef.current) return;
+                           await wait(2000);
+                           
+                           await playAudio("Avec ça, tu vas devenir un expert des nombres, matelot !");
+                           if (stopSignalRef.current) return;
+                           await wait(1500);
+                           
+                         } catch (error) {
+                           console.error('Erreur animation conseils:', error);
+                         } finally {
+                           setIsPlayingVocal(false);
+                         }
+                       }
+                     }}
+                >
+                  💡
+                </div>
+              </div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="bg-blue-50 rounded-lg p-6">
@@ -1544,8 +1952,10 @@ export default function DizainesUnitesCP() {
             {/* Mini-jeu */}
             <div className="bg-gradient-to-r from-purple-400 to-indigo-400 rounded-xl p-6 text-white">
               <h3 className="text-xl font-bold mb-3">🎮 Mini-jeu : Trouve les dizaines et unités !</h3>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                 {[
+                  { number: '7', answer: '0 dizaine + 7 unités' },
+                  { number: '8', answer: '0 dizaine + 8 unités' },
                   { number: '14', answer: '1 dizaine + 4 unités' },
                   { number: '18', answer: '1 dizaine + 8 unités' },
                   { number: '20', answer: '2 dizaines + 0 unité' },
@@ -1553,9 +1963,36 @@ export default function DizainesUnitesCP() {
                 ].map((item, index) => (
                   <div key={index} className="bg-white bg-opacity-20 rounded-lg p-3 text-center">
                     <div className="font-bold mb-2">{item.number} = ?</div>
-                    <div className="text-sm font-bold">{item.answer}</div>
+                    {revealedAnswers.has(index) ? (
+                      <div className="text-sm font-bold text-yellow-200">{item.answer}</div>
+                    ) : (
+                      <button
+                        onClick={() => {
+                          setRevealedAnswers(prev => {
+                            const newSet = new Set(prev);
+                            newSet.add(index);
+                            return newSet;
+                          });
+                        }}
+                        className="bg-yellow-500 hover:bg-yellow-600 text-purple-900 px-3 py-1 rounded-lg text-sm font-bold transition-all hover:scale-105"
+                      >
+                        👁️ Voir la réponse
+                      </button>
+                    )}
                   </div>
                 ))}
+              </div>
+              
+              {/* Bouton pour révéler toutes les réponses */}
+              <div className="text-center mt-4">
+                <button
+                  onClick={() => {
+                    setRevealedAnswers(new Set([0, 1, 2, 3, 4, 5]));
+                  }}
+                  className="bg-yellow-500 hover:bg-yellow-600 text-purple-900 px-6 py-2 rounded-lg font-bold transition-all hover:scale-105"
+                >
+                  🎯 Révéler toutes les réponses
+                </button>
               </div>
             </div>
           </div>
