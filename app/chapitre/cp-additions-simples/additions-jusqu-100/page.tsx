@@ -1031,27 +1031,34 @@ export default function AdditionsJusqua100() {
     setSamSizeExpanded(true);
     
     try {
+      // Compliment initial avec expression de pirate
+      const pirateExpression = pirateExpressions[Math.floor(Math.random() * pirateExpressions.length)];
       const randomCompliment = correctAnswerCompliments[Math.floor(Math.random() * correctAnswerCompliments.length)];
-      await playAudio(randomCompliment + " !");
+      await playAudio(`${pirateExpression} ! ${randomCompliment} !`);
       if (stopSignalRef.current) return;
       
-      await wait(800);
+      await wait(1200);
       if (stopSignalRef.current) return;
       
       // Phrases d'encouragement supplémentaires variées
       const encouragements = [
         "Tu maîtrises bien les additions jusqu'à 100 !",
-        "Tu es doué en calcul !",
+        "Tu es doué en calcul, moussaillon !",
         "Les mathématiques n'ont plus de secret pour toi !",
-        "Tu deviens un vrai expert !",
-        "Quel talent pour les nombres !",
+        "Tu deviens un vrai expert des nombres !",
+        "Quel talent pour les additions !",
         "Tu as l'œil pour les bonnes réponses !",
-        "Tu progresses à grands pas !"
+        "Tu progresses à grands pas dans les calculs !",
+        "Les additions posées, c'est ton fort !",
+        "Tu navigues dans les nombres comme un vrai capitaine !",
+        "Avec toi, les retenues n'ont qu'à bien se tenir !"
       ];
       
       const randomEncouragement = encouragements[Math.floor(Math.random() * encouragements.length)];
       await playAudio(randomEncouragement);
       if (stopSignalRef.current) return;
+      
+      await wait(500);
       
     } catch (error) {
       console.error('Erreur dans celebrateCorrectAnswer:', error);
@@ -1244,9 +1251,10 @@ export default function AdditionsJusqua100() {
     }
 
     if (correct) {
-      // Féliciter l'utilisateur
+      // Féliciter l'utilisateur avec Sam le Pirate
       await celebrateCorrectAnswer();
       
+      // Attendre plus longtemps pour laisser Sam finir de parler
       setTimeout(() => {
         if (currentExercise + 1 < exercises.length) {
           setCurrentExercise(currentExercise + 1);
@@ -1262,7 +1270,7 @@ export default function AdditionsJusqua100() {
           setFinalScore(finalScoreValue);
           setShowCompletionModal(true);
         }
-      }, 1500);
+      }, 3000); // Augmenté de 1.5s à 3s pour laisser Sam finir de parler
     } else {
       // Expliquer la mauvaise réponse avec correction animée
       await explainWrongAnswer();
@@ -2733,9 +2741,9 @@ export default function AdditionsJusqua100() {
                   <div className="flex items-center justify-center space-x-3">
                     {isCorrect ? (
                       <>
-                        <CheckCircle className="w-6 h-6 sm:w-8 sm:h-8" />
+                        <CheckCircle className="w-6 h-6 sm:w-8 sm:h-8 animate-bounce" />
                         <span className="font-bold text-lg sm:text-xl">
-                          Excellent ! {exercises[currentExercise].firstNumber} + {exercises[currentExercise].secondNumber} = {exercises[currentExercise].correctAnswer} !
+                          🎉 Parfait ! {exercises[currentExercise].firstNumber} + {exercises[currentExercise].secondNumber} = {exercises[currentExercise].correctAnswer} !
                         </span>
                       </>
                     ) : (
