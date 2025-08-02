@@ -1678,16 +1678,8 @@ export default function AdditionsJusqu20CP() {
                   Exercice {currentExercise + 1}/{exercises.length}
                 </h2>
                 
-                <div className="flex items-center space-x-2">
-                  <div className="text-xs font-bold text-blue-600">
-                    Score: {score}/{exercises.length}
-                  </div>
-                  <button
-                    onClick={resetAll}
-                    className="bg-gray-500 text-white px-2 py-1 rounded-lg font-bold text-xs hover:bg-gray-600 transition-colors"
-                  >
-                    <RotateCcw className="inline w-3 h-3" />
-                  </button>
+                <div className="text-xs font-bold text-blue-600">
+                  Score: {score}/{exercises.length}
                 </div>
               </div>
               
