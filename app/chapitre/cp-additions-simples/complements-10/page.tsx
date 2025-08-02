@@ -28,9 +28,48 @@ export default function ComplementsDixCP() {
   const [showCompletionModal, setShowCompletionModal] = useState(false);
   const [finalScore, setFinalScore] = useState(0);
 
-  // Refs pour gérer l'audio
+  // États pour Sam le Pirate
+  const [pirateIntroStarted, setPirateIntroStarted] = useState(false);
+  const [samSizeExpanded, setSamSizeExpanded] = useState(false);
+  const [imageError, setImageError] = useState(false);
+  const [isPlayingEnonce, setIsPlayingEnonce] = useState(false);
+
+  // État pour l'animation de correction
+  const [showAnimatedCorrection, setShowAnimatedCorrection] = useState(false);
+  const [correctionStep, setCorrectionStep] = useState<'complement' | 'counting' | 'result' | 'complete' | null>(null);
+  const [highlightNextButton, setHighlightNextButton] = useState(false);
+
+  // État pour la détection mobile
+  const [isMobile, setIsMobile] = useState(false);
+  const [animatedObjects, setAnimatedObjects] = useState<string[]>([]);
+
+  // État pour stocker les nombres de la correction en cours
+  const [correctionNumbers, setCorrectionNumbers] = useState<{
+    first: number;
+    second: number;
+    objectEmoji: string;
+    objectName: string;
+  } | null>(null);
+
+  // État pour l'animation de comptage objet par objet
+  const [countingIndex, setCountingIndex] = useState<number>(-1);
+
+  // Refs pour gérer l'audio et scroll
   const stopSignalRef = useRef(false);
   const currentAudioRef = useRef<SpeechSynthesisUtterance | null>(null);
+  const nextButtonRef = useRef<HTMLButtonElement>(null);
+
+  // Expressions de pirate aléatoires pour chaque exercice
+  const pirateExpressions = [
+    "Mille sabords", "Tonnerre de Brest", "Sacré matelot", "Par Neptune", "Sang de pirate",
+    "Mille millions de mille sabords", "Ventrebleu", "Sapristi", "Morbleu", "Fichtre"
+  ];
+
+  // Compliments aléatoires pour les bonnes réponses
+  const correctAnswerCompliments = [
+    "Parfait", "Bravo", "Excellent", "Formidable", "Magnifique", 
+    "Super", "Génial", "Fantastique", "Merveilleux", "Extraordinaire"
+  ];
 
   // Données des compléments à 10 avec animations
   const complementExamples = [
@@ -113,7 +152,9 @@ export default function ComplementsDixCP() {
       currentAudioRef.current = null;
     }
     
+    // Reset de tous les états d'animation et de vocal
     setIsPlayingVocal(false);
+    setIsPlayingEnonce(false);
     setIsAnimationRunning(false);
     setHighlightedElement(null);
     setAnimatingStep(null);
@@ -122,81 +163,77 @@ export default function ComplementsDixCP() {
     setShowingProcess(null);
     setComplementStep(null);
     setCountingTo10(null);
+    setSamSizeExpanded(false);
+    
+    // Nouveaux états pour la correction animée
+    setShowAnimatedCorrection(false);
+    setCorrectionStep(null);
+    setHighlightNextButton(false);
+    setAnimatedObjects([]);
+    setCorrectionNumbers(null);
+    setCountingIndex(-1);
   };
 
-  // Fonction pour jouer l'audio avec voix féminine française
-  const playAudio = async (text: string, slowMode = false) => {
-    return new Promise<void>((resolve) => {
-      if (stopSignalRef.current) {
-        resolve();
-        return;
-      }
-      
-      setIsPlayingVocal(true);
-      const utterance = new SpeechSynthesisUtterance(text);
-      
-      utterance.lang = 'fr-FR';
-      utterance.rate = slowMode ? 0.6 : 0.8;
-      utterance.pitch = 1.0;
-      utterance.volume = 1.0;
+  const playAudio = (text: string): Promise<void> => {
+    return new Promise((resolve, reject) => {
+      try {
+        if (stopSignalRef.current) {
+          resolve();
+          return;
+        }
+        
+        setIsPlayingVocal(true);
+        const utterance = new SpeechSynthesisUtterance(text);
+        
+        utterance.lang = 'fr-FR';
+        utterance.rate = 0.8;
+        utterance.pitch = 1.0;
+        utterance.volume = 1.0;
 
-      // Sélectionner la MEILLEURE voix française féminine disponible
-      const voices = speechSynthesis.getVoices();
-      console.log('Voix disponibles:', voices.map(v => `${v.name} (${v.lang}) ${v.default ? '✓' : ''}`));
-      
-      // Priorité aux voix FÉMININES françaises de qualité
-      const bestFrenchVoice = voices.find(voice => 
-        (voice.lang === 'fr-FR' || voice.lang === 'fr') && 
-        (voice.name.toLowerCase().includes('audrey') ||    // Voix féminine française courante  
-         voice.name.toLowerCase().includes('marie') ||     // Voix féminine française
-         voice.name.toLowerCase().includes('amélie') ||    // Voix féminine française
-         voice.name.toLowerCase().includes('virginie') ||  // Voix féminine française
-         voice.name.toLowerCase().includes('julie') ||     // Voix féminine française
-         voice.name.toLowerCase().includes('celine') ||    // Voix féminine française
-         voice.name.toLowerCase().includes('léa') ||       // Voix féminine française
-         voice.name.toLowerCase().includes('charlotte'))   // Voix féminine française
-      ) || voices.find(voice => 
-        (voice.lang === 'fr-FR' || voice.lang === 'fr') && 
-        voice.localService                                 // Voix système française
-      ) || voices.find(voice => 
-        voice.lang === 'fr-FR'                            // N'importe quelle voix fr-FR
-      ) || voices.find(voice => 
-        voice.lang.startsWith('fr')                       // N'importe quelle voix française
-      );
+        // Sélectionner une voix française
+        const voices = speechSynthesis.getVoices();
+        const frenchVoice = voices.find(voice => 
+          voice.lang === 'fr-FR' || voice.lang.startsWith('fr')
+        );
 
-      if (bestFrenchVoice) {
-        utterance.voice = bestFrenchVoice;
-        console.log('🎤 Voix sélectionnée:', bestFrenchVoice.name);
-      } else {
-        console.warn('⚠️ Aucune voix française trouvée');
+        if (frenchVoice) {
+          utterance.voice = frenchVoice;
+        }
+        
+        utterance.onend = () => {
+          setIsPlayingVocal(false);
+          currentAudioRef.current = null;
+          resolve();
+        };
+        
+        utterance.onerror = (error) => {
+          setIsPlayingVocal(false);
+          currentAudioRef.current = null;
+          console.error('Erreur utterance:', error);
+          reject(error);
+        };
+        
+        currentAudioRef.current = utterance;
+        speechSynthesis.speak(utterance);
+      } catch (error) {
+        setIsPlayingVocal(false);
+        console.error('Erreur utterance:', error);
+        reject(error);
       }
-      
-      utterance.onend = () => {
-        setIsPlayingVocal(false);
-        currentAudioRef.current = null;
-        resolve();
-      };
-      
-      utterance.onerror = () => {
-        setIsPlayingVocal(false);
-        currentAudioRef.current = null;
-        resolve();
-      };
-      
-      currentAudioRef.current = utterance;
-      speechSynthesis.speak(utterance);
     });
   };
 
-  // Fonction utilitaire pour les pauses
-  const wait = (ms: number) => {
-    return new Promise(resolve => {
-      if (stopSignalRef.current) {
-        resolve(undefined);
-        return;
-      }
-      setTimeout(resolve, ms);
-    });
+  const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
+  // Fonction pour scroller vers le bouton Suivant
+  const scrollToNextButton = () => {
+    if (nextButtonRef.current) {
+      nextButtonRef.current.scrollIntoView({
+        behavior: 'smooth',
+        block: 'end',
+        inline: 'nearest'
+      });
+    }
   };
 
   // Fonction pour scroller vers une section
@@ -250,17 +287,17 @@ export default function ComplementsDixCP() {
 
     try {
       // 1. Objet du chapitre
-      await playAudio("Bonjour ! Aujourd'hui, nous allons apprendre les compléments à 10 !", true);
+      await playAudio("Bonjour ! Aujourd'hui, nous allons apprendre les compléments à 10 !");
       if (stopSignalRef.current) return;
       
       await wait(1200);
-      await playAudio("Un complément à 10, c'est ce qu'il faut ajouter à un nombre pour arriver à 10 !", true);
+      await playAudio("Un complément à 10, c'est ce qu'il faut ajouter à un nombre pour arriver à 10 !");
       if (stopSignalRef.current) return;
       
       // 2. Explication du concept avec animations
       await wait(1800);
       setHighlightedElement('concept-section');
-      await playAudio("Regardons ensemble comment compléter 3 pour faire 10 !", true);
+      await playAudio("Regardons ensemble comment compléter 3 pour faire 10 !");
       if (stopSignalRef.current) return;
       
       await wait(1500);
@@ -268,23 +305,23 @@ export default function ComplementsDixCP() {
       setAnimatingStep('introduction');
       const example = complementExamples[0];
       
-      await playAudio(`D'abord, j'ai ${example.first} objets.`, true);
+      await playAudio(`D'abord, j'ai ${example.first} objets.`);
       if (stopSignalRef.current) return;
       
       await wait(1200);
       setComplementStep('first-number');
       setHighlightedNumber(example.first);
-      await playAudio(`Je vois ${example.first} objets ici.`, true);
+      await playAudio(`Je vois ${example.first} objets ici.`);
       if (stopSignalRef.current) return;
       
       await wait(1500);
       setShowingProcess('counting');
-      await playAudio("Maintenant, je dois compter jusqu'à 10. Combien dois-je ajouter ?", true);
+      await playAudio("Maintenant, je dois compter jusqu'à 10. Combien dois-je ajouter ?");
       if (stopSignalRef.current) return;
       
       await wait(1200);
       setComplementStep('missing');
-      await playAudio("Je vais compter de 3 jusqu'à 10 pour trouver le complément !", true);
+      await playAudio("Je vais compter de 3 jusqu'à 10 pour trouver le complément !");
       if (stopSignalRef.current) return;
       
       // Animation de comptage de 3 à 10
@@ -292,24 +329,24 @@ export default function ComplementsDixCP() {
       for (let i = example.first + 1; i <= 10; i++) {
         if (stopSignalRef.current) return;
         setCountingTo10(i);
-        await playAudio(`${i}`, true);
+        await playAudio(`${i}`);
         await wait(600);
       }
       
       await wait(1000);
       setShowingProcess('adding');
-      await playAudio(`Il faut ajouter ${example.second} pour aller de ${example.first} à 10 !`, true);
+      await playAudio(`Il faut ajouter ${example.second} pour aller de ${example.first} à 10 !`);
       if (stopSignalRef.current) return;
       
       await wait(1500);
       setComplementStep('total');
       setShowingProcess('completing');
-      await playAudio(`${example.first} plus ${example.second} égale 10 ! C'est ça, un complément !`, true);
+      await playAudio(`${example.first} plus ${example.second} égale 10 ! C'est ça, un complément !`);
       if (stopSignalRef.current) return;
       
       await wait(1500);
       setComplementStep('result');
-      await playAudio(`En mathématiques, on écrit : ${example.first} + ${example.second} = 10 !`, true);
+      await playAudio(`En mathématiques, on écrit : ${example.first} + ${example.second} = 10 !`);
       if (stopSignalRef.current) return;
       
       // 3. Présentation des autres exemples
@@ -320,21 +357,21 @@ export default function ComplementsDixCP() {
       setCountingTo10(null);
       setCurrentExample(null);
       setHighlightedElement(null);
-      await playAudio("Parfait ! Maintenant tu comprends les compléments à 10 !", true);
+      await playAudio("Parfait ! Maintenant tu comprends les compléments à 10 !");
       if (stopSignalRef.current) return;
       
       await wait(1200);
-      await playAudio("Il y a d'autres nombres et d'autres compléments à découvrir !", true);
+      await playAudio("Il y a d'autres nombres et d'autres compléments à découvrir !");
       if (stopSignalRef.current) return;
       
       await wait(1500);
       setHighlightedElement('examples-section');
       scrollToSection('examples-section');
-      await playAudio("Regarde ! Tu peux essayer avec d'autres nombres !", true);
+      await playAudio("Regarde ! Tu peux essayer avec d'autres nombres !");
       if (stopSignalRef.current) return;
       
       await wait(1200);
-      await playAudio("Clique sur les exemples pour voir d'autres compléments !", true);
+      await playAudio("Clique sur les exemples pour voir d'autres compléments !");
       if (stopSignalRef.current) return;
       
       await wait(800);
@@ -348,6 +385,185 @@ export default function ComplementsDixCP() {
       setComplementStep(null);
       setCountingTo10(null);
       setIsAnimationRunning(false);
+    }
+  };
+
+  // Fonction pour parser les nombres d'un exercice de complément
+  const parseComplementNumbers = (exercise: any) => {
+    const first = exercise.firstNumber || parseInt(exercise.correctAnswer);
+    const second = exercise.secondNumber || (10 - first);
+    
+    return {
+      first: exercise.firstNumber ? first : second,
+      second: exercise.firstNumber ? (10 - first) : first,
+      objectEmoji: '🟡',
+      objectName: 'pièces d\'or'
+    };
+  };
+
+  // Fonction pour créer une correction animée avec des objets visuels pour les compléments
+  const createAnimatedCorrection = async (exercise: any) => {
+    if (stopSignalRef.current) return;
+    
+    console.log('Début correction animée pour complément:', exercise);
+    
+    const { first, second, objectEmoji, objectName } = parseComplementNumbers(exercise);
+    
+    // Stocker les nombres pour l'affichage
+    setCorrectionNumbers({ first, second, objectEmoji, objectName });
+    
+    // Démarrer l'affichage de correction
+    setShowAnimatedCorrection(true);
+    setCorrectionStep('complement');
+    
+    // Scroller pour garder la correction visible
+    setTimeout(() => {
+      const correctionElement = document.getElementById('animated-correction');
+      if (correctionElement) {
+        correctionElement.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center'
+        });
+      }
+    }, 100);
+    
+    // Étape 1: Présentation du problème
+    await playAudio(`Je vais t'expliquer ce complément à 10 avec des ${objectName} !`);
+    if (stopSignalRef.current) return;
+    await wait(1000);
+    
+    // Étape 2: Affichage du premier nombre
+    await playAudio(`Regarde ! Voici ${first} ${objectName}.`);
+    if (stopSignalRef.current) return;
+    
+    // Montrer les objets du premier nombre
+    const firstObjects = Array(first).fill('🟡');
+    setAnimatedObjects(firstObjects);
+    await wait(1500);
+    
+    // Étape 3: Comptage jusqu'à 10
+    setCorrectionStep('counting');
+    await playAudio(`Maintenant, je compte jusqu'à 10 pour trouver le complément !`);
+    if (stopSignalRef.current) return;
+    await wait(1000);
+    
+    // Animation de comptage objet par objet
+    for (let i = first + 1; i <= 10; i++) {
+      if (stopSignalRef.current) return;
+      setCountingIndex(i - first - 1);
+      await playAudio(`${i}`);
+      
+      // Ajouter un objet à chaque comptage
+      const currentObjects = [
+        ...Array(first).fill('🟡'),
+        ...Array(i - first).fill('🟠')
+      ];
+      setAnimatedObjects(currentObjects);
+      await wait(600);
+    }
+    
+    // Étape 4: Résultat
+    setCorrectionStep('result');
+    await playAudio(`Il faut ajouter ${second} pour aller de ${first} à 10 !`);
+    if (stopSignalRef.current) return;
+    await wait(1500);
+    
+    await playAudio(`Donc ${first} + ${second} = 10 ! C'est ça, un complément !`);
+    if (stopSignalRef.current) return;
+    await wait(1500);
+    
+    // Étape 5: Vérification finale (répéter l'opération)
+    await playAudio(`Vérifions ensemble : ${first} plus ${second} égale 10 !`);
+    if (stopSignalRef.current) return;
+    await wait(1500);
+    
+    // Étape 6: Terminé
+    setCorrectionStep('complete');
+    
+    // Messages différents selon mobile/desktop
+    if (isMobile) {
+      await playAudio(`Appuie sur suivant pour un autre exercice !`);
+    } else {
+      await playAudio(`Maintenant tu peux cliquer sur suivant pour continuer !`);
+    }
+    
+    // Illuminer le bouton et scroller (plus prononcé sur mobile)
+    setHighlightNextButton(true);
+    
+    // Sur mobile, attendre un peu plus puis scroller vers le bouton
+    if (isMobile) {
+      setTimeout(() => {
+        // Scroll plus visible sur mobile
+        if (nextButtonRef.current) {
+          nextButtonRef.current.scrollIntoView({
+            behavior: 'smooth',
+            block: 'center',
+            inline: 'nearest'
+          });
+        }
+      }, 800);
+    } else {
+      setTimeout(() => {
+        scrollToNextButton();
+      }, 500);
+    }
+  };
+
+  // Fonction pour féliciter avec audio pour les bonnes réponses
+  const celebrateCorrectAnswer = async () => {
+    if (stopSignalRef.current) return;
+    
+    const randomCompliment = correctAnswerCompliments[Math.floor(Math.random() * correctAnswerCompliments.length)];
+    const randomExpression = pirateExpressions[Math.floor(Math.random() * pirateExpressions.length)];
+    
+    await playAudio(`${randomCompliment} ! ${randomExpression} ! Tu as trouvé le bon complément !`);
+  };
+
+  // Fonction pour expliquer une mauvaise réponse
+  const explainWrongAnswer = async () => {
+    if (stopSignalRef.current) return;
+    
+    const randomExpression = pirateExpressions[Math.floor(Math.random() * pirateExpressions.length)];
+    await playAudio(`${randomExpression} ! Pas de problème ! Regarde bien...`);
+    
+    if (stopSignalRef.current) return;
+    await wait(500);
+    
+    // Lancer l'animation de correction
+    await createAnimatedCorrection(exercises[currentExercise]);
+  };
+
+  // Fonction pour lire l'énoncé de l'exercice
+  const startExerciseExplanation = async () => {
+    if (stopSignalRef.current) return;
+    
+    setIsPlayingEnonce(true);
+    
+    try {
+      const exercise = exercises[currentExercise];
+      await playAudio(exercise.question);
+    } finally {
+      setIsPlayingEnonce(false);
+    }
+  };
+
+  // Fonction pour démarrer l'intro de Sam le Pirate
+  const startPirateIntro = async () => {
+    if (pirateIntroStarted) return;
+    
+    setPirateIntroStarted(true);
+    setSamSizeExpanded(true);
+    
+    try {
+      const randomExpression = pirateExpressions[Math.floor(Math.random() * pirateExpressions.length)];
+      await playAudio(`${randomExpression} ! Moi, c'est Sam le Pirate ! Je vais t'aider avec les compléments à 10 !`);
+      
+      if (stopSignalRef.current) return;
+      await wait(800);
+      
+      await playAudio(`Clique sur les réponses pour répondre. Si tu te trompes, je t'expliquerai avec des objets !`);
+    } finally {
+      setSamSizeExpanded(false);
     }
   };
 
@@ -365,18 +581,18 @@ export default function ComplementsDixCP() {
       setAnimatingStep('introduction');
       scrollToSection('concept-section');
       
-      await playAudio(`Je vais te montrer comment ${example.description}.`, true);
+      await playAudio(`Je vais te montrer comment ${example.description}.`);
       if (stopSignalRef.current) return;
       
       await wait(1500);
       setComplementStep('first-number');
       setHighlightedNumber(example.first);
-      await playAudio(`Voici ${example.first} objets.`, true);
+      await playAudio(`Voici ${example.first} objets.`);
       if (stopSignalRef.current) return;
       
       await wait(1200);
       setShowingProcess('counting');
-      await playAudio(`Je compte de ${example.first} jusqu'à 10.`, true);
+      await playAudio(`Je compte de ${example.first} jusqu'à 10.`);
       if (stopSignalRef.current) return;
 
       // Animation de comptage
@@ -384,20 +600,20 @@ export default function ComplementsDixCP() {
       for (let i = example.first + 1; i <= 10; i++) {
         if (stopSignalRef.current) return;
         setCountingTo10(i);
-        await playAudio(`${i}`, true);
+        await playAudio(`${i}`);
         await wait(600);
       }
       
       await wait(1000);
       setComplementStep('missing');
       setShowingProcess('adding');
-      await playAudio(`Il faut ajouter ${example.second} !`, true);
+      await playAudio(`Il faut ajouter ${example.second} !`);
       if (stopSignalRef.current) return;
       
       await wait(1200);
       setComplementStep('result');
       setShowingProcess('completing');
-      await playAudio(`${example.first} plus ${example.second} égale 10 !`, true);
+      await playAudio(`${example.first} plus ${example.second} égale 10 !`);
       if (stopSignalRef.current) return;
       
       await wait(2000);
@@ -419,7 +635,7 @@ export default function ComplementsDixCP() {
   };
 
   // Gestion des exercices
-  const handleAnswerClick = (answer: string) => {
+  const handleAnswerClick = async (answer: string) => {
     stopAllVocalsAndAnimations();
     setUserAnswer(answer);
     const correct = answer === exercises[currentExercise].correctAnswer;
@@ -435,6 +651,9 @@ export default function ComplementsDixCP() {
     }
 
     if (correct) {
+      // Féliciter l'utilisateur
+      await celebrateCorrectAnswer();
+      
       setTimeout(() => {
         if (currentExercise + 1 < exercises.length) {
           setCurrentExercise(currentExercise + 1);
@@ -446,11 +665,28 @@ export default function ComplementsDixCP() {
           setShowCompletionModal(true);
         }
       }, 1500);
+    } else {
+      // Expliquer l'erreur avec Sam
+      await explainWrongAnswer();
     }
   };
 
   const nextExercise = () => {
     stopAllVocalsAndAnimations();
+    
+    // Réinitialiser les états de correction seulement au passage à l'exercice suivant
+    setShowAnimatedCorrection(false);
+    setCorrectionStep(null);
+    setHighlightNextButton(false);
+    setAnimatedObjects([]);
+    setCorrectionNumbers(null);
+    setCountingIndex(-1);
+    
+    // Réactiver les fonctions audio après un court délai
+    setTimeout(() => {
+      stopSignalRef.current = false;
+    }, 100);
+    
     if (currentExercise < exercises.length - 1) {
       setCurrentExercise(currentExercise + 1);
       setUserAnswer('');
@@ -470,6 +706,15 @@ export default function ComplementsDixCP() {
     setAnsweredCorrectly(new Set());
     setShowCompletionModal(false);
     setFinalScore(0);
+    
+    // Réinitialiser les états spécifiques à Sam et la correction
+    setPirateIntroStarted(false);
+    setShowAnimatedCorrection(false);
+    setCorrectionStep(null);
+    setHighlightNextButton(false);
+    setAnimatedObjects([]);
+    setCorrectionNumbers(null);
+    setCountingIndex(-1);
   };
 
   // Fonction helper pour les messages de fin
@@ -481,9 +726,19 @@ export default function ComplementsDixCP() {
     return { title: "💪 Continue !", message: "Recommence pour mieux comprendre les compléments !", emoji: "📚" };
   };
 
-  // Effet pour initialiser le client
+  // Effet pour initialiser le client et détecter mobile
   useEffect(() => {
     setIsClient(true);
+    
+    // Détection mobile
+    const checkIfMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    
+    checkIfMobile();
+    window.addEventListener('resize', checkIfMobile);
+    
+    return () => window.removeEventListener('resize', checkIfMobile);
   }, []);
 
   // Effet pour gérer les changements de visibilité de la page et navigation
@@ -570,6 +825,93 @@ export default function ComplementsDixCP() {
     stopAllVocalsAndAnimations();
   }, [showExercises]);
 
+  // Composant JSX pour le bouton "Écouter l'énoncé" - Toujours actif
+  const ListenQuestionButtonJSX = () => {
+    // Toujours actif sauf pendant la lecture
+    const isButtonDisabled = isPlayingEnonce;
+
+    return (
+      <div className="mb-2 sm:mb-6">
+        <button
+          id="listen-question-button"
+          onClick={startExerciseExplanation}
+          disabled={isButtonDisabled}
+          className={`${
+            isPlayingEnonce 
+              ? 'bg-blue-600 text-white animate-pulse' 
+              : 'bg-blue-500 text-white hover:bg-blue-600'
+          } px-2 sm:px-6 py-1 sm:py-3 rounded-lg font-bold text-xs sm:text-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-1 sm:space-x-2 mx-auto shadow-lg ${
+            highlightedElement === 'listen-question-button' ? 'ring-4 ring-yellow-400 ring-opacity-75 animate-pulse scale-110 shadow-2xl bg-blue-600' : ''
+          }`}
+        >
+          <svg className="w-3 h-3 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 20 20">
+            <path fillRule="evenodd" d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.617.77L4.916 14H2a1 1 0 01-1-1V7a1 1 0 011-1h2.916l3.467-2.77a1 1 0 011.617.77zM14.657 2.929a1 1 0 011.414 0A9.972 9.972 0 0119 10a9.972 9.972 0 01-2.929 7.071 1 1 0 01-1.414-1.414A7.971 7.971 0 0017 10c0-2.21-.894-4.208-2.343-5.657a1 1 0 010-1.414zm-2.829 2.828a1 1 0 011.415 0A5.983 5.983 0 0115 10a5.983 5.983 0 01-1.757 4.243 1 1 0 01-1.415-1.414A3.983 3.983 0 0013 10a3.983 3.983 0 00-1.172-2.829 1 1 0 010-1.414z" clipRule="evenodd" />
+          </svg>
+          <span>🎧 Écouter l'énoncé</span>
+        </button>
+      </div>
+    );
+  };
+
+  // JSX pour l'introduction de Sam le Pirate dans les exercices
+  const SamPirateIntroJSX = () => {
+    return (
+      <div className="bg-gradient-to-r from-red-500 to-pink-500 rounded-xl p-3 sm:p-6 text-white relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r from-red-600/20 to-pink-600/20"></div>
+        <div className="relative flex flex-col sm:flex-row items-center space-y-3 sm:space-y-0 sm:space-x-4">
+          {/* Image de Sam le Pirate */}
+          <div className="relative">
+            <div 
+              className={`w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-white flex items-center justify-center text-xl sm:text-2xl transition-transform duration-300 ${
+                samSizeExpanded ? 'scale-110' : ''
+              }`}
+            >
+              {imageError ? (
+                <span className="text-red-500 font-bold">🏴‍☠️</span>
+              ) : (
+                <img 
+                  src="/image/pirate-small.png" 
+                  alt="Sam le Pirate" 
+                  className="w-8 h-8 sm:w-12 sm:h-12 rounded-full"
+                  onError={() => setImageError(true)}
+                />
+              )}
+            </div>
+            {isPlayingVocal && (
+              <div className="absolute -top-1 -right-1 w-3 h-3 sm:w-4 sm:h-4 bg-green-400 rounded-full animate-pulse"></div>
+            )}
+          </div>
+          
+          {/* Texte d'introduction */}
+          <div className="flex-1 text-center sm:text-left">
+            <h3 className="text-base sm:text-xl font-bold mb-1 sm:mb-2">
+              👋 Salut, moi c'est Sam le Pirate !
+            </h3>
+            <p className="text-xs sm:text-base opacity-90">
+              Je vais t'aider avec les compléments à 10. {!pirateIntroStarted && 'Clique pour commencer !'}
+            </p>
+          </div>
+          
+          {/* Bouton d'interaction */}
+          <div className="sm:flex-shrink-0">
+            {!pirateIntroStarted ? (
+              <button
+                onClick={startPirateIntro}
+                className="bg-white text-red-600 px-3 sm:px-6 py-1.5 sm:py-3 rounded-lg font-bold text-xs sm:text-sm hover:bg-gray-100 transition-colors shadow-lg hover:shadow-xl transform hover:scale-105 min-h-[32px] sm:min-h-[44px]"
+              >
+                ▶️ DÉMARRER
+              </button>
+            ) : (
+              <div className="bg-green-500 text-white px-3 sm:px-6 py-1.5 sm:py-3 rounded-lg font-bold text-xs sm:text-sm shadow-lg min-h-[32px] sm:min-h-[44px] flex items-center">
+                ✅ Prêt !
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   if (!isClient) {
     return <div className="min-h-screen bg-gradient-to-br from-orange-50 to-yellow-100 flex items-center justify-center">
       <div className="text-xl">Chargement...</div>
@@ -600,17 +942,17 @@ export default function ComplementsDixCP() {
           </div>
         </div>
 
-        {/* Navigation entre cours et exercices */}
-        <div className="flex justify-center mb-8">
-          <div className="bg-white rounded-lg p-1 shadow-md">
+        {/* Navigation entre cours et exercices - MOBILE OPTIMISÉE */}
+        <div className={`flex justify-center ${showExercises ? 'mb-2 sm:mb-6' : 'mb-8'}`}>
+          <div className="bg-white rounded-lg p-0.5 sm:p-1 shadow-md flex">
             <button
               onClick={() => {
                 stopAllVocalsAndAnimations();
                 setShowExercises(false);
               }}
-              className={`px-6 py-3 rounded-lg font-bold transition-all ${
+              className={`px-3 sm:px-6 py-1.5 sm:py-3 rounded-lg font-bold transition-all text-sm sm:text-base min-h-[44px] sm:min-h-[68px] flex items-center justify-center ${
                 !showExercises 
-                  ? 'bg-orange-500 text-white shadow-md' 
+                  ? 'bg-blue-500 text-white shadow-md' 
                   : 'text-gray-600 hover:bg-gray-100'
               }`}
             >
@@ -621,13 +963,14 @@ export default function ComplementsDixCP() {
                 stopAllVocalsAndAnimations();
                 setShowExercises(true);
               }}
-              className={`px-6 py-3 rounded-lg font-bold transition-all ${
+              className={`px-3 sm:px-6 py-1.5 sm:py-3 rounded-lg font-bold transition-all text-sm sm:text-base min-h-[44px] sm:min-h-[68px] flex flex-col items-center justify-center ${
                 showExercises 
-                  ? 'bg-orange-500 text-white shadow-md' 
+                  ? 'bg-green-500 text-white shadow-md' 
                   : 'text-gray-600 hover:bg-gray-100'
               }`}
             >
-              ✏️ Exercices ({score}/{exercises.length})
+              <span>✏️ Exercices</span>
+              <span className="text-xs">({score}/{exercises.length})</span>
             </button>
           </div>
         </div>
@@ -878,66 +1221,91 @@ export default function ComplementsDixCP() {
             </div>
           </div>
         ) : (
-          /* EXERCICES */
-          <div className="space-y-8">
-            {/* Header exercices */}
-            <div className="bg-white rounded-xl p-6 shadow-lg">
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-2xl font-bold text-gray-900">
-                  ✏️ Exercice {currentExercise + 1} sur {exercises.length}
+          /* EXERCICES - RESPONSIVE MOBILE OPTIMISÉ */
+          <div className="pb-12 sm:pb-0">
+            {/* Introduction de Sam le Pirate - toujours visible */}
+            <div className="mb-6 sm:mb-4 mt-4">
+              {SamPirateIntroJSX()}
+            </div>
+
+            {/* Header exercices - caché sur mobile */}
+            <div className="bg-white rounded-xl p-2 shadow-lg mt-8 hidden sm:block">
+              <div className="flex justify-between items-center mb-1">
+                <h2 className="text-lg font-bold text-gray-900">
+                  Exercice {currentExercise + 1}
                 </h2>
-                <button
-                  onClick={resetAll}
-                  className="bg-gray-500 text-white px-4 py-2 rounded-lg font-bold hover:bg-gray-600 transition-colors"
-                >
-                  🔄 Recommencer
-                </button>
+                
+                <div className="flex items-center space-x-4">
+                  <div className="text-sm font-bold text-purple-600">
+                    Score : {score}/{exercises.length}
+                  </div>
+                </div>
               </div>
               
               {/* Barre de progression */}
-              <div className="w-full bg-gray-200 rounded-full h-4 mb-3">
+              <div className="w-full bg-gray-200 rounded-full h-3">
                 <div 
-                  className="bg-orange-500 h-4 rounded-full transition-all duration-500"
+                  className="bg-orange-500 h-3 rounded-full transition-all duration-500"
                   style={{ width: `${((currentExercise + 1) / exercises.length) * 100}%` }}
                 ></div>
               </div>
-              
-              {/* Score */}
-              <div className="text-center">
-                <div className="text-xl font-bold text-orange-600">
-                  Score : {score}/{exercises.length}
-                </div>
-              </div>
             </div>
 
-            {/* Question */}
-            <div className="bg-white rounded-xl p-8 shadow-lg text-center">
-              <h3 className="text-2xl font-bold mb-8 text-gray-900">
-                {exercises[currentExercise].question}
+            {/* Sticky header mobile */}
+            {isMobile && (
+              <div className="fixed top-0 left-0 right-0 bg-white shadow-md z-40 px-3 py-2">
+                <div className="flex justify-between items-center">
+                  <div className="text-sm font-bold text-gray-900">
+                    Exercice {currentExercise + 1}/{exercises.length}
+                  </div>
+                  <div className="text-xs font-bold text-orange-600">
+                    Score: {score}/{exercises.length}
+                  </div>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-1.5 mt-1">
+                  <div 
+                    className="bg-orange-500 h-1.5 rounded-full transition-all duration-500"
+                    style={{ width: `${((currentExercise + 1) / exercises.length) * 100}%` }}
+                  ></div>
+                </div>
+              </div>
+            )}
+
+            {/* Espacement pour sticky header mobile */}
+            {isMobile && <div className="h-16"></div>}
+
+
+            {/* Question - AVEC BOUTON ÉCOUTER */}
+            <div className="bg-white rounded-xl shadow-lg text-center p-3 sm:p-6 md:p-8 mt-4 sm:mt-8">
+              <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-1 sm:mb-6 md:mb-8 gap-2 sm:gap-4">
+                <h3 className="text-sm sm:text-xl md:text-2xl font-bold text-gray-900 flex-1">
+                  {exercises[currentExercise]?.question || "Question..."}
               </h3>
+                {ListenQuestionButtonJSX()}
+              </div>
               
               {/* Affichage du nombre à compléter */}
-              <div className="bg-orange-50 rounded-lg p-6 mb-8">
-                <div className="text-6xl font-bold text-orange-600 mb-4">
+              <div className="bg-orange-50 rounded-lg p-2 sm:p-6 mb-2 sm:mb-8">
+                <div className="text-3xl sm:text-6xl font-bold text-orange-600 mb-2 sm:mb-4">
                   {exercises[currentExercise].firstNumber || exercises[currentExercise].secondNumber || '?'}
                 </div>
-                <div className="mb-4">
+                <div className="mb-2 sm:mb-4">
                   {exercises[currentExercise].firstNumber && renderCircles(exercises[currentExercise].firstNumber, '🔴')}
                   {exercises[currentExercise].secondNumber && renderCircles(exercises[currentExercise].secondNumber, '🔴')}
                 </div>
-                <p className="text-lg text-gray-700 font-semibold">
+                <p className="text-sm sm:text-lg text-gray-700 font-semibold">
                   Trouve le complément pour faire 10 !
                 </p>
               </div>
               
-              {/* Choix multiples */}
-              <div className="grid grid-cols-1 gap-4 max-w-md mx-auto mb-8">
+              {/* Choix multiples - MOBILE RESPONSIVE */}
+              <div className="grid grid-cols-1 gap-2 sm:gap-4 max-w-md mx-auto mb-4 sm:mb-8">
                 {exercises[currentExercise].choices.map((choice) => (
                   <button
                     key={choice}
                     onClick={() => handleAnswerClick(choice)}
                     disabled={isCorrect !== null}
-                    className={`p-6 rounded-lg font-bold text-3xl transition-all ${
+                    className={`p-3 sm:p-6 rounded-lg font-bold text-xl sm:text-3xl transition-all ${
                       userAnswer === choice
                         ? isCorrect === true
                           ? 'bg-green-500 text-white'
@@ -954,39 +1322,90 @@ export default function ComplementsDixCP() {
                 ))}
               </div>
               
-              {/* Résultat */}
-              {isCorrect !== null && (
-                <div className={`p-6 rounded-lg mb-6 ${
-                  isCorrect ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                }`}>
-                  <div className="flex items-center justify-center space-x-3">
-                    {isCorrect ? (
-                      <>
-                        <span className="text-2xl">✅</span>
-                        <span className="font-bold text-xl">
-                          Excellent ! {exercises[currentExercise].correctAnswer} est le bon complément !
-                        </span>
-                      </>
-                    ) : (
-                      <>
-                        <span className="text-2xl">❌</span>
-                        <span className="font-bold text-xl">
-                          Pas tout à fait... Le bon complément est : {exercises[currentExercise].correctAnswer}
-                        </span>
-                      </>
+              {/* Correction animée avec objets visuels */}
+              {showAnimatedCorrection && correctionNumbers && (
+                <div id="animated-correction" className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-3 sm:p-6 mb-4 sm:mb-8 border-2 border-blue-200">
+                  <h4 className="text-base sm:text-2xl font-bold text-center text-blue-800 mb-3 sm:mb-6">
+                    🎯 Regardons ensemble !
+                  </h4>
+                  
+                  {/* Affichage des objets animés */}
+                  <div className="text-center mb-3 sm:mb-6">
+                    <div className="mb-3 sm:mb-4">
+                      <div className="flex flex-wrap gap-1 sm:gap-2 justify-center items-center">
+                        {animatedObjects.map((obj, index) => (
+                          <span
+                            key={index}
+                            className={`text-lg sm:text-3xl inline-block transition-all duration-500 ${
+                              correctionStep === 'counting' && index === countingIndex + correctionNumbers.first
+                                ? 'animate-bounce scale-125 text-orange-500' 
+                                : ''
+                            }`}
+                          >
+                            {obj}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                    
+                    {/* Explication étape par étape */}
+                    {correctionStep === 'complement' && (
+                      <div className="text-sm sm:text-lg text-blue-700 font-semibold mb-2 sm:mb-4">
+                        Voici {correctionNumbers.first} {correctionNumbers.objectName}
+                      </div>
                     )}
-                                  </div>
-                                </div>
-                              )}
-                            
+                    
+                    {correctionStep === 'counting' && (
+                      <div className="text-sm sm:text-lg text-orange-700 font-semibold mb-2 sm:mb-4">
+                        Je compte jusqu'à 10...
+                      </div>
+                    )}
+                    
+                    {correctionStep === 'result' && (
+                      <div className="bg-green-100 rounded-lg p-2 sm:p-4 mb-2 sm:mb-4">
+                        <div className="text-base sm:text-2xl font-bold text-green-800 mb-1 sm:mb-2">
+                          <span className="bg-yellow-200 px-1 rounded">{correctionNumbers.first}</span> + <span className="bg-yellow-200 px-1 rounded">{correctionNumbers.second}</span> = <span className="bg-yellow-200 px-1 rounded">10</span>
+                        </div>
+                        <div className="text-xs sm:text-base text-green-700">
+                          Le complément de {correctionNumbers.first} pour faire 10 est {correctionNumbers.second} !
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Message final */}
+                  {correctionStep === 'complete' && (
+                    <div className="text-center bg-green-100 rounded-lg p-2 sm:p-4">
+                      <div className="text-base sm:text-xl font-bold text-green-800 mb-1 sm:mb-2">
+                        🎉 Maintenant tu comprends !
+                      </div>
+                      <div className="text-xs sm:text-base text-green-700 mb-2">
+                        Les compléments à 10, c'est ce qu'il faut ajouter pour arriver à 10 !
+                      </div>
+                      {/* Message spécifique mobile */}
+                      {isMobile && (
+                        <div className="text-xs sm:text-sm text-purple-600 font-semibold animate-pulse">
+                          👆 Appuie sur le bouton "Suivant" ci-dessous
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
+
               {/* Navigation */}
               {isCorrect === false && (
-                <div className="flex justify-center">
+                <div className="flex justify-center pb-3 sm:pb-0">
                               <button
+                    ref={nextButtonRef}
                     onClick={nextExercise}
-                    className="bg-orange-500 text-white px-8 py-4 rounded-lg font-bold text-lg hover:bg-orange-600 transition-colors"
+                    className={`bg-orange-500 text-white px-3 sm:px-6 md:px-8 py-2 sm:py-4 rounded-lg font-bold text-sm sm:text-base md:text-lg hover:bg-orange-600 transition-colors shadow-lg hover:shadow-xl transform hover:scale-105 min-h-[40px] sm:min-h-[56px] md:min-h-auto ${
+                      highlightNextButton 
+                        ? `ring-4 ring-yellow-400 ring-opacity-75 animate-pulse scale-110 bg-orange-600 shadow-2xl ${isMobile ? 'scale-125 py-3 text-base' : ''}` 
+                        : ''
+                    }`}
                   >
-                    Suivant →
+                    {isMobile && highlightNextButton ? '👆 Suivant →' : 'Suivant →'}
                   </button>
                 </div>
               )}
