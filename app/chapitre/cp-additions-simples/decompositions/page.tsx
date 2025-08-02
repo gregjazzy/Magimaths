@@ -490,7 +490,7 @@ export default function DecompositionsCP() {
     
     // Démarrer l'affichage de correction
     setShowAnimatedCorrection(true);
-    setCorrectionStep('group1');
+    setCorrectionStep(null); // Commencer sans étape pour montrer tous les objets
     
     // Scroller pour garder la correction visible
     setTimeout(() => {
@@ -518,31 +518,35 @@ export default function DecompositionsCP() {
     if (stopSignalRef.current) return;
     await wait(1000);
     
-    // Étape 2: Affichage du premier groupe
-    await playAudio(`Regarde ! D'abord, nous avons ${num1} ${objectName}.`);
+    // Étape 2: Affichage de tous les objets ensemble
+    await playAudio(`Regarde ! Voici ${result} ${objectName} en tout.`);
     if (stopSignalRef.current) return;
     
-    const objects1 = Array(num1).fill('🟡');
-    setAnimatedObjects(objects1);
+    // Montrer TOUS les objets d'abord (même couleur)
+    const allObjects = Array(result).fill('🟡');
+    setAnimatedObjects(allObjects);
     await wait(1500);
     
-    // Étape 3: Affichage du deuxième groupe
+    // Étape 3: Séparation en premier groupe
+    setCorrectionStep('group1');
+    await playAudio(`Maintenant, je vais faire un premier groupe de ${num1} ${objectName}.`);
+    if (stopSignalRef.current) return;
+    await wait(1500);
+    
+    // Étape 4: Séparation en deuxième groupe
     setCorrectionStep('group2');
-    await playAudio(`Ensuite, nous avons ${num2} ${objectName} de plus.`);
+    await playAudio(`Et un deuxième groupe de ${num2} ${objectName}.`);
     if (stopSignalRef.current) return;
-    
-    const objects2 = Array(num2).fill('🟠');
-    setAnimatedObjects([...objects1, ...objects2]);
     await wait(1500);
     
-    // Étape 4: Explication de la décomposition
-    await playAudio(`${num1} plus ${num2}, c'est bien une façon de décomposer ${result} !`);
+    // Étape 5: Explication de la décomposition
+    await playAudio(`Parfait ! ${num1} plus ${num2}, c'est bien une façon de décomposer ${result} !`);
     if (stopSignalRef.current) return;
     await wait(1000);
     
-    // Étape 5: Comptage interactif
+    // Étape 6: Comptage interactif
     setCorrectionStep('counting');
-    await playAudio(`Comptons ensemble toutes les ${objectName} !`);
+    await playAudio(`Maintenant, comptons ensemble toutes les ${objectName} pour vérifier !`);
     if (stopSignalRef.current) return;
     await wait(500);
     
@@ -561,9 +565,9 @@ export default function DecompositionsCP() {
     // Remettre tous les objets en position normale
     setCountingIndex(-1);
     
-    // Étape 6: Résultat final
+    // Étape 7: Résultat final
     setCorrectionStep('result');
-    await playAudio(`Parfait ! ${num1} plus ${num2} égale bien ${result} !`);
+    await playAudio(`Excellent ! Nous avons bien ${result} ${objectName} en tout !`);
     if (stopSignalRef.current) return;
     await wait(1000);
     
@@ -571,7 +575,7 @@ export default function DecompositionsCP() {
     if (stopSignalRef.current) return;
     await wait(1500);
     
-    // Étape 7: Terminé
+    // Étape 8: Terminé
     setCorrectionStep('complete');
     await playAudio(`Maintenant tu peux cliquer sur suivant pour continuer !`);
     
@@ -1677,8 +1681,9 @@ export default function DecompositionsCP() {
                   {/* Titre de section adaptatif */}
                   <div className="text-center mb-4 sm:mb-6">
                     <div className="text-xs sm:text-base text-purple-600">
-                      {correctionStep === 'group1' && "Observons le premier groupe..."}
-                      {correctionStep === 'group2' && "Ajoutons le deuxième groupe..."}
+                      {!correctionStep && "Voici tous les objets..."}
+                      {correctionStep === 'group1' && "Premier groupe..."}
+                      {correctionStep === 'group2' && "Deuxième groupe..."}
                       {correctionStep === 'counting' && "Comptons ensemble !"}
                       {correctionStep === 'result' && "Voici le résultat !"}
                     </div>
@@ -1688,38 +1693,59 @@ export default function DecompositionsCP() {
                   {animatedObjects.length > 0 && (
                     <div className="flex justify-center mb-3 sm:mb-6">
                       <div className="grid grid-cols-5 sm:grid-cols-6 md:grid-cols-8 gap-1 sm:gap-2 max-w-xs sm:max-w-md">
-                        {animatedObjects.map((obj, index) => (
-                          <div
-                            key={index}
-                            className={`text-lg sm:text-3xl md:text-4xl transition-all duration-300 transform ${
-                              // Animation spéciale pour l'objet en cours de comptage
-                              correctionStep === 'counting' && countingIndex === index
-                                ? 'animate-pulse scale-150 rotate-12 text-yellow-400 drop-shadow-lg' 
-                                : correctionStep === 'counting' 
-                                  ? 'hover:scale-110 opacity-60'
-                                  : 'hover:scale-110'
-                            } ${
-                              // Animation pour les groupes
-                              correctionStep === 'group1' && correctionNumbers && index < correctionNumbers.num1
-                                ? 'animate-bounce scale-110 text-red-500'
-                                : correctionStep === 'group2' && correctionNumbers && index >= correctionNumbers.num1
-                                  ? 'animate-bounce scale-110 text-blue-500'
-                                  : ''
-                            }`}
-                            style={{
-                              animationDuration: correctionStep === 'counting' && countingIndex === index ? '0.5s' : '1s',
-                              transformOrigin: 'center'
-                            }}
-                          >
-                            {obj}
-                          </div>
-                        ))}
+                        {animatedObjects.map((obj, index) => {
+                          // Déterminer la couleur et l'état de l'objet selon l'étape
+                          let objectDisplay = '🟡'; // Par défaut jaune
+                          let className = 'text-lg sm:text-3xl md:text-4xl transition-all duration-500 transform hover:scale-110';
+                          
+                          // Animation pour le comptage
+                          if (correctionStep === 'counting' && countingIndex === index) {
+                            className += ' animate-pulse scale-150 rotate-12 text-yellow-400 drop-shadow-lg';
+                          } else if (correctionStep === 'counting') {
+                            className += ' opacity-60';
+                          }
+                          
+                          // Couleurs selon les groupes
+                          if (correctionNumbers) {
+                            if (correctionStep === 'group1') {
+                              if (index < correctionNumbers.num1) {
+                                objectDisplay = '🔴'; // Rouge pour premier groupe
+                                className += ' animate-bounce scale-110';
+                              } else {
+                                objectDisplay = '🟡'; // Garder jaune pour les autres
+                              }
+                            } else if (correctionStep === 'group2') {
+                              if (index < correctionNumbers.num1) {
+                                objectDisplay = '🔴'; // Rouge pour premier groupe (déjà défini)
+                              } else {
+                                objectDisplay = '🔵'; // Bleu pour deuxième groupe
+                                className += ' animate-bounce scale-110';
+                              }
+                            } else if ((correctionStep === 'counting' || correctionStep === 'result' || correctionStep === 'complete') && correctionNumbers) {
+                              // Garder les couleurs des groupes pendant le comptage et après
+                              objectDisplay = index < correctionNumbers.num1 ? '🔴' : '🔵';
+                            }
+                          }
+                          
+                          return (
+                            <div
+                              key={index}
+                              className={className}
+                              style={{
+                                animationDuration: correctionStep === 'counting' && countingIndex === index ? '0.5s' : '1s',
+                                transformOrigin: 'center'
+                              }}
+                            >
+                              {objectDisplay}
+                            </div>
+                          );
+                        })}
                       </div>
                     </div>
                   )}
 
                   {/* Équation mathématique */}
-                  {correctionStep && correctionStep !== 'group1' && correctionNumbers && animatedObjects.length > 0 && (
+                  {correctionStep && (correctionStep === 'group2' || correctionStep === 'counting' || correctionStep === 'result' || correctionStep === 'complete') && correctionNumbers && animatedObjects.length > 0 && (
                     <div className="text-center bg-white rounded-lg p-2 sm:p-4 mb-3 sm:mb-4">
                       <div className="text-lg sm:text-3xl md:text-4xl font-bold text-purple-800">
                         {correctionNumbers.num1} + {correctionNumbers.num2} = {correctionStep === 'result' || correctionStep === 'complete' ? (
