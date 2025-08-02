@@ -1237,9 +1237,6 @@ export default function DecompositionsCP() {
             <h1 className="text-4xl font-bold text-gray-900 mb-4">
               🧩 Décomposer les nombres
             </h1>
-            <p className="text-lg text-gray-600">
-              Découvre comment séparer un nombre en plusieurs parties !
-            </p>
           </div>
         </div>
 
@@ -1253,7 +1250,7 @@ export default function DecompositionsCP() {
               }}
               className={`px-3 sm:px-6 py-1.5 sm:py-3 rounded-lg font-bold transition-all text-sm sm:text-base min-h-[44px] sm:min-h-[68px] flex items-center justify-center ${
                 !showExercises 
-                  ? 'bg-purple-500 text-white shadow-md' 
+                  ? 'bg-blue-500 text-white shadow-md' 
                   : 'text-gray-600 hover:bg-gray-100'
               }`}
             >
@@ -1266,7 +1263,7 @@ export default function DecompositionsCP() {
               }}
               className={`px-3 sm:px-6 py-1.5 sm:py-3 rounded-lg font-bold transition-all text-sm sm:text-base min-h-[44px] sm:min-h-[68px] flex flex-col items-center justify-center ${
                 showExercises 
-                  ? 'bg-purple-500 text-white shadow-md' 
+                  ? 'bg-green-500 text-white shadow-md' 
                   : 'text-gray-600 hover:bg-gray-100'
               }`}
             >
