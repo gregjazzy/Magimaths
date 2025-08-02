@@ -21,7 +21,8 @@ export default function DecompositionsCP() {
   // États pour les exercices
   const [showExercises, setShowExercises] = useState(false);
   const [currentExercise, setCurrentExercise] = useState(0);
-  const [userAnswer, setUserAnswer] = useState('');
+  const [userAnswer1, setUserAnswer1] = useState('');
+  const [userAnswer2, setUserAnswer2] = useState('');
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
   const [score, setScore] = useState(0);
   const [answeredCorrectly, setAnsweredCorrectly] = useState<Set<number>>(new Set());
@@ -113,25 +114,28 @@ export default function DecompositionsCP() {
 
   // Toutes les décompositions possibles pour chaque nombre
   const allDecompositions = {
+    3: [[1, 2], [2, 1]],
     4: [[1, 3], [2, 2], [3, 1]],
     5: [[1, 4], [2, 3], [3, 2], [4, 1]],
     6: [[1, 5], [2, 4], [3, 3], [4, 2], [5, 1]],
+    7: [[1, 6], [2, 5], [3, 4], [4, 3], [5, 2], [6, 1]],
     8: [[1, 7], [2, 6], [3, 5], [4, 4], [5, 3], [6, 2], [7, 1]],
-    10: [[1, 9], [2, 8], [3, 7], [4, 6], [5, 5]]
+    9: [[1, 8], [2, 7], [3, 6], [4, 5], [5, 4], [6, 3], [7, 2], [8, 1]],
+    10: [[1, 9], [2, 8], [3, 7], [4, 6], [5, 5], [6, 4], [7, 3], [8, 2], [9, 1]]
   };
 
-  // Exercices de décomposition
+  // Exercices de décomposition - saisie libre
   const exercises = [
-    { question: 'Décompose 5', correctAnswer: '2 + 3', choices: ['1 + 4', '2 + 3', '3 + 3'], number: 5 },
-    { question: 'Décompose 6', correctAnswer: '3 + 3', choices: ['2 + 4', '3 + 3', '4 + 3'], number: 6 },
-    { question: 'Décompose 4', correctAnswer: '2 + 2', choices: ['1 + 3', '2 + 2', '3 + 2'], number: 4 },
-    { question: 'Décompose 8', correctAnswer: '4 + 4', choices: ['3 + 5', '4 + 4', '5 + 4'], number: 8 },
-    { question: 'Décompose 10', correctAnswer: '5 + 5', choices: ['4 + 6', '5 + 5', '6 + 5'], number: 10 },
-    { question: 'Décompose 6', correctAnswer: '2 + 4', choices: ['2 + 4', '3 + 4', '1 + 4'], number: 6 },
-    { question: 'Décompose 8', correctAnswer: '3 + 5', choices: ['2 + 5', '3 + 5', '4 + 5'], number: 8 },
-    { question: 'Décompose 5', correctAnswer: '1 + 4', choices: ['1 + 4', '2 + 4', '1 + 5'], number: 5 },
-    { question: 'Décompose 4', correctAnswer: '1 + 3', choices: ['1 + 3', '1 + 4', '2 + 3'], number: 4 },
-    { question: 'Décompose 10', correctAnswer: '3 + 7', choices: ['2 + 7', '3 + 7', '3 + 8'], number: 10 }
+    { question: 'Décompose 5', number: 5 },
+    { question: 'Décompose 6', number: 6 },
+    { question: 'Décompose 4', number: 4 },
+    { question: 'Décompose 8', number: 8 },
+    { question: 'Décompose 10', number: 10 },
+    { question: 'Décompose 7', number: 7 },
+    { question: 'Décompose 9', number: 9 },
+    { question: 'Décompose 3', number: 3 },
+    { question: 'Décompose 6', number: 6 },
+    { question: 'Décompose 8', number: 8 }
   ];
 
   // Fonction pour arrêter toutes les animations et vocaux
@@ -180,7 +184,7 @@ export default function DecompositionsCP() {
         resolve();
         return;
       }
-
+      
       // Vérifications de base
       if (!text || text.trim() === '') {
         console.log('Texte vide, resolve immédiat');
@@ -212,7 +216,7 @@ export default function DecompositionsCP() {
         utterance.onstart = () => {
           console.log('Audio démarré');
         };
-      
+
       utterance.onend = () => {
           console.log('Audio terminé');
           if (!stopSignalRef.current) {
@@ -220,13 +224,13 @@ export default function DecompositionsCP() {
         resolve();
           }
       };
-      
+
         utterance.onerror = (event) => {
           console.error('Erreur synthèse vocale:', event.error);
         currentAudioRef.current = null;
           reject(new Error(`Erreur synthèse vocale: ${event.error}`));
       };
-      
+
       currentAudioRef.current = utterance;
         console.log('speechSynthesis.speak appelée');
       speechSynthesis.speak(utterance);
@@ -252,26 +256,32 @@ export default function DecompositionsCP() {
   };
 
   // Fonction pour parser les nombres d'un exercice de décomposition
-  const parseExerciseNumbers = (exercise: any) => {
-    let num1 = 0, num2 = 0, result = 0;
+  const parseExerciseNumbers = (exercise: any, answer1?: string, answer2?: string) => {
+    let num1 = 0, num2 = 0, result = exercise.number;
     let objectEmoji = '🟡';
     let objectName = 'pièces d\'or';
     
-    // Pour les décompositions, on parse la réponse correcte qui est toujours de la forme "X + Y"
-    if (exercise.correctAnswer && exercise.correctAnswer.includes('+')) {
-      console.log('Parsing décomposition:', exercise.correctAnswer);
-      const match = exercise.correctAnswer.match(/(\d+)\s*\+\s*(\d+)/);
-      if (match) {
-        num1 = parseInt(match[1]);
-        num2 = parseInt(match[2]);
-        result = num1 + num2;
-        objectEmoji = '🟡'; // Pièces d'or jaunes
-        objectName = 'pièces d\'or';
+    // Si on a des réponses utilisateur, on les utilise
+    if (answer1 && answer2) {
+      num1 = parseInt(answer1) || 0;
+      num2 = parseInt(answer2) || 0;
+    } else {
+      // Sinon, on prend une décomposition par défaut pour la démonstration
+      const decompositions = allDecompositions[result as keyof typeof allDecompositions];
+      if (decompositions && decompositions.length > 0) {
+        // Prendre la première décomposition disponible
+        [num1, num2] = decompositions[0];
       }
     }
     
     console.log('Nombres parsés pour décomposition:', { num1, num2, result, objectEmoji, objectName });
     return { num1, num2, result, objectEmoji, objectName };
+  };
+
+  // Fonction pour vérifier si une décomposition est correcte
+  const isValidDecomposition = (num1: number, num2: number, target: number) => {
+    // Vérifier que les nombres sont positifs et que leur somme est correcte
+    return num1 > 0 && num2 > 0 && (num1 + num2) === target;
   };
 
   // Fonction pour scroller vers une section
@@ -468,12 +478,12 @@ export default function DecompositionsCP() {
   };
 
   // Fonction pour créer une correction animée avec des objets visuels pour les décompositions
-  const createAnimatedCorrection = async (exercise: any) => {
+  const createAnimatedCorrection = async (exercise: any, answer1?: string, answer2?: string) => {
     if (stopSignalRef.current) return;
     
-    console.log('Début correction animée pour décomposition:', exercise);
+    console.log('Début correction animée pour décomposition:', exercise, 'avec réponses:', answer1, answer2);
     
-    const { num1, num2, result, objectEmoji, objectName } = parseExerciseNumbers(exercise);
+    const { num1, num2, result, objectEmoji, objectName } = parseExerciseNumbers(exercise, answer1, answer2);
     
     // Stocker les nombres pour l'affichage
     setCorrectionNumbers({ num1, num2, result, objectEmoji, objectName });
@@ -494,7 +504,17 @@ export default function DecompositionsCP() {
     }, 100);
     
     // Étape 1: Présentation du problème
-    await playAudio(`Je vais t'expliquer cette décomposition avec des ${objectName} !`);
+    const hasUserAnswer = answer1 && answer2;
+    if (hasUserAnswer) {
+      const userSum = parseInt(answer1) + parseInt(answer2);
+      if (userSum === result) {
+        await playAudio(`Je vais te montrer que ${answer1} plus ${answer2} égale bien ${result} !`);
+      } else {
+        await playAudio(`Tu as dit ${answer1} plus ${answer2} égale ${userSum}, mais ${result} se décompose autrement. Regarde !`);
+      }
+    } else {
+      await playAudio(`Je vais t'expliquer cette décomposition avec des ${objectName} !`);
+    }
     if (stopSignalRef.current) return;
     await wait(1000);
     
@@ -604,8 +624,12 @@ export default function DecompositionsCP() {
       await wait(1000);
       if (stopSignalRef.current) return;
       
-      // Lancer l'animation de correction pour décompositions
-      await createAnimatedCorrection(exercise);
+      // Lancer l'animation de correction pour décompositions avec les réponses utilisateur si incorrectes
+      if (isCorrect === false && userAnswer1 && userAnswer2) {
+        await createAnimatedCorrection(exercise, userAnswer1, userAnswer2);
+      } else {
+        await createAnimatedCorrection(exercise);
+      }
       if (stopSignalRef.current) return;
       
     } catch (error) {
@@ -616,10 +640,22 @@ export default function DecompositionsCP() {
     }
   };
 
-  // Gestion des exercices avec Sam le Pirate
-  const handleAnswerClick = async (answer: string) => {
-    setUserAnswer(answer);
-    const correct = answer === exercises[currentExercise].correctAnswer;
+    // Fonction pour valider la décomposition saisie
+  const handleValidateAnswer = async () => {
+    if (!userAnswer1.trim() || !userAnswer2.trim()) {
+      return; // Ne pas valider si les champs sont vides
+    }
+
+    const num1 = parseInt(userAnswer1);
+    const num2 = parseInt(userAnswer2);
+    const target = exercises[currentExercise].number;
+    
+    // Vérifier si les nombres sont valides
+    if (isNaN(num1) || isNaN(num2)) {
+      return; // Ne pas valider si ce ne sont pas des nombres
+    }
+
+    const correct = isValidDecomposition(num1, num2, target);
     setIsCorrect(correct);
     
     if (correct && !answeredCorrectly.has(currentExercise)) {
@@ -629,7 +665,7 @@ export default function DecompositionsCP() {
         newSet.add(currentExercise);
         return newSet;
       });
-      
+
       // Célébrer avec Sam
       celebrateCorrectAnswer();
       
@@ -637,7 +673,8 @@ export default function DecompositionsCP() {
       setTimeout(() => {
         if (currentExercise + 1 < exercises.length) {
           setCurrentExercise(currentExercise + 1);
-          setUserAnswer('');
+          setUserAnswer1('');
+          setUserAnswer2('');
           setIsCorrect(null);
         } else {
           const finalScoreValue = score + 1;
@@ -646,7 +683,7 @@ export default function DecompositionsCP() {
         }
       }, 1500);
     } else if (!correct) {
-      // Expliquer l'erreur avec Sam
+      // Expliquer l'erreur avec Sam en utilisant les réponses de l'utilisateur
       await explainWrongAnswer();
     }
   };
@@ -669,7 +706,8 @@ export default function DecompositionsCP() {
     
     if (currentExercise < exercises.length - 1) {
       setCurrentExercise(currentExercise + 1);
-      setUserAnswer('');
+      setUserAnswer1('');
+      setUserAnswer2('');
       setIsCorrect(null);
     } else {
       setFinalScore(score);
@@ -680,7 +718,8 @@ export default function DecompositionsCP() {
   const resetAll = () => {
     stopAllVocalsAndAnimations();
     setCurrentExercise(0);
-    setUserAnswer('');
+    setUserAnswer1('');
+    setUserAnswer2('');
     setIsCorrect(null);
     setScore(0);
     setAnsweredCorrectly(new Set());
@@ -735,7 +774,7 @@ export default function DecompositionsCP() {
       
       // Mettre en surbrillance la zone de réponse
       setHighlightedElement('answer-zone');
-      await playAudio("Dès que tu as la réponse, tu peux cliquer sur la bonne décomposition");
+      await playAudio("Écris les deux nombres dans les cases pour faire la décomposition, puis clique sur vérifier");
       if (stopSignalRef.current) return;
       
       await wait(1500);
@@ -1483,15 +1522,15 @@ export default function DecompositionsCP() {
                     Score : {score}/{exercises.length}
                   </div>
                   
-                  <button
-                    onClick={resetAll}
+                <button
+                  onClick={resetAll}
                     className="bg-gray-500 text-white px-3 py-1 rounded-lg font-bold text-sm hover:bg-gray-600 transition-colors flex items-center space-x-1"
-                  >
+                >
                     <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clipRule="evenodd" />
                     </svg>
                     <span>🔄 Recommencer</span>
-                  </button>
+                </button>
                 </div>
               </div>
               
@@ -1502,7 +1541,7 @@ export default function DecompositionsCP() {
                   style={{ width: `${((currentExercise + 1) / exercises.length) * 100}%` }}
                 ></div>
               </div>
-            </div>
+              </div>
               
             {/* Indicateur de progression mobile - sticky sur la page */}
             <div className="sticky top-2 bg-white z-10 px-2 py-2 border-b border-gray-200 sm:hidden mb-6 mt-4">
@@ -1534,7 +1573,7 @@ export default function DecompositionsCP() {
               <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-1 sm:mb-6 md:mb-8 gap-2 sm:gap-4">
                 <h3 className="text-sm sm:text-xl md:text-2xl font-bold text-gray-900 flex-1">
                   {exercises[currentExercise]?.question || "Question..."}
-                </h3>
+              </h3>
                 {ListenQuestionButtonJSX()}
               </div>
               
@@ -1545,41 +1584,66 @@ export default function DecompositionsCP() {
                 </div>
                 <div className="mb-2 sm:mb-4">
                   {renderCircles(exercises[currentExercise].number, '🔴')}
-                </div>
+                    </div>
                 <p className="text-sm sm:text-lg text-gray-700 font-semibold">
                   Sépare ce nombre en deux parties !
                 </p>
               </div>
-
-              {/* Zone de réponse - Choix multiples */}
+              
+                            {/* Zone de réponse - Saisie libre pour décomposition */}
               <div 
                 id="answer-zone" 
-                className={`${highlightedElement === 'answer-zone' ? 'ring-4 ring-yellow-400 ring-opacity-75 animate-pulse rounded-xl p-4 bg-yellow-50' : ''} transition-all duration-300`}
+                className={`${highlightedElement === 'answer-zone' ? 'ring-4 ring-yellow-400 ring-opacity-75 animate-pulse rounded-xl p-4 bg-yellow-50' : ''} transition-all duration-300 max-w-sm sm:max-w-md mx-auto mb-4 sm:mb-8`}
               >
-                <div className="grid grid-cols-1 gap-2 sm:gap-4 max-w-sm sm:max-w-md mx-auto mb-4 sm:mb-8">
-                  {exercises[currentExercise].choices?.map((choice) => (
-                    <button
-                      key={choice}
-                      onClick={() => handleAnswerClick(choice)}
+                <div className="text-center mb-4">
+                  <p className="text-sm sm:text-base text-gray-600 mb-4">
+                    Complète la décomposition :
+                  </p>
+                  
+                  {/* Équation de décomposition avec champs de saisie */}
+                  <div className="flex items-center justify-center space-x-2 sm:space-x-4 mb-6">
+                    <input
+                      type="number"
+                      value={userAnswer1}
+                      onChange={(e) => setUserAnswer1(e.target.value)}
                       disabled={isCorrect !== null || isPlayingVocal}
-                      className={`p-2 sm:p-4 md:p-6 rounded-lg font-bold text-sm sm:text-base md:text-xl transition-all min-h-[40px] sm:min-h-[56px] md:min-h-auto ${
-                        userAnswer === choice
-                          ? isCorrect === true
-                            ? 'bg-green-500 text-white'
-                            : isCorrect === false
-                              ? 'bg-red-500 text-white'
-                            : 'bg-purple-500 text-white'
-                          : exercises[currentExercise].correctAnswer === choice && isCorrect === false
-                            ? 'bg-green-200 text-green-800 border-2 border-green-500'
-                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200 disabled:opacity-50'
-                      } disabled:cursor-not-allowed`}
-                    >
-                      {choice}
-                    </button>
-                  ))}
+                      min="1"
+                      max={exercises[currentExercise].number - 1}
+                      className="w-12 sm:w-16 h-10 sm:h-12 text-center text-lg sm:text-xl font-bold border-2 border-purple-300 rounded-lg focus:border-purple-500 focus:outline-none disabled:bg-gray-100 disabled:cursor-not-allowed"
+                      placeholder="?"
+                    />
+                    
+                    <span className="text-2xl sm:text-3xl font-bold text-purple-600">+</span>
+                    
+                    <input
+                      type="number"
+                      value={userAnswer2}
+                      onChange={(e) => setUserAnswer2(e.target.value)}
+                      disabled={isCorrect !== null || isPlayingVocal}
+                      min="1"
+                      max={exercises[currentExercise].number - 1}
+                      className="w-12 sm:w-16 h-10 sm:h-12 text-center text-lg sm:text-xl font-bold border-2 border-purple-300 rounded-lg focus:border-purple-500 focus:outline-none disabled:bg-gray-100 disabled:cursor-not-allowed"
+                      placeholder="?"
+                    />
+                    
+                    <span className="text-2xl sm:text-3xl font-bold text-purple-600">=</span>
+                    
+                    <div className="w-12 sm:w-16 h-10 sm:h-12 flex items-center justify-center text-lg sm:text-xl font-bold bg-purple-100 border-2 border-purple-300 rounded-lg text-purple-600">
+                      {exercises[currentExercise].number}
+                    </div>
+                  </div>
+                  
+                  {/* Bouton pour valider */}
+                  <button
+                    onClick={handleValidateAnswer}
+                    disabled={isCorrect !== null || isPlayingVocal || !userAnswer1.trim() || !userAnswer2.trim()}
+                    className="bg-purple-500 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-bold text-sm sm:text-base hover:bg-purple-600 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed min-h-[40px] sm:min-h-[48px] shadow-lg"
+                  >
+                    ✅ Vérifier ma décomposition
+                  </button>
                 </div>
               </div>
-
+              
               {/* Résultat */}
               {isCorrect !== null && (
                 <div className={`p-2 sm:p-4 md:p-6 rounded-lg mb-3 sm:mb-6 ${
@@ -1590,14 +1654,16 @@ export default function DecompositionsCP() {
                       <>
                         <span className="text-base sm:text-xl md:text-2xl">✅</span>
                         <span className="font-bold text-xs sm:text-base md:text-xl">
-                          Excellent ! {exercises[currentExercise].correctAnswer} est bien une décomposition de {exercises[currentExercise].number} !
+                          Excellent ! {userAnswer1} + {userAnswer2} est bien une décomposition de {exercises[currentExercise].number} !
                         </span>
                       </>
                     ) : (
                       <>
                         <span className="text-base sm:text-xl md:text-2xl">❌</span>
                         <span className="font-bold text-xs sm:text-sm md:text-xl">
-                          Pas tout à fait... Je vais t'expliquer !
+                          {userAnswer1 && userAnswer2 && (parseInt(userAnswer1) + parseInt(userAnswer2)) !== exercises[currentExercise].number 
+                            ? `${userAnswer1} + ${userAnswer2} = ${parseInt(userAnswer1) + parseInt(userAnswer2)}, mais nous voulons ${exercises[currentExercise].number}. Je vais t'expliquer !`
+                            : 'Pas tout à fait... Je vais t\'expliquer !'}
                         </span>
                       </>
                     )}
@@ -1685,7 +1751,7 @@ export default function DecompositionsCP() {
               {/* Navigation */}
               {isCorrect === false && (
                 <div className="flex justify-center pb-3 sm:pb-0">
-                  <button
+                      <button 
                     ref={nextButtonRef}
                     onClick={nextExercise}
                     className={`bg-purple-500 text-white px-3 sm:px-6 md:px-8 py-2 sm:py-4 rounded-lg font-bold text-sm sm:text-base md:text-lg hover:bg-purple-600 transition-colors shadow-lg hover:shadow-xl transform hover:scale-105 min-h-[40px] sm:min-h-[56px] md:min-h-auto ${
