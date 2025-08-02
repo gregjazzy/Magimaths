@@ -38,7 +38,7 @@ export default function AdditionsJusqu20CP() {
 
   // État pour l'animation de correction
   const [showAnimatedCorrection, setShowAnimatedCorrection] = useState(false);
-  const [correctionStep, setCorrectionStep] = useState<'numbers' | 'adding' | 'counting' | 'result' | 'complete' | null>(null);
+  const [correctionStep, setCorrectionStep] = useState<'numbers' | 'adding' | 'counting' | 'result' | 'complete' | 'complement-strategy' | 'complement-animation' | null>(null);
   const [highlightNextButton, setHighlightNextButton] = useState(false);
 
   // État pour la détection mobile
@@ -385,29 +385,69 @@ export default function AdditionsJusqu20CP() {
     setAnimatedObjects(allObjects);
     await wait(1500);
     
-    // Étape 3: Addition 
-    setCorrectionStep('adding');
-    await playAudio(`Maintenant, je compte tous les ${objectName} ensemble !`);
-    if (stopSignalRef.current) return;
-    await wait(1000);
+    // Vérifier si on peut utiliser la technique du complément à 10
+    const complement = 10 - first;
+    const canUseComplement = first < 10 && second > complement && result > 10;
     
-    // Étape 4: Comptage objet par objet
-    setCorrectionStep('counting');
-    for (let i = 1; i <= result; i++) {
+    if (canUseComplement) {
+      // Étape 3: Explication de la technique du complément à 10
+      setCorrectionStep('complement-strategy');
+      await wait(800);
+      await playAudio(`Attends ! Je vais te montrer une technique magique : le complément à 10 !`);
       if (stopSignalRef.current) return;
-      setCountingIndex(i - 1);
-      await playAudio(`${i}`);
-      await wait(600);
+      await wait(1200);
+      
+      await playAudio(`Au lieu de compter tout, je vais séparer les ${second} ${objectName} bleus.`);
+      if (stopSignalRef.current) return;
+      await wait(1000);
+      
+      await playAudio(`Je prends ${complement} ${objectName} bleus pour compléter les ${first} rouges et faire 10.`);
+      if (stopSignalRef.current) return;
+      await wait(1200);
+      
+      // Animation du complément à 10
+      setCorrectionStep('complement-animation');
+      await playAudio(`Regarde ! ${first} plus ${complement} égale 10 !`);
+      if (stopSignalRef.current) return;
+      await wait(1500);
+      
+      const remaining = second - complement;
+      await playAudio(`Maintenant j'ajoute les ${remaining} ${objectName} bleus qui restent.`);
+      if (stopSignalRef.current) return;
+      await wait(1200);
+      
+      await playAudio(`10 plus ${remaining} égale ${result} ! C'est plus facile comme ça !`);
+      if (stopSignalRef.current) return;
+      await wait(1500);
+      
+      setCorrectionStep('result');
+      await playAudio(`Donc ${first} + ${second} = ${first} + ${complement} + ${remaining} = 10 + ${remaining} = ${result} !`);
+      if (stopSignalRef.current) return;
+    } else {
+      // Étape 3: Addition classique
+      setCorrectionStep('adding');
+      await playAudio(`Maintenant, je compte tous les ${objectName} ensemble !`);
+      if (stopSignalRef.current) return;
+      await wait(1000);
+      
+      // Étape 4: Comptage objet par objet
+      setCorrectionStep('counting');
+      for (let i = 1; i <= result; i++) {
+        if (stopSignalRef.current) return;
+        setCountingIndex(i - 1);
+        await playAudio(`${i}`);
+        await wait(600);
+      }
+      
+      // Remettre tous les objets en position normale
+      setCountingIndex(-1);
+      
+      // Étape 5: Résultat
+      setCorrectionStep('result');
+      await playAudio(`En tout, j'ai ${result} ${objectName} !`);
+      if (stopSignalRef.current) return;
+      await wait(1500);
     }
-    
-    // Remettre tous les objets en position normale
-    setCountingIndex(-1);
-    
-    // Étape 5: Résultat
-    setCorrectionStep('result');
-    await playAudio(`En tout, j'ai ${result} ${objectName} !`);
-    if (stopSignalRef.current) return;
-    await wait(1500);
     
     await playAudio(`Donc ${first} + ${second} = ${result} ! C'est ça, une addition !`);
     if (stopSignalRef.current) return;
@@ -1836,6 +1876,22 @@ export default function AdditionsJusqu20CP() {
                             className += ' opacity-60';
                           }
                           
+                          // Animation pour le complément à 10
+                          if (correctionStep === 'complement-strategy' || correctionStep === 'complement-animation') {
+                            const complement = 10 - correctionNumbers.first;
+                            const isRedObject = index < correctionNumbers.first;
+                            const isComplementBlue = index >= correctionNumbers.first && index < correctionNumbers.first + complement;
+                            const isRemainingBlue = index >= correctionNumbers.first + complement;
+                            
+                            if (isRedObject) {
+                              className += ' ring-2 ring-red-400 ring-opacity-70 bg-red-100 rounded-full';
+                            } else if (isComplementBlue) {
+                              className += ' ring-2 ring-purple-400 ring-opacity-70 bg-purple-100 rounded-full animate-bounce';
+                            } else if (isRemainingBlue) {
+                              className += ' ring-2 ring-blue-400 ring-opacity-70 bg-blue-100 rounded-full';
+                            }
+                          }
+                          
                           return (
                             <span
                               key={index}
@@ -1856,6 +1912,30 @@ export default function AdditionsJusqu20CP() {
                       <p className="text-sm sm:text-lg text-blue-700 font-semibold">
                         Voici {correctionNumbers.first} {correctionNumbers.objectEmoji1} et {correctionNumbers.second} {correctionNumbers.objectEmoji2}
                       </p>
+                    )}
+                    
+                    {correctionStep === 'complement-strategy' && (
+                      <div className="space-y-2">
+                        <p className="text-sm sm:text-lg text-purple-700 font-semibold">
+                          ✨ Technique magique : Le complément à 10 !
+                        </p>
+                        <p className="text-xs sm:text-base text-purple-600">
+                          Je vais séparer les {correctionNumbers.objectEmoji2} pour faire 10 d'abord
+                        </p>
+                      </div>
+                    )}
+                    
+                    {correctionStep === 'complement-animation' && (
+                      <div className="space-y-2">
+                        <div className="bg-purple-100 rounded-lg p-2 sm:p-3">
+                          <p className="text-sm sm:text-lg text-purple-800 font-bold">
+                            {correctionNumbers.first} + {10 - correctionNumbers.first} = 10
+                          </p>
+                          <p className="text-xs sm:text-base text-purple-600">
+                            Puis j'ajoute les {correctionNumbers.second - (10 - correctionNumbers.first)} qui restent
+                          </p>
+                        </div>
+                      </div>
                     )}
                     
                     {correctionStep === 'adding' && (
