@@ -126,16 +126,16 @@ export default function DecompositionsCP() {
 
   // Exercices de décomposition - saisie libre
   const exercises = [
-    { question: 'Décompose 5', number: 5 },
-    { question: 'Décompose 6', number: 6 },
-    { question: 'Décompose 4', number: 4 },
-    { question: 'Décompose 8', number: 8 },
-    { question: 'Décompose 10', number: 10 },
-    { question: 'Décompose 7', number: 7 },
-    { question: 'Décompose 9', number: 9 },
-    { question: 'Décompose 3', number: 3 },
-    { question: 'Décompose 6', number: 6 },
-    { question: 'Décompose 8', number: 8 }
+    { question: 'Décompose 5 en 2 parties', number: 5 },
+    { question: 'Décompose 6 en 2 parties', number: 6 },
+    { question: 'Décompose 4 en 2 parties', number: 4 },
+    { question: 'Décompose 8 en 2 parties', number: 8 },
+    { question: 'Décompose 10 en 2 parties', number: 10 },
+    { question: 'Décompose 7 en 2 parties', number: 7 },
+    { question: 'Décompose 9 en 2 parties', number: 9 },
+    { question: 'Décompose 3 en 2 parties', number: 3 },
+    { question: 'Décompose 6 en 2 parties', number: 6 },
+    { question: 'Décompose 8 en 2 parties', number: 8 }
   ];
 
   // Fonction pour arrêter toutes les animations et vocaux
