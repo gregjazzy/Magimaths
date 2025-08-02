@@ -266,11 +266,12 @@ export default function DecompositionsCP() {
       num1 = parseInt(answer1) || 0;
       num2 = parseInt(answer2) || 0;
     } else {
-      // Sinon, on prend une décomposition par défaut pour la démonstration
+      // Sinon, on varie les décompositions pour montrer différentes possibilités
       const decompositions = allDecompositions[result as keyof typeof allDecompositions];
       if (decompositions && decompositions.length > 0) {
-        // Prendre la première décomposition disponible
-        [num1, num2] = decompositions[0];
+        // Utiliser l'index de l'exercice pour varier les exemples
+        const decompositionIndex = currentExercise % decompositions.length;
+        [num1, num2] = decompositions[decompositionIndex];
       }
     }
     
