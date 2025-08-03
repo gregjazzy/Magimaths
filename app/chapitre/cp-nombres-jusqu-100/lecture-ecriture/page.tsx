@@ -1003,19 +1003,7 @@ export default function LectureEcritureCP100() {
                               </div>
                             </div>
 
-                            {/* Bouton pour déclencher l'animation */}
-                            <div className="text-center">
-                              <button 
-                                onClick={() => speakNumberExplanation(selected.chiffre)}
-                                disabled={isAnimating}
-                                className={`bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-bold text-sm sm:text-base md:text-lg hover:from-yellow-600 hover:to-orange-600 transition-all shadow-lg transform hover:scale-105 inline-flex items-center space-x-2 sm:space-x-3 ${
-                                  isAnimating ? 'opacity-50 cursor-not-allowed' : ''
-                                }`}
-                              >
-                                <Volume2 className="w-4 h-4 sm:w-5 sm:h-5" />
-                                <span>{isAnimating ? 'Animation en cours...' : 'Voir l\'animation'}</span>
-                              </button>
-                            </div>
+
                           </div>
                         );
                       })()}
