@@ -329,6 +329,49 @@ export default function LectureEcritureCP100() {
     }
   };
 
+  // Fonction pour expliquer un nombre spécifique avec animation
+  const explainNumberDirectly = async (numberToExplain: string) => {
+    if (isPlayingVocal) return;
+    
+    const selected = numbersWithWriting.find(n => n.chiffre === numberToExplain);
+    if (!selected) return;
+    
+    stopAllVocalsAndAnimations();
+    await new Promise(resolve => setTimeout(resolve, 300));
+    stopSignalRef.current = false;
+    setIsPlayingVocal(true);
+    setSamSizeExpanded(true);
+    
+    try {
+      await playAudio(`Analysons ensemble le nombre ${selected.chiffre} !`);
+      if (stopSignalRef.current) return;
+      
+      await new Promise(resolve => setTimeout(resolve, 1200));
+      if (stopSignalRef.current) return;
+      
+      await playAudio(`${selected.chiffre} s'écrit "${selected.lettres}" en lettres.`);
+      if (stopSignalRef.current) return;
+      
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      if (stopSignalRef.current) return;
+      
+      await playAudio(`Voici comment on peut représenter ${selected.chiffre} : ${selected.visual}`);
+      if (stopSignalRef.current) return;
+      
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      if (stopSignalRef.current) return;
+      
+      await playAudio(`Parfait ! Tu as découvert le nombre ${selected.chiffre} !`);
+      
+    } catch (error) {
+      console.error('Erreur dans explainNumberDirectly:', error);
+    } finally {
+      setIsPlayingVocal(false);
+      setSamSizeExpanded(false);
+      stopSignalRef.current = false;
+    }
+  };
+
   // Fonction pour expliquer le nombre sélectionné avec animation
   const explainSelectedNumber = async () => {
     if (isPlayingVocal) return;
@@ -824,11 +867,21 @@ export default function LectureEcritureCP100() {
                 {numbersWithWriting.map((num) => (
                   <button
                     key={num.chiffre}
-                    onClick={() => setSelectedNumber(num.chiffre)}
+                    onClick={async () => {
+                      if (!isPlayingVocal) {
+                        stopAllVocalsAndAnimations();
+                        setSelectedNumber(num.chiffre);
+                        await new Promise(resolve => setTimeout(resolve, 200));
+                        await explainNumberDirectly(num.chiffre);
+                      }
+                    }}
+                    disabled={isPlayingVocal}
                     className={`p-2 sm:p-3 rounded-lg font-bold text-base sm:text-lg transition-all ${
                       selectedNumber === num.chiffre
                         ? 'bg-purple-500 text-white shadow-lg scale-105'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200 hover:scale-102'
+                        : isPlayingVocal
+                          ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200 hover:scale-102'
                     }`}
                   >
                     {num.chiffre}
