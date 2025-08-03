@@ -1266,9 +1266,9 @@ export default function UnitesDizainesCP() {
 
         {!showExercises ? (
           /* COURS - MOBILE OPTIMISÉ */
-          <div className="space-y-1 sm:space-y-6">
+          <div className="space-y-4 sm:space-y-6">
             {/* Image de Sam le Pirate avec bouton DÉMARRER */}
-            <div className="flex items-center justify-center gap-2 sm:gap-4 p-2 sm:p-4 mb-3 sm:mb-6">
+            <div className="flex items-center justify-center gap-2 sm:gap-4 p-2 sm:p-4 mb-5 sm:mb-6">
               {/* Image de Sam le Pirate */}
               <div className={`relative transition-all duration-500 border-2 border-blue-300 rounded-full bg-gradient-to-br from-blue-100 to-cyan-100 ${
                 isPlayingVocal
@@ -1308,7 +1308,7 @@ export default function UnitesDizainesCP() {
               </div>
 
             {/* Explication des positions */}
-            <div id="position-section" className="bg-white rounded-xl p-3 sm:p-8 shadow-lg">
+            <div id="position-section" className="bg-white rounded-xl p-4 sm:p-8 shadow-lg">
               <div className="flex items-center justify-center gap-1 sm:gap-3 mb-3 sm:mb-6">
                 <h2 className="text-base sm:text-2xl font-bold text-gray-900">
                   🧠 La place des chiffres est importante !
@@ -1336,20 +1336,20 @@ export default function UnitesDizainesCP() {
                 </div>
               </div>
               
-              <div className="bg-blue-50 rounded-lg p-3 sm:p-8 mb-3 sm:mb-6">
+              <div className="bg-blue-50 rounded-lg p-4 sm:p-8 mb-4 sm:mb-6">
                 {showTitle && (
-                  <h3 className="text-base sm:text-xl font-bold mb-3 sm:mb-6 text-blue-800 text-center animate-[fadeInUp_0.8s_ease-out]">
+                  <h3 className="text-base sm:text-xl font-bold mb-4 sm:mb-6 text-blue-800 text-center animate-[fadeInUp_0.8s_ease-out]">
                     Exemple avec le nombre 34 :
                   </h3>
                 )}
                 
-                <div className="grid md:grid-cols-2 gap-3 sm:gap-8 items-center">
+                <div className="grid md:grid-cols-2 gap-5 sm:gap-8 items-center">
                   {/* Visualisation */}
                   <div className="text-center">
                     {showNumber && (
                       <>
                         {/* Nombre 34 avec animations de chiffres */}
-                        <div className={`text-6xl sm:text-8xl font-bold text-blue-600 mb-2 sm:mb-4 transform transition-all duration-500 cursor-pointer ${
+                        <div className={`text-6xl sm:text-8xl font-bold text-blue-600 mb-4 sm:mb-4 transform transition-all duration-500 cursor-pointer ${
                           slideInNumber ? 'animate-[slideInFromLeft_1s_ease-out]' : ''
                         }`}>
                           <span className={`inline-block transition-all duration-500 ${
@@ -1373,7 +1373,7 @@ export default function UnitesDizainesCP() {
                     {showVisualExplanation && (
                       <>
                         {/* Groupes visuels avec apparition conditionnelle */}
-                        <div className={`text-2xl sm:text-4xl mb-2 sm:mb-4 transition-all duration-700 animate-[fadeInUp_0.8s_ease-out] ${
+                        <div className={`text-2xl sm:text-4xl mb-3 sm:mb-4 transition-all duration-700 animate-[fadeInUp_0.8s_ease-out] ${
                           showVisualGroups 
                             ? 'opacity-100' 
                             : 'opacity-60'
@@ -1408,8 +1408,8 @@ export default function UnitesDizainesCP() {
 
                   {/* Tableau des positions */}
                   {showTable && (
-                    <div className="bg-white rounded-lg p-2 sm:p-6 shadow-md animate-[fadeInUp_0.8s_ease-out]">
-                      <div className="text-center mb-2 sm:mb-4">
+                    <div className="bg-white rounded-lg p-3 sm:p-6 shadow-md animate-[fadeInUp_0.8s_ease-out]">
+                      <div className="text-center mb-3 sm:mb-4">
                         <h4 className="text-sm sm:text-xl font-bold text-gray-800 animate-bounce-in">
                           🎯 Tableau magique des positions !
                         </h4>
@@ -1418,11 +1418,11 @@ export default function UnitesDizainesCP() {
                     <table className="w-full border-collapse border-2 border-blue-600 overflow-hidden rounded-lg">
                       <thead>
                         <tr className="bg-gradient-to-r from-blue-400 to-purple-500 text-white">
-                          <th className="border-2 border-blue-600 p-2 sm:p-4 font-bold animate-slide-in-left text-sm sm:text-base">
+                          <th className="border-2 border-blue-600 p-3 sm:p-4 font-bold animate-slide-in-left text-sm sm:text-base">
                             <Package className="inline w-4 h-4 sm:w-6 sm:h-6 mr-1 sm:mr-2 animate-wiggle" />
                             🔟 Dizaines
                           </th>
-                          <th className="border-2 border-blue-600 p-2 sm:p-4 font-bold animate-slide-in-right text-sm sm:text-base">
+                          <th className="border-2 border-blue-600 p-3 sm:p-4 font-bold animate-slide-in-right text-sm sm:text-base">
                             <Dot className="inline w-4 h-4 sm:w-6 sm:h-6 mr-1 sm:mr-2 animate-wiggle" />
                             🔴 Unités
                           </th>
@@ -1430,7 +1430,7 @@ export default function UnitesDizainesCP() {
                       </thead>
                       <tbody>
                         <tr>
-                          <td className={`border-2 border-blue-600 p-2 sm:p-6 text-center bg-gradient-to-br from-blue-100 to-blue-200 transition-all duration-500 ${
+                          <td className={`border-2 border-blue-600 p-3 sm:p-6 text-center bg-gradient-to-br from-blue-100 to-blue-200 transition-all duration-500 ${
                             highlightTableCell === 'dizaines' 
                               ? 'animate-[tableHighlight_1s_ease-in-out_infinite] bg-gradient-to-br from-yellow-200 to-yellow-300' 
                               : 'animate-slide-in-left'
@@ -1442,14 +1442,14 @@ export default function UnitesDizainesCP() {
                             }`}>
                               3
                             </div>
-                            <div className={`text-xs sm:text-lg font-semibold mt-1 sm:mt-3 transition-all duration-500 ${
+                            <div className={`text-xs sm:text-lg font-semibold mt-2 sm:mt-3 transition-all duration-500 ${
                               highlightTableCell === 'dizaines' 
                                 ? 'text-yellow-800 font-bold scale-110' 
                                 : 'text-blue-800 animate-fade-in-up'
                             }`}>
                               3 × 10 = 30
                             </div>
-                            <div className={`text-lg sm:text-3xl mt-1 sm:mt-2 transition-all duration-500 ${
+                            <div className={`text-lg sm:text-3xl mt-2 sm:mt-2 transition-all duration-500 ${
                               highlightTableCell === 'dizaines' || animatingDigit === 'left' || animatingDigit === 'both'
                                 ? 'scale-125 animate-bounce' 
                                 : 'animate-pulse'
@@ -1457,7 +1457,7 @@ export default function UnitesDizainesCP() {
                               🔟🔟🔟
                             </div>
                           </td>
-                          <td className={`border-2 border-blue-600 p-2 sm:p-6 text-center bg-gradient-to-br from-green-100 to-green-200 transition-all duration-500 ${
+                          <td className={`border-2 border-blue-600 p-3 sm:p-6 text-center bg-gradient-to-br from-green-100 to-green-200 transition-all duration-500 ${
                             highlightTableCell === 'unites' 
                               ? 'animate-[tableHighlight_1s_ease-in-out_infinite] bg-gradient-to-br from-yellow-200 to-yellow-300' 
                               : 'animate-slide-in-right'
@@ -1469,14 +1469,14 @@ export default function UnitesDizainesCP() {
                             }`} style={{animationDelay: '0.2s'}}>
                               4
                             </div>
-                            <div className={`text-xs sm:text-lg font-semibold mt-1 sm:mt-3 transition-all duration-500 ${
+                            <div className={`text-xs sm:text-lg font-semibold mt-2 sm:mt-3 transition-all duration-500 ${
                               highlightTableCell === 'unites' 
                                 ? 'text-yellow-800 font-bold scale-110' 
                                 : 'text-green-800 animate-fade-in-up'
                             }`} style={{animationDelay: '0.1s'}}>
                               4 × 1 = 4
                             </div>
-                            <div className={`text-lg sm:text-3xl mt-1 sm:mt-2 transition-all duration-500 ${
+                            <div className={`text-lg sm:text-3xl mt-2 sm:mt-2 transition-all duration-500 ${
                               highlightTableCell === 'unites' || animatingDigit === 'right' || animatingDigit === 'both'
                                 ? 'scale-125 animate-bounce' 
                                 : 'animate-pulse'
@@ -1491,7 +1491,7 @@ export default function UnitesDizainesCP() {
                     {showFinalSum && (
                       <>
                         {/* Animation de la somme finale */}
-                        <div className={`text-center mt-3 sm:mt-6 rounded-lg p-3 sm:p-4 transition-all duration-700 animate-[fadeInUp_0.8s_ease-out] ${
+                        <div className={`text-center mt-4 sm:mt-6 rounded-lg p-4 sm:p-4 transition-all duration-700 animate-[fadeInUp_0.8s_ease-out] ${
                           showVisualGroups 
                             ? 'bg-gradient-to-r from-green-200 to-emerald-200 scale-110' 
                             : 'bg-gradient-to-r from-yellow-100 to-orange-100'
@@ -1503,7 +1503,7 @@ export default function UnitesDizainesCP() {
                           }`}>
                             ✨ 30 + 4 = 34 ✨
                           </div>
-                          <div className={`text-xs sm:text-lg mt-1 sm:mt-2 transition-all duration-500 ${
+                          <div className={`text-xs sm:text-lg mt-2 sm:mt-2 transition-all duration-500 ${
                             showVisualGroups 
                               ? 'text-green-700 font-bold animate-pulse' 
                               : 'text-gray-600'
@@ -1513,7 +1513,7 @@ export default function UnitesDizainesCP() {
                         </div>
                         
                         {/* Flèches animées pour montrer le mouvement */}
-                        <div className="flex justify-center items-center mt-2 sm:mt-4 space-x-1 sm:space-x-4 animate-[fadeInUp_1s_ease-out_0.3s_both]">
+                        <div className="flex justify-center items-center mt-3 sm:mt-4 space-x-1 sm:space-x-4 animate-[fadeInUp_1s_ease-out_0.3s_both]">
                           <div className="text-center">
                             <div className="text-sm sm:text-2xl animate-bounce">⬇️</div>
                             <div className="text-xs sm:text-sm font-semibold text-blue-600">Dizaines</div>
@@ -1537,21 +1537,20 @@ export default function UnitesDizainesCP() {
               </div>
 
               {/* Règle importante */}
-              <div className="bg-yellow-50 rounded-lg p-3 sm:p-6">
+              <div className="bg-yellow-50 rounded-lg p-4 sm:p-6">
                 <h3 className="text-base sm:text-xl font-bold mb-3 sm:mb-4 text-yellow-800 text-center">
                   📏 Règle importante
                 </h3>
                 <div className="text-center space-y-1 sm:space-y-2 text-yellow-700 text-sm sm:text-lg font-semibold">
-                  <p>• Le chiffre de DROITE = les unités (objets seuls)</p>
-                  <p>• Le chiffre de GAUCHE = les dizaines (paquets de 10)</p>
-                  <p>• La position du chiffre change sa valeur !</p>
+                  <p>• Le chiffre de DROITE = les unités</p>
+                  <p>• Le chiffre de GAUCHE = les dizaines</p>
                 </div>
               </div>
             </div>
 
             {/* Sélecteur de nombre */}
-            <div id="explore-section" className="bg-white rounded-xl p-2 sm:p-8 shadow-lg">
-              <div className="flex items-center justify-center gap-1 sm:gap-3 mb-2 sm:mb-6">
+            <div id="explore-section" className="bg-white rounded-xl p-4 sm:p-8 shadow-lg">
+              <div className="flex items-center justify-center gap-1 sm:gap-3 mb-4 sm:mb-6">
                 <h2 className="text-base sm:text-2xl font-bold text-gray-900">
                   🎯 Explore un nombre
                 </h2>
@@ -1643,10 +1642,10 @@ export default function UnitesDizainesCP() {
                     )}
 
                     {/* Décomposition détaillée */}
-                    <div className="grid md:grid-cols-2 gap-2 sm:gap-6">
+                    <div className="grid md:grid-cols-2 gap-4 sm:gap-6">
                       {/* Dizaines */}
                       {showDizaines && (
-                        <div className="bg-blue-50 rounded-lg p-2 sm:p-6 animate-[fadeInUp_0.8s_ease-out]">
+                        <div className="bg-blue-50 rounded-lg p-3 sm:p-6 animate-[fadeInUp_0.8s_ease-out]">
                           <h3 className="text-sm sm:text-xl font-bold mb-1 sm:mb-4 text-blue-800 text-center">
                             <Package className="inline w-3 h-3 sm:w-6 sm:h-6 mr-1 sm:mr-2" />
                             Le chiffre des dizaines
@@ -1678,7 +1677,7 @@ export default function UnitesDizainesCP() {
 
                       {/* Unités */}
                       {showUnites && (
-                        <div className="bg-green-50 rounded-lg p-2 sm:p-6 animate-[fadeInUp_0.8s_ease-out]">
+                        <div className="bg-green-50 rounded-lg p-3 sm:p-6 animate-[fadeInUp_0.8s_ease-out]">
                           <h3 className="text-sm sm:text-xl font-bold mb-1 sm:mb-4 text-green-800 text-center">
                             <Dot className="inline w-3 h-3 sm:w-6 sm:h-6 mr-1 sm:mr-2" />
                             Le chiffre des unités
@@ -1711,7 +1710,7 @@ export default function UnitesDizainesCP() {
 
                     {/* Résultat final */}
                     {showFinalCalculation && (
-                      <div className="bg-yellow-50 rounded-lg p-2 sm:p-6 text-center animate-[fadeInUp_0.8s_ease-out]">
+                      <div className="bg-yellow-50 rounded-lg p-3 sm:p-6 text-center animate-[fadeInUp_0.8s_ease-out]">
                         <h3 className="text-sm sm:text-xl font-bold mb-1 sm:mb-4 text-yellow-800">
                           🎯 Au final :
                         </h3>
