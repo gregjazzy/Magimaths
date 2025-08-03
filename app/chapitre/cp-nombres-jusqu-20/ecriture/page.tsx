@@ -1985,20 +1985,27 @@ export default function EcritureNombresCP() {
           </div>
         )}
 
-        {/* Bouton Stop flottant pour toutes les animations vocales */}
+        {/* Bouton flottant Sam pour arrêter les vocaux */}
         {isPlayingVocal && (
-          <button
-            onClick={() => {
-              console.log('🛑 Bouton stop flottant cliqué');
-              stopAllVocalsAndAnimations();
-            }}
-            className="fixed top-4 right-4 z-50 bg-red-500 hover:bg-red-600 text-white p-3 rounded-full shadow-lg transition-all hover:scale-110 animate-pulse"
-            title="Arrêter la lecture de Sam"
-          >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
-              <rect x="6" y="6" width="12" height="12" />
-            </svg>
-          </button>
+          <div className="fixed top-4 right-4 z-[60]">
+            <button
+              onClick={stopAllVocalsAndAnimations}
+              className="relative flex items-center gap-2 px-3 py-2 rounded-full shadow-2xl transition-all duration-300 bg-gradient-to-r from-red-500 to-red-600 text-white hover:from-red-600 hover:to-red-700 hover:scale-105 animate-pulse"
+              title="Arrêter Sam"
+            >
+              <div className="w-8 h-8 rounded-full overflow-hidden border-2 border-white/50">
+                <img 
+                  src="/image/pirate-small.png" 
+                  alt="Sam le Pirate" 
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <>
+                <span className="text-sm font-bold hidden sm:block">Stop</span>
+                <div className="w-3 h-3 bg-white rounded-sm animate-pulse"></div>
+              </>
+            </button>
+          </div>
         )}
       </div>
     </div>

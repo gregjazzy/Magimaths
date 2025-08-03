@@ -7,6 +7,61 @@ import { ArrowLeft, CheckCircle, XCircle, RotateCcw, Volume2, Play, Pause } from
 
 export default function OrdonnerComparerCP() {
   const router = useRouter();
+
+  // Styles CSS pour les animations des symboles
+  const symbolAnimationStyles = `
+    @keyframes pique-left-attack {
+      0% { transform: translateX(0) scale(1) rotate(0deg); color: inherit; }
+      /* Premier coup */
+      10% { transform: translateX(-20px) scale(1.3) rotate(-10deg); color: #dc2626; }
+      15% { transform: translateX(0) scale(1) rotate(0deg); color: #dc2626; }
+      /* Deuxième coup */
+      25% { transform: translateX(-22px) scale(1.4) rotate(-12deg); color: #b91c1c; }
+      30% { transform: translateX(0) scale(1) rotate(0deg); color: #dc2626; }
+      /* Troisième coup */
+      40% { transform: translateX(-24px) scale(1.5) rotate(-14deg); color: #991b1b; }
+      45% { transform: translateX(0) scale(1) rotate(0deg); color: #dc2626; }
+      /* Quatrième coup */
+      55% { transform: translateX(-26px) scale(1.6) rotate(-16deg); color: #7f1d1d; }
+      60% { transform: translateX(0) scale(1) rotate(0deg); color: #dc2626; }
+      /* Cinquième coup final - juste toucher le 2 */
+      70% { transform: translateX(-28px) scale(1.7) rotate(-18deg); color: #450a0a; }
+      75% { transform: translateX(0) scale(1) rotate(0deg); color: #dc2626; }
+      100% { transform: translateX(0) scale(1) rotate(0deg); color: #dc2626; }
+    }
+    
+    @keyframes pique-right-attack {
+      0% { transform: translateX(0) scale(1) rotate(0deg); color: inherit; }
+      /* Premier coup */
+      10% { transform: translateX(20px) scale(1.3) rotate(10deg); color: #dc2626; }
+      15% { transform: translateX(0) scale(1) rotate(0deg); color: #dc2626; }
+      /* Deuxième coup */
+      25% { transform: translateX(22px) scale(1.4) rotate(12deg); color: #b91c1c; }
+      30% { transform: translateX(0) scale(1) rotate(0deg); color: #dc2626; }
+      /* Troisième coup */
+      40% { transform: translateX(24px) scale(1.5) rotate(14deg); color: #991b1b; }
+      45% { transform: translateX(0) scale(1) rotate(0deg); color: #dc2626; }
+      /* Quatrième coup */
+      55% { transform: translateX(26px) scale(1.6) rotate(16deg); color: #7f1d1d; }
+      60% { transform: translateX(0) scale(1) rotate(0deg); color: #dc2626; }
+      /* Cinquième coup final - juste toucher le 3 */
+      70% { transform: translateX(28px) scale(1.7) rotate(18deg); color: #450a0a; }
+      75% { transform: translateX(0) scale(1) rotate(0deg); color: #dc2626; }
+      100% { transform: translateX(0) scale(1) rotate(0deg); color: #dc2626; }
+    }
+    
+
+    
+    .pique-left { 
+      animation: pique-left-attack 4s ease-in-out; 
+      color: #dc2626 !important;
+    }
+    .pique-right { 
+      animation: pique-right-attack 4s ease-in-out; 
+      color: #dc2626 !important;
+    }
+    .chomp { animation: chomp 0.3s ease-in-out 3; }
+  `;
   
   // États existants
   const [selectedActivity, setSelectedActivity] = useState('comparer');
@@ -42,6 +97,39 @@ export default function OrdonnerComparerCP() {
   const [isExplainingError, setIsExplainingError] = useState(false);
   const [pirateIntroStarted, setPirateIntroStarted] = useState(false);
   const [showExercisesList, setShowExercisesList] = useState(false);
+  
+  // État pour le mini-jeu : quelles réponses sont révélées
+  const [revealedAnswers, setRevealedAnswers] = useState<boolean[]>([false, false, false, false]);
+  const [completedAnswers, setCompletedAnswers] = useState<boolean[]>([false, false, false, false]);
+  const [miniGameScore, setMiniGameScore] = useState(0);
+
+  // Fonction pour révéler une réponse du mini-jeu
+  const revealAnswer = (index: number) => {
+    if (revealedAnswers[index]) return;
+    
+    setRevealedAnswers(prev => {
+      const newRevealed = [...prev];
+      newRevealed[index] = true;
+      return newRevealed;
+    });
+
+    // Marquer comme complété après un court délai
+    setTimeout(() => {
+      setCompletedAnswers(prev => {
+        const newCompleted = [...prev];
+        newCompleted[index] = true;
+        return newCompleted;
+      });
+      setMiniGameScore(prev => prev + 1);
+    }, 300);
+  };
+
+  // Fonction pour réinitialiser le mini-jeu
+  const resetMiniGame = () => {
+    setRevealedAnswers([false, false, false, false]);
+    setCompletedAnswers([false, false, false, false]);
+    setMiniGameScore(0);
+  };
 
   // Refs pour gérer l'audio
   const stopSignalRef = useRef(false);
@@ -110,6 +198,13 @@ export default function OrdonnerComparerCP() {
     }
   };
 
+  const scrollToElement = (elementId: string) => {
+    const element = document.getElementById(elementId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  };
+
   const scrollToActivity = () => {
     const element = document.getElementById('activity-section');
     if (element) {
@@ -117,7 +212,89 @@ export default function OrdonnerComparerCP() {
     }
   };
 
-
+  // Fonction pour Sam explique les comparaisons avec animation "pique"
+  const samExplainsComparisons = async () => {
+    if (isPlayingVocal) return;
+    
+    stopAllVocalsAndAnimations();
+    await wait(300);
+    stopSignalRef.current = false;
+    setIsPlayingVocal(true);
+    
+    try {
+      // Animation pour Sam qui se prépare
+      setSamSizeExpanded(true);
+      await wait(500);
+      
+      await playAudio("Ahoy moussaillon ! Sam le pirate va vous montrer comment les symboles attaquent lentement !");
+      await wait(800);
+      
+      // Explication du plus grand que avec son animation "tac tac tac"
+      setHighlightedElement('symbols');
+      await playAudio("Regardez bien le symbole plus grand que ! Il va piquer le plus petit nombre !");
+      await wait(500);
+      
+      setHighlightedSymbol('>');
+      await playAudio("TAC... TAC... TAC... TAC... TAC... Le symbole rouge pique le trois plusieurs fois !");
+      await wait(1500); // Temps réduit pour transition plus fluide
+      
+      // Rappel de la règle avant la conclusion
+      await playAudio("Rappelez-vous, le symbole pique toujours le plus petit nombre !");
+      await wait(800);
+      
+      // Redire l'expression complète
+      await playAudio("Donc 7 est plus grand que 3 !");
+      await wait(1000);
+      
+      setHighlightedSymbol(null);
+      await wait(800);
+      
+      // Explication du plus petit que
+      await playAudio("Maintenant le symbole plus petit que !");
+      await wait(500);
+      
+      setHighlightedSymbol('<');
+      await playAudio("TAC... TAC... TAC... TAC... TAC... Le symbole rouge pique le deux plusieurs fois !");
+      await wait(1500); // Temps réduit pour transition plus fluide
+      
+      // Rappel de la règle avant la conclusion
+      await playAudio("Rappelez-vous, le symbole pique toujours le plus petit nombre !");
+      await wait(800);
+      
+      // Redire l'expression complète
+      await playAudio("Donc 2 est plus petit que 8 !");
+      await wait(1000);
+      
+      setHighlightedSymbol(null);
+      await wait(800);
+      
+      // Explication de l'égalité
+      await playAudio("Et pour l'égalité, les deux nombres sont identiques !");
+      await wait(500);
+      
+      setHighlightedSymbol('=');
+      await playAudio("Regardez ! Les deux cinq sont exactement pareils !");
+      await wait(2500);
+      
+      // Redire l'expression complète
+      await playAudio("Donc 5 est égal à 5 !");
+      await wait(1000);
+      
+      setHighlightedSymbol(null);
+      await wait(500);
+      
+      await playAudio("Voilà ! Maintenant vous savez comment les symboles attaquent et piquent !");
+      await wait(2000); // Plus de temps pour la dernière phrase
+      
+    } catch (error) {
+      console.error('Erreur dans samExplainsComparisons:', error);
+    } finally {
+      setIsPlayingVocal(false);
+      setHighlightedElement(null);
+      setHighlightedSymbol(null);
+      setSamSizeExpanded(false);
+    }
+  };
 
   const playAudio = async (text: string, slowMode = false) => {
     return new Promise<void>((resolve) => {
@@ -187,101 +364,153 @@ export default function OrdonnerComparerCP() {
     await playAudio("Bonjour ! Aujourd'hui, nous allons apprendre à comparer et ordonner les nombres de 1 à 20.");
     if (stopSignalRef.current) return;
     
+    // Aller aux symboles de comparaison avec explication et animation complète
     await wait(1200);
+    scrollToElement('symbols');
+    await wait(500);
     setHighlightedElement('symbols');
-    await playAudio("Regardons d'abord les symboles de comparaison.");
+    setSamSizeExpanded(true);
+    await playAudio("Regardons d'abord les symboles de comparaison avec Sam le pirate !");
     if (stopSignalRef.current) return;
     
+    await wait(1000);
+    await playAudio("Sam va vous montrer comment les symboles attaquent !");
+    if (stopSignalRef.current) return;
+    
+    // Explication du plus grand que avec animation
     await wait(800);
+    await playAudio("Regardez bien le symbole plus grand que ! Il va piquer le plus petit nombre !");
+    if (stopSignalRef.current) return;
+    
+    await wait(500);
     setHighlightedSymbol('>');
-    await playAudio("Le symbole plus grand que : sa bouche mange le plus petit nombre !");
+    await playAudio("TAC... TAC... TAC... TAC... TAC... Le symbole rouge pique le trois plusieurs fois !");
     if (stopSignalRef.current) return;
     
-    await wait(1000);
-    setHighlightedSymbol('<');
-    await playAudio("Le symbole plus petit que : sa bouche mange aussi le plus petit nombre !");
-    if (stopSignalRef.current) return;
+    await wait(1500); // Temps réduit pour transition plus fluide
     
-    await wait(1000);
-    setHighlightedSymbol('=');
-    await playAudio("Et le symbole égal : quand les deux nombres sont exactement pareils !");
+    // Rappel de la règle avant la conclusion
+    await playAudio("Rappelez-vous, le symbole pique toujours le plus petit nombre !");
     if (stopSignalRef.current) return;
+    await wait(800);
     
+    // Redire l'expression complète
+    await playAudio("Donc 7 est plus grand que 3 !");
+      if (stopSignalRef.current) return;
     await wait(1000);
+    
     setHighlightedSymbol(null);
+    
+    // Explication du plus petit que avec animation
+    await wait(800);
+    await playAudio("Maintenant le symbole plus petit que !");
+    if (stopSignalRef.current) return;
+    
+    await wait(500);
+    setHighlightedSymbol('<');
+    await playAudio("TAC... TAC... TAC... TAC... TAC... Le symbole rouge pique le deux plusieurs fois !");
+    if (stopSignalRef.current) return;
+    
+    await wait(1500); // Temps réduit pour transition plus fluide
+    
+    // Rappel de la règle avant la conclusion
+    await playAudio("Rappelez-vous, le symbole pique toujours le plus petit nombre !");
+    if (stopSignalRef.current) return;
+    await wait(800);
+    
+    // Redire l'expression complète
+    await playAudio("Donc 2 est plus petit que 8 !");
+    if (stopSignalRef.current) return;
+    await wait(1000);
+    
+    setHighlightedSymbol(null);
+    
+    // Explication de l'égalité
+    await wait(800);
+    await playAudio("Et pour l'égalité, les deux nombres sont identiques !");
+    if (stopSignalRef.current) return;
+      
+    await wait(500);
+    setHighlightedSymbol('=');
+    await playAudio("Regardez ! Les deux cinq sont exactement pareils !");
+    if (stopSignalRef.current) return;
+    
+    await wait(2500);
+    
+    // Redire l'expression complète
+    await playAudio("Donc 5 est égal à 5 !");
+    if (stopSignalRef.current) return;
+    await wait(1000);
+    
+    setHighlightedSymbol(null);
+    setSamSizeExpanded(false);
+    
+    await wait(500);
+    await playAudio("Voilà ! Maintenant vous savez comment les symboles attaquent !");
+    if (stopSignalRef.current) return;
+    await wait(2000); // Plus de temps pour la dernière phrase
+    
+    // Scroll vers l'introduction et expliquer l'importance
+    await wait(1500);
+    setHighlightedElement(null);
+    scrollToElement('introduction');
+    await wait(500);
+    setHighlightedElement('introduction');
+    await playAudio("Comparer les nombres nous aide à savoir lequel est plus grand ou plus petit !");
+    if (stopSignalRef.current) return;
+    
+    // Aller à l'exemple 5 > 3
+    await wait(1200);
+    setHighlightedElement(null);
     setAnimatingExample(0);
     setExampleStep('intro');
-    await playAudio("Maintenant, regardons un exemple avec 5 et 3.");
+    await playAudio("Regardons un exemple avec 5 et 3.");
     if (stopSignalRef.current) return;
     
-      await wait(1200);
+    await wait(1200);
     setExampleStep('counting');
     await playAudio("Comptons : 5 cercles rouges contre 3 cercles rouges. 5 est plus grand que 3 !");
     if (stopSignalRef.current) return;
-      
-      await wait(1500);
+    
+    await wait(1500);
     setAnimatingExample(null);
     setExampleStep(null);
     
-    // Résumé avec zoom sur chaque partie
+    // Aller au sélecteur d'activité
     await wait(800);
-    await playAudio("Maintenant, révisons ensemble avec les exemples des symboles !");
-    if (stopSignalRef.current) return;
-    
-      await wait(1000);
-    setZoomingSymbolPart({symbol: '>', part: 'num1'});
-    await playAudio("7");
-    if (stopSignalRef.current) return;
-    
-    await wait(600);
-    setZoomingSymbolPart({symbol: '>', part: 'operator'});
-    await playAudio("plus grand que");
-    if (stopSignalRef.current) return;
-    
-    await wait(600);
-    setZoomingSymbolPart({symbol: '>', part: 'num2'});
-    await playAudio("3");
-    if (stopSignalRef.current) return;
-    
-    await wait(1000);
-    setZoomingSymbolPart({symbol: '<', part: 'num1'});
-    await playAudio("2");
-    if (stopSignalRef.current) return;
-    
-    await wait(600);
-    setZoomingSymbolPart({symbol: '<', part: 'operator'});
-    await playAudio("plus petit que");
-    if (stopSignalRef.current) return;
-    
-    await wait(600);
-    setZoomingSymbolPart({symbol: '<', part: 'num2'});
-    await playAudio("8");
-    if (stopSignalRef.current) return;
-    
-    await wait(1000);
-    setZoomingSymbolPart({symbol: '=', part: 'num1'});
-    await playAudio("5");
-    if (stopSignalRef.current) return;
-    
-    await wait(600);
-    setZoomingSymbolPart({symbol: '=', part: 'operator'});
-    await playAudio("égal à");
-    if (stopSignalRef.current) return;
-    
-    await wait(600);
-    setZoomingSymbolPart({symbol: '=', part: 'num2'});
-    await playAudio("5");
-    if (stopSignalRef.current) return;
-    
-      await wait(1200);
-    setZoomingSymbolPart(null);
     setHighlightedElement('activity-selector');
     scrollToActivity();
-    await playAudio("Tu peux choisir de t'entraîner à comparer deux nombres ou à mettre en ordre plusieurs nombres. Clique sur ton choix !");
+    await playAudio("Maintenant, tu peux choisir ton activité ! Clique sur ce que tu veux apprendre !");
     if (stopSignalRef.current) return;
       
-    await wait(800);
-      setHighlightedElement(null);
+    await wait(1000);
+    
+    // Présenter la première activité
+    setHighlightedElement('comparer-button');
+    await playAudio("Tu peux apprendre à comparer deux nombres !");
+    if (stopSignalRef.current) return;
+    
+    await wait(1200);
+    
+    // Présenter la deuxième activité
+    setHighlightedElement('ordonner-button');
+    await playAudio("Ou alors ordonner les nombres !");
+    if (stopSignalRef.current) return;
+    
+    await wait(1200);
+    setHighlightedElement(null);
+    
+    // Scroll vers le haut et présenter les exercices
+    await wait(500);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    await wait(1500); // Temps pour le scroll
+    
+    setHighlightedElement('navigation-tabs');
+    await playAudio("Maintenant tu peux aller où tu veux pour regarder le cours ou faire des exercices !");
+    if (stopSignalRef.current) return;
+    
+    await wait(1000);
+    setHighlightedElement(null);
   };
 
   const explainComparison = async () => {
@@ -290,11 +519,18 @@ export default function OrdonnerComparerCP() {
     stopSignalRef.current = false;
     
     try {
+      await playAudio("Parfait ! Allons voir les exemples de comparaison !");
+      if (stopSignalRef.current) return;
+      
+      await wait(800);
       setAnimatingComparison(true);
       setAnimatingStep('comparing');
+      setHighlightedElement('illustration-section');
       scrollToIllustration();
+      await wait(1000);
+      setHighlightedElement(null);
       
-      await playAudio("Parfait ! Pour comparer deux nombres, nous regardons lequel est plus grand ou plus petit.");
+      await playAudio("Pour comparer deux nombres, nous regardons lequel est plus grand ou plus petit.");
       if (stopSignalRef.current) return;
       
       await wait(1000);
@@ -334,11 +570,18 @@ export default function OrdonnerComparerCP() {
     stopSignalRef.current = false;
     
     try {
+      await playAudio("Excellent choix ! Allons voir les exemples de rangement !");
+      if (stopSignalRef.current) return;
+      
+      await wait(800);
       setAnimatingRangement(true);
       setAnimatingStep('ordering');
+      setHighlightedElement('illustration-section');
       scrollToIllustration();
+      await wait(1000);
+      setHighlightedElement(null);
       
-      await playAudio("Excellent choix ! Je vais t'expliquer comment ordonner les nombres étape par étape.", true);
+      await playAudio("Je vais t'expliquer comment ordonner les nombres étape par étape.", true);
       if (stopSignalRef.current) return;
       
       await wait(1500);
@@ -760,6 +1003,18 @@ export default function OrdonnerComparerCP() {
     setIsClient(true);
   }, []);
 
+  // Injection des styles CSS pour les animations
+  useEffect(() => {
+    const styleElement = document.createElement('style');
+    styleElement.textContent = symbolAnimationStyles;
+    document.head.appendChild(styleElement);
+    return () => {
+      if (document.head.contains(styleElement)) {
+        document.head.removeChild(styleElement);
+      }
+    };
+  }, []);
+
   // Effet pour gérer les changements de visibilité de la page et navigation
   useEffect(() => {
     const handleVisibilityChange = () => {
@@ -1067,7 +1322,7 @@ export default function OrdonnerComparerCP() {
 
   // JSX pour l'introduction de Sam le Pirate dans les exercices
   const SamPirateIntroJSX = () => (
-    <div className="flex justify-center p-1 mt-1 sm:mt-2">
+    <div className="flex justify-center p-1 mt-2">
       <div className="flex items-center gap-2">
         {/* Image de Sam le Pirate */}
         <div className={`relative flex-shrink-0 rounded-full bg-gradient-to-br from-blue-100 to-cyan-100 border-2 border-blue-200 shadow-md transition-all duration-300 ${
@@ -1104,7 +1359,7 @@ export default function OrdonnerComparerCP() {
               : 'bg-gradient-to-r from-orange-500 via-red-500 to-pink-500 text-white hover:from-orange-600 hover:via-red-600 hover:to-pink-600 hover:scale-110 shadow-2xl hover:shadow-3xl animate-pulse border-4 border-yellow-300'
         } ${!isPlayingVocal && !pirateIntroStarted ? 'ring-4 ring-yellow-300 ring-opacity-75' : ''}`}
         style={{
-          animationDuration: !isPlayingVocal && !pirateIntroStarted ? '1.5s' : '2s',
+          animationDuration: !isPlayingVocal && !pirateIntroStarted ? '1.2s' : '2s',
           animationIterationCount: isPlayingVocal || pirateIntroStarted ? 'none' : 'infinite',
           textShadow: '2px 2px 4px rgba(0,0,0,0.3)',
           boxShadow: !isPlayingVocal && !pirateIntroStarted 
@@ -1114,7 +1369,12 @@ export default function OrdonnerComparerCP() {
       >
         {/* Effet de brillance */}
         {!isPlayingVocal && !pirateIntroStarted && (
-          <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-transparent via-white to-transparent opacity-20 animate-pulse"></div>
+          <div 
+            className="absolute inset-0 rounded-xl bg-gradient-to-r from-transparent via-white to-transparent opacity-20"
+            style={{
+              animation: 'pulse 1.2s cubic-bezier(0.4, 0, 0.6, 1) infinite'
+            }}
+          ></div>
         )}
         
         {/* Icônes et texte avec plus d'émojis */}
@@ -1159,7 +1419,48 @@ export default function OrdonnerComparerCP() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-50 to-purple-100">
-
+      {/* Animation CSS personnalisée pour les icônes */}
+      <style dangerouslySetInnerHTML={{
+        __html: `
+          @keyframes subtle-glow {
+            0%, 100% {
+              opacity: 0.8;
+              transform: scale(1);
+              filter: brightness(1);
+            }
+            50% {
+              opacity: 1;
+              transform: scale(1.05);
+              filter: brightness(1.1);
+            }
+          }
+        `
+      }} />
+      {/* Bouton flottant de Sam - visible uniquement quand Sam parle */}
+      {isPlayingVocal && (
+        <div className="fixed top-4 right-4 z-[60]">
+          <button
+            onClick={stopAllVocalsAndAnimations}
+            className="relative flex items-center gap-2 px-3 py-2 rounded-full shadow-2xl transition-all duration-300 bg-gradient-to-r from-red-500 to-red-600 text-white hover:from-red-600 hover:to-red-700 hover:scale-105 animate-pulse"
+            title="Arrêter Sam"
+          >
+            {/* Image de Sam */}
+            <div className="w-8 h-8 rounded-full overflow-hidden border-2 border-white/50">
+            <img
+              src="/image/pirate-small.png"
+              alt="Sam le Pirate"
+                className="w-full h-full object-cover"
+            />
+            </div>
+            
+            {/* Texte et icône */}
+                          <>
+                <span className="text-sm font-bold hidden sm:block">Stop</span>
+                <div className="w-3 h-3 bg-white rounded-sm animate-pulse"></div>
+              </>
+          </button>
+        </div>
+      )}
 
       <div className="max-w-6xl mx-auto px-4 py-4 sm:py-8 pb-8 sm:pb-8">
         {/* Header */}
@@ -1184,14 +1485,21 @@ export default function OrdonnerComparerCP() {
         </div>
 
         {/* Navigation entre cours et exercices */}
-        <div className="flex justify-center mb-4 sm:mb-8">
-          <div className="bg-white rounded-lg p-1 shadow-md">
+        <div 
+          id="navigation-tabs"
+          className={`flex justify-center mb-2 sm:mb-8 transition-all duration-1000 ${
+            highlightedElement === 'navigation-tabs' ? 'scale-110' : ''
+          }`}
+        >
+          <div className={`bg-white rounded-lg p-1 shadow-md transition-all duration-1000 ${
+            highlightedElement === 'navigation-tabs' ? 'ring-4 ring-green-400 bg-green-50' : ''
+          }`}>
             <button
               onClick={() => {
                 stopAllVocalsAndAnimations();
                 setShowExercises(false);
               }}
-              className={`px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-bold transition-all ${
+              className={`px-3 sm:px-6 py-1 sm:py-3 rounded-lg font-bold text-sm sm:text-base transition-all ${
                 !showExercises 
                   ? 'bg-pink-500 text-white shadow-md' 
                   : 'text-gray-600 hover:bg-gray-100'
@@ -1204,7 +1512,7 @@ export default function OrdonnerComparerCP() {
                 stopAllVocalsAndAnimations();
                 setShowExercises(true);
               }}
-              className={`px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-bold transition-all ${
+              className={`px-3 sm:px-6 py-1 sm:py-3 rounded-lg font-bold text-sm sm:text-base transition-all ${
                 showExercises 
                   ? 'bg-pink-500 text-white shadow-md' 
                   : 'text-gray-600 hover:bg-gray-100'
@@ -1215,31 +1523,239 @@ export default function OrdonnerComparerCP() {
           </div>
         </div>
 
-        {/* Bouton Démarrer - visible uniquement dans la section cours */}
-        {!showExercises && (
-          <div className="flex justify-center mb-4 sm:mb-8">
+        {!showExercises ? (
+          /* COURS - MOBILE OPTIMISÉ */
+          <div className="space-y-2 sm:space-y-6">
+            {/* Image de Sam le Pirate avec bouton DÉMARRER */}
+          <div className="flex items-center justify-center gap-2 sm:gap-4 p-2 sm:p-4 mb-3 sm:mb-6">
+            {/* Image de Sam le Pirate */}
+            <div className={`relative transition-all duration-500 border-2 border-blue-300 rounded-full bg-gradient-to-br from-blue-100 to-cyan-100 ${
+              isPlayingVocal
+                  ? 'w-14 sm:w-24 h-14 sm:h-24' // When speaking - plus petit sur mobile
+                : samSizeExpanded
+                    ? 'w-12 sm:w-32 h-12 sm:h-32' // Enlarged - plus petit sur mobile
+                    : 'w-12 sm:w-20 h-12 sm:h-20' // Initial - plus petit sur mobile
+              }`}>
+                <img 
+                  src="/image/pirate-small.png" 
+                  alt="Sam le Pirate" 
+                  className="w-full h-full rounded-full object-cover"
+                />
+              {/* Megaphone animé quand il parle */}
+                {isPlayingVocal && (
+                <div className="absolute -top-1 -right-1 bg-red-500 text-white p-1 rounded-full shadow-lg">
+                  <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.617.77L4.916 14H2a1 1 0 01-1-1V7a1 1 0 011-1h2.916l3.467-2.77a1 1 0 011.617.77zM14.657 2.929a1 1 0 011.414 0A9.972 9.972 0 0119 10a9.972 9.972 0 01-2.929 7.071 1 1 0 01-1.414-1.414A7.971 7.971 0 0017 10c0-2.21-.894-4.208-2.343-5.657a1 1 0 010-1.414zm-2.829 2.828a1 1 0 011.415 0A5.983 5.983 0 0115 10a5.983 5.983 0 01-1.757 4.243 1 1 0 01-1.415-1.414A3.983 3.983 0 0013 10a3.983 3.983 0 00-1.172-2.829 1 1 0 010-1.414z" clipRule="evenodd" />
+                  </svg>
+                  </div>
+                )}
+              </div>
+              
+            {/* Bouton Démarrer */}
+            <div className="text-center">
               <button
               onClick={explainChapter}
-              disabled={isPlayingVocal}
-              className="bg-gradient-to-r from-green-500 to-blue-500 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-full text-lg sm:text-xl font-bold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2 sm:space-x-3"
-              >
-              <Play className="w-5 h-5 sm:w-6 sm:h-6" />
-              <span>🎯 Démarrer l'explication</span>
+                disabled={isPlayingVocal}
+                className={`bg-gradient-to-r from-green-500 to-blue-500 text-white px-3 sm:px-12 py-2 sm:py-6 rounded-xl font-bold text-sm sm:text-3xl shadow-2xl hover:shadow-3xl transition-all transform hover:scale-105 ${
+                isPlayingVocal ? 'opacity-75 cursor-not-allowed' : 'hover:from-green-600 hover:to-blue-600'
+              }`}
+            >
+                <Play className="inline w-4 h-4 sm:w-8 sm:h-8 mr-1 sm:mr-4" />
+                {isPlayingVocal ? '🎤 JE PARLE...' : '🎯 DÉMARRER'}
               </button>
+              </div>
             </div>
-        )}
 
-        {!showExercises ? (
-          /* COURS */
-          <div className="space-y-4 sm:space-y-8">
-            {/* Introduction */}
-            <div className="bg-white rounded-xl p-8 shadow-lg">
-              <h2 className="text-2xl font-bold text-center mb-6 text-gray-900">
-                🤔 Pourquoi comparer et mettre dans l'ordre ?
-              </h2>
+            {/* Les symboles */}
+            <div 
+              id="symbols"
+              className={`bg-white rounded-xl p-2 sm:p-8 shadow-lg transition-all duration-1000 ${
+                highlightedElement === 'symbols' ? 'ring-4 ring-blue-400 bg-blue-50 scale-105' : ''
+              }`}
+            >
+              <div className="flex items-center justify-center gap-1 sm:gap-3 mb-2 sm:mb-6">
+                <h2 className="text-base sm:text-2xl font-bold text-gray-900">
+                  🔣 Les symboles de comparaison
+                </h2>
+                {/* Icône d'animation pour les symboles */}
+                <div className="bg-gradient-to-r from-red-500 to-pink-600 text-white rounded-full w-6 h-6 sm:w-12 sm:h-12 flex items-center justify-center text-xs sm:text-xl font-bold shadow-lg hover:scale-110 cursor-pointer transition-all duration-300 ring-2 ring-red-300 ring-opacity-40 hover:shadow-xl hover:ring-4 hover:ring-red-200"
+                     style={{
+                       animation: 'subtle-glow 3s ease-in-out infinite',
+                       animationPlayState: 'running'
+                     }} 
+                     title="🐊 Animation des symboles ! Cliquez pour voir les attaques de Sam."
+                  onClick={async () => {
+                    if (!isPlayingVocal) {
+                      stopAllVocalsAndAnimations();
+                      await new Promise(resolve => setTimeout(resolve, 100));
+                         samExplainsComparisons();
+                       }
+                     }}
+                >
+                  🐊
+                </div>
+              </div>
               
-              <div className="bg-pink-50 rounded-lg p-6 mb-6">
-                <p className="text-lg text-center text-pink-800 font-semibold mb-4">
+              <div className="text-center mb-2 sm:mb-6">
+                <button
+                  onClick={() => samExplainsComparisons()}
+                  disabled={isPlayingVocal}
+                  className={`px-3 sm:px-6 py-1 sm:py-3 rounded-lg font-bold text-white text-xs sm:text-base transition-all duration-300 ${
+                    isPlayingVocal 
+                      ? 'bg-gray-400 cursor-not-allowed'
+                      : 'bg-red-600 hover:bg-red-700 hover:scale-105 shadow-lg hover:shadow-xl'
+                  }`}
+                >
+                  🐊 Sam explique les attaques !
+                </button>
+                    </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-2 sm:gap-6">
+                <div className={`bg-blue-50 rounded-lg p-2 sm:p-6 text-center transition-all duration-1000 ${
+                    highlightedSymbol === '>' ? 'ring-4 ring-blue-400 bg-blue-100 scale-110 shadow-2xl' : ''
+                }`}>
+                  <div className={`text-3xl sm:text-6xl font-bold text-blue-600 mb-1 sm:mb-4 transition-all duration-500 ${
+                    highlightedSymbol === '>' ? 'animate-bounce text-5xl sm:text-8xl' : ''
+                  }`}>&gt;</div>
+                  <h3 className="text-sm sm:text-xl font-bold text-blue-800 mb-1 sm:mb-2">Plus grand que</h3>
+                  
+                  {/* Disposition avec nombres de chaque côté */}
+                  <div className="flex items-center justify-center gap-1 sm:gap-4 h-8 sm:h-16 mx-auto mb-1 sm:mb-4">
+                    {/* Nombre 7 (à gauche) */}
+                    <div className={`text-lg sm:text-3xl font-bold text-blue-800 transition-all duration-500 ${
+                      zoomingSymbolPart?.symbol === '>' && zoomingSymbolPart?.part === 'num1' ? 'text-xl sm:text-4xl text-red-600 animate-bounce scale-150' : ''
+                    }`}>7</div>
+                    
+                    {/* Symbole > (au centre) avec animation pique */}
+                    <div className={`text-xl sm:text-4xl font-bold transition-all duration-500 ${
+                      zoomingSymbolPart?.symbol === '>' && zoomingSymbolPart?.part === 'operator' ? 'text-2xl sm:text-5xl text-green-600 animate-bounce scale-150' : ''
+                    } ${
+                      highlightedSymbol === '>' ? 'pique-right text-red-600' : 'text-blue-600'
+                    }`}>&gt;</div>
+                    
+                    {/* Nombre 3 (à droite) - RESTE COMPLÈTEMENT IMMOBILE */}
+                    <div className={`text-lg sm:text-3xl font-bold text-blue-800 ${
+                      zoomingSymbolPart?.symbol === '>' && zoomingSymbolPart?.part === 'num2' ? 'text-xl sm:text-4xl text-red-600 animate-bounce scale-150' : ''
+                    }`}>3</div>
+                  </div>
+                  
+                  <p className={`text-xs sm:text-sm text-gray-600 ${
+                    highlightedSymbol === '>' ? 'animate-pulse font-bold text-blue-800' : ''
+                  }`}>Le bec pique le plus petit !</p>
+                </div>
+                 
+                <div className={`bg-green-50 rounded-lg p-2 sm:p-6 text-center transition-all duration-1000 ${
+                    highlightedSymbol === '<' ? 'ring-4 ring-green-400 bg-green-100 scale-110 shadow-2xl' : ''
+                }`}>
+                  <div className={`text-3xl sm:text-6xl font-bold text-green-600 mb-1 sm:mb-4 transition-all duration-500 ${
+                    highlightedSymbol === '<' ? 'animate-bounce text-5xl sm:text-8xl' : ''
+                  }`}>&lt;</div>
+                  <h3 className="text-sm sm:text-xl font-bold text-green-800 mb-1 sm:mb-2">Plus petit que</h3>
+                  
+                  {/* Disposition avec nombres de chaque côté */}
+                  <div className="flex items-center justify-center gap-1 sm:gap-4 h-8 sm:h-16 mx-auto mb-1 sm:mb-4">
+                    {/* Nombre 2 (à gauche) - RESTE COMPLÈTEMENT IMMOBILE */}
+                    <div className={`text-lg sm:text-3xl font-bold text-green-800 ${
+                      zoomingSymbolPart?.symbol === '<' && zoomingSymbolPart?.part === 'num1' ? 'text-xl sm:text-4xl text-red-600 animate-bounce scale-150' : ''
+                    }`}>2</div>
+                    
+                    {/* Symbole < (au centre) avec animation pique */}
+                    <div className={`text-xl sm:text-4xl font-bold transition-all duration-500 ${
+                      zoomingSymbolPart?.symbol === '<' && zoomingSymbolPart?.part === 'operator' ? 'text-2xl sm:text-5xl text-blue-600 animate-bounce scale-150' : ''
+                    } ${
+                      highlightedSymbol === '<' ? 'pique-left text-red-600' : 'text-green-600'
+                    }`}>&lt;</div>
+                    
+                    {/* Nombre 8 (à droite) */}
+                    <div className={`text-lg sm:text-3xl font-bold text-green-800 transition-all duration-500 ${
+                      zoomingSymbolPart?.symbol === '<' && zoomingSymbolPart?.part === 'num2' ? 'text-xl sm:text-4xl text-red-600 animate-bounce scale-150' : ''
+                    }`}>8</div>
+                  </div>
+                  
+                  <p className={`text-xs sm:text-sm text-gray-600 ${
+                    highlightedSymbol === '<' ? 'animate-pulse font-bold text-green-800' : ''
+                  }`}>Le bec pique le plus petit !</p>
+                </div>
+                
+                <div className={`bg-orange-50 rounded-lg p-2 sm:p-6 text-center transition-all duration-1000 ${
+                    highlightedSymbol === '=' ? 'ring-4 ring-orange-400 bg-orange-100 scale-110 shadow-2xl' : ''
+                }`}>
+                  <div className={`text-3xl sm:text-6xl font-bold text-orange-600 mb-1 sm:mb-4 transition-all duration-500 ${
+                    highlightedSymbol === '=' ? 'animate-bounce text-5xl sm:text-8xl' : ''
+                  }`}>=</div>
+                  <h3 className="text-sm sm:text-xl font-bold text-orange-800 mb-1 sm:mb-2">Égal à</h3>
+                  
+                  {/* Disposition avec nombres de chaque côté */}
+                  <div className="relative flex items-center justify-center gap-1 sm:gap-4 h-8 sm:h-16 mx-auto mb-1 sm:mb-4">
+                    {/* Nombre 5 (à gauche) */}
+                    <div className={`text-lg sm:text-3xl font-bold text-orange-800 transition-all duration-500 ${
+                      zoomingSymbolPart?.symbol === '=' && zoomingSymbolPart?.part === 'num1' ? 'text-xl sm:text-4xl text-red-600 animate-bounce scale-150' : ''
+                    } ${
+                      highlightedSymbol === '=' ? 'winner-celebrate' : ''
+                    }`}>5</div>
+                    
+                    {/* Symbole = (au centre) */}
+                    <div className={`text-xl sm:text-4xl font-bold transition-all duration-500 ${
+                      zoomingSymbolPart?.symbol === '=' && zoomingSymbolPart?.part === 'operator' ? 'text-2xl sm:text-5xl text-purple-600 animate-bounce scale-150' : ''
+                    } ${
+                      highlightedSymbol === '=' ? 'animate-pulse' : ''
+                    } text-orange-600`}>=</div>
+                    
+                    {/* Nombre 5 (à droite) */}
+                    <div className={`text-lg sm:text-3xl font-bold text-orange-800 transition-all duration-500 ${
+                      zoomingSymbolPart?.symbol === '=' && zoomingSymbolPart?.part === 'num2' ? 'text-xl sm:text-4xl text-red-600 animate-bounce scale-150' : ''
+                    } ${
+                      highlightedSymbol === '=' ? 'winner-celebrate' : ''
+                    }`}>5</div>
+                    
+                            {/* Animation pour l'égalité */}
+        {highlightedSymbol === '=' && (
+          <>
+            <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 text-green-500 text-sm sm:text-lg animate-pulse">✨</div>
+          </>
+        )}
+                  </div>
+                  
+                  <p className={`text-xs sm:text-sm text-gray-600 ${
+                    highlightedSymbol === '=' ? 'animate-pulse font-bold text-orange-800' : ''
+                  }`}>Exactement pareil !</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Introduction */}
+            <div 
+              id="introduction"
+              className="bg-white rounded-xl p-3 sm:p-8 shadow-lg"
+            >
+              <div className="flex items-center justify-center gap-2 sm:gap-3 mb-3 sm:mb-6">
+                <h2 className="text-lg sm:text-2xl font-bold text-gray-900">
+                  🤔 Pourquoi comparer et mettre dans l'ordre ?
+                </h2>
+                {/* Icône d'animation pour l'exemple */}
+                <div className="bg-gradient-to-r from-purple-500 to-indigo-600 text-white rounded-full w-8 h-8 sm:w-12 sm:h-12 flex items-center justify-center text-sm sm:text-xl font-bold shadow-lg hover:scale-110 cursor-pointer transition-all duration-300 ring-2 ring-purple-300 ring-opacity-40 hover:shadow-xl hover:ring-4 hover:ring-purple-200"
+                     style={{
+                       animation: 'subtle-glow 3s ease-in-out infinite',
+                       animationPlayState: 'running'
+                     }} 
+                     title="🎯 Animation de l'exemple ! Cliquez pour voir 5 > 3 en action."
+                     onClick={async () => {
+                       if (!isPlayingVocal) {
+                         stopAllVocalsAndAnimations();
+                         await new Promise(resolve => setTimeout(resolve, 100));
+                         // Animation de l'exemple 5 > 3
+                         setAnimatingExample(0);
+                         await new Promise(resolve => setTimeout(resolve, 3000));
+                         setAnimatingExample(null);
+                       }
+                     }}
+                >
+                  🎯
+                </div>
+              </div>
+              
+              <div className="bg-pink-50 rounded-lg p-3 sm:p-6 mb-3 sm:mb-6">
+                <p className="text-base sm:text-lg text-center text-pink-800 font-semibold mb-2 sm:mb-4">
                   Comparer les nombres nous aide à savoir lequel est plus grand ou plus petit !
                 </p>
                 
@@ -1247,12 +1763,12 @@ export default function OrdonnerComparerCP() {
                   animatingExample === 0 ? 'ring-4 ring-pink-400 bg-pink-50 scale-105' : ''
                 }`}>
                   <div className="text-center">
-                    <div className={`text-2xl font-bold text-pink-600 mb-2 transition-all duration-500 ${
-                      exampleStep === 'intro' ? 'animate-pulse text-3xl' : ''
+                    <div className={`text-lg sm:text-2xl font-bold text-pink-600 mb-1 sm:mb-2 transition-all duration-500 ${
+                      exampleStep === 'intro' ? 'animate-pulse text-xl sm:text-3xl' : ''
                     }`}>
                       Exemple : 5 &gt; 3
-                    </div>
-                    <div className={`text-xl text-gray-700 mb-4 transition-all duration-500 ${
+                </div>
+                    <div className={`text-base sm:text-xl text-gray-700 mb-2 sm:mb-4 transition-all duration-500 ${
                       exampleStep === 'intro' ? 'animate-bounce font-bold text-pink-700' : ''
                     }`}>
                       5 est plus grand que 3
@@ -1264,7 +1780,7 @@ export default function OrdonnerComparerCP() {
                         {renderCircles(5)}
                       </div>
                       <div className={`text-2xl font-bold text-pink-600 transition-all duration-500 ${
-                        exampleStep === 'counting' ? 'text-4xl animate-bounce text-green-600' : ''
+                        exampleStep === 'counting' ? 'text-4xl pique-right text-red-600' : ''
                       }`}>&gt;</div>
                       <div className={`flex justify-center transition-all duration-700 ${
                         exampleStep === 'counting' ? 'scale-125 ring-2 ring-red-400' : ''
@@ -1277,169 +1793,128 @@ export default function OrdonnerComparerCP() {
               </div>
             </div>
 
-            {/* Les symboles */}
-            <div 
-              id="symbols"
-              className={`bg-white rounded-xl p-8 shadow-lg transition-all duration-1000 ${
-                highlightedElement === 'symbols' ? 'ring-4 ring-blue-400 bg-blue-50 scale-105' : ''
-              }`}
-            >
-              <h2 className="text-2xl font-bold text-center mb-6 text-gray-900">
-                🔣 Les symboles de comparaison
-              </h2>
-              
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className={`bg-blue-50 rounded-lg p-6 text-center transition-all duration-1000 ${
-                  highlightedSymbol === '>' ? 'ring-4 ring-blue-400 bg-blue-100 scale-110 shadow-2xl' : ''
-                }`}>
-                  <div className={`text-6xl font-bold text-blue-600 mb-4 transition-all duration-500 ${
-                    highlightedSymbol === '>' ? 'animate-bounce text-8xl' : ''
-                  }`}>&gt;</div>
-                  <h3 className="text-xl font-bold text-blue-800 mb-2">Plus grand que</h3>
-                  <p className="text-lg text-blue-700 flex items-center justify-center space-x-2">
-                    <span className={`transition-all duration-500 ${
-                      zoomingSymbolPart?.symbol === '>' && zoomingSymbolPart?.part === 'num1' ? 'text-3xl font-bold text-red-600 animate-bounce scale-150' : ''
-                    }`}>7</span>
-                    <span className={`transition-all duration-500 ${
-                      zoomingSymbolPart?.symbol === '>' && zoomingSymbolPart?.part === 'operator' ? 'text-3xl font-bold text-green-600 animate-bounce scale-150' : ''
-                    }`}>&gt;</span>
-                    <span className={`transition-all duration-500 ${
-                      zoomingSymbolPart?.symbol === '>' && zoomingSymbolPart?.part === 'num2' ? 'text-3xl font-bold text-red-600 animate-bounce scale-150' : ''
-                    }`}>3</span>
-                  </p>
-                  <p className={`text-sm text-gray-600 ${
-                    highlightedSymbol === '>' ? 'animate-pulse font-bold text-blue-800' : ''
-                  }`}>La bouche mange le plus petit !</p>
-                </div>
-                 
-                <div className={`bg-green-50 rounded-lg p-6 text-center transition-all duration-1000 ${
-                  highlightedSymbol === '<' ? 'ring-4 ring-green-400 bg-green-100 scale-110 shadow-2xl' : ''
-                }`}>
-                  <div className={`text-6xl font-bold text-green-600 mb-4 transition-all duration-500 ${
-                    highlightedSymbol === '<' ? 'animate-bounce text-8xl' : ''
-                  }`}>&lt;</div>
-                  <h3 className="text-xl font-bold text-green-800 mb-2">Plus petit que</h3>
-                  <p className="text-lg text-green-700 flex items-center justify-center space-x-2">
-                    <span className={`transition-all duration-500 ${
-                      zoomingSymbolPart?.symbol === '<' && zoomingSymbolPart?.part === 'num1' ? 'text-3xl font-bold text-red-600 animate-bounce scale-150' : ''
-                    }`}>2</span>
-                    <span className={`transition-all duration-500 ${
-                      zoomingSymbolPart?.symbol === '<' && zoomingSymbolPart?.part === 'operator' ? 'text-3xl font-bold text-blue-600 animate-bounce scale-150' : ''
-                    }`}>&lt;</span>
-                    <span className={`transition-all duration-500 ${
-                      zoomingSymbolPart?.symbol === '<' && zoomingSymbolPart?.part === 'num2' ? 'text-3xl font-bold text-red-600 animate-bounce scale-150' : ''
-                    }`}>8</span>
-                  </p>
-                  <p className={`text-sm text-gray-600 ${
-                    highlightedSymbol === '<' ? 'animate-pulse font-bold text-green-800' : ''
-                  }`}>La bouche mange le plus petit !</p>
-                </div>
-                
-                <div className={`bg-orange-50 rounded-lg p-6 text-center transition-all duration-1000 ${
-                  highlightedSymbol === '=' ? 'ring-4 ring-orange-400 bg-orange-100 scale-110 shadow-2xl' : ''
-                }`}>
-                  <div className={`text-6xl font-bold text-orange-600 mb-4 transition-all duration-500 ${
-                    highlightedSymbol === '=' ? 'animate-bounce text-8xl' : ''
-                  }`}>=</div>
-                  <h3 className="text-xl font-bold text-orange-800 mb-2">Égal à</h3>
-                  <p className="text-lg text-orange-700 flex items-center justify-center space-x-2">
-                    <span className={`transition-all duration-500 ${
-                      zoomingSymbolPart?.symbol === '=' && zoomingSymbolPart?.part === 'num1' ? 'text-3xl font-bold text-red-600 animate-bounce scale-150' : ''
-                    }`}>5</span>
-                    <span className={`transition-all duration-500 ${
-                      zoomingSymbolPart?.symbol === '=' && zoomingSymbolPart?.part === 'operator' ? 'text-3xl font-bold text-purple-600 animate-bounce scale-150' : ''
-                    }`}>=</span>
-                    <span className={`transition-all duration-500 ${
-                      zoomingSymbolPart?.symbol === '=' && zoomingSymbolPart?.part === 'num2' ? 'text-3xl font-bold text-red-600 animate-bounce scale-150' : ''
-                    }`}>5</span>
-                  </p>
-                  <p className={`text-sm text-gray-600 ${
-                    highlightedSymbol === '=' ? 'animate-pulse font-bold text-orange-800' : ''
-                  }`}>Exactement pareil !</p>
-                </div>
-              </div>
-            </div>
-
             {/* Sélecteur d'activité */}
             <div 
               id="activity-section"
-              className={`bg-white rounded-xl p-8 shadow-lg transition-all duration-1000 ${
+              className={`bg-white rounded-xl p-3 sm:p-8 shadow-lg transition-all duration-1000 ${
                 highlightedElement === 'activity-selector' ? 'ring-4 ring-green-400 bg-green-50 scale-105' : ''
               }`}
             >
-              <h2 className="text-2xl font-bold text-center mb-6 text-gray-900">
-                🎯 Choisis ce que tu veux apprendre
-              </h2>
+              <div className="flex items-center justify-center gap-2 sm:gap-3 mb-3 sm:mb-6">
+                <h2 className="text-lg sm:text-2xl font-bold text-gray-900">
+                  🎯 Choisis ce que tu veux apprendre
+                </h2>
+                {/* Icône d'animation pour les activités */}
+                <div className="bg-gradient-to-r from-green-500 to-teal-600 text-white rounded-full w-8 h-8 sm:w-12 sm:h-12 flex items-center justify-center text-sm sm:text-xl font-bold shadow-lg hover:scale-110 cursor-pointer transition-all duration-300 ring-2 ring-green-300 ring-opacity-40 hover:shadow-xl hover:ring-4 hover:ring-green-200"
+                     style={{
+                       animation: 'subtle-glow 3s ease-in-out infinite',
+                       animationPlayState: 'running'
+                     }} 
+                     title="🎯 Animation des activités ! Cliquez pour un aperçu rapide."
+                  onClick={async () => {
+                    if (!isPlayingVocal) {
+                      stopAllVocalsAndAnimations();
+                      await new Promise(resolve => setTimeout(resolve, 100));
+                         // Animation rapide des boutons d'activité
+                      setHighlightedElement('activity-selector');
+                         await new Promise(resolve => setTimeout(resolve, 2000));
+                        setHighlightedElement(null);
+                    }
+                  }}
+                >
+                  🎯
+                </div>
+              </div>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+              <div className="grid grid-cols-2 gap-3 sm:gap-4 mb-3 sm:mb-6">
+                <div className="relative">
                 <button
+                  id="comparer-button"
                   onClick={() => {
                     setSelectedActivity('comparer');
                     explainComparison();
                   }}
-                  className={`p-6 rounded-lg font-bold text-xl transition-all ${
+                    className={`w-full h-16 sm:h-20 p-3 sm:p-6 rounded-lg font-bold text-xs sm:text-base transition-all flex items-center justify-center ${
                     selectedActivity === 'comparer'
                       ? 'bg-pink-500 text-white shadow-lg scale-105'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      : highlightedElement === 'comparer-button' 
+                        ? 'bg-pink-300 text-white ring-4 ring-pink-400 scale-105'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}
                 >
                   ⚖️ Comparer deux nombres
                 </button>
-                  <button
+                  {/* Petite icône d'animation */}
+                  <div className="absolute -top-1 -right-1 sm:-top-2 sm:-right-2 bg-gradient-to-r from-pink-400 to-red-500 text-white rounded-full w-6 h-6 sm:w-8 sm:h-8 flex items-center justify-center text-xs sm:text-sm font-bold shadow-lg animate-pulse">
+                    🎬
+                  </div>
+                </div>
+                <div className="relative">
+                <button
+                  id="ordonner-button"
                   onClick={() => {
                     setSelectedActivity('ordonner');
                     explainRangement();
                   }}
-                  className={`p-6 rounded-lg font-bold text-xl transition-all ${
+                    className={`w-full h-16 sm:h-20 p-3 sm:p-6 rounded-lg font-bold text-xs sm:text-base transition-all flex items-center justify-center ${
                     selectedActivity === 'ordonner'
                       ? 'bg-purple-500 text-white shadow-lg scale-105'
+                      : highlightedElement === 'ordonner-button' 
+                        ? 'bg-purple-300 text-white ring-4 ring-purple-400 scale-105'
                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                     }`}
-                  >
-                  📊 Mettre plusieurs nombres dans l'ordre
-                  </button>
-                            </div>
-                          </div>
+                >
+                  📊 Ordonner les nombres
+                </button>
+                  {/* Petite icône d'animation */}
+                  <div className="absolute -top-1 -right-1 sm:-top-2 sm:-right-2 bg-gradient-to-r from-purple-400 to-indigo-500 text-white rounded-full w-6 h-6 sm:w-8 sm:h-8 flex items-center justify-center text-xs sm:text-sm font-bold shadow-lg animate-pulse">
+                    🎬
+                  </div>
+                </div>
+              </div>
+            </div>
 
             {/* Affichage selon l'activité sélectionnée */}
             {selectedActivity === 'comparer' ? (
               <div 
                 id="illustration-section"
-                className={`bg-white rounded-xl p-8 shadow-lg transition-all duration-1000 ${
+                className={`bg-white rounded-xl p-3 sm:p-8 shadow-lg transition-all duration-1000 ${
                   animatingComparison ? 'ring-4 ring-pink-400 bg-pink-50 scale-105' : ''
                 }`}
               >
-                <h2 className="text-2xl font-bold text-center mb-6 text-gray-900">
+                <div className="text-center mb-3 sm:mb-6">
+                  <h2 className="text-lg sm:text-2xl font-bold text-gray-900">
                   ⚖️ Comment comparer deux nombres
                 </h2>
+                </div>
                 
-                    <div className="space-y-6">
+                    <div className="space-y-3 sm:space-y-6">
                   {comparaisonExamples.map((example, index) => (
                     <div 
                       key={index} 
-                      className={`bg-gradient-to-r from-blue-50 to-green-50 rounded-lg p-6 transition-all duration-700 ${
+                      className={`bg-gradient-to-r from-blue-50 to-green-50 rounded-lg p-3 sm:p-6 transition-all duration-700 ${
                         animatingStep === 'comparing' ? 'scale-105 ring-2 ring-blue-300' : ''
                       } ${
                         animatingExample === index && exampleStep === 'highlight' ? 'ring-4 ring-purple-400 bg-purple-100 scale-110 shadow-2xl' : ''
                       }`}
                     >
-                      <div className="text-center space-y-4">
-                        <div className={`text-3xl font-bold text-purple-600 transition-all duration-500 ${
-                          animatingExample === index && exampleStep === 'highlight' ? 'animate-pulse text-4xl text-green-600' : ''
+                      <div className="text-center space-y-2 sm:space-y-4">
+                        <div className={`text-2xl sm:text-3xl font-bold text-purple-600 transition-all duration-500 ${
+                          animatingExample === index && exampleStep === 'highlight' ? 'animate-pulse text-3xl sm:text-4xl text-green-600' : ''
                         }`}>
                           {example.num1} {example.symbol} {example.num2}
                                 </div>
                         
-                        <div className="bg-white rounded-lg p-4">
-                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-center mb-3">
+                        <div className="bg-white rounded-lg p-2 sm:p-4">
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-2 sm:gap-4 items-center mb-2 sm:mb-3">
                             <div className={`text-center transition-all duration-700 ${
                               animatingExample === index && exampleStep === 'highlight' ? 'scale-125 ring-2 ring-blue-300' : ''
                             }`}>
-                              <div className="text-xl font-bold mb-2">{example.num1}</div>
+                              <div className="text-base sm:text-xl font-bold mb-1 sm:mb-2">{example.num1}</div>
                               {renderCircles(example.num1)}
                               </div>
-                            <div className={`text-4xl font-bold text-purple-600 text-center transition-all duration-500 ${
-                              animatingExample === index && exampleStep === 'highlight' ? 'animate-bounce text-6xl text-green-600' : ''
+                            <div className={`text-3xl sm:text-4xl font-bold text-purple-600 text-center transition-all duration-500 ${
+                              animatingExample === index && exampleStep === 'highlight' ? 'animate-bounce text-5xl sm:text-6xl text-green-600' : ''
                             }`}>
                               {example.symbol}
                             </div>
@@ -1468,9 +1943,30 @@ export default function OrdonnerComparerCP() {
                   animatingRangement ? 'ring-4 ring-purple-400 bg-purple-50 scale-105' : ''
                 }`}
               >
-                <h2 className="text-2xl font-bold text-center mb-6 text-gray-900">
+                <div className="flex items-center justify-center gap-3 mb-6">
+                  <h2 className="text-2xl font-bold text-gray-900">
                   📊 Comment mettre les nombres dans l'ordre
                 </h2>
+                  {/* Icône d'animation pour les rangements */}
+                  <div className="bg-gradient-to-r from-purple-500 to-violet-600 text-white rounded-full w-10 h-10 flex items-center justify-center text-lg font-bold shadow-lg hover:scale-110 cursor-pointer transition-all duration-300 ring-2 ring-purple-300 ring-opacity-40 hover:shadow-xl hover:ring-4 hover:ring-purple-200"
+                       style={{
+                         animation: 'subtle-glow 3s ease-in-out infinite',
+                         animationPlayState: 'running'
+                       }} 
+                       title="📊 Animation des rangements ! Cliquez pour voir les exemples."
+                       onClick={async () => {
+                         if (!isPlayingVocal) {
+                           stopAllVocalsAndAnimations();
+                           await new Promise(resolve => setTimeout(resolve, 100));
+                           setAnimatingRangement(true);
+                           await new Promise(resolve => setTimeout(resolve, 3000));
+                           setAnimatingRangement(false);
+                         }
+                       }}
+                  >
+                    📊
+                  </div>
+                </div>
                 
                 <div className="space-y-6">
                   {rangementExamples.map((example, index) => (
@@ -1576,54 +2072,166 @@ export default function OrdonnerComparerCP() {
                       )}
 
             {/* Conseils pratiques */}
-            <div className="bg-white rounded-xl p-8 shadow-lg">
-              <h2 className="text-2xl font-bold text-center mb-6 text-gray-900">
-                💡 Trucs pour retenir
-              </h2>
+            <div className="bg-white rounded-xl p-3 sm:p-8 shadow-lg">
+              <h2 className="text-lg sm:text-2xl font-bold text-center mb-3 sm:mb-6 text-gray-900">
+                  💡 Trucs pour retenir
+                </h2>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="bg-blue-50 rounded-lg p-6">
-                  <h3 className="text-xl font-bold mb-4 text-blue-800">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-6">
+                <div className="bg-blue-50 rounded-lg p-3 sm:p-6">
+                  <h3 className="text-base sm:text-xl font-bold mb-2 sm:mb-4 text-blue-800">
                     ⚖️ Pour comparer
                   </h3>
-                  <ul className="space-y-2 text-blue-700">
-                    <li>• Compte les objets ou les doigts</li>
-                    <li>• La "bouche" mange toujours le plus petit</li>
-                    <li>• Plus de dizaines = plus grand nombre</li>
+                  <ul className="space-y-1 sm:space-y-2 text-sm sm:text-base text-blue-700">
+                    <li>• Compte les objets</li>
+                    <li>• Le "bec" pique le plus petit</li>
+                    <li>• Plus de dizaines = plus grand</li>
                     <li>• Utilise la droite numérique</li>
-              </ul>
-            </div>
+                  </ul>
+                </div>
 
-                <div className="bg-purple-50 rounded-lg p-6">
-                  <h3 className="text-xl font-bold mb-4 text-purple-800">
+                <div className="bg-purple-50 rounded-lg p-3 sm:p-6">
+                  <h3 className="text-base sm:text-xl font-bold mb-2 sm:mb-4 text-purple-800">
                     📊 Pour mettre dans l'ordre
                   </h3>
-                  <ul className="space-y-2 text-purple-700">
+                  <ul className="space-y-1 sm:space-y-2 text-sm sm:text-base text-purple-700">
                     <li>• Commence par le plus petit</li>
                     <li>• Compare deux par deux</li>
-                    <li>• Écris-les dans l'ordre sur une ligne</li>
+                    <li>• Écris-les sur une ligne</li>
                     <li>• Vérifie en comptant</li>
                   </ul>
                 </div>
                 </div>
                 </div>
 
-            {/* Mini-jeu */}
-            <div className="bg-gradient-to-r from-pink-400 to-purple-400 rounded-xl p-6 text-white">
-              <h3 className="text-xl font-bold mb-3">🎮 Mini-jeu : Compare rapidement !</h3>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {[
-                  { comparison: '8 ? 5', answer: '8 > 5' },
-                  { comparison: '3 ? 9', answer: '3 < 9' },
-                  { comparison: '7 ? 7', answer: '7 = 7' },
-                  { comparison: '12 ? 6', answer: '12 > 6' }
-                ].map((item, index) => (
-                  <div key={index} className="bg-white bg-opacity-20 rounded-lg p-3 text-center">
-                    <div className="font-bold mb-2">{item.comparison}</div>
-                    <div className="text-lg font-bold">{item.answer}</div>
+            {/* Mini-jeu sobre */}
+            <div className="bg-white rounded-xl p-6 shadow-lg border border-gray-200">
+              {/* En-tête simple */}
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-xl font-bold text-gray-900">🎮 Mini-jeu : Compare rapidement !</h3>
+                <button
+                  onClick={resetMiniGame}
+                  className="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1 rounded-lg text-sm font-medium transition-colors"
+                >
+                  🔄 Reset
+                </button>
               </div>
+
+              {/* Score simple */}
+              <div className="flex items-center justify-between mb-4">
+                <div className="text-sm text-gray-600">
+                  Score: <span className="font-bold text-gray-900">{miniGameScore}/4</span>
+                </div>
+                <div className="flex gap-1">
+                  {[...Array(4)].map((_, i) => (
+                    <div
+                      key={i}
+                      className={`w-2 h-2 rounded-full transition-colors ${
+                        completedAnswers[i] ? 'bg-green-500' : 'bg-gray-300'
+                      }`}
+                    ></div>
                 ))}
             </div>
+              </div>
+
+              {/* Message de félicitations sobre */}
+              {miniGameScore === 4 && (
+                <div className="bg-green-50 border border-green-200 text-green-800 rounded-lg p-3 mb-4 text-center">
+                  ✅ Excellent ! Toutes les réponses sont correctes !
+                </div>
+              )}
+
+              <p className="text-sm text-gray-600 mb-4 text-center">
+                Clique sur "Voir la solution" pour révéler chaque réponse.
+              </p>
+
+              {/* Cartes colorées */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                {[
+                  { comparison: '8 ? 5', answer: '8 > 5', color: 'blue' },
+                  { comparison: '3 ? 9', answer: '3 < 9', color: 'green' },
+                  { comparison: '7 ? 7', answer: '7 = 7', color: 'orange' },
+                  { comparison: '12 ? 6', answer: '12 > 6', color: 'purple' }
+                ].map((item, index) => {
+                  const getCardColors = (color: string) => {
+                    switch(color) {
+                      case 'blue':
+                        return {
+                          bg: completedAnswers[index] ? 'bg-blue-100 border-blue-400' : 'bg-blue-50 border-blue-200',
+                          text: 'text-blue-800',
+                          button: 'bg-blue-500 hover:bg-blue-600 text-white'
+                        };
+                      case 'green':
+                        return {
+                          bg: completedAnswers[index] ? 'bg-green-100 border-green-400' : 'bg-green-50 border-green-200',
+                          text: 'text-green-800',
+                          button: 'bg-green-500 hover:bg-green-600 text-white'
+                        };
+                      case 'orange':
+                        return {
+                          bg: completedAnswers[index] ? 'bg-orange-100 border-orange-400' : 'bg-orange-50 border-orange-200',
+                          text: 'text-orange-800',
+                          button: 'bg-orange-500 hover:bg-orange-600 text-white'
+                        };
+                      case 'purple':
+                        return {
+                          bg: completedAnswers[index] ? 'bg-purple-100 border-purple-400' : 'bg-purple-50 border-purple-200',
+                          text: 'text-purple-800',
+                          button: 'bg-purple-500 hover:bg-purple-600 text-white'
+                        };
+                      default:
+                        return {
+                          bg: 'bg-gray-50 border-gray-200',
+                          text: 'text-gray-800',
+                          button: 'bg-gray-500 hover:bg-gray-600 text-white'
+                        };
+                    }
+                  };
+                  
+                  const colors = getCardColors(item.color);
+                  
+                  return (
+                    <div
+                      key={index}
+                      className={`p-3 sm:p-4 rounded-lg border-2 text-center transition-all duration-300 ${colors.bg} ${colors.text}`}
+                    >
+                      <div className="font-bold text-base sm:text-lg mb-2">{item.comparison}</div>
+                      
+                      {revealedAnswers[index] ? (
+                        <div className="space-y-2">
+                          <div className="text-base sm:text-lg font-bold p-2 bg-white rounded border">
+                            {item.answer}
+                          </div>
+                          {completedAnswers[index] && (
+                            <div className="text-lg">
+                              ✅
+                            </div>
+                          )}
+                        </div>
+                      ) : (
+                        <button
+                          onClick={() => revealAnswer(index)}
+                          className={`px-3 py-1 rounded text-xs sm:text-sm font-medium transition-all hover:scale-105 ${colors.button}`}
+                        >
+                          👁️ Voir la solution
+                        </button>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Barre de progression simple */}
+              {miniGameScore > 0 && (
+                <div className="mt-4">
+                  <div className="bg-gray-200 rounded-full h-2 overflow-hidden">
+                    <div 
+                      className="bg-green-500 h-full transition-all duration-500 ease-out"
+                      style={{ width: `${(miniGameScore / 4) * 100}%` }}
+                    ></div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         ) : (

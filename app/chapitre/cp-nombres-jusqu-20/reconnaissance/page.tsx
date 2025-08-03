@@ -351,8 +351,6 @@ export default function ReconnaissanceNombresCP() {
 
   // Fonction pour l'introduction vocale de Sam le Pirate - DÉMARRAGE MANUEL PAR CLIC
   const startPirateIntro = async () => {
-    if (pirateIntroStarted) return;
-    
     // FORCER la remise à false pour le démarrage manuel
     stopSignalRef.current = false;
     setIsPlayingVocal(true);
@@ -1069,26 +1067,33 @@ export default function ReconnaissanceNombresCP() {
         {/* Bouton Start Exercices - AVEC AUDIO */}
         <button
         onClick={startPirateIntro}
-        disabled={isPlayingVocal || pirateIntroStarted}
+        disabled={isPlayingVocal}
         className={`relative px-6 sm:px-12 py-3 sm:py-5 rounded-xl font-black text-base sm:text-2xl transition-all duration-300 transform ${
           isPlayingVocal 
             ? 'bg-gradient-to-r from-gray-400 to-gray-500 text-gray-200 cursor-not-allowed animate-pulse shadow-md' 
             : pirateIntroStarted
-              ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white opacity-75 cursor-not-allowed shadow-lg'
+              ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white hover:from-blue-600 hover:to-indigo-700 hover:scale-110 shadow-xl hover:shadow-2xl border-2 border-blue-300'
               : 'bg-gradient-to-r from-orange-500 via-red-500 to-pink-500 text-white hover:from-orange-600 hover:via-red-600 hover:to-pink-600 hover:scale-110 shadow-2xl hover:shadow-3xl animate-pulse border-4 border-yellow-300'
-        } ${!isPlayingVocal && !pirateIntroStarted ? 'ring-4 ring-yellow-300 ring-opacity-75' : ''}`}
+        } ${!isPlayingVocal && pirateIntroStarted ? 'ring-4 ring-blue-300 ring-opacity-75' : !isPlayingVocal ? 'ring-4 ring-yellow-300 ring-opacity-75' : ''}`}
         style={{
-          animationDuration: !isPlayingVocal && !pirateIntroStarted ? '1.5s' : '2s',
-          animationIterationCount: isPlayingVocal || pirateIntroStarted ? 'none' : 'infinite',
+          animationDuration: !isPlayingVocal ? '1.2s' : '2s',
+          animationIterationCount: isPlayingVocal ? 'none' : 'infinite',
           textShadow: '2px 2px 4px rgba(0,0,0,0.3)',
           boxShadow: !isPlayingVocal && !pirateIntroStarted 
-            ? '0 10px 25px rgba(0,0,0,0.3), 0 0 30px rgba(255,215,0,0.4), inset 0 1px 0 rgba(255,255,255,0.2)' 
-            : ''
+            ? '0 10px 25px rgba(0,0,0,0.3), 0 0 30px rgba(255,215,0,0.4), inset 0 1px 0 rgba(255,255,255,0.2)'
+            : !isPlayingVocal && pirateIntroStarted
+              ? '0 10px 25px rgba(0,0,0,0.3), 0 0 30px rgba(59,130,246,0.4), inset 0 1px 0 rgba(255,255,255,0.2)'
+              : ''
         }}
       >
         {/* Effet de brillance */}
-        {!isPlayingVocal && !pirateIntroStarted && (
-          <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-transparent via-white to-transparent opacity-20 animate-pulse"></div>
+        {!isPlayingVocal && (
+          <div 
+            className="absolute inset-0 rounded-xl bg-gradient-to-r from-transparent via-white to-transparent opacity-20"
+            style={{
+              animation: 'pulse 1.2s cubic-bezier(0.4, 0, 0.6, 1) infinite'
+            }}
+          ></div>
         )}
         
         {/* Icônes et texte avec plus d'émojis */}
@@ -1096,13 +1101,13 @@ export default function ReconnaissanceNombresCP() {
           {isPlayingVocal 
             ? <>🎤 <span className="animate-bounce">Sam parle...</span></> 
             : pirateIntroStarted
-              ? <>✅ <span>Intro terminée</span></>
+              ? <>🔄 <span className="animate-bounce">RECOMMENCER</span> ✨</>
               : <>🚀 <span className="animate-bounce">COMMENCER</span> ✨</>
           }
         </span>
         
-        {/* Particules brillantes pour le bouton commencer */}
-        {!isPlayingVocal && !pirateIntroStarted && (
+        {/* Particules brillantes pour le bouton commencer/recommencer */}
+        {!isPlayingVocal && (
           <>
             <div className="absolute -top-1 -right-1 w-3 h-3 bg-yellow-300 rounded-full animate-ping"></div>
             <div className="absolute -bottom-1 -left-1 w-2 h-2 bg-pink-300 rounded-full animate-ping" style={{animationDelay: '0.5s'}}></div>
@@ -2030,20 +2035,27 @@ export default function ReconnaissanceNombresCP() {
           </div>
         )}
 
-        {/* Bouton Stop flottant pour toutes les animations vocales */}
+        {/* Bouton flottant Sam pour arrêter les vocaux */}
         {isPlayingVocal && (
-          <button
-            onClick={() => {
-              console.log('🛑 Bouton stop flottant cliqué');
-              stopAllVocalsAndAnimations();
-            }}
-            className="fixed top-4 right-4 z-50 bg-red-500 hover:bg-red-600 text-white p-3 rounded-full shadow-lg transition-all hover:scale-110 animate-pulse"
-            title="Arrêter la lecture de Sam"
-          >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
-              <rect x="6" y="6" width="12" height="12" />
-            </svg>
-          </button>
+          <div className="fixed top-4 right-4 z-[60]">
+            <button
+              onClick={stopAllVocalsAndAnimations}
+              className="relative flex items-center gap-2 px-3 py-2 rounded-full shadow-2xl transition-all duration-300 bg-gradient-to-r from-red-500 to-red-600 text-white hover:from-red-600 hover:to-red-700 hover:scale-105 animate-pulse"
+              title="Arrêter Sam"
+            >
+              <div className="w-8 h-8 rounded-full overflow-hidden border-2 border-white/50">
+                <img 
+                  src="/image/pirate-small.png" 
+                  alt="Sam le Pirate" 
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <>
+                <span className="text-sm font-bold hidden sm:block">Stop</span>
+                <div className="w-3 h-3 bg-white rounded-sm animate-pulse"></div>
+              </>
+            </button>
+          </div>
         )}
       </div>
     </div>
