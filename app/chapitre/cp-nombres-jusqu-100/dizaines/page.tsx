@@ -1556,7 +1556,7 @@ export default function DizainesCP() {
               </div>
               
               {/* Animation de la transformation - VERSION UNIFIÉE */}
-              <div className={`bg-gradient-to-br from-green-50 to-blue-50 rounded-lg sm:rounded-xl p-3 sm:p-6 transition-all duration-1000 ${
+              <div className={`bg-gradient-to-br from-green-50 to-blue-50 rounded-lg sm:rounded-xl p-4 sm:p-6 transition-all duration-1000 ${
                 (autoAnimationStep >= 11 || manualAnimationStep >= 1) ? 'ring-2 sm:ring-4 ring-green-400 bg-green-100 scale-105' : ''
               }`}>
                 <div className="text-center mb-3 sm:mb-4">
@@ -1615,7 +1615,7 @@ export default function DizainesCP() {
             {/* Section exemples avec animation automatique */}
             <div 
               id="examples-section"
-              className={`bg-white rounded-xl p-4 sm:p-6 shadow-lg transition-all duration-1000 ${
+              className={`bg-white rounded-xl p-4 sm:p-8 shadow-lg transition-all duration-1000 ${
                 highlightedElement === 'examples-section' || autoAnimationStep >= 2 ? 'ring-4 ring-purple-400 bg-purple-50 scale-105' : ''
               }`}
             >
@@ -1641,7 +1641,7 @@ export default function DizainesCP() {
               </div>
               
               {/* Grille des dizaines avec animations */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-4 mb-6 sm:mb-8">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8">
                 {dizaines.map((diz, index) => {
                   const isCurrentlyAnimated = selectedNumber === diz.value;
                   return (
@@ -1663,7 +1663,7 @@ export default function DizainesCP() {
 
               {/* Affichage détaillé du nombre sélectionné */}
               {selectedNumber && (
-                <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-lg p-3 sm:p-6 border-2 border-blue-200 mt-4">
+                <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-4 sm:p-8 border-2 border-blue-200 mt-4">
                   {(() => {
                     const numberData = dizaines.find(d => d.value === selectedNumber);
                     const isAnimated = (autoAnimationStep >= 3 && autoAnimationStep <= 10) || selectedNumber;
@@ -1671,13 +1671,13 @@ export default function DizainesCP() {
                       <div className="text-center">
                         {/* Affichage du nombre avec mise en évidence du chiffre de gauche */}
                                                 {highlightLeftDigit && numberData.value.length >= 2 ? (
-                          <div className="flex justify-center items-center gap-2 mb-3 sm:mb-4">
+                          <div className="flex justify-center items-center gap-1 sm:gap-2 mb-2 sm:mb-4">
                             {/* Chiffre de gauche (dizaines) mis en évidence */}
-                            <div className="text-3xl sm:text-6xl font-bold bg-yellow-300 text-yellow-800 px-3 sm:px-4 py-1 sm:py-2 rounded-lg border-2 sm:border-4 border-yellow-500 shadow-lg">
+                            <div className="text-2xl sm:text-6xl font-bold bg-yellow-300 text-yellow-800 px-2 sm:px-4 py-1 sm:py-2 rounded-lg border-2 sm:border-4 border-yellow-500 shadow-lg">
                               {numberData.value[0]}
                 </div>
                             {/* Chiffre de droite (unités) normal */}
-                            <div className="text-3xl sm:text-6xl font-bold text-gray-400 opacity-60">
+                            <div className="text-2xl sm:text-6xl font-bold text-gray-400 opacity-60">
                               {numberData.value[1] || '0'}
               </div>
                           </div>
@@ -1691,19 +1691,19 @@ export default function DizainesCP() {
                         
                         {/* Étiquette explicative quand le chiffre est mis en évidence */}
                         {highlightLeftDigit && (
-                          <div className="mb-4">
-                            <div className="bg-yellow-100 border-4 border-yellow-400 rounded-lg p-3">
-                              <div className="text-yellow-800 font-bold text-lg">
-                                ⬆️ CHIFFRE DE GAUCHE
+                          <div className="mb-3 sm:mb-4">
+                            <div className="bg-yellow-100 border-2 sm:border-4 border-yellow-400 rounded-lg p-3 sm:p-3">
+                              <div className="text-yellow-800 font-bold text-sm sm:text-lg">
+                                📍 CHIFFRE DE GAUCHE
                               </div>
-                              <div className="text-yellow-700 font-bold">
+                              <div className="text-yellow-700 font-bold text-sm sm:text-base">
                                 = {numberData.value[0]} dizaines
                               </div>
                             </div>
                           </div>
                         )}
                         
-                                                <div className={`text-lg sm:text-2xl font-bold mb-2 transition-all duration-1000 ${
+                                                <div className={`text-base sm:text-2xl font-bold mb-2 transition-all duration-1000 ${
                           isAnimated ? 'text-purple-700' : 'text-blue-700'
                         }`}>
                           {numberData.reading}
@@ -1711,10 +1711,10 @@ export default function DizainesCP() {
 
                                                 {/* Représentation visuelle avec mise en surbrillance */}
                         {(showStep >= 2 || selectedNumber) && (
-                          <div className={`text-3xl sm:text-4xl mb-6 p-4 rounded-xl transition-all duration-1000 ${
+                          <div className={`text-2xl sm:text-4xl mb-4 sm:mb-6 p-3 sm:p-4 rounded-xl transition-all duration-1000 ${
                             highlightVisual ? 'bg-purple-100 ring-4 ring-purple-400 scale-110' : 'bg-gray-50'
                           }`}>
-                            <div className="text-center font-bold text-purple-700 mb-2 text-sm">
+                            <div className="text-center font-bold text-purple-700 mb-1 sm:mb-2 text-xs sm:text-sm">
                               REPRÉSENTATION VISUELLE
                             </div>
                     <div className="text-center">
@@ -1725,26 +1725,26 @@ export default function DizainesCP() {
 
                         {/* Décomposition progressive et interactive */}
                         {(showStep >= 2 || selectedNumber) && (
-                          <div className="space-y-4">
+                          <div className="space-y-3 sm:space-y-4">
                             
                             {/* Section boîtes */}
-                            <div className={`bg-white rounded-xl p-4 shadow-md transition-all duration-1000 ${
+                            <div className={`bg-white rounded-xl p-3 sm:p-4 shadow-md transition-all duration-1000 ${
                               highlightBoxes ? 'ring-4 ring-blue-400 bg-blue-50 scale-105' : ''
                             }`}>
                               <div className="flex items-center justify-between">
-                                <div className="flex items-center space-x-3">
-                                  <div className="text-2xl">📦</div>
+                                <div className="flex items-center space-x-2 sm:space-x-3">
+                                  <div className="text-lg sm:text-2xl">📦</div>
                                   <div>
-                                    <div className="font-bold text-blue-700 text-lg">
+                                    <div className="font-bold text-blue-700 text-sm sm:text-lg">
                                       {numberData.groups} boîtes de 10
                             </div>
-                                    <div className="text-blue-600 text-sm">
+                                    <div className="text-blue-600 text-xs sm:text-sm">
                                       Chaque boîte = 10 objets
                                     </div>
                                   </div>
                                 </div>
                                 <div className="text-right">
-                                  <div className="text-2xl font-bold text-blue-700">
+                                  <div className="text-lg sm:text-2xl font-bold text-blue-700">
                                     = {numberData.groups * 10}
                                   </div>
                                 </div>
@@ -1753,23 +1753,23 @@ export default function DizainesCP() {
 
                             {/* Section unités (si présentes) */}
                             {numberData.units > 0 && (
-                              <div className={`bg-white rounded-xl p-4 shadow-md transition-all duration-1000 ${
+                              <div className={`bg-white rounded-xl p-3 sm:p-4 shadow-md transition-all duration-1000 ${
                                 highlightUnits ? 'ring-4 ring-green-400 bg-green-50 scale-105' : ''
                               }`}>
                                 <div className="flex items-center justify-between">
-                                  <div className="flex items-center space-x-3">
-                                    <div className="text-2xl">🔵</div>
+                                  <div className="flex items-center space-x-2 sm:space-x-3">
+                                    <div className="text-lg sm:text-2xl">🔵</div>
                                     <div>
-                                      <div className="font-bold text-green-700 text-lg">
+                                      <div className="font-bold text-green-700 text-sm sm:text-lg">
                                         {numberData.units} objets individuels
                             </div>
-                                      <div className="text-green-600 text-sm">
+                                      <div className="text-green-600 text-xs sm:text-sm">
                                         Objets en plus
                             </div>
                           </div>
                         </div>
                                   <div className="text-right">
-                                    <div className="text-2xl font-bold text-green-700">
+                                    <div className="text-lg sm:text-2xl font-bold text-green-700">
                                       = {numberData.units}
                           </div>
                         </div>
@@ -1779,17 +1779,17 @@ export default function DizainesCP() {
 
                             {/* Total */}
                             {(showStep >= 3 || selectedNumber) && (
-                              <div className={`bg-gradient-to-r from-purple-100 to-pink-100 rounded-xl p-4 shadow-lg transition-all duration-1000 ${
+                              <div className={`bg-gradient-to-r from-purple-100 to-pink-100 rounded-xl p-3 sm:p-4 shadow-lg transition-all duration-1000 ${
                                 highlightTotal ? 'ring-4 ring-purple-500 scale-110' : ''
                               }`}>
                                 <div className="text-center">
-                                  <div className="text-purple-700 font-bold text-lg mb-2">
+                                  <div className="text-purple-700 font-bold text-sm sm:text-lg mb-1 sm:mb-2">
                                     🔢 CALCUL TOTAL
                       </div>
-                                  <div className="text-2xl font-bold text-purple-800">
+                                  <div className="text-lg sm:text-2xl font-bold text-purple-800">
                                     {numberData.groups * 10} + {numberData.units} = {numberData.value}
                                   </div>
-                                  <div className="text-purple-600 text-sm mt-2">
+                                  <div className="text-purple-600 text-xs sm:text-sm mt-1 sm:mt-2">
                                     {numberData.groups} dizaines + {numberData.units} unités
                                   </div>
                                 </div>
@@ -1858,7 +1858,7 @@ export default function DizainesCP() {
 
             {/* Section finale : Récapitulatif */}
             {showFinalSection && (
-              <div className="bg-gradient-to-br from-orange-50 to-pink-50 rounded-xl p-3 sm:p-8 shadow-lg border-2 border-orange-200">
+                              <div className="bg-gradient-to-br from-orange-50 to-pink-50 rounded-xl p-4 sm:p-8 shadow-lg border-2 border-orange-200">
                 <h2 className="text-lg sm:text-2xl font-bold text-center mb-3 sm:mb-6 text-gray-900">
                   🎯 Bravo ! Tu maîtrises les dizaines !
               </h2>
