@@ -19,6 +19,14 @@ export default function LectureEcritureCP100() {
   // États pour l'animation progressive
   const [animationStep, setAnimationStep] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
+  
+  // États pour la décomposition progressive
+  const [showDecomposition, setShowDecomposition] = useState(false);
+  const [showDizaines, setShowDizaines] = useState(false);
+  const [showDizainesText, setShowDizainesText] = useState(false);
+  const [showUnites, setShowUnites] = useState(false);
+  const [showUnitesText, setShowUnitesText] = useState(false);
+  const [showFinalNumber, setShowFinalNumber] = useState(false);
 
   // États pour Sam le Pirate et audio
   const [highlightDigit, setHighlightDigit] = useState<'left' | 'right' | null>(null);
@@ -56,6 +64,13 @@ export default function LectureEcritureCP100() {
     setImageError(false);
     setShowNextButton(false);
     setHighlightNextButton(false);
+    // Réinitialiser les états de décomposition
+    setShowDecomposition(false);
+    setShowDizaines(false);
+    setShowDizainesText(false);
+    setShowUnites(false);
+    setShowUnitesText(false);
+    setShowFinalNumber(false);
   }, [currentExercise]);
 
   // Fonction pour stopper tous les vocaux et animations
@@ -66,6 +81,13 @@ export default function LectureEcritureCP100() {
     setIsExplainingError(false);
     setHighlightDigit(null);
     setHighlightedElement(null);
+    // Réinitialiser les états de décomposition
+    setShowDecomposition(false);
+    setShowDizaines(false);
+    setShowDizainesText(false);
+    setShowUnites(false);
+    setShowUnitesText(false);
+    setShowFinalNumber(false);
   };
 
   // Effet pour détecter la navigation et stopper les vocaux
@@ -329,12 +351,50 @@ export default function LectureEcritureCP100() {
     }
   };
 
-  // Fonction pour expliquer un nombre spécifique avec animation
+  // Fonction pour convertir les chiffres en mots français
+  const getNumberWords = (number: string) => {
+    const unites = ['', 'un', 'deux', 'trois', 'quatre', 'cinq', 'six', 'sept', 'huit', 'neuf'];
+    const dizainesMots = ['', '', 'vingt', 'trente', 'quarante', 'cinquante', 'soixante', 'soixante-dix', 'quatre-vingts', 'quatre-vingt-dix'];
+    
+    if (number === '100') return { dizaines: 10, dizainesText: 'cent', unites: 0, unitesText: '' };
+    
+    const num = parseInt(number);
+    const dizaines = Math.floor(num / 10);
+    const unitesChiffre = num % 10;
+    
+    let dizainesText = '';
+    if (dizaines >= 7 && dizaines <= 9) {
+      if (dizaines === 7) dizainesText = 'soixante-dix';
+      else if (dizaines === 8) dizainesText = 'quatre-vingts';
+      else if (dizaines === 9) dizainesText = 'quatre-vingt-dix';
+    } else {
+      dizainesText = dizainesMots[dizaines];
+    }
+    
+    return {
+      dizaines,
+      dizainesText: dizainesText || '',
+      unites: unitesChiffre,
+      unitesText: unites[unitesChiffre] || ''
+    };
+  };
+
+  // Fonction pour expliquer un nombre spécifique avec animation progressive
   const explainNumberDirectly = async (numberToExplain: string) => {
     if (isPlayingVocal) return;
     
     const selected = numbersWithWriting.find(n => n.chiffre === numberToExplain);
     if (!selected) return;
+    
+    const decomposition = getNumberWords(numberToExplain);
+    
+    // Réinitialiser tous les états
+    setShowDecomposition(false);
+    setShowDizaines(false);
+    setShowDizainesText(false);
+    setShowUnites(false);
+    setShowUnitesText(false);
+    setShowFinalNumber(false);
     
     stopAllVocalsAndAnimations();
     await new Promise(resolve => setTimeout(resolve, 300));
@@ -346,22 +406,53 @@ export default function LectureEcritureCP100() {
       await playAudio(`Analysons ensemble le nombre ${selected.chiffre} !`);
       if (stopSignalRef.current) return;
       
+      // Afficher la décomposition
+      setShowDecomposition(true);
+      await new Promise(resolve => setTimeout(resolve, 800));
+      if (stopSignalRef.current) return;
+      
+      // Étape 1: Montrer les dizaines
+      await playAudio(`D'abord, regardons les dizaines : ${decomposition.dizaines} dizaines !`);
+      if (stopSignalRef.current) return;
+      
+      setShowDizaines(true);
       await new Promise(resolve => setTimeout(resolve, 1200));
       if (stopSignalRef.current) return;
       
-      await playAudio(`${selected.chiffre} s'écrit "${selected.lettres}" en lettres.`);
+      // Montrer le texte des dizaines
+      await playAudio(`${decomposition.dizaines} dizaines, ça fait ${decomposition.dizainesText} !`);
       if (stopSignalRef.current) return;
       
+      setShowDizainesText(true);
       await new Promise(resolve => setTimeout(resolve, 1500));
       if (stopSignalRef.current) return;
       
-      await playAudio(`Voici comment on peut représenter ${selected.chiffre} : ${selected.visual}`);
+      // Étape 2: Montrer les unités
+      if (decomposition.unites > 0) {
+        await playAudio(`Maintenant, les unités : ${decomposition.unites} unités !`);
+        if (stopSignalRef.current) return;
+        
+        setShowUnites(true);
+        await new Promise(resolve => setTimeout(resolve, 1200));
+        if (stopSignalRef.current) return;
+        
+        await playAudio(`${decomposition.unites} unités, ça s'écrit ${decomposition.unitesText} !`);
+        if (stopSignalRef.current) return;
+        
+        setShowUnitesText(true);
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        if (stopSignalRef.current) return;
+      }
+      
+      // Étape 3: Assembler le tout
+      await playAudio(`Et maintenant, assemblons tout : ${decomposition.dizainesText}${decomposition.unites > 0 ? '-' + decomposition.unitesText : ''} = ${selected.chiffre} !`);
       if (stopSignalRef.current) return;
       
+      setShowFinalNumber(true);
       await new Promise(resolve => setTimeout(resolve, 2000));
       if (stopSignalRef.current) return;
       
-      await playAudio(`Parfait ! Tu as découvert le nombre ${selected.chiffre} !`);
+      await playAudio(`Parfait ! Tu as découvert comment décomposer ${selected.chiffre} !`);
       
     } catch (error) {
       console.error('Erreur dans explainNumberDirectly:', error);
@@ -918,6 +1009,112 @@ export default function LectureEcritureCP100() {
                         </p>
                       </div>
                     </div>
+
+                    {/* Décomposition progressive animée */}
+                    {showDecomposition && (() => {
+                      const decomposition = getNumberWords(selected.chiffre);
+                      
+                      return (
+                        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-4 sm:p-6 border-2 border-blue-200">
+                          <h4 className="text-lg sm:text-xl font-bold mb-4 text-blue-800 text-center">
+                            🧮 Décomposition du nombre {selected.chiffre}
+                          </h4>
+                          
+                          <div className="space-y-4">
+                            {/* Étape 1: Dizaines */}
+                            <div className="flex items-center justify-center space-x-4">
+                              <div className={`transition-all duration-1000 ${showDizaines ? 'opacity-100 scale-100' : 'opacity-0 scale-50'}`}>
+                                <div className="bg-white rounded-lg p-3 shadow-md">
+                                  <div className="text-center">
+                                    <div className="text-4xl sm:text-6xl font-bold text-blue-600 mb-2">
+                                      {decomposition.dizaines}
+                                    </div>
+                                    <div className="text-sm sm:text-base text-gray-600">
+                                      dizaines
+                                    </div>
+                                    <div className="text-2xl mt-2">
+                                      {'📦'.repeat(decomposition.dizaines)}
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                              
+                              {showDizainesText && (
+                                <div className="transition-all duration-1000 opacity-100 scale-100">
+                                  <div className="text-2xl sm:text-3xl">→</div>
+                                </div>
+                              )}
+                              
+                              <div className={`transition-all duration-1000 ${showDizainesText ? 'opacity-100 scale-100' : 'opacity-0 scale-50'}`}>
+                                <div className="bg-green-100 rounded-lg p-3 shadow-md">
+                                  <div className="text-center">
+                                    <div className="text-lg sm:text-xl font-bold text-green-700">
+                                      {decomposition.dizainesText}
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Étape 2: Unités (si > 0) */}
+                            {decomposition.unites > 0 && (
+                              <div className="flex items-center justify-center space-x-4">
+                                <div className={`transition-all duration-1000 ${showUnites ? 'opacity-100 scale-100' : 'opacity-0 scale-50'}`}>
+                                  <div className="bg-white rounded-lg p-3 shadow-md">
+                                    <div className="text-center">
+                                      <div className="text-4xl sm:text-6xl font-bold text-red-600 mb-2">
+                                        {decomposition.unites}
+                                      </div>
+                                      <div className="text-sm sm:text-base text-gray-600">
+                                        unités
+                                      </div>
+                                      <div className="text-2xl mt-2">
+                                        {'🔴'.repeat(decomposition.unites)}
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                                
+                                {showUnitesText && (
+                                  <div className="transition-all duration-1000 opacity-100 scale-100">
+                                    <div className="text-2xl sm:text-3xl">→</div>
+                                  </div>
+                                )}
+                                
+                                <div className={`transition-all duration-1000 ${showUnitesText ? 'opacity-100 scale-100' : 'opacity-0 scale-50'}`}>
+                                  <div className="bg-orange-100 rounded-lg p-3 shadow-md">
+                                    <div className="text-center">
+                                      <div className="text-lg sm:text-xl font-bold text-orange-700">
+                                        {decomposition.unitesText}
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Étape 3: Assemblage final */}
+                            {showFinalNumber && (
+                              <div className="border-t-2 border-blue-300 pt-4">
+                                <div className="text-center">
+                                  <div className="text-lg sm:text-xl font-bold text-gray-700 mb-2">
+                                    Assemblons tout :
+                                  </div>
+                                  <div className="bg-gradient-to-r from-purple-100 to-pink-100 rounded-lg p-4 shadow-md">
+                                    <div className="text-2xl sm:text-3xl font-bold text-purple-700">
+                                      {decomposition.dizainesText}
+                                      {decomposition.unites > 0 && `-${decomposition.unitesText}`}
+                                      {' = '}
+                                      <span className="text-purple-900">{selected.chiffre}</span>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })()}
 
                     {/* Représentation visuelle animée */}
                     <div className="bg-yellow-50 rounded-lg p-3 sm:p-4 md:p-6">
