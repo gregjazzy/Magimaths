@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, CheckCircle, XCircle, RotateCcw, Volume2, Eye, Edit } from 'lucide-react';
+import { ArrowLeft, CheckCircle, XCircle, RotateCcw, Volume2, Eye, Edit, Play } from 'lucide-react';
 
 export default function LectureEcritureCP100() {
   const [selectedNumber, setSelectedNumber] = useState('45');
@@ -288,6 +288,83 @@ export default function LectureEcritureCP100() {
         resolve();
       }
     });
+  };
+
+  // Fonction pour expliquer le chapitre dans le cours
+  const explainChapter = async () => {
+    if (isPlayingVocal) return;
+    
+    stopAllVocalsAndAnimations();
+    await new Promise(resolve => setTimeout(resolve, 300));
+    stopSignalRef.current = false;
+    setIsPlayingVocal(true);
+    setSamSizeExpanded(true);
+    
+    try {
+      await playAudio("Bonjour ! Aujourd'hui, nous allons apprendre à lire et écrire les nombres jusqu'à 100 !");
+      if (stopSignalRef.current) return;
+      
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      if (stopSignalRef.current) return;
+      
+      await playAudio("Tu vas découvrir comment passer des chiffres aux lettres et des lettres aux chiffres, nom d'une jambe en bois !");
+      if (stopSignalRef.current) return;
+      
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      if (stopSignalRef.current) return;
+      
+      await playAudio("Maintenant tu peux explorer les nombres et voir leurs animations !");
+      if (stopSignalRef.current) return;
+      
+    } catch (error) {
+      console.error('Erreur dans explainChapter:', error);
+    } finally {
+      setIsPlayingVocal(false);
+      setSamSizeExpanded(false);
+    }
+  };
+
+  // Fonction pour expliquer le nombre sélectionné avec animation
+  const explainSelectedNumber = async () => {
+    if (isPlayingVocal) return;
+    
+    const selected = numbersWithWriting.find(n => n.chiffre === selectedNumber);
+    if (!selected) return;
+    
+    stopAllVocalsAndAnimations();
+    await new Promise(resolve => setTimeout(resolve, 300));
+    stopSignalRef.current = false;
+    setIsPlayingVocal(true);
+    setSamSizeExpanded(true);
+    
+    try {
+      await playAudio(`Analysons ensemble le nombre ${selected.chiffre} !`);
+      if (stopSignalRef.current) return;
+      
+      await new Promise(resolve => setTimeout(resolve, 1200));
+      if (stopSignalRef.current) return;
+      
+      await playAudio(`En chiffres, on écrit ${selected.chiffre} !`);
+      if (stopSignalRef.current) return;
+      
+      await new Promise(resolve => setTimeout(resolve, 1200));
+      if (stopSignalRef.current) return;
+      
+      await playAudio(`En lettres, on écrit ${selected.lettres} !`);
+      if (stopSignalRef.current) return;
+      
+      await new Promise(resolve => setTimeout(resolve, 1200));
+      if (stopSignalRef.current) return;
+      
+      await playAudio(`Et on le prononce comme ça : ${selected.pronunciation} !`);
+      if (stopSignalRef.current) return;
+      
+    } catch (error) {
+      console.error('Erreur dans explainSelectedNumber:', error);
+    } finally {
+      setIsPlayingVocal(false);
+      setSamSizeExpanded(false);
+    }
   };
 
   // Fonction pour l'introduction vocale de Sam le Pirate - DÉMARRAGE MANUEL PAR CLIC
@@ -585,6 +662,50 @@ export default function LectureEcritureCP100() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-100">
+      {/* Animation CSS personnalisée pour les icônes */}
+      <style dangerouslySetInnerHTML={{
+        __html: `
+          @keyframes subtle-glow {
+            0%, 100% {
+              opacity: 0.8;
+              transform: scale(1);
+              filter: brightness(1);
+            }
+            50% {
+              opacity: 1;
+              transform: scale(1.05);
+              filter: brightness(1.1);
+            }
+          }
+        `
+      }} />
+      
+      {/* Bouton flottant de Sam - visible uniquement quand Sam parle */}
+      {isPlayingVocal && (
+        <div className="fixed top-4 right-4 z-[60]">
+          <button
+            onClick={stopAllVocalsAndAnimations}
+            className="relative flex items-center gap-2 px-3 py-2 rounded-full shadow-2xl transition-all duration-300 bg-gradient-to-r from-red-500 to-red-600 text-white hover:from-red-600 hover:to-red-700 hover:scale-105 animate-pulse"
+            title="Arrêter Sam"
+          >
+            {/* Image de Sam */}
+            <div className="w-8 h-8 rounded-full overflow-hidden border-2 border-white/50">
+              <img
+                src="/image/pirate-small.png"
+                alt="Sam le Pirate"
+                className="w-full h-full object-cover"
+              />
+            </div>
+            
+            {/* Texte et icône */}
+            <>
+              <span className="text-sm font-bold hidden sm:block">Stop</span>
+              <div className="w-3 h-3 bg-white rounded-sm animate-pulse"></div>
+            </>
+          </button>
+        </div>
+      )}
+
       <div className="max-w-6xl mx-auto px-3 sm:px-4 py-4 sm:py-8">
         {/* Header */}
         <div className={showExercises ? 'mb-4 sm:mb-6' : 'mb-8'}>
@@ -645,13 +766,55 @@ export default function LectureEcritureCP100() {
         </div>
 
         {!showExercises ? (
-          /* COURS */
-          <div className="space-y-4 sm:space-y-8">
+          /* COURS - MOBILE OPTIMISÉ */
+          <div className="space-y-2 sm:space-y-6">
+            {/* Image de Sam le Pirate avec bouton DÉMARRER */}
+            <div className="flex items-center justify-center gap-2 sm:gap-4 p-2 sm:p-4 mb-3 sm:mb-6">
+              {/* Image de Sam le Pirate */}
+              <div className={`relative transition-all duration-500 border-2 border-purple-300 rounded-full bg-gradient-to-br from-purple-100 to-pink-100 ${
+                isPlayingVocal
+                    ? 'w-14 sm:w-24 h-14 sm:h-24' // When speaking - plus petit sur mobile
+                  : samSizeExpanded
+                      ? 'w-12 sm:w-32 h-12 sm:h-32' // Enlarged - plus petit sur mobile
+                      : 'w-12 sm:w-20 h-12 sm:h-20' // Initial - plus petit sur mobile
+                }`}>
+                  <img 
+                    src="/image/pirate-small.png" 
+                    alt="Sam le Pirate" 
+                    className="w-full h-full rounded-full object-cover"
+                  />
+                {/* Megaphone animé quand il parle */}
+                  {isPlayingVocal && (
+                  <div className="absolute -top-1 -right-1 bg-red-500 text-white p-1 rounded-full shadow-lg">
+                    <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.617.77L4.916 14H2a1 1 0 01-1-1V7a1 1 0 011-1h2.916l3.467-2.77a1 1 0 011.617.77zM14.657 2.929a1 1 0 011.414 0A9.972 9.972 0 0119 10a9.972 9.972 0 01-2.929 7.071 1 1 0 01-1.414-1.414A7.971 7.971 0 0017 10c0-2.21-.894-4.208-2.343-5.657a1 1 0 010-1.414zm-2.829 2.828a1 1 0 011.415 0A5.983 5.983 0 0115 10a5.983 5.983 0 01-1.757 4.243 1 1 0 01-1.415-1.414A3.983 3.983 0 0013 10a3.983 3.983 0 00-1.172-2.829 1 1 0 010-1.414z" clipRule="evenodd" />
+                    </svg>
+                    </div>
+                  )}
+                </div>
+                
+              {/* Bouton Démarrer */}
+              <div className="text-center">
+                <button
+                onClick={explainChapter}
+                  disabled={isPlayingVocal}
+                  className={`bg-gradient-to-r from-green-500 to-blue-500 text-white px-3 sm:px-12 py-2 sm:py-6 rounded-xl font-bold text-sm sm:text-3xl shadow-2xl hover:shadow-3xl transition-all transform hover:scale-105 ${
+                  isPlayingVocal ? 'opacity-75 cursor-not-allowed' : 'hover:from-green-600 hover:to-blue-600'
+                }`}
+              >
+                  <Play className="inline w-4 h-4 sm:w-8 sm:h-8 mr-1 sm:mr-4" />
+                  {isPlayingVocal ? '🎤 JE PARLE...' : '🎯 DÉMARRER'}
+                </button>
+                </div>
+              </div>
+
             {/* Sélecteur de nombre */}
             <div className="bg-white rounded-xl p-3 sm:p-6 shadow-lg">
-              <h2 className="text-lg sm:text-2xl font-bold text-center mb-3 sm:mb-6 text-gray-900">
-                🎯 Choisis un nombre à découvrir
-              </h2>
+              <div className="flex items-center justify-center gap-1 sm:gap-3 mb-3 sm:mb-6">
+                <h2 className="text-base sm:text-2xl font-bold text-gray-900">
+                  🎯 Choisis un nombre à découvrir
+                </h2>
+              </div>
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 sm:gap-3 mb-3 sm:mb-6">
                 {numbersWithWriting.map((num) => (
                   <button
@@ -670,10 +833,12 @@ export default function LectureEcritureCP100() {
             </div>
 
             {/* Affichage du nombre sélectionné */}
-            <div className="bg-white rounded-xl p-4 sm:p-8 shadow-lg text-center">
-              <h3 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-6 text-gray-900">
-                🔍 Découvrons le nombre {selectedNumber}
-              </h3>
+            <div className="bg-white rounded-xl p-3 sm:p-8 shadow-lg text-center">
+              <div className="flex items-center justify-center gap-1 sm:gap-3 mb-3 sm:mb-6">
+                <h3 className="text-base sm:text-2xl font-bold text-gray-900">
+                  🔍 Découvrons le nombre {selectedNumber}
+                </h3>
+              </div>
               
               {(() => {
                 const selected = numbersWithWriting.find(n => n.chiffre === selectedNumber);
@@ -817,8 +982,57 @@ export default function LectureEcritureCP100() {
             </div>
 
             {/* Nombres spéciaux */}
-            <div className="bg-white rounded-xl p-4 sm:p-6 shadow-lg">
-              <h3 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4 text-center text-gray-900">🔥 Nombres spéciaux à retenir</h3>
+            <div className="bg-white rounded-xl p-3 sm:p-6 shadow-lg">
+              <div className="flex items-center justify-center gap-1 sm:gap-3 mb-3 sm:mb-4">
+                <h3 className="text-base sm:text-xl font-bold text-gray-900">🔥 Nombres spéciaux à retenir</h3>
+                {/* Icône d'animation pour les nombres spéciaux */}
+                <div className="bg-gradient-to-r from-red-500 to-orange-600 text-white rounded-full w-6 h-6 sm:w-12 sm:h-12 flex items-center justify-center text-xs sm:text-xl font-bold shadow-lg hover:scale-110 cursor-pointer transition-all duration-300 ring-2 ring-red-300 ring-opacity-40 hover:shadow-xl hover:ring-4 hover:ring-red-200"
+                     style={{
+                       animation: 'subtle-glow 3s ease-in-out infinite',
+                       animationPlayState: 'running'
+                     }} 
+                     title="🔥 Animation des nombres spéciaux ! Cliquez pour les entendre."
+                  onClick={async () => {
+                    if (!isPlayingVocal) {
+                      stopAllVocalsAndAnimations();
+                      await new Promise(resolve => setTimeout(resolve, 100));
+                      setIsPlayingVocal(true);
+                      setSamSizeExpanded(true);
+                      
+                      try {
+                        await playAudio("Voici les nombres spéciaux qu'il faut vraiment retenir !");
+                        if (stopSignalRef.current) return;
+                        
+                        await new Promise(resolve => setTimeout(resolve, 1000));
+                        if (stopSignalRef.current) return;
+                        
+                        await playAudio("70 se dit soixante-dix, c'est 60 plus 10 !");
+                        if (stopSignalRef.current) return;
+                        
+                        await new Promise(resolve => setTimeout(resolve, 1200));
+                        if (stopSignalRef.current) return;
+                        
+                        await playAudio("80 se dit quatre-vingts, avec un s !");
+                        if (stopSignalRef.current) return;
+                        
+                        await new Promise(resolve => setTimeout(resolve, 1200));
+                        if (stopSignalRef.current) return;
+                        
+                        await playAudio("Et 90 se dit quatre-vingt-dix, sans s cette fois !");
+                        if (stopSignalRef.current) return;
+                        
+                      } catch (error) {
+                        console.error('Erreur:', error);
+                      } finally {
+                        setIsPlayingVocal(false);
+                        setSamSizeExpanded(false);
+                      }
+                    }
+                  }}
+                >
+                  🔥
+                </div>
+              </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
                 <div className="bg-red-50 rounded-lg p-3 sm:p-4 text-center">
                   <div className="text-2xl sm:text-3xl font-bold text-red-600 mb-2">70</div>
@@ -839,8 +1053,8 @@ export default function LectureEcritureCP100() {
             </div>
 
             {/* Conseils pratiques */}
-            <div className="bg-gradient-to-r from-indigo-400 to-purple-400 rounded-xl p-4 sm:p-6 text-white">
-              <h3 className="text-lg sm:text-xl font-bold mb-2 sm:mb-3">💡 Trucs pour retenir</h3>
+            <div className="bg-gradient-to-r from-indigo-400 to-purple-400 rounded-xl p-3 sm:p-6 text-white">
+              <h3 className="text-base sm:text-xl font-bold mb-2 sm:mb-3">💡 Trucs pour retenir</h3>
               <ul className="space-y-1 sm:space-y-2 text-sm sm:text-lg">
                 <li>• Les dizaines : vingt, trente, quarante, cinquante, soixante</li>
                 <li>• 70 = soixante-dix (attention !)</li>
