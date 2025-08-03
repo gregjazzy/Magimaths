@@ -1187,11 +1187,16 @@ export default function LectureEcritureCP100() {
                                     Assemblons tout :
                                   </div>
                                   <div className="bg-gradient-to-r from-purple-100 to-pink-100 rounded-lg p-4 shadow-md">
-                                    <div className="text-2xl sm:text-3xl font-bold text-purple-700">
-                                      {decomposition.dizainesText}
-                                      {decomposition.unites > 0 && `-${decomposition.unitesText}`}
-                                      {' = '}
-                                      <span className="text-purple-900">{selected.chiffre}</span>
+                                    <div className="text-xl sm:text-2xl font-bold text-purple-700 space-y-2">
+                                      {decomposition.unites > 0 ? (
+                                        <>
+                                          <div>{decomposition.dizainesText} et {decomposition.unitesText}</div>
+                                          <div className="text-gray-600">ça fait</div>
+                                          <div className="text-purple-900">{decomposition.dizainesText}-{decomposition.unitesText}</div>
+                                        </>
+                                      ) : (
+                                        <div className="text-purple-900">{decomposition.dizainesText}</div>
+                                      )}
                                     </div>
                                   </div>
                                 </div>
