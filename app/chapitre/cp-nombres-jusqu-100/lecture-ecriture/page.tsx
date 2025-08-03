@@ -151,6 +151,7 @@ export default function LectureEcritureCP100() {
     { chiffre: '84', lettres: 'quatre-vingt-quatre', pronunciation: 'quatre-vingt-quatre', visual: '📦📦📦📦📦📦📦📦🔴🔴🔴🔴' },
     { chiffre: '87', lettres: 'quatre-vingt-sept', pronunciation: 'quatre-vingt-sept', visual: '📦📦📦📦📦📦📦📦🔴🔴🔴🔴🔴🔴🔴' },
     { chiffre: '90', lettres: 'quatre-vingt-dix', pronunciation: 'quatre-vingt-dix', visual: '📦📦📦📦📦📦📦📦📦' },
+    { chiffre: '96', lettres: 'quatre-vingt-seize', pronunciation: 'quatre-vingt-seize', visual: '📦📦📦📦📦📦📦📦📦🔴🔴🔴🔴🔴🔴' },
     { chiffre: '100', lettres: 'cent', pronunciation: 'cent', visual: '🏠' }
   ];
 
