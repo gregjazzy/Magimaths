@@ -365,35 +365,22 @@ export default function LectureEcritureCP100() {
     let dizainesText = '';
     let unitesText = '';
     
-    // Cas spéciaux pour 91-96 (quatre-vingt-onze, quatre-vingt-douze, etc.)
-    if (num >= 91 && num <= 96) {
-      dizainesText = 'quatre-vingt';
-      unitesText = unitesSpeciales[unitesChiffre] || unites[unitesChiffre];
-    }
-    // Cas spéciaux pour 97-99 (quatre-vingt-dix-sept, etc.)
-    else if (num >= 97 && num <= 99) {
-      dizainesText = 'quatre-vingt-dix';
-      unitesText = unites[unitesChiffre] || '';
-    }
-    // Cas spéciaux pour 90 (quatre-vingt-dix)
-    else if (num === 90) {
-      dizainesText = 'quatre-vingt-dix';
-      unitesText = '';
-    }
-    // Cas spéciaux pour 80-89
-    else if (num >= 80 && num <= 89) {
-      dizainesText = unitesChiffre === 0 ? 'quatre-vingts' : 'quatre-vingt';
-      unitesText = unites[unitesChiffre] || '';
-    }
-    // Cas spéciaux pour 70-79
-    else if (num >= 70 && num <= 79) {
+    // Pour l'affichage des dizaines, on utilise la vraie logique française
+    if (dizaines === 7) {
       dizainesText = 'soixante-dix';
-      unitesText = unites[unitesChiffre] || '';
-    }
-    // Cas normaux
-    else {
+    } else if (dizaines === 8) {
+      dizainesText = unitesChiffre === 0 ? 'quatre-vingts' : 'quatre-vingt';
+    } else if (dizaines === 9) {
+      dizainesText = 'quatre-vingt-dix';
+    } else {
       const dizainesMots = ['', '', 'vingt', 'trente', 'quarante', 'cinquante', 'soixante'];
       dizainesText = dizainesMots[dizaines] || '';
+    }
+    
+    // Pour les unités, gestion spéciale 91-96
+    if (num >= 91 && num <= 96) {
+      unitesText = unitesSpeciales[unitesChiffre] || unites[unitesChiffre];
+    } else {
       unitesText = unites[unitesChiffre] || '';
     }
     
@@ -480,7 +467,21 @@ export default function LectureEcritureCP100() {
       
       // Étape 3: Assembler le tout
       if (decomposition.unites > 0) {
-        await playAudio(`Et maintenant, assemblons tout : ${decomposition.dizainesText} et ${decomposition.unitesText}, ça fait ${decomposition.dizainesText}-${decomposition.unitesText} !`);
+        // Pour l'assemblage, on utilise la vraie construction française
+        const num = parseInt(numberToExplain);
+        let assemblageBase = '';
+        let assemblageUnite = decomposition.unitesText;
+        
+        if (num >= 91 && num <= 96) {
+          assemblageBase = 'quatre-vingt';
+        } else if (num >= 97 && num <= 99) {
+          assemblageBase = 'quatre-vingt-dix';
+        } else {
+          assemblageBase = decomposition.dizainesText;
+        }
+        
+        const selected = numbersWithWriting.find(n => n.chiffre === numberToExplain);
+        await playAudio(`Et maintenant, assemblons tout : ${assemblageBase} et ${assemblageUnite}, ça fait ${selected?.lettres} !`);
       } else {
         await playAudio(`Le nombre final est donc ${decomposition.dizainesText} !`);
       }
@@ -1190,13 +1191,28 @@ export default function LectureEcritureCP100() {
                                   <div className="bg-gradient-to-r from-purple-100 to-pink-100 rounded-lg p-4 shadow-md">
                                     <div className="text-xl sm:text-2xl font-bold text-purple-700 space-y-2">
                                       {decomposition.unites > 0 ? (
-                                        <>
-                                          <div>{decomposition.dizainesText} et {decomposition.unitesText}</div>
-                                          <div className="text-gray-600">ça fait</div>
-                                          <div className="text-purple-900">{decomposition.dizainesText}-{decomposition.unitesText}</div>
-                                        </>
+                                        (() => {
+                                          const num = parseInt(selected.chiffre);
+                                          let assemblageBase = '';
+                                          
+                                          if (num >= 91 && num <= 96) {
+                                            assemblageBase = 'quatre-vingt';
+                                          } else if (num >= 97 && num <= 99) {
+                                            assemblageBase = 'quatre-vingt-dix';
+                                          } else {
+                                            assemblageBase = decomposition.dizainesText;
+                                          }
+                                          
+                                          return (
+                                            <>
+                                              <div>{assemblageBase} et {decomposition.unitesText}</div>
+                                              <div className="text-gray-600">ça fait</div>
+                                              <div className="text-purple-900">{selected.lettres}</div>
+                                            </>
+                                          );
+                                        })()
                                       ) : (
-                                        <div className="text-purple-900">{decomposition.dizainesText}</div>
+                                        <div className="text-purple-900">{selected.lettres}</div>
                                       )}
                                     </div>
                                   </div>
