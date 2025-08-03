@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { ArrowLeft, CheckCircle, XCircle, RotateCcw, Volume2, Eye, Edit, Play } from 'lucide-react';
 
 export default function LectureEcritureCP100() {
-  const [selectedNumber, setSelectedNumber] = useState('45');
+  const [selectedNumber, setSelectedNumber] = useState('25');
   const [currentExercise, setCurrentExercise] = useState(0);
   const [userAnswer, setUserAnswer] = useState('');
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
@@ -20,13 +20,13 @@ export default function LectureEcritureCP100() {
   const [animationStep, setAnimationStep] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
   
-  // États pour la décomposition progressive
-  const [showDecomposition, setShowDecomposition] = useState(false);
-  const [showDizaines, setShowDizaines] = useState(false);
-  const [showDizainesText, setShowDizainesText] = useState(false);
-  const [showUnites, setShowUnites] = useState(false);
-  const [showUnitesText, setShowUnitesText] = useState(false);
-  const [showFinalNumber, setShowFinalNumber] = useState(false);
+  // États pour la décomposition progressive (affichage par défaut de l'exemple)
+  const [showDecomposition, setShowDecomposition] = useState(true);
+  const [showDizaines, setShowDizaines] = useState(true);
+  const [showDizainesText, setShowDizainesText] = useState(true);
+  const [showUnites, setShowUnites] = useState(true);
+  const [showUnitesText, setShowUnitesText] = useState(true);
+  const [showFinalNumber, setShowFinalNumber] = useState(true);
 
   // États pour Sam le Pirate et audio
   const [highlightDigit, setHighlightDigit] = useState<'left' | 'right' | null>(null);
