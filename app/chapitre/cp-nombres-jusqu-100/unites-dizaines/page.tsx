@@ -1783,10 +1783,12 @@ export default function UnitesDizainesCP() {
               </div>
               
               {/* Affichage du nombre ou de l'expression avec explication si erreur */}
-              <div className={`bg-white border-2 rounded-lg p-4 sm:p-6 md:p-8 mb-4 sm:mb-6 transition-all duration-500 ${
-                isExplainingError ? 'border-yellow-400 bg-yellow-50 ring-4 ring-yellow-300' : 'border-orange-200'
+              <div className={`border-2 rounded-lg p-4 sm:p-6 md:p-8 mb-4 sm:mb-6 transition-all duration-500 ${
+                isExplainingError 
+                  ? 'border-red-400 bg-red-50 ring-4 ring-red-300 shadow-lg' 
+                  : 'bg-white border-orange-200'
               }`}>
-                <div className="py-6 sm:py-8 md:py-10">
+                <div className={`${isExplainingError ? 'py-4 sm:py-6 md:py-8' : 'py-6 sm:py-8 md:py-10'}`}>
                 {exercises[currentExercise]?.display ? (
                   <div className="text-6xl sm:text-8xl font-bold text-blue-600 mb-4">
                     {exercises[currentExercise].display}
@@ -1832,29 +1834,29 @@ export default function UnitesDizainesCP() {
                   </>
                 )}
                 
-                <p className="text-sm sm:text-lg text-gray-700 font-semibold mb-6 hidden sm:block">
-                  Trouve la bonne réponse !
-                </p>
-                
-                {/* Message d'explication avec la bonne réponse en rouge */}
-                {isExplainingError && (
-                  <div className="bg-red-100 border-2 border-red-400 rounded-lg p-4 mb-4">
-                    <div className="text-lg font-bold text-red-800 mb-2">
+                {/* Texte d'aide ou explication d'erreur intégrée */}
+                {isExplainingError ? (
+                  <div className="text-center mt-4">
+                    <div className="text-lg sm:text-xl font-bold text-red-800 mb-2">
                       🏴‍☠️ Explication de Sam le Pirate
-                                      </div>
-                    <div className="text-red-700 text-xl">
-                      La bonne réponse est <span className="font-bold text-3xl text-red-800">{exercises[currentExercise]?.correctAnswer}</span> !
-                                      </div>
-                    <div className="text-sm text-red-600 mt-2">
+                    </div>
+                    <div className="text-red-700 text-lg sm:text-xl mb-2">
+                      La bonne réponse est <span className="font-bold text-2xl sm:text-3xl text-red-800">{exercises[currentExercise]?.correctAnswer}</span> !
+                    </div>
+                    <div className="text-sm sm:text-base text-red-600">
                       {exercises[currentExercise]?.type === 'dizaines' 
                         ? `Dans "${exercises[currentExercise]?.number}", le chiffre des dizaines est "${exercises[currentExercise]?.correctAnswer}".`
                         : exercises[currentExercise]?.type === 'unites'
                           ? `Dans "${exercises[currentExercise]?.number}", le chiffre des unités est "${exercises[currentExercise]?.correctAnswer}".`
                           : `L'expression "${exercises[currentExercise]?.display}" donne "${exercises[currentExercise]?.correctAnswer}".`
                       }
-                                      </div>
-                                </div>
-                              )}
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-sm sm:text-lg text-gray-700 font-semibold mt-4 hidden sm:block text-center">
+                    Trouve la bonne réponse !
+                  </p>
+                )}
                                 </div>
               </div>
               
