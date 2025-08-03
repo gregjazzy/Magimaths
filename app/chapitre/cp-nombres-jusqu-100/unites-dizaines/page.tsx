@@ -337,50 +337,68 @@ export default function UnitesDizainesCP() {
           )}
         </div>
         
-        {/* Bouton Start Exercices - AVEC AUDIO */}
-        <button
-        onClick={startPirateIntro}
-        disabled={isPlayingVocal || pirateIntroStarted}
-        className={`relative px-6 sm:px-12 py-3 sm:py-5 rounded-xl font-black text-base sm:text-2xl transition-all duration-300 transform ${
-          isPlayingVocal 
-            ? 'bg-gradient-to-r from-gray-400 to-gray-500 text-gray-200 cursor-not-allowed animate-pulse shadow-md' 
-            : pirateIntroStarted
-              ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white opacity-75 cursor-not-allowed shadow-lg'
-              : 'bg-gradient-to-r from-orange-500 via-red-500 to-pink-500 text-white hover:from-orange-600 hover:via-red-600 hover:to-pink-600 hover:scale-110 shadow-2xl hover:shadow-3xl animate-pulse border-4 border-yellow-300'
-        } ${!isPlayingVocal && !pirateIntroStarted ? 'ring-4 ring-yellow-300 ring-opacity-75' : ''}`}
-        style={{
-          animationDuration: !isPlayingVocal && !pirateIntroStarted ? '1.5s' : '2s',
-          animationIterationCount: isPlayingVocal || pirateIntroStarted ? 'none' : 'infinite',
-          textShadow: '2px 2px 4px rgba(0,0,0,0.3)',
-          boxShadow: !isPlayingVocal && !pirateIntroStarted 
-            ? '0 10px 25px rgba(0,0,0,0.3), 0 0 30px rgba(255,215,0,0.4), inset 0 1px 0 rgba(255,255,255,0.2)' 
-            : ''
-        }}
-      >
-        {/* Effet de brillance */}
-        {!isPlayingVocal && !pirateIntroStarted && (
-          <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-transparent via-white to-transparent opacity-20 animate-pulse"></div>
+        {/* Boutons d'introduction */}
+        <div className="flex flex-col gap-2">
+          {/* Bouton Start Exercices - AVEC AUDIO */}
+          <button
+          onClick={startPirateIntro}
+          disabled={isPlayingVocal || pirateIntroStarted}
+          className={`relative px-6 sm:px-12 py-3 sm:py-5 rounded-xl font-black text-base sm:text-2xl transition-all duration-300 transform ${
+            isPlayingVocal 
+              ? 'bg-gradient-to-r from-gray-400 to-gray-500 text-gray-200 cursor-not-allowed animate-pulse shadow-md' 
+              : pirateIntroStarted
+                ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white opacity-75 cursor-not-allowed shadow-lg'
+                : 'bg-gradient-to-r from-orange-500 via-red-500 to-pink-500 text-white hover:from-orange-600 hover:via-red-600 hover:to-pink-600 hover:scale-110 shadow-2xl hover:shadow-3xl animate-pulse border-4 border-yellow-300'
+          } ${!isPlayingVocal && !pirateIntroStarted ? 'ring-4 ring-yellow-300 ring-opacity-75' : ''}`}
+          style={{
+            animationDuration: !isPlayingVocal && !pirateIntroStarted ? '1.5s' : '2s',
+            animationIterationCount: isPlayingVocal || pirateIntroStarted ? 'none' : 'infinite',
+            textShadow: '2px 2px 4px rgba(0,0,0,0.3)',
+            boxShadow: !isPlayingVocal && !pirateIntroStarted 
+              ? '0 10px 25px rgba(0,0,0,0.3), 0 0 30px rgba(255,215,0,0.4), inset 0 1px 0 rgba(255,255,255,0.2)' 
+              : ''
+          }}
+        >
+          {/* Effet de brillance */}
+          {!isPlayingVocal && !pirateIntroStarted && (
+            <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-transparent via-white to-transparent opacity-20 animate-pulse"></div>
+          )}
+          
+          {/* Icônes et texte avec plus d'émojis */}
+          <span className="relative z-10 flex items-center justify-center gap-2">
+            {isPlayingVocal 
+              ? <>🎤 <span className="animate-bounce">Sam parle...</span></> 
+              : pirateIntroStarted
+                ? <>✅ <span>Intro terminée</span></>
+                : <>🚀 <span className="animate-bounce">COMMENCER</span> ✨</>
+            }
+          </span>
+          
+          {/* Particules brillantes pour le bouton commencer */}
+          {!isPlayingVocal && !pirateIntroStarted && (
+            <>
+              <div className="absolute -top-1 -right-1 w-3 h-3 bg-yellow-300 rounded-full animate-ping"></div>
+              <div className="absolute -bottom-1 -left-1 w-2 h-2 bg-pink-300 rounded-full animate-ping" style={{animationDelay: '0.5s'}}></div>
+              <div className="absolute top-2 left-2 w-1 h-1 bg-white rounded-full animate-ping" style={{animationDelay: '1s'}}></div>
+            </>
+          )}
+        </button>
+
+        {/* Bouton Relire l'intro (affiché après que l'intro ait été faite) */}
+        {pirateIntroStarted && (
+          <button
+            onClick={startPirateIntro}
+            disabled={isPlayingVocal}
+            className={`px-3 sm:px-6 py-2 sm:py-3 rounded-lg font-bold text-sm sm:text-base transition-all duration-300 transform ${
+              isPlayingVocal 
+                ? 'bg-gray-400 text-gray-200 cursor-not-allowed' 
+                : 'bg-blue-500 text-white hover:bg-blue-600 hover:scale-105 shadow-md'
+            }`}
+          >
+            🔊 Relire l'intro
+          </button>
         )}
-        
-        {/* Icônes et texte avec plus d'émojis */}
-        <span className="relative z-10 flex items-center justify-center gap-2">
-          {isPlayingVocal 
-            ? <>🎤 <span className="animate-bounce">Sam parle...</span></> 
-            : pirateIntroStarted
-              ? <>✅ <span>Intro terminée</span></>
-              : <>🚀 <span className="animate-bounce">COMMENCER</span> ✨</>
-          }
-        </span>
-        
-        {/* Particules brillantes pour le bouton commencer */}
-        {!isPlayingVocal && !pirateIntroStarted && (
-          <>
-            <div className="absolute -top-1 -right-1 w-3 h-3 bg-yellow-300 rounded-full animate-ping"></div>
-            <div className="absolute -bottom-1 -left-1 w-2 h-2 bg-pink-300 rounded-full animate-ping" style={{animationDelay: '0.5s'}}></div>
-            <div className="absolute top-2 left-2 w-1 h-1 bg-white rounded-full animate-ping" style={{animationDelay: '1s'}}></div>
-          </>
-        )}
-      </button>
+        </div>
       </div>
     </div>
   );
