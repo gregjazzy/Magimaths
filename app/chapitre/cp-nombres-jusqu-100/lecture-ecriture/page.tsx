@@ -478,7 +478,11 @@ export default function LectureEcritureCP100() {
       }
       
       // Étape 3: Assembler le tout
-      await playAudio(`Et maintenant, assemblons tout : ${decomposition.dizainesText}${decomposition.unites > 0 ? '-' + decomposition.unitesText : ''} = ${selected.chiffre} !`);
+      if (decomposition.unites > 0) {
+        await playAudio(`Et maintenant, assemblons tout : ${decomposition.dizainesText} et ${decomposition.unitesText}, ça fait ${decomposition.dizainesText}-${decomposition.unitesText} !`);
+      } else {
+        await playAudio(`Le nombre final est donc ${decomposition.dizainesText} !`);
+      }
       if (stopSignalRef.current) return;
       
       setShowFinalNumber(true);
