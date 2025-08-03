@@ -186,7 +186,115 @@ export default function UnitesDizainesCP() {
   const [showDizaines, setShowDizaines] = useState(true);
   const [showUnites, setShowUnites] = useState(true);
   const [showFinalCalculation, setShowFinalCalculation] = useState(true);
+  
+  // États pour le jeu interactif
+  const [gameStarted, setGameStarted] = useState(false);
+  const [currentGameQuestion, setCurrentGameQuestion] = useState(0);
+  const [gameScore, setGameScore] = useState(0);
+  const [selectedGameAnswer, setSelectedGameAnswer] = useState<string | null>(null);
+  const [gameAnswered, setGameAnswered] = useState(false);
+  const [gameCompleted, setGameCompleted] = useState(false);
+  const [showGameFeedback, setShowGameFeedback] = useState(false);
+  
   const stopSignalRef = useRef(false);
+
+  // Questions du jeu interactif
+  const gameQuestions = [
+    {
+      question: "Comment peut-on faire 23 ?",
+      target: 23,
+      visual: "📦📦 🔴🔴🔴",
+      options: [
+        { type: "chiffres", value: "2️⃣3️⃣", correct: true },
+        { type: "chiffres", value: "3️⃣2️⃣", correct: false },
+        { type: "chiffres", value: "5️⃣", correct: false }
+      ]
+    },
+    {
+      question: "Quelle addition fait 34 ?",
+      target: 34,
+      visual: "📦📦📦 🔴🔴🔴🔴",
+      options: [
+        { type: "addition", value: "20 + 14", correct: false },
+        { type: "addition", value: "30 + 4", correct: true },
+        { type: "addition", value: "40 + 3", correct: false }
+      ]
+    },
+    {
+      question: "Combien d'objets représente 📦📦📦📦 🔴🔴 ?",
+      target: 42,
+      visual: "📦📦📦📦 🔴🔴",
+      options: [
+        { type: "nombre", value: "42", correct: true },
+        { type: "nombre", value: "24", correct: false },
+        { type: "nombre", value: "62", correct: false }
+      ]
+    },
+    {
+      question: "Le nombre 56 s'écrit comment en objets ?",
+      target: 56,
+      visual: "",
+      options: [
+        { type: "objets", value: "📦📦📦📦📦 🔴🔴🔴🔴🔴🔴", correct: true },
+        { type: "objets", value: "📦📦📦📦📦📦 🔴🔴🔴🔴🔴", correct: false },
+        { type: "objets", value: "📦📦📦📦 🔴🔴🔴🔴🔴🔴", correct: false }
+      ]
+    },
+    {
+      question: "Quelle décomposition correspond à 78 ?",
+      target: 78,
+      visual: "7️⃣8️⃣",
+      options: [
+        { type: "decomposition", value: "7 dizaines + 8 unités", correct: true },
+        { type: "decomposition", value: "8 dizaines + 7 unités", correct: false },
+        { type: "decomposition", value: "70 + 80", correct: false }
+      ]
+    }
+  ];
+
+  // Fonctions du jeu
+  const startGame = () => {
+    setGameStarted(true);
+    setCurrentGameQuestion(0);
+    setGameScore(0);
+    setGameCompleted(false);
+    setSelectedGameAnswer(null);
+    setGameAnswered(false);
+    setShowGameFeedback(false);
+  };
+
+  const selectGameAnswer = (answer: string, isCorrect: boolean) => {
+    if (gameAnswered) return;
+    
+    setSelectedGameAnswer(answer);
+    setGameAnswered(true);
+    setShowGameFeedback(true);
+    
+    if (isCorrect) {
+      setGameScore(gameScore + 1);
+    }
+    
+    setTimeout(() => {
+      if (currentGameQuestion < gameQuestions.length - 1) {
+        setCurrentGameQuestion(currentGameQuestion + 1);
+        setSelectedGameAnswer(null);
+        setGameAnswered(false);
+        setShowGameFeedback(false);
+      } else {
+        setGameCompleted(true);
+      }
+    }, 2000);
+  };
+
+  const resetGame = () => {
+    setGameStarted(false);
+    setCurrentGameQuestion(0);
+    setGameScore(0);
+    setGameCompleted(false);
+    setSelectedGameAnswer(null);
+    setGameAnswered(false);
+    setShowGameFeedback(false);
+  };
 
   // Réinitialiser les états sur changement d'exercice
   useEffect(() => {
@@ -1726,32 +1834,158 @@ export default function UnitesDizainesCP() {
               })()}
             </div>
 
-            {/* Jeu de construction */}
+            {/* Jeu interactif de construction */}
             <div className="bg-white rounded-xl p-3 sm:p-8 shadow-lg">
               <h2 className="text-base sm:text-2xl font-bold text-center mb-3 sm:mb-6 text-gray-900">
                 🎮 Jeu : Construis des nombres !
               </h2>
               
-              <div className="bg-purple-50 rounded-lg p-6">
-                <h3 className="text-xl font-bold mb-4 text-purple-800 text-center">
-                  Avec quoi peut-on faire 45 ?
-                </h3>
-                
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
-                  <div className="bg-white rounded-lg p-4">
-                    <div className="text-3xl mb-2">4️⃣5️⃣</div>
-                    <div className="text-lg font-semibold text-gray-800">En chiffres</div>
+              {!gameStarted ? (
+                // Écran d'accueil du jeu
+                <div className="text-center">
+                  <div className="bg-gradient-to-r from-purple-100 to-pink-100 rounded-lg p-6 mb-6">
+                    <h3 className="text-xl font-bold mb-4 text-purple-800">
+                      🎯 Défis des nombres !
+                    </h3>
+                    <p className="text-gray-700 mb-4">
+                      Réponds aux questions sur les dizaines et unités.<br/>
+                      Tu auras {gameQuestions.length} défis à relever !
+                    </p>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                      <div className="bg-white rounded-lg p-4 shadow-sm">
+                        <div className="text-3xl mb-2">4️⃣5️⃣</div>
+                        <div className="text-sm font-semibold text-gray-600">En chiffres</div>
+                      </div>
+                      <div className="bg-white rounded-lg p-4 shadow-sm">
+                        <div className="text-2xl mb-2">📦📦📦📦 🔴🔴🔴🔴🔴</div>
+                        <div className="text-sm font-semibold text-gray-600">En objets</div>
+                      </div>
+                      <div className="bg-white rounded-lg p-4 shadow-sm">
+                        <div className="text-3xl mb-2">40 + 5</div>
+                        <div className="text-sm font-semibold text-gray-600">En addition</div>
+                      </div>
+                    </div>
                   </div>
-                  <div className="bg-white rounded-lg p-4">
-                    <div className="text-3xl mb-2">📦📦📦📦 🔴🔴🔴🔴🔴</div>
-                    <div className="text-lg font-semibold text-gray-800">En objets</div>
+                  <button
+                    onClick={startGame}
+                    className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-8 py-4 rounded-xl font-bold text-xl hover:from-purple-600 hover:to-pink-600 transition-all transform hover:scale-105 shadow-lg"
+                  >
+                    🚀 Commencer le jeu !
+                  </button>
+                </div>
+              ) : gameCompleted ? (
+                // Écran de fin du jeu
+                <div className="text-center">
+                  <div className={`rounded-lg p-6 mb-6 ${
+                    gameScore >= 4 ? 'bg-green-100' : gameScore >= 3 ? 'bg-yellow-100' : 'bg-orange-100'
+                  }`}>
+                    <div className="text-6xl mb-4">
+                      {gameScore >= 4 ? '🏆' : gameScore >= 3 ? '🎉' : '👍'}
+                    </div>
+                    <h3 className="text-2xl font-bold mb-4">
+                      {gameScore >= 4 ? 'Excellent !' : gameScore >= 3 ? 'Très bien !' : 'Bien joué !'}
+                    </h3>
+                    <p className="text-xl mb-4">
+                      Score : <span className="font-bold text-2xl">{gameScore}/{gameQuestions.length}</span>
+                    </p>
+                    <p className="text-gray-700 mb-6">
+                      {gameScore >= 4 
+                        ? 'Tu maîtrises parfaitement les dizaines et unités !' 
+                        : gameScore >= 3 
+                        ? 'Tu comprends très bien les nombres !'
+                        : 'Continue à t\'entraîner, tu progresses bien !'}
+                    </p>
                   </div>
-                  <div className="bg-white rounded-lg p-4">
-                    <div className="text-3xl mb-2">40 + 5</div>
-                    <div className="text-lg font-semibold text-gray-800">En addition</div>
+                  <div className="flex gap-4 justify-center">
+                    <button
+                      onClick={resetGame}
+                      className="bg-blue-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-blue-600 transition-colors"
+                    >
+                      🔄 Rejouer
+                    </button>
                   </div>
                 </div>
-              </div>
+              ) : (
+                // Question en cours
+                <div>
+                  {/* Barre de progression */}
+                  <div className="mb-6">
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="text-sm font-semibold text-gray-600">
+                        Question {currentGameQuestion + 1}/{gameQuestions.length}
+                      </span>
+                      <span className="text-sm font-semibold text-green-600">
+                        Score : {gameScore}
+                      </span>
+                    </div>
+                    <div className="bg-gray-200 rounded-full h-2">
+                      <div 
+                        className="bg-gradient-to-r from-purple-500 to-pink-500 h-2 rounded-full transition-all duration-500"
+                        style={{ width: `${((currentGameQuestion + 1) / gameQuestions.length) * 100}%` }}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Question */}
+                  <div className="bg-purple-50 rounded-lg p-6 mb-6">
+                    <h3 className="text-xl font-bold mb-4 text-purple-800 text-center">
+                      {gameQuestions[currentGameQuestion].question}
+                    </h3>
+                    
+                    {gameQuestions[currentGameQuestion].visual && (
+                      <div className="text-center mb-4">
+                        <div className="text-4xl p-4 bg-white rounded-lg inline-block">
+                          {gameQuestions[currentGameQuestion].visual}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Options de réponse */}
+                  <div className="grid grid-cols-1 gap-3 mb-6">
+                    {gameQuestions[currentGameQuestion].options.map((option, index) => (
+                      <button
+                        key={index}
+                        onClick={() => selectGameAnswer(option.value, option.correct)}
+                        disabled={gameAnswered}
+                        className={`p-4 rounded-lg border-2 transition-all ${
+                          gameAnswered
+                            ? selectedGameAnswer === option.value
+                              ? option.correct
+                                ? 'bg-green-100 border-green-500 text-green-800'
+                                : 'bg-red-100 border-red-500 text-red-800'
+                              : option.correct
+                              ? 'bg-green-100 border-green-500 text-green-800'
+                              : 'bg-gray-100 border-gray-300 text-gray-600'
+                            : 'bg-white border-gray-300 hover:border-purple-500 hover:bg-purple-50'
+                        } ${gameAnswered ? 'cursor-not-allowed' : 'cursor-pointer'}`}
+                      >
+                        <div className="text-lg font-semibold text-center">
+                          {option.value}
+                        </div>
+                        {gameAnswered && selectedGameAnswer === option.value && (
+                          <div className="text-center mt-2">
+                            {option.correct ? '✅ Correct !' : '❌ Incorrect'}
+                          </div>
+                        )}
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Feedback */}
+                  {showGameFeedback && (
+                    <div className={`text-center p-4 rounded-lg ${
+                      gameQuestions[currentGameQuestion].options.find(o => o.value === selectedGameAnswer)?.correct
+                        ? 'bg-green-100 text-green-800'
+                        : 'bg-red-100 text-red-800'
+                    }`}>
+                      {gameQuestions[currentGameQuestion].options.find(o => o.value === selectedGameAnswer)?.correct
+                        ? '🎉 Bravo ! Bonne réponse !'
+                        : '💪 Pas grave ! Tu apprendras la prochaine fois !'}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
 
             {/* Conseils */}
