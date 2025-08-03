@@ -375,6 +375,11 @@ export default function LectureEcritureCP100() {
       dizainesText = 'quatre-vingt-dix';
       unitesText = unites[unitesChiffre] || '';
     }
+    // Cas spéciaux pour 90 (quatre-vingt-dix)
+    else if (num === 90) {
+      dizainesText = 'quatre-vingt-dix';
+      unitesText = '';
+    }
     // Cas spéciaux pour 80-89
     else if (num >= 80 && num <= 89) {
       dizainesText = unitesChiffre === 0 ? 'quatre-vingts' : 'quatre-vingt';
@@ -449,11 +454,7 @@ export default function LectureEcritureCP100() {
       if (stopSignalRef.current) return;
       
       // Montrer le texte des dizaines
-      if (isSpecial70_79 || isSpecial90_99) {
-        await playAudio(`La base ${decomposition.dizainesText} reste la même !`);
-      } else {
-        await playAudio(`${decomposition.dizaines} dizaines, ça fait ${decomposition.dizainesText} !`);
-      }
+      await playAudio(`${decomposition.dizaines} dizaines, ça fait ${decomposition.dizainesText} !`);
       if (stopSignalRef.current) return;
       
       setShowDizainesText(true);
