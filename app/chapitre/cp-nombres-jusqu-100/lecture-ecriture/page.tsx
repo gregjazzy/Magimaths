@@ -484,7 +484,10 @@ export default function LectureEcritureCP100() {
         }
         
         const selected = numbersWithWriting.find(n => n.chiffre === numberToExplain);
-        await playAudio(`Et maintenant, assemblons tout : ${assemblageBase} et ${assemblageUnite}, ça fait ${selected?.lettres} !`);
+        // Pour l'assemblage vocal, on utilise ce qui a été expliqué dans les étapes précédentes
+        const unitesBasiques = ['', 'un', 'deux', 'trois', 'quatre', 'cinq', 'six', 'sept', 'huit', 'neuf'];
+        const uniteVocale = unitesBasiques[decomposition.unites];
+        await playAudio(`Et maintenant, assemblons tout : ${decomposition.dizainesText} et ${uniteVocale}, ça fait ${selected?.lettres} !`);
       } else {
         await playAudio(`Le nombre final est donc ${decomposition.dizainesText} !`);
       }
