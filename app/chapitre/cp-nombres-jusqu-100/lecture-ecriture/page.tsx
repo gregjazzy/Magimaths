@@ -820,7 +820,7 @@ export default function LectureEcritureCP100() {
                   🎯 Choisis un nombre à découvrir
                 </h2>
               </div>
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 sm:gap-3 mb-3 sm:mb-6">
+              <div className="grid grid-cols-3 gap-2 sm:gap-3 mb-3 sm:mb-6">
                 {numbersWithWriting.map((num) => (
                   <button
                     key={num.chiffre}
