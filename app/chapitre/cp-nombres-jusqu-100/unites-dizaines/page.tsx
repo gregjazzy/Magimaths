@@ -1212,21 +1212,10 @@ export default function UnitesDizainesCP() {
             <span>Retour au chapitre</span>
           </Link>
           
-          <div className="bg-white rounded-xl shadow-lg text-center" style={{
-            padding: showExercises ? 'clamp(0.5rem, 2vw, 1rem) clamp(0.5rem, 2vw, 1rem)' : '1.5rem'
-          }}>
-            <h1 className={`font-bold text-gray-900 ${
-              showExercises 
-                ? 'text-lg sm:text-2xl lg:text-3xl mb-1 sm:mb-2' 
-                : 'text-4xl mb-4'
-            }`}>
+          <div className="bg-white rounded-xl shadow-lg text-center p-2 sm:p-4">
+            <h1 className="text-lg sm:text-2xl lg:text-3xl mb-1 sm:mb-2 font-bold text-gray-900">
               🔢 Unités et dizaines
             </h1>
-            {!showExercises && (
-            <p className="text-lg text-gray-600">
-              Comprends la valeur des chiffres selon leur position !
-            </p>
-            )}
           </div>
         </div>
 
