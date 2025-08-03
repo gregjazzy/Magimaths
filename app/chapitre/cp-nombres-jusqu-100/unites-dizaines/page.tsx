@@ -1392,9 +1392,9 @@ export default function UnitesDizainesCP() {
 
                   {/* Tableau des positions */}
                   {showTable && (
-                    <div className="bg-white rounded-lg p-3 sm:p-6 shadow-md animate-[fadeInUp_0.8s_ease-out]">
+                    <div className="bg-white rounded-lg p-2 sm:p-6 shadow-md animate-[fadeInUp_0.8s_ease-out]">
                       <div className="text-center mb-2 sm:mb-4">
-                        <h4 className="text-base sm:text-xl font-bold text-gray-800 animate-bounce-in">
+                        <h4 className="text-sm sm:text-xl font-bold text-gray-800 animate-bounce-in">
                           🎯 Tableau magique des positions !
                         </h4>
                       </div>
@@ -1414,26 +1414,26 @@ export default function UnitesDizainesCP() {
                       </thead>
                       <tbody>
                         <tr>
-                          <td className={`border-2 border-blue-600 p-3 sm:p-6 text-center bg-gradient-to-br from-blue-100 to-blue-200 transition-all duration-500 ${
+                          <td className={`border-2 border-blue-600 p-2 sm:p-6 text-center bg-gradient-to-br from-blue-100 to-blue-200 transition-all duration-500 ${
                             highlightTableCell === 'dizaines' 
                               ? 'animate-[tableHighlight_1s_ease-in-out_infinite] bg-gradient-to-br from-yellow-200 to-yellow-300' 
                               : 'animate-slide-in-left'
                           }`}>
-                            <div className={`text-4xl sm:text-8xl font-bold transition-all duration-500 ${
+                            <div className={`text-3xl sm:text-8xl font-bold transition-all duration-500 ${
                               highlightTableCell === 'dizaines' || animatingDigit === 'left' || animatingDigit === 'both'
                                 ? 'text-yellow-600 scale-125 animate-pulse' 
                                 : 'text-blue-600 animate-bounce-in transform hover:scale-110'
                             }`}>
                               3
                             </div>
-                            <div className={`text-sm sm:text-lg font-semibold mt-2 sm:mt-3 transition-all duration-500 ${
+                            <div className={`text-xs sm:text-lg font-semibold mt-1 sm:mt-3 transition-all duration-500 ${
                               highlightTableCell === 'dizaines' 
                                 ? 'text-yellow-800 font-bold scale-110' 
                                 : 'text-blue-800 animate-fade-in-up'
                             }`}>
                               3 × 10 = 30
                             </div>
-                            <div className={`text-xl sm:text-3xl mt-1 sm:mt-2 transition-all duration-500 ${
+                            <div className={`text-lg sm:text-3xl mt-1 sm:mt-2 transition-all duration-500 ${
                               highlightTableCell === 'dizaines' || animatingDigit === 'left' || animatingDigit === 'both'
                                 ? 'scale-125 animate-bounce' 
                                 : 'animate-pulse'
@@ -1441,26 +1441,26 @@ export default function UnitesDizainesCP() {
                               🔟🔟🔟
                             </div>
                           </td>
-                          <td className={`border-2 border-blue-600 p-3 sm:p-6 text-center bg-gradient-to-br from-green-100 to-green-200 transition-all duration-500 ${
+                          <td className={`border-2 border-blue-600 p-2 sm:p-6 text-center bg-gradient-to-br from-green-100 to-green-200 transition-all duration-500 ${
                             highlightTableCell === 'unites' 
                               ? 'animate-[tableHighlight_1s_ease-in-out_infinite] bg-gradient-to-br from-yellow-200 to-yellow-300' 
                               : 'animate-slide-in-right'
                           }`}>
-                            <div className={`text-4xl sm:text-8xl font-bold transition-all duration-500 ${
+                            <div className={`text-3xl sm:text-8xl font-bold transition-all duration-500 ${
                               highlightTableCell === 'unites' || animatingDigit === 'right' || animatingDigit === 'both'
                                 ? 'text-yellow-600 scale-125 animate-pulse' 
                                 : 'text-green-600 animate-bounce-in transform hover:scale-110'
                             }`} style={{animationDelay: '0.2s'}}>
                               4
                             </div>
-                            <div className={`text-sm sm:text-lg font-semibold mt-2 sm:mt-3 transition-all duration-500 ${
+                            <div className={`text-xs sm:text-lg font-semibold mt-1 sm:mt-3 transition-all duration-500 ${
                               highlightTableCell === 'unites' 
                                 ? 'text-yellow-800 font-bold scale-110' 
                                 : 'text-green-800 animate-fade-in-up'
                             }`} style={{animationDelay: '0.1s'}}>
                               4 × 1 = 4
                             </div>
-                            <div className={`text-xl sm:text-3xl mt-1 sm:mt-2 transition-all duration-500 ${
+                            <div className={`text-lg sm:text-3xl mt-1 sm:mt-2 transition-all duration-500 ${
                               highlightTableCell === 'unites' || animatingDigit === 'right' || animatingDigit === 'both'
                                 ? 'scale-125 animate-bounce' 
                                 : 'animate-pulse'
@@ -1480,14 +1480,14 @@ export default function UnitesDizainesCP() {
                             ? 'bg-gradient-to-r from-green-200 to-emerald-200 scale-110' 
                             : 'bg-gradient-to-r from-yellow-100 to-orange-100'
                         }`}>
-                          <div className={`text-xl sm:text-3xl font-bold transition-all duration-500 ${
+                          <div className={`text-lg sm:text-3xl font-bold transition-all duration-500 ${
                             showVisualGroups 
                               ? 'text-green-800 animate-bounce scale-110' 
                               : 'text-gray-800 animate-pulse'
                           }`}>
                             ✨ 30 + 4 = 34 ✨
                           </div>
-                          <div className={`text-sm sm:text-lg mt-1 sm:mt-2 transition-all duration-500 ${
+                          <div className={`text-xs sm:text-lg mt-1 sm:mt-2 transition-all duration-500 ${
                             showVisualGroups 
                               ? 'text-green-700 font-bold animate-pulse' 
                               : 'text-gray-600'
@@ -1497,19 +1497,19 @@ export default function UnitesDizainesCP() {
                         </div>
                         
                         {/* Flèches animées pour montrer le mouvement */}
-                        <div className="flex justify-center items-center mt-2 sm:mt-4 space-x-2 sm:space-x-4 animate-[fadeInUp_1s_ease-out_0.3s_both]">
+                        <div className="flex justify-center items-center mt-2 sm:mt-4 space-x-1 sm:space-x-4 animate-[fadeInUp_1s_ease-out_0.3s_both]">
                           <div className="text-center">
-                            <div className="text-lg sm:text-2xl animate-bounce">⬇️</div>
+                            <div className="text-sm sm:text-2xl animate-bounce">⬇️</div>
                             <div className="text-xs sm:text-sm font-semibold text-blue-600">Dizaines</div>
                           </div>
-                          <div className="text-2xl sm:text-4xl font-bold text-purple-600 animate-pulse">+</div>
+                          <div className="text-lg sm:text-4xl font-bold text-purple-600 animate-pulse">+</div>
                           <div className="text-center">
-                            <div className="text-lg sm:text-2xl animate-bounce">⬇️</div>
+                            <div className="text-sm sm:text-2xl animate-bounce">⬇️</div>
                             <div className="text-xs sm:text-sm font-semibold text-green-600">Unités</div>
                           </div>
-                          <div className="text-2xl sm:text-4xl font-bold text-purple-600 animate-pulse">=</div>
+                          <div className="text-lg sm:text-4xl font-bold text-purple-600 animate-pulse">=</div>
                           <div className="text-center">
-                            <div className="text-lg sm:text-2xl animate-bounce">🎉</div>
+                            <div className="text-sm sm:text-2xl animate-bounce">🎉</div>
                             <div className="text-xs sm:text-sm font-semibold text-purple-600">Résultat</div>
                           </div>
                         </div>
