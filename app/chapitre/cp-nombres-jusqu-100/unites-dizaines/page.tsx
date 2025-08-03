@@ -1717,9 +1717,9 @@ export default function UnitesDizainesCP() {
             </div>
 
             {/* Conseils */}
-            <div className="bg-gradient-to-r from-blue-600 to-green-600 rounded-xl p-3 sm:p-6 text-white">
-              <h3 className="text-base sm:text-xl font-bold mb-2 sm:mb-3">💡 Trucs pour retenir</h3>
-              <ul className="space-y-1 sm:space-y-2 text-sm sm:text-lg">
+            <div className="bg-gradient-to-r from-blue-600 to-green-600 rounded-xl p-3 sm:p-6 text-white mt-4 sm:mt-0">
+              <h3 className="text-sm sm:text-xl font-bold mb-2 sm:mb-3">💡 Trucs pour retenir</h3>
+              <ul className="space-y-1 sm:space-y-2 text-xs sm:text-lg">
                 <li>• DROITE = unités (objets seuls)</li>
                 <li>• GAUCHE = dizaines (paquets de 10)</li>
                 <li>• Utilise tes mains : 1 main = 5, 2 mains = 10</li>
