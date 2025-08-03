@@ -4,6 +4,20 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, CheckCircle, XCircle, RotateCcw, Play, Pause } from 'lucide-react';
 
+// Styles CSS pour les animations
+const symbolAnimationStyles = `
+  @keyframes subtle-glow {
+    0%, 100% { 
+      box-shadow: 0 0 5px rgba(59, 130, 246, 0.3), 0 0 10px rgba(59, 130, 246, 0.2), 0 0 15px rgba(59, 130, 246, 0.1);
+      transform: scale(1);
+    }
+    50% { 
+      box-shadow: 0 0 10px rgba(59, 130, 246, 0.6), 0 0 20px rgba(59, 130, 246, 0.4), 0 0 30px rgba(59, 130, 246, 0.2);
+      transform: scale(1.05);
+    }
+  }
+`;
+
 export default function DoublesMoitiesCP() {
   const [selectedType, setSelectedType] = useState('doubles');
   const [currentExercise, setCurrentExercise] = useState(0);
@@ -26,6 +40,12 @@ export default function DoublesMoitiesCP() {
   const [animatingStep, setAnimatingStep] = useState<string | null>(null);
   const [currentExample, setCurrentExample] = useState<number | null>(null);
   const [showingProcess, setShowingProcess] = useState<'addition' | 'division' | null>(null);
+  const [highlightExplanationButtons, setHighlightExplanationButtons] = useState(false);
+
+  // États pour le mini-jeu
+  const [revealedAnswers, setRevealedAnswers] = useState<boolean[]>([false, false, false, false]);
+  const [completedAnswers, setCompletedAnswers] = useState<boolean[]>([false, false, false, false]);
+  const [miniGameScore, setMiniGameScore] = useState(0);
 
   // États pour Sam le Pirate
   const [samSizeExpanded, setSamSizeExpanded] = useState(false);
@@ -63,6 +83,7 @@ export default function DoublesMoitiesCP() {
     setAnimatingStep(null);
     setCurrentExample(null);
     setShowingProcess(null);
+    setHighlightExplanationButtons(false);
     
     // Réinitialiser les états Sam
     setIsExplainingError(false);
@@ -348,6 +369,8 @@ export default function DoublesMoitiesCP() {
       
       // 2. Explication des doubles avec animations sur la BOX DOUBLES
       await wait(1800);
+      scrollToSection('concept-section');
+      await wait(800);
       setHighlightedElement('concept-section');
       await playAudio("Commençons par les doubles. Un double, c'est quand on ajoute un nombre à lui-même !", true);
       if (stopSignalRef.current) return;
@@ -379,6 +402,8 @@ export default function DoublesMoitiesCP() {
         await wait(2000);
       setHighlightedNumber(null);
       setShowingProcess(null);
+      scrollToSection('moities-concept-section');
+      await wait(800);
       setHighlightedElement('moities-concept-section');
       
       await playAudio("Maintenant, parlons des moitiés. Une moitié, c'est partager en deux parts égales !", true);
@@ -467,10 +492,12 @@ export default function DoublesMoitiesCP() {
       if (stopSignalRef.current) return;
       
       await wait(1200);
+      setHighlightExplanationButtons(true);
       await playAudio("Clique sur l'explication à côté de chaque exemple pour voir l'animation détaillée !", true);
       if (stopSignalRef.current) return;
       
       await wait(1500);
+      setHighlightExplanationButtons(false);
       await playAudio("Ou clique sur 'Voir tous les exemples' pour les découvrir d'affilée !", true);
       if (stopSignalRef.current) return;
       
@@ -499,6 +526,15 @@ export default function DoublesMoitiesCP() {
       
       await wait(1500);
       setHighlightedNumber(item.number);
+      
+      // Scroll vers l'exemple spécifique en cours
+      setTimeout(() => {
+        const exampleElement = document.querySelectorAll('#doubles-section .space-y-4 > div')[index];
+        if (exampleElement) {
+          exampleElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 500);
+      
       await playAudio(`Ici, j'ai le nombre ${item.number}. Je vois ${item.number} cercle${item.number > 1 ? 's' : ''} rouge${item.number > 1 ? 's' : ''}.`, true);
       if (stopSignalRef.current) return;
         
@@ -571,10 +607,12 @@ export default function DoublesMoitiesCP() {
       if (stopSignalRef.current) return;
       
         await wait(1200);
+      setHighlightExplanationButtons(true);
       await playAudio("Clique sur l'explication à côté de chaque exemple pour voir l'animation détaillée !", true);
       if (stopSignalRef.current) return;
       
       await wait(1500);
+      setHighlightExplanationButtons(false);
       await playAudio("Ou clique sur 'Voir tous les exemples' pour les découvrir d'affilée !", true);
       if (stopSignalRef.current) return;
       
@@ -603,6 +641,15 @@ export default function DoublesMoitiesCP() {
       
       await wait(1500);
       setHighlightedNumber(item.number);
+      
+      // Scroll vers l'exemple spécifique en cours
+      setTimeout(() => {
+        const exampleElement = document.querySelectorAll('#moities-section .space-y-4 > div')[index];
+        if (exampleElement) {
+          exampleElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 500);
+      
       await playAudio(`Ici, j'ai le nombre ${item.number}. Je vois ${item.number} cercle${item.number > 1 ? 's' : ''} rouge${item.number > 1 ? 's' : ''}.`, true);
       if (stopSignalRef.current) return;
       
@@ -959,6 +1006,30 @@ export default function DoublesMoitiesCP() {
     setIsExplainingError(false);
     setPirateIntroStarted(false);
     setShowExercisesList(false);
+    
+    // Réinitialiser les états du mini-jeu
+    setRevealedAnswers([false, false, false, false]);
+    setCompletedAnswers([false, false, false, false]);
+    setMiniGameScore(0);
+  };
+
+  // Fonctions pour le mini-jeu
+  const revealAnswer = (index: number) => {
+    const newRevealed = [...revealedAnswers];
+    newRevealed[index] = true;
+    setRevealedAnswers(newRevealed);
+
+    const newCompleted = [...completedAnswers];
+    newCompleted[index] = true;
+    setCompletedAnswers(newCompleted);
+
+    setMiniGameScore(prev => prev + 1);
+  };
+
+  const resetMiniGame = () => {
+    setRevealedAnswers([false, false, false, false]);
+    setCompletedAnswers([false, false, false, false]);
+    setMiniGameScore(0);
   };
 
   // JSX pour l'introduction de Sam le Pirate dans les exercices
@@ -1079,23 +1150,29 @@ export default function DoublesMoitiesCP() {
         </div>
 
         {/* Navigation entre cours et exercices */}
-        <div className="flex justify-center mb-4 sm:mb-8">
+        <div className="flex justify-center mb-2 sm:mb-8">
           <div className="bg-white rounded-lg p-1 shadow-md">
             <button
-              onClick={() => setShowExercises(false)}
-              className={`px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-bold transition-all ${
+              onClick={() => {
+                stopAllVocalsAndAnimations();
+                setShowExercises(false);
+              }}
+              className={`px-3 sm:px-6 py-1 sm:py-3 rounded-lg font-bold text-sm sm:text-base transition-all ${
                 !showExercises 
-                  ? 'bg-green-500 text-white shadow-md' 
+                  ? 'bg-pink-500 text-white shadow-md' 
                   : 'text-gray-600 hover:bg-gray-100'
               }`}
             >
               📖 Cours
             </button>
             <button
-              onClick={() => setShowExercises(true)}
-              className={`px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-bold transition-all ${
+              onClick={() => {
+                stopAllVocalsAndAnimations();
+                setShowExercises(true);
+              }}
+              className={`px-3 sm:px-6 py-1 sm:py-3 rounded-lg font-bold text-sm sm:text-base transition-all ${
                 showExercises 
-                  ? 'bg-green-500 text-white shadow-md' 
+                  ? 'bg-pink-500 text-white shadow-md' 
                   : 'text-gray-600 hover:bg-gray-100'
               }`}
             >
@@ -1105,62 +1182,109 @@ export default function DoublesMoitiesCP() {
         </div>
 
         {!showExercises ? (
-          /* COURS */
-          <div className="space-y-4 sm:space-y-8">
-            {/* Bouton d'explication vocal principal */}
-            <div className="text-center mb-4 sm:mb-6">
-              <button
-                onClick={explainChapter}
-                className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-bold text-lg sm:text-xl shadow-lg hover:shadow-xl transition-all transform hover:scale-105"
-                style={{
-                  animationDuration: !hasStarted ? '2s' : 'none',
-                  animationIterationCount: !hasStarted ? 'infinite' : 'none'
-                }}
-              >
-                ▶️ COMMENCER !
-              </button>
+          /* COURS - MOBILE OPTIMISÉ */
+          <div className="space-y-2 sm:space-y-6">
+            {/* Image de Sam le Pirate avec bouton DÉMARRER */}
+          <div className="flex items-center justify-center gap-2 sm:gap-4 p-2 sm:p-4 mb-3 sm:mb-6">
+            {/* Image de Sam le Pirate */}
+            <div className={`relative transition-all duration-500 border-2 border-blue-300 rounded-full bg-gradient-to-br from-blue-100 to-cyan-100 ${
+              isPlayingVocal
+                  ? 'w-14 sm:w-24 h-14 sm:h-24' // When speaking - plus petit sur mobile
+                : samSizeExpanded
+                    ? 'w-12 sm:w-32 h-12 sm:h-32' // Enlarged - plus petit sur mobile
+                    : 'w-12 sm:w-20 h-12 sm:h-20' // Initial - plus petit sur mobile
+              }`}>
+                <img 
+                  src="/image/pirate-small.png" 
+                  alt="Sam le Pirate" 
+                  className="w-full h-full rounded-full object-cover"
+                />
+              {/* Megaphone animé quand il parle */}
+                {isPlayingVocal && (
+                <div className="absolute -top-1 -right-1 bg-red-500 text-white p-1 rounded-full shadow-lg">
+                  <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.617.77L4.916 14H2a1 1 0 01-1-1V7a1 1 0 011-1h2.916l3.467-2.77a1 1 0 011.617.77zM14.657 2.929a1 1 0 011.414 0A9.972 9.972 0 0119 10a9.972 9.972 0 01-2.929 7.071 1 1 0 01-1.414-1.414A7.971 7.971 0 0017 10c0-2.21-.894-4.208-2.343-5.657a1 1 0 010-1.414zm-2.829 2.828a1 1 0 011.415 0A5.983 5.983 0 0115 10a5.983 5.983 0 01-1.757 4.243 1 1 0 01-1.415-1.414A3.983 3.983 0 0013 10a3.983 3.983 0 00-1.172-2.829 1 1 0 010-1.414z" clipRule="evenodd" />
+                  </svg>
+                  </div>
+                )}
+              </div>
               
-
+            {/* Bouton Démarrer */}
+            <div className="text-center">
+              <button
+              onClick={explainChapter}
+                disabled={isPlayingVocal}
+                className={`bg-gradient-to-r from-green-500 to-blue-500 text-white px-3 sm:px-12 py-2 sm:py-6 rounded-xl font-bold text-sm sm:text-3xl shadow-2xl hover:shadow-3xl transition-all transform hover:scale-105 ${
+                isPlayingVocal ? 'opacity-75 cursor-not-allowed' : 'hover:from-green-600 hover:to-blue-600'
+              }`}
+            >
+                <Play className="inline w-4 h-4 sm:w-8 sm:h-8 mr-1 sm:mr-4" />
+                {isPlayingVocal ? '🎤 JE PARLE...' : '🎯 DÉMARRER'}
+              </button>
+              </div>
             </div>
 
             {/* Qu'est-ce qu'un double ? */}
             <div 
               id="concept-section"
-              className={`bg-white rounded-xl p-8 shadow-lg transition-all duration-1000 ${
+              className={`bg-white rounded-xl p-3 sm:p-8 shadow-lg transition-all duration-1000 ${
                 highlightedElement === 'concept-section' ? 'ring-4 ring-green-400 bg-green-50 scale-105' : ''
               }`}
             >
-              <h2 className="text-2xl font-bold text-center mb-6 text-gray-900">
-                🤔 Qu'est-ce qu'un double ?
-              </h2>
+              <div className="flex items-center justify-center gap-2 sm:gap-3 mb-3 sm:mb-6">
+                <h2 className="text-lg sm:text-2xl font-bold text-gray-900">
+                  🤔 Qu'est-ce qu'un double ?
+                </h2>
+                {/* Icône d'animation pour les concepts */}
+                <div className="bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-full w-8 h-8 sm:w-12 sm:h-12 flex items-center justify-center text-sm sm:text-xl font-bold shadow-lg hover:scale-110 cursor-pointer transition-all duration-300 ring-2 ring-green-300 ring-opacity-40 hover:shadow-xl hover:ring-4 hover:ring-green-200"
+                     style={{
+                       animation: 'subtle-glow 3s ease-in-out infinite',
+                       animationPlayState: 'running'
+                     }} 
+                     title="🤔 Animation des concepts ! Cliquez pour voir les explications."
+                  onClick={async () => {
+                    if (!isPlayingVocal) {
+                      stopAllVocalsAndAnimations();
+                      await new Promise(resolve => setTimeout(resolve, 100));
+                      scrollToSection('concept-section');
+                      await new Promise(resolve => setTimeout(resolve, 300));
+                      setHighlightedElement('concept-section');
+                      await new Promise(resolve => setTimeout(resolve, 2000));
+                      setHighlightedElement(null);
+                    }
+                  }}
+                >
+                  🤔
+                </div>
+              </div>
               
-              <div className="bg-green-50 rounded-lg p-6 mb-6">
-                <p className="text-lg text-center text-green-800 font-semibold mb-4">
+              <div className="bg-green-50 rounded-lg p-3 sm:p-6 mb-3 sm:mb-6">
+                <p className="text-sm sm:text-base text-center text-green-800 font-semibold mb-3 sm:mb-4">
                   Le double d'un nombre, c'est ce nombre + lui-même !
                 </p>
                 
-                <div className="bg-white rounded-lg p-4">
+                <div className="bg-white rounded-lg p-2 sm:p-4">
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-green-600 mb-2">
+                    <div className="text-base sm:text-lg font-bold text-green-600 mb-2">
                       Exemple : Double de 3 = 3 + 3 = 6
                     </div>
-                    <div className="text-xl text-gray-700 mb-4">
+                    <div className="text-sm text-gray-700 mb-2 sm:mb-4">
                       On ajoute 3 avec lui-même pour faire 6
                     </div>
-                    <div className="flex justify-center items-center space-x-4 text-lg">
+                    <div className="flex justify-center items-center space-x-2 sm:space-x-4 text-sm sm:text-lg">
                       <div className="text-center">
-                        <div className="text-sm text-gray-600 mb-2">3 cercles</div>
-                        {renderCircles(3)}
+                        <div className="text-xs text-gray-600 mb-2">3 cercles</div>
+                        <div className="scale-75">{renderCircles(3)}</div>
                       </div>
-                      <div className="text-2xl text-green-600 font-bold">+</div>
+                      <div className="text-base sm:text-xl text-green-600 font-bold">+</div>
                       <div className="text-center">
-                        <div className="text-sm text-gray-600 mb-2">3 cercles</div>
-                        {renderCircles(3)}
+                        <div className="text-xs text-gray-600 mb-2">3 cercles</div>
+                        <div className="scale-75">{renderCircles(3)}</div>
                       </div>
-                      <div className="text-2xl text-green-600 font-bold">=</div>
+                      <div className="text-base sm:text-xl text-green-600 font-bold">=</div>
                       <div className="text-center">
-                        <div className="text-sm text-gray-600 mb-2">6 cercles</div>
-                        {renderCircles(6)}
+                        <div className="text-xs text-gray-600 mb-2">6 cercles</div>
+                        <div className="scale-75">{renderCircles(6)}</div>
                       </div>
                     </div>
                   </div>
@@ -1171,36 +1295,59 @@ export default function DoublesMoitiesCP() {
             {/* Qu'est-ce qu'une moitié ? */}
             <div 
               id="moities-concept-section"
-              className={`bg-white rounded-xl p-8 shadow-lg transition-all duration-1000 ${
+              className={`bg-white rounded-xl p-3 sm:p-8 shadow-lg transition-all duration-1000 ${
                 highlightedElement === 'moities-concept-section' ? 'ring-4 ring-blue-400 bg-blue-50 scale-105' : ''
               }`}
             >
-              <h2 className="text-2xl font-bold text-center mb-6 text-gray-900">
-                🤔 Qu'est-ce qu'une moitié ?
-              </h2>
+              <div className="flex items-center justify-center gap-2 sm:gap-3 mb-3 sm:mb-6">
+                <h2 className="text-lg sm:text-2xl font-bold text-gray-900">
+                  ✂️ Qu'est-ce qu'une moitié ?
+                </h2>
+                {/* Icône d'animation pour les moitiés */}
+                <div className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-full w-8 h-8 sm:w-12 sm:h-12 flex items-center justify-center text-sm sm:text-xl font-bold shadow-lg hover:scale-110 cursor-pointer transition-all duration-300 ring-2 ring-blue-300 ring-opacity-40 hover:shadow-xl hover:ring-4 hover:ring-blue-200"
+                     style={{
+                       animation: 'subtle-glow 3s ease-in-out infinite',
+                       animationPlayState: 'running'
+                     }} 
+                     title="✂️ Animation des moitiés ! Cliquez pour voir les partages."
+                  onClick={async () => {
+                    if (!isPlayingVocal) {
+                      stopAllVocalsAndAnimations();
+                      await new Promise(resolve => setTimeout(resolve, 100));
+                      scrollToSection('moities-concept-section');
+                      await new Promise(resolve => setTimeout(resolve, 300));
+                      setHighlightedElement('moities-concept-section');
+                      await new Promise(resolve => setTimeout(resolve, 2000));
+                      setHighlightedElement(null);
+                    }
+                  }}
+                >
+                  ✂️
+                </div>
+              </div>
               
-              <div className="bg-blue-50 rounded-lg p-6 mb-6">
-                <p className="text-lg text-center text-blue-800 font-semibold mb-4">
+              <div className="bg-blue-50 rounded-lg p-3 sm:p-6 mb-3 sm:mb-6">
+                <p className="text-sm sm:text-base text-center text-blue-800 font-semibold mb-3 sm:mb-4">
                   La moitié d'un nombre, c'est le partager en 2 parts égales !
                 </p>
                 
-                <div className="bg-white rounded-lg p-4">
+                <div className="bg-white rounded-lg p-2 sm:p-4">
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-blue-600 mb-2">
+                    <div className="text-base sm:text-lg font-bold text-blue-600 mb-2">
                       Exemple : Moitié de 6 = 6 ÷ 2 = 3
                     </div>
-                    <div className="text-xl text-gray-700 mb-4">
+                    <div className="text-sm text-gray-700 mb-2 sm:mb-4">
                       On partage 6 en 2 groupes égaux de 3
                     </div>
-                    <div className="flex justify-center items-center space-x-4 text-lg">
+                    <div className="flex justify-center items-center space-x-2 sm:space-x-4 text-sm sm:text-lg">
                       <div className="text-center">
-                        <div className="text-sm text-gray-600 mb-2">6 cercles</div>
-                        {renderCircles(6)}
+                        <div className="text-xs text-gray-600 mb-2">6 cercles</div>
+                        <div className="scale-75">{renderCircles(6)}</div>
                       </div>
-                      <div className="text-2xl text-blue-600 font-bold">÷ 2 =</div>
+                      <div className="text-base sm:text-xl text-blue-600 font-bold">÷ 2 =</div>
                       <div className="text-center">
-                        <div className="text-sm text-gray-600 mb-2">3 cercles</div>
-                        <div className="border-2 border-blue-300 rounded-lg p-2 bg-blue-50">
+                        <div className="text-xs text-gray-600 mb-2">3 cercles</div>
+                        <div className="border-2 border-blue-300 rounded-lg p-2 bg-blue-50 scale-75">
                           {renderCircles(3)}
                         </div>
                         <div className="text-xs text-blue-600 mt-1">chaque part</div>
@@ -1214,22 +1361,45 @@ export default function DoublesMoitiesCP() {
             {/* Sélecteur de type */}
             <div 
               id="selector-section"
-              className={`bg-white rounded-xl p-8 shadow-lg transition-all duration-1000 ${
+              className={`bg-white rounded-xl p-3 sm:p-8 shadow-lg transition-all duration-1000 ${
                 highlightedElement === 'selector-section' ? 'ring-4 ring-purple-400 bg-purple-50 scale-105' : ''
               }`}
             >
-              <h2 className="text-2xl font-bold text-center mb-6 text-gray-900">
-                🎯 Choisis ce que tu veux apprendre
-              </h2>
+              <div className="flex items-center justify-center gap-2 sm:gap-3 mb-3 sm:mb-6">
+                <h2 className="text-lg sm:text-2xl font-bold text-gray-900">
+                  🎯 Choisis ce que tu veux apprendre
+                </h2>
+                {/* Icône d'animation pour le sélecteur */}
+                <div className="bg-gradient-to-r from-purple-500 to-pink-600 text-white rounded-full w-8 h-8 sm:w-12 sm:h-12 flex items-center justify-center text-sm sm:text-xl font-bold shadow-lg hover:scale-110 cursor-pointer transition-all duration-300 ring-2 ring-purple-300 ring-opacity-40 hover:shadow-xl hover:ring-4 hover:ring-purple-200"
+                     style={{
+                       animation: 'subtle-glow 3s ease-in-out infinite',
+                       animationPlayState: 'running'
+                     }} 
+                     title="🎯 Animation du sélecteur ! Cliquez pour un aperçu."
+                  onClick={async () => {
+                    if (!isPlayingVocal) {
+                      stopAllVocalsAndAnimations();
+                      await new Promise(resolve => setTimeout(resolve, 100));
+                      scrollToSection('selector-section');
+                      await new Promise(resolve => setTimeout(resolve, 300));
+                      setHighlightedElement('selector-section');
+                      await new Promise(resolve => setTimeout(resolve, 2000));
+                      setHighlightedElement(null);
+                    }
+                  }}
+                >
+                  🎯
+                </div>
+              </div>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+              <div className="grid grid-cols-2 gap-3 sm:gap-4 mb-3 sm:mb-6">
                 <button
                   id="doubles-button"
                   onClick={() => {
                     setSelectedType('doubles');
                     explainDoublesGeneral();
                   }}
-                  className={`p-6 rounded-lg font-bold text-xl transition-all ${
+                  className={`p-3 sm:p-6 rounded-lg font-bold text-sm sm:text-xl transition-all ${
                     selectedType === 'doubles'
                       ? 'bg-green-500 text-white shadow-lg scale-105'
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -1245,7 +1415,7 @@ export default function DoublesMoitiesCP() {
                     setSelectedType('moities');
                     explainMoitiesGeneral();
                   }}
-                  className={`p-6 rounded-lg font-bold text-xl transition-all ${
+                  className={`p-3 sm:p-6 rounded-lg font-bold text-sm sm:text-xl transition-all ${
                     selectedType === 'moities'
                       ? 'bg-blue-500 text-white shadow-lg scale-105'
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -1262,94 +1432,96 @@ export default function DoublesMoitiesCP() {
             {selectedType === 'doubles' ? (
               <div 
                 id="doubles-section"
-                className={`bg-white rounded-xl p-8 shadow-lg transition-all duration-1000 ${
+                className={`bg-white rounded-xl p-3 sm:p-8 shadow-lg transition-all duration-1000 ${
                   animatingDoubles ? 'ring-4 ring-green-400 bg-green-50 scale-105' : ''
                 }`}
               >
-                <div className="flex items-center justify-center mb-6 space-x-4 flex-wrap gap-2">
-                  <h2 className="text-2xl font-bold text-gray-900">
+                <div className="flex items-center justify-center mb-3 sm:mb-6 space-x-2 sm:space-x-4 flex-wrap gap-2">
+                  <h2 className="text-lg sm:text-2xl font-bold text-gray-900">
                     🎯 Tableau des doubles
                   </h2>
                   <button
                     onClick={explainAllDoubles}
-                    className="bg-orange-500 text-white px-4 py-2 rounded-lg font-bold hover:bg-orange-600 transition-colors"
+                    className="bg-orange-500 text-white px-2 sm:px-4 py-1 sm:py-2 rounded-lg font-bold hover:bg-orange-600 transition-colors text-sm sm:text-base"
                   >
-                    🎬 Voir tous les exemples
+                    🎬 Tous les exemples
                   </button>
                         </div>
                 
-                <div className="mb-6 p-4 bg-green-50 border-l-4 border-green-400 rounded-lg">
-                  <p className="text-green-800">
-                    💡 <strong>Astuce :</strong> Clique sur "▶️ Explication" à côté de chaque exemple pour voir l'animation détaillée ! Ou clique sur "🎬 Voir tous les exemples" pour découvrir tous les doubles d'affilée !
+                <div className="mb-3 sm:mb-6 p-2 sm:p-4 bg-green-50 border-l-4 border-green-400 rounded-lg">
+                  <p className="text-sm sm:text-base text-green-800">
+                    💡 <strong>Astuce :</strong> Clique sur "▶️ Explication" pour voir l'animation ! <span className="hidden sm:inline">Ou clique sur "🎬 Voir tous les exemples" pour découvrir tous les doubles d'affilée !</span>
                   </p>
                         </div>
                 
                 {/* Indicateur d'étape */}
                 {animatingStep && (
-                  <div className="mb-4 p-3 rounded-lg bg-green-100 border-l-4 border-green-500">
-                    <div className="text-lg font-bold text-green-800">
+                  <div className="mb-2 sm:mb-4 p-2 sm:p-3 rounded-lg bg-green-100 border-l-4 border-green-500">
+                    <div className="text-base sm:text-lg font-bold text-green-800">
                       {animatingStep === 'introduction' && '🎯 Découverte des doubles'}
                     </div>
                   </div>
                 )}
                 
-                <div className="space-y-4">
+                <div className="space-y-2 sm:space-y-4">
                   {doublesData.map((item, index) => (
                     <div 
                       key={index} 
-                      className={`bg-green-50 rounded-lg p-6 transition-all duration-700 ${
+                      className={`bg-green-50 rounded-lg p-3 sm:p-6 transition-all duration-700 ${
                         currentExample === index ? 'ring-4 ring-yellow-400 bg-yellow-100 scale-105' : ''
                       }`}
                     >
-                      <div className="text-center space-y-4">
-                        <div className="flex items-center justify-center space-x-4 mb-4">
-                          <div className={`text-3xl font-bold text-green-600 transition-all duration-500 ${
-                            highlightedNumber === item.double ? 'text-4xl text-yellow-800 animate-pulse' : ''
+                      <div className="text-center space-y-2 sm:space-y-4">
+                        <div className="flex items-center justify-center space-x-2 sm:space-x-4 mb-2 sm:mb-4">
+                          <div className={`text-xl sm:text-3xl font-bold text-green-600 transition-all duration-500 ${
+                            highlightedNumber === item.double ? 'text-2xl sm:text-4xl text-yellow-800 animate-pulse' : ''
                           }`}>
                             Double de {item.number} = {item.double}
                       </div>
                           <button
                             onClick={() => explainSpecificDouble(index)}
-                            className="bg-yellow-500 text-white px-3 py-1 rounded-lg font-bold hover:bg-yellow-600 transition-colors text-sm"
+                            className={`bg-yellow-500 text-white px-3 py-1 rounded-lg font-bold hover:bg-yellow-600 transition-colors text-sm ${
+                              highlightExplanationButtons ? 'ring-4 ring-orange-400 animate-pulse bg-orange-500 scale-110 shadow-2xl' : ''
+                            }`}
                           >
                             ▶️ Explication
                           </button>
                     </div>
 
-                        <div className="bg-white rounded-lg p-4">
-                          <div className={`text-xl text-gray-700 mb-4 transition-all duration-300 ${
-                            showingProcess === 'addition' && currentExample === index ? 'text-2xl text-green-800 font-bold' : ''
+                        <div className="bg-white rounded-lg p-2 sm:p-4">
+                          <div className={`text-base sm:text-xl text-gray-700 mb-2 sm:mb-4 transition-all duration-300 ${
+                            showingProcess === 'addition' && currentExample === index ? 'text-lg sm:text-2xl text-green-800 font-bold' : ''
                           }`}>
                             {item.number} + {item.number} = {item.double}
                           </div>
                           
-                          <div className="flex justify-center items-center space-x-4">
+                          <div className="flex justify-center items-center space-x-2 sm:space-x-4">
                             <div className="text-center">
-                              <div className="text-sm text-gray-600 mb-2">{item.number} cercles</div>
-                              <div className={`transition-all duration-500 ${
-                                highlightedNumber === item.number && currentExample === index ? 'scale-110' : ''
+                              <div className="text-xs sm:text-sm text-gray-600 mb-2">{item.number} cercles</div>
+                              <div className={`transition-all duration-500 scale-75 ${
+                                highlightedNumber === item.number && currentExample === index ? 'scale-90' : ''
                               }`}>
                                 {renderCircles(item.number)}
                               </div>
                             </div>
-                            <div className={`text-2xl font-bold transition-all duration-300 ${
-                              showingProcess === 'addition' && currentExample === index ? 'text-3xl text-green-600 animate-bounce' : 'text-green-600'
+                            <div className={`text-xl sm:text-2xl font-bold transition-all duration-300 ${
+                              showingProcess === 'addition' && currentExample === index ? 'text-2xl sm:text-3xl text-green-600 animate-bounce' : 'text-green-600'
                             }`}>+</div>
                             <div className="text-center">
-                              <div className="text-sm text-gray-600 mb-2">{item.number} cercles</div>
-                              <div className={`transition-all duration-500 ${
-                                highlightedNumber === item.number && currentExample === index ? 'scale-110' : ''
+                              <div className="text-xs sm:text-sm text-gray-600 mb-2">{item.number} cercles</div>
+                              <div className={`transition-all duration-500 scale-75 ${
+                                highlightedNumber === item.number && currentExample === index ? 'scale-90' : ''
                               }`}>
                                 {renderCircles(item.number)}
                               </div>
                             </div>
-                            <div className={`text-2xl font-bold transition-all duration-300 ${
-                              showingProcess === 'addition' && currentExample === index ? 'text-3xl text-green-600 animate-bounce' : 'text-green-600'
+                            <div className={`text-xl sm:text-2xl font-bold transition-all duration-300 ${
+                              showingProcess === 'addition' && currentExample === index ? 'text-2xl sm:text-3xl text-green-600 animate-bounce' : 'text-green-600'
                             }`}>=</div>
                             <div className="text-center">
-                              <div className="text-sm text-gray-600 mb-2">{item.double} cercles</div>
-                              <div className={`transition-all duration-500 ${
-                                highlightedNumber === item.double && currentExample === index ? 'scale-110 ring-4 ring-green-400 rounded-lg p-2' : ''
+                              <div className="text-xs sm:text-sm text-gray-600 mb-2">{item.double} cercles</div>
+                              <div className={`transition-all duration-500 scale-75 ${
+                                highlightedNumber === item.double && currentExample === index ? 'scale-90 ring-4 ring-green-400 rounded-lg p-1 sm:p-2' : ''
                               }`}>
                                 {renderCircles(item.double)}
                               </div>
@@ -1364,83 +1536,85 @@ export default function DoublesMoitiesCP() {
             ) : (
               <div 
                 id="moities-section"
-                className={`bg-white rounded-xl p-8 shadow-lg transition-all duration-1000 ${
+                className={`bg-white rounded-xl p-3 sm:p-8 shadow-lg transition-all duration-1000 ${
                   animatingMoities ? 'ring-4 ring-blue-400 bg-blue-50 scale-105' : ''
                 }`}
               >
-                <div className="flex items-center justify-center mb-6 space-x-4 flex-wrap gap-2">
-                  <h2 className="text-2xl font-bold text-gray-900">
+                <div className="flex items-center justify-center mb-3 sm:mb-6 space-x-2 sm:space-x-4 flex-wrap gap-2">
+                  <h2 className="text-lg sm:text-2xl font-bold text-gray-900">
                     ✂️ Tableau des moitiés
                   </h2>
                       <button
                     onClick={explainAllMoities}
-                    className="bg-orange-500 text-white px-4 py-2 rounded-lg font-bold hover:bg-orange-600 transition-colors"
+                    className="bg-orange-500 text-white px-2 sm:px-4 py-1 sm:py-2 rounded-lg font-bold hover:bg-orange-600 transition-colors text-sm sm:text-base"
                   >
-                    🎬 Voir tous les exemples
+                    🎬 Tous les exemples
                       </button>
                     </div>
                 
-                <div className="mb-6 p-4 bg-blue-50 border-l-4 border-blue-400 rounded-lg">
-                  <p className="text-blue-800">
-                    💡 <strong>Astuce :</strong> Clique sur "▶️ Explication" à côté de chaque exemple pour voir l'animation détaillée ! Ou clique sur "🎬 Voir tous les exemples" pour découvrir toutes les moitiés d'affilée !
+                <div className="mb-3 sm:mb-6 p-2 sm:p-4 bg-blue-50 border-l-4 border-blue-400 rounded-lg">
+                  <p className="text-sm sm:text-base text-blue-800">
+                    💡 <strong>Astuce :</strong> Clique sur "▶️ Explication" pour voir l'animation ! <span className="hidden sm:inline">Ou clique sur "🎬 Voir tous les exemples" pour découvrir toutes les moitiés d'affilée !</span>
                   </p>
                   </div>
                 
                 {/* Indicateur d'étape */}
                 {animatingStep && (
-                  <div className="mb-4 p-3 rounded-lg bg-blue-100 border-l-4 border-blue-500">
-                    <div className="text-lg font-bold text-blue-800">
+                  <div className="mb-2 sm:mb-4 p-2 sm:p-3 rounded-lg bg-blue-100 border-l-4 border-blue-500">
+                    <div className="text-base sm:text-lg font-bold text-blue-800">
                       {animatingStep === 'introduction' && '🎯 Découverte des moitiés'}
             </div>
                   </div>
                 )}
                 
-                <div className="space-y-4">
+                <div className="space-y-2 sm:space-y-4">
                   {moitiesData.map((item, index) => (
                     <div 
                       key={index} 
-                      className={`bg-blue-50 rounded-lg p-6 transition-all duration-700 ${
+                      className={`bg-blue-50 rounded-lg p-3 sm:p-6 transition-all duration-700 ${
                         currentExample === index ? 'ring-4 ring-yellow-400 bg-yellow-100 scale-105' : ''
                       }`}
                     >
-                      <div className="text-center space-y-4">
-                        <div className="flex items-center justify-center space-x-4 mb-4">
-                          <div className={`text-3xl font-bold text-blue-600 transition-all duration-500 ${
-                            highlightedNumber === item.half ? 'text-4xl text-yellow-800 animate-pulse' : ''
+                      <div className="text-center space-y-2 sm:space-y-4">
+                        <div className="flex items-center justify-center space-x-2 sm:space-x-4 mb-2 sm:mb-4">
+                          <div className={`text-xl sm:text-3xl font-bold text-blue-600 transition-all duration-500 ${
+                            highlightedNumber === item.half ? 'text-2xl sm:text-4xl text-yellow-800 animate-pulse' : ''
                           }`}>
                             Moitié de {item.number} = {item.half}
                     </div>
                           <button
                             onClick={() => explainSpecificMoitie(index)}
-                            className="bg-yellow-500 text-white px-3 py-1 rounded-lg font-bold hover:bg-yellow-600 transition-colors text-sm"
+                            className={`bg-yellow-500 text-white px-3 py-1 rounded-lg font-bold hover:bg-yellow-600 transition-colors text-sm ${
+                              highlightExplanationButtons ? 'ring-4 ring-orange-400 animate-pulse bg-orange-500 scale-110 shadow-2xl' : ''
+                            }`}
                           >
                             ▶️ Explication
                           </button>
                 </div>
                         
-                        <div className="bg-white rounded-lg p-4">
-                          <div className={`text-xl text-gray-700 mb-4 transition-all duration-300 ${
-                            showingProcess === 'division' && currentExample === index ? 'text-2xl text-blue-800 font-bold' : ''
+                        <div className="bg-white rounded-lg p-2 sm:p-4">
+                          <div className={`text-base sm:text-xl text-gray-700 mb-2 sm:mb-4 transition-all duration-300 ${
+                            showingProcess === 'division' && currentExample === index ? 'text-lg sm:text-2xl text-blue-800 font-bold' : ''
                           }`}>
                             {item.number} ÷ 2 = {item.half}
-              </div>
-
-                          <div className="flex justify-center items-center space-x-4">
+                          </div>
+                          
+                          <div className="flex justify-center items-center space-x-2 sm:space-x-4">
                             <div className="text-center">
-                              <div className="text-sm text-gray-600 mb-2">{item.number} cercles</div>
+                              <div className="text-xs sm:text-sm text-gray-600 mb-2">{item.number} cercles</div>
                               <div className={`transition-all duration-500 ${
                                 highlightedNumber === item.number && currentExample === index ? 'scale-110' : ''
                               }`}>
                                 {renderCircles(item.number)}
                     </div>
                 </div>
-                            <div className={`text-2xl font-bold transition-all duration-300 ${
-                              showingProcess === 'division' && currentExample === index ? 'text-3xl text-blue-600 animate-bounce' : 'text-blue-600'
+                            <div className={`text-xl sm:text-2xl font-bold transition-all duration-300 ${
+                              showingProcess === 'division' && currentExample === index ? 'text-2xl sm:text-3xl text-blue-600 animate-bounce' : 'text-blue-600'
                             }`}>÷ 2 =</div>
                             <div className="text-center">
-                              <div className="text-sm text-gray-600 mb-2">chaque part</div>
-                              <div className={`border-2 border-blue-300 rounded-lg p-2 bg-blue-50 transition-all duration-500 ${
-                                highlightedNumber === item.half && currentExample === index ? 'scale-110 ring-4 ring-blue-400' : ''
+                              <div className="text-xs sm:text-sm text-gray-600 mb-2">chaque part</div>
+                              <div className={`border-2 border-blue-300 rounded-lg p-1 sm:p-2 bg-blue-50 transition-all duration-500 scale-75 ${
+                                highlightedNumber === item.half && currentExample === index ? 'scale-90 ring-4 ring-blue-400' : ''
                               }`}>
                                 {renderCircles(item.half)}
               </div>
@@ -1463,47 +1637,147 @@ export default function DoublesMoitiesCP() {
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="bg-green-50 rounded-lg p-6">
-                  <h3 className="text-xl font-bold mb-4 text-green-800">
+                  <h3 className="text-lg font-bold mb-4 text-green-800">
                     🎯 Pour les doubles
                   </h3>
-                  <ul className="space-y-2 text-green-700">
-                    <li>• Utilise tes doigts : 2 mains → double de 5 = 10</li>
-                    <li>• Pense aux objets identiques</li>
-                    <li>• C'est comme ajouter à soi-même</li>
-                    <li>• Regarde tes chaussettes : toujours par paires !</li>
+                  <ul className="space-y-2 text-sm text-green-700">
+                    <li>• Tes doigts : 2 mains = 10</li>
+                    <li>• Objets identiques</li>
+                    <li>• Ajouter à soi-même</li>
+                    <li>• Chaussettes par paires !</li>
               </ul>
             </div>
                 
                 <div className="bg-blue-50 rounded-lg p-6">
-                  <h3 className="text-xl font-bold mb-4 text-blue-800">
+                  <h3 className="text-lg font-bold mb-4 text-blue-800">
                     ✂️ Pour les moitiés
                   </h3>
-                  <ul className="space-y-2 text-blue-700">
-                    <li>• Partage en 2 groupes égaux</li>
-                    <li>• Coupe un gâteau en 2 parts égales</li>
-                    <li>• C'est l'inverse du double</li>
-                    <li>• Utilise des objets pour voir</li>
+                  <ul className="space-y-2 text-sm text-blue-700">
+                    <li>• 2 groupes égaux</li>
+                    <li>• Gâteau en 2 parts</li>
+                    <li>• Inverse du double</li>
+                    <li>• Utilise des objets</li>
                   </ul>
           </div>
                 </div>
               </div>
 
-            {/* Mini-jeu */}
-            <div className="bg-gradient-to-r from-green-400 to-blue-400 rounded-xl p-6 text-white">
-              <h3 className="text-xl font-bold mb-3">🎮 Mini-jeu rapide !</h3>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {[
-                  { question: 'Double de 2', answer: '4' },
-                  { question: 'Moitié de 8', answer: '4' },
-                  { question: 'Double de 4', answer: '8' },
-                  { question: 'Moitié de 6', answer: '3' }
-                ].map((item, index) => (
-                  <div key={index} className="bg-white bg-opacity-20 rounded-lg p-3 text-center">
-                    <div className="font-bold mb-2">{item.question}</div>
-                    <div className="text-xl font-bold">{item.answer}</div>
-                  </div>
-                ))}
+            {/* Mini-jeu sobre */}
+            <div className="bg-white rounded-xl p-6 shadow-lg border border-gray-200">
+              {/* En-tête simple */}
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-xl font-bold text-gray-900">🎮 Mini-jeu : Doubles et moitiés !</h3>
+                <button
+                  onClick={resetMiniGame}
+                  className="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1 rounded-lg text-sm font-medium transition-colors"
+                >
+                  🔄 Reset
+                </button>
               </div>
+
+              {/* Score simple */}
+              <div className="flex items-center justify-between mb-4">
+                <div className="text-sm text-gray-600">
+                  Score: <span className="font-bold text-gray-900">{miniGameScore}/4</span>
+                </div>
+                <div className="flex gap-1">
+                  {[...Array(4)].map((_, i) => (
+                    <div
+                      key={i}
+                      className={`w-2 h-2 rounded-full transition-colors ${
+                        completedAnswers[i] ? 'bg-green-500' : 'bg-gray-300'
+                      }`}
+                    ></div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Message de félicitations sobre */}
+              {miniGameScore === 4 && (
+                <div className="bg-green-50 border border-green-200 text-green-800 rounded-lg p-3 mb-4 text-center">
+                  ✅ Excellent ! Toutes les réponses sont correctes !
+                </div>
+              )}
+
+              <p className="text-sm text-gray-600 mb-4 text-center">
+                Clique sur "Voir la solution" pour révéler chaque réponse.
+              </p>
+
+              {/* Cartes colorées */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                {[
+                  { comparison: 'Double de 2 ?', answer: 'Double de 2 = 4', color: 'green' },
+                  { comparison: 'Moitié de 8 ?', answer: 'Moitié de 8 = 4', color: 'blue' },
+                  { comparison: 'Double de 4 ?', answer: 'Double de 4 = 8', color: 'green' },
+                  { comparison: 'Moitié de 6 ?', answer: 'Moitié de 6 = 3', color: 'blue' }
+                ].map((item, index) => {
+                  const getCardColors = (color: string) => {
+                    switch(color) {
+                      case 'green':
+                        return {
+                          bg: completedAnswers[index] ? 'bg-green-100 border-green-400' : 'bg-green-50 border-green-200',
+                          text: 'text-green-800',
+                          button: 'bg-green-500 hover:bg-green-600 text-white'
+                        };
+                      case 'blue':
+                        return {
+                          bg: completedAnswers[index] ? 'bg-blue-100 border-blue-400' : 'bg-blue-50 border-blue-200',
+                          text: 'text-blue-800',
+                          button: 'bg-blue-500 hover:bg-blue-600 text-white'
+                        };
+                      default:
+                        return {
+                          bg: 'bg-gray-50 border-gray-200',
+                          text: 'text-gray-800',
+                          button: 'bg-gray-500 hover:bg-gray-600 text-white'
+                        };
+                    }
+                  };
+                  
+                  const colors = getCardColors(item.color);
+                  
+                  return (
+                    <div
+                      key={index}
+                      className={`p-3 sm:p-4 rounded-lg border-2 text-center transition-all duration-300 ${colors.bg} ${colors.text}`}
+                    >
+                      <div className="font-bold text-sm sm:text-base mb-2">{item.comparison}</div>
+                      
+                      {revealedAnswers[index] ? (
+                        <div className="space-y-1 sm:space-y-2">
+                          <div className="text-sm sm:text-base font-bold p-1 sm:p-2 bg-white rounded border">
+                            {item.answer}
+                          </div>
+                          {completedAnswers[index] && (
+                            <div className="text-base">
+                              ✅
+                            </div>
+                          )}
+                        </div>
+                      ) : (
+                        <button
+                          onClick={() => revealAnswer(index)}
+                          className={`px-3 py-1 rounded text-xs sm:text-sm font-medium transition-all hover:scale-105 ${colors.button}`}
+                        >
+                          👁️ Voir la solution
+                        </button>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Barre de progression simple */}
+              {miniGameScore > 0 && (
+                <div className="mt-4">
+                  <div className="bg-gray-200 rounded-full h-2 overflow-hidden">
+                    <div 
+                      className="bg-green-500 h-full transition-all duration-500 ease-out"
+                      style={{ width: `${(miniGameScore / 4) * 100}%` }}
+                    ></div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         ) : (
@@ -1730,6 +2004,32 @@ export default function DoublesMoitiesCP() {
             </div>
           </div>
         )}
+
+        {/* Bouton flottant Sam pour arrêter les vocaux */}
+        {isPlayingVocal && (
+          <div className="fixed top-4 right-4 z-[60]">
+            <button
+              onClick={stopAllVocalsAndAnimations}
+              className="relative flex items-center gap-2 px-3 py-2 rounded-full shadow-2xl transition-all duration-300 bg-gradient-to-r from-red-500 to-red-600 text-white hover:from-red-600 hover:to-red-700 hover:scale-105 animate-pulse"
+              title="Arrêter Sam"
+            >
+              <div className="w-8 h-8 rounded-full overflow-hidden border-2 border-white/50">
+                <img 
+                  src="/image/pirate-small.png" 
+                  alt="Sam le Pirate" 
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <>
+                <span className="text-sm font-bold hidden sm:block">Stop</span>
+                <div className="w-3 h-3 bg-white rounded-sm animate-pulse"></div>
+              </>
+            </button>
+          </div>
+        )}
+
+        {/* Injection des styles CSS */}
+        <style jsx>{symbolAnimationStyles}</style>
       </div>
     </div>
   );
