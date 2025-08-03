@@ -995,7 +995,23 @@ export default function UnitesDizainesCP() {
   // Fonction pour célébrer une bonne réponse
   const celebrateCorrectAnswer = async () => {
     setIsPlayingVocal(true);
-    await playAudio('Bravo ! C\'est la bonne réponse !');
+    
+    // Messages d'encouragement variés
+    const encouragements = [
+      "Bravo ! C'est la bonne réponse !",
+      "Excellent ! Tu as trouvé !",
+      "Parfait ! Tu maîtrises bien !",
+      "Super ! C'est exact !",
+      "Formidable ! Tu es doué !",
+      "Génial ! Tu progresses !",
+      "Magnifique ! Bien joué !",
+      "Fantastique ! Tu réussis !",
+      "Merveilleux ! C'est ça !",
+      "Extraordinaire ! Tu comprends bien !"
+    ];
+    
+    const randomEncouragement = encouragements[Math.floor(Math.random() * encouragements.length)];
+    await playAudio(randomEncouragement);
     
     // Mettre en évidence le bouton Suivant
     setHighlightedElement('next-exercise-button');
