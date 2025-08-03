@@ -1250,7 +1250,7 @@ export default function UnitesDizainesCP() {
 
         {!showExercises ? (
           /* COURS - MOBILE OPTIMISÉ */
-          <div className="space-y-2 sm:space-y-6">
+          <div className="space-y-1 sm:space-y-6">
             {/* Image de Sam le Pirate avec bouton DÉMARRER */}
             <div className="flex items-center justify-center gap-2 sm:gap-4 p-2 sm:p-4 mb-3 sm:mb-6">
               {/* Image de Sam le Pirate */}
@@ -1534,8 +1534,8 @@ export default function UnitesDizainesCP() {
             </div>
 
             {/* Sélecteur de nombre */}
-            <div id="explore-section" className="bg-white rounded-xl p-3 sm:p-8 shadow-lg">
-              <div className="flex items-center justify-center gap-1 sm:gap-3 mb-3 sm:mb-6">
+            <div id="explore-section" className="bg-white rounded-xl p-2 sm:p-8 shadow-lg">
+              <div className="flex items-center justify-center gap-1 sm:gap-3 mb-2 sm:mb-6">
                 <h2 className="text-base sm:text-2xl font-bold text-gray-900">
                   🎯 Explore un nombre
                 </h2>
@@ -1561,7 +1561,7 @@ export default function UnitesDizainesCP() {
                   🔍
                 </div>
               </div>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-4 mb-3 sm:mb-6">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-4 mb-2 sm:mb-6">
                 {numbersDecomposition.map((item) => (
                   <button
                     key={item.number}
@@ -1575,7 +1575,7 @@ export default function UnitesDizainesCP() {
                         }, 200);
                       }
                     }}
-                    className={`p-2 sm:p-4 rounded-lg font-bold text-lg sm:text-2xl transition-all ${
+                    className={`p-1 sm:p-4 rounded-lg font-bold text-base sm:text-2xl transition-all ${
                       selectedNumber === item.number
                         ? 'bg-blue-500 text-white shadow-lg scale-105'
                         : highlightedNumbers.includes(item.number)
@@ -1590,8 +1590,8 @@ export default function UnitesDizainesCP() {
             </div>
 
             {/* Analyse détaillée du nombre sélectionné */}
-            <div id="analyse-section" className="bg-white rounded-xl p-3 sm:p-8 shadow-lg">
-              <div className="text-center mb-3 sm:mb-6">
+            <div id="analyse-section" className="bg-white rounded-xl p-2 sm:p-8 shadow-lg">
+              <div className="text-center mb-1 sm:mb-6">
                 {showAnalysisTitle && (
                   <h2 className="text-base sm:text-2xl font-bold text-gray-900 animate-[fadeInUp_0.8s_ease-out]">
                     🔍 Analysons le nombre {selectedNumber}
@@ -1604,20 +1604,20 @@ export default function UnitesDizainesCP() {
                 if (!selected) return null;
                 
                 return (
-                  <div className="space-y-3 sm:space-y-8">
+                  <div className="space-y-2 sm:space-y-8">
                     {/* Affichage principal */}
                     {showSelectedNumber && (
-                      <div className="bg-gradient-to-r from-blue-100 to-green-100 rounded-lg p-3 sm:p-8 animate-[fadeInUp_0.8s_ease-out]">
-                        <div className="text-center mb-3 sm:mb-6">
-                          <div className="text-6xl sm:text-9xl font-bold text-gray-800 mb-2 sm:mb-4">
+                      <div className="bg-gradient-to-r from-blue-100 to-green-100 rounded-lg p-2 sm:p-8 animate-[fadeInUp_0.8s_ease-out]">
+                        <div className="text-center mb-2 sm:mb-6">
+                          <div className="text-4xl sm:text-9xl font-bold text-gray-800 mb-1 sm:mb-4">
                             {selected.number}
                           </div>
                           {showDecomposition && (
                             <>
-                              <div className="text-2xl sm:text-4xl mb-2 sm:mb-4 animate-[fadeInUp_1s_ease-out_0.2s_both]">
+                              <div className="text-lg sm:text-4xl mb-1 sm:mb-4 animate-[fadeInUp_1s_ease-out_0.2s_both]">
                                 {selected.visual}
                               </div>
-                              <p className="text-sm sm:text-xl font-semibold text-gray-700 animate-[fadeInUp_1.2s_ease-out_0.4s_both]">
+                              <p className="text-xs sm:text-xl font-semibold text-gray-700 animate-[fadeInUp_1.2s_ease-out_0.4s_both]">
                                 {selected.explanation}
                               </p>
                             </>
@@ -1627,34 +1627,34 @@ export default function UnitesDizainesCP() {
                     )}
 
                     {/* Décomposition détaillée */}
-                    <div className="grid md:grid-cols-2 gap-3 sm:gap-6">
+                    <div className="grid md:grid-cols-2 gap-2 sm:gap-6">
                       {/* Dizaines */}
                       {showDizaines && (
-                        <div className="bg-blue-50 rounded-lg p-3 sm:p-6 animate-[fadeInUp_0.8s_ease-out]">
-                          <h3 className="text-base sm:text-xl font-bold mb-2 sm:mb-4 text-blue-800 text-center">
-                            <Package className="inline w-4 h-4 sm:w-6 sm:h-6 mr-1 sm:mr-2" />
+                        <div className="bg-blue-50 rounded-lg p-2 sm:p-6 animate-[fadeInUp_0.8s_ease-out]">
+                          <h3 className="text-sm sm:text-xl font-bold mb-1 sm:mb-4 text-blue-800 text-center">
+                            <Package className="inline w-3 h-3 sm:w-6 sm:h-6 mr-1 sm:mr-2" />
                             Le chiffre des dizaines
                           </h3>
                           <div className="text-center">
-                            <div className="text-4xl sm:text-8xl font-bold text-blue-600 mb-2 sm:mb-4">
+                            <div className="text-3xl sm:text-8xl font-bold text-blue-600 mb-1 sm:mb-4">
                               {selected.dizaines}
                             </div>
-                            <div className="bg-white rounded-lg p-2 sm:p-4 mb-2 sm:mb-4">
-                              <div className="text-xl sm:text-3xl mb-1 sm:mb-2">
+                            <div className="bg-white rounded-lg p-1 sm:p-4 mb-1 sm:mb-4">
+                              <div className="text-lg sm:text-3xl mb-1 sm:mb-2">
                                 {'📦'.repeat(selected.dizaines)}
                               </div>
-                              <p className="text-sm sm:text-lg font-semibold text-blue-700">
+                              <p className="text-xs sm:text-lg font-semibold text-blue-700">
                                 {selected.dizaines} paquets de 10
                               </p>
                             </div>
-                            <div className="text-lg sm:text-2xl font-bold text-blue-600">
+                            <div className="text-sm sm:text-2xl font-bold text-blue-600">
                               {selected.dizaines} × 10 = {selected.dizaines * 10}
                             </div>
                             <button
                               onClick={() => speakText(`${selected.dizaines} dizaines font ${selected.dizaines * 10}`)}
-                              className="bg-blue-400 hover:bg-blue-500 text-white p-2 rounded-lg transition-colors mt-2 sm:mt-3"
+                              className="bg-blue-400 hover:bg-blue-500 text-white p-1 sm:p-2 rounded-lg transition-colors mt-1 sm:mt-3"
                             >
-                              <Volume2 className="w-4 h-4 sm:w-5 sm:h-5" />
+                              <Volume2 className="w-3 h-3 sm:w-5 sm:h-5" />
                             </button>
                           </div>
                         </div>
@@ -1662,31 +1662,31 @@ export default function UnitesDizainesCP() {
 
                       {/* Unités */}
                       {showUnites && (
-                        <div className="bg-green-50 rounded-lg p-3 sm:p-6 animate-[fadeInUp_0.8s_ease-out]">
-                          <h3 className="text-base sm:text-xl font-bold mb-2 sm:mb-4 text-green-800 text-center">
-                            <Dot className="inline w-4 h-4 sm:w-6 sm:h-6 mr-1 sm:mr-2" />
+                        <div className="bg-green-50 rounded-lg p-2 sm:p-6 animate-[fadeInUp_0.8s_ease-out]">
+                          <h3 className="text-sm sm:text-xl font-bold mb-1 sm:mb-4 text-green-800 text-center">
+                            <Dot className="inline w-3 h-3 sm:w-6 sm:h-6 mr-1 sm:mr-2" />
                             Le chiffre des unités
                           </h3>
                           <div className="text-center">
-                            <div className="text-4xl sm:text-8xl font-bold text-green-600 mb-2 sm:mb-4">
+                            <div className="text-3xl sm:text-8xl font-bold text-green-600 mb-1 sm:mb-4">
                               {selected.unites}
                             </div>
-                            <div className="bg-white rounded-lg p-2 sm:p-4 mb-2 sm:mb-4">
-                              <div className="text-xl sm:text-3xl mb-1 sm:mb-2">
+                            <div className="bg-white rounded-lg p-1 sm:p-4 mb-1 sm:mb-4">
+                              <div className="text-lg sm:text-3xl mb-1 sm:mb-2">
                                 {'🔴'.repeat(selected.unites)}
                               </div>
-                              <p className="text-sm sm:text-lg font-semibold text-green-700">
+                              <p className="text-xs sm:text-lg font-semibold text-green-700">
                                 {selected.unites} objets seuls
                               </p>
                             </div>
-                            <div className="text-lg sm:text-2xl font-bold text-green-600">
+                            <div className="text-sm sm:text-2xl font-bold text-green-600">
                               {selected.unites} × 1 = {selected.unites}
                             </div>
                             <button
                               onClick={() => speakText(`${selected.unites} unités font ${selected.unites}`)}
-                              className="bg-green-400 hover:bg-green-500 text-white p-2 rounded-lg transition-colors mt-2 sm:mt-3"
+                              className="bg-green-400 hover:bg-green-500 text-white p-1 sm:p-2 rounded-lg transition-colors mt-1 sm:mt-3"
                             >
-                              <Volume2 className="w-4 h-4 sm:w-5 sm:h-5" />
+                              <Volume2 className="w-3 h-3 sm:w-5 sm:h-5" />
                             </button>
                           </div>
                         </div>
@@ -1695,18 +1695,18 @@ export default function UnitesDizainesCP() {
 
                     {/* Résultat final */}
                     {showFinalCalculation && (
-                      <div className="bg-yellow-50 rounded-lg p-3 sm:p-6 text-center animate-[fadeInUp_0.8s_ease-out]">
-                        <h3 className="text-base sm:text-xl font-bold mb-2 sm:mb-4 text-yellow-800">
+                      <div className="bg-yellow-50 rounded-lg p-2 sm:p-6 text-center animate-[fadeInUp_0.8s_ease-out]">
+                        <h3 className="text-sm sm:text-xl font-bold mb-1 sm:mb-4 text-yellow-800">
                           🎯 Au final :
                         </h3>
-                        <div className="text-xl sm:text-3xl font-bold text-gray-800">
+                        <div className="text-lg sm:text-3xl font-bold text-gray-800">
                           {selected.dizaines * 10} + {selected.unites} = {selected.number}
                         </div>
                         <button
                           onClick={() => speakText(`${selected.dizaines * 10} plus ${selected.unites} égale ${selected.number}`)}
-                          className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-bold mt-2 sm:mt-4 transition-colors text-sm sm:text-base"
+                          className="bg-yellow-500 hover:bg-yellow-600 text-white px-2 sm:px-6 py-1 sm:py-3 rounded-lg font-bold mt-1 sm:mt-4 transition-colors text-xs sm:text-base"
                         >
-                          <Volume2 className="inline w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" />
+                          <Volume2 className="inline w-3 h-3 sm:w-5 sm:h-5 mr-1 sm:mr-2" />
                           Écouter
                         </button>
                       </div>
