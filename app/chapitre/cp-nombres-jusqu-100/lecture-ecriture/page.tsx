@@ -457,7 +457,10 @@ export default function LectureEcritureCP100() {
         await new Promise(resolve => setTimeout(resolve, 1200));
         if (stopSignalRef.current) return;
         
-        await playAudio(`${decomposition.unites} unités, ça s'écrit ${decomposition.unitesText} !`);
+        // Pour les unités, on utilise toujours les mots de base (pas les spéciaux comme "seize")
+        const unitesBasiques = ['', 'un', 'deux', 'trois', 'quatre', 'cinq', 'six', 'sept', 'huit', 'neuf'];
+        const uniteText = unitesBasiques[decomposition.unites];
+        await playAudio(`${decomposition.unites} unités, ça s'écrit ${uniteText} !`);
         if (stopSignalRef.current) return;
         
         setShowUnitesText(true);
@@ -1112,7 +1115,11 @@ export default function LectureEcritureCP100() {
                                               <div className={`transition-all duration-1000 ${showUnitesText ? 'opacity-100 scale-100' : 'opacity-0 scale-50'}`}>
                                                 <div className="bg-orange-100 rounded-lg p-2 mt-2">
                                                   <div className="text-sm sm:text-lg font-bold text-orange-700">
-                                                    {decomposition.unitesText}
+                                                    {(() => {
+                                                      // Pour l'affichage des unités individuelles, on utilise toujours les mots de base
+                                                      const unitesBasiques = ['', 'un', 'deux', 'trois', 'quatre', 'cinq', 'six', 'sept', 'huit', 'neuf'];
+                                                      return unitesBasiques[decomposition.unites];
+                                                    })()}
                                                   </div>
                                                 </div>
                                               </div>
@@ -1167,7 +1174,11 @@ export default function LectureEcritureCP100() {
                                               <div className={`transition-all duration-1000 ${showUnitesText ? 'opacity-100 scale-100' : 'opacity-0 scale-50'}`}>
                                                 <div className="bg-orange-100 rounded-lg p-2 mt-2">
                                                   <div className="text-sm sm:text-lg font-bold text-orange-700">
-                                                    {decomposition.unitesText}
+                                                    {(() => {
+                                                      // Pour l'affichage des unités individuelles, on utilise toujours les mots de base
+                                                      const unitesBasiques = ['', 'un', 'deux', 'trois', 'quatre', 'cinq', 'six', 'sept', 'huit', 'neuf'];
+                                                      return unitesBasiques[decomposition.unites];
+                                                    })()}
                                                   </div>
                                                 </div>
                                               </div>
