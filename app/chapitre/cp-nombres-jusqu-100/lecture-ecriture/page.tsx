@@ -64,14 +64,17 @@ export default function LectureEcritureCP100() {
     setImageError(false);
     setShowNextButton(false);
     setHighlightNextButton(false);
-    // Réinitialiser les états de décomposition
-    setShowDecomposition(false);
-    setShowDizaines(false);
-    setShowDizainesText(false);
-    setShowUnites(false);
-    setShowUnitesText(false);
-    setShowFinalNumber(false);
-  }, [currentExercise]);
+    
+    // Réinitialiser les états de décomposition SEULEMENT dans la section exercices
+    if (showExercises) {
+      setShowDecomposition(false);
+      setShowDizaines(false);
+      setShowDizainesText(false);
+      setShowUnites(false);
+      setShowUnitesText(false);
+      setShowFinalNumber(false);
+    }
+  }, [currentExercise, showExercises]);
 
   // Fonction pour stopper tous les vocaux et animations
   const stopAllVocalsAndAnimations = () => {
