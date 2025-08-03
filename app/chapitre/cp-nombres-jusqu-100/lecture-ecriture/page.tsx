@@ -1069,20 +1069,23 @@ export default function LectureEcritureCP100() {
                                   // Cas spéciaux 70-79 et 90-99 : base + unités
                                   return (
                                     <>
-                                      {/* Base française */}
+                                      {/* Dizaines pour cas spéciaux */}
                                       <div className={`transition-all duration-1000 ${showDizaines ? 'opacity-100 scale-100' : 'opacity-0 scale-50'}`}>
                                         <div className="bg-white rounded-lg p-4 shadow-md min-w-[140px]">
                                           <div className="text-center">
-                                            <div className="text-lg sm:text-2xl font-bold text-blue-600 mb-3">
-                                              {isSpecial70_79 ? 'soixante-dix' : 'quatre-vingt-dix'}
+                                            <div className="text-4xl sm:text-6xl font-bold text-blue-600 mb-2">
+                                              {decomposition.dizaines}
+                                            </div>
+                                            <div className="text-sm sm:text-base text-gray-600 mb-3">
+                                              dizaines
                                             </div>
                                             <div className="text-xl sm:text-2xl mb-3">
-                                              {isSpecial70_79 ? '📦📦📦📦📦📦📦' : '📦📦📦📦📦📦📦📦📦'}
+                                              {'📦'.repeat(decomposition.dizaines)}
                                             </div>
                                             <div className={`transition-all duration-1000 ${showDizainesText ? 'opacity-100 scale-100' : 'opacity-0 scale-50'}`}>
                                               <div className="bg-green-100 rounded-lg p-2 mt-2">
                                                 <div className="text-sm sm:text-lg font-bold text-green-700">
-                                                  {isSpecial70_79 ? 'soixante-dix' : 'quatre-vingt-dix'}
+                                                  {decomposition.dizainesText}
                                                 </div>
                                               </div>
                                             </div>
