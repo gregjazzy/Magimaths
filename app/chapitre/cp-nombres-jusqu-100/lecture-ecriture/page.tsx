@@ -354,7 +354,7 @@ export default function LectureEcritureCP100() {
   // Fonction pour convertir les chiffres en mots français
   const getNumberWords = (number: string) => {
     const unites = ['', 'un', 'deux', 'trois', 'quatre', 'cinq', 'six', 'sept', 'huit', 'neuf'];
-    const dizainesMots = ['', '', 'vingt', 'trente', 'quarante', 'cinquante', 'soixante', 'soixante-dix', 'quatre-vingts', 'quatre-vingt-dix'];
+    const unitesSpeciales = ['', 'onze', 'douze', 'treize', 'quatorze', 'quinze', 'seize', 'dix-sept', 'dix-huit', 'dix-neuf'];
     
     if (number === '100') return { dizaines: 10, dizainesText: 'cent', unites: 0, unitesText: '' };
     
@@ -363,19 +363,40 @@ export default function LectureEcritureCP100() {
     const unitesChiffre = num % 10;
     
     let dizainesText = '';
-    if (dizaines >= 7 && dizaines <= 9) {
-      if (dizaines === 7) dizainesText = 'soixante-dix';
-      else if (dizaines === 8) dizainesText = 'quatre-vingts';
-      else if (dizaines === 9) dizainesText = 'quatre-vingt-dix';
-    } else {
-      dizainesText = dizainesMots[dizaines];
+    let unitesText = '';
+    
+    // Cas spéciaux pour 91-96 (quatre-vingt-onze, quatre-vingt-douze, etc.)
+    if (num >= 91 && num <= 96) {
+      dizainesText = 'quatre-vingt';
+      unitesText = unitesSpeciales[unitesChiffre] || unites[unitesChiffre];
+    }
+    // Cas spéciaux pour 97-99 (quatre-vingt-dix-sept, etc.)
+    else if (num >= 97 && num <= 99) {
+      dizainesText = 'quatre-vingt-dix';
+      unitesText = unites[unitesChiffre] || '';
+    }
+    // Cas spéciaux pour 80-89
+    else if (num >= 80 && num <= 89) {
+      dizainesText = unitesChiffre === 0 ? 'quatre-vingts' : 'quatre-vingt';
+      unitesText = unites[unitesChiffre] || '';
+    }
+    // Cas spéciaux pour 70-79
+    else if (num >= 70 && num <= 79) {
+      dizainesText = 'soixante-dix';
+      unitesText = unites[unitesChiffre] || '';
+    }
+    // Cas normaux
+    else {
+      const dizainesMots = ['', '', 'vingt', 'trente', 'quarante', 'cinquante', 'soixante'];
+      dizainesText = dizainesMots[dizaines] || '';
+      unitesText = unites[unitesChiffre] || '';
     }
     
     return {
       dizaines,
       dizainesText: dizainesText || '',
       unites: unitesChiffre,
-      unitesText: unites[unitesChiffre] || ''
+      unitesText: unitesText || ''
     };
   };
 
@@ -1020,78 +1041,61 @@ export default function LectureEcritureCP100() {
                             🧮 Décomposition du nombre {selected.chiffre}
                           </h4>
                           
-                          <div className="space-y-4">
-                            {/* Étape 1: Dizaines */}
-                            <div className="flex items-center justify-center space-x-4">
+                          <div className="space-y-6">
+                            {/* Disposition côte à côte: Dizaines et Unités */}
+                            <div className="flex items-start justify-center space-x-8">
+                              {/* Dizaines */}
                               <div className={`transition-all duration-1000 ${showDizaines ? 'opacity-100 scale-100' : 'opacity-0 scale-50'}`}>
-                                <div className="bg-white rounded-lg p-3 shadow-md">
+                                <div className="bg-white rounded-lg p-4 shadow-md min-w-[120px]">
                                   <div className="text-center">
                                     <div className="text-4xl sm:text-6xl font-bold text-blue-600 mb-2">
                                       {decomposition.dizaines}
                                     </div>
-                                    <div className="text-sm sm:text-base text-gray-600">
+                                    <div className="text-sm sm:text-base text-gray-600 mb-3">
                                       dizaines
                                     </div>
-                                    <div className="text-2xl mt-2">
+                                    <div className="text-xl sm:text-2xl mb-3">
                                       {'📦'.repeat(decomposition.dizaines)}
                                     </div>
-                                  </div>
-                                </div>
-                              </div>
-                              
-                              {showDizainesText && (
-                                <div className="transition-all duration-1000 opacity-100 scale-100">
-                                  <div className="text-2xl sm:text-3xl">→</div>
-                                </div>
-                              )}
-                              
-                              <div className={`transition-all duration-1000 ${showDizainesText ? 'opacity-100 scale-100' : 'opacity-0 scale-50'}`}>
-                                <div className="bg-green-100 rounded-lg p-3 shadow-md">
-                                  <div className="text-center">
-                                    <div className="text-lg sm:text-xl font-bold text-green-700">
-                                      {decomposition.dizainesText}
+                                    {/* Texte des dizaines en dessous */}
+                                    <div className={`transition-all duration-1000 ${showDizainesText ? 'opacity-100 scale-100' : 'opacity-0 scale-50'}`}>
+                                      <div className="bg-green-100 rounded-lg p-2 mt-2">
+                                        <div className="text-sm sm:text-lg font-bold text-green-700">
+                                          {decomposition.dizainesText}
+                                        </div>
+                                      </div>
                                     </div>
                                   </div>
                                 </div>
                               </div>
-                            </div>
 
-                            {/* Étape 2: Unités (si > 0) */}
-                            {decomposition.unites > 0 && (
-                              <div className="flex items-center justify-center space-x-4">
+                              {/* Unités (si > 0) */}
+                              {decomposition.unites > 0 && (
                                 <div className={`transition-all duration-1000 ${showUnites ? 'opacity-100 scale-100' : 'opacity-0 scale-50'}`}>
-                                  <div className="bg-white rounded-lg p-3 shadow-md">
+                                  <div className="bg-white rounded-lg p-4 shadow-md min-w-[120px]">
                                     <div className="text-center">
                                       <div className="text-4xl sm:text-6xl font-bold text-red-600 mb-2">
                                         {decomposition.unites}
                                       </div>
-                                      <div className="text-sm sm:text-base text-gray-600">
+                                      <div className="text-sm sm:text-base text-gray-600 mb-3">
                                         unités
                                       </div>
-                                      <div className="text-2xl mt-2">
+                                      <div className="text-xl sm:text-2xl mb-3">
                                         {'🔴'.repeat(decomposition.unites)}
                                       </div>
-                                    </div>
-                                  </div>
-                                </div>
-                                
-                                {showUnitesText && (
-                                  <div className="transition-all duration-1000 opacity-100 scale-100">
-                                    <div className="text-2xl sm:text-3xl">→</div>
-                                  </div>
-                                )}
-                                
-                                <div className={`transition-all duration-1000 ${showUnitesText ? 'opacity-100 scale-100' : 'opacity-0 scale-50'}`}>
-                                  <div className="bg-orange-100 rounded-lg p-3 shadow-md">
-                                    <div className="text-center">
-                                      <div className="text-lg sm:text-xl font-bold text-orange-700">
-                                        {decomposition.unitesText}
+                                      {/* Texte des unités en dessous */}
+                                      <div className={`transition-all duration-1000 ${showUnitesText ? 'opacity-100 scale-100' : 'opacity-0 scale-50'}`}>
+                                        <div className="bg-orange-100 rounded-lg p-2 mt-2">
+                                          <div className="text-sm sm:text-lg font-bold text-orange-700">
+                                            {decomposition.unitesText}
+                                          </div>
+                                        </div>
                                       </div>
                                     </div>
                                   </div>
                                 </div>
-                              </div>
-                            )}
+                              )}
+                            </div>
 
                             {/* Étape 3: Assemblage final */}
                             {showFinalNumber && (
