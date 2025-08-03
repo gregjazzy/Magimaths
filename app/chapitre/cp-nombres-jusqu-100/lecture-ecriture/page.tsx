@@ -432,8 +432,16 @@ export default function LectureEcritureCP100() {
       await new Promise(resolve => setTimeout(resolve, 800));
       if (stopSignalRef.current) return;
       
-      // Étape 1: Montrer les dizaines
-      await playAudio(`D'abord, regardons les dizaines : ${decomposition.dizaines} dizaines !`);
+      // Étape 1: Montrer les dizaines ou base française
+      const num = parseInt(numberToExplain);
+      const isSpecial70_79 = num >= 70 && num <= 79;
+      const isSpecial90_99 = num >= 90 && num <= 99;
+      
+      if (isSpecial70_79 || isSpecial90_99) {
+        await playAudio(`D'abord, la base française : ${decomposition.dizainesText} !`);
+      } else {
+        await playAudio(`D'abord, regardons les dizaines : ${decomposition.dizaines} dizaines !`);
+      }
       if (stopSignalRef.current) return;
       
       setShowDizaines(true);
@@ -441,7 +449,11 @@ export default function LectureEcritureCP100() {
       if (stopSignalRef.current) return;
       
       // Montrer le texte des dizaines
-      await playAudio(`${decomposition.dizaines} dizaines, ça fait ${decomposition.dizainesText} !`);
+      if (isSpecial70_79 || isSpecial90_99) {
+        await playAudio(`La base ${decomposition.dizainesText} reste la même !`);
+      } else {
+        await playAudio(`${decomposition.dizaines} dizaines, ça fait ${decomposition.dizainesText} !`);
+      }
       if (stopSignalRef.current) return;
       
       setShowDizainesText(true);
@@ -1042,59 +1054,122 @@ export default function LectureEcritureCP100() {
                           </h4>
                           
                           <div className="space-y-6">
-                            {/* Disposition côte à côte: Dizaines et Unités */}
+                            {/* Disposition côte à côte: Cas spéciaux français */}
                             <div className="flex items-start justify-center space-x-8">
-                              {/* Dizaines */}
-                              <div className={`transition-all duration-1000 ${showDizaines ? 'opacity-100 scale-100' : 'opacity-0 scale-50'}`}>
-                                <div className="bg-white rounded-lg p-4 shadow-md min-w-[120px]">
-                                  <div className="text-center">
-                                    <div className="text-4xl sm:text-6xl font-bold text-blue-600 mb-2">
-                                      {decomposition.dizaines}
-                                    </div>
-                                    <div className="text-sm sm:text-base text-gray-600 mb-3">
-                                      dizaines
-                                    </div>
-                                    <div className="text-xl sm:text-2xl mb-3">
-                                      {'📦'.repeat(decomposition.dizaines)}
-                                    </div>
-                                    {/* Texte des dizaines en dessous */}
-                                    <div className={`transition-all duration-1000 ${showDizainesText ? 'opacity-100 scale-100' : 'opacity-0 scale-50'}`}>
-                                      <div className="bg-green-100 rounded-lg p-2 mt-2">
-                                        <div className="text-sm sm:text-lg font-bold text-green-700">
-                                          {decomposition.dizainesText}
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-
-                              {/* Unités (si > 0) */}
-                              {decomposition.unites > 0 && (
-                                <div className={`transition-all duration-1000 ${showUnites ? 'opacity-100 scale-100' : 'opacity-0 scale-50'}`}>
-                                  <div className="bg-white rounded-lg p-4 shadow-md min-w-[120px]">
-                                    <div className="text-center">
-                                      <div className="text-4xl sm:text-6xl font-bold text-red-600 mb-2">
-                                        {decomposition.unites}
-                                      </div>
-                                      <div className="text-sm sm:text-base text-gray-600 mb-3">
-                                        unités
-                                      </div>
-                                      <div className="text-xl sm:text-2xl mb-3">
-                                        {'🔴'.repeat(decomposition.unites)}
-                                      </div>
-                                      {/* Texte des unités en dessous */}
-                                      <div className={`transition-all duration-1000 ${showUnitesText ? 'opacity-100 scale-100' : 'opacity-0 scale-50'}`}>
-                                        <div className="bg-orange-100 rounded-lg p-2 mt-2">
-                                          <div className="text-sm sm:text-lg font-bold text-orange-700">
-                                            {decomposition.unitesText}
+                              {(() => {
+                                const num = parseInt(selected.chiffre);
+                                const isSpecial70_79 = num >= 70 && num <= 79;
+                                const isSpecial90_99 = num >= 90 && num <= 99;
+                                
+                                if (isSpecial70_79 || isSpecial90_99) {
+                                  // Cas spéciaux 70-79 et 90-99 : base + unités
+                                  return (
+                                    <>
+                                      {/* Base française */}
+                                      <div className={`transition-all duration-1000 ${showDizaines ? 'opacity-100 scale-100' : 'opacity-0 scale-50'}`}>
+                                        <div className="bg-white rounded-lg p-4 shadow-md min-w-[140px]">
+                                          <div className="text-center">
+                                            <div className="text-lg sm:text-2xl font-bold text-blue-600 mb-3">
+                                              {isSpecial70_79 ? 'soixante-dix' : 'quatre-vingt-dix'}
+                                            </div>
+                                            <div className="text-xl sm:text-2xl mb-3">
+                                              {isSpecial70_79 ? '📦📦📦📦📦📦📦' : '📦📦📦📦📦📦📦📦📦'}
+                                            </div>
+                                            <div className={`transition-all duration-1000 ${showDizainesText ? 'opacity-100 scale-100' : 'opacity-0 scale-50'}`}>
+                                              <div className="bg-green-100 rounded-lg p-2 mt-2">
+                                                <div className="text-sm sm:text-lg font-bold text-green-700">
+                                                  {isSpecial70_79 ? 'soixante-dix' : 'quatre-vingt-dix'}
+                                                </div>
+                                              </div>
+                                            </div>
                                           </div>
                                         </div>
                                       </div>
-                                    </div>
-                                  </div>
-                                </div>
-                              )}
+
+                                      {/* Unités */}
+                                      {decomposition.unites > 0 && (
+                                        <div className={`transition-all duration-1000 ${showUnites ? 'opacity-100 scale-100' : 'opacity-0 scale-50'}`}>
+                                          <div className="bg-white rounded-lg p-4 shadow-md min-w-[120px]">
+                                            <div className="text-center">
+                                              <div className="text-4xl sm:text-6xl font-bold text-red-600 mb-2">
+                                                {decomposition.unites}
+                                              </div>
+                                              <div className="text-sm sm:text-base text-gray-600 mb-3">
+                                                unités
+                                              </div>
+                                              <div className="text-xl sm:text-2xl mb-3">
+                                                {'🔴'.repeat(decomposition.unites)}
+                                              </div>
+                                              <div className={`transition-all duration-1000 ${showUnitesText ? 'opacity-100 scale-100' : 'opacity-0 scale-50'}`}>
+                                                <div className="bg-orange-100 rounded-lg p-2 mt-2">
+                                                  <div className="text-sm sm:text-lg font-bold text-orange-700">
+                                                    {decomposition.unitesText}
+                                                  </div>
+                                                </div>
+                                              </div>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      )}
+                                    </>
+                                  );
+                                } else {
+                                  // Cas normaux : dizaines + unités
+                                  return (
+                                    <>
+                                      {/* Dizaines */}
+                                      <div className={`transition-all duration-1000 ${showDizaines ? 'opacity-100 scale-100' : 'opacity-0 scale-50'}`}>
+                                        <div className="bg-white rounded-lg p-4 shadow-md min-w-[120px]">
+                                          <div className="text-center">
+                                            <div className="text-4xl sm:text-6xl font-bold text-blue-600 mb-2">
+                                              {decomposition.dizaines}
+                                            </div>
+                                            <div className="text-sm sm:text-base text-gray-600 mb-3">
+                                              dizaines
+                                            </div>
+                                            <div className="text-xl sm:text-2xl mb-3">
+                                              {'📦'.repeat(decomposition.dizaines)}
+                                            </div>
+                                            <div className={`transition-all duration-1000 ${showDizainesText ? 'opacity-100 scale-100' : 'opacity-0 scale-50'}`}>
+                                              <div className="bg-green-100 rounded-lg p-2 mt-2">
+                                                <div className="text-sm sm:text-lg font-bold text-green-700">
+                                                  {decomposition.dizainesText}
+                                                </div>
+                                              </div>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+
+                                      {/* Unités (si > 0) */}
+                                      {decomposition.unites > 0 && (
+                                        <div className={`transition-all duration-1000 ${showUnites ? 'opacity-100 scale-100' : 'opacity-0 scale-50'}`}>
+                                          <div className="bg-white rounded-lg p-4 shadow-md min-w-[120px]">
+                                            <div className="text-center">
+                                              <div className="text-4xl sm:text-6xl font-bold text-red-600 mb-2">
+                                                {decomposition.unites}
+                                              </div>
+                                              <div className="text-sm sm:text-base text-gray-600 mb-3">
+                                                unités
+                                              </div>
+                                              <div className="text-xl sm:text-2xl mb-3">
+                                                {'🔴'.repeat(decomposition.unites)}
+                                              </div>
+                                              <div className={`transition-all duration-1000 ${showUnitesText ? 'opacity-100 scale-100' : 'opacity-0 scale-50'}`}>
+                                                <div className="bg-orange-100 rounded-lg p-2 mt-2">
+                                                  <div className="text-sm sm:text-lg font-bold text-orange-700">
+                                                    {decomposition.unitesText}
+                                                  </div>
+                                                </div>
+                                              </div>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      )}
+                                    </>
+                                  );
+                                }
+                              })()}
                             </div>
 
                             {/* Étape 3: Assemblage final */}
