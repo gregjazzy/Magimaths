@@ -146,7 +146,11 @@ export default function LectureEcritureCP100() {
   const numbersWithWriting = [
     { chiffre: '25', lettres: 'vingt-cinq', pronunciation: 'vingt-cinq', visual: '📦📦🔴🔴🔴🔴🔴' },
     { chiffre: '45', lettres: 'quarante-cinq', pronunciation: 'quarante-cinq', visual: '📦📦📦📦🔴🔴🔴🔴🔴' },
+    { chiffre: '63', lettres: 'soixante-trois', pronunciation: 'soixante-trois', visual: '📦📦📦📦📦📦🔴🔴🔴' },
     { chiffre: '78', lettres: 'soixante-dix-huit', pronunciation: 'soixante-dix-huit', visual: '📦📦📦📦📦📦📦🔴🔴🔴🔴🔴🔴🔴🔴' },
+    { chiffre: '84', lettres: 'quatre-vingt-quatre', pronunciation: 'quatre-vingt-quatre', visual: '📦📦📦📦📦📦📦📦🔴🔴🔴🔴' },
+    { chiffre: '87', lettres: 'quatre-vingt-sept', pronunciation: 'quatre-vingt-sept', visual: '📦📦📦📦📦📦📦📦🔴🔴🔴🔴🔴🔴🔴' },
+    { chiffre: '90', lettres: 'quatre-vingt-dix', pronunciation: 'quatre-vingt-dix', visual: '📦📦📦📦📦📦📦📦📦' },
     { chiffre: '100', lettres: 'cent', pronunciation: 'cent', visual: '🏠' }
   ];
 
