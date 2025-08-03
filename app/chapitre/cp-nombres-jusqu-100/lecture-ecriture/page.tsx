@@ -40,6 +40,7 @@ export default function LectureEcritureCP100() {
   const [showNextButton, setShowNextButton] = useState(false);
   const [highlightNextButton, setHighlightNextButton] = useState(false);
   const [samSizeExpanded, setSamSizeExpanded] = useState(false);
+  const [highlightNumberButtons, setHighlightNumberButtons] = useState(false);
   const stopSignalRef = useRef(false);
 
   // Fonction pour lire l'énoncé de l'exercice - LECTURE SIMPLE DE LA QUESTION
@@ -64,6 +65,7 @@ export default function LectureEcritureCP100() {
     setImageError(false);
     setShowNextButton(false);
     setHighlightNextButton(false);
+    setHighlightNumberButtons(false);
     
     // Réinitialiser les états de décomposition SEULEMENT dans la section exercices
     if (showExercises) {
@@ -84,6 +86,7 @@ export default function LectureEcritureCP100() {
     setIsExplainingError(false);
     setHighlightDigit(null);
     setHighlightedElement(null);
+    setHighlightNumberButtons(false);
     // Réinitialiser les états de décomposition
     setShowDecomposition(false);
     setShowDizaines(false);
@@ -258,12 +261,12 @@ export default function LectureEcritureCP100() {
         {/* Bouton Start Exercices - AVEC AUDIO */}
         <button
         onClick={startPirateIntro}
-        disabled={isPlayingVocal || pirateIntroStarted}
+        disabled={isPlayingVocal}
         className={`relative px-6 sm:px-12 py-3 sm:py-5 rounded-xl font-black text-base sm:text-2xl transition-all duration-300 transform ${
           isPlayingVocal 
             ? 'bg-gradient-to-r from-gray-400 to-gray-500 text-gray-200 cursor-not-allowed animate-pulse shadow-md' 
             : pirateIntroStarted
-              ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white opacity-75 cursor-not-allowed shadow-lg'
+              ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white hover:from-blue-600 hover:to-blue-700 hover:scale-105 shadow-lg'
               : 'bg-gradient-to-r from-orange-500 via-red-500 to-pink-500 text-white hover:from-orange-600 hover:via-red-600 hover:to-pink-600 hover:scale-110 shadow-2xl hover:shadow-3xl animate-pulse border-4 border-yellow-300'
         } ${!isPlayingVocal && !pirateIntroStarted ? 'ring-4 ring-yellow-300 ring-opacity-75' : ''}`}
         style={{
@@ -285,7 +288,7 @@ export default function LectureEcritureCP100() {
           {isPlayingVocal 
             ? <>🎤 <span className="animate-bounce">Sam parle...</span></> 
             : pirateIntroStarted
-              ? <>✅ <span>Intro terminée</span></>
+              ? <>🔊 <span>Relire l'intro</span></>
               : <>🚀 <span className="animate-bounce">COMMENCER</span> ✨</>
           }
         </span>
@@ -345,6 +348,11 @@ export default function LectureEcritureCP100() {
       
       await playAudio("Maintenant tu peux explorer les nombres et voir leurs animations !");
       if (stopSignalRef.current) return;
+      
+      // Illuminer quelques boutons pour montrer qu'on peut cliquer
+      setHighlightNumberButtons(true);
+      await new Promise(resolve => setTimeout(resolve, 3000)); // Illuminer pendant 3 secondes
+      setHighlightNumberButtons(false);
       
     } catch (error) {
       console.error('Erreur dans explainChapter:', error);
@@ -556,7 +564,7 @@ export default function LectureEcritureCP100() {
 
   // Fonction pour l'introduction vocale de Sam le Pirate - DÉMARRAGE MANUEL PAR CLIC
   const startPirateIntro = async () => {
-    if (pirateIntroStarted) return;
+    if (isPlayingVocal) return;
     
     // FORCER la remise à false pour le démarrage manuel
     stopSignalRef.current = false;
@@ -907,12 +915,12 @@ export default function LectureEcritureCP100() {
             <h1 className={`font-bold text-gray-900 ${
               showExercises 
                 ? 'text-lg sm:text-2xl lg:text-3xl mb-1 sm:mb-2' 
-                : 'text-4xl mb-4'
+                : 'text-lg sm:text-4xl mb-2 sm:mb-4'
             }`}>
               ✏️ Lire et écrire jusqu'à 100
             </h1>
             {!showExercises && (
-            <p className="text-lg text-gray-600">
+            <p className="text-lg text-gray-600 hidden sm:block">
               Apprends à lire et écrire tous les nombres de 21 à 100 en chiffres et en lettres !
             </p>
             )}
@@ -1010,17 +1018,30 @@ export default function LectureEcritureCP100() {
                       if (!isPlayingVocal) {
                         stopAllVocalsAndAnimations();
                         setSelectedNumber(num.chiffre);
-                        await new Promise(resolve => setTimeout(resolve, 200));
+                        
+                        // Scroll vers la section de décomposition pour voir toute l'animation
+                        const decompositionSection = document.getElementById('decomposition-section');
+                        if (decompositionSection) {
+                          decompositionSection.scrollIntoView({ 
+                            behavior: 'smooth', 
+                            block: 'start',
+                            inline: 'nearest'
+                          });
+                        }
+                        
+                        await new Promise(resolve => setTimeout(resolve, 500));
                         await explainNumberDirectly(num.chiffre);
                       }
                     }}
-                    disabled={isPlayingVocal}
+                    disabled={isPlayingVocal && !(highlightNumberButtons && ['45', '78', '96'].includes(num.chiffre))}
                     className={`p-2 sm:p-3 rounded-lg font-bold text-base sm:text-lg transition-all ${
                       selectedNumber === num.chiffre
                         ? 'bg-purple-500 text-white shadow-lg scale-105'
-                        : isPlayingVocal
-                          ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200 hover:scale-102'
+                        : highlightNumberButtons && ['45', '78', '96'].includes(num.chiffre)
+                          ? 'bg-gradient-to-r from-yellow-400 to-orange-500 text-white shadow-xl scale-110 animate-pulse ring-4 ring-yellow-300'
+                          : isPlayingVocal
+                            ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200 hover:scale-102'
                     }`}
                   >
                     {num.chiffre}
@@ -1030,7 +1051,7 @@ export default function LectureEcritureCP100() {
             </div>
 
             {/* Affichage du nombre sélectionné */}
-            <div className="bg-white rounded-xl p-3 sm:p-8 shadow-lg text-center">
+            <div id="decomposition-section" className="bg-white rounded-xl p-3 sm:p-8 shadow-lg text-center">
               <div className="flex items-center justify-center gap-1 sm:gap-3 mb-3 sm:mb-6">
                 <h3 className="text-base sm:text-2xl font-bold text-gray-900">
                   🔍 Découvrons le nombre {selectedNumber}
@@ -1063,14 +1084,14 @@ export default function LectureEcritureCP100() {
                       const decomposition = getNumberWords(selected.chiffre);
                       
                       return (
-                        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-4 sm:p-6 border-2 border-blue-200">
-                          <h4 className="text-lg sm:text-xl font-bold mb-4 text-blue-800 text-center">
+                        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-2 sm:p-6 border-2 border-blue-200">
+                          <h4 className="text-lg sm:text-xl font-bold mb-2 sm:mb-4 text-blue-800 text-center">
                             🧮 Décomposition du nombre {selected.chiffre}
                           </h4>
                           
-                          <div className="space-y-6">
+                          <div className="space-y-3 sm:space-y-6">
                             {/* Disposition côte à côte: Cas spéciaux français */}
-                            <div className="flex items-start justify-center space-x-8">
+                            <div className="flex items-stretch justify-center space-x-4 sm:space-x-8">
                               {(() => {
                                 const num = parseInt(selected.chiffre);
                                 const isSpecial70_79 = num >= 70 && num <= 79;
@@ -1082,7 +1103,8 @@ export default function LectureEcritureCP100() {
                                     <>
                                       {/* Dizaines pour cas spéciaux */}
                                       <div className={`transition-all duration-1000 ${showDizaines ? 'opacity-100 scale-100' : 'opacity-0 scale-50'}`}>
-                                        <div className="bg-white rounded-lg p-4 shadow-md min-w-[140px]">
+                                        <div className="bg-white rounded-lg p-3 shadow-md min-w-[130px] sm:min-w-[140px] h-full flex flex-col justify-between">
+                                          {/* Contenu principal */}
                                           <div className="text-center">
                                             <div className="text-4xl sm:text-6xl font-bold text-blue-600 mb-2">
                                               {decomposition.dizaines}
@@ -1090,14 +1112,15 @@ export default function LectureEcritureCP100() {
                                             <div className="text-sm sm:text-base text-gray-600 mb-3">
                                               dizaines
                                             </div>
-                                            <div className="text-xl sm:text-2xl mb-3">
+                                            <div className="text-xl sm:text-2xl">
                                               {'📦'.repeat(decomposition.dizaines)}
                                             </div>
-                                            <div className={`transition-all duration-1000 ${showDizainesText ? 'opacity-100 scale-100' : 'opacity-0 scale-50'}`}>
-                                              <div className="bg-green-100 rounded-lg p-2 mt-2">
-                                                <div className="text-sm sm:text-lg font-bold text-green-700">
-                                                  {decomposition.dizainesText}
-                                                </div>
+                                          </div>
+                                          {/* Texte en lettres aligné en bas */}
+                                          <div className={`transition-all duration-1000 ${showDizainesText ? 'opacity-100 scale-100' : 'opacity-0 scale-50'}`}>
+                                            <div className="bg-green-100 rounded-lg p-2 mt-2">
+                                              <div className="text-sm sm:text-lg font-bold text-green-700">
+                                                {decomposition.dizainesText}
                                               </div>
                                             </div>
                                           </div>
@@ -1107,7 +1130,8 @@ export default function LectureEcritureCP100() {
                                       {/* Unités */}
                                       {decomposition.unites > 0 && (
                                         <div className={`transition-all duration-1000 ${showUnites ? 'opacity-100 scale-100' : 'opacity-0 scale-50'}`}>
-                                          <div className="bg-white rounded-lg p-4 shadow-md min-w-[120px]">
+                                          <div className="bg-white rounded-lg p-3 shadow-md min-w-[110px] sm:min-w-[120px] h-full flex flex-col justify-between">
+                                            {/* Contenu principal */}
                                             <div className="text-center">
                                               <div className="text-4xl sm:text-6xl font-bold text-red-600 mb-2">
                                                 {decomposition.unites}
@@ -1115,18 +1139,19 @@ export default function LectureEcritureCP100() {
                                               <div className="text-sm sm:text-base text-gray-600 mb-3">
                                                 unités
                                               </div>
-                                              <div className="text-xl sm:text-2xl mb-3">
+                                              <div className="text-xl sm:text-2xl">
                                                 {'🔴'.repeat(decomposition.unites)}
                                               </div>
-                                              <div className={`transition-all duration-1000 ${showUnitesText ? 'opacity-100 scale-100' : 'opacity-0 scale-50'}`}>
-                                                <div className="bg-orange-100 rounded-lg p-2 mt-2">
-                                                  <div className="text-sm sm:text-lg font-bold text-orange-700">
-                                                    {(() => {
-                                                      // Pour l'affichage des unités individuelles, on utilise toujours les mots de base
-                                                      const unitesBasiques = ['', 'un', 'deux', 'trois', 'quatre', 'cinq', 'six', 'sept', 'huit', 'neuf'];
-                                                      return unitesBasiques[decomposition.unites];
-                                                    })()}
-                                                  </div>
+                                            </div>
+                                            {/* Texte en lettres aligné en bas */}
+                                            <div className={`transition-all duration-1000 ${showUnitesText ? 'opacity-100 scale-100' : 'opacity-0 scale-50'}`}>
+                                              <div className="bg-orange-100 rounded-lg p-2 mt-2">
+                                                <div className="text-sm sm:text-lg font-bold text-orange-700">
+                                                  {(() => {
+                                                    // Pour l'affichage des unités individuelles, on utilise toujours les mots de base
+                                                    const unitesBasiques = ['', 'un', 'deux', 'trois', 'quatre', 'cinq', 'six', 'sept', 'huit', 'neuf'];
+                                                    return unitesBasiques[decomposition.unites];
+                                                  })()}
                                                 </div>
                                               </div>
                                             </div>
@@ -1141,7 +1166,8 @@ export default function LectureEcritureCP100() {
                                     <>
                                       {/* Dizaines */}
                                       <div className={`transition-all duration-1000 ${showDizaines ? 'opacity-100 scale-100' : 'opacity-0 scale-50'}`}>
-                                        <div className="bg-white rounded-lg p-4 shadow-md min-w-[120px]">
+                                        <div className="bg-white rounded-lg p-3 shadow-md min-w-[120px] sm:min-w-[120px] h-full flex flex-col justify-between">
+                                          {/* Contenu principal */}
                                           <div className="text-center">
                                             <div className="text-4xl sm:text-6xl font-bold text-blue-600 mb-2">
                                               {decomposition.dizaines}
@@ -1149,14 +1175,15 @@ export default function LectureEcritureCP100() {
                                             <div className="text-sm sm:text-base text-gray-600 mb-3">
                                               dizaines
                                             </div>
-                                            <div className="text-xl sm:text-2xl mb-3">
+                                            <div className="text-xl sm:text-2xl">
                                               {'📦'.repeat(decomposition.dizaines)}
                                             </div>
-                                            <div className={`transition-all duration-1000 ${showDizainesText ? 'opacity-100 scale-100' : 'opacity-0 scale-50'}`}>
-                                              <div className="bg-green-100 rounded-lg p-2 mt-2">
-                                                <div className="text-sm sm:text-lg font-bold text-green-700">
-                                                  {decomposition.dizainesText}
-                                                </div>
+                                          </div>
+                                          {/* Texte en lettres aligné en bas */}
+                                          <div className={`transition-all duration-1000 ${showDizainesText ? 'opacity-100 scale-100' : 'opacity-0 scale-50'}`}>
+                                            <div className="bg-green-100 rounded-lg p-2 mt-2">
+                                              <div className="text-sm sm:text-lg font-bold text-green-700">
+                                                {decomposition.dizainesText}
                                               </div>
                                             </div>
                                           </div>
@@ -1166,7 +1193,8 @@ export default function LectureEcritureCP100() {
                                       {/* Unités (si > 0) */}
                                       {decomposition.unites > 0 && (
                                         <div className={`transition-all duration-1000 ${showUnites ? 'opacity-100 scale-100' : 'opacity-0 scale-50'}`}>
-                                          <div className="bg-white rounded-lg p-4 shadow-md min-w-[120px]">
+                                          <div className="bg-white rounded-lg p-3 shadow-md min-w-[110px] sm:min-w-[120px] h-full flex flex-col justify-between">
+                                            {/* Contenu principal */}
                                             <div className="text-center">
                                               <div className="text-4xl sm:text-6xl font-bold text-red-600 mb-2">
                                                 {decomposition.unites}
@@ -1174,18 +1202,19 @@ export default function LectureEcritureCP100() {
                                               <div className="text-sm sm:text-base text-gray-600 mb-3">
                                                 unités
                                               </div>
-                                              <div className="text-xl sm:text-2xl mb-3">
+                                              <div className="text-xl sm:text-2xl">
                                                 {'🔴'.repeat(decomposition.unites)}
                                               </div>
-                                              <div className={`transition-all duration-1000 ${showUnitesText ? 'opacity-100 scale-100' : 'opacity-0 scale-50'}`}>
-                                                <div className="bg-orange-100 rounded-lg p-2 mt-2">
-                                                  <div className="text-sm sm:text-lg font-bold text-orange-700">
-                                                    {(() => {
-                                                      // Pour l'affichage des unités individuelles, on utilise toujours les mots de base
-                                                      const unitesBasiques = ['', 'un', 'deux', 'trois', 'quatre', 'cinq', 'six', 'sept', 'huit', 'neuf'];
-                                                      return unitesBasiques[decomposition.unites];
-                                                    })()}
-                                                  </div>
+                                            </div>
+                                            {/* Texte en lettres aligné en bas */}
+                                            <div className={`transition-all duration-1000 ${showUnitesText ? 'opacity-100 scale-100' : 'opacity-0 scale-50'}`}>
+                                              <div className="bg-orange-100 rounded-lg p-2 mt-2">
+                                                <div className="text-sm sm:text-lg font-bold text-orange-700">
+                                                  {(() => {
+                                                    // Pour l'affichage des unités individuelles, on utilise toujours les mots de base
+                                                    const unitesBasiques = ['', 'un', 'deux', 'trois', 'quatre', 'cinq', 'six', 'sept', 'huit', 'neuf'];
+                                                    return unitesBasiques[decomposition.unites];
+                                                  })()}
                                                 </div>
                                               </div>
                                             </div>
@@ -1212,9 +1241,7 @@ export default function LectureEcritureCP100() {
                                           const num = parseInt(selected.chiffre);
                                           let assemblageBase = '';
                                           
-                                          if (num >= 91 && num <= 96) {
-                                            assemblageBase = 'quatre-vingt';
-                                          } else if (num >= 97 && num <= 99) {
+                                          if (num >= 91 && num <= 99) {
                                             assemblageBase = 'quatre-vingt-dix';
                                           } else {
                                             assemblageBase = decomposition.dizainesText;
@@ -1222,7 +1249,11 @@ export default function LectureEcritureCP100() {
                                           
                                           return (
                                             <>
-                                              <div>{assemblageBase} et {decomposition.unitesText}</div>
+                                              <div>{assemblageBase} et {(() => {
+                                                // Utiliser les mots de base pour les unités
+                                                const unitesBasiques = ['', 'un', 'deux', 'trois', 'quatre', 'cinq', 'six', 'sept', 'huit', 'neuf'];
+                                                return unitesBasiques[decomposition.unites];
+                                              })()}</div>
                                               <div className="text-gray-600">ça fait</div>
                                               <div className="text-purple-900">{selected.lettres}</div>
                                             </>
