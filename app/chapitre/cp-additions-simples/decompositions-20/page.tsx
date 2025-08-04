@@ -806,21 +806,9 @@ export default function Decompositions20CP() {
       return; // Ne pas valider si ce ne sont pas des nombres
     }
 
-    // Vérifier la décomposition selon la stratégie attendue
-    let correct = false;
-    if (exercise.strategy === 'Dizaines + Unités') {
-      // Pour la stratégie dizaines + unités, accepter toute décomposition utilisant des multiples de 10
-      // ou la décomposition canonique dizaines + unités
-      const isValidSum = (num1 + num2) === target;
-      const usesMultipleOf10 = (num1 % 10 === 0) || (num2 % 10 === 0);
-      correct = isValidSum && usesMultipleOf10;
-    } else if (exercise.strategy === 'Parties égales') {
-      // Pour la stratégie parties égales, accepter uniquement si les deux parties sont égales
-      correct = (num1 === num2) && (num1 + num2 === target);
-    } else {
-      // Fallback : vérifier simplement que la somme est correcte
-      correct = isValidDecomposition(num1, num2, target);
-    }
+    // Pour les exercices, accepter toute décomposition mathématiquement correcte
+    // (le cours enseigne la technique spécifique, mais on accepte la créativité dans les exercices)
+    const correct = isValidDecomposition(num1, num2, target);
     setIsCorrect(correct);
     
     if (correct && !answeredCorrectly.has(currentExercise)) {
