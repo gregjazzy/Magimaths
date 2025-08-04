@@ -84,31 +84,31 @@ export default function DecompositionsCP() {
     },
     { 
       number: 6, 
-      parts: [3, 3], 
+      parts: [2, 4], 
       item: '🟢', 
       description: 'le nombre 6',
-      explanation: 'Nous pouvons séparer 6 objets en 2 groupes égaux de 3'
+      explanation: 'Nous pouvons séparer 6 objets en 2 groupes : un groupe de 2 et un groupe de 4'
     },
     { 
-      number: 4, 
-      parts: [2, 2], 
+      number: 7, 
+      parts: [3, 4], 
       item: '🔵', 
-      description: 'le nombre 4',
-      explanation: 'Nous pouvons séparer 4 objets en 2 groupes égaux de 2'
+      description: 'le nombre 7',
+      explanation: 'Nous pouvons séparer 7 objets en 2 groupes : un groupe de 3 et un groupe de 4'
     },
     { 
       number: 8, 
-      parts: [4, 4], 
+      parts: [3, 5], 
       item: '🟡', 
       description: 'le nombre 8',
-      explanation: 'Nous pouvons séparer 8 objets en 2 groupes égaux de 4'
+      explanation: 'Nous pouvons séparer 8 objets en 2 groupes : un groupe de 3 et un groupe de 5'
     },
     { 
       number: 10, 
-      parts: [5, 5], 
+      parts: [3, 7], 
       item: '🟣', 
       description: 'le nombre 10',
-      explanation: 'Nous pouvons séparer 10 objets en 2 groupes égaux de 5'
+      explanation: 'Nous pouvons séparer 10 objets en 2 groupes : un groupe de 3 et un groupe de 7'
     }
   ];
 
