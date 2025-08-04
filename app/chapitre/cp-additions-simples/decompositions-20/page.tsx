@@ -1758,7 +1758,7 @@ export default function Decompositions20CP() {
             <div className="bg-gradient-to-r from-purple-400 to-blue-500 rounded-xl p-3 sm:p-6 text-white">
               <div className="flex items-center justify-center gap-1 sm:gap-3 mb-3 sm:mb-4">
                 <h3 className="text-base sm:text-xl font-bold text-white">
-                  💡 Conseils pour bien décomposer
+                  💡 Les 3 techniques de décomposition
                 </h3>
                 {/* Icône d'animation pour les conseils */}
                 <div className="bg-white/20 text-white rounded-full w-6 h-6 sm:w-12 sm:h-12 flex items-center justify-center text-xs sm:text-xl font-bold shadow-lg hover:scale-110 cursor-pointer transition-all duration-300 ring-2 ring-white/30 hover:shadow-xl hover:ring-4 hover:ring-white/40 backdrop-blur-sm"
@@ -1766,7 +1766,7 @@ export default function Decompositions20CP() {
                        animation: 'subtle-glow 3s ease-in-out infinite',
                        animationPlayState: 'running'
                      }} 
-                     title="💡 Animation des conseils ! Cliquez pour entendre Sam donner ses astuces pour décomposer."
+                     title="💡 Animation des techniques ! Cliquez pour entendre Sam expliquer les 3 techniques de décomposition."
                   onClick={async () => {
                     if (!isAnimationRunning) {
                       stopAllVocalsAndAnimations();
@@ -1776,25 +1776,25 @@ export default function Decompositions20CP() {
                       setSamSizeExpanded(true);
                       
                       try {
-                        await playAudio("Voici mes meilleurs conseils pour bien décomposer les nombres !");
+                        await playAudio("Voici mes 3 techniques favorites pour bien décomposer les nombres !");
                         if (stopSignalRef.current) return;
                         
                         await new Promise(resolve => setTimeout(resolve, 1000));
                         if (stopSignalRef.current) return;
                         
-                        await playAudio("D'abord, tu peux utiliser tes doigts ! Sépare-les en groupes différents !");
+                        await playAudio("Première technique : les parties égales ! Pour les nombres pairs, sépare en deux groupes identiques !");
                         if (stopSignalRef.current) return;
                         
                         await new Promise(resolve => setTimeout(resolve, 1200));
                         if (stopSignalRef.current) return;
                         
-                        await playAudio("Tu peux aussi prendre des objets et les grouper différemment !");
+                        await playAudio("Deuxième technique : la décomposition avec 10 ! Pour les grands nombres impairs, utilise 10 plus le reste !");
                         if (stopSignalRef.current) return;
                         
                         await new Promise(resolve => setTimeout(resolve, 1200));
                         if (stopSignalRef.current) return;
                         
-                        await playAudio("Et tu peux dessiner des groupes pour visualiser les séparations !");
+                        await playAudio("Troisième technique : la décomposition libre ! Pour les petits nombres impairs, sépare comme tu veux !");
                         if (stopSignalRef.current) return;
                         
                       } catch (error) {
@@ -1811,19 +1811,19 @@ export default function Decompositions20CP() {
               </div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
                 <div>
-                  <div className="text-2xl sm:text-3xl mb-2">🤲</div>
-                  <div className="font-bold">Utilise tes doigts</div>
-                  <div className="text-sm">Sépare-les en groupes</div>
+                  <div className="text-2xl sm:text-3xl mb-2">🟡🟡</div>
+                  <div className="font-bold">Parties égales</div>
+                  <div className="text-sm">Pour nombres pairs<br/>Ex: 12 = 6 + 6</div>
             </div>
                 <div>
-                  <div className="text-2xl sm:text-3xl mb-2">🧸</div>
-                  <div className="font-bold">Prends des objets</div>
-                  <div className="text-sm">Groupe-les différemment</div>
+                  <div className="text-2xl sm:text-3xl mb-2">🔟➕</div>
+                  <div className="font-bold">Décomposition avec 10</div>
+                  <div className="text-sm">Pour grands nombres impairs<br/>Ex: 15 = 10 + 5</div>
           </div>
                 <div>
-                  <div className="text-2xl sm:text-3xl mb-2">✏️</div>
-                  <div className="font-bold">Dessine des groupes</div>
-                  <div className="text-sm">Visualise les séparations</div>
+                  <div className="text-2xl sm:text-3xl mb-2">🎯</div>
+                  <div className="font-bold">Décomposition libre</div>
+                  <div className="text-sm">Pour petits nombres impairs<br/>Ex: 7 = 4 + 3</div>
                 </div>
               </div>
             </div>
