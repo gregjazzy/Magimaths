@@ -74,42 +74,47 @@ export default function Decompositions20CP() {
     "Super", "Génial", "Fantastique", "Merveilleux", "Extraordinaire"
   ];
 
-  // Données des décompositions avec animations (jusqu'à 20)
+  // Données des décompositions avec animations (jusqu'à 20) - Technique des doubles uniquement
   const decompositionExamples = [
     { 
       number: 12, 
-      parts: [5, 7], 
+      parts: [6, 6], 
       item: '🔴', 
       description: 'le nombre 12',
-      explanation: 'Nous pouvons séparer 12 objets en 2 groupes : un groupe de 5 et un groupe de 7'
+      explanation: 'Nous pouvons séparer 12 objets en 2 groupes égaux : deux groupes de 6',
+      strategy: 'Parties égales'
     },
     { 
-      number: 15, 
-      parts: [8, 7], 
+      number: 14, 
+      parts: [7, 7], 
       item: '🟢', 
-      description: 'le nombre 15',
-      explanation: 'Nous pouvons séparer 15 objets en 2 groupes : un groupe de 8 et un groupe de 7'
-    },
-    { 
-      number: 13, 
-      parts: [6, 7], 
-      item: '🔵', 
-      description: 'le nombre 13',
-      explanation: 'Nous pouvons séparer 13 objets en 2 groupes : un groupe de 6 et un groupe de 7'
+      description: 'le nombre 14',
+      explanation: 'Nous pouvons séparer 14 objets en 2 groupes égaux : deux groupes de 7',
+      strategy: 'Parties égales'
     },
     { 
       number: 16, 
-      parts: [9, 7], 
-      item: '🟡', 
+      parts: [8, 8], 
+      item: '🔵', 
       description: 'le nombre 16',
-      explanation: 'Nous pouvons séparer 16 objets en 2 groupes : un groupe de 9 et un groupe de 7'
+      explanation: 'Nous pouvons séparer 16 objets en 2 groupes égaux : deux groupes de 8',
+      strategy: 'Parties égales'
     },
     { 
       number: 18, 
       parts: [9, 9], 
-      item: '🟣', 
+      item: '🟡', 
       description: 'le nombre 18',
-      explanation: 'Nous pouvons séparer 18 objets en 2 groupes : un groupe de 9 et un groupe de 9'
+      explanation: 'Nous pouvons séparer 18 objets en 2 groupes égaux : deux groupes de 9',
+      strategy: 'Parties égales'
+    },
+    { 
+      number: 20, 
+      parts: [10, 10], 
+      item: '🟣', 
+      description: 'le nombre 20',
+      explanation: 'Nous pouvons séparer 20 objets en 2 groupes égaux : deux groupes de 10',
+      strategy: 'Parties égales'
     }
   ];
 
@@ -135,18 +140,18 @@ export default function Decompositions20CP() {
     20: [[1, 19], [2, 18], [3, 17], [4, 16], [5, 15], [6, 14], [7, 13], [8, 12], [9, 11], [10, 10], [11, 9], [12, 8], [13, 7], [14, 6], [15, 5], [16, 4], [17, 3], [18, 2], [19, 1]]
   };
 
-  // Exercices de décomposition stratégique (jusqu'à 20)
+  // Exercices de décomposition stratégique (jusqu'à 20) - Technique des doubles uniquement
   const exercises = [
-    { question: 'Décompose 11 en deux parties', number: 11, strategy: 'Dizaines + Unités', correctAnswer: [10, 1] },
     { question: 'Décompose 12 en deux parties', number: 12, strategy: 'Parties égales', correctAnswer: [6, 6] },
-    { question: 'Décompose 15 en deux parties', number: 15, strategy: 'Dizaines + Unités', correctAnswer: [10, 5] },
     { question: 'Décompose 14 en deux parties', number: 14, strategy: 'Parties égales', correctAnswer: [7, 7] },
-    { question: 'Décompose 17 en deux parties', number: 17, strategy: 'Dizaines + Unités', correctAnswer: [10, 7] },
     { question: 'Décompose 16 en deux parties', number: 16, strategy: 'Parties égales', correctAnswer: [8, 8] },
-    { question: 'Décompose 19 en deux parties', number: 19, strategy: 'Dizaines + Unités', correctAnswer: [10, 9] },
     { question: 'Décompose 18 en deux parties', number: 18, strategy: 'Parties égales', correctAnswer: [9, 9] },
-    { question: 'Décompose 13 en deux parties', number: 13, strategy: 'Dizaines + Unités', correctAnswer: [10, 3] },
-    { question: 'Décompose 20 en deux parties', number: 20, strategy: 'Parties égales', correctAnswer: [10, 10] }
+    { question: 'Décompose 20 en deux parties', number: 20, strategy: 'Parties égales', correctAnswer: [10, 10] },
+    { question: 'Décompose 10 en deux parties', number: 10, strategy: 'Parties égales', correctAnswer: [5, 5] },
+    { question: 'Décompose 8 en deux parties', number: 8, strategy: 'Parties égales', correctAnswer: [4, 4] },
+    { question: 'Décompose 6 en deux parties', number: 6, strategy: 'Parties égales', correctAnswer: [3, 3] },
+    { question: 'Décompose 4 en deux parties', number: 4, strategy: 'Parties égales', correctAnswer: [2, 2] },
+    { question: 'Décompose 2 en deux parties', number: 2, strategy: 'Parties égales', correctAnswer: [1, 1] }
   ];
 
   // Fonction pour arrêter toutes les animations et vocaux
