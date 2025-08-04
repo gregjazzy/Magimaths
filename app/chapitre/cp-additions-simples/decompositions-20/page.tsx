@@ -74,46 +74,54 @@ export default function Decompositions20CP() {
     "Super", "Génial", "Fantastique", "Merveilleux", "Extraordinaire"
   ];
 
-  // Données des décompositions avec animations (jusqu'à 20) - Technique des doubles uniquement
+  // Données des décompositions avec animations (jusqu'à 20) - Techniques adaptées selon les nombres
   const decompositionExamples = [
     { 
-      number: 12, 
-      parts: [6, 6], 
+      number: 6, 
+      parts: [3, 3], 
       item: '🔴', 
-      description: 'le nombre 12',
-      explanation: 'Nous pouvons séparer 12 objets en 2 groupes égaux : deux groupes de 6',
+      description: 'le nombre 6',
+      explanation: 'Pour les petits nombres pairs, nous pouvons faire des parties égales : deux groupes de 3',
       strategy: 'Parties égales'
+    },
+    { 
+      number: 7, 
+      parts: [4, 3], 
+      item: '🟢', 
+      description: 'le nombre 7',
+      explanation: 'Pour ce nombre impair, nous pouvons le séparer de différentes façons : 4 et 3',
+      strategy: 'Décomposition libre'
+    },
+    { 
+      number: 11, 
+      parts: [10, 1], 
+      item: '🔵', 
+      description: 'le nombre 11',
+      explanation: 'Pour les nombres plus grands, nous utilisons 10 : un groupe de 10 et un groupe de 1',
+      strategy: 'Décomposition avec 10'
     },
     { 
       number: 14, 
       parts: [7, 7], 
-      item: '🟢', 
+      item: '🟡', 
       description: 'le nombre 14',
-      explanation: 'Nous pouvons séparer 14 objets en 2 groupes égaux : deux groupes de 7',
+      explanation: 'Ce nombre pair peut se décomposer en parties égales : deux groupes de 7',
       strategy: 'Parties égales'
     },
     { 
-      number: 16, 
-      parts: [8, 8], 
-      item: '🔵', 
-      description: 'le nombre 16',
-      explanation: 'Nous pouvons séparer 16 objets en 2 groupes égaux : deux groupes de 8',
-      strategy: 'Parties égales'
+      number: 15, 
+      parts: [10, 5], 
+      item: '🟣', 
+      description: 'le nombre 15',
+      explanation: 'Ce nombre impair se décompose avec 10 : un groupe de 10 et un groupe de 5',
+      strategy: 'Décomposition avec 10'
     },
     { 
       number: 18, 
       parts: [9, 9], 
-      item: '🟡', 
+      item: '🟠', 
       description: 'le nombre 18',
-      explanation: 'Nous pouvons séparer 18 objets en 2 groupes égaux : deux groupes de 9',
-      strategy: 'Parties égales'
-    },
-    { 
-      number: 20, 
-      parts: [10, 10], 
-      item: '🟣', 
-      description: 'le nombre 20',
-      explanation: 'Nous pouvons séparer 20 objets en 2 groupes égaux : deux groupes de 10',
+      explanation: 'Ce grand nombre pair peut faire des parties égales : deux groupes de 9',
       strategy: 'Parties égales'
     }
   ];
@@ -140,18 +148,18 @@ export default function Decompositions20CP() {
     20: [[1, 19], [2, 18], [3, 17], [4, 16], [5, 15], [6, 14], [7, 13], [8, 12], [9, 11], [10, 10], [11, 9], [12, 8], [13, 7], [14, 6], [15, 5], [16, 4], [17, 3], [18, 2], [19, 1]]
   };
 
-  // Exercices de décomposition stratégique (jusqu'à 20) - Technique des doubles uniquement
+  // Exercices de décomposition (jusqu'à 20) - Variés selon les possibilités de chaque nombre
   const exercises = [
-    { question: 'Décompose 12 en deux parties', number: 12, strategy: 'Parties égales', correctAnswer: [6, 6] },
-    { question: 'Décompose 14 en deux parties', number: 14, strategy: 'Parties égales', correctAnswer: [7, 7] },
-    { question: 'Décompose 16 en deux parties', number: 16, strategy: 'Parties égales', correctAnswer: [8, 8] },
-    { question: 'Décompose 18 en deux parties', number: 18, strategy: 'Parties égales', correctAnswer: [9, 9] },
-    { question: 'Décompose 20 en deux parties', number: 20, strategy: 'Parties égales', correctAnswer: [10, 10] },
-    { question: 'Décompose 10 en deux parties', number: 10, strategy: 'Parties égales', correctAnswer: [5, 5] },
-    { question: 'Décompose 8 en deux parties', number: 8, strategy: 'Parties égales', correctAnswer: [4, 4] },
     { question: 'Décompose 6 en deux parties', number: 6, strategy: 'Parties égales', correctAnswer: [3, 3] },
-    { question: 'Décompose 4 en deux parties', number: 4, strategy: 'Parties égales', correctAnswer: [2, 2] },
-    { question: 'Décompose 2 en deux parties', number: 2, strategy: 'Parties égales', correctAnswer: [1, 1] }
+    { question: 'Décompose 7 en deux parties', number: 7, strategy: 'Décomposition libre', correctAnswer: [4, 3] },
+    { question: 'Décompose 11 en deux parties', number: 11, strategy: 'Décomposition avec 10', correctAnswer: [10, 1] },
+    { question: 'Décompose 12 en deux parties', number: 12, strategy: 'Parties égales', correctAnswer: [6, 6] },
+    { question: 'Décompose 13 en deux parties', number: 13, strategy: 'Décomposition avec 10', correctAnswer: [10, 3] },
+    { question: 'Décompose 8 en deux parties', number: 8, strategy: 'Parties égales', correctAnswer: [4, 4] },
+    { question: 'Décompose 15 en deux parties', number: 15, strategy: 'Décomposition avec 10', correctAnswer: [10, 5] },
+    { question: 'Décompose 16 en deux parties', number: 16, strategy: 'Parties égales', correctAnswer: [8, 8] },
+    { question: 'Décompose 9 en deux parties', number: 9, strategy: 'Décomposition libre', correctAnswer: [5, 4] },
+    { question: 'Décompose 19 en deux parties', number: 19, strategy: 'Décomposition avec 10', correctAnswer: [10, 9] }
   ];
 
   // Fonction pour arrêter toutes les animations et vocaux
@@ -285,12 +293,15 @@ export default function Decompositions20CP() {
     let objectName = 'unités';
     
     // Adapter le vocabulaire selon la stratégie
-    if (exercise.strategy === 'Dizaines + Unités') {
-      objectEmoji = '🔢';
-      objectName = 'unités';
+    if (exercise.strategy === 'Décomposition avec 10') {
+      objectEmoji = '🔟';
+      objectName = 'objets';
     } else if (exercise.strategy === 'Parties égales') {
       objectEmoji = '🟡';
       objectName = 'éléments';
+    } else if (exercise.strategy === 'Décomposition libre') {
+      objectEmoji = '🔴';
+      objectName = 'objets';
     }
     
     // Si on a des réponses utilisateur, on les utilise
@@ -605,9 +616,11 @@ export default function Decompositions20CP() {
         await playAudio(`Tu as dit ${answer1} plus ${answer2} égale ${userSum}, mais ${result} se décompose autrement. Regarde !`);
       }
     } else {
-      if (strategy === 'Dizaines + Unités') {
-        await playAudio(`Je vais t'expliquer cette décomposition avec la technique des dizaines et unités !`);
+      if (strategy === 'Décomposition avec 10') {
+        await playAudio(`Je vais t'expliquer cette décomposition avec la technique du 10 !`);
       } else if (strategy === 'Parties égales') {
+        await playAudio(`Je vais t'expliquer cette décomposition avec des ${objectName} !`);
+      } else if (strategy === 'Décomposition libre') {
         await playAudio(`Je vais t'expliquer cette décomposition avec des ${objectName} !`);
       } else {
         await playAudio(`Je vais t'expliquer cette décomposition avec des ${objectName} !`);
@@ -617,8 +630,8 @@ export default function Decompositions20CP() {
     await wait(1000);
     
     // Étape 2: Affichage de tous les objets ensemble
-    if (strategy === 'Dizaines + Unités') {
-      await playAudio(`Regarde ! Voici le nombre ${result} que nous allons décomposer.`);
+    if (strategy === 'Décomposition avec 10') {
+      await playAudio(`Regarde ! Voici le nombre ${result} que nous allons décomposer avec 10.`);
     } else {
       await playAudio(`Regarde ! Voici ${result} ${objectName} en tout.`);
     }
@@ -631,10 +644,12 @@ export default function Decompositions20CP() {
     
     // Étape 3: Séparation en première partie avec explication de la stratégie
     setCorrectionStep('group1');
-    if (strategy === 'Dizaines + Unités') {
-      await playAudio(`Maintenant, j'utilise la technique des dizaines plus unités ! Je sépare la dizaine, soit ${num1}.`);
+    if (strategy === 'Décomposition avec 10') {
+      await playAudio(`Maintenant, j'utilise la technique avec 10 ! Je sépare d'abord ${num1} objets.`);
     } else if (strategy === 'Parties égales') {
       await playAudio(`Maintenant, j'utilise la technique des parties égales ! Je fais une première partie de ${num1}.`);
+    } else if (strategy === 'Décomposition libre') {
+      await playAudio(`Maintenant, je vais séparer ce nombre ! Je fais une première partie de ${num1}.`);
     } else {
       await playAudio(`Maintenant, je vais faire une première partie de ${num1} ${objectName}.`);
     }
@@ -643,10 +658,12 @@ export default function Decompositions20CP() {
     
     // Étape 4: Séparation en deuxième partie
     setCorrectionStep('group2');
-    if (strategy === 'Dizaines + Unités') {
-      await playAudio(`Et maintenant les unités restantes, soit ${num2}. C'est la technique dizaines plus unités !`);
+    if (strategy === 'Décomposition avec 10') {
+      await playAudio(`Et maintenant ${num2} objets restants. C'est la technique de décomposition avec 10 !`);
     } else if (strategy === 'Parties égales') {
       await playAudio(`Et une deuxième partie égale de ${num2}. Regarde : ${num1} égale ${num2} ! C'est la technique des parties égales !`);
+    } else if (strategy === 'Décomposition libre') {
+      await playAudio(`Et une deuxième partie de ${num2}. ${num1} plus ${num2} égale bien ${result} !`);
     } else {
       await playAudio(`Et une deuxième partie de ${num2} ${objectName}.`);
     }
@@ -654,10 +671,12 @@ export default function Decompositions20CP() {
     await wait(1500);
     
     // Étape 5: Explication de la décomposition selon la stratégie
-    if (strategy === 'Dizaines + Unités') {
-      await playAudio(`Parfait ! ${num1} plus ${num2}, c'est ${Math.floor(result / 10)} dizaine plus ${result % 10} unités ! Technique réussie !`);
+    if (strategy === 'Décomposition avec 10') {
+      await playAudio(`Parfait ! ${num1} plus ${num2}, c'est la décomposition avec 10 ! Technique réussie !`);
     } else if (strategy === 'Parties égales') {
       await playAudio(`Parfait ! ${num1} plus ${num2}, ce sont bien deux parties égales de ${result} ! Technique réussie !`);
+    } else if (strategy === 'Décomposition libre') {
+      await playAudio(`Parfait ! ${num1} plus ${num2} égale bien ${result} ! Bonne décomposition !`);
     } else {
       await playAudio(`Parfait ! ${num1} plus ${num2}, c'est bien une façon de décomposer ${result} !`);
     }
