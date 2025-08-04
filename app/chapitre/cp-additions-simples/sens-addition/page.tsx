@@ -77,8 +77,8 @@ export default function SensAdditionCP() {
     { item: '🍎', group1: 2, group2: 3, result: 5, description: 'pommes' },
     { item: '🚗', group1: 1, group2: 2, result: 3, description: 'voitures' },
     { item: '⭐', group1: 3, group2: 2, result: 5, description: 'étoiles' },
-    { item: '🎾', group1: 2, group2: 1, result: 3, description: 'balles' },
-    { item: '🧸', group1: 4, group2: 1, result: 5, description: 'nounours' }
+    { item: '🎾', group1: 4, group2: 7, result: 11, description: 'balles' },
+    { item: '🧸', group1: 6, group2: 9, result: 15, description: 'nounours' }
   ];
 
   // Exercices sur le sens de l'addition
@@ -548,7 +548,7 @@ export default function SensAdditionCP() {
       objects.push(
         <span
           key={i}
-          className="text-4xl inline-block transition-all duration-300 animate-bounce"
+          className="text-2xl sm:text-4xl inline-block transition-all duration-300 animate-bounce"
           style={{ 
             animationDelay: `${i * 100}ms`,
             transform: highlightedNumber === count ? 'scale(1.2)' : 'scale(1)'
@@ -559,9 +559,20 @@ export default function SensAdditionCP() {
       );
     }
     
+    // Grouper les objets par lignes (9 max sur mobile, 12 sur desktop)
+    const maxPerRow = isMobile ? 9 : 12;
+    const rows = [];
+    for (let i = 0; i < objects.length; i += maxPerRow) {
+      rows.push(objects.slice(i, i + maxPerRow));
+    }
+    
     return (
-      <div className="flex flex-wrap gap-2 justify-center items-center">
-        {objects}
+      <div className="flex flex-col gap-1 sm:gap-2 justify-center items-center">
+        {rows.map((row, rowIndex) => (
+          <div key={rowIndex} className="flex flex-wrap gap-1 sm:gap-2 justify-center items-center">
+            {row}
+          </div>
+        ))}
       </div>
     );
   };
@@ -610,6 +621,11 @@ export default function SensAdditionCP() {
              await wait(1500);
        // Explication du signe +
        setShowingProcess('gathering');
+       
+       // Scroll vers la zone d'addition pour bien voir l'opération
+       scrollToSection('concept-section');
+       await wait(800);
+       
        await playAudio("Tu vois le signe plus ? Il veut dire qu'on va ajouter, mettre ensemble !");
        if (stopSignalRef.current) return;
        
@@ -625,6 +641,15 @@ export default function SensAdditionCP() {
       
              await wait(1500);
        setShowingProcess('counting');
+       
+       // Scroll vers la zone de résultat pour bien voir le comptage
+       const resultSection = document.querySelector('[class*="bg-yellow"]') || 
+                             document.getElementById('concept-section');
+       if (resultSection) {
+         resultSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+         await wait(800);
+       }
+       
        await playAudio("Maintenant, je compte tout ensemble !");
        if (stopSignalRef.current) return;
        
@@ -670,6 +695,23 @@ export default function SensAdditionCP() {
        await playAudio("Clique sur les exemples pour voir d'autres animations !");
        if (stopSignalRef.current) return;
        
+       await wait(1000);
+       
+       // Scroll vers l'onglet exercices et l'illuminer
+       const exercisesTab = document.getElementById('exercises-tab');
+       
+       if (exercisesTab) {
+         exercisesTab.scrollIntoView({ behavior: 'smooth', block: 'center' });
+         await wait(1000);
+         
+         // Illuminer l'onglet exercices
+         setHighlightedElement('exercises-tab');
+         await playAudio("Tu peux ensuite faire les exercices pour t'entraîner. Amuse-toi bien, nom d'un pirate !");
+         if (stopSignalRef.current) return;
+         
+         await wait(1500);
+       }
+       
        await wait(800);
     setHighlightedElement(null);
        setCurrentExample(null);
@@ -710,6 +752,11 @@ export default function SensAdditionCP() {
        await wait(1200);
        // Explication du signe +
        setShowingProcess('gathering');
+       
+       // Scroll vers la zone d'addition pour bien voir l'opération
+       scrollToSection('concept-section');
+       await wait(800);
+       
        await playAudio("Tu vois le signe plus ? Il veut dire qu'on va ajouter, mettre ensemble !");
        if (stopSignalRef.current) return;
       
@@ -725,6 +772,15 @@ export default function SensAdditionCP() {
        
       await wait(1200);
        setShowingProcess('counting');
+       
+       // Scroll vers la zone de résultat pour bien voir le comptage
+       const resultSection = document.querySelector('[class*="bg-yellow"]') || 
+                             document.getElementById('concept-section');
+       if (resultSection) {
+         resultSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+         await wait(800);
+       }
+       
        await playAudio("Je compte tout ensemble maintenant !");
        if (stopSignalRef.current) return;
        
@@ -1344,6 +1400,51 @@ export default function SensAdditionCP() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-100">
+      {/* Animation CSS personnalisée pour les icônes */}
+      <style dangerouslySetInnerHTML={{
+        __html: `
+          @keyframes subtle-glow {
+            0%, 100% {
+              opacity: 0.8;
+              transform: scale(1);
+              filter: brightness(1);
+            }
+            50% {
+              opacity: 1;
+              transform: scale(1.05);
+              filter: brightness(1.1);
+            }
+          }
+        `
+      }} />
+      
+      {/* Bouton flottant de Sam - visible quand Sam parle ou pendant les animations du cours */}
+      {(isPlayingVocal || isAnimationRunning) && (
+        <div className="fixed top-4 right-4 z-[60]">
+          <button
+            onClick={stopAllVocalsAndAnimations}
+            className="relative flex items-center gap-2 px-3 py-2 rounded-full shadow-2xl transition-all duration-300 bg-gradient-to-r from-red-500 to-red-600 text-white hover:from-red-600 hover:to-red-700 hover:scale-105 animate-pulse"
+            title={isPlayingVocal ? "Arrêter Sam" : "Arrêter l'animation"}
+          >
+            {/* Image de Sam */}
+            <div className="w-8 h-8 rounded-full overflow-hidden border-2 border-white/50">
+              <img
+                src="/image/pirate-small.png"
+                alt="Sam le Pirate"
+                className="w-full h-full object-cover"
+              />
+            </div>
+            
+            {/* Texte et icône */}
+            <>
+              <span className="text-sm font-bold hidden sm:block">
+                {isPlayingVocal ? 'Stop' : 'Stop Animation'}
+              </span>
+              <div className="w-3 h-3 bg-white rounded-sm animate-pulse"></div>
+            </>
+          </button>
+        </div>
+      )}
       <div className="max-w-6xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-4 sm:mb-8">
@@ -1383,6 +1484,7 @@ export default function SensAdditionCP() {
               📖 Cours
             </button>
             <button
+              id="exercises-tab"
               onClick={() => {
                  stopAllVocalsAndAnimations();
                 setShowExercises(true);
@@ -1391,6 +1493,8 @@ export default function SensAdditionCP() {
                 showExercises 
                    ? 'bg-green-500 text-white shadow-md' 
                   : 'text-gray-600 hover:bg-gray-100'
+              } ${
+                highlightedElement === 'exercises-tab' ? 'ring-4 ring-green-400 bg-green-100 animate-pulse scale-110 shadow-2xl' : ''
               }`}
             >
               <span>✏️ Exercices</span>
@@ -1400,46 +1504,88 @@ export default function SensAdditionCP() {
         </div>
 
         {!showExercises ? (
-          /* COURS */
-          <div className="space-y-8">
-            {/* Bouton d'explication vocal principal */}
-            <div className="text-center mb-6">
+          /* COURS - MOBILE OPTIMISÉ */
+          <div className="space-y-2 sm:space-y-6">
+            {/* Image de Sam le Pirate avec bouton DÉMARRER */}
+            <div className="flex items-center justify-center gap-2 sm:gap-4 p-2 sm:p-4 mb-3 sm:mb-6">
+              {/* Image de Sam le Pirate */}
+              <div className={`relative transition-all duration-500 border-2 border-green-300 rounded-full bg-gradient-to-br from-green-100 to-blue-100 ${
+                isAnimationRunning
+                    ? 'w-14 sm:w-24 h-14 sm:h-24' // When speaking - plus petit sur mobile
+                  : samSizeExpanded
+                      ? 'w-12 sm:w-32 h-12 sm:h-32' // Enlarged - plus petit sur mobile
+                      : 'w-12 sm:w-20 h-12 sm:h-20' // Initial - plus petit sur mobile
+                }`}>
+                  <img 
+                    src="/image/pirate-small.png" 
+                    alt="Sam le Pirate" 
+                    className="w-full h-full rounded-full object-cover"
+                  />
+                {/* Megaphone animé quand il parle */}
+                  {isAnimationRunning && (
+                  <div className="absolute -top-1 -right-1 bg-red-500 text-white p-1 rounded-full shadow-lg">
+                    <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.617.77L4.916 14H2a1 1 0 01-1-1V7a1 1 0 011-1h2.916l3.467-2.77a1 1 0 011.617.77zM14.657 2.929a1 1 0 011.414 0A9.972 9.972 0 0119 10a9.972 9.972 0 01-2.929 7.071 1 1 0 01-1.414-1.414A7.971 7.971 0 0017 10c0-2.21-.894-4.208-2.343-5.657a1 1 0 010-1.414zm-2.829 2.828a1 1 0 011.415 0A5.983 5.983 0 0115 10a5.983 5.983 0 01-1.757 4.243 1 1 0 01-1.415-1.414A3.983 3.983 0 0013 10a3.983 3.983 0 00-1.172-2.829 1 1 0 010-1.414z" clipRule="evenodd" />
+                    </svg>
+                    </div>
+                  )}
+                </div>
+                
+              {/* Bouton Démarrer */}
+              <div className="text-center">
                 <button
                 onClick={explainChapter}
                 disabled={isAnimationRunning}
-                className={`px-8 py-4 rounded-xl font-bold text-xl shadow-lg transition-all transform ${
-                  isAnimationRunning 
-                    ? 'bg-gray-400 text-gray-200 cursor-not-allowed' 
-                    : 'bg-gradient-to-r from-green-500 to-blue-500 text-white hover:shadow-xl hover:scale-105'
+                className={`bg-gradient-to-r from-green-500 to-blue-500 text-white px-3 sm:px-8 py-2 sm:py-4 rounded-xl font-bold text-xs sm:text-xl shadow-2xl hover:shadow-3xl transition-all transform hover:scale-105 ${
+                  isAnimationRunning ? 'opacity-75 cursor-not-allowed' : 'hover:from-green-600 hover:to-blue-600'
                 }`}
                 style={{
                   animationDuration: !hasStarted && !isAnimationRunning ? '2s' : 'none',
                   animationIterationCount: !hasStarted && !isAnimationRunning ? 'infinite' : 'none'
                 }}
-                >
-                {isAnimationRunning ? '⏳ Animation en cours...' : '▶️ COMMENCER !'}
+              >
+                  <Play className="inline w-3 h-3 sm:w-6 sm:h-6 mr-1 sm:mr-2" />
+                  {isAnimationRunning ? '⏳ JE PARLE...' : '➕ DÉMARRER'}
                 </button>
+                </div>
               </div>
 
-                         {/* Explication du concept avec animation intégrée */}
+            {/* Explication du concept avec animation intégrée */}
              <div 
                id="concept-section"
-               className={`bg-white rounded-xl p-8 shadow-lg transition-all duration-1000 ${
+               className={`bg-white rounded-xl p-3 sm:p-8 shadow-lg transition-all duration-1000 ${
                  highlightedElement === 'concept-section' ? 'ring-4 ring-green-400 bg-green-50 scale-105' : ''
               }`}
             >
-               <h2 className="text-2xl font-bold text-center mb-6 text-gray-900">
-                 🤔 Qu'est-ce qu'additionner ?
-               </h2>
+              <div className="flex items-center justify-center gap-1 sm:gap-3 mb-3 sm:mb-6">
+                <h2 className="text-base sm:text-2xl font-bold text-gray-900">
+                  🤔 Qu'est-ce qu'additionner ?
+                </h2>
+                {/* Icône d'animation pour le concept */}
+                <div className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-full w-5 h-5 sm:w-8 sm:h-8 flex items-center justify-center text-xs sm:text-lg font-bold shadow-lg hover:scale-110 cursor-pointer transition-all duration-300 ring-2 ring-blue-300 ring-opacity-40 hover:shadow-xl hover:ring-4 hover:ring-blue-200"
+                     style={{
+                       animation: 'subtle-glow 3s ease-in-out infinite',
+                       animationPlayState: 'running'
+                     }} 
+                     title="🤔 Animation du concept ! Cliquez pour entendre Sam expliquer l'addition."
+                  onClick={async () => {
+                    if (!isAnimationRunning) {
+                      explainChapter();
+                    }
+                  }}
+                >
+                  ➕
+                </div>
+              </div>
             
-               <div className="bg-green-50 rounded-lg p-6 mb-6">
-                 <p className="text-lg text-center text-green-800 font-semibold mb-6">
+               <div className="bg-green-50 rounded-lg p-3 sm:p-6 mb-3 sm:mb-6">
+                 <p className="text-sm sm:text-lg text-center text-green-800 font-semibold mb-3 sm:mb-6">
                    Additionner, c'est mettre des objets ensemble pour savoir combien on en a en tout !
                  </p>
                  
-                 <div className="bg-white rounded-lg p-6">
-                   <div className="text-center mb-6">
-                     <div className="text-2xl font-bold text-green-600 mb-4">
+                 <div className="bg-white rounded-lg p-3 sm:p-6">
+                   <div className="text-center mb-3 sm:mb-6">
+                     <div className="text-lg sm:text-2xl font-bold text-green-600 mb-2 sm:mb-4">
                        {currentExample !== null ? 
                          `Exemple : ${additionExamples[currentExample].group1} + ${additionExamples[currentExample].group2} = ${additionExamples[currentExample].result}` 
                          : 'Exemple : 2 + 3 = 5'
@@ -1449,22 +1595,22 @@ export default function SensAdditionCP() {
 
                                        {/* Animation intégrée dans le concept */}
                     {currentExample !== null ? (
-                     <div className="space-y-6">
+                     <div className="space-y-3 sm:space-y-6">
                        {/* Indicateur d'étape */}
                        {animatingStep && (
-                         <div className="p-3 rounded-lg bg-blue-100 border-l-4 border-blue-500 text-center">
-                           <div className="text-lg font-bold text-blue-800">
+                         <div className="p-2 sm:p-3 rounded-lg bg-blue-100 border-l-4 border-blue-500 text-center">
+                           <div className="text-sm sm:text-lg font-bold text-blue-800">
                              {animatingStep === 'introduction' && '🎯 Regardons ensemble...'}
             </div>
           </div>
                        )}
                        
-                                                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                                <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-6">
                 {/* Premier groupe */}
-                           <div className={`text-center p-6 rounded-lg transition-all duration-500 ${
+                           <div className={`text-center p-3 sm:p-6 rounded-lg transition-all duration-500 ${
                              objectsStep === 'group1' ? 'ring-4 ring-purple-400 bg-purple-100 scale-105' : 'bg-purple-50'
                            }`}>
-                             <h4 className="text-lg font-bold text-purple-800 mb-4">
+                             <h4 className="text-sm sm:text-lg font-bold text-purple-800 mb-2 sm:mb-4">
                                {additionExamples[currentExample].group1} {additionExamples[currentExample].description}
                              </h4>
                              <div className="mb-4">
@@ -1479,18 +1625,18 @@ export default function SensAdditionCP() {
 
                 {/* Symbole + */}
                            <div className="text-center flex items-center justify-center">
-                  <div className={`text-8xl font-bold transition-all duration-500 ${
-                               showingProcess === 'gathering' ? 'text-green-500 animate-bounce scale-125 ring-4 ring-yellow-400 bg-yellow-100 rounded-full p-4 shadow-2xl' : 'text-gray-400'
+                  <div className={`text-2xl sm:text-8xl font-bold transition-all duration-500 ${
+                               showingProcess === 'gathering' ? 'text-green-500 animate-bounce scale-125 ring-4 ring-yellow-400 bg-yellow-100 rounded-full p-2 sm:p-4 shadow-2xl' : 'text-gray-400'
                   }`}>
                     +
                   </div>
                 </div>
 
                 {/* Deuxième groupe */}
-                           <div className={`text-center p-6 rounded-lg transition-all duration-500 ${
+                           <div className={`text-center p-3 sm:p-6 rounded-lg transition-all duration-500 ${
                              objectsStep === 'group2' ? 'ring-4 ring-pink-400 bg-pink-100 scale-105' : 'bg-pink-50'
                            }`}>
-                             <h4 className="text-lg font-bold text-pink-800 mb-4">
+                             <h4 className="text-sm sm:text-lg font-bold text-pink-800 mb-2 sm:mb-4">
                                {additionExamples[currentExample].group2} {additionExamples[currentExample].description}
                              </h4>
                              <div className="mb-4">
@@ -1506,22 +1652,38 @@ export default function SensAdditionCP() {
 
                                                 {/* Animation de comptage */}
                          {showingProcess === 'counting' && (
-                           <div className="bg-yellow-50 rounded-lg p-6 border-2 border-yellow-300">
-                             <h4 className="text-xl font-bold text-center text-yellow-800 mb-4">
+                           <div className="bg-yellow-50 rounded-lg p-3 sm:p-6 border-2 border-yellow-300">
+                             <h4 className="text-lg sm:text-xl font-bold text-center text-yellow-800 mb-2 sm:mb-4">
                                🔢 Maintenant, comptons tout ensemble !
                              </h4>
-                             <div className="flex justify-center items-center space-x-2 text-5xl">
-                               {Array.from({ length: additionExamples[currentExample].result }, (_, i) => (
-                      <span 
-                        key={i} 
-                                   className={`transition-all duration-500 ${
-                                     highlightedNumber === i + 1 ? 'scale-150 animate-bounce text-red-500' : ''
-                                   }`}
-                      >
-                                   {additionExamples[currentExample].item}
-                      </span>
-                    ))}
-                  </div>
+                             <div className="flex flex-col gap-1 sm:gap-2 justify-center items-center text-2xl sm:text-5xl">
+                               {(() => {
+                                 // Créer tous les objets
+                                 const allObjects = Array.from({ length: additionExamples[currentExample].result }, (_, i) => (
+                                   <span 
+                                     key={i} 
+                                     className={`transition-all duration-500 ${
+                                       highlightedNumber === i + 1 ? 'scale-150 animate-bounce text-red-500' : ''
+                                     }`}
+                                   >
+                                     {additionExamples[currentExample].item}
+                                   </span>
+                                 ));
+                                 
+                                 // Grouper par lignes (9 max sur mobile, 12 sur desktop)
+                                 const maxPerRow = isMobile ? 9 : 12;
+                                 const rows = [];
+                                 for (let i = 0; i < allObjects.length; i += maxPerRow) {
+                                   rows.push(allObjects.slice(i, i + maxPerRow));
+                                 }
+                                 
+                                 return rows.map((row, rowIndex) => (
+                                   <div key={rowIndex} className="flex justify-center items-center space-x-1 sm:space-x-2">
+                                     {row}
+                                   </div>
+                                 ));
+                               })()}
+                             </div>
                              <div className="text-center mt-4">
                                <div className="text-3xl font-bold text-yellow-800">
                                  {highlightedNumber && highlightedNumber > 0 && `${highlightedNumber}...`}
@@ -1532,15 +1694,15 @@ export default function SensAdditionCP() {
 
               {/* Résultat */}
                          {objectsStep === 'result' && (
-                           <div className={`text-center p-6 rounded-lg transition-all duration-1000 bg-green-100 ring-4 ring-green-400 scale-105`}>
-                             <h4 className="text-2xl font-bold text-green-800 mb-4">🎉 Résultat !</h4>
-                             <div className="mb-4">
+                           <div className={`text-center p-3 sm:p-6 rounded-lg transition-all duration-1000 bg-green-100 ring-4 ring-green-400 scale-105`}>
+                             <h4 className="text-lg sm:text-2xl font-bold text-green-800 mb-2 sm:mb-4">🎉 Résultat !</h4>
+                             <div className="mb-2 sm:mb-4">
                                {renderObjects(additionExamples[currentExample].result, additionExamples[currentExample].item)}
                     </div>
-                             <div className="text-3xl font-bold text-green-800 mb-2">
+                             <div className="text-xl sm:text-3xl font-bold text-green-800 mb-1 sm:mb-2">
                                {additionExamples[currentExample].group1} + {additionExamples[currentExample].group2} = {additionExamples[currentExample].result}
                     </div>
-                             <div className="text-lg text-green-600">
+                             <div className="text-sm sm:text-lg text-green-600">
                                En tout : {additionExamples[currentExample].result} {additionExamples[currentExample].description} !
                   </div>
                 </div>
@@ -1548,19 +1710,19 @@ export default function SensAdditionCP() {
             </div>
                    ) : (
                      /* Version statique quand pas d'animation */
-                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                       <div className="text-center p-4 bg-purple-50 rounded-lg">
-                         <div className="text-sm text-gray-600 mb-2">2 pommes</div>
+                     <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-6">
+                       <div className="text-center p-3 sm:p-4 bg-purple-50 rounded-lg">
+                         <div className="text-xs sm:text-sm text-gray-600 mb-1 sm:mb-2">2 pommes</div>
                          {renderObjects(2, '🍎')}
-                         <div className="text-xl font-bold text-purple-800 mt-2">2</div>
+                         <div className="text-lg sm:text-xl font-bold text-purple-800 mt-1 sm:mt-2">2</div>
                 </div>
                        <div className="text-center flex items-center justify-center">
-                         <div className="text-6xl font-bold text-green-600">+</div>
+                         <div className="text-2xl sm:text-6xl font-bold text-green-600">+</div>
                 </div>
-                       <div className="text-center p-4 bg-pink-50 rounded-lg">
-                         <div className="text-sm text-gray-600 mb-2">3 pommes</div>
+                       <div className="text-center p-3 sm:p-4 bg-pink-50 rounded-lg">
+                         <div className="text-xs sm:text-sm text-gray-600 mb-1 sm:mb-2">3 pommes</div>
                          {renderObjects(3, '🍎')}
-                         <div className="text-xl font-bold text-pink-800 mt-2">3</div>
+                         <div className="text-lg sm:text-xl font-bold text-pink-800 mt-1 sm:mt-2">3</div>
               </div>
             </div>
           )}
@@ -1571,19 +1733,36 @@ export default function SensAdditionCP() {
             {/* Autres exemples */}
             <div 
               id="examples-section"
-              className={`bg-white rounded-xl p-8 shadow-lg transition-all duration-1000 ${
+              className={`bg-white rounded-xl p-3 sm:p-8 shadow-lg transition-all duration-1000 ${
                 highlightedElement === 'examples-section' ? 'ring-4 ring-blue-400 bg-blue-50 scale-105' : ''
               }`}
             >
-              <h2 className="text-2xl font-bold text-center mb-6 text-gray-900">
-                🌟 Autres exemples d'addition
-              </h2>
+              <div className="flex items-center justify-center gap-1 sm:gap-3 mb-3 sm:mb-6">
+                <h2 className="text-base sm:text-2xl font-bold text-gray-900">
+                  🌟 Autres exemples d'addition
+                </h2>
+                {/* Icône d'animation pour les exemples */}
+                <div className="bg-gradient-to-r from-purple-500 to-violet-600 text-white rounded-full w-5 h-5 sm:w-8 sm:h-8 flex items-center justify-center text-xs sm:text-lg font-bold shadow-lg hover:scale-110 cursor-pointer transition-all duration-300 ring-2 ring-purple-300 ring-opacity-40 hover:shadow-xl hover:ring-4 hover:ring-purple-200"
+                     style={{
+                       animation: 'subtle-glow 3s ease-in-out infinite',
+                       animationPlayState: 'running'
+                     }} 
+                     title="🌟 Animation des exemples ! Cliquez sur les cartes pour voir Sam expliquer chaque exemple."
+                  onClick={async () => {
+                    if (!isAnimationRunning) {
+                      explainSpecificExample(0); // Commencer par le premier exemple
+                    }
+                  }}
+                >
+                  🌟
+                </div>
+              </div>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                 {additionExamples.map((example, index) => (
                   <div 
                     key={index}
-                    className={`bg-gradient-to-br from-purple-50 to-pink-50 rounded-lg p-6 transition-all duration-300 ${
+                    className={`bg-gradient-to-br from-purple-50 to-pink-50 rounded-lg p-3 sm:p-6 transition-all duration-300 ${
                       isAnimationRunning 
                         ? 'opacity-50 cursor-not-allowed' 
                         : 'cursor-pointer hover:scale-105 hover:shadow-lg'
@@ -1591,11 +1770,11 @@ export default function SensAdditionCP() {
                     onClick={isAnimationRunning ? undefined : () => explainSpecificExample(index)}
                   >
                 <div className="text-center">
-                      <div className="text-3xl mb-2">{example.item}</div>
-                      <div className="font-bold text-lg text-gray-800 mb-2">
+                      <div className="text-lg sm:text-3xl mb-1 sm:mb-2">{example.item}</div>
+                      <div className="font-bold text-sm sm:text-lg text-gray-800 mb-1 sm:mb-2">
                         {example.group1} + {example.group2} = {example.result}
                 </div>
-                      <div className="text-sm text-gray-600 mb-3">
+                      <div className="text-xs sm:text-sm text-gray-600 mb-2 sm:mb-3">
                         {example.description}
                   </div>
                       <button className={`px-3 py-1 rounded-lg text-sm transition-colors ${
@@ -1612,23 +1791,73 @@ export default function SensAdditionCP() {
         </div>
 
             {/* Conseils pratiques */}
-            <div className="bg-gradient-to-r from-green-400 to-blue-500 rounded-xl p-6 text-white">
-              <h3 className="text-xl font-bold mb-4 text-center">
-                💡 Conseils pour bien additionner
-              </h3>
+            <div className="bg-gradient-to-r from-green-400 to-blue-500 rounded-xl p-3 sm:p-6 text-white">
+              <div className="flex items-center justify-center gap-1 sm:gap-3 mb-3 sm:mb-4">
+                <h3 className="text-base sm:text-xl font-bold text-white">
+                  💡 Conseils pour bien additionner
+                </h3>
+                {/* Icône d'animation pour les conseils */}
+                <div className="bg-white/20 text-white rounded-full w-6 h-6 sm:w-12 sm:h-12 flex items-center justify-center text-xs sm:text-xl font-bold shadow-lg hover:scale-110 cursor-pointer transition-all duration-300 ring-2 ring-white/30 hover:shadow-xl hover:ring-4 hover:ring-white/40 backdrop-blur-sm"
+                     style={{
+                       animation: 'subtle-glow 3s ease-in-out infinite',
+                       animationPlayState: 'running'
+                     }} 
+                     title="💡 Animation des conseils ! Cliquez pour entendre Sam donner ses astuces."
+                  onClick={async () => {
+                    if (!isAnimationRunning) {
+                      stopAllVocalsAndAnimations();
+                      await new Promise(resolve => setTimeout(resolve, 100));
+                      stopSignalRef.current = false;
+                      setIsPlayingVocal(true);
+                      setSamSizeExpanded(true);
+                      
+                      try {
+                        await playAudio("Voici mes meilleurs conseils pour bien additionner !");
+                        if (stopSignalRef.current) return;
+                        
+                        await new Promise(resolve => setTimeout(resolve, 1000));
+                        if (stopSignalRef.current) return;
+                        
+                        await playAudio("D'abord, tu peux utiliser tes doigts ! C'est très pratique pour compter !");
+                        if (stopSignalRef.current) return;
+                        
+                        await new Promise(resolve => setTimeout(resolve, 1200));
+                        if (stopSignalRef.current) return;
+                        
+                        await playAudio("Tu peux aussi prendre des objets comme des jouets ou des crayons !");
+                        if (stopSignalRef.current) return;
+                        
+                        await new Promise(resolve => setTimeout(resolve, 1200));
+                        if (stopSignalRef.current) return;
+                        
+                        await playAudio("Et surtout, regarde bien et compte tous les objets ensemble !");
+                        if (stopSignalRef.current) return;
+                        
+                      } catch (error) {
+                        console.error('Erreur:', error);
+                      } finally {
+                        setIsPlayingVocal(false);
+                        setSamSizeExpanded(false);
+                      }
+                    }
+                  }}
+                >
+                  💡
+                </div>
+              </div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
                 <div>
-                  <div className="text-3xl mb-2">🤲</div>
+                  <div className="text-2xl sm:text-3xl mb-2">🤲</div>
                   <div className="font-bold">Utilise tes doigts</div>
                   <div className="text-sm">Compte sur tes mains</div>
                 </div>
                 <div>
-                  <div className="text-3xl mb-2">🧸</div>
+                  <div className="text-2xl sm:text-3xl mb-2">🧸</div>
                   <div className="font-bold">Prends des objets</div>
                   <div className="text-sm">Jouets, crayons, bonbons...</div>
                 </div>
                 <div>
-                  <div className="text-3xl mb-2">👀</div>
+                  <div className="text-2xl sm:text-3xl mb-2">👀</div>
                   <div className="font-bold">Regarde bien</div>
                   <div className="text-sm">Compte tous les objets ensemble</div>
                 </div>
