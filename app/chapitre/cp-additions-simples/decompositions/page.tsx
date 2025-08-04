@@ -1395,6 +1395,7 @@ export default function DecompositionsCP() {
               📖 Cours
             </button>
             <button
+              id="exercises-tab"
               onClick={() => {
                 stopAllVocalsAndAnimations();
                 setShowExercises(true);
@@ -1403,6 +1404,8 @@ export default function DecompositionsCP() {
                 showExercises 
                   ? 'bg-green-500 text-white shadow-md' 
                   : 'text-gray-600 hover:bg-gray-100'
+              } ${
+                highlightedElement === 'exercises-tab' ? 'ring-4 ring-green-400 bg-green-100 animate-pulse scale-110 shadow-2xl' : ''
               }`}
             >
               <span>✏️ Exercices</span>
