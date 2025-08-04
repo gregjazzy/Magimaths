@@ -227,9 +227,16 @@ export default function DecompositionsCP() {
 
         utterance.onerror = (event) => {
           console.error('Erreur synthèse vocale:', event.error);
-        currentAudioRef.current = null;
-          reject(new Error(`Erreur synthèse vocale: ${event.error}`));
-      };
+          currentAudioRef.current = null;
+          
+          // Ignorer l'erreur "interrupted" qui est normale quand on arrête l'audio
+          if (event.error === 'interrupted' || event.error === 'canceled') {
+            console.log('Audio interrompu - comportement normal');
+            resolve();
+          } else {
+            reject(new Error(`Erreur synthèse vocale: ${event.error}`));
+          }
+        };
 
       currentAudioRef.current = utterance;
         console.log('speechSynthesis.speak appelée');
@@ -305,7 +312,7 @@ export default function DecompositionsCP() {
       circles.push(
         <span
           key={i}
-          className={`text-4xl inline-block transition-all duration-500 ${
+          className={`text-2xl sm:text-4xl inline-block transition-all duration-500 ${
             isHighlighted ? 'animate-bounce scale-125' : ''
           }`}
           style={{ 
@@ -317,9 +324,20 @@ export default function DecompositionsCP() {
       );
     }
     
+    // Grouper les objets par lignes (9 max sur mobile, 12 sur desktop)
+    const maxPerRow = isMobile ? 9 : 12;
+    const rows = [];
+    for (let i = 0; i < circles.length; i += maxPerRow) {
+      rows.push(circles.slice(i, i + maxPerRow));
+    }
+    
     return (
-      <div className="flex flex-wrap gap-2 justify-center items-center">
-        {circles}
+      <div className="flex flex-col gap-1 sm:gap-2 justify-center items-center">
+        {rows.map((row, rowIndex) => (
+          <div key={rowIndex} className="flex flex-wrap gap-1 sm:gap-2 justify-center items-center">
+            {row}
+          </div>
+        ))}
       </div>
     );
   };
@@ -1252,6 +1270,51 @@ export default function DecompositionsCP() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-100">
+      {/* Animation CSS personnalisée pour les icônes */}
+      <style dangerouslySetInnerHTML={{
+        __html: `
+          @keyframes subtle-glow {
+            0%, 100% {
+              opacity: 0.8;
+              transform: scale(1);
+              filter: brightness(1);
+            }
+            50% {
+              opacity: 1;
+              transform: scale(1.05);
+              filter: brightness(1.1);
+            }
+          }
+        `
+      }} />
+      
+      {/* Bouton flottant de Sam - visible quand Sam parle ou pendant les animations du cours */}
+      {(isPlayingVocal || isAnimationRunning) && (
+        <div className="fixed top-4 right-4 z-[60]">
+          <button
+            onClick={stopAllVocalsAndAnimations}
+            className="relative flex items-center gap-2 px-3 py-2 rounded-full shadow-2xl transition-all duration-300 bg-gradient-to-r from-red-500 to-red-600 text-white hover:from-red-600 hover:to-red-700 hover:scale-105 animate-pulse"
+            title={isPlayingVocal ? "Arrêter Sam" : "Arrêter l'animation"}
+          >
+            {/* Image de Sam */}
+            <div className="w-8 h-8 rounded-full overflow-hidden border-2 border-white/50">
+              <img
+                src="/image/pirate-small.png"
+                alt="Sam le Pirate"
+                className="w-full h-full object-cover"
+              />
+            </div>
+            
+            {/* Texte et icône */}
+            <>
+              <span className="text-sm font-bold hidden sm:block">
+                {isPlayingVocal ? 'Stop' : 'Stop Animation'}
+              </span>
+              <div className="w-3 h-3 bg-white rounded-sm animate-pulse"></div>
+            </>
+          </button>
+        </div>
+      )}
       <div className="max-w-6xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8">
@@ -1305,37 +1368,79 @@ export default function DecompositionsCP() {
         </div>
 
         {!showExercises ? (
-          /* COURS */
-          <div className="space-y-8">
-            {/* Bouton d'explication vocal principal */}
-            <div className="text-center mb-6">
-              <button
+          /* COURS - MOBILE OPTIMISÉ */
+          <div className="space-y-2 sm:space-y-6">
+            {/* Image de Sam le Pirate avec bouton DÉMARRER */}
+            <div className="flex items-center justify-center gap-2 sm:gap-4 p-2 sm:p-4 mb-3 sm:mb-6">
+              {/* Image de Sam le Pirate */}
+              <div className={`relative transition-all duration-500 border-2 border-purple-300 rounded-full bg-gradient-to-br from-purple-100 to-blue-100 ${
+                isAnimationRunning
+                    ? 'w-14 sm:w-24 h-14 sm:h-24' // When speaking - plus petit sur mobile
+                  : samSizeExpanded
+                      ? 'w-12 sm:w-32 h-12 sm:h-32' // Enlarged - plus petit sur mobile
+                      : 'w-12 sm:w-20 h-12 sm:h-20' // Initial - plus petit sur mobile
+                }`}>
+                  <img 
+                    src="/image/pirate-small.png" 
+                    alt="Sam le Pirate" 
+                    className="w-full h-full rounded-full object-cover"
+                  />
+                {/* Megaphone animé quand il parle */}
+                  {isAnimationRunning && (
+                  <div className="absolute -top-1 -right-1 bg-red-500 text-white p-1 rounded-full shadow-lg">
+                    <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.617.77L4.916 14H2a1 1 0 01-1-1V7a1 1 0 011-1h2.916l3.467-2.77a1 1 0 011.617.77zM14.657 2.929a1 1 0 011.414 0A9.972 9.972 0 0119 10a9.972 9.972 0 01-2.929 7.071 1 1 0 01-1.414-1.414A7.971 7.971 0 0017 10c0-2.21-.894-4.208-2.343-5.657a1 1 0 010-1.414zm-2.829 2.828a1 1 0 011.415 0A5.983 5.983 0 0115 10a5.983 5.983 0 01-1.757 4.243 1 1 0 01-1.415-1.414A3.983 3.983 0 0013 10a3.983 3.983 0 00-1.172-2.829 1 1 0 010-1.414z" clipRule="evenodd" />
+                    </svg>
+                    </div>
+                  )}
+                </div>
+                
+              {/* Bouton Démarrer */}
+              <div className="text-center">
+                <button
                 onClick={explainChapter}
                 disabled={isAnimationRunning}
-                className={`px-8 py-4 rounded-xl font-bold text-xl shadow-lg transition-all transform ${
-                  isAnimationRunning 
-                    ? 'bg-gray-400 text-gray-200 cursor-not-allowed' 
-                    : 'bg-gradient-to-r from-purple-500 to-blue-500 text-white hover:shadow-xl hover:scale-105'
+                className={`bg-gradient-to-r from-purple-500 to-blue-500 text-white px-3 sm:px-12 py-2 sm:py-6 rounded-xl font-bold text-sm sm:text-3xl shadow-2xl hover:shadow-3xl transition-all transform hover:scale-105 ${
+                  isAnimationRunning ? 'opacity-75 cursor-not-allowed' : 'hover:from-purple-600 hover:to-blue-600'
                 }`}
                 style={{
                   animationDuration: !hasStarted && !isAnimationRunning ? '2s' : 'none',
                   animationIterationCount: !hasStarted && !isAnimationRunning ? 'infinite' : 'none'
                 }}
               >
-                {isAnimationRunning ? '⏳ Animation en cours...' : '▶️ COMMENCER !'}
-              </button>
-            </div>
+                  <Play className="inline w-4 h-4 sm:w-8 sm:h-8 mr-1 sm:mr-4" />
+                  {isAnimationRunning ? '⏳ JE PARLE...' : '🧩 DÉMARRER'}
+                </button>
+                </div>
+              </div>
 
             {/* Explication du concept avec animation intégrée */}
             <div 
               id="concept-section"
-              className={`bg-white rounded-xl p-8 shadow-lg transition-all duration-1000 ${
+              className={`bg-white rounded-xl p-3 sm:p-8 shadow-lg transition-all duration-1000 ${
                 highlightedElement === 'concept-section' ? 'ring-4 ring-purple-400 bg-purple-50 scale-105' : ''
               }`}
             >
-              <h2 className="text-2xl font-bold text-center mb-6 text-gray-900">
-                🤔 Qu'est-ce que décomposer un nombre ?
-              </h2>
+              <div className="flex items-center justify-center gap-1 sm:gap-3 mb-3 sm:mb-6">
+                <h2 className="text-base sm:text-2xl font-bold text-gray-900">
+                  🤔 Qu'est-ce que décomposer un nombre ?
+                </h2>
+                {/* Icône d'animation pour le concept */}
+                <div className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-full w-6 h-6 sm:w-12 sm:h-12 flex items-center justify-center text-xs sm:text-xl font-bold shadow-lg hover:scale-110 cursor-pointer transition-all duration-300 ring-2 ring-blue-300 ring-opacity-40 hover:shadow-xl hover:ring-4 hover:ring-blue-200"
+                     style={{
+                       animation: 'subtle-glow 3s ease-in-out infinite',
+                       animationPlayState: 'running'
+                     }} 
+                     title="🤔 Animation du concept ! Cliquez pour entendre Sam expliquer la décomposition."
+                  onClick={async () => {
+                    if (!isAnimationRunning) {
+                      explainChapter();
+                    }
+                  }}
+                >
+                  🧩
+                </div>
+              </div>
               
               <div className="bg-purple-50 rounded-lg p-6 mb-6">
                 <p className="text-lg text-center text-purple-800 font-semibold mb-6">
@@ -1432,7 +1537,7 @@ export default function DecompositionsCP() {
                           <div className="mb-4">
                             {renderCircles(decompositionExamples[currentExample].number, decompositionExamples[currentExample].item)}
                         </div>
-                          <div className="text-3xl font-bold text-green-800 mb-2">
+                          <div className="text-xl sm:text-3xl font-bold text-green-800 mb-2">
                             {decompositionExamples[currentExample].number} = {decompositionExamples[currentExample].parts[0]} + {decompositionExamples[currentExample].parts[1]}
                       </div>
                           <div className="text-lg text-green-600">
@@ -1466,13 +1571,30 @@ export default function DecompositionsCP() {
             {/* Autres exemples */}
             <div 
               id="examples-section"
-              className={`bg-white rounded-xl p-8 shadow-lg transition-all duration-1000 ${
+              className={`bg-white rounded-xl p-3 sm:p-8 shadow-lg transition-all duration-1000 ${
                 highlightedElement === 'examples-section' ? 'ring-4 ring-blue-400 bg-blue-50 scale-105' : ''
               }`}
             >
-              <h2 className="text-2xl font-bold text-center mb-6 text-gray-900">
-                🌟 Autres exemples de décomposition
-              </h2>
+              <div className="flex items-center justify-center gap-1 sm:gap-3 mb-3 sm:mb-6">
+                <h2 className="text-base sm:text-2xl font-bold text-gray-900">
+                  🌟 Autres exemples de décomposition
+                </h2>
+                {/* Icône d'animation pour les exemples */}
+                <div className="bg-gradient-to-r from-purple-500 to-violet-600 text-white rounded-full w-6 h-6 sm:w-12 sm:h-12 flex items-center justify-center text-xs sm:text-xl font-bold shadow-lg hover:scale-110 cursor-pointer transition-all duration-300 ring-2 ring-purple-300 ring-opacity-40 hover:shadow-xl hover:ring-4 hover:ring-purple-200"
+                     style={{
+                       animation: 'subtle-glow 3s ease-in-out infinite',
+                       animationPlayState: 'running'
+                     }} 
+                     title="🌟 Animation des exemples ! Cliquez sur les cartes pour voir Sam expliquer chaque décomposition."
+                  onClick={async () => {
+                    if (!isAnimationRunning) {
+                      explainSpecificExample(0); // Commencer par le premier exemple
+                    }
+                  }}
+                >
+                  🌟
+                </div>
+              </div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {decompositionExamples.map((example, index) => (
@@ -1486,7 +1608,7 @@ export default function DecompositionsCP() {
                     onClick={isAnimationRunning ? undefined : () => explainSpecificExample(index)}
                   >
                 <div className="text-center">
-                      <div className="text-3xl mb-2">{example.item}</div>
+                      <div className="text-lg sm:text-3xl mb-2">{example.item}</div>
                       <div className="font-bold text-lg text-gray-800 mb-2">
                         {example.number} = {example.parts[0]} + {example.parts[1]}
                   </div>
@@ -1507,23 +1629,73 @@ export default function DecompositionsCP() {
             </div>
 
             {/* Conseils pratiques */}
-            <div className="bg-gradient-to-r from-purple-400 to-blue-500 rounded-xl p-6 text-white">
-              <h3 className="text-xl font-bold mb-4 text-center">
-                💡 Conseils pour bien décomposer
-              </h3>
+            <div className="bg-gradient-to-r from-purple-400 to-blue-500 rounded-xl p-3 sm:p-6 text-white">
+              <div className="flex items-center justify-center gap-1 sm:gap-3 mb-3 sm:mb-4">
+                <h3 className="text-base sm:text-xl font-bold text-white">
+                  💡 Conseils pour bien décomposer
+                </h3>
+                {/* Icône d'animation pour les conseils */}
+                <div className="bg-white/20 text-white rounded-full w-6 h-6 sm:w-12 sm:h-12 flex items-center justify-center text-xs sm:text-xl font-bold shadow-lg hover:scale-110 cursor-pointer transition-all duration-300 ring-2 ring-white/30 hover:shadow-xl hover:ring-4 hover:ring-white/40 backdrop-blur-sm"
+                     style={{
+                       animation: 'subtle-glow 3s ease-in-out infinite',
+                       animationPlayState: 'running'
+                     }} 
+                     title="💡 Animation des conseils ! Cliquez pour entendre Sam donner ses astuces pour décomposer."
+                  onClick={async () => {
+                    if (!isAnimationRunning) {
+                      stopAllVocalsAndAnimations();
+                      await new Promise(resolve => setTimeout(resolve, 100));
+                      stopSignalRef.current = false;
+                      setIsPlayingVocal(true);
+                      setSamSizeExpanded(true);
+                      
+                      try {
+                        await playAudio("Voici mes meilleurs conseils pour bien décomposer les nombres !");
+                        if (stopSignalRef.current) return;
+                        
+                        await new Promise(resolve => setTimeout(resolve, 1000));
+                        if (stopSignalRef.current) return;
+                        
+                        await playAudio("D'abord, tu peux utiliser tes doigts ! Sépare-les en groupes différents !");
+                        if (stopSignalRef.current) return;
+                        
+                        await new Promise(resolve => setTimeout(resolve, 1200));
+                        if (stopSignalRef.current) return;
+                        
+                        await playAudio("Tu peux aussi prendre des objets et les grouper différemment !");
+                        if (stopSignalRef.current) return;
+                        
+                        await new Promise(resolve => setTimeout(resolve, 1200));
+                        if (stopSignalRef.current) return;
+                        
+                        await playAudio("Et tu peux dessiner des groupes pour visualiser les séparations !");
+                        if (stopSignalRef.current) return;
+                        
+                      } catch (error) {
+                        console.error('Erreur:', error);
+                      } finally {
+                        setIsPlayingVocal(false);
+                        setSamSizeExpanded(false);
+                      }
+                    }
+                  }}
+                >
+                  💡
+                </div>
+              </div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
                 <div>
-                  <div className="text-3xl mb-2">🤲</div>
+                  <div className="text-2xl sm:text-3xl mb-2">🤲</div>
                   <div className="font-bold">Utilise tes doigts</div>
                   <div className="text-sm">Sépare-les en groupes</div>
             </div>
                 <div>
-                  <div className="text-3xl mb-2">🧸</div>
+                  <div className="text-2xl sm:text-3xl mb-2">🧸</div>
                   <div className="font-bold">Prends des objets</div>
                   <div className="text-sm">Groupe-les différemment</div>
           </div>
                 <div>
-                  <div className="text-3xl mb-2">✏️</div>
+                  <div className="text-2xl sm:text-3xl mb-2">✏️</div>
                   <div className="font-bold">Dessine des groupes</div>
                   <div className="text-sm">Visualise les séparations</div>
                 </div>
@@ -1586,7 +1758,7 @@ export default function DecompositionsCP() {
               
               {/* Affichage du nombre à décomposer */}
               <div className="bg-purple-50 rounded-lg p-2 sm:p-6 mb-2 sm:mb-8">
-                <div className="text-3xl sm:text-6xl font-bold text-purple-600 mb-2 sm:mb-4">
+                <div className="text-2xl sm:text-6xl font-bold text-purple-600 mb-2 sm:mb-4">
                   {exercises[currentExercise].number}
                 </div>
                 <div className="mb-2 sm:mb-4">
@@ -1620,7 +1792,7 @@ export default function DecompositionsCP() {
                       placeholder="?"
                     />
                     
-                    <span className="text-2xl sm:text-3xl font-bold text-purple-600">+</span>
+                    <span className="text-xl sm:text-3xl font-bold text-purple-600">+</span>
                     
                     <input
                       type="number"
@@ -1633,7 +1805,7 @@ export default function DecompositionsCP() {
                       placeholder="?"
                     />
                     
-                    <span className="text-2xl sm:text-3xl font-bold text-purple-600">=</span>
+                    <span className="text-xl sm:text-3xl font-bold text-purple-600">=</span>
                     
                     <div className="w-12 sm:w-16 h-10 sm:h-12 flex items-center justify-center text-lg sm:text-xl font-bold bg-purple-100 border-2 border-purple-300 rounded-lg text-purple-600">
                       {exercises[currentExercise].number}
@@ -1818,7 +1990,7 @@ export default function DecompositionsCP() {
                       <p className="text-xl font-bold text-gray-900">
                         Score : {finalScore}/{exercises.length}
                       </p>
-                      <div className="text-4xl mt-2">
+                      <div className="text-2xl sm:text-4xl mt-2">
                         {finalScore >= 8 ? '⭐⭐⭐' : finalScore >= 6 ? '⭐⭐' : '⭐'}
                       </div>
                       <p className="text-sm text-gray-600 mt-2">
