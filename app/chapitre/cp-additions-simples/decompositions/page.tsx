@@ -362,6 +362,10 @@ export default function DecompositionsCP() {
       // 2. Explication du concept avec animations
       await wait(1800);
       setHighlightedElement('concept-section');
+      // Scroll vers la zone de concept pour bien voir l'opération
+      scrollToSection('concept-section');
+      await wait(800);
+      
       await playAudio("Regardons ensemble comment décomposer le nombre 5 !");
       if (stopSignalRef.current) return;
       
@@ -381,6 +385,11 @@ export default function DecompositionsCP() {
       
       await wait(1500);
       setShowingProcess('separating');
+      
+      // Scroll vers la zone de concept pour bien voir la séparation
+      scrollToSection('concept-section');
+      await wait(800);
+      
       await playAudio("Maintenant, je vais séparer ces objets en deux groupes !");
       if (stopSignalRef.current) return;
       
@@ -397,6 +406,15 @@ export default function DecompositionsCP() {
       await wait(1800);
       setDecompositionStep('result');
       setShowingProcess('result');
+      
+      // Scroll vers la zone de résultat pour bien voir la décomposition finale
+      const resultSection = document.querySelector('[class*="bg-green"]') || 
+                            document.getElementById('concept-section');
+      if (resultSection) {
+        resultSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        await wait(800);
+      }
+      
       await playAudio(`${example.parts[0]} plus ${example.parts[1]} égale ${example.number} ! C'est une décomposition !`);
       if (stopSignalRef.current) return;
       
@@ -427,6 +445,23 @@ export default function DecompositionsCP() {
       await wait(1200);
       await playAudio("Clique sur les exemples pour voir d'autres décompositions !");
       if (stopSignalRef.current) return;
+      
+      await wait(1000);
+      
+      // Scroll vers l'onglet exercices et l'illuminer
+      const exercisesTab = document.getElementById('exercises-tab');
+      
+      if (exercisesTab) {
+        exercisesTab.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        await wait(1000);
+        
+        // Illuminer l'onglet exercices
+        setHighlightedElement('exercises-tab');
+        await playAudio("Tu peux ensuite faire les exercices pour t'entraîner. Amuse-toi bien, nom d'un pirate !");
+        if (stopSignalRef.current) return;
+        
+        await wait(1500);
+      }
 
       await wait(800);
       setHighlightedElement(null);
@@ -476,6 +511,15 @@ export default function DecompositionsCP() {
       
       await wait(1200);
       setShowingProcess('result');
+      
+      // Scroll vers la zone de résultat pour bien voir la décomposition finale
+      const resultSection = document.querySelector('[class*="bg-green"]') || 
+                            document.getElementById('concept-section');
+      if (resultSection) {
+        resultSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        await wait(800);
+      }
+      
       setDecompositionStep('result');
       await playAudio(`${example.parts[0]} plus ${example.parts[1]} égale ${example.number} !`);
       if (stopSignalRef.current) return;
