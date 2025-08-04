@@ -26,7 +26,7 @@ const sections = [
   },
   {
     id: 'decompositions',
-    title: 'Décompositions additives',
+    title: 'Décompositions additives jusqu\'à 10',
     description: 'Savoir que 5 = 2+3 = 1+4... Toutes les façons de faire un nombre',
     icon: '🧩',
     duration: '10 min',

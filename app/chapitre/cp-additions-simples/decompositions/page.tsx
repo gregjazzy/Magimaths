@@ -1373,7 +1373,7 @@ export default function DecompositionsCP() {
           
           <div className="bg-white rounded-xl p-4 sm:p-6 shadow-lg text-center">
             <h1 className="text-xl sm:text-4xl font-bold text-gray-900 mb-2 sm:mb-4">
-              🧩 Décomposer les nombres
+              🧩 Décomposer les nombres jusqu'à 10
             </h1>
           </div>
         </div>
