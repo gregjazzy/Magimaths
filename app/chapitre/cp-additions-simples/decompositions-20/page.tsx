@@ -1875,9 +1875,6 @@ export default function Decompositions20CP() {
                 <div className="text-2xl sm:text-6xl font-bold text-purple-600 mb-2 sm:mb-4">
                   {exercises[currentExercise].number}
                 </div>
-                <div className="mb-2 sm:mb-4">
-                  {renderCircles(exercises[currentExercise].number, '🔴')}
-                    </div>
                 <p className="text-sm sm:text-lg text-gray-700 font-semibold">
                   Sépare ce nombre en deux parties !
                 </p>
