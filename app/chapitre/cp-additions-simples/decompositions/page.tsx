@@ -1443,13 +1443,13 @@ export default function DecompositionsCP() {
               </div>
               
               <div className="bg-purple-50 rounded-lg p-6 mb-6">
-                <p className="text-lg text-center text-purple-800 font-semibold mb-6">
+                <p className="text-sm sm:text-lg text-center text-purple-800 font-semibold mb-3 sm:mb-6">
                   Décomposer un nombre, c'est le séparer en plusieurs parties qui s'additionnent !
                 </p>
                 
                 <div className="bg-white rounded-lg p-6">
                   <div className="text-center mb-6">
-                    <div className="text-2xl font-bold text-purple-600 mb-4">
+                    <div className="text-lg sm:text-2xl font-bold text-purple-600 mb-2 sm:mb-4">
                       {currentExample !== null ? 
                         `Exemple : ${decompositionExamples[currentExample].number} = ${decompositionExamples[currentExample].parts[0]} + ${decompositionExamples[currentExample].parts[1]}` 
                         : 'Exemple : 5 = 2 + 3'
@@ -1463,7 +1463,7 @@ export default function DecompositionsCP() {
                       {/* Indicateur d'étape */}
                       {animatingStep && (
                         <div className="p-3 rounded-lg bg-blue-100 border-l-4 border-blue-500 text-center">
-                          <div className="text-lg font-bold text-blue-800">
+                          <div className="text-sm sm:text-lg font-bold text-blue-800">
                             {animatingStep === 'introduction' && '🎯 Regardons ensemble...'}
                   </div>
                   </div>
@@ -1472,13 +1472,13 @@ export default function DecompositionsCP() {
                       {/* Nombre complet */}
                       {decompositionStep === 'number' && (
                         <div className={`text-center p-6 rounded-lg transition-all duration-500 bg-yellow-100 ring-4 ring-yellow-400 scale-105`}>
-                          <h4 className="text-2xl font-bold text-yellow-800 mb-4">
+                          <h4 className="text-lg sm:text-2xl font-bold text-yellow-800 mb-2 sm:mb-4">
                             Nombre complet : {decompositionExamples[currentExample].number}
                           </h4>
                           <div className="mb-4">
                             {renderCircles(decompositionExamples[currentExample].number, decompositionExamples[currentExample].item, highlightedNumber === decompositionExamples[currentExample].number)}
                   </div>
-                          <div className={`text-xl font-bold transition-all duration-500 ${
+                          <div className={`text-lg sm:text-xl font-bold transition-all duration-500 ${
                             highlightedNumber === decompositionExamples[currentExample].number ? 'text-yellow-600 scale-125 animate-pulse' : 'text-yellow-800'
                           }`}>
                             {decompositionExamples[currentExample].number} objets en tout
@@ -1493,20 +1493,20 @@ export default function DecompositionsCP() {
                           <div className={`text-center p-6 rounded-lg transition-all duration-500 ${
                             showingProcess === 'separating' ? 'ring-4 ring-purple-400 bg-purple-100 scale-105' : 'bg-purple-50'
                           }`}>
-                            <h4 className="text-lg font-bold text-purple-800 mb-4">
+                            <h4 className="text-sm sm:text-lg font-bold text-purple-800 mb-2 sm:mb-4">
                               Premier groupe
                             </h4>
                             <div className="mb-4">
                               {renderCircles(decompositionExamples[currentExample].parts[0], decompositionExamples[currentExample].item)}
                             </div>
-                            <div className="text-xl font-bold text-purple-800">
+                            <div className="text-lg sm:text-xl font-bold text-purple-800">
                               {decompositionExamples[currentExample].parts[0]}
               </div>
             </div>
 
                           {/* Symbole + */}
                           <div className="text-center flex items-center justify-center">
-                            <div className={`text-8xl font-bold transition-all duration-500 ${
+                            <div className={`text-4xl sm:text-8xl font-bold transition-all duration-500 ${
                               showingProcess === 'grouping' ? 'text-green-500 animate-bounce scale-125 ring-4 ring-yellow-400 bg-yellow-100 rounded-full p-4 shadow-2xl' : 'text-gray-400'
                             }`}>
                               +
@@ -1517,13 +1517,13 @@ export default function DecompositionsCP() {
                           <div className={`text-center p-6 rounded-lg transition-all duration-500 ${
                             showingProcess === 'separating' ? 'ring-4 ring-pink-400 bg-pink-100 scale-105' : 'bg-pink-50'
                           }`}>
-                            <h4 className="text-lg font-bold text-pink-800 mb-4">
+                            <h4 className="text-sm sm:text-lg font-bold text-pink-800 mb-2 sm:mb-4">
                               Deuxième groupe
                             </h4>
                             <div className="mb-4">
                               {renderCircles(decompositionExamples[currentExample].parts[1], decompositionExamples[currentExample].item)}
                       </div>
-                            <div className="text-xl font-bold text-pink-800">
+                            <div className="text-lg sm:text-xl font-bold text-pink-800">
                               {decompositionExamples[currentExample].parts[1]}
                         </div>
                         </div>
@@ -1533,14 +1533,14 @@ export default function DecompositionsCP() {
                       {/* Résultat */}
                       {decompositionStep === 'result' && (
                         <div className={`text-center p-6 rounded-lg transition-all duration-1000 bg-green-100 ring-4 ring-green-400 scale-105`}>
-                          <h4 className="text-2xl font-bold text-green-800 mb-4">🎉 Décomposition réussie !</h4>
+                          <h4 className="text-lg sm:text-2xl font-bold text-green-800 mb-2 sm:mb-4">🎉 Décomposition réussie !</h4>
                           <div className="mb-4">
                             {renderCircles(decompositionExamples[currentExample].number, decompositionExamples[currentExample].item)}
                         </div>
                           <div className="text-xl sm:text-3xl font-bold text-green-800 mb-2">
                             {decompositionExamples[currentExample].number} = {decompositionExamples[currentExample].parts[0]} + {decompositionExamples[currentExample].parts[1]}
                       </div>
-                          <div className="text-lg text-green-600">
+                          <div className="text-sm sm:text-lg text-green-600">
                             {decompositionExamples[currentExample].parts[0]} + {decompositionExamples[currentExample].parts[1]} = {decompositionExamples[currentExample].number} !
                     </div>
                     </div>
@@ -1552,15 +1552,15 @@ export default function DecompositionsCP() {
                       <div className="text-center p-4 bg-purple-50 rounded-lg">
                         <div className="text-sm text-gray-600 mb-2">2 objets</div>
                         {renderCircles(2, '🔴')}
-                        <div className="text-xl font-bold text-purple-800 mt-2">2</div>
+                        <div className="text-lg sm:text-xl font-bold text-purple-800 mt-2">2</div>
                       </div>
                       <div className="text-center flex items-center justify-center">
-                        <div className="text-6xl font-bold text-purple-600">+</div>
+                        <div className="text-3xl sm:text-6xl font-bold text-purple-600">+</div>
                       </div>
                       <div className="text-center p-4 bg-pink-50 rounded-lg">
                         <div className="text-sm text-gray-600 mb-2">3 objets</div>
                         {renderCircles(3, '🔴')}
-                        <div className="text-xl font-bold text-pink-800 mt-2">3</div>
+                        <div className="text-lg sm:text-xl font-bold text-pink-800 mt-2">3</div>
                       </div>
                     </div>
                   )}
