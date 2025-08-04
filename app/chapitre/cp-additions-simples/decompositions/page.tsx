@@ -312,7 +312,7 @@ export default function DecompositionsCP() {
       circles.push(
         <span
           key={i}
-          className={`text-2xl sm:text-4xl inline-block transition-all duration-500 ${
+          className={`text-lg sm:text-4xl inline-block transition-all duration-500 ${
             isHighlighted ? 'animate-bounce scale-125' : ''
           }`}
           style={{ 
@@ -332,9 +332,9 @@ export default function DecompositionsCP() {
     }
     
     return (
-      <div className="flex flex-col gap-1 sm:gap-2 justify-center items-center">
+      <div className="flex flex-col gap-0.5 sm:gap-2 justify-center items-center">
         {rows.map((row, rowIndex) => (
-          <div key={rowIndex} className="flex flex-wrap gap-1 sm:gap-2 justify-center items-center">
+          <div key={rowIndex} className="flex flex-wrap gap-0.5 sm:gap-2 justify-center items-center">
             {row}
           </div>
         ))}
@@ -1592,19 +1592,19 @@ export default function DecompositionsCP() {
                   </div>
                   ) : (
                     /* Version statique quand pas d'animation */
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                      <div className="text-center p-2 sm:p-4 bg-purple-50 rounded-lg">
-                        <div className="text-xs sm:text-sm text-gray-600 mb-1 sm:mb-2">2 objets</div>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-6">
+                      <div className="text-center p-1 sm:p-4 bg-purple-50 rounded-lg">
+                        <div className="text-xs sm:text-sm text-gray-600 mb-0.5 sm:mb-2">2 objets</div>
                         {renderCircles(2, '🔴')}
-                        <div className="text-base sm:text-xl font-bold text-purple-800 mt-1 sm:mt-2">2</div>
+                        <div className="text-base sm:text-xl font-bold text-purple-800 mt-0.5 sm:mt-2">2</div>
                       </div>
                       <div className="text-center flex items-center justify-center">
                         <div className="text-2xl sm:text-6xl font-bold text-purple-600">+</div>
                       </div>
-                      <div className="text-center p-2 sm:p-4 bg-pink-50 rounded-lg">
-                        <div className="text-xs sm:text-sm text-gray-600 mb-1 sm:mb-2">3 objets</div>
+                      <div className="text-center p-1 sm:p-4 bg-pink-50 rounded-lg">
+                        <div className="text-xs sm:text-sm text-gray-600 mb-0.5 sm:mb-2">3 objets</div>
                         {renderCircles(3, '🔴')}
-                        <div className="text-base sm:text-xl font-bold text-pink-800 mt-1 sm:mt-2">3</div>
+                        <div className="text-base sm:text-xl font-bold text-pink-800 mt-0.5 sm:mt-2">3</div>
                       </div>
                     </div>
                   )}
