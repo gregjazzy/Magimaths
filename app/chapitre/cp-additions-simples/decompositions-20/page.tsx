@@ -51,6 +51,7 @@ export default function Decompositions20CP() {
     result: number;
     objectEmoji: string;
     objectName: string;
+    strategy?: string;
   } | null>(null);
 
   // État pour l'animation de comptage objet par objet
@@ -134,18 +135,18 @@ export default function Decompositions20CP() {
     20: [[1, 19], [2, 18], [3, 17], [4, 16], [5, 15], [6, 14], [7, 13], [8, 12], [9, 11], [10, 10], [11, 9], [12, 8], [13, 7], [14, 6], [15, 5], [16, 4], [17, 3], [18, 2], [19, 1]]
   };
 
-  // Exercices de décomposition - saisie libre (jusqu'à 20)
+  // Exercices de décomposition stratégique (jusqu'à 20)
   const exercises = [
-    { question: 'Décompose 11 en 2 parties', number: 11 },
-    { question: 'Décompose 12 en 2 parties', number: 12 },
-    { question: 'Décompose 14 en 2 parties', number: 14 },
-    { question: 'Décompose 15 en 2 parties', number: 15 },
-    { question: 'Décompose 13 en 2 parties', number: 13 },
-    { question: 'Décompose 16 en 2 parties', number: 16 },
-    { question: 'Décompose 18 en 2 parties', number: 18 },
-    { question: 'Décompose 17 en 2 parties', number: 17 },
-    { question: 'Décompose 19 en 2 parties', number: 19 },
-    { question: 'Décompose 20 en 2 parties', number: 20 }
+    { question: 'Décompose 11 en deux parties', number: 11, strategy: 'Dizaines + Unités', correctAnswer: [10, 1] },
+    { question: 'Décompose 12 en deux parties', number: 12, strategy: 'Parties égales', correctAnswer: [6, 6] },
+    { question: 'Décompose 15 en deux parties', number: 15, strategy: 'Dizaines + Unités', correctAnswer: [10, 5] },
+    { question: 'Décompose 14 en deux parties', number: 14, strategy: 'Parties égales', correctAnswer: [7, 7] },
+    { question: 'Décompose 17 en deux parties', number: 17, strategy: 'Dizaines + Unités', correctAnswer: [10, 7] },
+    { question: 'Décompose 16 en deux parties', number: 16, strategy: 'Parties égales', correctAnswer: [8, 8] },
+    { question: 'Décompose 19 en deux parties', number: 19, strategy: 'Dizaines + Unités', correctAnswer: [10, 9] },
+    { question: 'Décompose 18 en deux parties', number: 18, strategy: 'Parties égales', correctAnswer: [9, 9] },
+    { question: 'Décompose 13 en deux parties', number: 13, strategy: 'Dizaines + Unités', correctAnswer: [10, 3] },
+    { question: 'Décompose 20 en deux parties', number: 20, strategy: 'Parties égales', correctAnswer: [10, 10] }
   ];
 
   // Fonction pour arrêter toutes les animations et vocaux
@@ -276,24 +277,37 @@ export default function Decompositions20CP() {
   const parseExerciseNumbers = (exercise: any, answer1?: string, answer2?: string) => {
     let num1 = 0, num2 = 0, result = exercise.number;
     let objectEmoji = '🟡';
-    let objectName = 'pièces d\'or';
+    let objectName = 'unités';
+    
+    // Adapter le vocabulaire selon la stratégie
+    if (exercise.strategy === 'Dizaines + Unités') {
+      objectEmoji = '🔢';
+      objectName = 'unités';
+    } else if (exercise.strategy === 'Parties égales') {
+      objectEmoji = '🟡';
+      objectName = 'éléments';
+    }
     
     // Si on a des réponses utilisateur, on les utilise
     if (answer1 && answer2) {
       num1 = parseInt(answer1) || 0;
       num2 = parseInt(answer2) || 0;
     } else {
-      // Sinon, on varie les décompositions pour montrer différentes possibilités
-      const decompositions = allDecompositions[result as keyof typeof allDecompositions];
-      if (decompositions && decompositions.length > 0) {
-        // Utiliser l'index de l'exercice pour varier les exemples
-        const decompositionIndex = currentExercise % decompositions.length;
-        [num1, num2] = decompositions[decompositionIndex];
+      // Utiliser la réponse correcte selon la stratégie de l'exercice
+      if (exercise.correctAnswer) {
+        [num1, num2] = exercise.correctAnswer;
+      } else {
+        // Fallback: varie les décompositions pour montrer différentes possibilités
+        const decompositions = allDecompositions[result as keyof typeof allDecompositions];
+        if (decompositions && decompositions.length > 0) {
+          const decompositionIndex = currentExercise % decompositions.length;
+          [num1, num2] = decompositions[decompositionIndex];
+        }
       }
     }
     
-    console.log('Nombres parsés pour décomposition:', { num1, num2, result, objectEmoji, objectName });
-    return { num1, num2, result, objectEmoji, objectName };
+    console.log('Nombres parsés pour décomposition:', { num1, num2, result, objectEmoji, objectName, strategy: exercise.strategy });
+    return { num1, num2, result, objectEmoji, objectName, strategy: exercise.strategy };
   };
 
   // Fonction pour vérifier si une décomposition est correcte
@@ -556,10 +570,10 @@ export default function Decompositions20CP() {
     
     console.log('Début correction animée pour décomposition:', exercise, 'avec réponses:', answer1, answer2);
     
-    const { num1, num2, result, objectEmoji, objectName } = parseExerciseNumbers(exercise, answer1, answer2);
+    const { num1, num2, result, objectEmoji, objectName, strategy } = parseExerciseNumbers(exercise, answer1, answer2);
     
     // Stocker les nombres pour l'affichage
-    setCorrectionNumbers({ num1, num2, result, objectEmoji, objectName });
+    setCorrectionNumbers({ num1, num2, result, objectEmoji, objectName, strategy });
     
     // Démarrer l'affichage de correction
     setShowAnimatedCorrection(true);
@@ -586,13 +600,23 @@ export default function Decompositions20CP() {
         await playAudio(`Tu as dit ${answer1} plus ${answer2} égale ${userSum}, mais ${result} se décompose autrement. Regarde !`);
       }
     } else {
-      await playAudio(`Je vais t'expliquer cette décomposition avec des ${objectName} !`);
+      if (strategy === 'Dizaines + Unités') {
+        await playAudio(`Je vais t'expliquer cette décomposition avec la technique des dizaines et unités !`);
+      } else if (strategy === 'Parties égales') {
+        await playAudio(`Je vais t'expliquer cette décomposition avec des ${objectName} !`);
+      } else {
+        await playAudio(`Je vais t'expliquer cette décomposition avec des ${objectName} !`);
+      }
     }
     if (stopSignalRef.current) return;
     await wait(1000);
     
     // Étape 2: Affichage de tous les objets ensemble
-    await playAudio(`Regarde ! Voici ${result} ${objectName} en tout.`);
+    if (strategy === 'Dizaines + Unités') {
+      await playAudio(`Regarde ! Voici le nombre ${result} que nous allons décomposer.`);
+    } else {
+      await playAudio(`Regarde ! Voici ${result} ${objectName} en tout.`);
+    }
     if (stopSignalRef.current) return;
     
     // Montrer TOUS les objets d'abord (même couleur)
@@ -600,20 +624,38 @@ export default function Decompositions20CP() {
     setAnimatedObjects(allObjects);
     await wait(1500);
     
-    // Étape 3: Séparation en premier groupe
+    // Étape 3: Séparation en première partie avec explication de la stratégie
     setCorrectionStep('group1');
-    await playAudio(`Maintenant, je vais faire un premier groupe de ${num1} ${objectName}.`);
+    if (strategy === 'Dizaines + Unités') {
+      await playAudio(`Maintenant, j'utilise la technique des dizaines plus unités ! Je sépare la dizaine, soit ${num1}.`);
+    } else if (strategy === 'Parties égales') {
+      await playAudio(`Maintenant, j'utilise la technique des parties égales ! Je fais une première partie de ${num1}.`);
+    } else {
+      await playAudio(`Maintenant, je vais faire une première partie de ${num1} ${objectName}.`);
+    }
     if (stopSignalRef.current) return;
     await wait(1500);
     
-    // Étape 4: Séparation en deuxième groupe
+    // Étape 4: Séparation en deuxième partie
     setCorrectionStep('group2');
-    await playAudio(`Et un deuxième groupe de ${num2} ${objectName}.`);
+    if (strategy === 'Dizaines + Unités') {
+      await playAudio(`Et maintenant les unités restantes, soit ${num2}. C'est la technique dizaines plus unités !`);
+    } else if (strategy === 'Parties égales') {
+      await playAudio(`Et une deuxième partie égale de ${num2}. Regarde : ${num1} égale ${num2} ! C'est la technique des parties égales !`);
+    } else {
+      await playAudio(`Et une deuxième partie de ${num2} ${objectName}.`);
+    }
     if (stopSignalRef.current) return;
     await wait(1500);
     
-    // Étape 5: Explication de la décomposition
-    await playAudio(`Parfait ! ${num1} plus ${num2}, c'est bien une façon de décomposer ${result} !`);
+    // Étape 5: Explication de la décomposition selon la stratégie
+    if (strategy === 'Dizaines + Unités') {
+      await playAudio(`Parfait ! ${num1} plus ${num2}, c'est ${Math.floor(result / 10)} dizaine plus ${result % 10} unités ! Technique réussie !`);
+    } else if (strategy === 'Parties égales') {
+      await playAudio(`Parfait ! ${num1} plus ${num2}, ce sont bien deux parties égales de ${result} ! Technique réussie !`);
+    } else {
+      await playAudio(`Parfait ! ${num1} plus ${num2}, c'est bien une façon de décomposer ${result} !`);
+    }
     if (stopSignalRef.current) return;
     await wait(1000);
     
@@ -751,14 +793,29 @@ export default function Decompositions20CP() {
 
     const num1 = parseInt(userAnswer1);
     const num2 = parseInt(userAnswer2);
-    const target = exercises[currentExercise].number;
+    const exercise = exercises[currentExercise];
+    const target = exercise.number;
     
     // Vérifier si les nombres sont valides
     if (isNaN(num1) || isNaN(num2)) {
       return; // Ne pas valider si ce ne sont pas des nombres
     }
 
-    const correct = isValidDecomposition(num1, num2, target);
+    // Vérifier la décomposition selon la stratégie attendue
+    let correct = false;
+    if (exercise.strategy === 'Dizaines + Unités') {
+      // Pour la stratégie dizaines + unités, accepter toute décomposition utilisant des multiples de 10
+      // ou la décomposition canonique dizaines + unités
+      const isValidSum = (num1 + num2) === target;
+      const usesMultipleOf10 = (num1 % 10 === 0) || (num2 % 10 === 0);
+      correct = isValidSum && usesMultipleOf10;
+    } else if (exercise.strategy === 'Parties égales') {
+      // Pour la stratégie parties égales, accepter uniquement si les deux parties sont égales
+      correct = (num1 === num2) && (num1 + num2 === target);
+    } else {
+      // Fallback : vérifier simplement que la somme est correcte
+      correct = isValidDecomposition(num1, num2, target);
+    }
     setIsCorrect(correct);
     
     if (correct && !answeredCorrectly.has(currentExercise)) {
@@ -1807,9 +1864,14 @@ export default function Decompositions20CP() {
             {/* Question - AVEC BOUTON ÉCOUTER */}
             <div className="bg-white rounded-xl shadow-lg text-center p-3 sm:p-6 md:p-8 mt-4 sm:mt-8">
               <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-1 sm:mb-6 md:mb-8 gap-2 sm:gap-4">
-                <h3 className="text-sm sm:text-xl md:text-2xl font-bold text-gray-900 flex-1">
-                  {exercises[currentExercise]?.question || "Question..."}
-              </h3>
+                <div className="flex-1">
+                  <h3 className="text-sm sm:text-xl md:text-2xl font-bold text-gray-900">
+                    {exercises[currentExercise]?.question || "Question..."}
+                  </h3>
+                  <p className="text-xs sm:text-sm text-purple-600 font-semibold mt-1">
+                    💡 Utilise la technique : {exercises[currentExercise]?.strategy}
+                  </p>
+                </div>
                 {ListenQuestionButtonJSX()}
               </div>
               
@@ -1917,8 +1979,8 @@ export default function Decompositions20CP() {
                   <div className="text-center mb-4 sm:mb-6">
                     <div className="text-xs sm:text-base text-purple-600">
                       {!correctionStep && "Voici tous les objets..."}
-                      {correctionStep === 'group1' && "Premier groupe..."}
-                      {correctionStep === 'group2' && "Deuxième groupe..."}
+                      {correctionStep === 'group1' && (correctionNumbers?.strategy ? `Technique : ${correctionNumbers.strategy} - Première partie...` : "Première partie...")}
+                      {correctionStep === 'group2' && "Deuxième partie..."}
                       {correctionStep === 'counting' && "Comptons ensemble !"}
                       {correctionStep === 'result' && "Voici le résultat !"}
                     </div>
