@@ -1549,18 +1549,18 @@ export default function DecompositionsCP() {
                   ) : (
                     /* Version statique quand pas d'animation */
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                      <div className="text-center p-4 bg-purple-50 rounded-lg">
-                        <div className="text-sm text-gray-600 mb-2">2 objets</div>
+                      <div className="text-center p-2 sm:p-4 bg-purple-50 rounded-lg">
+                        <div className="text-xs sm:text-sm text-gray-600 mb-1 sm:mb-2">2 objets</div>
                         {renderCircles(2, '🔴')}
-                        <div className="text-lg sm:text-xl font-bold text-purple-800 mt-2">2</div>
+                        <div className="text-base sm:text-xl font-bold text-purple-800 mt-1 sm:mt-2">2</div>
                       </div>
                       <div className="text-center flex items-center justify-center">
-                        <div className="text-3xl sm:text-6xl font-bold text-purple-600">+</div>
+                        <div className="text-2xl sm:text-6xl font-bold text-purple-600">+</div>
                       </div>
-                      <div className="text-center p-4 bg-pink-50 rounded-lg">
-                        <div className="text-sm text-gray-600 mb-2">3 objets</div>
+                      <div className="text-center p-2 sm:p-4 bg-pink-50 rounded-lg">
+                        <div className="text-xs sm:text-sm text-gray-600 mb-1 sm:mb-2">3 objets</div>
                         {renderCircles(3, '🔴')}
-                        <div className="text-lg sm:text-xl font-bold text-pink-800 mt-2">3</div>
+                        <div className="text-base sm:text-xl font-bold text-pink-800 mt-1 sm:mt-2">3</div>
                       </div>
                     </div>
                   )}
