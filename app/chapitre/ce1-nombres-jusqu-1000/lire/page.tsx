@@ -1754,7 +1754,9 @@ export default function LireNombresCE1Page() {
                               <div className="text-4xl mb-2">
                                 {gameAnswer === currentGameNumber.hasS ? '🎉' : '😅'}
                               </div>
-                              <div className="text-lg font-bold mb-1">
+                              <div className={`text-lg font-bold mb-1 ${
+                                gameAnswer === currentGameNumber.hasS ? 'text-green-800' : 'text-red-800'
+                              }`}>
                                 {gameAnswer === currentGameNumber.hasS ? 'Bravo !' : 'Pas tout à fait...'}
                               </div>
                               <div className="text-xs text-gray-900">
