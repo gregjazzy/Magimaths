@@ -1475,6 +1475,52 @@ export default function LireNombresCE1Page() {
                 </ul>
               </div>
 
+              {/* RÈGLES COMPACTES DU "S" */}
+              <div className="bg-gradient-to-r from-green-500 to-blue-500 rounded-lg p-4 text-white shadow-lg mb-6">
+                <h3 className="text-lg font-bold text-center mb-4">📋 Règles du "S" - Résumé</h3>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                  {/* Règle CENTS */}
+                  <div className="bg-white bg-opacity-20 rounded-lg p-3">
+                    <h4 className="font-bold mb-2 text-center">🏆 Les CENTS</h4>
+                    <div className="space-y-1">
+                      <div className="flex justify-between">
+                        <span><strong>200, 300, 600</strong></span>
+                        <span className="text-green-200">→ avec <span className="font-bold text-yellow-300">S</span></span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span><strong>201, 305, 678</strong></span>
+                        <span className="text-red-200">→ sans S</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Règle QUATRE-VINGTS */}
+                  <div className="bg-white bg-opacity-20 rounded-lg p-3">
+                    <h4 className="font-bold mb-2 text-center">🏆 Les QUATRE-VINGTS</h4>
+                    <div className="space-y-1">
+                      <div className="flex justify-between">
+                        <span><strong>80, 580</strong></span>
+                        <span className="text-green-200">→ avec <span className="font-bold text-yellow-300">S</span></span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span><strong>81, 83, 90</strong></span>
+                        <span className="text-red-200">→ sans S</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Règle simple */}
+                <div className="text-center mt-4 p-3 bg-white bg-opacity-20 rounded-lg">
+                  <p className="text-sm">
+                    <span className="font-bold">💡 Astuce :</span> 
+                    <span className="text-green-200">Nombre exact = S</span> • 
+                    <span className="text-red-200">Suivi d'autre chose = pas de S</span>
+                  </p>
+                </div>
+              </div>
+
               {/* SECTION LES PIÈGES - Nombres avec S */}  
               <div id="traps-selector" className="bg-white rounded-lg sm:rounded-xl p-4 sm:p-6 shadow-md border border-gray-200 mb-6">
                 <h2 className="text-xl sm:text-2xl font-bold text-center mb-6 text-gray-800">
@@ -2054,51 +2100,7 @@ export default function LireNombresCE1Page() {
 
               </div>
 
-              {/* RÈGLES COMPACTES DU "S" */}
-              <div className="bg-gradient-to-r from-green-500 to-blue-500 rounded-lg p-4 text-white shadow-lg mb-6">
-                <h3 className="text-lg font-bold text-center mb-4">📋 Règles du "S" - Résumé</h3>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                  {/* Règle CENTS */}
-                  <div className="bg-white bg-opacity-20 rounded-lg p-3">
-                    <h4 className="font-bold mb-2 text-center">🏆 Les CENTS</h4>
-                    <div className="space-y-1">
-                      <div className="flex justify-between">
-                        <span><strong>200, 300, 600</strong></span>
-                        <span className="text-green-200">→ avec <span className="font-bold text-yellow-300">S</span></span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span><strong>201, 305, 678</strong></span>
-                        <span className="text-red-200">→ sans S</span>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  {/* Règle QUATRE-VINGTS */}
-                  <div className="bg-white bg-opacity-20 rounded-lg p-3">
-                    <h4 className="font-bold mb-2 text-center">🏆 Les QUATRE-VINGTS</h4>
-                    <div className="space-y-1">
-                      <div className="flex justify-between">
-                        <span><strong>80, 580</strong></span>
-                        <span className="text-green-200">→ avec <span className="font-bold text-yellow-300">S</span></span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span><strong>81, 83, 90</strong></span>
-                        <span className="text-red-200">→ sans S</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                
-                {/* Règle simple */}
-                <div className="text-center mt-4 p-3 bg-white bg-opacity-20 rounded-lg">
-                  <p className="text-sm">
-                    <span className="font-bold">💡 Astuce :</span> 
-                    <span className="text-green-200">Nombre exact = S</span> • 
-                    <span className="text-red-200">Suivi d'autre chose = pas de S</span>
-                  </p>
-                </div>
-              </div>
+
 
               {/* Règle sur les tirets */}
               <div className="bg-gradient-to-r from-orange-400 to-red-400 rounded-lg sm:rounded-xl p-3 sm:p-6 text-white">
