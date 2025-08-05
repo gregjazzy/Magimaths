@@ -368,8 +368,8 @@ export default function EcrireNombresCE1Page() {
       setExampleStep(2);
       for (let i = 0; i < example.digits.length; i++) {
         if (stopSignalRef.current) break;
-        await new Promise(resolve => setTimeout(resolve, 600));
-        
+          await new Promise(resolve => setTimeout(resolve, 600));
+          
         const digitElement = document.getElementById(`${exampleType}-digit-${i}`);
         const targetElement = document.getElementById(`${exampleType}-table-${example.digits[i].position}`);
         
@@ -410,9 +410,24 @@ export default function EcrireNombresCE1Page() {
             digitElement.style.fontWeight = 'bold';
           }
           
-          // Lecture vocale de cette partie (seulement si il y a quelque chose à dire)
-          if (digit.vocal && digit.vocal.trim() !== '') {
-            await playAudio(digit.vocal);
+          // Lecture vocale simple de la valeur positionnelle
+          if (digit.value !== '0') {
+            let positionalValue = '';
+            let positionalText = '';
+            
+            if (position === 'centaines') {
+              positionalValue = `${digit.value}00`;
+              positionalText = `${digit.value} centaine${digit.value > '1' ? 's' : ''} ça fait ${positionalValue}`;
+            } else if (position === 'dizaines') {
+              positionalValue = `${digit.value}0`;
+              positionalText = `${digit.value} dizaine${digit.value > '1' ? 's' : ''} ça fait ${positionalValue}`;
+            } else if (position === 'unités') {
+              positionalValue = digit.value;
+              positionalText = `${digit.value} unité${digit.value > '1' ? 's' : ''} ça fait ${positionalValue}`;
+            }
+            
+            // Lecture vocale simple
+            await playAudio(positionalText);
             if (stopSignalRef.current) break;
           }
           
@@ -432,9 +447,19 @@ export default function EcrireNombresCE1Page() {
         }
       }
       
-      // Étape 4: Révélation du nombre complet
+      // Étape 4: Construction finale du nombre complet
       setExampleStep(4);
-      await playAudio(example.number);
+      
+      // Explication de l'addition finale selon l'exemple
+      if (exampleType === 'cent-vingt-trois') {
+        await playAudio("Et maintenant, on additionne tout : cent plus vingt plus trois égale cent vingt-trois !");
+      } else if (exampleType === 'quatre-vingt-sept') {
+        await playAudio("Et maintenant, on additionne tout : zéro plus quatre-vingt plus sept égale quatre-vingt-sept !");
+      } else if (exampleType === 'deux-cent-soixante-sept') {
+        await playAudio("Et maintenant, on additionne tout : deux cent plus soixante plus sept égale deux cent soixante-sept !");
+      }
+      
+      if (stopSignalRef.current) return;
       
     } catch (error) {
       console.error('Erreur animation tableau:', error);
@@ -745,7 +770,7 @@ export default function EcrireNombresCE1Page() {
                         <div id="cent-vingt-trois-digit-0" className="w-8 h-8 bg-red-200 rounded flex items-center justify-center font-bold text-red-800">1</div>
                         <div id="cent-vingt-trois-digit-1" className="w-8 h-8 bg-blue-200 rounded flex items-center justify-center font-bold text-blue-800">2</div>
                         <div id="cent-vingt-trois-digit-2" className="w-8 h-8 bg-green-200 rounded flex items-center justify-center font-bold text-green-800">3</div>
-                      </div>
+                    </div>
                     )}
                     
                     {/* Tableau de placement */}
@@ -755,33 +780,51 @@ export default function EcrireNombresCE1Page() {
                         <div className="p-2 text-xs font-bold text-blue-700 border-r border-gray-300">Dizaines</div>
                         <div className="p-2 text-xs font-bold text-green-700">Unités</div>
                       </div>
-                      <div className="grid grid-cols-3 bg-white min-h-[3rem]">
-                        <div id="cent-vingt-trois-column-centaines" className="p-3 border-r border-gray-300 flex items-center justify-center">
-                          {exampleStep >= 2 && exampleAnimating === 'cent-vingt-trois' && (
-                            <div id="cent-vingt-trois-table-centaines" className="text-2xl font-bold text-red-600">1</div>
+                      <div className="grid grid-cols-3 bg-white min-h-[4rem]">
+                        <div id="cent-vingt-trois-column-centaines" className="p-2 border-r border-gray-300 flex flex-col items-center justify-center">
+                    {exampleStep >= 2 && exampleAnimating === 'cent-vingt-trois' && (
+                            <>
+                              <div id="cent-vingt-trois-table-centaines" className="text-2xl font-bold text-red-600 mb-1">1</div>
+                              {exampleStep >= 3 && (
+                                <div className="text-sm font-semibold text-red-500 bg-red-100 px-2 py-1 rounded">100</div>
+                              )}
+                            </>
                           )}
-                        </div>
-                        <div id="cent-vingt-trois-column-dizaines" className="p-3 border-r border-gray-300 flex items-center justify-center">
-                          {exampleStep >= 2 && exampleAnimating === 'cent-vingt-trois' && (
-                            <div id="cent-vingt-trois-table-dizaines" className="text-2xl font-bold text-blue-600">2</div>
-                          )}
-                        </div>
-                        <div id="cent-vingt-trois-column-unités" className="p-3 flex items-center justify-center">
-                          {exampleStep >= 2 && exampleAnimating === 'cent-vingt-trois' && (
-                            <div id="cent-vingt-trois-table-unités" className="text-2xl font-bold text-green-600">3</div>
-                          )}
-                        </div>
                       </div>
-                    </div>
-                    
-                    {exampleStep >= 4 && exampleAnimating === 'cent-vingt-trois' && (
-                      <div className="mt-4 text-xl font-bold text-gray-800">
-                        Résultat : <span className="text-blue-600">123</span>
-                      </div>
-                    )}
+                        <div id="cent-vingt-trois-column-dizaines" className="p-2 border-r border-gray-300 flex flex-col items-center justify-center">
+                          {exampleStep >= 2 && exampleAnimating === 'cent-vingt-trois' && (
+                            <>
+                              <div id="cent-vingt-trois-table-dizaines" className="text-2xl font-bold text-blue-600 mb-1">2</div>
+                              {exampleStep >= 3 && (
+                                <div className="text-sm font-semibold text-blue-500 bg-blue-100 px-2 py-1 rounded">20</div>
+                              )}
+                            </>
+                          )}
+                        </div>
+                        <div id="cent-vingt-trois-column-unités" className="p-2 flex flex-col items-center justify-center">
+                          {exampleStep >= 2 && exampleAnimating === 'cent-vingt-trois' && (
+                            <>
+                              <div id="cent-vingt-trois-table-unités" className="text-2xl font-bold text-green-600 mb-1">3</div>
+                              {exampleStep >= 3 && (
+                                <div className="text-sm font-semibold text-green-500 bg-green-100 px-2 py-1 rounded">3</div>
+                              )}
+                            </>
+                          )}
+                        </div>
                   </div>
                 </div>
                 
+                    {exampleStep >= 4 && exampleAnimating === 'cent-vingt-trois' && (
+                      <div className="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                  <div className="text-center">
+                          <div className="text-lg font-bold text-gray-700 mb-2">Construction du nombre :</div>
+                          <div className="text-xl font-bold text-blue-600">100 + 20 + 3 = 123</div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                    </div>
+                    
                 {/* Exemple 2: Quatre-vingt-sept */}
                 <div 
                   id="quatre-vingt-sept-container"
@@ -799,7 +842,7 @@ export default function EcrireNombresCE1Page() {
                         <div id="quatre-vingt-sept-digit-0" className="w-8 h-8 bg-gray-200 rounded flex items-center justify-center font-bold text-gray-500">0</div>
                         <div id="quatre-vingt-sept-digit-1" className="w-8 h-8 bg-blue-200 rounded flex items-center justify-center font-bold text-blue-800">8</div>
                         <div id="quatre-vingt-sept-digit-2" className="w-8 h-8 bg-green-200 rounded flex items-center justify-center font-bold text-green-800">7</div>
-                      </div>
+                    </div>
                     )}
                     
                     {/* Tableau de placement */}
@@ -809,33 +852,51 @@ export default function EcrireNombresCE1Page() {
                         <div className="p-2 text-xs font-bold text-blue-700 border-r border-gray-300">Dizaines</div>
                         <div className="p-2 text-xs font-bold text-green-700">Unités</div>
                       </div>
-                      <div className="grid grid-cols-3 bg-white min-h-[3rem]">
-                        <div id="quatre-vingt-sept-column-centaines" className="p-3 border-r border-gray-300 flex items-center justify-center">
-                          {exampleStep >= 2 && exampleAnimating === 'quatre-vingt-sept' && (
-                            <div id="quatre-vingt-sept-table-centaines" className="text-2xl font-bold text-gray-400">0</div>
+                      <div className="grid grid-cols-3 bg-white min-h-[4rem]">
+                        <div id="quatre-vingt-sept-column-centaines" className="p-2 border-r border-gray-300 flex flex-col items-center justify-center">
+                    {exampleStep >= 2 && exampleAnimating === 'quatre-vingt-sept' && (
+                            <>
+                              <div id="quatre-vingt-sept-table-centaines" className="text-2xl font-bold text-gray-400 mb-1">0</div>
+                              {exampleStep >= 3 && (
+                                <div className="text-xs text-gray-400">-</div>
+                              )}
+                            </>
                           )}
-                        </div>
-                        <div id="quatre-vingt-sept-column-dizaines" className="p-3 border-r border-gray-300 flex items-center justify-center">
-                          {exampleStep >= 2 && exampleAnimating === 'quatre-vingt-sept' && (
-                            <div id="quatre-vingt-sept-table-dizaines" className="text-2xl font-bold text-blue-600">8</div>
-                          )}
-                        </div>
-                        <div id="quatre-vingt-sept-column-unités" className="p-3 flex items-center justify-center">
-                          {exampleStep >= 2 && exampleAnimating === 'quatre-vingt-sept' && (
-                            <div id="quatre-vingt-sept-table-unités" className="text-2xl font-bold text-green-600">7</div>
-                          )}
-                        </div>
                       </div>
-                    </div>
-                    
-                    {exampleStep >= 4 && exampleAnimating === 'quatre-vingt-sept' && (
-                      <div className="mt-4 text-xl font-bold text-gray-800">
-                        Résultat : <span className="text-orange-600">87</span>
-                      </div>
-                    )}
+                        <div id="quatre-vingt-sept-column-dizaines" className="p-2 border-r border-gray-300 flex flex-col items-center justify-center">
+                          {exampleStep >= 2 && exampleAnimating === 'quatre-vingt-sept' && (
+                            <>
+                              <div id="quatre-vingt-sept-table-dizaines" className="text-2xl font-bold text-blue-600 mb-1">8</div>
+                              {exampleStep >= 3 && (
+                                <div className="text-sm font-semibold text-blue-500 bg-blue-100 px-2 py-1 rounded">80</div>
+                              )}
+                            </>
+                          )}
+                        </div>
+                        <div id="quatre-vingt-sept-column-unités" className="p-2 flex flex-col items-center justify-center">
+                          {exampleStep >= 2 && exampleAnimating === 'quatre-vingt-sept' && (
+                            <>
+                              <div id="quatre-vingt-sept-table-unités" className="text-2xl font-bold text-green-600 mb-1">7</div>
+                              {exampleStep >= 3 && (
+                                <div className="text-sm font-semibold text-green-500 bg-green-100 px-2 py-1 rounded">7</div>
+                              )}
+                            </>
+                          )}
+                        </div>
                   </div>
                 </div>
                 
+                    {exampleStep >= 4 && exampleAnimating === 'quatre-vingt-sept' && (
+                      <div className="mt-4 p-3 bg-orange-50 rounded-lg border border-orange-200">
+                  <div className="text-center">
+                          <div className="text-lg font-bold text-gray-700 mb-2">Construction du nombre :</div>
+                          <div className="text-xl font-bold text-orange-600">0 + 80 + 7 = 87</div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                    </div>
+                    
                 {/* Exemple 3: Deux cent soixante-sept */}
                 <div 
                   id="deux-cent-soixante-sept-container"
@@ -853,7 +914,7 @@ export default function EcrireNombresCE1Page() {
                         <div id="deux-cent-soixante-sept-digit-0" className="w-8 h-8 bg-red-200 rounded flex items-center justify-center font-bold text-red-800">2</div>
                         <div id="deux-cent-soixante-sept-digit-1" className="w-8 h-8 bg-blue-200 rounded flex items-center justify-center font-bold text-blue-800">6</div>
                         <div id="deux-cent-soixante-sept-digit-2" className="w-8 h-8 bg-green-200 rounded flex items-center justify-center font-bold text-green-800">7</div>
-                      </div>
+                    </div>
                     )}
                     
                     {/* Tableau de placement */}
@@ -863,28 +924,46 @@ export default function EcrireNombresCE1Page() {
                         <div className="p-2 text-xs font-bold text-blue-700 border-r border-gray-300">Dizaines</div>
                         <div className="p-2 text-xs font-bold text-green-700">Unités</div>
                       </div>
-                      <div className="grid grid-cols-3 bg-white min-h-[3rem]">
-                        <div id="deux-cent-soixante-sept-column-centaines" className="p-3 border-r border-gray-300 flex items-center justify-center">
+                      <div className="grid grid-cols-3 bg-white min-h-[4rem]">
+                        <div id="deux-cent-soixante-sept-column-centaines" className="p-2 border-r border-gray-300 flex flex-col items-center justify-center">
                           {exampleStep >= 2 && exampleAnimating === 'deux-cent-soixante-sept' && (
-                            <div id="deux-cent-soixante-sept-table-centaines" className="text-2xl font-bold text-red-600">2</div>
+                            <>
+                              <div id="deux-cent-soixante-sept-table-centaines" className="text-2xl font-bold text-red-600 mb-1">2</div>
+                              {exampleStep >= 3 && (
+                                <div className="text-sm font-semibold text-red-500 bg-red-100 px-2 py-1 rounded">200</div>
+                              )}
+                            </>
+                    )}
+                  </div>
+                        <div id="deux-cent-soixante-sept-column-dizaines" className="p-2 border-r border-gray-300 flex flex-col items-center justify-center">
+                          {exampleStep >= 2 && exampleAnimating === 'deux-cent-soixante-sept' && (
+                            <>
+                              <div id="deux-cent-soixante-sept-table-dizaines" className="text-2xl font-bold text-blue-600 mb-1">6</div>
+                              {exampleStep >= 3 && (
+                                <div className="text-sm font-semibold text-blue-500 bg-blue-100 px-2 py-1 rounded">60</div>
+                              )}
+                            </>
                           )}
                         </div>
-                        <div id="deux-cent-soixante-sept-column-dizaines" className="p-3 border-r border-gray-300 flex items-center justify-center">
+                        <div id="deux-cent-soixante-sept-column-unités" className="p-2 flex flex-col items-center justify-center">
                           {exampleStep >= 2 && exampleAnimating === 'deux-cent-soixante-sept' && (
-                            <div id="deux-cent-soixante-sept-table-dizaines" className="text-2xl font-bold text-blue-600">6</div>
-                          )}
-                        </div>
-                        <div id="deux-cent-soixante-sept-column-unités" className="p-3 flex items-center justify-center">
-                          {exampleStep >= 2 && exampleAnimating === 'deux-cent-soixante-sept' && (
-                            <div id="deux-cent-soixante-sept-table-unités" className="text-2xl font-bold text-green-600">7</div>
+                            <>
+                              <div id="deux-cent-soixante-sept-table-unités" className="text-2xl font-bold text-green-600 mb-1">7</div>
+                              {exampleStep >= 3 && (
+                                <div className="text-sm font-semibold text-green-500 bg-green-100 px-2 py-1 rounded">7</div>
+                              )}
+                            </>
                           )}
                         </div>
                       </div>
                     </div>
                     
                     {exampleStep >= 4 && exampleAnimating === 'deux-cent-soixante-sept' && (
-                      <div className="mt-4 text-xl font-bold text-gray-800">
-                        Résultat : <span className="text-purple-600">267</span>
+                      <div className="mt-4 p-3 bg-purple-50 rounded-lg border border-purple-200">
+                        <div className="text-center">
+                          <div className="text-lg font-bold text-gray-700 mb-2">Construction du nombre :</div>
+                          <div className="text-xl font-bold text-purple-600">200 + 60 + 7 = 267</div>
+                        </div>
                       </div>
                     )}
                   </div>
