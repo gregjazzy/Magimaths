@@ -619,21 +619,28 @@ export default function LireNombresCE1Page() {
   ];
 
   const exercises = [
+    // Nombres AVEC S (multiples de 20 ou 100 exacts)
+    { number: '80', reading: 'Quatre-vingts' },
+    { number: '200', reading: 'Deux-cents' },
+    { number: '300', reading: 'Trois-cents' },
+    { number: '400', reading: 'Quatre-cents' },
+    { number: '580', reading: 'Cinq-cent-quatre-vingts' },
+    { number: '680', reading: 'Six-cent-quatre-vingts' },
+    { number: '800', reading: 'Huit-cents' },
+    
+    // Nombres SANS S (pièges ou nombres normaux)
+    { number: '83', reading: 'Quatre-vingt-trois' },
+    { number: '91', reading: 'Quatre-vingt-onze' },
+    { number: '205', reading: 'Deux-cent-cinq' },
+    { number: '301', reading: 'Trois-cent-un' },
+    { number: '483', reading: 'Quatre-cent-quatre-vingt-trois' },
+    { number: '590', reading: 'Cinq-cent-quatre-vingt-dix' },
     { number: '145', reading: 'Cent-quarante-cinq' },
     { number: '267', reading: 'Deux-cent-soixante-sept' },
     { number: '389', reading: 'Trois-cent-quatre-vingt-neuf' },
-    { number: '512', reading: 'Cinq-cent-douze' },
+    { number: '456', reading: 'Quatre-cent-cinquante-six' },
     { number: '634', reading: 'Six-cent-trente-quatre' },
-    { number: '758', reading: 'Sept-cent-cinquante-huit' },
-    { number: '823', reading: 'Huit-cent-vingt-trois' },
-    { number: '946', reading: 'Neuf-cent-quarante-six' },
-    { number: '207', reading: 'Deux-cent-sept' },
-    { number: '350', reading: 'Trois-cent-cinquante' },
-    { number: '284', reading: 'Deux-cent-quatre-vingt-quatre' },
-    { number: '837', reading: 'Huit-cent-trente-sept' },
-    { number: '300', reading: 'Trois-cents' },
-    { number: '98', reading: 'Quatre-vingt-dix-huit' },
-    { number: '456', reading: 'Quatre-cent-cinquante-six' }
+    { number: '758', reading: 'Sept-cent-cinquante-huit' }
   ];
 
   const formatNumber = (num: string) => {
