@@ -387,36 +387,48 @@ export default function EcrireNombresCE1Page() {
       
       await new Promise(resolve => setTimeout(resolve, 800));
       
-      // Étape 3: Illumination séquentielle avec lecture vocale
+      // Étape 3: Illumination séquentielle EN COMMENÇANT PAR LES CENTAINES
       setExampleStep(3);
-      const positions = ['centaines', 'dizaines', 'unités'];
       
-      for (const position of positions) {
+      // STRICTEMENT dans l'ordre : CENTAINES → DIZAINES → UNITÉS
+      const orderedPositions = ['centaines', 'dizaines', 'unités'];
+      
+      for (const position of orderedPositions) {
         if (stopSignalRef.current) break;
         
         const digit = example.digits.find(d => d.position === position);
-        if (digit && digit.vocal) {
-          // Illuminer la colonne
-          const columnElement = document.getElementById(`${exampleType}-column-${position}`);
-          if (columnElement) {
-            columnElement.style.transition = 'all 0.5s ease';
-            columnElement.style.background = 'linear-gradient(135deg, #fbbf24, #f59e0b)';
-            columnElement.style.transform = 'scale(1.05)';
-            columnElement.style.boxShadow = '0 0 30px rgba(251, 191, 36, 0.6)';
+        if (digit) { // Traiter tous les chiffres, même les zéros
+          // Illuminer LE CHIFFRE SPÉCIFIQUE (pas toute la colonne)
+          const digitElement = document.getElementById(`${exampleType}-table-${position}`);
+          if (digitElement) {
+            digitElement.style.transition = 'all 0.8s ease';
+            digitElement.style.background = 'linear-gradient(135deg, #fbbf24, #f59e0b)';
+            digitElement.style.transform = 'scale(1.3)';
+            digitElement.style.boxShadow = '0 0 30px rgba(251, 191, 36, 0.8)';
+            digitElement.style.borderRadius = '8px';
+            digitElement.style.color = 'white';
+            digitElement.style.fontWeight = 'bold';
           }
           
-          // Lecture vocale
-          await playAudio(digit.vocal);
-          if (stopSignalRef.current) break;
-          
-          // Désilluminer
-          if (columnElement) {
-            columnElement.style.background = '';
-            columnElement.style.transform = 'scale(1)';
-            columnElement.style.boxShadow = '';
+          // Lecture vocale de cette partie (seulement si il y a quelque chose à dire)
+          if (digit.vocal && digit.vocal.trim() !== '') {
+            await playAudio(digit.vocal);
+            if (stopSignalRef.current) break;
           }
           
-          await new Promise(resolve => setTimeout(resolve, 300));
+          // Attendre un peu avant de désilluminer
+          await new Promise(resolve => setTimeout(resolve, 500));
+          
+          // Désilluminer le chiffre
+          if (digitElement) {
+            digitElement.style.background = '';
+            digitElement.style.transform = 'scale(1)';
+            digitElement.style.boxShadow = '';
+            digitElement.style.borderRadius = '';
+            digitElement.style.color = '';
+          }
+          
+          await new Promise(resolve => setTimeout(resolve, 400));
         }
       }
       
