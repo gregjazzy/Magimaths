@@ -270,344 +270,130 @@ export default function LireNombresCE1Page() {
     setIsAnimating(false);
   };
 
-  // Animation spectaculaire pour la paire 80 vs 83
+  // Animation subtile pour la paire 80 vs 83
   const animateContrast80vs83 = async () => {
     setIsAnimating(true);
     
-    // 🌟 PHASE 1 : Animation explosive du "s" de 80
     const s80 = document.getElementById('s-80');
-    if (s80) {
-      // Effet d'explosion initiale
-      s80.style.animation = 'bounce 0.8s ease-out infinite';
-      s80.style.color = '#ff0066';
-      s80.style.fontSize = '3em';
-      s80.style.textShadow = '0 0 30px #ff0066, 0 0 60px #ffdd00, 0 0 90px #00ff66';
-      s80.style.transform = 'scale(3) rotate(360deg)';
-      s80.style.transition = 'all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
-      s80.style.backgroundColor = 'rgba(255, 215, 0, 0.3)';
-      s80.style.borderRadius = '50%';
-      s80.style.padding = '10px';
-      s80.style.border = '3px solid #ff0066';
-    }
-    
-    await new Promise(resolve => setTimeout(resolve, 1800));
-    
-    // 🎆 PHASE 2 : Effet de particules qui se dispersent
-    if (s80) {
-      s80.style.animation = 'pulse 0.5s ease-in-out 3';
-      s80.style.boxShadow = '0 0 50px #ff0066, 0 0 100px #ffdd00, inset 0 0 30px rgba(255, 255, 255, 0.5)';
-      s80.style.filter = 'brightness(1.5) saturate(2)';
-    }
-    
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    // 🔄 PHASE 3 : Retour progressif à la normale avec style
-    if (s80) {
-      s80.style.animation = '';
-      s80.style.fontSize = '';
-      s80.style.transform = 'scale(1.2)';
-      s80.style.textShadow = '0 0 10px #16a34a';
-      s80.style.color = '#16a34a';
-      s80.style.backgroundColor = '';
-      s80.style.borderRadius = '';
-      s80.style.padding = '';
-      s80.style.border = '';
-      s80.style.boxShadow = '';
-      s80.style.filter = '';
-      s80.style.transition = 'all 0.8s ease-out';
-    }
-    
-    await new Promise(resolve => setTimeout(resolve, 800));
-    
-    // 💥 PHASE 4 : Animation spectaculaire du badge de 83
     const badge83 = document.getElementById('badge-83');
-    if (badge83) {
-      // Effet de tremblement puis explosion
-      badge83.style.animation = 'pulse 0.3s ease-in-out 5';
-      badge83.style.transform = 'scale(2.5) rotate(-15deg)';
-      badge83.style.boxShadow = '0 0 40px rgba(239, 68, 68, 1), 0 0 80px rgba(255, 165, 0, 0.8)';
-      badge83.style.transition = 'all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
-      badge83.style.backgroundColor = '#ff1744';
-      badge83.style.border = '3px solid #ffff00';
-      badge83.style.filter = 'brightness(1.8) contrast(1.5)';
-    }
     
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    // 🌈 PHASE 5 : Effet arc-en-ciel final
-    if (badge83) {
-      badge83.style.animation = 'bounce 0.6s ease-in-out 3';
-      badge83.style.background = 'linear-gradient(45deg, #ff1744, #ff9800, #4caf50, #2196f3, #9c27b0)';
-      badge83.style.backgroundSize = '300% 300%';
-      badge83.style.animation = 'bounce 0.6s ease-in-out 3, gradient-shift 2s ease-in-out infinite';
-    }
-    
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    // 🎬 PHASE 6 : Retour à la normale avec une petite brillance
-    if (badge83) {
-      badge83.style.animation = '';
-      badge83.style.transform = 'scale(1.1)';
-      badge83.style.boxShadow = '0 0 15px rgba(239, 68, 68, 0.5)';
-      badge83.style.backgroundColor = '#ef4444';
-      badge83.style.border = '';
-      badge83.style.filter = '';
-      badge83.style.background = '';
-      badge83.style.backgroundSize = '';
-      badge83.style.transition = 'all 1s ease-out';
-      
-      // Petit effet final de brillance
-      setTimeout(() => {
-        if (badge83) {
-          badge83.style.transform = '';
-          badge83.style.boxShadow = '';
-        }
-      }, 1000);
-    }
-    
-    // Final : remettre le S complètement normal
+    // Phase 1 : Mise en évidence douce du S de 80
     if (s80) {
-      s80.style.transform = '';
-      s80.style.textShadow = '';
-      s80.style.transition = 'all 0.5s ease-out';
-    }
-    
-    setIsAnimating(false);
-  };
-
-  // Animation dorée et verte pour la paire 200 vs 205 (thème centaines)
-  const animateContrast200vs205 = async () => {
-    setIsAnimating(true);
-    
-    // 🌟 PHASE 1 : Animation dorée majestueuse du "s" de 200
-    const s200 = document.getElementById('s-200');
-    if (s200) {
-      // Effet de couronne dorée
-      s200.style.animation = 'bounce 0.6s ease-out infinite';
-      s200.style.color = '#ffd700';
-      s200.style.fontSize = '3.5em';
-      s200.style.textShadow = '0 0 40px #ffd700, 0 0 80px #ff8c00, 0 0 120px #32cd32';
-      s200.style.transform = 'scale(3.5) rotateY(360deg)';
-      s200.style.transition = 'all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
-      s200.style.backgroundColor = 'radial-gradient(circle, rgba(255,215,0,0.4) 0%, rgba(255,140,0,0.2) 100%)';
-      s200.style.borderRadius = '10px';
-      s200.style.padding = '15px';
-      s200.style.border = '4px solid #ffd700';
-      s200.style.position = 'relative';
-      s200.style.zIndex = '10';
-    }
-    
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    // 💎 PHASE 2 : Effet de cristal brillant
-    if (s200) {
-      s200.style.animation = 'pulse 0.4s ease-in-out 4';
-      s200.style.boxShadow = '0 0 60px #ffd700, 0 0 120px #32cd32, inset 0 0 40px rgba(255, 255, 255, 0.7)';
-      s200.style.filter = 'brightness(2) saturate(1.8) hue-rotate(10deg)';
-      s200.style.background = 'linear-gradient(45deg, #ffd700, #32cd32, #ffd700)';
-      s200.style.backgroundSize = '200% 200%';
-    }
-    
-    await new Promise(resolve => setTimeout(resolve, 1600));
-    
-    // 🌱 PHASE 3 : Transformation verte élégante
-    if (s200) {
-      s200.style.animation = '';
-      s200.style.fontSize = '';
-      s200.style.transform = 'scale(1.3) rotateZ(5deg)';
-      s200.style.textShadow = '0 0 15px #16a34a, 0 0 30px #22c55e';
-      s200.style.color = '#16a34a';
-      s200.style.backgroundColor = '';
-      s200.style.borderRadius = '';
-      s200.style.padding = '';
-      s200.style.border = '';
-      s200.style.boxShadow = '';
-      s200.style.filter = '';
-      s200.style.background = '';
-      s200.style.transition = 'all 1s ease-out';
+      s80.style.transform = 'scale(1.4)';
+      s80.style.color = '#16a34a';
+      s80.style.background = '#dcfce7';
+      s80.style.borderRadius = '4px';
+      s80.style.padding = '4px 8px';
+      s80.style.transition = 'all 0.3s ease-out';
     }
     
     await new Promise(resolve => setTimeout(resolve, 800));
     
-    // 🔥 PHASE 4 : Animation flamboyante du badge de 205
-    const badge205 = document.getElementById('badge-205');
-    if (badge205) {
-      // Effet de feu et tremblement
-      badge205.style.animation = 'pulse 0.2s ease-in-out 8';
-      badge205.style.transform = 'scale(3) rotate(25deg) skew(10deg)';
-      badge205.style.boxShadow = '0 0 50px rgba(255, 69, 0, 1), 0 0 100px rgba(255, 140, 0, 0.8), 0 0 150px rgba(255, 215, 0, 0.6)';
-      badge205.style.transition = 'all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
-      badge205.style.backgroundColor = '#ff4500';
-      badge205.style.border = '4px solid #ffd700';
-      badge205.style.filter = 'brightness(2) contrast(1.8) saturate(2)';
-      badge205.style.position = 'relative';
-      badge205.style.zIndex = '10';
-    }
-    
-    await new Promise(resolve => setTimeout(resolve, 1600));
-    
-    // 🌊 PHASE 5 : Effet vague océanique
-    if (badge205) {
-      badge205.style.animation = 'bounce 0.5s ease-in-out 4';
-      badge205.style.background = 'linear-gradient(45deg, #ff4500, #ff8c00, #ffd700, #32cd32, #1e90ff)';
-      badge205.style.backgroundSize = '400% 400%';
-      badge205.style.animation = 'bounce 0.5s ease-in-out 4, gradient-wave 3s ease-in-out infinite';
-      badge205.style.transform = 'scale(2.2) rotate(-10deg)';
-    }
-    
-    await new Promise(resolve => setTimeout(resolve, 2400));
-    
-    // 🎯 PHASE 6 : Atterrissage en douceur
-    if (badge205) {
-      badge205.style.animation = '';
-      badge205.style.transform = 'scale(1.15)';
-      badge205.style.boxShadow = '0 0 20px rgba(239, 68, 68, 0.6)';
-      badge205.style.backgroundColor = '#ef4444';
-      badge205.style.border = '';
-      badge205.style.filter = '';
-      badge205.style.background = '';
-      badge205.style.backgroundSize = '';
-      badge205.style.transition = 'all 1.2s ease-out';
-      badge205.style.position = '';
-      badge205.style.zIndex = '';
-      
-      setTimeout(() => {
-        if (badge205) {
-          badge205.style.transform = '';
-          badge205.style.boxShadow = '';
-        }
-      }, 1200);
-    }
-    
-    // Final : remettre le S complètement normal
-    if (s200) {
-      s200.style.transform = '';
-      s200.style.textShadow = '';
-      s200.style.position = '';
-      s200.style.zIndex = '';
-      s200.style.transition = 'all 0.8s ease-out';
-    }
-    
-    setIsAnimating(false);
-  };
-
-  // Animation galactique violet/cyan pour la paire 300 vs 305 (thème cosmique)
-  const animateContrast300vs305 = async () => {
-    setIsAnimating(true);
-    
-    // 🌌 PHASE 1 : Animation cosmique du "s" de 300
-    const s300 = document.getElementById('s-300');
-    if (s300) {
-      // Effet de portail galactique
-      s300.style.animation = 'bounce 0.7s ease-out infinite';
-      s300.style.color = '#9d4edd';
-      s300.style.fontSize = '4em';
-      s300.style.textShadow = '0 0 50px #9d4edd, 0 0 100px #00d4ff, 0 0 150px #ff006e, 0 0 200px #c77dff';
-      s300.style.transform = 'scale(4) rotateX(360deg) rotateZ(180deg)';
-      s300.style.transition = 'all 1s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
-      s300.style.background = 'radial-gradient(circle, rgba(157,78,221,0.5) 0%, rgba(0,212,255,0.3) 50%, rgba(255,0,110,0.2) 100%)';
-      s300.style.borderRadius = '50%';
-      s300.style.padding = '20px';
-      s300.style.border = '5px solid transparent';
-      s300.style.backgroundClip = 'padding-box';
-      s300.style.position = 'relative';
-      s300.style.zIndex = '15';
-    }
-    
-    await new Promise(resolve => setTimeout(resolve, 2200));
-    
-    // 🪐 PHASE 2 : Effet de nébuleuse tourbillonnante
-    if (s300) {
-      s300.style.animation = 'pulse 0.3s ease-in-out 6';
-      s300.style.boxShadow = '0 0 80px #9d4edd, 0 0 160px #00d4ff, inset 0 0 50px rgba(255, 255, 255, 0.8)';
-      s300.style.filter = 'brightness(2.5) saturate(2.2) hue-rotate(30deg) blur(0.5px)';
-      s300.style.background = 'conic-gradient(from 0deg, #9d4edd, #00d4ff, #ff006e, #c77dff, #9d4edd)';
-      s300.style.backgroundSize = '300% 300%';
-      s300.style.transform = 'scale(3.8) rotate(720deg)';
-    }
-    
-    await new Promise(resolve => setTimeout(resolve, 1800));
-    
-    // 🌠 PHASE 3 : Atterrissage stellaire
-    if (s300) {
-      s300.style.animation = '';
-      s300.style.fontSize = '';
-      s300.style.transform = 'scale(1.4) rotateY(15deg)';
-      s300.style.textShadow = '0 0 20px #16a34a, 0 0 40px #22c55e, 0 0 60px #10b981';
-      s300.style.color = '#16a34a';
-      s300.style.backgroundColor = '';
-      s300.style.borderRadius = '';
-      s300.style.padding = '';
-      s300.style.border = '';
-      s300.style.backgroundClip = '';
-      s300.style.boxShadow = '';
-      s300.style.filter = '';
-      s300.style.background = '';
-      s300.style.backgroundSize = '';
-      s300.style.transition = 'all 1.5s ease-out';
+    // Phase 2 : Mise en évidence du badge 83
+    if (badge83) {
+      badge83.style.transform = 'scale(1.2)';
+      badge83.style.boxShadow = '0 4px 12px rgba(239, 68, 68, 0.4)';
+      badge83.style.transition = 'all 0.3s ease-out';
     }
     
     await new Promise(resolve => setTimeout(resolve, 1000));
     
-    // 🌀 PHASE 4 : Animation dimensionnelle du badge de 305
+    // Phase 3 : Retour à la normale
+    if (s80) {
+      s80.style.transform = '';
+      s80.style.background = '';
+      s80.style.padding = '';
+    }
+    
+    if (badge83) {
+      badge83.style.transform = '';
+      badge83.style.boxShadow = '';
+    }
+    
+    setIsAnimating(false);
+  };
+
+  // Animation subtile pour la paire 200 vs 205
+  const animateContrast200vs205 = async () => {
+    setIsAnimating(true);
+    
+    const s200 = document.getElementById('s-200');
+    const badge205 = document.getElementById('badge-205');
+    
+    // Phase 1 : Mise en évidence douce du S de 200
+    if (s200) {
+      s200.style.transform = 'scale(1.4)';
+      s200.style.color = '#16a34a';
+      s200.style.background = '#dcfce7';
+      s200.style.borderRadius = '4px';
+      s200.style.padding = '4px 8px';
+      s200.style.transition = 'all 0.3s ease-out';
+    }
+    
+    await new Promise(resolve => setTimeout(resolve, 800));
+    
+    // Phase 2 : Mise en évidence du badge 205
+    if (badge205) {
+      badge205.style.transform = 'scale(1.2)';
+      badge205.style.boxShadow = '0 4px 12px rgba(239, 68, 68, 0.4)';
+      badge205.style.transition = 'all 0.3s ease-out';
+    }
+    
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    // Phase 3 : Retour à la normale
+    if (s200) {
+      s200.style.transform = '';
+      s200.style.background = '';
+      s200.style.padding = '';
+    }
+    
+    if (badge205) {
+      badge205.style.transform = '';
+      badge205.style.boxShadow = '';
+    }
+    
+    setIsAnimating(false);
+  };
+
+  // Animation subtile pour la paire 300 vs 305
+  const animateContrast300vs305 = async () => {
+    setIsAnimating(true);
+    
+    const s300 = document.getElementById('s-300');
     const badge305 = document.getElementById('badge-305');
-    if (badge305) {
-      // Effet de déchirure dimensionnelle
-      badge305.style.animation = 'pulse 0.25s ease-in-out 10';
-      badge305.style.transform = 'scale(3.5) rotate(45deg) skewX(15deg) skewY(-5deg)';
-      badge305.style.boxShadow = '0 0 60px rgba(255, 0, 110, 1), 0 0 120px rgba(0, 212, 255, 0.9), 0 0 180px rgba(157, 78, 221, 0.7)';
-      badge305.style.transition = 'all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
-      badge305.style.backgroundColor = '#ff006e';
-      badge305.style.border = '5px solid #00d4ff';
-      badge305.style.filter = 'brightness(2.5) contrast(2) saturate(2.5) hue-rotate(45deg)';
-      badge305.style.position = 'relative';
-      badge305.style.zIndex = '15';
+    
+    // Phase 1 : Mise en évidence douce du S de 300
+    if (s300) {
+      s300.style.transform = 'scale(1.4)';
+      s300.style.color = '#16a34a';
+      s300.style.background = '#dcfce7';
+      s300.style.borderRadius = '4px';
+      s300.style.padding = '4px 8px';
+      s300.style.transition = 'all 0.3s ease-out';
     }
     
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    await new Promise(resolve => setTimeout(resolve, 800));
     
-    // 🎆 PHASE 5 : Effet prismatique multidimensionnel
+    // Phase 2 : Mise en évidence du badge 305
     if (badge305) {
-      badge305.style.animation = 'bounce 0.4s ease-in-out 6';
-      badge305.style.background = 'linear-gradient(45deg, #ff006e, #9d4edd, #00d4ff, #c77dff, #ff006e, #10b981)';
-      badge305.style.backgroundSize = '600% 600%';
-      badge305.style.animation = 'bounce 0.4s ease-in-out 6, cosmic-shift 4s ease-in-out infinite';
-      badge305.style.transform = 'scale(2.8) rotate(-30deg) rotateY(180deg)';
-      badge305.style.borderRadius = '50% 10% 50% 10%';
+      badge305.style.transform = 'scale(1.2)';
+      badge305.style.boxShadow = '0 4px 12px rgba(239, 68, 68, 0.4)';
+      badge305.style.transition = 'all 0.3s ease-out';
     }
     
-    await new Promise(resolve => setTimeout(resolve, 3000));
+    await new Promise(resolve => setTimeout(resolve, 1000));
     
-    // 🎯 PHASE 6 : Retour à la réalité avec style
-    if (badge305) {
-      badge305.style.animation = '';
-      badge305.style.transform = 'scale(1.2) rotate(5deg)';
-      badge305.style.boxShadow = '0 0 25px rgba(239, 68, 68, 0.7), 0 0 50px rgba(157, 78, 221, 0.3)';
-      badge305.style.backgroundColor = '#ef4444';
-      badge305.style.border = '';
-      badge305.style.filter = '';
-      badge305.style.background = '';
-      badge305.style.backgroundSize = '';
-      badge305.style.borderRadius = '';
-      badge305.style.transition = 'all 1.5s ease-out';
-      badge305.style.position = '';
-      badge305.style.zIndex = '';
-      
-      setTimeout(() => {
-        if (badge305) {
-          badge305.style.transform = '';
-          badge305.style.boxShadow = '';
-        }
-      }, 1500);
-    }
-    
-    // Final : remettre le S dans notre dimension
+    // Phase 3 : Retour à la normale
     if (s300) {
       s300.style.transform = '';
-      s300.style.textShadow = '';
-      s300.style.position = '';
-      s300.style.zIndex = '';
-      s300.style.transition = 'all 1s ease-out';
+      s300.style.background = '';
+      s300.style.padding = '';
+    }
+    
+    if (badge305) {
+      badge305.style.transform = '';
+      badge305.style.boxShadow = '';
     }
     
     setIsAnimating(false);
