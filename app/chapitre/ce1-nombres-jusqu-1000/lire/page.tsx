@@ -1883,17 +1883,7 @@ export default function LireNombresCE1Page() {
                   </div>
                 </div>
 
-                <div className="text-center">
-                  <button
-                    onClick={animateCentsRule}
-                    disabled={isPlayingVocal || isAnimating}
-                    className={`bg-white text-orange-600 px-6 py-4 sm:px-10 sm:py-5 rounded-xl font-bold text-base sm:text-xl hover:bg-gray-100 transition-all transform hover:scale-105 shadow-lg pulse-interactive ${
-                      (isPlayingVocal || isAnimating) ? 'opacity-50 cursor-not-allowed' : ''
-                    }`}
-                  >
-                    🎪 VOIR LES ANIMATIONS MAGIQUES ! 🎪
-                  </button>
-                </div>
+
               </div>
 
               {/* SECTION SPÉCIALE : AVEC OU SANS S - Contrastes */}
