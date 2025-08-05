@@ -1689,131 +1689,353 @@ export default function LireNombresCE1Page() {
                 </ul>
               </div>
 
-              {/* 🎮 MINI-JEU DU "S" */}
-              <div id="s-game-section" className="bg-gradient-to-br from-blue-50 to-purple-100 rounded-lg sm:rounded-xl p-4 sm:p-6 shadow-lg border-2 border-blue-200 mb-6">
-                <h2 className="text-xl sm:text-2xl font-bold text-center mb-4 text-blue-800">
-                  🎮 Le Défi du "S" !
+              {/* SECTION LES PIÈGES - Nombres avec S */}  
+              <div id="traps-selector" className="bg-white rounded-lg sm:rounded-xl p-4 sm:p-6 shadow-md border border-gray-200 mb-6">
+                <h2 className="text-xl sm:text-2xl font-bold text-center mb-6 text-gray-800">
+                  Comprendre le "S"
                 </h2>
                 
-                {!gameStarted ? (
-                  /* Écran d'accueil du jeu */
-                  <div className="text-center">
-                    <div className="mb-6">
-                      <div className="text-6xl mb-4">🎯</div>
-                      <h3 className="text-lg sm:text-xl font-bold text-gray-800 mb-4">
-                        Prêt à tester tes connaissances ?
-                      </h3>
-                      <p className="text-sm text-gray-600 mb-6">
-                        Je vais te montrer des nombres. À toi de deviner s'ils prennent un "S" ou pas !
-                      </p>
-                    </div>
-                    
-                    <button
-                      onClick={startGame}
-                      className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white px-8 py-4 rounded-xl font-bold text-lg shadow-lg transform hover:scale-105 transition-all pulse-interactive"
-                    >
-                      🚀 Commencer le Défi !
-                    </button>
-                  </div>
-                ) : (
-                  /* Interface de jeu */
-                  <div>
-                    {/* Tableau de score */}
-                    <div className="flex justify-between items-center mb-6 bg-white rounded-lg p-3 shadow-md">
-                      <div className="flex items-center gap-4">
-                        <div className="text-center">
-                          <div className="text-2xl font-bold text-blue-600">{gameScore}</div>
-                          <div className="text-xs text-gray-600">Score</div>
-                        </div>
-                        <div className="text-center">
-                          <div className="text-2xl font-bold text-purple-600">{gameStreak}</div>
-                          <div className="text-xs text-gray-600">Série</div>
-                        </div>
-                        <div className="text-center">
-                          <div className="text-2xl font-bold text-green-600">Niv.{gameLevel}</div>
-                          <div className="text-xs text-gray-600">Niveau</div>
-                        </div>
-                      </div>
+                {/* Titre simple */}
+                <div className="text-center mb-6">
+                  <h3 className="text-lg sm:text-xl font-bold text-gray-800 mb-2">
+                    Observe les différences :
+                  </h3>
+                  <p className="text-sm text-gray-600">
+                    Compare chaque paire pour comprendre la règle
+                  </p>
+                </div>
+
+                {/* Paires simplifiées */}
+                <div className="space-y-6 mb-6">
+                  {/* Paire 1 */}
+                  <div className="bg-gray-50 rounded-lg p-4">
+                    <div className="flex items-center justify-center gap-4 sm:gap-8 mb-3">
                       <button
-                        onClick={resetGame}
-                        className="bg-gray-400 hover:bg-gray-500 text-white px-3 py-1 rounded-lg text-xs transition-all"
+                        onClick={() => {
+                          setSelectedNumber('80');
+                          setTimeout(() => scrollToElement('animation-section'), 100);
+                        }}
+                        className="group relative bg-white border-2 border-gray-200 rounded-xl p-4 sm:p-6 hover:border-blue-300 hover:shadow-md transition-all min-w-[100px] sm:min-w-[120px]"
                       >
-                        🔄 Reset
+                        <div className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">80</div>
+                        <div className="text-xs sm:text-sm text-gray-600">
+                          quatre-vingt<span id="s-80" className="text-green-600 font-bold text-base sm:text-lg">s</span>
+                        </div>
+                        <div className="absolute -top-2 -right-2 bg-green-500 text-white text-xs px-2 py-1 rounded-full">
+                          ✓ S
+                        </div>
+                      </button>
+
+                      <div className="text-xl sm:text-2xl text-gray-400">VS</div>
+
+                      <button
+                        onClick={() => {
+                          setSelectedNumber('83');
+                          setTimeout(() => scrollToElement('animation-section'), 100);
+                        }}
+                        className="group relative bg-white border-2 border-gray-200 rounded-xl p-4 sm:p-6 hover:border-blue-300 hover:shadow-md transition-all min-w-[100px] sm:min-w-[120px]"
+                      >
+                        <div className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">83</div>
+                        <div className="text-xs sm:text-sm text-gray-600">quatre-vingt-trois</div>
+                        <div id="badge-83" className="absolute -top-2 -right-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full">
+                          ✗ pas S
+                        </div>
                       </button>
                     </div>
-
-                    {currentGameNumber && (
-                      <div className="text-center">
-                        {/* Question */}
-                        <div className="mb-6">
-                          <h3 className="text-lg font-bold text-gray-800 mb-4">
-                            Ce nombre prend-il un "S" ?
-                          </h3>
-                          
-                          {/* Le nombre à analyser */}
-                          <div className="bg-white rounded-xl p-6 shadow-lg mb-4 mx-auto max-w-sm">
-                            <div className="text-4xl sm:text-5xl font-bold text-gray-800 mb-3">
-                              {currentGameNumber.value}
-                            </div>
-                            <div className="text-sm sm:text-base text-gray-600">
-                              {currentGameNumber.reading}
-                            </div>
-                          </div>
-                        </div>
-
-                        {!showGameResult ? (
-                          /* Boutons de réponse */
-                          <div className="flex gap-4 justify-center mb-6">
-                            <button
-                              onClick={() => submitGameAnswer(true)}
-                              className="bg-gradient-to-r from-green-400 to-green-500 hover:from-green-500 hover:to-green-600 text-white px-8 py-4 rounded-xl font-bold text-lg shadow-lg transform hover:scale-105 transition-all"
-                            >
-                              ✅ AVEC "S"
-                            </button>
-                            <button
-                              onClick={() => submitGameAnswer(false)}
-                              className="bg-gradient-to-r from-red-400 to-red-500 hover:from-red-500 hover:to-red-600 text-white px-8 py-4 rounded-xl font-bold text-lg shadow-lg transform hover:scale-105 transition-all"
-                            >
-                              ❌ SANS "S"
-                            </button>
-                          </div>
-                        ) : (
-                          /* Résultat */
-                          <div className={`p-6 rounded-xl mb-6 ${
-                            gameAnswer === currentGameNumber.hasS 
-                              ? 'bg-green-100 border-2 border-green-400' 
-                              : 'bg-red-100 border-2 border-red-400'
-                          }`}>
-                            <div className="text-6xl mb-3">
-                              {gameAnswer === currentGameNumber.hasS ? '🎉' : '😅'}
-                            </div>
-                            <div className="text-xl font-bold mb-2">
-                              {gameAnswer === currentGameNumber.hasS ? 'Bravo !' : 'Pas tout à fait...'}
-                            </div>
-                            <div className="text-sm text-gray-700">
-                              <span className="font-bold">
-                                {currentGameNumber.reading}
-                              </span>
-                              <br/>
-                              {currentGameNumber.explanation}
-                            </div>
-                          </div>
-                        )}
-
-                        {/* Barre de progression */}
-                        <div className="bg-gray-200 rounded-full h-2 mb-4">
-                          <div 
-                            className="bg-gradient-to-r from-blue-400 to-purple-400 h-2 rounded-full transition-all duration-1000"
-                            style={{ width: `${Math.min((gameScore % 5) * 20, 100)}%` }}
-                          ></div>
-                        </div>
-                        <div className="text-xs text-gray-600">
-                          {5 - (gameScore % 5)} bonnes réponses pour le niveau suivant
-                        </div>
-                      </div>
-                    )}
+                    <div className="text-center">
+                      <button
+                        onClick={animateContrast80vs83}
+                        disabled={isAnimating}
+                        className={`bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg font-bold text-xs transition-all ${
+                          isAnimating ? 'opacity-50 cursor-not-allowed' : ''
+                        }`}
+                      >
+                        ✨ Comparer 80 vs 83
+                      </button>
+                    </div>
                   </div>
-                )}
+
+                  {/* Paire 2 */}
+                  <div className="bg-gray-50 rounded-lg p-4">
+                    <div className="flex items-center justify-center gap-4 sm:gap-8 mb-3">
+                      <button
+                        onClick={() => {
+                          setSelectedNumber('200');
+                          setTimeout(() => scrollToElement('animation-section'), 100);
+                        }}
+                        className="group relative bg-white border-2 border-gray-200 rounded-xl p-4 sm:p-6 hover:border-blue-300 hover:shadow-md transition-all min-w-[100px] sm:min-w-[120px]"
+                      >
+                        <div className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">200</div>
+                        <div className="text-xs sm:text-sm text-gray-600">
+                          deux-cent<span id="s-200" className="text-green-600 font-bold text-base sm:text-lg">s</span>
+                        </div>
+                        <div className="absolute -top-2 -right-2 bg-green-500 text-white text-xs px-2 py-1 rounded-full">
+                          ✓ S
+                        </div>
+                      </button>
+
+                      <div className="text-xl sm:text-2xl text-gray-400">VS</div>
+
+                      <button
+                        onClick={() => {
+                          setSelectedNumber('205');
+                          setTimeout(() => scrollToElement('animation-section'), 100);
+                        }}
+                        className="group relative bg-white border-2 border-gray-200 rounded-xl p-4 sm:p-6 hover:border-blue-300 hover:shadow-md transition-all min-w-[100px] sm:min-w-[120px]"
+                      >
+                        <div className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">205</div>
+                        <div className="text-xs sm:text-sm text-gray-600">deux-cent-cinq</div>
+                        <div id="badge-205" className="absolute -top-2 -right-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full">
+                          ✗ pas S
+                        </div>
+                      </button>
+                    </div>
+                    <div className="text-center">
+                      <button
+                        onClick={animateContrast200vs205}
+                        disabled={isAnimating}
+                        className={`bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg font-bold text-xs transition-all ${
+                          isAnimating ? 'opacity-50 cursor-not-allowed' : ''
+                        }`}
+                      >
+                        ✨ Comparer 200 vs 205
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Paire 3 */}
+                  <div className="bg-gray-50 rounded-lg p-4">
+                    <div className="flex items-center justify-center gap-4 sm:gap-8 mb-3">
+                      <button
+                        onClick={() => {
+                          setSelectedNumber('300');
+                          setTimeout(() => scrollToElement('animation-section'), 100);
+                        }}
+                        className="group relative bg-white border-2 border-gray-200 rounded-xl p-4 sm:p-6 hover:border-blue-300 hover:shadow-md transition-all min-w-[100px] sm:min-w-[120px]"
+                      >
+                        <div className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">300</div>
+                        <div className="text-xs sm:text-sm text-gray-600">
+                          trois-cent<span id="s-300" className="text-green-600 font-bold text-base sm:text-lg">s</span>
+                        </div>
+                        <div className="absolute -top-2 -right-2 bg-green-500 text-white text-xs px-2 py-1 rounded-full">
+                          ✓ S
+                        </div>
+                      </button>
+
+                      <div className="text-xl sm:text-2xl text-gray-400">VS</div>
+
+                      <button
+                        onClick={() => {
+                          setSelectedNumber('305');
+                          setTimeout(() => scrollToElement('animation-section'), 100);
+                        }}
+                        className="group relative bg-white border-2 border-gray-200 rounded-xl p-4 sm:p-6 hover:border-blue-300 hover:shadow-md transition-all min-w-[100px] sm:min-w-[120px]"
+                      >
+                        <div className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">305</div>
+                        <div className="text-xs sm:text-sm text-gray-600">trois-cent-cinq</div>
+                        <div id="badge-305" className="absolute -top-2 -right-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full">
+                          ✗ pas S
+                        </div>
+                      </button>
+                    </div>
+                    <div className="text-center">
+                      <button
+                        onClick={animateContrast300vs305}
+                        disabled={isAnimating}
+                        className={`bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-lg font-bold text-xs transition-all ${
+                          isAnimating ? 'opacity-50 cursor-not-allowed' : ''
+                        }`}
+                      >
+                        ✨ Comparer 300 vs 305
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 🎮 MINI-JEU DU "S" - Remplace la section en colonnes */}
+                <div className="bg-gradient-to-br from-blue-50 to-purple-100 rounded-lg p-4 shadow-lg border-2 border-blue-200 mb-6">
+                  <h3 className="text-lg font-bold text-center mb-4 text-blue-800">
+                    🎮 Le Défi du "S" !
+                  </h3>
+                  
+                  {!gameStarted ? (
+                    /* Écran d'accueil du jeu */
+                    <div className="text-center">
+                      <div className="mb-4">
+                        <div className="text-4xl mb-3">🎯</div>
+                        <h4 className="text-base font-bold text-gray-800 mb-3">
+                          Prêt à tester tes connaissances ?
+                        </h4>
+                        <p className="text-sm text-gray-600 mb-4">
+                          Je vais te montrer des nombres. À toi de deviner s'ils prennent un "S" ou pas !
+                        </p>
+                      </div>
+                      
+                      <button
+                        onClick={startGame}
+                        className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white px-6 py-3 rounded-lg font-bold text-sm shadow-lg transform hover:scale-105 transition-all pulse-interactive"
+                      >
+                        🚀 Commencer le Défi !
+                      </button>
+                    </div>
+                  ) : (
+                    /* Interface de jeu */
+                    <div>
+                      {/* Tableau de score compact */}
+                      <div className="flex justify-between items-center mb-4 bg-white rounded-lg p-2 shadow-md">
+                        <div className="flex items-center gap-3">
+                          <div className="text-center">
+                            <div className="text-lg font-bold text-blue-600">{gameScore}</div>
+                            <div className="text-xs text-gray-600">Score</div>
+                          </div>
+                          <div className="text-center">
+                            <div className="text-lg font-bold text-purple-600">{gameStreak}</div>
+                            <div className="text-xs text-gray-600">Série</div>
+                          </div>
+                          <div className="text-center">
+                            <div className="text-lg font-bold text-green-600">Niv.{gameLevel}</div>
+                            <div className="text-xs text-gray-600">Niveau</div>
+                          </div>
+                        </div>
+                        <button
+                          onClick={resetGame}
+                          className="bg-gray-400 hover:bg-gray-500 text-white px-2 py-1 rounded text-xs transition-all"
+                        >
+                          🔄 Reset
+                        </button>
+                      </div>
+
+                      {currentGameNumber && (
+                        <div className="text-center">
+                          {/* Question compacte */}
+                          <div className="mb-4">
+                            <h4 className="text-sm font-bold text-gray-800 mb-3">
+                              Ce nombre prend-il un "S" ?
+                            </h4>
+                            
+                            {/* Le nombre à analyser - plus compact */}
+                            <div className="bg-white rounded-lg p-4 shadow-md mb-3 mx-auto max-w-xs">
+                              <div className="text-3xl font-bold text-gray-800 mb-2">
+                                {currentGameNumber.value}
+                              </div>
+                              <div className="text-sm text-gray-600">
+                                {currentGameNumber.reading}
+                              </div>
+                            </div>
+                          </div>
+
+                          {!showGameResult ? (
+                            /* Boutons de réponse compacts */
+                            <div className="flex gap-3 justify-center mb-4">
+                              <button
+                                onClick={() => submitGameAnswer(true)}
+                                className="bg-gradient-to-r from-green-400 to-green-500 hover:from-green-500 hover:to-green-600 text-white px-6 py-3 rounded-lg font-bold text-sm shadow-lg transform hover:scale-105 transition-all"
+                              >
+                                ✅ AVEC "S"
+                              </button>
+                              <button
+                                onClick={() => submitGameAnswer(false)}
+                                className="bg-gradient-to-r from-red-400 to-red-500 hover:from-red-500 hover:to-red-600 text-white px-6 py-3 rounded-lg font-bold text-sm shadow-lg transform hover:scale-105 transition-all"
+                              >
+                                ❌ SANS "S"
+                              </button>
+                            </div>
+                          ) : (
+                            /* Résultat compact */
+                            <div className={`p-4 rounded-lg mb-4 ${
+                              gameAnswer === currentGameNumber.hasS 
+                                ? 'bg-green-100 border-2 border-green-400' 
+                                : 'bg-red-100 border-2 border-red-400'
+                            }`}>
+                              <div className="text-4xl mb-2">
+                                {gameAnswer === currentGameNumber.hasS ? '🎉' : '😅'}
+                              </div>
+                              <div className="text-lg font-bold mb-1">
+                                {gameAnswer === currentGameNumber.hasS ? 'Bravo !' : 'Pas tout à fait...'}
+                              </div>
+                              <div className="text-xs text-gray-700">
+                                <span className="font-bold">
+                                  {currentGameNumber.reading}
+                                </span>
+                                <br/>
+                                {currentGameNumber.explanation}
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Barre de progression */}
+                          <div className="bg-gray-200 rounded-full h-1 mb-3">
+                            <div 
+                              className="bg-gradient-to-r from-blue-400 to-purple-400 h-1 rounded-full transition-all duration-1000"
+                              style={{ width: `${Math.min((gameScore % 5) * 20, 100)}%` }}
+                            ></div>
+                          </div>
+                          <div className="text-xs text-gray-600">
+                            {5 - (gameScore % 5)} bonnes réponses pour le niveau suivant
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+
+                {/* Section piège spéciale : 90/91 */}
+                <div className="mt-6 p-4 bg-yellow-50 border-2 border-yellow-300 rounded-lg">
+                  <h4 className="text-center text-lg font-bold text-yellow-800 mb-4">
+                    ⚠️ Attention aux pièges !
+                  </h4>
+                  <p className="text-center text-sm text-yellow-700 mb-4">
+                    Ces nombres ressemblent à "80" mais n'ont <span className="font-bold">PAS de S</span> !
+                  </p>
+                  
+                  <div className="flex items-center justify-center gap-4 sm:gap-8">
+                    <button
+                      onClick={() => {
+                        setSelectedNumber('90');
+                        setTimeout(() => scrollToElement('animation-section'), 100);
+                      }}
+                      className="group relative bg-white border-2 border-yellow-400 rounded-xl p-4 sm:p-6 hover:border-red-400 hover:shadow-md transition-all min-w-[100px] sm:min-w-[120px]"
+                    >
+                      <div className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">90</div>
+                      <div className="text-xs sm:text-sm text-gray-600">quatre-vingt-dix</div>
+                      <div className="absolute -top-2 -right-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full">
+                        ⚠️ PAS S
+                      </div>
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        setSelectedNumber('91');
+                        setTimeout(() => scrollToElement('animation-section'), 100);
+                      }}
+                      className="group relative bg-white border-2 border-yellow-400 rounded-xl p-4 sm:p-6 hover:border-red-400 hover:shadow-md transition-all min-w-[100px] sm:min-w-[120px]"
+                    >
+                      <div className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">91</div>
+                      <div className="text-xs sm:text-sm text-gray-600">quatre-vingt-onze</div>
+                      <div className="absolute -top-2 -right-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full">
+                        ⚠️ PAS S
+                      </div>
+                    </button>
+                  </div>
+
+                  <div className="text-center mt-4 p-3 bg-yellow-100 rounded-lg">
+                    <p className="text-xs text-yellow-800">
+                      <span className="font-bold">Pourquoi pas de S ?</span><br/>
+                      Parce qu'ils sont suivis de "dix" ou "onze" !<br/>
+                      <span className="italic">80 = exact → quatre-vingt<span className="font-bold text-green-600">s</span></span><br/>
+                      <span className="italic">90 = suivi de "dix" → quatre-vingt-dix</span>
+                    </p>
+                  </div>
+                </div>
+
+                {/* Règle simple à la fin */}
+                <div className="text-center p-4 bg-gray-50 rounded-lg mt-6">
+                  <p className="text-sm text-gray-700">
+                    <span className="font-bold text-green-600">Avec S</span> : nombre exact (80, 200, 300...)
+                    <br/>
+                    <span className="font-bold text-red-600">Sans S</span> : suivi d'autre chose (83, 205, 305...)
+                  </p>
+                </div>
               </div>
 
               {/* SECTION SPÉCIALE : La règle d'or des "cents" ET "vingts" */}
