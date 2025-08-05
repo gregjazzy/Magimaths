@@ -1484,7 +1484,7 @@ export default function LireNombresCE1Page() {
               {/* SECTION LES PIÈGES - Nombres avec S */}  
               <div id="traps-selector" className="bg-white rounded-lg sm:rounded-xl p-4 sm:p-6 shadow-md border border-gray-200 mb-6">
                 <h2 className="text-xl sm:text-2xl font-bold text-center mb-6 text-gray-800">
-                  Comprendre le "S"
+                  Avec ou sans S
                 </h2>
 
                 {/* RÈGLES COMPACTES DU "S" */}
