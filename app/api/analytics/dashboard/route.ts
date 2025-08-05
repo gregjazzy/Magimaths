@@ -42,13 +42,13 @@ export async function GET() {
       .eq('page_type', 'class')
       .not('class_level', 'is', null);
     
-    const classCount = topClasses?.reduce((acc, item) => {
+    const classCount = topClasses?.reduce((acc: Record<string, number>, item: any) => {
       acc[item.class_level] = (acc[item.class_level] || 0) + 1;
       return acc;
     }, {} as Record<string, number>) || {};
     
     const topClassesArray = Object.entries(classCount)
-      .map(([class_level, views]) => ({ class_level, views }))
+      .map(([class_level, views]) => ({ class_level, views: views as number }))
       .sort((a, b) => b.views - a.views)
       .slice(0, 10);
     
@@ -59,7 +59,7 @@ export async function GET() {
       .eq('page_type', 'chapter')
       .not('page_title', 'is', null);
     
-    const chapterCount = topChapters?.reduce((acc, item) => {
+    const chapterCount = topChapters?.reduce((acc: Record<string, number>, item: any) => {
       const key = `${item.page_title}|${item.class_level}`;
       acc[key] = (acc[key] || 0) + 1;
       return acc;
@@ -68,7 +68,7 @@ export async function GET() {
     const topChaptersArray = Object.entries(chapterCount)
       .map(([key, views]) => {
         const [page_title, class_level] = key.split('|');
-        return { page_title, class_level, views };
+        return { page_title, class_level, views: views as number };
       })
       .sort((a, b) => b.views - a.views)
       .slice(0, 10);
@@ -78,14 +78,14 @@ export async function GET() {
       .from('visitor_sessions')
       .select('country');
     
-    const countryCount = visitorsByCountry?.reduce((acc, item) => {
+    const countryCount = visitorsByCountry?.reduce((acc: Record<string, number>, item: any) => {
       const country = item.country || 'Non renseigné';
       acc[country] = (acc[country] || 0) + 1;
       return acc;
     }, {} as Record<string, number>) || {};
     
     const visitorsByCountryArray = Object.entries(countryCount)
-      .map(([country, visitors]) => ({ country, visitors }))
+      .map(([country, visitors]) => ({ country, visitors: visitors as number }))
       .sort((a, b) => b.visitors - a.visitors);
     
     return NextResponse.json({

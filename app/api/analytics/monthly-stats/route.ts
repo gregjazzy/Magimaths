@@ -3,7 +3,7 @@ import { createClient } from '@/lib/supabase';
 
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
+    const searchParams = request.nextUrl.searchParams;
     const months = parseInt(searchParams.get('months') || '12'); // Par défaut 12 mois
     
     const supabase = createClient();
