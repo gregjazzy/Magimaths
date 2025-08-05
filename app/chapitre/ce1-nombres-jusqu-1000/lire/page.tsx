@@ -707,6 +707,8 @@ export default function LireNombresCE1Page() {
   const numbersWithS = [
     { value: '80', label: '80', reading: 'Quatre-vingts', hasS: true },
     { value: '83', label: '83', reading: 'Quatre-vingt-trois', hasS: false },
+    { value: '90', label: '90', reading: 'Quatre-vingt-dix', hasS: false },
+    { value: '91', label: '91', reading: 'Quatre-vingt-onze', hasS: false },
     { value: '200', label: '200', reading: 'Deux-cents', hasS: true },
     { value: '205', label: '205', reading: 'Deux-cent-cinq', hasS: false },
     { value: '300', label: '300', reading: 'Trois-cents', hasS: true },
@@ -1584,6 +1586,68 @@ export default function LireNombresCE1Page() {
                       </div>
                     </button>
                   </div>
+                </div>
+
+                {/* Section piège spéciale : 90/91 */}
+                <div className="mt-8 p-4 bg-yellow-50 border-2 border-yellow-300 rounded-lg">
+                  <h4 className="text-center text-lg font-bold text-yellow-800 mb-4">
+                    ⚠️ Attention aux pièges !
+                  </h4>
+                  <p className="text-center text-sm text-yellow-700 mb-4">
+                    Ces nombres ressemblent à "80" mais n'ont <span className="font-bold">PAS de S</span> !
+                  </p>
+                  
+                  <div className="flex items-center justify-center gap-4 sm:gap-8">
+                    <button
+                      onClick={() => {
+                        setSelectedNumber('90');
+                        setTimeout(() => scrollToElement('animation-section'), 100);
+                      }}
+                      className="group relative bg-white border-2 border-yellow-400 rounded-xl p-4 sm:p-6 hover:border-red-400 hover:shadow-md transition-all min-w-[100px] sm:min-w-[120px]"
+                    >
+                      <div className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">90</div>
+                      <div className="text-xs sm:text-sm text-gray-600">quatre-vingt-dix</div>
+                      <div className="absolute -top-2 -right-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full">
+                        ⚠️ PAS S
+                      </div>
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        setSelectedNumber('91');
+                        setTimeout(() => scrollToElement('animation-section'), 100);
+                      }}
+                      className="group relative bg-white border-2 border-yellow-400 rounded-xl p-4 sm:p-6 hover:border-red-400 hover:shadow-md transition-all min-w-[100px] sm:min-w-[120px]"
+                    >
+                      <div className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">91</div>
+                      <div className="text-xs sm:text-sm text-gray-600">quatre-vingt-onze</div>
+                      <div className="absolute -top-2 -right-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full">
+                        ⚠️ PAS S
+                      </div>
+                    </button>
+                  </div>
+
+                  <div className="text-center mt-4 p-3 bg-yellow-100 rounded-lg">
+                    <p className="text-xs text-yellow-800">
+                      <span className="font-bold">Pourquoi pas de S ?</span><br/>
+                      Parce qu'ils sont suivis de "dix" ou "onze" !<br/>
+                      <span className="italic">80 = exact → quatre-vingt<span className="font-bold text-green-600">s</span></span><br/>
+                      <span className="italic">90 = suivi de "dix" → quatre-vingt-dix</span>
+                    </p>
+                  </div>
+                </div>
+
+                {/* Bouton d'animation des contrastes */}
+                <div className="text-center mb-4">
+                  <button
+                    onClick={animateContrastS}
+                    disabled={isAnimating || isPlayingVocal}
+                    className={`bg-purple-500 hover:bg-purple-600 text-white px-6 py-3 rounded-lg font-bold text-sm transition-all pulse-interactive ${
+                      isAnimating || isPlayingVocal ? 'opacity-50 cursor-not-allowed' : ''
+                    }`}
+                  >
+                    ✨ Voir l'animation des contrastes
+                  </button>
                 </div>
 
                 {/* Règle simple à la fin */}
