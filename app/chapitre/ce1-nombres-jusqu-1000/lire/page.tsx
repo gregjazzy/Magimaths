@@ -352,209 +352,134 @@ export default function LireNombresCE1Page() {
     setShowGameResult(false);
   };
 
-  // Fonction pour expliquer le chapitre au démarrage
+  // Fonction pour expliquer le chapitre au démarrage - SELON READMEANIM
   const explainChapter = async () => {
     stopSignalRef.current = false;
     setIsPlayingVocal(true);
     setHasStarted(true);
-    setCharacterSizeExpanded(true); // Agrandir le personnage de façon permanente
+    setCharacterSizeExpanded(true);
 
     try {
-      const isChrome = /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor);
-      console.log('Début explainChapter - Chrome:', isChrome);
-      
-      if (isChrome) {
-        speechSynthesis.cancel();
-        await new Promise(resolve => setTimeout(resolve, 200));
-        
-        let voices = speechSynthesis.getVoices();
-        if (voices.length === 0) {
-          console.log('Attente des voix Chrome...');
-          await new Promise((resolve) => {
-            const checkVoices = () => {
-              voices = speechSynthesis.getVoices();
-              if (voices.length > 0) {
-                console.log('Voix Chrome chargées:', voices.length);
-                resolve(voices);
-              } else {
-                setTimeout(checkVoices, 100);
-              }
-            };
-            checkVoices();
-          });
-        }
-      }
-
       if (showExercises) {
-        // Mode d'emploi pour les exercices
-        if (stopSignalRef.current) return;
-        await playAudio("Salut petit mineur ! Bienvenue dans l'arène d'entraînement aux nombres jusqu'à 1000 !");
-        if (stopSignalRef.current) return;
-        await new Promise(resolve => setTimeout(resolve, 500));
-        
-        if (stopSignalRef.current) return;
-        await playAudio("Objectif de ta quête : maîtriser la lecture des grands nombres comme un vrai pro !");
+        // TUTORIEL EXERCICES - READMEANIM
+        await playAudio("Salut petit mineur ! Bienvenue dans l'arène de lecture des nombres jusqu'à 1000 !");
         if (stopSignalRef.current) return;
         await new Promise(resolve => setTimeout(resolve, 500));
         
-        if (stopSignalRef.current) return;
-        await playAudio("Voici tes outils de mineur :");
-        if (stopSignalRef.current) return;
-        await new Promise(resolve => setTimeout(resolve, 300));
-        
-        if (stopSignalRef.current) return;
-        scrollToElement('exercise-question');
-        await playAudio("D'abord, tu verras un nombre mystère à déchiffrer, comme un coffre à ouvrir !");
-        if (stopSignalRef.current) return;
-        highlightElement('mystery-number', 2500);
-        await new Promise(resolve => setTimeout(resolve, 500));
-        
-        if (stopSignalRef.current) return;
-        await playAudio("Ensuite, tape ta réponse dans le bloc de texte avec ton clavier magique !");
-        if (stopSignalRef.current) return;
-        highlightElement('answer-input', 2500);
-        await new Promise(resolve => setTimeout(resolve, 500));
-        
-        if (stopSignalRef.current) return;
-        await playAudio("Le bouton Effacer, c'est comme ta gomme enchantée pour recommencer !");
-        if (stopSignalRef.current) return;
-        highlightElement('erase-button', 2500);
-        await new Promise(resolve => setTimeout(resolve, 500));
-        
-        if (stopSignalRef.current) return;
-        scrollToElement('navigation-buttons');
-        // Détection dynamique du texte du bouton
-        const buttonText = isCorrect === null ? 'Vérifier' : 'Suivant';
-        const buttonExplanation = isCorrect === null 
-          ? "Le bouton Vérifier, c'est pour valider ta réponse comme un sort de vérité !" 
-          : "Le bouton Suivant, c'est pour passer à l'exercice suivant une fois que tu as réussi !";
-        await playAudio(`${buttonExplanation} Et Précédent pour revenir en arrière !`);
-        if (stopSignalRef.current) return;
-        await highlightElementsSequentially(['next-button', 'previous-button'], 1000);
+        await playAudio("Objectif de ta quête : maîtriser la lecture des grands nombres !");
         if (stopSignalRef.current) return;
         await new Promise(resolve => setTimeout(resolve, 500));
         
-        if (stopSignalRef.current) return;
+        // Parcourir les éléments d'exercices
         scrollToElement('score-section');
-        await playAudio("Et le score en haut à droite, c'est ton compteur d'expérience ! Plus tu réussis, plus tu gagnes de points !");
-        if (stopSignalRef.current) return;
+        await playAudio("Voici ton tableau de score ! Tes points s'affichent ici !");
         highlightElement('score-display', 3000);
+        if (stopSignalRef.current) return;
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        
+        scrollToElement('exercise-question');
+        await playAudio("Ici apparaît le nombre mystère que tu dois lire !");
+        highlightElement('mystery-number', 3000);
+        if (stopSignalRef.current) return;
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        
+        await playAudio("Tu écris ta réponse dans cette zone de saisie !");
+        highlightElement('answer-input', 3000);
+        if (stopSignalRef.current) return;
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        
+        await playAudio("Le bouton effacer, c'est pour recommencer si tu te trompes !");
+        highlightElement('erase-button', 2500);
+        if (stopSignalRef.current) return;
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        scrollToElement('navigation-buttons');
+        // Détection dynamique des boutons
+        const hasNextButton = document.getElementById('next-button');
+        const hasPreviousButton = document.getElementById('previous-button');
+        
+        if (hasNextButton && hasPreviousButton) {
+          await playAudio("Les boutons Précédent et Suivant, c'est pour naviguer entre les exercices !");
+          await highlightElementsSequentially(['previous-button', 'next-button'], 1000);
+        }
+        if (stopSignalRef.current) return;
         await new Promise(resolve => setTimeout(resolve, 500));
         
-        if (stopSignalRef.current) return;
-        await playAudio("Allez petit aventurier, montre-moi tes talents de lecture ! Que l'aventure commence !");
+        scrollToElement('tab-navigation');
+        await playAudio("Et voici les onglets : Cours pour apprendre, Exercices pour t'entraîner !");
+        await highlightElementsSequentially(['tab-cours', 'tab-exercices'], 1000);
         
       } else {
-        // Mode d'emploi pour le cours
-        if (stopSignalRef.current) return;
+        // TUTORIEL COURS - READMEANIM
         await playAudio("Salut petit crafteur ! Bienvenue dans l'atelier des nombres jusqu'à 1000 !");
         if (stopSignalRef.current) return;
         await new Promise(resolve => setTimeout(resolve, 500));
         
-        if (stopSignalRef.current) return;
-        await playAudio("Objectif de ta mission : apprendre à lire les grands nombres comme un maître builder !");
+        await playAudio("Objectif : découvrir comment lire et écrire tous les nombres jusqu'à 1000 !");
         if (stopSignalRef.current) return;
         await new Promise(resolve => setTimeout(resolve, 500));
         
-        if (stopSignalRef.current) return;
-        await playAudio("Voici ta table de craft magique :");
-        if (stopSignalRef.current) return;
-        await new Promise(resolve => setTimeout(resolve, 300));
-        
-        if (stopSignalRef.current) return;
+        // Parcourir les éléments du cours
         scrollToElement('number-selector');
-        await playAudio("En haut, tu peux choisir un nombre dans ton inventaire ! Clique sur les blocs colorés !");
+        await playAudio("Voici le sélecteur de nombres ! Clique sur un nombre pour l'explorer !");
+        highlightElement('number-selector', 3000);
         if (stopSignalRef.current) return;
-        // Faire clignoter les boutons de nombres un par un
-        const numberButtons = numbers.map((_, index) => `number-btn-${index}`);
-        await highlightElementsSequentially(numberButtons, 600);
-        if (stopSignalRef.current) return;
-        await new Promise(resolve => setTimeout(resolve, 500));
+        await new Promise(resolve => setTimeout(resolve, 1000));
         
+        // Animation non agressive des boutons de nombres
+        await playAudio("Regarde tous ces nombres disponibles !");
+        const numberButtonIds = ['number-btn-0', 'number-btn-1', 'number-btn-2', 'number-btn-3', 'number-btn-4', 'number-btn-5'];
+        await highlightElementsSequentially(numberButtonIds, 600); // Non agressif : 600ms entre chaque
         if (stopSignalRef.current) return;
-        await playAudio("Parfait ! Tu vois qu'il y a deux sections de nombres : les classiques et les pièges !");
-        if (stopSignalRef.current) return;
-        await new Promise(resolve => setTimeout(resolve, 500));
+        await new Promise(resolve => setTimeout(resolve, 800));
         
-        if (stopSignalRef.current) return;
-        await playAudio("Regarde ! Cette première section contient les nombres classiques : tous SANS S !");
-        if (stopSignalRef.current) return;
-        // Faire clignoter tous les boutons classiques
-        await highlightElementsSequentially(['number-btn-0', 'number-btn-1', 'number-btn-2', 'number-btn-3', 'number-btn-4', 'number-btn-5'], 600);
-        if (stopSignalRef.current) return;
-        await new Promise(resolve => setTimeout(resolve, 500));
-        
-        if (stopSignalRef.current) return;
-        await playAudio("234, 89, 567, 123, 694, 978 : tous ces nombres n'ont pas de S !");
-        if (stopSignalRef.current) return;
-        await new Promise(resolve => setTimeout(resolve, 500));
-        
-        if (stopSignalRef.current) return;
-        scrollToElement('traps-selector');
-        await playAudio("Mais attention ! Plus bas, il y a une section spéciale : Avec ou sans S pour vingt et cent !");
-        if (stopSignalRef.current) return;
-        await new Promise(resolve => setTimeout(resolve, 500));
-        
-        if (stopSignalRef.current) return;
-        await playAudio("D'abord, tu vois deux boîtes résumé : une verte pour AVEC S et une rouge pour SANS S !");
-        if (stopSignalRef.current) return;
-        await new Promise(resolve => setTimeout(resolve, 500));
-        
-        if (stopSignalRef.current) return;
-        await playAudio("Ensuite, tu peux observer les contrastes : 80 avec S contre 83 sans S ! 200 avec S contre 205 sans S !");
-        if (stopSignalRef.current) return;
-        await new Promise(resolve => setTimeout(resolve, 500));
-        
-        if (stopSignalRef.current) return;
-        await playAudio("Clique sur un nombre coloré pour le sélectionner et voir son animation dans le tableau !");
-        if (stopSignalRef.current) return;
-        await new Promise(resolve => setTimeout(resolve, 500));
-        
-        if (stopSignalRef.current) return;
-        await playAudio("Et encore plus bas, il y a un mini-jeu super ! Le Défi du S ! Tu vois juste un chiffre et tu dois deviner s'il prend un S ou pas !");
-        if (stopSignalRef.current) return;
-        await new Promise(resolve => setTimeout(resolve, 500));
-        
-        if (stopSignalRef.current) return;
         scrollToElement('animation-section');
-        await playAudio("Le bouton bleu Voir le placement, c'est comme une potion de vision ! Il te montre où placer chaque chiffre dans le tableau !");
+        await playAudio("Cette zone montre la décomposition du nombre en centaines, dizaines et unités !");
+        highlightElement('animation-section', 3000);
         if (stopSignalRef.current) return;
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        
+        await playAudio("Le bouton Animer, c'est pour voir la décomposition en mouvement !");
         highlightElement('animation-button', 2500);
-        await new Promise(resolve => setTimeout(resolve, 500));
-        
         if (stopSignalRef.current) return;
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
         scrollToElement('reading-section');
-        await playAudio("Le bouton jaune Écouter, c'est ton perroquet magique ! Il te dit comment prononcer le nombre !");
+        await playAudio("Ici tu découvres comment se lit le nombre en français !");
+        highlightElement('reading-section', 3000);
         if (stopSignalRef.current) return;
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        
+        await playAudio("Le bouton écouter, c'est pour entendre la prononciation !");
         highlightElement('listen-button', 2500);
+        if (stopSignalRef.current) return;
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        scrollToElement('traps-selector');
+        await playAudio("Et voici les pièges du S ! La règle magique des nombres français !");
+        highlightElement('traps-selector', 3000);
+        if (stopSignalRef.current) return;
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        
+        await playAudio("80 et 200 prennent un S car ils sont exacts, mais 83 et 205 n'en prennent pas !");
+        await highlightElementsSequentially(['paire-80-83', 'paire-200-205', 'paire-300-305'], 1200);
+        if (stopSignalRef.current) return;
         await new Promise(resolve => setTimeout(resolve, 500));
         
+        // Section défi du S
+        await playAudio("Et tu peux tester tes connaissances avec le défi du S !");
+        highlightElement('start-game-button', 2500);
         if (stopSignalRef.current) return;
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        await playAudio("Appuie sur le bouton Commencer le Défi pour choisir un nombre à découvrir !");
+        highlightElement('start-game-button', 2500);
+        if (stopSignalRef.current) return;
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
         scrollToElement('tab-navigation');
-        await playAudio("En haut, tu as deux onglets : Cours pour apprendre, et Exercices pour t'entraîner !");
-        if (stopSignalRef.current) return;
+        await playAudio("N'oublie pas : onglet Cours pour apprendre, onglet Exercices pour t'entraîner !");
         await highlightElementsSequentially(['tab-cours', 'tab-exercices'], 1000);
-        if (stopSignalRef.current) return;
-        await new Promise(resolve => setTimeout(resolve, 500));
-        
-        if (stopSignalRef.current) return;
-        
-        // MOMENT SPÉCIAL : Animation de la règle des cents
-        await playAudio("Oh ! Mais avant de commencer, laisse-moi te montrer LE secret le plus important !");
-        if (stopSignalRef.current) return;
-        await new Promise(resolve => setTimeout(resolve, 500));
-        
-        await playAudio("LA règle magique des centaines exactes ! Regarde bien !");
-        if (stopSignalRef.current) return;
-        
-        // Appeler l'animation spéciale des cents
-        setIsPlayingVocal(false); // Temporairement pour l'animation
-        await animateCentsRule();
-        if (stopSignalRef.current) return;
-        setIsPlayingVocal(true); // Reprendre le vocal
-        
-        await new Promise(resolve => setTimeout(resolve, 500));
-        await playAudio("Alors petit explorateur, maintenant que tu connais LE secret ultime, prêt à découvrir les autres mystères des grands nombres ? C'est parti pour l'aventure !");
       }
 
     } catch (error) {
@@ -1094,7 +1019,7 @@ export default function LireNombresCE1Page() {
               <button
                 id="tab-cours"
                 onClick={() => setShowExercises(false)}
-                className={`px-3 sm:px-6 py-2 sm:py-3 text-sm sm:text-base rounded-lg font-bold transition-all ${
+                className={`px-3 sm:px-6 py-2 sm:py-3 text-sm sm:text-base rounded-lg font-bold transition-all pulse-interactive-yellow ${
                   !showExercises 
                     ? 'bg-orange-500 text-white shadow-md' 
                     : 'text-gray-600 hover:bg-gray-100'
@@ -1105,7 +1030,7 @@ export default function LireNombresCE1Page() {
               <button
                 id="tab-exercices"
                 onClick={() => setShowExercises(true)}
-                className={`px-3 sm:px-6 py-2 sm:py-3 text-sm sm:text-base rounded-lg font-bold transition-all ${
+                className={`px-3 sm:px-6 py-2 sm:py-3 text-sm sm:text-base rounded-lg font-bold transition-all pulse-interactive-yellow ${
                   showExercises 
                     ? 'bg-orange-500 text-white shadow-md' 
                     : 'text-gray-600 hover:bg-gray-100'
@@ -1149,7 +1074,7 @@ export default function LireNombresCE1Page() {
               <button
                 onClick={explainChapter}
                 disabled={isPlayingVocal}
-                className={`bg-gradient-to-r from-green-500 to-blue-500 text-white px-3 sm:px-8 py-2 sm:py-4 rounded-md sm:rounded-xl font-bold text-xs sm:text-xl shadow-md sm:shadow-2xl hover:shadow-lg sm:hover:shadow-3xl transition-all transform hover:scale-105 min-h-[2.5rem] sm:min-h-[3rem] ${
+                className={`bg-gradient-to-r from-green-500 to-blue-500 text-white px-3 sm:px-8 py-2 sm:py-4 rounded-md sm:rounded-xl font-bold text-xs sm:text-xl shadow-md sm:shadow-2xl hover:shadow-lg sm:hover:shadow-3xl transition-all transform hover:scale-105 min-h-[2.5rem] sm:min-h-[3rem] pulse-interactive ${
                   isPlayingVocal ? 'opacity-75 cursor-not-allowed' : 'hover:from-green-600 hover:to-blue-600'
                 }`}
               >
@@ -1556,6 +1481,7 @@ export default function LireNombresCE1Page() {
                       </div>
                       
                       <button
+                        id="start-game-button"
                         onClick={startGame}
                         className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white px-6 py-3 rounded-lg font-bold text-sm shadow-lg transform hover:scale-105 transition-all pulse-interactive"
                       >
