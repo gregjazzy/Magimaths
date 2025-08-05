@@ -1554,9 +1554,9 @@ export default function LireNombresCE1Page() {
                     <div className="bg-green-500 bg-opacity-30 rounded-lg p-4 sm:p-6">
                       <h5 className="font-bold mb-3 text-green-100 text-base sm:text-lg">✅ CENTAINES EXACTES = AVEC S</h5>
                       <ul className="space-y-2 text-sm sm:text-base">
-                        <li><span className="font-bold">200</span> = deux-cent<span className="cents-s-highlight font-extrabold text-red-300 text-xl sm:text-2xl">s</span></li>
-                        <li><span className="font-bold">300</span> = trois-cent<span className="cents-s-highlight font-extrabold text-red-300 text-xl sm:text-2xl">s</span></li>
-                        <li><span className="font-bold">600</span> = six-cent<span className="cents-s-highlight font-extrabold text-red-300 text-xl sm:text-2xl">s</span></li>
+                        <li><span className="font-bold">200</span> = deux-cent<span className="cents-s-highlight font-extrabold text-red-700 text-xl sm:text-2xl">s</span></li>
+                        <li><span className="font-bold">300</span> = trois-cent<span className="cents-s-highlight font-extrabold text-red-700 text-xl sm:text-2xl">s</span></li>
+                        <li><span className="font-bold">600</span> = six-cent<span className="cents-s-highlight font-extrabold text-red-700 text-xl sm:text-2xl">s</span></li>
                       </ul>
                     </div>
                     <div className="bg-red-500 bg-opacity-30 rounded-lg p-4 sm:p-6">
@@ -1577,8 +1577,8 @@ export default function LireNombresCE1Page() {
                     <div className="bg-green-500 bg-opacity-30 rounded-lg p-4 sm:p-6">
                       <h5 className="font-bold mb-3 text-green-100 text-base sm:text-lg">✅ À LA FIN = AVEC S</h5>
                       <ul className="space-y-2 text-sm sm:text-base">
-                        <li><span className="font-bold">80</span> = quatre-vingt<span className="vingts-s-highlight font-extrabold text-red-300 text-xl sm:text-2xl">s</span></li>
-                        <li><span className="font-bold">580</span> = cinq-cent-quatre-vingt<span className="vingts-s-highlight font-extrabold text-red-300 text-xl sm:text-2xl">s</span></li>
+                        <li><span className="font-bold">80</span> = quatre-vingt<span className="vingts-s-highlight font-extrabold text-red-700 text-xl sm:text-2xl">s</span></li>
+                        <li><span className="font-bold">580</span> = cinq-cent-quatre-vingt<span className="vingts-s-highlight font-extrabold text-red-700 text-xl sm:text-2xl">s</span></li>
                       </ul>
                     </div>
                     <div className="bg-red-500 bg-opacity-30 rounded-lg p-4 sm:p-6">
@@ -1621,7 +1621,7 @@ export default function LireNombresCE1Page() {
                     <div className="space-y-3">
                       <div className="bg-green-400 bg-opacity-30 rounded-lg p-3 text-center">
                         <div className="font-bold text-lg">80</div>
-                        <div className="text-sm">quatre-vingt<span className="contrast-s-highlight font-extrabold text-red-300 text-xl">s</span></div>
+                        <div className="text-sm">quatre-vingt<span className="contrast-s-highlight font-extrabold text-red-700 text-xl">s</span></div>
                         <div className="text-xs text-green-200">✅ Rien après → S</div>
                       </div>
                       <div className="bg-red-400 bg-opacity-30 rounded-lg p-3 text-center">
@@ -1638,7 +1638,7 @@ export default function LireNombresCE1Page() {
                     <div className="space-y-3">
                       <div className="bg-green-400 bg-opacity-30 rounded-lg p-3 text-center">
                         <div className="font-bold text-lg">200</div>
-                        <div className="text-sm">deux-cent<span className="contrast-s-highlight font-extrabold text-red-300 text-xl">s</span></div>
+                        <div className="text-sm">deux-cent<span className="contrast-s-highlight font-extrabold text-red-700 text-xl">s</span></div>
                         <div className="text-xs text-green-200">✅ Exacte → S</div>
                       </div>
                       <div className="bg-red-400 bg-opacity-30 rounded-lg p-3 text-center">
