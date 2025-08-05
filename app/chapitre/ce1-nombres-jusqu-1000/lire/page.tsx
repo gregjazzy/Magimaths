@@ -261,84 +261,65 @@ export default function LireNombresCE1Page() {
     setIsAnimating(false);
   };
 
-  // Animation spéciale pour les contrastes "AVEC OU SANS S"
+  // Animation simple pour mettre en évidence les contrastes
   const animateContrastS = async () => {
     setIsAnimating(true);
-    setIsPlayingVocal(true);
     
-    // Vocal d'introduction
-    await playAudio("Attention petit maître ! Voici la leçon des contrastes ! Tu vas comprendre la différence !");
-    if (stopSignalRef.current) { setIsAnimating(false); setIsPlayingVocal(false); return; }
-    
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    // Animation paire 1: 80 vs 83
-    await playAudio("Paire 1 : 80 contre 83 ! Regarde la différence !");
-    if (stopSignalRef.current) { setIsAnimating(false); setIsPlayingVocal(false); return; }
-    
-    // Animer tous les "s" verts dans les paires
+    // 1. Animer tous les "s" verts (avec S)
     const sElements = document.querySelectorAll('.text-green-600');
     sElements.forEach((el, index) => {
       setTimeout(() => {
         if (el instanceof HTMLElement) {
-          el.style.animation = 'bounce 1s ease-in-out';
+          el.style.animation = 'bounce 1.5s ease-in-out';
           el.style.color = '#dc2626';
-          el.style.fontSize = '2em';
-          el.style.textShadow = '0 0 20px gold, 0 0 40px orange';
-          el.style.transform = 'scale(1.8)';
-          el.style.transition = 'all 0.3s';
+          el.style.fontSize = '1.8em';
+          el.style.textShadow = '0 0 15px gold';
+          el.style.transform = 'scale(1.5)';
+          el.style.transition = 'all 0.4s';
         }
-      }, index * 300);
+      }, index * 200);
     });
     
     await new Promise(resolve => setTimeout(resolve, 2000));
-    await playAudio("80, 200, 300 = nombres exacts ! Ils finissent par quatre-vingt ou cent, alors ils prennent un S !");
-    if (stopSignalRef.current) { setIsAnimating(false); setIsPlayingVocal(false); return; }
     
-    // Remettre les S normaux
+    // 2. Remettre les S normaux
     sElements.forEach(el => {
       if (el instanceof HTMLElement) {
         el.style.animation = '';
         el.style.fontSize = '';
         el.style.transform = '';
         el.style.textShadow = '';
-        el.style.color = '#16a34a'; // Remettre en vert
+        el.style.color = '#16a34a';
       }
     });
     
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await new Promise(resolve => setTimeout(resolve, 500));
     
-    // Maintenant animer les badges "✗ pas S"
-    await playAudio("Maintenant regarde les autres : 83, 205, 305 ! Ils sont suivis d'autre chose, alors PAS de S !");
-    if (stopSignalRef.current) { setIsAnimating(false); setIsPlayingVocal(false); return; }
-    
+    // 3. Animer les badges "✗ pas S" (sans S)
     const noSBadges = document.querySelectorAll('.bg-red-500');
     noSBadges.forEach((el, index) => {
       setTimeout(() => {
         if (el instanceof HTMLElement) {
-          el.style.animation = 'pulse 1s ease-in-out';
-          el.style.transform = 'scale(1.3)';
-          el.style.transition = 'all 0.3s';
+          el.style.animation = 'pulse 1.5s ease-in-out';
+          el.style.transform = 'scale(1.4)';
+          el.style.boxShadow = '0 0 20px rgba(239, 68, 68, 0.8)';
+          el.style.transition = 'all 0.4s';
         }
-      }, index * 400);
+      }, index * 300);
     });
     
     await new Promise(resolve => setTimeout(resolve, 2000));
     
-    // Remettre les badges normaux
+    // 4. Remettre les badges normaux
     noSBadges.forEach(el => {
       if (el instanceof HTMLElement) {
         el.style.animation = '';
         el.style.transform = '';
+        el.style.boxShadow = '';
       }
     });
     
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    await playAudio("Tu vois maintenant la différence ? C'est le secret du S !");
-    if (stopSignalRef.current) { setIsAnimating(false); setIsPlayingVocal(false); return; }
-    
     setIsAnimating(false);
-    setIsPlayingVocal(false);
   };
 
   // Fonction pour expliquer le chapitre au démarrage
