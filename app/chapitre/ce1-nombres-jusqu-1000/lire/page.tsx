@@ -1899,9 +1899,6 @@ export default function LireNombresCE1Page() {
                   <p className="font-semibold">✅ Orthographe moderne :</p>
                   <ul className="space-y-1 ml-2">
                     <li>• Tous les nombres composés ont des tirets</li>
-                    <li>• <span className="font-bold">31</span> = trente-et-un</li>
-                    <li>• <span className="font-bold">22</span> = vingt-deux (sans "et")</li>
-                    <li>• <span className="font-bold">32</span> = trente-deux</li>
                   </ul>
                 </div>
               </div>
@@ -1929,15 +1926,7 @@ export default function LireNombresCE1Page() {
                       <li>• <span className="font-bold">111</span> = cent-onze</li>
                     </ul>
                   </div>
-                  <div className="bg-white bg-opacity-20 rounded-lg p-2 sm:p-3">
-                    <h4 className="font-bold mb-2">Attention au "et" :</h4>
-                    <ul className="space-y-1">
-                      <li>• <span className="font-bold">21</span> = vingt-et-un (avec "et")</li>
-                      <li>• <span className="font-bold">31</span> = trente-et-un</li>
-                      <li>• <span className="font-bold">22</span> = vingt-deux (sans "et")</li>
-                      <li>• <span className="font-bold">32</span> = trente-deux</li>
-                    </ul>
-                  </div>
+
                 </div>
               </div>
             </div>
