@@ -1177,22 +1177,22 @@ export default function LireNombresCE1Page() {
             </Link>
             
             <div className="bg-white rounded-xl p-6 shadow-lg text-center">
-                          <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
+                          <h1 className="text-2xl sm:text-4xl font-bold text-gray-900 mb-2 sm:mb-4">
               📚 Apprendre à lire et écrire des nombres
             </h1>
-              <p className="text-lg text-gray-600 hidden sm:block">
+              <p className="text-sm sm:text-lg text-gray-600 hidden sm:block">
                 Découvre comment lire tous les nombres jusqu'à 1000 !
               </p>
             </div>
           </div>
 
           {/* Navigation entre cours et exercices */}
-          <div id="tab-navigation" className="flex justify-center mb-8">
+          <div id="tab-navigation" className="flex justify-center mb-4 sm:mb-8">
             <div className="bg-white rounded-lg p-1 shadow-md">
               <button
                 id="tab-cours"
                 onClick={() => setShowExercises(false)}
-                className={`px-6 py-3 rounded-lg font-bold transition-all ${
+                className={`px-3 sm:px-6 py-2 sm:py-3 text-sm sm:text-base rounded-lg font-bold transition-all ${
                   !showExercises 
                     ? 'bg-orange-500 text-white shadow-md' 
                     : 'text-gray-600 hover:bg-gray-100'
@@ -1203,7 +1203,7 @@ export default function LireNombresCE1Page() {
               <button
                 id="tab-exercices"
                 onClick={() => setShowExercises(true)}
-                className={`px-6 py-3 rounded-lg font-bold transition-all ${
+                className={`px-3 sm:px-6 py-2 sm:py-3 text-sm sm:text-base rounded-lg font-bold transition-all ${
                   showExercises 
                     ? 'bg-orange-500 text-white shadow-md' 
                     : 'text-gray-600 hover:bg-gray-100'
@@ -1216,9 +1216,9 @@ export default function LireNombresCE1Page() {
 
           {!showExercises ? (
             /* COURS */
-            <div className="space-y-4 sm:space-y-8">
+            <div className="space-y-3 sm:space-y-8">
               {/* Personnage Minecraft avec bouton DÉMARRER */}
-              <div className="flex flex-row items-center justify-center gap-3 sm:gap-6 p-3 sm:p-4 mb-4 sm:mb-6">
+              <div className="flex flex-row items-center justify-center gap-2 sm:gap-6 p-2 sm:p-4 mb-3 sm:mb-6">
                 {/* Image du personnage Minecraft */}
                 <div className={`relative transition-all duration-500 border-4 border-green-300 rounded-full bg-gradient-to-br from-green-100 to-emerald-100 shadow-lg ${
                   isPlayingVocal
@@ -1247,11 +1247,11 @@ export default function LireNombresCE1Page() {
               <button
                 onClick={explainChapter}
                 disabled={isPlayingVocal}
-                className={`bg-gradient-to-r from-green-500 to-blue-500 text-white px-4 sm:px-8 py-2 sm:py-4 rounded-lg sm:rounded-xl font-bold text-sm sm:text-xl shadow-lg sm:shadow-2xl hover:shadow-xl sm:hover:shadow-3xl transition-all transform hover:scale-105 ${
+                className={`bg-gradient-to-r from-green-500 to-blue-500 text-white px-3 sm:px-8 py-2 sm:py-4 rounded-md sm:rounded-xl font-bold text-xs sm:text-xl shadow-md sm:shadow-2xl hover:shadow-lg sm:hover:shadow-3xl transition-all transform hover:scale-105 min-h-[2.5rem] sm:min-h-[3rem] ${
                   isPlayingVocal ? 'opacity-75 cursor-not-allowed' : 'hover:from-green-600 hover:to-blue-600'
                 }`}
               >
-                <Play className="inline w-4 h-4 sm:w-6 sm:h-6 mr-1 sm:mr-2" />
+                <Play className="inline w-3 h-3 sm:w-6 sm:h-6 mr-1 sm:mr-2" />
                 {isPlayingVocal ? '🎤 JE PARLE...' : '🎯 DÉMARRER'}
               </button>
               
@@ -1260,13 +1260,13 @@ export default function LireNombresCE1Page() {
               </div>
 
               {/* Sélecteur de nombre */}
-              <div id="number-selector" className="bg-white rounded-lg sm:rounded-xl p-4 sm:p-6 shadow-lg">
-                <h2 className="text-lg sm:text-2xl font-bold text-center mb-3 sm:mb-4 text-gray-900">
+              <div id="number-selector" className="bg-white rounded-lg sm:rounded-xl p-3 sm:p-6 shadow-lg">
+                <h2 className="text-base sm:text-2xl font-bold text-center mb-2 sm:mb-4 text-gray-900">
                   🎯 Choisis un nombre à découvrir
                 </h2>
                 
                 
-                <div className="grid grid-cols-3 gap-2 sm:gap-3 mb-4 sm:mb-6">
+                <div className="grid grid-cols-3 gap-2 sm:gap-3 mb-3 sm:mb-6">
                   {numbers.map((num, index) => (
                     <button
                       key={num.value}
@@ -1276,7 +1276,7 @@ export default function LireNombresCE1Page() {
                         // Scroll automatique vers l'animation
                         setTimeout(() => scrollToElement('animation-section'), 100);
                       }}
-                      className={`p-3 sm:p-4 rounded-lg sm:rounded-xl font-bold transition-all pulse-interactive flex flex-col items-center justify-center min-h-[5rem] sm:min-h-[6rem] relative ${
+                      className={`p-2 sm:p-4 rounded-md sm:rounded-xl font-bold transition-all pulse-interactive flex flex-col items-center justify-center min-h-[4rem] sm:min-h-[6rem] relative ${
                         selectedNumber === num.value
                           ? 'bg-green-500 text-white shadow-lg scale-105'
                           : num.hasS 
@@ -1289,7 +1289,7 @@ export default function LireNombresCE1Page() {
                           S !
                         </div>
                       )}
-                      <div className="text-lg sm:text-2xl font-bold mb-1">
+                      <div className="text-base sm:text-2xl font-bold mb-1">
                         {num.label}
                       </div>
                       <div className="text-xs sm:text-sm font-semibold leading-tight text-center">
@@ -1927,9 +1927,9 @@ export default function LireNombresCE1Page() {
             </div>
           ) : (
             /* EXERCICES */
-            <div className="space-y-4 sm:space-y-8">
+            <div className="space-y-3 sm:space-y-8">
               {/* Personnage Minecraft avec bouton DÉMARRER */}
-              <div className="flex flex-row items-center justify-center gap-3 sm:gap-6 p-3 sm:p-4 mb-4 sm:mb-6">
+              <div className="flex flex-row items-center justify-center gap-2 sm:gap-6 p-2 sm:p-4 mb-3 sm:mb-6">
                 {/* Image du personnage Minecraft */}
                 <div className={`relative transition-all duration-500 border-4 border-blue-300 rounded-full bg-gradient-to-br from-blue-100 to-cyan-100 shadow-lg ${
                   isPlayingVocal
@@ -1958,11 +1958,11 @@ export default function LireNombresCE1Page() {
                   <button
                     onClick={explainChapter}
                     disabled={isPlayingVocal}
-                    className={`bg-gradient-to-r from-green-500 to-blue-500 text-white px-4 sm:px-8 py-2 sm:py-4 rounded-lg sm:rounded-xl font-bold text-sm sm:text-xl shadow-lg sm:shadow-2xl hover:shadow-xl sm:hover:shadow-3xl transition-all transform hover:scale-105 ${
+                    className={`bg-gradient-to-r from-green-500 to-blue-500 text-white px-3 sm:px-8 py-2 sm:py-4 rounded-md sm:rounded-xl font-bold text-xs sm:text-xl shadow-md sm:shadow-2xl hover:shadow-lg sm:hover:shadow-3xl transition-all transform hover:scale-105 min-h-[2.5rem] sm:min-h-[3rem] ${
                       isPlayingVocal ? 'opacity-75 cursor-not-allowed' : 'hover:from-green-600 hover:to-blue-600'
                     }`}
                   >
-                    <Play className="inline w-4 h-4 sm:w-6 sm:h-6 mr-1 sm:mr-2" />
+                    <Play className="inline w-3 h-3 sm:w-6 sm:h-6 mr-1 sm:mr-2" />
                     {isPlayingVocal ? '🎤 JE PARLE...' : '🎯 DÉMARRER'}
                   </button>
                   
@@ -1971,15 +1971,15 @@ export default function LireNombresCE1Page() {
               </div>
 
               {/* Header exercices */}
-              <div id="score-section" className="bg-white rounded-lg sm:rounded-xl p-4 sm:p-6 shadow-lg">
-                <div className="flex flex-col sm:flex-row justify-between items-center mb-3 sm:mb-4 gap-3 sm:gap-0">
-                  <h2 className="text-lg sm:text-2xl font-bold text-gray-900 text-center sm:text-left">
+              <div id="score-section" className="bg-white rounded-lg sm:rounded-xl p-3 sm:p-6 shadow-lg">
+                <div className="flex flex-col sm:flex-row justify-between items-center mb-2 sm:mb-4 gap-2 sm:gap-0">
+                  <h2 className="text-base sm:text-2xl font-bold text-gray-900 text-center sm:text-left">
                     ✏️ Exercice {currentExercise + 1} sur {exercises.length}
                   </h2>
                   <button
                     onClick={resetAll}
                     disabled={isPlayingVocal}
-                    className="bg-gray-500 text-white px-3 sm:px-4 py-2 sm:py-3 rounded-md sm:rounded-lg font-bold text-sm sm:text-base hover:bg-gray-600 transition-colors disabled:opacity-50 pulse-interactive-gray flex items-center justify-center"
+                    className="bg-gray-500 text-white px-2 sm:px-4 py-1 sm:py-3 rounded-md sm:rounded-lg font-bold text-xs sm:text-base hover:bg-gray-600 transition-colors disabled:opacity-50 pulse-interactive-gray flex items-center justify-center min-h-[2rem] sm:min-h-[3rem]"
                   >
                     <RotateCcw className="inline w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                     Recommencer
@@ -1996,7 +1996,7 @@ export default function LireNombresCE1Page() {
                 
                 {/* Score sous la barre */}
                 <div className="text-center">
-                  <div id="score-display" className={`text-lg font-bold text-blue-600 ${
+                  <div id="score-display" className={`text-sm sm:text-lg font-bold text-blue-600 ${
                     highlightedElement === 'score-display' ? 'ring-4 ring-yellow-400 bg-yellow-200 scale-110 animate-pulse p-2 rounded-lg' : ''
                   }`}>
                     Score : {score}/{exercises.length}
@@ -2005,36 +2005,36 @@ export default function LireNombresCE1Page() {
               </div>
 
               {/* Question */}
-              <div id="exercise-question" className="bg-white rounded-lg sm:rounded-xl p-4 sm:p-8 shadow-lg text-center">
-                <h3 className="text-lg sm:text-xl font-bold mb-4 sm:mb-6 text-gray-900">
+              <div id="exercise-question" className="bg-white rounded-lg sm:rounded-xl p-3 sm:p-8 shadow-lg text-center">
+                <h3 className="text-base sm:text-xl font-bold mb-3 sm:mb-6 text-gray-900">
                   📝 Écris ce nombre en lettres
                 </h3>
                 
-                <div id="mystery-number" className={`text-4xl sm:text-6xl font-bold text-blue-600 mb-6 sm:mb-8 ${
+                <div id="mystery-number" className={`text-3xl sm:text-6xl font-bold text-blue-600 mb-4 sm:mb-8 ${
                   highlightedElement === 'mystery-number' ? 'ring-4 ring-yellow-400 bg-yellow-200 scale-110 animate-pulse p-2 sm:p-4 rounded-lg' : ''
                 }`}>
                   {exercises[currentExercise].number}
                 </div>
                 
-                <div className="max-w-xs sm:max-w-md mx-auto mb-4 sm:mb-6">
+                <div className="max-w-xs sm:max-w-md mx-auto mb-3 sm:mb-6">
                   <input
                     id="answer-input"
                     type="text"
                     value={userAnswer}
                     onChange={(e) => setUserAnswer(e.target.value)}
                     placeholder="Écris comment tu lis ce nombre..."
-                    className={`w-full px-3 sm:px-4 py-3 sm:py-3 border-2 border-gray-300 rounded-md sm:rounded-lg text-center text-base sm:text-lg focus:border-blue-500 focus:outline-none bg-white text-gray-900 ${
+                    className={`w-full px-3 sm:px-4 py-2 sm:py-3 border-2 border-gray-300 rounded-md sm:rounded-lg text-center text-sm sm:text-lg focus:border-blue-500 focus:outline-none bg-white text-gray-900 min-h-[2.5rem] sm:min-h-[3rem] ${
                       highlightedElement === 'answer-input' ? 'ring-4 ring-yellow-400 bg-yellow-100 scale-105' : ''
                     }`}
                   />
                 </div>
                 
-                <div className="flex justify-center space-x-3 sm:space-x-4 mb-4 sm:mb-6">
+                <div className="flex justify-center space-x-2 sm:space-x-4 mb-3 sm:mb-6">
                   <button
                     id="erase-button"
                     onClick={resetExercise}
                     disabled={isPlayingVocal}
-                    className={`bg-gray-500 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-md sm:rounded-lg font-bold text-sm sm:text-base hover:bg-gray-600 transition-colors disabled:opacity-50 pulse-interactive-gray flex items-center justify-center ${
+                    className={`bg-gray-500 text-white px-3 sm:px-6 py-1 sm:py-3 rounded-md sm:rounded-lg font-bold text-xs sm:text-base hover:bg-gray-600 transition-colors disabled:opacity-50 pulse-interactive-gray flex items-center justify-center min-h-[2rem] sm:min-h-[3rem] ${
                       highlightedElement === 'erase-button' ? 'ring-4 ring-yellow-400 bg-gray-400 scale-110 animate-pulse' : ''
                     }`}
                   >
@@ -2044,7 +2044,7 @@ export default function LireNombresCE1Page() {
                 
                 {/* Résultat */}
                 {isCorrect !== null && (
-                  <div className={`p-4 rounded-lg mb-6 ${
+                  <div className={`p-3 sm:p-4 rounded-lg mb-4 sm:mb-6 ${
                     isCorrect ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
                   }`}>
                     <div className="flex items-center justify-center space-x-2">
