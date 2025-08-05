@@ -25,7 +25,13 @@ export async function POST() {
       high_usage_alerts: 0,
       rapid_visit_alerts: 0,
       total_new_alerts: 0,
-      details: []
+      details: [] as Array<{
+        type: string;
+        ip: string;
+        visits?: number;
+        visits_per_hour?: number;
+        country?: string;
+      }>
     };
 
     // Traiter les utilisateurs avec haute utilisation

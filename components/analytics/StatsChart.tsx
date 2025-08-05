@@ -46,7 +46,7 @@ export default function StatsChart({ dailyData, monthlyData, type, title }: Stat
 
   const chartData = data.map(item => ({
     ...item,
-    label: type === 'daily' ? item.date : (item as MonthlyStats).monthName
+    label: type === 'daily' ? (item as DailyStats).date : (item as MonthlyStats).monthName
   }));
 
   return (
@@ -64,7 +64,7 @@ export default function StatsChart({ dailyData, monthlyData, type, title }: Stat
           <Tooltip 
             labelFormatter={(label) => type === 'daily' ? 
               new Date(label).toLocaleDateString('fr-FR') : 
-              chartData.find(d => d[type === 'daily' ? 'date' : 'month'] === label)?.label
+              chartData.find(d => (d as MonthlyStats).month === label)?.label
             }
             formatter={(value, name) => {
               const labels = {

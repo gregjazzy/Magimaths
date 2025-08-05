@@ -45,8 +45,8 @@ export async function GET(request: NextRequest) {
       const month = currentDate.getMonth() + 1;
       const monthKey = `${year}-${month.toString().padStart(2, '0')}`;
       
-      const userStat = monthlyUsers?.find(d => d.month === monthKey);
-      const viewStat = monthlyViews?.find(d => d.month === monthKey);
+      const userStat = monthlyUsers?.find((d: any) => d.month === monthKey);
+      const viewStat = monthlyViews?.find((d: any) => d.month === monthKey);
       
       monthlyStats.push({
         month: monthKey,

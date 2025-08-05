@@ -214,7 +214,7 @@ export default function AnalyticsDashboard() {
                 <tr key={index} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                     {viewMode === 'daily' 
-                      ? new Date(item.date).toLocaleDateString('fr-FR')
+                      ? new Date((item as DailyStats).date).toLocaleDateString('fr-FR')
                       : (item as MonthlyStats).monthName
                     }
                   </td>

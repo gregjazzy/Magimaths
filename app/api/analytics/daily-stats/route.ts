@@ -41,8 +41,8 @@ export async function GET(request: NextRequest) {
       currentDate.setDate(startDate.getDate() + i);
       const dateStr = currentDate.toISOString().split('T')[0];
       
-      const userStat = dailyUsers?.find(d => d.date === dateStr);
-      const viewStat = dailyViews?.find(d => d.date === dateStr);
+      const userStat = dailyUsers?.find((d: any) => d.date === dateStr);
+      const viewStat = dailyViews?.find((d: any) => d.date === dateStr);
       
       dailyStats.push({
         date: dateStr,

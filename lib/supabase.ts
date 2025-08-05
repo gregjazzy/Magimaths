@@ -53,6 +53,11 @@ export type Database = {
 
 export const supabase = createClientComponentClient<Database>()
 
+// Pour les API routes - création d'un client côté serveur
+export function createClient() {
+  return createClientComponentClient<Database>()
+}
+
 // Configuration d'accès selon les plans
 export const ACCESS_CONFIG = {
   free: {
