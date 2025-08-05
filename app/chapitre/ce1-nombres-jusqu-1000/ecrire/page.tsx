@@ -764,8 +764,8 @@ export default function EcrireNombresCE1Page() {
                   <div className="text-center mb-4">
                     <h3 className="font-bold text-blue-700 mb-2">Cent vingt-trois</h3>
                     
-                    {/* Chiffres à placer */}
-                    {exampleStep >= 1 && exampleAnimating === 'cent-vingt-trois' && (
+                                        {/* Chiffres à placer - N'apparaissent qu'à l'étape 2 */}
+                    {exampleStep >= 2 && exampleAnimating === 'cent-vingt-trois' && (
                       <div className="flex justify-center gap-2 mb-4">
                         <div id="cent-vingt-trois-digit-0" className="w-8 h-8 bg-red-200 rounded flex items-center justify-center font-bold text-red-800">1</div>
                         <div id="cent-vingt-trois-digit-1" className="w-8 h-8 bg-blue-200 rounded flex items-center justify-center font-bold text-blue-800">2</div>
@@ -836,8 +836,8 @@ export default function EcrireNombresCE1Page() {
                   <div className="text-center mb-4">
                     <h3 className="font-bold text-orange-700 mb-2">Quatre-vingt-sept</h3>
                     
-                    {/* Chiffres à placer */}
-                    {exampleStep >= 1 && exampleAnimating === 'quatre-vingt-sept' && (
+                                        {/* Chiffres à placer - N'apparaissent qu'à l'étape 2 */}
+                    {exampleStep >= 2 && exampleAnimating === 'quatre-vingt-sept' && (
                       <div className="flex justify-center gap-2 mb-4">
                         <div id="quatre-vingt-sept-digit-0" className="w-8 h-8 bg-gray-200 rounded flex items-center justify-center font-bold text-gray-500">0</div>
                         <div id="quatre-vingt-sept-digit-1" className="w-8 h-8 bg-blue-200 rounded flex items-center justify-center font-bold text-blue-800">8</div>
@@ -908,8 +908,8 @@ export default function EcrireNombresCE1Page() {
                   <div className="text-center mb-4">
                     <h3 className="font-bold text-purple-700 mb-2">Deux cent soixante-sept</h3>
                     
-                    {/* Chiffres à placer */}
-                    {exampleStep >= 1 && exampleAnimating === 'deux-cent-soixante-sept' && (
+                                        {/* Chiffres à placer - N'apparaissent qu'à l'étape 2 */}
+                    {exampleStep >= 2 && exampleAnimating === 'deux-cent-soixante-sept' && (
                       <div className="flex justify-center gap-2 mb-4">
                         <div id="deux-cent-soixante-sept-digit-0" className="w-8 h-8 bg-red-200 rounded flex items-center justify-center font-bold text-red-800">2</div>
                         <div id="deux-cent-soixante-sept-digit-1" className="w-8 h-8 bg-blue-200 rounded flex items-center justify-center font-bold text-blue-800">6</div>
