@@ -53,16 +53,6 @@ const sections = [
     xp: 12,
     color: 'from-orange-500 to-red-500',
     verified: true
-  },
-  {
-    id: 'doubles-moities',
-    title: 'Doubles et moitiés',
-    description: 'Connaître les doubles jusqu\'à 50 et leurs moitiés',
-    icon: '🎯',
-    duration: '10 min',
-    xp: 12,
-    color: 'from-pink-500 to-rose-500',
-    verified: true
   }
 ]
 
@@ -183,7 +173,7 @@ export default function CPNombresJusqu100Page() {
               💯 Nombres jusqu'à 100
             </h1>
             <p className="text-base sm:text-lg text-gray-600 mb-4 sm:mb-6 px-2">
-              Extension 21-100. Découvre les unités, dizaines, compare et ordonne les grands nombres !
+              Extension 21-100. Découvre les unités, dizaines, compare et ordonne les grands nombres jusqu'à 100 !
             </p>
             <div className="text-lg sm:text-xl mb-4 sm:mb-6">
               <span className="bg-blue-200 px-3 sm:px-4 py-2 rounded-full font-bold text-gray-800 text-sm sm:text-base">
@@ -200,7 +190,7 @@ export default function CPNombresJusqu100Page() {
             <div>
               <h2 className="text-lg sm:text-2xl font-bold mb-2">Programme français CP - Nombres jusqu'à 100</h2>
               <p className="text-sm sm:text-lg">
-                Extension 21-100. Unités/dizaines, comparer, ordonner, doubles/moitiés !
+                Extension 21-100. Unités/dizaines, comparer, ordonner les grands nombres !
               </p>
             </div>
           </div>

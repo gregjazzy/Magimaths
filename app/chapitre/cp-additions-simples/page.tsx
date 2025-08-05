@@ -35,6 +35,26 @@ const sections = [
     verified: true
   },
   {
+    id: 'decompositions-20',
+    title: 'Décompositions additives jusqu\'à 20',
+    description: 'Maîtriser les décompositions avec des nombres plus grands jusqu\'à 20',
+    icon: '🔢',
+    duration: '12 min',
+    xp: 15,
+    color: 'from-indigo-500 to-purple-500',
+    verified: false
+  },
+  {
+    id: 'decompositions-100',
+    title: 'Décompositions additives jusqu\'à 100',
+    description: 'Explorer toutes les façons de décomposer les grands nombres',
+    icon: '💫',
+    duration: '15 min',
+    xp: 20,
+    color: 'from-cyan-500 to-blue-500',
+    verified: false
+  },
+  {
     id: 'complements-10',
     title: 'Compléments à 10',
     description: 'Connaître par cœur les compléments à 10 (7+3=10, 6+4=10...)',

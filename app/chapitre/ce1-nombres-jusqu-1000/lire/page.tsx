@@ -27,6 +27,11 @@ export default function LireNombresCE1Page() {
   const stopSignalRef = useRef(false);
   const currentAudioRef = useRef<SpeechSynthesisUtterance | null>(null);
 
+  // Helper function pour trouver un nombre dans les deux listes
+  const findNumber = (value: string) => {
+    return numbers.find(n => n.value === value) || numbersWithS.find(n => n.value === value);
+  };
+
   // Fonction pour arrêter tous les vocaux et animations
   const stopAllVocalsAndAnimations = () => {
     stopSignalRef.current = true;
@@ -103,6 +108,357 @@ export default function LireNombresCE1Page() {
         resolve();
       }
     });
+  };
+
+  // Animation spéciale pour les règles du "s" - PURE ANIMATION FLUIDE
+  const animateCentsRule = async () => {
+    setIsAnimating(true);
+    
+    // Scroll vers la section avec animation douce
+    scrollToElement('cents-rule-section');
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    // Sélectionner tous les éléments à animer
+    const centsElements = document.querySelectorAll('.cents-s-highlight');
+    const vingtsElements = document.querySelectorAll('.vingts-s-highlight');
+    const centsNoSElements = document.querySelectorAll('.cents-no-s-highlight');
+    const vingtsNoSElements = document.querySelectorAll('.vingts-no-s-highlight');
+    
+    const allSElements = [...Array.from(centsElements), ...Array.from(vingtsElements)];
+    const allNoSElements = [...Array.from(centsNoSElements), ...Array.from(vingtsNoSElements)];
+    
+    // Phase 1: Révélation progressive des éléments AVEC S (mouvement de vague)
+    for (let i = 0; i < allSElements.length; i++) {
+      if (stopSignalRef.current) break;
+      
+      const el = allSElements[i] as HTMLElement;
+      
+      // Animation fluide d'apparition
+      el.style.transition = 'all 1.2s cubic-bezier(0.34, 1.56, 0.64, 1)';
+      el.style.transform = 'scale(2) translateY(-15px)';
+      el.style.color = '#059669'; // vert émeraude
+      el.style.fontWeight = '900';
+      el.style.textShadow = '0 0 20px #10b981, 0 0 40px #34d399';
+      el.style.backgroundColor = 'rgba(16, 185, 129, 0.1)';
+      el.style.borderRadius = '12px';
+      el.style.padding = '6px 12px';
+      el.style.border = '2px solid #10b981';
+      
+      await new Promise(resolve => setTimeout(resolve, 400)); // Délai entre chaque S
+    }
+    
+    // Pause pour admirer
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    
+    // Phase 2: Animation des éléments SANS S (contraste)
+    for (let i = 0; i < allNoSElements.length; i++) {
+      if (stopSignalRef.current) break;
+      
+      const el = allNoSElements[i] as HTMLElement;
+      
+      el.style.transition = 'all 1s ease-out';
+      el.style.transform = 'scale(1.8) translateY(-8px)';
+      el.style.color = '#f59e0b'; // orange
+      el.style.fontWeight = '900';
+      el.style.textShadow = '0 0 15px #fbbf24, 0 0 30px #f59e0b';
+      el.style.backgroundColor = 'rgba(245, 158, 11, 0.1)';
+      el.style.borderRadius = '8px';
+      el.style.padding = '4px 8px';
+      el.style.border = '2px solid #f59e0b';
+      
+      await new Promise(resolve => setTimeout(resolve, 350));
+    }
+    
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    
+    // Phase 3: Animation de danse synchronisée (mouvement de vague)
+    for (let cycle = 0; cycle < 3; cycle++) {
+      if (stopSignalRef.current) break;
+      
+      // Vague montante - S en premier
+      for (let i = 0; i < allSElements.length; i++) {
+        if (stopSignalRef.current) break;
+        const el = allSElements[i] as HTMLElement;
+        el.style.transform = 'scale(2.5) translateY(-25px) rotate(10deg)';
+        el.style.textShadow = '0 0 25px #10b981, 0 0 50px #34d399';
+        await new Promise(resolve => setTimeout(resolve, 200));
+      }
+      
+      // Puis les tirets
+      for (let i = 0; i < allNoSElements.length; i++) {
+        if (stopSignalRef.current) break;
+        const el = allNoSElements[i] as HTMLElement;
+        el.style.transform = 'scale(2.2) translateY(-20px) rotate(-8deg)';
+        el.style.textShadow = '0 0 20px #fbbf24, 0 0 40px #f59e0b';
+        await new Promise(resolve => setTimeout(resolve, 180));
+      }
+      
+      await new Promise(resolve => setTimeout(resolve, 300));
+      
+      // Vague descendante
+      const allElements = [...allSElements, ...allNoSElements];
+      for (let i = allElements.length - 1; i >= 0; i--) {
+        if (stopSignalRef.current) break;
+        const el = allElements[i] as HTMLElement;
+        el.style.transform = el.style.transform.includes('scale(2.5)') 
+          ? 'scale(2) translateY(-15px) rotate(0deg)'
+          : 'scale(1.8) translateY(-8px) rotate(0deg)';
+        await new Promise(resolve => setTimeout(resolve, 100));
+      }
+      
+      await new Promise(resolve => setTimeout(resolve, 400));
+    }
+    
+    // Phase 4: Animation finale en spirale
+    await new Promise(resolve => setTimeout(resolve, 800));
+    
+    // Créer un effet de spirale avec tous les éléments
+    const allElements = [...allSElements, ...allNoSElements];
+    for (let i = 0; i < allElements.length; i++) {
+      if (stopSignalRef.current) break;
+      
+      const el = allElements[i] as HTMLElement;
+      const angle = (i * 45) % 360; // Rotation différente pour chaque élément
+      
+      el.style.transition = 'all 1.5s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
+      el.style.transform = `scale(2.8) translateY(-30px) rotate(${angle}deg)`;
+      
+      // Couleur dynamique selon la position
+      if (allSElements.includes(el)) {
+        el.style.color = i % 2 === 0 ? '#dc2626' : '#059669';
+        el.style.textShadow = i % 2 === 0 ? '0 0 30px #dc2626' : '0 0 30px #059669';
+      } else {
+        el.style.color = '#f59e0b';
+        el.style.textShadow = '0 0 25px #fbbf24';
+      }
+      
+      await new Promise(resolve => setTimeout(resolve, 250));
+    }
+    
+    // Maintenir la spirale pendant un moment
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    
+    // Phase 5: Retour gracieux à la normale
+    for (let i = 0; i < allElements.length; i++) {
+      if (stopSignalRef.current) break;
+      
+      const el = allElements[i] as HTMLElement;
+      el.style.transition = 'all 2s ease-out';
+      el.style.transform = '';
+      el.style.color = '';
+      el.style.fontWeight = '';
+      el.style.textShadow = '';
+      el.style.backgroundColor = '';
+      el.style.borderRadius = '';
+      el.style.padding = '';
+      el.style.border = '';
+      
+      await new Promise(resolve => setTimeout(resolve, 150));
+    }
+    
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    setIsAnimating(false);
+  };
+
+  // Animation spéciale pour les contrastes "AVEC OU SANS S"
+  const animateContrastS = async () => {
+    setIsAnimating(true);
+    setIsPlayingVocal(true);
+    
+    // Vocal d'introduction
+    await playAudio("Attention petit maître ! Voici la leçon des contrastes ! Tu vas comprendre la différence !");
+    if (stopSignalRef.current) { setIsAnimating(false); setIsPlayingVocal(false); return; }
+    
+    // Scroll vers la section des contrastes
+    scrollToElement('contrast-s-section');
+    await new Promise(resolve => setTimeout(resolve, 500));
+    
+    // Mettre en surbrillance la section
+    setHighlightedElement('contrast-s-section');
+    await playAudio("Regarde bien ! Chaque paire montre exactement pourquoi un nombre a un S et l'autre non !");
+    if (stopSignalRef.current) { setHighlightedElement(null); setIsAnimating(false); setIsPlayingVocal(false); return; }
+    
+    await new Promise(resolve => setTimeout(resolve, 500));
+    
+    // Animation paire 1: 80 vs 83
+    await playAudio("Paire 1 : 80 contre 83 ! Regarde la différence !");
+    if (stopSignalRef.current) { setHighlightedElement(null); setIsAnimating(false); setIsPlayingVocal(false); return; }
+    
+    const contrastSElements = document.querySelectorAll('.contrast-s-highlight');
+    const contrastNoSElements = document.querySelectorAll('.contrast-no-s-highlight');
+    
+    // Animation du premier S (80)
+    if (contrastSElements.length > 0) {
+      const el = contrastSElements[0] as HTMLElement;
+      el.style.animation = 'bounce-subtle 2s ease-in-out';
+      el.style.color = '#dc2626'; 
+      el.style.fontSize = '3em';
+      el.style.fontWeight = '900';
+      el.style.textShadow = '0 0 25px gold, 0 0 50px orange';
+      el.style.transform = 'scale(2.5)';
+      el.style.transition = 'all 0.5s';
+      
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      await playAudio("80 = quatre-vingts ! Rien après quatre-vingt, alors on met un S !");
+      if (stopSignalRef.current) { setHighlightedElement(null); setIsAnimating(false); setIsPlayingVocal(false); return; }
+      
+      // Remettre normal
+      el.style.animation = '';
+      el.style.fontSize = '';
+      el.style.transform = '';
+      el.style.textShadow = '';
+    }
+    
+    await new Promise(resolve => setTimeout(resolve, 500));
+    
+    // Animation du premier tiret (83)
+    if (contrastNoSElements.length > 0) {
+      const el = contrastNoSElements[0] as HTMLElement;
+      el.style.animation = 'pulse-subtle 2s ease-in-out';
+      el.style.color = '#fbbf24'; 
+      el.style.fontSize = '3em';
+      el.style.fontWeight = '900';
+      el.style.textShadow = '0 0 25px yellow, 0 0 50px orange';
+      el.style.transform = 'scale(2.5)';
+      el.style.transition = 'all 0.5s';
+      
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      await playAudio("Mais 83 = quatre-vingt-trois ! Suivi de trois, alors PAS de S, juste un tiret !");
+      if (stopSignalRef.current) { setHighlightedElement(null); setIsAnimating(false); setIsPlayingVocal(false); return; }
+      
+      // Remettre normal
+      el.style.animation = '';
+      el.style.fontSize = '';
+      el.style.transform = '';
+      el.style.textShadow = '';
+    }
+    
+    await new Promise(resolve => setTimeout(resolve, 800));
+    
+    // Animation paire 2: 200 vs 205
+    await playAudio("Paire 2 : 200 contre 205 ! Même principe avec les centaines !");
+    if (stopSignalRef.current) { setHighlightedElement(null); setIsAnimating(false); setIsPlayingVocal(false); return; }
+    
+    // Animation du deuxième S (200)
+    if (contrastSElements.length > 1) {
+      const el = contrastSElements[1] as HTMLElement;
+      el.style.animation = 'bounce-subtle 2s ease-in-out';
+      el.style.color = '#dc2626'; 
+      el.style.fontSize = '3em';
+      el.style.fontWeight = '900';
+      el.style.textShadow = '0 0 25px gold, 0 0 50px orange';
+      el.style.transform = 'scale(2.5)';
+      el.style.transition = 'all 0.5s';
+      
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      await playAudio("200 = deux-cents ! Centaine exacte, alors S !");
+      if (stopSignalRef.current) { setHighlightedElement(null); setIsAnimating(false); setIsPlayingVocal(false); return; }
+      
+      // Remettre normal
+      el.style.animation = '';
+      el.style.fontSize = '';
+      el.style.transform = '';
+      el.style.textShadow = '';
+    }
+    
+    await new Promise(resolve => setTimeout(resolve, 500));
+    
+    // Animation du deuxième tiret (205)
+    if (contrastNoSElements.length > 1) {
+      const el = contrastNoSElements[1] as HTMLElement;
+      el.style.animation = 'pulse-subtle 2s ease-in-out';
+      el.style.color = '#fbbf24'; 
+      el.style.fontSize = '3em';
+      el.style.fontWeight = '900';
+      el.style.textShadow = '0 0 25px yellow, 0 0 50px orange';
+      el.style.transform = 'scale(2.5)';
+      el.style.transition = 'all 0.5s';
+      
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      await playAudio("Mais 205 = deux-cent-cinq ! Pas exacte car suivie de cinq, alors PAS de S !");
+      if (stopSignalRef.current) { setHighlightedElement(null); setIsAnimating(false); setIsPlayingVocal(false); return; }
+      
+      // Remettre normal
+      el.style.animation = '';
+      el.style.fontSize = '';
+      el.style.transform = '';
+      el.style.textShadow = '';
+    }
+    
+    await new Promise(resolve => setTimeout(resolve, 800));
+    
+    // Animation paire 3: 690 et 691
+    await playAudio("Paire 3 : 690 et 691 ! Tous les deux sans S car quatre-vingt est suivi !");
+    if (stopSignalRef.current) { setHighlightedElement(null); setIsAnimating(false); setIsPlayingVocal(false); return; }
+    
+    // Animation des derniers tirets (690, 691)
+    for (let i = 2; i < contrastNoSElements.length && i < 4; i++) {
+      if (stopSignalRef.current) break;
+      const el = contrastNoSElements[i] as HTMLElement;
+      el.style.animation = 'pulse-subtle 1s ease-in-out';
+      el.style.color = '#fbbf24'; 
+      el.style.fontSize = '2em';
+      el.style.fontWeight = '900';
+      el.style.textShadow = '0 0 15px yellow, 0 0 30px orange';
+      el.style.transform = 'scale(1.8)';
+      el.style.transition = 'all 0.3s';
+      
+      await new Promise(resolve => setTimeout(resolve, 800));
+      
+      // Remettre normal
+      el.style.animation = '';
+      el.style.fontSize = '';
+      el.style.transform = '';
+      el.style.textShadow = '';
+      
+      await new Promise(resolve => setTimeout(resolve, 200));
+    }
+    
+    await playAudio("690 = six-cent-quatre-vingt-dix et 691 = six-cent-quatre-vingt-onze ! Quatre-vingt suivi, alors pas de S !");
+    if (stopSignalRef.current) { setHighlightedElement(null); setIsAnimating(false); setIsPlayingVocal(false); return; }
+    
+    await new Promise(resolve => setTimeout(resolve, 500));
+    
+    // Animation finale : tous les éléments ensemble
+    await playAudio("Tu vois maintenant ? Les contrastes sont clairs : avec S quand c'est fini, sans S quand c'est suivi !");
+    if (stopSignalRef.current) { setHighlightedElement(null); setIsAnimating(false); setIsPlayingVocal(false); return; }
+    
+    // Grande finale avec tous les éléments
+    const allElements = [...Array.from(contrastSElements), ...Array.from(contrastNoSElements)];
+    for (let i = 0; i < 3; i++) {
+      if (stopSignalRef.current) break;
+      allElements.forEach(element => {
+        const el = element as HTMLElement;
+        el.style.backgroundColor = '#fef3c7';
+        el.style.color = '#dc2626';
+        el.style.fontWeight = '900';
+        el.style.transform = 'scale(1.4)';
+        el.style.transition = 'all 0.3s';
+        el.style.borderRadius = '8px';
+        el.style.padding = '4px 8px';
+        el.style.boxShadow = '0 0 20px gold';
+      });
+      await new Promise(resolve => setTimeout(resolve, 600));
+      allElements.forEach(element => {
+        const el = element as HTMLElement;
+        el.style.backgroundColor = '';
+        el.style.color = '';
+        el.style.fontWeight = '';
+        el.style.transform = '';
+        el.style.transition = '';
+        el.style.borderRadius = '';
+        el.style.padding = '';
+        el.style.boxShadow = '';
+      });
+      await new Promise(resolve => setTimeout(resolve, 400));
+    }
+    
+    await playAudio("Parfait ! Maintenant tu es un maître des contrastes ! Tu sauras toujours quand mettre un S !");
+    
+    setHighlightedElement(null);
+    setIsAnimating(false);
+    setIsPlayingVocal(false);
   };
 
   // Fonction pour expliquer le chapitre au démarrage
@@ -225,6 +581,35 @@ export default function LireNombresCE1Page() {
         await new Promise(resolve => setTimeout(resolve, 500));
         
         if (stopSignalRef.current) return;
+        await playAudio("Parfait ! Tu vois qu'il y a deux sections de nombres : les classiques et les pièges !");
+        if (stopSignalRef.current) return;
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        if (stopSignalRef.current) return;
+        await playAudio("Regarde ! Cette première section contient les nombres classiques : tous SANS S !");
+        if (stopSignalRef.current) return;
+        // Faire clignoter tous les boutons classiques
+        await highlightElementsSequentially(['number-btn-0', 'number-btn-1', 'number-btn-2', 'number-btn-3', 'number-btn-4', 'number-btn-5'], 600);
+        if (stopSignalRef.current) return;
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        if (stopSignalRef.current) return;
+        await playAudio("234, 89, 567, 123, 694, 978 : tous ces nombres n'ont pas de S !");
+        if (stopSignalRef.current) return;
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        if (stopSignalRef.current) return;
+        scrollToElement('traps-selector');
+        await playAudio("Mais attention ! Plus bas, il y a une section CONTRASTES pour bien comprendre la différence !");
+        if (stopSignalRef.current) return;
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        if (stopSignalRef.current) return;
+        await playAudio("Tu vois ? 80 avec S contre 83 sans S ! 200 avec S contre 205 sans S ! C'est le contraste parfait !");
+        if (stopSignalRef.current) return;
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        if (stopSignalRef.current) return;
         scrollToElement('animation-section');
         await playAudio("Le bouton bleu Voir le placement, c'est comme une potion de vision ! Il te montre où placer chaque chiffre dans le tableau !");
         if (stopSignalRef.current) return;
@@ -247,7 +632,23 @@ export default function LireNombresCE1Page() {
         await new Promise(resolve => setTimeout(resolve, 500));
         
         if (stopSignalRef.current) return;
-        await playAudio("Alors petit explorateur, prêt à découvrir les secrets des grands nombres ? C'est parti pour l'aventure !");
+        
+        // MOMENT SPÉCIAL : Animation de la règle des cents
+        await playAudio("Oh ! Mais avant de commencer, laisse-moi te montrer LE secret le plus important !");
+        if (stopSignalRef.current) return;
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        await playAudio("LA règle magique des centaines exactes ! Regarde bien !");
+        if (stopSignalRef.current) return;
+        
+        // Appeler l'animation spéciale des cents
+        setIsPlayingVocal(false); // Temporairement pour l'animation
+        await animateCentsRule();
+        if (stopSignalRef.current) return;
+        setIsPlayingVocal(true); // Reprendre le vocal
+        
+        await new Promise(resolve => setTimeout(resolve, 500));
+        await playAudio("Alors petit explorateur, maintenant que tu connais LE secret ultime, prêt à découvrir les autres mystères des grands nombres ? C'est parti pour l'aventure !");
       }
 
     } catch (error) {
@@ -295,12 +696,21 @@ export default function LireNombresCE1Page() {
   };
 
   const numbers = [
-    { value: '234', label: '234', reading: 'Deux-cent-trente-quatre' },
-    { value: '89', label: '89', reading: 'Quatre-vingt-neuf' },
-    { value: '345', label: '345', reading: 'Trois-cent-quarante-cinq' },
-    { value: '37', label: '37', reading: 'Trente-sept' },
-    { value: '694', label: '694', reading: 'Six-cent-quatre-vingt-quatorze' },
-    { value: '978', label: '978', reading: 'Neuf-cent-soixante-dix-huit' }
+    { value: '234', label: '234', reading: 'Deux-cent-trente-quatre', hasS: false },
+    { value: '89', label: '89', reading: 'Quatre-vingt-neuf', hasS: false },
+    { value: '567', label: '567', reading: 'Cinq-cent-soixante-sept', hasS: false },
+    { value: '123', label: '123', reading: 'Cent-vingt-trois', hasS: false },
+    { value: '694', label: '694', reading: 'Six-cent-quatre-vingt-quatorze', hasS: false },
+    { value: '978', label: '978', reading: 'Neuf-cent-soixante-dix-huit', hasS: false }
+  ];
+
+  const numbersWithS = [
+    { value: '80', label: '80', reading: 'Quatre-vingts', hasS: true },
+    { value: '83', label: '83', reading: 'Quatre-vingt-trois', hasS: false },
+    { value: '200', label: '200', reading: 'Deux-cents', hasS: true },
+    { value: '205', label: '205', reading: 'Deux-cent-cinq', hasS: false },
+    { value: '300', label: '300', reading: 'Trois-cents', hasS: true },
+    { value: '305', label: '305', reading: 'Trois-cent-cinq', hasS: false }
   ];
 
   const exercises = [
@@ -316,7 +726,7 @@ export default function LireNombresCE1Page() {
     { number: '350', reading: 'Trois-cent-cinquante' },
     { number: '284', reading: 'Deux-cent-quatre-vingt-quatre' },
     { number: '837', reading: 'Huit-cent-trente-sept' },
-    { number: '37', reading: 'Trente-sept' },
+    { number: '300', reading: 'Trois-cents' },
     { number: '98', reading: 'Quatre-vingt-dix-huit' },
     { number: '456', reading: 'Quatre-cent-cinquante-six' }
   ];
@@ -530,7 +940,7 @@ export default function LireNombresCE1Page() {
     // Conclusion vocale avec le nombre complet
     if (!stopSignalRef.current) {
       setIsPlayingVocal(true);
-      const completeReading = numbers.find(n => n.value === selectedNumber)?.reading || selectedNumber;
+      const completeReading = findNumber(selectedNumber)?.reading || selectedNumber;
       const conclusionText = `Et donc, ${selectedNumber} se lit ${completeReading} !`;
       await playAudio(conclusionText);
       setIsPlayingVocal(false);
@@ -754,9 +1164,9 @@ export default function LireNombresCE1Page() {
             </Link>
             
             <div className="bg-white rounded-xl p-6 shadow-lg text-center">
-              <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
-                👁️ Apprendre à lire les nombres
-              </h1>
+                          <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
+              📚 Apprendre à lire et écrire des nombres
+            </h1>
               <p className="text-lg text-gray-600 hidden sm:block">
                 Découvre comment lire tous les nombres jusqu'à 1000 !
               </p>
@@ -838,10 +1248,12 @@ export default function LireNombresCE1Page() {
 
               {/* Sélecteur de nombre */}
               <div id="number-selector" className="bg-white rounded-lg sm:rounded-xl p-4 sm:p-6 shadow-lg">
-                <h2 className="text-lg sm:text-2xl font-bold text-center mb-4 sm:mb-6 text-gray-900">
+                <h2 className="text-lg sm:text-2xl font-bold text-center mb-3 sm:mb-4 text-gray-900">
                   🎯 Choisis un nombre à découvrir
                 </h2>
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 sm:gap-3 mb-4 sm:mb-6">
+                
+                
+                <div className="grid grid-cols-3 gap-2 sm:gap-3 mb-4 sm:mb-6">
                   {numbers.map((num, index) => (
                     <button
                       key={num.value}
@@ -851,13 +1263,33 @@ export default function LireNombresCE1Page() {
                         // Scroll automatique vers l'animation
                         setTimeout(() => scrollToElement('animation-section'), 100);
                       }}
-                      className={`p-2 sm:p-4 rounded-md sm:rounded-lg font-bold text-base sm:text-xl transition-all pulse-interactive flex items-center justify-center min-h-[3rem] sm:min-h-[4rem] ${
+                      className={`p-3 sm:p-4 rounded-lg sm:rounded-xl font-bold transition-all pulse-interactive flex flex-col items-center justify-center min-h-[5rem] sm:min-h-[6rem] relative ${
                         selectedNumber === num.value
                           ? 'bg-green-500 text-white shadow-lg scale-105'
-                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                          : num.hasS 
+                            ? 'bg-gradient-to-br from-yellow-100 to-orange-100 text-gray-800 hover:from-yellow-200 hover:to-orange-200 border-2 border-orange-300 shadow-md'
+                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                       } ${highlightedElement === `number-btn-${index}` ? 'ring-4 ring-yellow-400 bg-yellow-200 scale-110 animate-pulse' : ''}`}
                     >
-                      {num.label}
+                      {num.hasS && (
+                        <div className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full animate-bounce">
+                          S !
+                        </div>
+                      )}
+                      <div className="text-lg sm:text-2xl font-bold mb-1">
+                        {num.label}
+                      </div>
+                      <div className="text-xs sm:text-sm font-semibold leading-tight text-center">
+                        {num.hasS ? (
+                          <span dangerouslySetInnerHTML={{ 
+                            __html: num.reading
+                              .replace(/cents/g, 'cent<span style="color: #dc2626; font-weight: 900; font-size: 1.3em; text-shadow: 0 0 8px #dc2626, 0 0 15px #fbbf24; animation: pulse 2s infinite; background: linear-gradient(45deg, #fef3c7, #fed7aa); padding: 1px 3px; border-radius: 3px; border: 1px solid #dc2626;">s</span>')
+                              .replace(/vingts/g, 'vingt<span style="color: #dc2626; font-weight: 900; font-size: 1.3em; text-shadow: 0 0 8px #dc2626, 0 0 15px #fbbf24; animation: pulse 2s infinite; background: linear-gradient(45deg, #fef3c7, #fed7aa); padding: 1px 3px; border-radius: 3px; border: 1px solid #dc2626;">s</span>')
+                          }} />
+                        ) : (
+                          num.reading
+                        )}
+                      </div>
                     </button>
                   ))}
                 </div>
@@ -1002,11 +1434,11 @@ export default function LireNombresCE1Page() {
                   </h4>
                   <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4">
                     <p className="text-sm sm:text-2xl font-bold text-yellow-900 text-center">
-                      {numbers.find(n => n.value === selectedNumber)?.reading}
+                      {findNumber(selectedNumber)?.reading}
                     </p>
                     <button
                       id="listen-button"
-                      onClick={() => speakNumber(numbers.find(n => n.value === selectedNumber)?.reading || '')}
+                      onClick={() => speakNumber(findNumber(selectedNumber)?.reading || '')}
                       disabled={isPlayingVocal}
                       className={`bg-yellow-500 text-white px-2 sm:px-4 py-1 sm:py-3 rounded-md sm:rounded-lg font-bold text-xs sm:text-base hover:bg-yellow-600 transition-colors disabled:opacity-50 pulse-interactive-yellow flex items-center justify-center ${
                         highlightedElement === 'listen-button' ? 'ring-4 ring-yellow-400 bg-yellow-400 scale-110 animate-pulse' : ''
@@ -1028,6 +1460,341 @@ export default function LireNombresCE1Page() {
                   <li>• Et enfin les unités</li>
                   <li>• N'oublie pas de dire "cent" quand il y en a !</li>
                 </ul>
+              </div>
+
+              {/* SECTION LES PIÈGES - Nombres avec S */}
+              <div id="traps-selector" className="bg-white rounded-lg sm:rounded-xl p-4 sm:p-6 shadow-md border border-gray-200 mb-6">
+                <h2 className="text-xl sm:text-2xl font-bold text-center mb-6 text-gray-800">
+                  Comprendre le "S"
+                </h2>
+                
+                {/* Titre simple et clair */}
+                <div className="text-center mb-4">
+                  <h3 className="text-lg sm:text-xl font-bold text-gray-800 mb-2">
+                    Observe les différences :
+                  </h3>
+                  <p className="text-sm text-gray-600">
+                    Compare chaque paire pour comprendre la règle
+                  </p>
+                </div>
+
+                {/* Paires simplifiées */}
+                <div className="space-y-6 mb-6">
+                  {/* Paire 1 */}
+                  <div className="flex items-center justify-center gap-4 sm:gap-8">
+                    <button
+                      onClick={() => {
+                        setSelectedNumber('80');
+                        setTimeout(() => scrollToElement('animation-section'), 100);
+                      }}
+                      className="group relative bg-white border-2 border-gray-200 rounded-xl p-4 sm:p-6 hover:border-blue-300 hover:shadow-md transition-all min-w-[100px] sm:min-w-[120px]"
+                    >
+                      <div className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">80</div>
+                      <div className="text-xs sm:text-sm text-gray-600">
+                        quatre-vingt<span className="text-green-600 font-bold text-base sm:text-lg">s</span>
+                      </div>
+                      <div className="absolute -top-2 -right-2 bg-green-500 text-white text-xs px-2 py-1 rounded-full">
+                        ✓ S
+                      </div>
+                    </button>
+
+                    <div className="text-xl sm:text-2xl text-gray-400">VS</div>
+
+                    <button
+                      onClick={() => {
+                        setSelectedNumber('83');
+                        setTimeout(() => scrollToElement('animation-section'), 100);
+                      }}
+                      className="group relative bg-white border-2 border-gray-200 rounded-xl p-4 sm:p-6 hover:border-blue-300 hover:shadow-md transition-all min-w-[100px] sm:min-w-[120px]"
+                    >
+                      <div className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">83</div>
+                      <div className="text-xs sm:text-sm text-gray-600">quatre-vingt-trois</div>
+                      <div className="absolute -top-2 -right-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full">
+                        ✗ pas S
+                      </div>
+                    </button>
+                  </div>
+
+                  {/* Paire 2 */}
+                  <div className="flex items-center justify-center gap-4 sm:gap-8">
+                    <button
+                      onClick={() => {
+                        setSelectedNumber('200');
+                        setTimeout(() => scrollToElement('animation-section'), 100);
+                      }}
+                      className="group relative bg-white border-2 border-gray-200 rounded-xl p-4 sm:p-6 hover:border-blue-300 hover:shadow-md transition-all min-w-[100px] sm:min-w-[120px]"
+                    >
+                      <div className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">200</div>
+                      <div className="text-xs sm:text-sm text-gray-600">
+                        deux-cent<span className="text-green-600 font-bold text-base sm:text-lg">s</span>
+                      </div>
+                      <div className="absolute -top-2 -right-2 bg-green-500 text-white text-xs px-2 py-1 rounded-full">
+                        ✓ S
+                      </div>
+                    </button>
+
+                    <div className="text-xl sm:text-2xl text-gray-400">VS</div>
+
+                    <button
+                      onClick={() => {
+                        setSelectedNumber('205');
+                        setTimeout(() => scrollToElement('animation-section'), 100);
+                      }}
+                      className="group relative bg-white border-2 border-gray-200 rounded-xl p-4 sm:p-6 hover:border-blue-300 hover:shadow-md transition-all min-w-[100px] sm:min-w-[120px]"
+                    >
+                      <div className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">205</div>
+                      <div className="text-xs sm:text-sm text-gray-600">deux-cent-cinq</div>
+                      <div className="absolute -top-2 -right-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full">
+                        ✗ pas S
+                      </div>
+                    </button>
+                  </div>
+
+                  {/* Paire 3 */}
+                  <div className="flex items-center justify-center gap-4 sm:gap-8">
+                    <button
+                      onClick={() => {
+                        setSelectedNumber('300');
+                        setTimeout(() => scrollToElement('animation-section'), 100);
+                      }}
+                      className="group relative bg-white border-2 border-gray-200 rounded-xl p-4 sm:p-6 hover:border-blue-300 hover:shadow-md transition-all min-w-[100px] sm:min-w-[120px]"
+                    >
+                      <div className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">300</div>
+                      <div className="text-xs sm:text-sm text-gray-600">
+                        trois-cent<span className="text-green-600 font-bold text-base sm:text-lg">s</span>
+                      </div>
+                      <div className="absolute -top-2 -right-2 bg-green-500 text-white text-xs px-2 py-1 rounded-full">
+                        ✓ S
+                      </div>
+                    </button>
+
+                    <div className="text-xl sm:text-2xl text-gray-400">VS</div>
+
+                    <button
+                      onClick={() => {
+                        setSelectedNumber('305');
+                        setTimeout(() => scrollToElement('animation-section'), 100);
+                      }}
+                      className="group relative bg-white border-2 border-gray-200 rounded-xl p-4 sm:p-6 hover:border-blue-300 hover:shadow-md transition-all min-w-[100px] sm:min-w-[120px]"
+                    >
+                      <div className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">305</div>
+                      <div className="text-xs sm:text-sm text-gray-600">trois-cent-cinq</div>
+                      <div className="absolute -top-2 -right-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full">
+                        ✗ pas S
+                      </div>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Règle simple à la fin */}
+                <div className="text-center p-4 bg-gray-50 rounded-lg">
+                  <p className="text-sm text-gray-700">
+                    <span className="font-bold text-green-600">Avec S</span> : nombre exact (80, 200, 300...)
+                    <br/>
+                    <span className="font-bold text-red-600">Sans S</span> : suivi d'autre chose (83, 205, 305...)
+                  </p>
+                </div>
+              </div>
+
+              {/* SECTION SPÉCIALE : La règle d'or des "cents" ET "vingts" */}
+              <div id="cents-rule-section" className={`bg-gradient-to-r from-yellow-400 to-orange-500 rounded-lg sm:rounded-xl p-4 sm:p-8 text-white shadow-2xl transform transition-all ${
+                highlightedElement === 'cents-rule-section' ? 'ring-4 ring-yellow-400 bg-yellow-200 scale-105 animate-pulse' : ''
+              }`}>
+                <h3 className="text-xl sm:text-3xl font-bold mb-4 sm:mb-6 text-center">🎯 LES RÈGLES D'OR DU "S" 🎯</h3>
+                <p className="text-center text-base sm:text-lg mb-6 font-semibold">
+                  ⚡ SUPER IMPORTANT : Deux règles magiques à retenir ! ⚡
+                </p>
+                
+                {/* RÈGLE 1 : LES CENTS */}
+                <div className="mb-6">
+                  <h4 className="text-lg sm:text-2xl font-bold mb-4 text-center text-white">🏆 RÈGLE 1 : LES "CENTS" 🏆</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="bg-green-500 bg-opacity-30 rounded-lg p-4 sm:p-6">
+                      <h5 className="font-bold mb-3 text-green-100 text-base sm:text-lg">✅ CENTAINES EXACTES = AVEC S</h5>
+                      <ul className="space-y-2 text-sm sm:text-base">
+                        <li><span className="font-bold">200</span> = deux-cent<span className="cents-s-highlight font-extrabold text-red-300 text-xl sm:text-2xl">s</span></li>
+                        <li><span className="font-bold">300</span> = trois-cent<span className="cents-s-highlight font-extrabold text-red-300 text-xl sm:text-2xl">s</span></li>
+                        <li><span className="font-bold">600</span> = six-cent<span className="cents-s-highlight font-extrabold text-red-300 text-xl sm:text-2xl">s</span></li>
+                      </ul>
+                    </div>
+                    <div className="bg-red-500 bg-opacity-30 rounded-lg p-4 sm:p-6">
+                      <h5 className="font-bold mb-3 text-red-100 text-base sm:text-lg">❌ PAS EXACTES = SANS S</h5>
+                      <ul className="space-y-2 text-sm sm:text-base">
+                        <li><span className="font-bold">201</span> = deux-cent<span className="cents-no-s-highlight font-extrabold text-yellow-300 text-xl sm:text-2xl">-</span>un</li>
+                        <li><span className="font-bold">305</span> = trois-cent<span className="cents-no-s-highlight font-extrabold text-yellow-300 text-xl sm:text-2xl">-</span>cinq</li>
+                        <li><span className="font-bold">678</span> = six-cent<span className="cents-no-s-highlight font-extrabold text-yellow-300 text-xl sm:text-2xl">-</span>soixante-dix-huit</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+
+                {/* RÈGLE 2 : LES QUATRE-VINGTS */}
+                <div className="mb-6">
+                  <h4 className="text-lg sm:text-2xl font-bold mb-4 text-center text-white">🏆 RÈGLE 2 : LES "QUATRE-VINGTS" 🏆</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="bg-green-500 bg-opacity-30 rounded-lg p-4 sm:p-6">
+                      <h5 className="font-bold mb-3 text-green-100 text-base sm:text-lg">✅ À LA FIN = AVEC S</h5>
+                      <ul className="space-y-2 text-sm sm:text-base">
+                        <li><span className="font-bold">80</span> = quatre-vingt<span className="vingts-s-highlight font-extrabold text-red-300 text-xl sm:text-2xl">s</span></li>
+                        <li><span className="font-bold">380</span> = trois-cent-quatre-vingt<span className="vingts-s-highlight font-extrabold text-red-300 text-xl sm:text-2xl">s</span></li>
+                        <li><span className="font-bold">580</span> = cinq-cent-quatre-vingt<span className="vingts-s-highlight font-extrabold text-red-300 text-xl sm:text-2xl">s</span></li>
+                      </ul>
+                    </div>
+                    <div className="bg-red-500 bg-opacity-30 rounded-lg p-4 sm:p-6">
+                      <h5 className="font-bold mb-3 text-red-100 text-base sm:text-lg">❌ SUIVI D'AUTRE CHOSE = SANS S</h5>
+                      <ul className="space-y-2 text-sm sm:text-base">
+                        <li><span className="font-bold">81</span> = quatre-vingt<span className="vingts-no-s-highlight font-extrabold text-yellow-300 text-xl sm:text-2xl">-</span>un</li>
+                        <li><span className="font-bold">390</span> = trois-cent-quatre-vingt<span className="vingts-no-s-highlight font-extrabold text-yellow-300 text-xl sm:text-2xl">-</span>dix</li>
+                        <li><span className="font-bold">583</span> = cinq-cent-quatre-vingt<span className="vingts-no-s-highlight font-extrabold text-yellow-300 text-xl sm:text-2xl">-</span>trois</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="text-center">
+                  <button
+                    onClick={animateCentsRule}
+                    disabled={isPlayingVocal || isAnimating}
+                    className={`bg-white text-orange-600 px-6 py-4 sm:px-10 sm:py-5 rounded-xl font-bold text-base sm:text-xl hover:bg-gray-100 transition-all transform hover:scale-105 shadow-lg pulse-interactive ${
+                      (isPlayingVocal || isAnimating) ? 'opacity-50 cursor-not-allowed' : ''
+                    }`}
+                  >
+                    🎪 VOIR LES ANIMATIONS MAGIQUES ! 🎪
+                  </button>
+                </div>
+              </div>
+
+              {/* SECTION SPÉCIALE : AVEC OU SANS S - Contrastes */}
+              <div id="contrast-s-section" className={`bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg sm:rounded-xl p-4 sm:p-8 text-white shadow-2xl transform transition-all ${
+                highlightedElement === 'contrast-s-section' ? 'ring-4 ring-blue-400 bg-blue-200 scale-105 animate-pulse' : ''
+              }`}>
+                <h3 className="text-xl sm:text-3xl font-bold mb-4 sm:mb-6 text-center">⚖️ AVEC OU SANS "S" ? ⚖️</h3>
+                <p className="text-center text-base sm:text-lg mb-6 font-semibold">
+                  🔍 Regarde bien les contrastes ! Chaque paire montre la différence !
+                </p>
+                
+                {/* Grille 3x2 des exemples contrastés */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                  {/* Paire 1: 80 vs 83 */}
+                  <div className="bg-white bg-opacity-20 rounded-lg p-4">
+                    <h4 className="font-bold mb-3 text-center">PAIRE 1: QUATRE-VINGTS</h4>
+                    <div className="space-y-3">
+                      <div className="bg-green-400 bg-opacity-30 rounded-lg p-3 text-center">
+                        <div className="font-bold text-lg">80</div>
+                        <div className="text-sm">quatre-vingt<span className="contrast-s-highlight font-extrabold text-red-300 text-xl">s</span></div>
+                        <div className="text-xs text-green-200">✅ Rien après → S</div>
+                      </div>
+                      <div className="bg-red-400 bg-opacity-30 rounded-lg p-3 text-center">
+                        <div className="font-bold text-lg">83</div>
+                        <div className="text-sm">quatre-vingt<span className="contrast-no-s-highlight font-extrabold text-yellow-300 text-xl">-</span>trois</div>
+                        <div className="text-xs text-red-200">❌ Suivi → pas de S</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Paire 2: 200 vs 205 */}
+                  <div className="bg-white bg-opacity-20 rounded-lg p-4">
+                    <h4 className="font-bold mb-3 text-center">PAIRE 2: CENTAINES</h4>
+                    <div className="space-y-3">
+                      <div className="bg-green-400 bg-opacity-30 rounded-lg p-3 text-center">
+                        <div className="font-bold text-lg">200</div>
+                        <div className="text-sm">deux-cent<span className="contrast-s-highlight font-extrabold text-red-300 text-xl">s</span></div>
+                        <div className="text-xs text-green-200">✅ Exacte → S</div>
+                      </div>
+                      <div className="bg-red-400 bg-opacity-30 rounded-lg p-3 text-center">
+                        <div className="font-bold text-lg">205</div>
+                        <div className="text-sm">deux-cent<span className="contrast-no-s-highlight font-extrabold text-yellow-300 text-xl">-</span>cinq</div>
+                        <div className="text-xs text-red-200">❌ Pas exacte → pas de S</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Paire 3: 690 vs 691 */}
+                  <div className="bg-white bg-opacity-20 rounded-lg p-4">
+                    <h4 className="font-bold mb-3 text-center">PAIRE 3: COMPLEXES</h4>
+                    <div className="space-y-3">
+                      <div className="bg-red-400 bg-opacity-30 rounded-lg p-3 text-center">
+                        <div className="font-bold text-lg">690</div>
+                        <div className="text-sm text-xs">six-cent-quatre-vingt<span className="contrast-no-s-highlight font-extrabold text-yellow-300 text-lg">-</span>dix</div>
+                        <div className="text-xs text-red-200">❌ Suivi de dix → pas de S</div>
+                      </div>
+                      <div className="bg-red-400 bg-opacity-30 rounded-lg p-3 text-center">
+                        <div className="font-bold text-lg">691</div>
+                        <div className="text-sm text-xs">six-cent-quatre-vingt<span className="contrast-no-s-highlight font-extrabold text-yellow-300 text-lg">-</span>onze</div>
+                        <div className="text-xs text-red-200">❌ Suivi de onze → pas de S</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="text-center">
+                  <button
+                    onClick={animateContrastS}
+                    disabled={isPlayingVocal || isAnimating}
+                    className={`bg-white text-blue-600 px-6 py-4 sm:px-10 sm:py-5 rounded-xl font-bold text-base sm:text-xl hover:bg-gray-100 transition-all transform hover:scale-105 shadow-lg pulse-interactive ${
+                      (isPlayingVocal || isAnimating) ? 'opacity-50 cursor-not-allowed' : ''
+                    }`}
+                  >
+                    🎭 VOIR LES CONTRASTES EN ACTION ! 🎭
+                  </button>
+                </div>
+              </div>
+
+              {/* Règle sur les tirets */}
+              <div className="bg-gradient-to-r from-orange-400 to-red-400 rounded-lg sm:rounded-xl p-3 sm:p-6 text-white">
+                <h3 className="text-sm sm:text-xl font-bold mb-2 sm:mb-3">📏 Règle des tirets</h3>
+                <div className="space-y-2 text-xs sm:text-base">
+                  <p className="font-semibold">✅ Orthographe moderne :</p>
+                  <ul className="space-y-1 ml-2">
+                    <li>• Tous les nombres composés ont des tirets</li>
+                    <li>• <span className="font-bold">Vingt-et-un</span>, <span className="font-bold">trente-quatre</span></li>
+                    <li>• <span className="font-bold">Quatre-vingt-douze</span>, <span className="font-bold">cent-vingt-trois</span></li>
+                    <li>• <span className="font-bold">Deux-cent-cinquante-six</span>, <span className="font-bold">neuf-cent-quatre-vingt-dix</span></li>
+                  </ul>
+                </div>
+              </div>
+
+              {/* Exemples délicats */}
+              <div className="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-lg sm:rounded-xl p-3 sm:p-6 text-white">
+                <h3 className="text-sm sm:text-xl font-bold mb-2 sm:mb-3">⚠️ Nombres délicats à retenir</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 text-xs sm:text-base">
+                  <div className="bg-white bg-opacity-20 rounded-lg p-2 sm:p-3">
+                    <h4 className="font-bold mb-2">Les "quatre-vingts" :</h4>
+                    <ul className="space-y-1">
+                      <li>• <span className="font-bold">80</span> = quatre-vingts (avec s)</li>
+                      <li>• <span className="font-bold">81</span> = quatre-vingt-un (sans s)</li>
+                      <li>• <span className="font-bold">280</span> = deux-cent-quatre-vingts</li>
+                      <li>• <span className="font-bold">281</span> = deux-cent-quatre-vingt-un</li>
+                    </ul>
+                  </div>
+                  <div className="bg-white bg-opacity-20 rounded-lg p-2 sm:p-3">
+                    <h4 className="font-bold mb-2">Les "mille" :</h4>
+                    <ul className="space-y-1">
+                      <li>• <span className="font-bold">1000</span> = mille (pas de s !)</li>
+                      <li>• <span className="font-bold">2000</span> = deux mille</li>
+                      <li>• <span className="font-bold">3000</span> = trois mille</li>
+                      <li>• <span className="font-bold">5000</span> = cinq mille</li>
+                    </ul>
+                  </div>
+                  <div className="bg-white bg-opacity-20 rounded-lg p-2 sm:p-3">
+                    <h4 className="font-bold mb-2">Les pièges :</h4>
+                    <ul className="space-y-1">
+                      <li>• <span className="font-bold">71</span> = soixante-et-onze</li>
+                      <li>• <span className="font-bold">91</span> = quatre-vingt-onze</li>
+                      <li>• <span className="font-bold">101</span> = cent-un</li>
+                      <li>• <span className="font-bold">111</span> = cent-onze</li>
+                    </ul>
+                  </div>
+                  <div className="bg-white bg-opacity-20 rounded-lg p-2 sm:p-3">
+                    <h4 className="font-bold mb-2">Attention au "et" :</h4>
+                    <ul className="space-y-1">
+                      <li>• <span className="font-bold">21</span> = vingt-et-un (avec "et")</li>
+                      <li>• <span className="font-bold">31</span> = trente-et-un</li>
+                      <li>• <span className="font-bold">22</span> = vingt-deux (sans "et")</li>
+                      <li>• <span className="font-bold">32</span> = trente-deux</li>
+                    </ul>
+                  </div>
+                </div>
               </div>
             </div>
           ) : (
@@ -1156,14 +1923,31 @@ export default function LireNombresCE1Page() {
                       {isCorrect ? (
                         <>
                           <CheckCircle className="w-6 h-6" />
-                          <span className="font-bold">Excellent ! C'est la bonne réponse !</span>
+                          <div className="text-center">
+                            <span className="font-bold">Excellent ! C'est la bonne réponse !</span>
+                            {(exercises[currentExercise].number === '300' || exercises[currentExercise].number === '600') && (
+                              <div className="mt-2 p-2 bg-green-100 text-green-800 rounded-lg text-sm">
+                                <span className="font-bold">🎯 BRAVO !</span> Tu as bien pensé au <span className="font-bold">"S"</span> de "cents" ! 
+                                C'est parfait : les centaines exactes prennent toujours un S !
+                              </div>
+                            )}
+                          </div>
                         </>
                       ) : (
                         <>
                           <XCircle className="w-6 h-6" />
-                          <span className="font-bold">
-                            Pas tout à fait... La bonne réponse est : "{exercises[currentExercise].reading}"
-                          </span>
+                          <div className="text-center">
+                            <span className="font-bold">
+                              Pas tout à fait... La bonne réponse est : "{exercises[currentExercise].reading}"
+                            </span>
+                            {(exercises[currentExercise].number === '300' || exercises[currentExercise].number === '600') && (
+                              <div className="mt-2 p-2 bg-yellow-100 text-yellow-800 rounded-lg text-sm">
+                                <span className="font-bold">💡 RAPPEL IMPORTANT :</span> Pour les centaines exactes (300, 600, etc.), 
+                                on écrit <span className="font-bold">"cents" avec un S</span> à la fin ! 
+                                C'est la règle : trois-cent<span className="font-bold text-red-600">s</span>, six-cent<span className="font-bold text-red-600">s</span> !
+                              </div>
+                            )}
+                          </div>
                         </>
                       )}
                     </div>

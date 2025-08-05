@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, Calculator, Target, Star, CheckCircle, XCircle, Trophy, Brain, Zap, BookOpen, Eye, RotateCcw } from 'lucide-react';
+import { ArrowLeft, Calculator, Target, Star, CheckCircle, XCircle, Trophy, Brain, Zap, BookOpen, Eye, RotateCcw, Play } from 'lucide-react';
 
 export default function AdditionsJusqua100() {
   // États pour l'audio et animations
@@ -630,6 +630,46 @@ export default function AdditionsJusqua100() {
       setTimeout(() => {
         scrollToNextButton();
       }, 500);
+    }
+  };
+
+  // Fonction pour expliquer le chapitre dans le cours avec Sam
+  const explainChapterWithSam = async () => {
+    if (isPlayingVocal) return;
+    
+    stopAllVocalsAndAnimations();
+    await wait(300);
+    stopSignalRef.current = false;
+    setIsPlayingVocal(true);
+    setSamSizeExpanded(true);
+    
+    try {
+      await playAudio("Bonjour ! Aujourd'hui, nous allons apprendre les additions jusqu'à 100 !");
+      if (stopSignalRef.current) return;
+      
+      await wait(1000);
+      if (stopSignalRef.current) return;
+      
+      await playAudio("Tu vas découvrir 4 techniques extraordinaires pour calculer avec de gros nombres, nom d'une jambe en bois !");
+      if (stopSignalRef.current) return;
+      
+      await wait(1200);
+      if (stopSignalRef.current) return;
+      
+      await playAudio("L'addition sans retenue, l'addition avec retenue, le calcul mental rapide et le complément à 10 !");
+      if (stopSignalRef.current) return;
+      
+      await wait(1500);
+      if (stopSignalRef.current) return;
+      
+      await playAudio("Avec ces techniques, tu seras un champion des additions jusqu'à 100 !");
+      if (stopSignalRef.current) return;
+      
+    } catch (error) {
+      console.error('Erreur dans explainChapterWithSam:', error);
+    } finally {
+      setIsPlayingVocal(false);
+      setSamSizeExpanded(false);
     }
   };
 
@@ -1376,6 +1416,39 @@ export default function AdditionsJusqua100() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-100 to-indigo-200">
+      {/* Animation CSS personnalisée pour les icônes */}
+      <style dangerouslySetInnerHTML={{
+        __html: `
+          @keyframes subtle-glow {
+            0%, 100% {
+              opacity: 0.8;
+              transform: scale(1);
+              filter: brightness(1);
+            }
+            50% {
+              opacity: 1;
+              transform: scale(1.05);
+              filter: brightness(1.1);
+            }
+          }
+        `
+      }} />
+      
+      {/* Bouton flottant de Sam - visible uniquement quand Sam parle */}
+      {isPlayingVocal && (
+        <div className="fixed top-4 right-4 z-[60]">
+          <button
+            onClick={stopAllVocalsAndAnimations}
+            className="bg-red-600 hover:bg-red-700 text-white rounded-full p-3 shadow-lg animate-pulse"
+            title="Arrêter Sam"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+      )}
+      
       <div className="max-w-6xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8">
@@ -1429,37 +1502,89 @@ export default function AdditionsJusqua100() {
         </div>
 
         {!showExercises ? (
-          /* Section Cours */
-          <div className="space-y-8">
-            {/* Bouton COMMENCER */}
-            <div className="text-center mb-8">
+          /* COURS - MOBILE OPTIMISÉ */
+          <div className="space-y-2 sm:space-y-6">
+            {/* Image de Sam le Pirate avec bouton DÉMARRER */}
+            <div className="flex items-center justify-center gap-2 sm:gap-4 p-2 sm:p-4 mb-3 sm:mb-6">
+              {/* Image de Sam le Pirate */}
+              <div className={`relative transition-all duration-500 border-2 border-indigo-300 rounded-full bg-gradient-to-br from-indigo-100 to-blue-100 ${
+                isPlayingVocal
+                    ? 'w-14 sm:w-24 h-14 sm:h-24' // When speaking - plus petit sur mobile
+                  : samSizeExpanded
+                      ? 'w-12 sm:w-32 h-12 sm:h-32' // Enlarged - plus petit sur mobile
+                      : 'w-10 sm:w-20 h-10 sm:h-20' // Normal - plus petit sur mobile
+              } flex items-center justify-center hover:scale-105 cursor-pointer`}>
+                {!imageError && (
+                  <img 
+                    src="/images/pirate-small.png"
+                    alt="Sam le Pirate"
+                    className="w-full h-full object-cover rounded-full"
+                    onError={() => setImageError(true)}
+                  />
+                )}
+                {imageError && (
+                  <div className="text-lg sm:text-2xl">🏴‍☠️</div>
+                )}
+                
+                {/* Megaphone animé quand Sam parle */}
+                {isPlayingVocal && (
+                  <div className="absolute -top-1 -right-1 sm:-top-2 sm:-right-2 bg-red-500 rounded-full p-1 sm:p-2 shadow-lg animate-bounce">
+                    <svg className="w-2 h-2 sm:w-4 sm:h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M18 3a1 1 0 00-1.447-.894L8.763 6H5a3 3 0 000 6h3.763l7.79 3.894A1 1 0 0018 15V3zM14 8.59c0 1.2.8 2.27 2 2.27v.64c-1.77 0-3.2-1.4-3.2-3.14 0-1.74 1.43-3.14 3.2-3.14v.64c-1.2 0-2 1.07-2 2.27z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                )}
+              </div>
+
+              {/* Bouton DÉMARRER avec Sam */}
+              <button
+                onClick={explainChapterWithSam}
+                disabled={isPlayingVocal}
+                className={`px-3 sm:px-6 py-2 sm:py-3 rounded-lg font-bold text-sm sm:text-lg shadow-lg transition-all ${
+                  isPlayingVocal
+                    ? 'bg-gray-400 text-gray-200 cursor-not-allowed'
+                    : 'bg-gradient-to-r from-indigo-500 to-blue-500 text-white hover:shadow-xl hover:scale-105'
+                } ${!hasStarted && !isPlayingVocal ? 'animate-pulse' : ''}`}
+              >
+                <Play className="w-3 h-3 sm:w-5 sm:h-5 inline-block mr-1 sm:mr-2" />
+                {isPlayingVocal ? 'Sam explique...' : 'DÉMARRER'}
+              </button>
+            </div>
+
+            {/* Bouton COMMENCER (animation complète) */}
+            <div className="text-center mb-3 sm:mb-8">
               <button
                 onClick={explainChapter}
                 disabled={isAnimationRunning}
-                className={`px-8 py-4 rounded-xl font-bold text-xl shadow-lg transition-all transform ${
+                className={`px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-bold text-base sm:text-xl shadow-lg transition-all transform ${
                   isAnimationRunning 
                     ? 'bg-gray-400 text-gray-200 cursor-not-allowed' 
-                    : 'bg-gradient-to-r from-blue-500 to-indigo-500 text-white hover:shadow-xl hover:scale-105 animate-pulse'
-                }`}
+                    : 'bg-gradient-to-r from-blue-500 to-indigo-500 text-white hover:shadow-xl hover:scale-105'
+                } ${!hasStarted && !isAnimationRunning ? 'animate-pulse' : ''}`}
               >
-                {isAnimationRunning ? '⏳ Animation en cours...' : '▶️ COMMENCER !'}
+                {isAnimationRunning ? '⏳ Animation en cours...' : '▶️ COMMENCER (Animation complète) !'}
               </button>
             </div>
 
             {/* Introduction */}
             <div 
               id="intro-section"
-              className={`bg-white rounded-xl shadow-lg p-6 transition-all duration-300 ${
+              className={`bg-white rounded-xl shadow-lg p-3 sm:p-6 transition-all duration-300 ${
                 highlightedElement === 'intro' ? 'ring-4 ring-blue-400 bg-blue-100' : ''
               }`}
             >
-              <div className="flex items-center gap-3 mb-4">
-                <div className="p-2 bg-blue-100 rounded-lg">
-                  <Calculator className="w-6 h-6 text-blue-600" />
+              <div className="flex items-center gap-1 sm:gap-3 mb-3 sm:mb-4">
+                <div className="p-1 sm:p-2 bg-blue-100 rounded-lg">
+                  <Calculator className="w-4 h-4 sm:w-6 sm:h-6 text-blue-600" />
                 </div>
-                <h2 className="text-2xl font-bold text-gray-800">Les additions jusqu'à 100</h2>
+                <h2 className="text-base sm:text-2xl font-bold text-gray-800">Les additions jusqu'à 100</h2>
+                {/* Icône d'animation pour l'introduction */}
+                <div className="bg-gradient-to-r from-blue-500 to-cyan-600 text-white rounded-full w-6 h-6 sm:w-12 sm:h-12 flex items-center justify-center text-xs sm:text-xl font-bold shadow-lg hover:scale-110 cursor-pointer transition-all duration-300 ring-2 ring-blue-300" 
+                     style={{animation: 'subtle-glow 2s infinite'}}>
+                  💯
+                </div>
               </div>
-              <p className="text-lg text-gray-700 leading-relaxed">
+              <p className="text-sm sm:text-lg text-gray-700 leading-relaxed">
                 Félicitations ! Tu vas apprendre les techniques pour additionner tous les nombres jusqu'à 100. 
                 C'est un cours très important qui va te rendre super fort en mathématiques !
               </p>
@@ -1468,15 +1593,20 @@ export default function AdditionsJusqua100() {
             {/* Les 4 techniques */}
             <div 
               id="techniques-section"
-              className={`bg-white rounded-xl shadow-lg p-6 transition-all duration-300 ${
+              className={`bg-white rounded-xl shadow-lg p-3 sm:p-6 transition-all duration-300 ${
                 highlightedElement === 'techniques' ? 'ring-4 ring-blue-400 bg-blue-100' : ''
               }`}
             >
-              <div className="flex items-center gap-3 mb-6">
-                <div className="p-2 bg-indigo-100 rounded-lg">
-                  <Brain className="w-6 h-6 text-indigo-600" />
+              <div className="flex items-center gap-1 sm:gap-3 mb-3 sm:mb-6">
+                <div className="p-1 sm:p-2 bg-indigo-100 rounded-lg">
+                  <Brain className="w-4 h-4 sm:w-6 sm:h-6 text-indigo-600" />
                 </div>
-                <h2 className="text-2xl font-bold text-gray-800">4 techniques extraordinaires</h2>
+                <h2 className="text-base sm:text-2xl font-bold text-gray-800">4 techniques extraordinaires</h2>
+                {/* Icône d'animation pour les techniques */}
+                <div className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-full w-6 h-6 sm:w-12 sm:h-12 flex items-center justify-center text-xs sm:text-xl font-bold shadow-lg hover:scale-110 cursor-pointer transition-all duration-300 ring-2 ring-indigo-300" 
+                     style={{animation: 'subtle-glow 2s infinite'}}>
+                  🧠
+                </div>
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1517,13 +1647,20 @@ export default function AdditionsJusqua100() {
             {/* Exemples de techniques */}
             <div 
               id="examples-section"
-              className={`bg-white rounded-xl shadow-lg p-6 transition-all duration-300 ${
+              className={`bg-white rounded-xl shadow-lg p-3 sm:p-6 transition-all duration-300 ${
                 highlightedElement === 'examples' ? 'ring-4 ring-blue-400 bg-blue-100' : ''
               }`}
             >
-              <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">
-                🎯 Choisis ta technique préférée !
-              </h2>
+              <div className="flex items-center justify-center gap-1 sm:gap-3 mb-3 sm:mb-6">
+                <h2 className="text-base sm:text-2xl font-bold text-gray-800">
+                  🎯 Choisis ta technique préférée !
+                </h2>
+                {/* Icône d'animation pour choisir la technique */}
+                <div className="bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-full w-6 h-6 sm:w-12 sm:h-12 flex items-center justify-center text-xs sm:text-xl font-bold shadow-lg hover:scale-110 cursor-pointer transition-all duration-300 ring-2 ring-green-300" 
+                     style={{animation: 'subtle-glow 2s infinite'}}>
+                  🎯
+                </div>
+              </div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {additionTechniques.map((technique, index) => (

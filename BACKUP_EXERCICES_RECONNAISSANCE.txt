@@ -1,0 +1,344 @@
+// =============================================
+// SAUVEGARDE PARTIE EXERCICES - RECONNAISSANCE
+// =============================================
+
+// États spécifiques aux exercices
+const [currentExercise, setCurrentExercise] = useState(0);
+const [userAnswer, setUserAnswer] = useState('');
+const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
+const [score, setScore] = useState(0);
+const [answeredCorrectly, setAnsweredCorrectly] = useState<Set<number>>(new Set());
+const [showCompletionModal, setShowCompletionModal] = useState(false);
+const [finalScore, setFinalScore] = useState(0);
+const [exercises, setExercises] = useState<any[]>([]);
+const [shuffledChoices, setShuffledChoices] = useState<string[]>([]);
+
+// Fonction pour générer des exercices aléatoires et mélangés
+const generateExercises = () => {
+  const allExercises = [
+    // Exercices faciles (4 premiers)
+    { question: "Combien vois-tu de pièces d'or ?", correctAnswer: "3", number: "3" },
+    { question: "Compte les pièces d'or de Sam !", correctAnswer: "5", number: "5" },
+    { question: "Combien y a-t-il de trésors ?", correctAnswer: "7", number: "7" },
+    { question: "Dis-moi le nombre de pièces d'or !", correctAnswer: "4", number: "4" },
+    
+    // Exercices moyens
+    { question: "Quel est ce nombre de trésors ?", correctAnswer: "9", number: "9" },
+    { question: "Combien comptes-tu de pièces d'or ?", correctAnswer: "12", number: "12" },
+    { question: "Trouve le nombre de trésors de pirates !", correctAnswer: "8", number: "8" },
+    { question: "Compte bien toutes les pièces d'or !", correctAnswer: "15", number: "15" },
+    { question: "Quel nombre vois-tu ?", correctAnswer: "11", number: "11" },
+    { question: "Dis le nombre de pièces d'or !", correctAnswer: "6", number: "6" }
+  ];
+
+  // Mélanger avec Fisher-Yates
+  const shuffled = [...allExercises];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+
+  // Garder les 4 premiers faciles au début, puis mélanger le reste
+  const easyExercises = shuffled.slice(0, 4);
+  const otherExercises = shuffled.slice(4, 10);
+  
+  return [...easyExercises, ...otherExercises];
+};
+
+// Fonction pour obtenir des exercices aléatoires
+const getRandomExercises = () => generateExercises();
+
+// Sauvegarder les progrès et calculer les XP
+const saveProgress = (score: number, maxScore: number) => {
+  const percentage = score / maxScore;
+  const baseXP = 10; // XP de base pour la reconnaissance
+  const earnedXP = Math.round(baseXP * percentage);
+  
+  const progress = {
+    sectionId: 'reconnaissance',
+    completed: true,
+    score: score,
+    maxScore: maxScore,
+    completedAt: new Date().toISOString(),
+    attempts: 1,
+    xpEarned: earnedXP
+  };
+
+  const existingProgress = localStorage.getItem('cp-nombres-20-progress');
+  let allProgress: any[] = [];
+  
+  if (existingProgress) {
+    const rawProgress = JSON.parse(existingProgress);
+    
+    // Convertir en tableau si c'est un objet
+    if (Array.isArray(rawProgress)) {
+      allProgress = rawProgress;
+    } else {
+      // Convertir l'objet en tableau
+      allProgress = Object.entries(rawProgress).map(([sectionId, data]: [string, any]) => ({
+        sectionId,
+        completed: data.completed || data.score > 0,
+        score: data.score || 0,
+        maxScore: data.maxScore || data.total || 10,
+        completedAt: data.completedAt || new Date().toISOString(),
+        attempts: data.attempts || 1,
+        xpEarned: data.xpEarned
+      }));
+    }
+    
+    const existingIndex = allProgress.findIndex((p: any) => p.sectionId === 'reconnaissance');
+    
+    if (existingIndex >= 0) {
+      if (score > allProgress[existingIndex].score) {
+        allProgress[existingIndex] = {
+          ...progress,
+          attempts: allProgress[existingIndex].attempts + 1
+        };
+      } else {
+        allProgress[existingIndex].attempts += 1;
+      }
+    } else {
+      allProgress.push(progress);
+    }
+  } else {
+    allProgress = [progress];
+  }
+
+  localStorage.setItem('cp-nombres-20-progress', JSON.stringify(allProgress));
+};
+
+// JSX PARTIE EXERCICES COMPLÈTE
+const ExercicesJSX = () => (
+  <div className="space-y-8">
+    {/* Introduction de Sam le Pirate - toujours visible */}
+    {SamPirateIntroJSX()}
+
+    {/* Header exercices - toujours visible */}
+    <div className="bg-white rounded-xl p-6 shadow-lg">
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-2xl font-bold text-gray-900">
+          ✏️ Exercice {currentExercise + 1} sur {exercises.length}
+        </h2>
+        <button
+          onClick={resetAll}
+          className="bg-gray-500 text-white px-4 py-2 rounded-lg font-bold hover:bg-gray-600 transition-colors"
+        >
+          <RotateCcw className="inline w-4 h-4 mr-2" />
+          Recommencer
+        </button>
+      </div>
+      
+      {/* Barre de progression */}
+      <div className="w-full bg-gray-200 rounded-full h-4 mb-3">
+        <div 
+          className="bg-blue-500 h-4 rounded-full transition-all duration-500"
+          style={{ width: `${((currentExercise + 1) / exercises.length) * 100}%` }}
+        ></div>
+      </div>
+      
+      {/* Score */}
+      <div className="text-center">
+        <div className="text-xl font-bold text-blue-600">
+          Score : {score}/{exercises.length}
+        </div>
+      </div>
+    </div>
+
+    {/* Question */}
+    <div className="bg-white rounded-xl p-8 shadow-lg text-center">
+      <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-6 gap-4">
+        <h3 className="text-2xl font-bold text-gray-900 flex-1">
+          {exercises[currentExercise].question}
+        </h3>
+        {ListenQuestionButtonJSX()}
+      </div>
+      
+      {/* Affichage visuel */}
+      <div className="bg-blue-50 rounded-lg p-6 mb-8">
+        <div className="text-6xl font-bold text-blue-600 mb-4">
+          {exercises[currentExercise].number}
+        </div>
+        <div className="flex justify-center flex-wrap gap-2 mb-6">
+          {renderCircles(exercises[currentExercise].number)}
+        </div>
+        <p className="text-lg text-gray-700 font-semibold">
+          Compte bien toutes les pièces d'or de Sam le Pirate !
+        </p>
+      </div>
+      
+      {/* Champ de réponse */}
+      <div className="mb-8">
+        <div className={`relative max-w-xs mx-auto transition-all duration-500 ${
+          highlightedElement === 'answer-input' ? 'ring-4 ring-yellow-400 bg-yellow-50 rounded-lg p-2' : ''
+        }`}>
+          <input
+            id="answer-input"
+            type="number"
+            value={userAnswer}
+            onChange={(e) => setUserAnswer(e.target.value)}
+            onKeyPress={(e) => e.key === 'Enter' && handleAnswerSubmit(userAnswer)}
+            onClick={() => stopAllVocalsAndAnimations()}
+            disabled={isCorrect !== null || isExplainingError}
+            className="w-full px-6 py-4 text-2xl font-bold text-center border-4 border-gray-300 rounded-xl focus:border-blue-500 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed bg-black text-white"
+            placeholder="?"
+            min="1"
+            max="20"
+          />
+        </div>
+        
+        <button
+          onClick={() => handleAnswerSubmit(userAnswer)}
+          disabled={!userAnswer.trim() || isCorrect !== null || isPlayingVocal || isExplainingError}
+          className="mt-4 bg-green-500 text-white px-8 py-3 rounded-lg font-bold text-xl hover:bg-green-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          Valider
+        </button>
+      </div>
+      
+      {/* Résultat */}
+      {isCorrect !== null && (
+        <div className={`p-6 rounded-lg mb-6 ${
+          isCorrect ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+        }`}>
+          <div className="flex items-center justify-center space-x-3 mb-4">
+            {isCorrect ? (
+              <>
+                <CheckCircle className="w-8 h-8" />
+                <span className="font-bold text-xl">
+                  Bravo ! C'est bien {exercises[currentExercise].correctAnswer} !
+                </span>
+              </>
+            ) : (
+              <>
+                <XCircle className="w-8 h-8" />
+                <span className="font-bold text-xl">
+                  La bonne réponse est {exercises[currentExercise].correctAnswer} !
+                </span>
+              </>
+            )}
+          </div>
+          
+          {/* Explication pour les mauvaises réponses */}
+          {!isCorrect && (
+            <div className="bg-white rounded-lg p-6 border-2 border-yellow-300">
+              <h4 className="text-lg font-bold mb-4 text-yellow-800 text-center">
+                🏴‍☠️ Explication de Sam le Pirate
+              </h4>
+              
+              <div className="space-y-4">
+                <div className="bg-yellow-50 rounded-lg p-4 text-center">
+                  <div className="text-xl font-bold text-yellow-600 mb-2">
+                    Compte les pièces d'or : {exercises[currentExercise].correctAnswer}
+                  </div>
+                  <div className="flex justify-center flex-wrap gap-2 mb-4">
+                    {renderCircles(exercises[currentExercise].number)}
+                  </div>
+                  <div className="text-lg text-gray-700">
+                    Sam le Pirate t'a montré en comptant une par une !
+                  </div>
+                </div>
+                
+                <div className="bg-gradient-to-r from-yellow-100 to-amber-100 rounded-lg p-3 text-center">
+                  <div className="text-lg">🌟</div>
+                  <p className="text-sm font-semibold text-blue-800">
+                    Maintenant tu sais reconnaître {exercises[currentExercise].correctAnswer} !
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+      
+      {/* Bouton suivant pour les mauvaises réponses */}
+      {NextButtonJSX()}
+    </div>
+  </div>
+);
+
+// Modale de fin d'exercices
+const CompletionModalJSX = () => (
+  showCompletionModal && (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-2xl p-8 max-w-md w-full text-center shadow-2xl">
+        {(() => {
+          const percentage = Math.round((finalScore / exercises.length) * 100);
+          const getMessage = () => {
+            if (percentage >= 90) return { title: "🎉 Champion de la reconnaissance !", message: "Tu reconnais parfaitement les nombres !", emoji: "🎉" };
+            if (percentage >= 70) return { title: "👏 Très bien !", message: "Tu progresses super bien !", emoji: "👏" };
+            if (percentage >= 50) return { title: "👍 C'est bien !", message: "Tu apprends à bien reconnaître !", emoji: "😊" };
+            return { title: "💪 Continue !", message: "Recommence pour mieux maîtriser !", emoji: "📚" };
+          };
+          const result = getMessage();
+          return (
+            <>
+              <div className="text-6xl mb-4">{result.emoji}</div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-3">{result.title}</h3>
+              <p className="text-lg text-gray-700 mb-6">{result.message}</p>
+              <div className="bg-blue-100 rounded-lg p-4 mb-6">
+                <p className="text-xl font-bold text-gray-900">
+                  Score : {finalScore}/{exercises.length}
+                </p>
+                <div className="text-4xl mt-2">
+                  {finalScore >= 12 ? '⭐⭐⭐' : finalScore >= 8 ? '⭐⭐' : '⭐'}
+                </div>
+                <div className="bg-yellow-100 rounded-lg p-3 mt-3 border-2 border-yellow-300">
+                  <p className="text-lg font-bold text-yellow-800">
+                    🏆 XP gagnés : {Math.round((finalScore / exercises.length) * 10)}
+                  </p>
+                </div>
+                <p className="text-sm text-gray-600 mt-2">
+                  Savoir reconnaître les nombres est très important !
+                </p>
+              </div>
+              <div className="flex space-x-3">
+                <button
+                  onClick={resetAll}
+                  className="flex-1 bg-blue-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-blue-600 transition-colors"
+                >
+                  Recommencer
+                </button>
+                <button
+                  onClick={() => setShowCompletionModal(false)}
+                  className="flex-1 bg-gray-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-gray-600 transition-colors"
+                >
+                  Fermer
+                </button>
+              </div>
+            </>
+          );
+        })()}
+      </div>
+    </div>
+  )
+);
+
+// Initialiser les exercices au chargement
+useEffect(() => {
+  setIsClient(true);
+  setExercises(getRandomExercises());
+}, []);
+
+// Effet pour démarrer automatiquement l'intro vocale quand on arrive sur les exercices
+useEffect(() => {
+  if (showExercises && !pirateIntroStarted && isClient) {
+    // Attendre un peu avant de démarrer l'intro
+    setTimeout(() => {
+      if (!stopSignalRef.current) {
+        startPirateIntro();
+      }
+    }, 1000);
+  }
+}, [showExercises]);
+
+// Arrêter les vocaux quand on change d'onglet et gérer la réinitialisation
+useEffect(() => {
+  if (showExercises) {
+    stopAllVocalsAndAnimations();
+    if (exercises.length > 0) {
+      setCurrentExercise(0);
+      setUserAnswer('');
+      setIsCorrect(null);
+    }
+  }
+}, [showExercises]);

@@ -123,8 +123,8 @@ export const chaptersData: Chapter[] = [
   // CE1 - Nouveau programme 2025
   {
     id: 'ce1-nombres-jusqu-1000',
-    title: 'Nombres jusqu\'à 1000',
-    description: 'Lecture, écriture et comparaison des nombres jusqu\'à 1000 (dès période 2)',
+    title: 'Apprendre à lire et écrire des nombres',
+    description: 'Apprendre à lire les nombres et passer des lettres aux chiffres jusqu\'à 1000 (dès période 2)',
     classLevel: 'CE1',
     category: 'numeracy',
     difficulty: 'beginner',

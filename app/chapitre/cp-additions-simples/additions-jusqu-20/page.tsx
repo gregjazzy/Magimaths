@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, CheckCircle, XCircle, RotateCcw } from 'lucide-react';
+import { ArrowLeft, CheckCircle, XCircle, RotateCcw, Play } from 'lucide-react';
 
 export default function AdditionsJusqu20CP() {
   // États pour l'audio et animations
@@ -679,6 +679,40 @@ export default function AdditionsJusqu20CP() {
     }
   };
 
+  // Fonction pour expliquer le chapitre dans le cours avec Sam
+  const explainChapterWithSam = async () => {
+    if (isPlayingVocal) return;
+    
+    stopAllVocalsAndAnimations();
+    await wait(300);
+    stopSignalRef.current = false;
+    setIsPlayingVocal(true);
+    setSamSizeExpanded(true);
+    
+    try {
+      await playAudio("Bonjour ! Aujourd'hui, nous allons apprendre les additions jusqu'à 20 !");
+      if (stopSignalRef.current) return;
+      
+      await wait(1000);
+      if (stopSignalRef.current) return;
+      
+      await playAudio("Tu vas découvrir des techniques magiques pour calculer facilement, nom d'une jambe en bois !");
+      if (stopSignalRef.current) return;
+      
+      await wait(1000);
+      if (stopSignalRef.current) return;
+      
+      await playAudio("C'est passionnant ! Tu deviendras un vrai pirate des mathématiques !");
+      if (stopSignalRef.current) return;
+      
+    } catch (error) {
+      console.error('Erreur dans explainChapterWithSam:', error);
+    } finally {
+      setIsPlayingVocal(false);
+      setSamSizeExpanded(false);
+    }
+  };
+
   // Fonction pour expliquer le chapitre principal avec la belle animation
   const explainChapter = async () => {
     stopAllVocalsAndAnimations();
@@ -1236,6 +1270,39 @@ export default function AdditionsJusqu20CP() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-100">
+      {/* Animation CSS personnalisée pour les icônes */}
+      <style dangerouslySetInnerHTML={{
+        __html: `
+          @keyframes subtle-glow {
+            0%, 100% {
+              opacity: 0.8;
+              transform: scale(1);
+              filter: brightness(1);
+            }
+            50% {
+              opacity: 1;
+              transform: scale(1.05);
+              filter: brightness(1.1);
+            }
+          }
+        `
+      }} />
+      
+      {/* Bouton flottant de Sam - visible uniquement quand Sam parle */}
+      {isPlayingVocal && (
+        <div className="fixed top-4 right-4 z-[60]">
+          <button
+            onClick={stopAllVocalsAndAnimations}
+            className="bg-red-500 hover:bg-red-600 text-white p-2 sm:p-3 rounded-full shadow-lg border-2 border-white transition-all duration-300 hover:scale-110 flex items-center justify-center min-w-[48px] min-h-[48px] sm:min-w-[56px] sm:min-h-[56px]"
+            title="Arrêter Sam"
+          >
+            <svg className="w-4 h-4 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+      )}
+      
       <div className="max-w-6xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8">
@@ -1292,8 +1359,55 @@ export default function AdditionsJusqu20CP() {
         </div>
 
         {!showExercises ? (
-          /* COURS */
-          <div className="space-y-8">
+          /* COURS - MOBILE OPTIMISÉ */
+          <div className="space-y-2 sm:space-y-6">
+            {/* Image de Sam le Pirate avec bouton DÉMARRER */}
+            <div className="flex items-center justify-center gap-2 sm:gap-4 p-2 sm:p-4 mb-3 sm:mb-6">
+              {/* Image de Sam le Pirate */}
+              <div className={`relative transition-all duration-500 border-2 border-blue-300 rounded-full bg-gradient-to-br from-blue-100 to-purple-100 ${
+                isPlayingVocal
+                    ? 'w-14 sm:w-24 h-14 sm:h-24' // When speaking - plus petit sur mobile
+                  : samSizeExpanded
+                      ? 'w-12 sm:w-32 h-12 sm:h-32' // Enlarged - plus petit sur mobile
+                      : 'w-10 sm:w-20 h-10 sm:h-20' // Normal - plus petit sur mobile
+              }`}>
+                {!imageError ? (
+                  <img 
+                    src="/image/pirate-small.png" 
+                    alt="Sam le Pirate" 
+                    className="w-full h-full rounded-full object-cover"
+                    onError={() => setImageError(true)}
+                  />
+                ) : (
+                  <div className="w-full h-full rounded-full flex items-center justify-center text-xs sm:text-2xl">
+                    🏴‍☠️
+                  </div>
+                )}
+                {/* Megaphone quand il parle */}
+                {isPlayingVocal && (
+                  <div className="absolute -top-1 -right-1 bg-red-500 text-white p-1 sm:p-2 rounded-full animate-bounce shadow-lg">
+                    <svg className="w-2 sm:w-4 h-2 sm:h-4" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.617.77L4.916 14H2a1 1 0 01-1-1V7a1 1 0 011-1h2.916l3.467-2.77a1 1 0 011.617.77zM14.657 2.929a1 1 0 011.414 0A9.972 9.972 0 0119 10a9.972 9.972 0 01-2.929 7.071 1 1 0 01-1.414-1.414A7.971 7.971 0 0017 10c0-2.21-.894-4.208-2.343-5.657a1 1 0 010-1.414zm-2.829 2.828a1 1 0 011.415 0A5.983 5.983 0 0115 10a5.983 5.983 0 01-1.757 4.243 1 1 0 01-1.415-1.414A3.983 3.983 0 0013 10a3.983 3.983 0 00-1.172-2.829 1 1 0 010-1.414z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                )}
+              </div>
+              
+              {/* Bouton DÉMARRER */}
+              <button
+                onClick={explainChapterWithSam}
+                disabled={isPlayingVocal}
+                className={`transition-all duration-300 ${
+                  isPlayingVocal 
+                    ? 'px-2 sm:px-4 py-1 sm:py-2 rounded-lg font-bold text-xs sm:text-base bg-gray-400 text-gray-200 cursor-not-allowed' 
+                    : 'px-3 sm:px-6 py-2 sm:py-3 rounded-lg font-bold text-xs sm:text-lg bg-gradient-to-r from-blue-500 to-purple-600 text-white hover:from-blue-600 hover:to-purple-700 hover:scale-105 shadow-lg'
+                }`}
+              >
+                <Play className="w-3 h-3 sm:w-5 sm:h-5 inline mr-1 sm:mr-2" />
+                {isPlayingVocal ? 'Sam parle...' : 'DÉMARRER'}
+              </button>
+            </div>
+
             {/* Bouton d'explication vocal principal */}
             <div className="text-center mb-6">
                 <button
@@ -1316,13 +1430,21 @@ export default function AdditionsJusqu20CP() {
             {/* Explication du concept avec animation intégrée */}
             <div 
               id="concept-section"
-              className={`bg-white rounded-xl p-8 shadow-lg transition-all duration-1000 ${
+              className={`bg-white rounded-xl p-3 sm:p-8 shadow-lg transition-all duration-1000 ${
                 highlightedElement === 'concept-section' ? 'ring-4 ring-blue-400 bg-blue-50 scale-105' : ''
               }`}
             >
-              <h2 className="text-2xl font-bold text-center mb-6 text-gray-900">
-                🧮 Comment faire des additions jusqu'à 20 ?
-              </h2>
+              <div className="flex items-center justify-center gap-1 sm:gap-3 mb-3 sm:mb-6">
+                <h2 className="text-base sm:text-2xl font-bold text-gray-900">
+                  🧮 Comment faire des additions jusqu'à 20 ?
+                </h2>
+                {/* Icône d'animation pour le concept */}
+                <div className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-full w-6 h-6 sm:w-12 sm:h-12 flex items-center justify-center text-xs sm:text-xl font-bold shadow-lg hover:scale-110 cursor-pointer transition-all duration-300 ring-2 ring-blue-300 animate-pulse"
+                     style={{ animation: 'subtle-glow 2s infinite' }}
+                     title="Techniques magiques pour calculer">
+                  🎯
+                </div>
+              </div>
               
               <div className="bg-blue-50 rounded-lg p-6 mb-6">
                 <p className="text-lg text-center text-blue-800 font-semibold mb-6">
@@ -1594,13 +1716,21 @@ export default function AdditionsJusqu20CP() {
             {/* Autres exemples */}
             <div 
               id="examples-section"
-              className={`bg-white rounded-xl p-8 shadow-lg transition-all duration-1000 ${
+              className={`bg-white rounded-xl p-3 sm:p-8 shadow-lg transition-all duration-1000 ${
                 highlightedElement === 'examples-section' ? 'ring-4 ring-green-400 bg-green-50 scale-105' : ''
               }`}
             >
-              <h2 className="text-2xl font-bold text-center mb-6 text-gray-900">
-                🌟 Autres exemples d'additions
-              </h2>
+              <div className="flex items-center justify-center gap-1 sm:gap-3 mb-3 sm:mb-6">
+                <h2 className="text-base sm:text-2xl font-bold text-gray-900">
+                  🌟 Autres exemples d'additions
+                </h2>
+                {/* Icône d'animation pour les exemples */}
+                <div className="bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-full w-6 h-6 sm:w-12 sm:h-12 flex items-center justify-center text-xs sm:text-xl font-bold shadow-lg hover:scale-110 cursor-pointer transition-all duration-300 ring-2 ring-green-300 animate-pulse"
+                     style={{ animation: 'subtle-glow 2s infinite' }}
+                     title="Exemples d'additions avec animations">
+                  🌟
+                </div>
+              </div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {additionExamples.map((example, index) => (
@@ -1653,42 +1783,50 @@ export default function AdditionsJusqu20CP() {
             </div>
 
             {/* Stratégies d'addition */}
-            <div className="bg-white rounded-xl p-8 shadow-lg">
-              <h2 className="text-2xl font-bold text-center mb-6 text-gray-900">
-                🧠 Stratégies d'addition
-              </h2>
+            <div className="bg-white rounded-xl p-3 sm:p-8 shadow-lg">
+              <div className="flex items-center justify-center gap-1 sm:gap-3 mb-3 sm:mb-6">
+                <h2 className="text-base sm:text-2xl font-bold text-gray-900">
+                  🧠 Stratégies d'addition
+                </h2>
+                {/* Icône d'animation pour les stratégies */}
+                <div className="bg-gradient-to-r from-purple-500 to-violet-600 text-white rounded-full w-6 h-6 sm:w-12 sm:h-12 flex items-center justify-center text-xs sm:text-xl font-bold shadow-lg hover:scale-110 cursor-pointer transition-all duration-300 ring-2 ring-purple-300 animate-pulse"
+                     style={{ animation: 'subtle-glow 2s infinite' }}
+                     title="Stratégies pour calculer efficacement">
+                  🧠
+                </div>
+              </div>
               
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="bg-blue-50 rounded-lg p-6 text-center">
-                  <div className="text-4xl mb-4">🎯</div>
-                  <h3 className="text-xl font-bold mb-3 text-blue-800">Complément à 10</h3>
-                  <p className="text-blue-600">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-6">
+                <div className="bg-blue-50 rounded-lg p-3 sm:p-6 text-center">
+                  <div className="text-2xl sm:text-4xl mb-2 sm:mb-4">🎯</div>
+                  <h3 className="text-sm sm:text-xl font-bold mb-2 sm:mb-3 text-blue-800">Complément à 10</h3>
+                  <p className="text-xs sm:text-base text-blue-600 mb-2 sm:mb-3">
                     Pour 7 + 5 : prends 3 de 5 pour faire 10, puis ajoute les 2 qui restent !
                   </p>
-                  <div className="mt-3 p-2 bg-blue-100 rounded">
-                    <span className="text-sm font-bold text-blue-800">7 + 3 = 10, puis 10 + 2 = 12</span>
+                  <div className="mt-1 sm:mt-3 p-1 sm:p-2 bg-blue-100 rounded">
+                    <span className="text-xs sm:text-sm font-bold text-blue-800">7 + 3 = 10, puis 10 + 2 = 12</span>
                   </div>
                 </div>
                 
-                <div className="bg-pink-50 rounded-lg p-6 text-center">
-                  <div className="text-4xl mb-4">💕</div>
-                  <h3 className="text-xl font-bold mb-3 text-pink-800">Les doubles</h3>
-                  <p className="text-pink-600">
+                <div className="bg-pink-50 rounded-lg p-3 sm:p-6 text-center">
+                  <div className="text-2xl sm:text-4xl mb-2 sm:mb-4">💕</div>
+                  <h3 className="text-sm sm:text-xl font-bold mb-2 sm:mb-3 text-pink-800">Les doubles</h3>
+                  <p className="text-xs sm:text-base text-pink-600 mb-2 sm:mb-3">
                     6 + 6 = 12, 7 + 7 = 14, 8 + 8 = 16, 9 + 9 = 18
                   </p>
-                  <div className="mt-3 p-2 bg-pink-100 rounded">
-                    <span className="text-sm font-bold text-pink-800">Faciles à retenir !</span>
+                  <div className="mt-1 sm:mt-3 p-1 sm:p-2 bg-pink-100 rounded">
+                    <span className="text-xs sm:text-sm font-bold text-pink-800">Faciles à retenir !</span>
                   </div>
                 </div>
                 
-                <div className="bg-green-50 rounded-lg p-6 text-center">
-                  <div className="text-4xl mb-4">➕</div>
-                  <h3 className="text-xl font-bold mb-3 text-green-800">Ajouter à 10</h3>
-                  <p className="text-green-600">
+                <div className="bg-green-50 rounded-lg p-3 sm:p-6 text-center">
+                  <div className="text-2xl sm:text-4xl mb-2 sm:mb-4">➕</div>
+                  <h3 className="text-sm sm:text-xl font-bold mb-2 sm:mb-3 text-green-800">Ajouter à 10</h3>
+                  <p className="text-xs sm:text-base text-green-600 mb-2 sm:mb-3">
                     10 + 5 = 15, 10 + 8 = 18, 10 + 9 = 19
                   </p>
-                  <div className="mt-3 p-2 bg-green-100 rounded">
-                    <span className="text-sm font-bold text-green-800">Super facile !</span>
+                  <div className="mt-1 sm:mt-3 p-1 sm:p-2 bg-green-100 rounded">
+                    <span className="text-xs sm:text-sm font-bold text-green-800">Super facile !</span>
                   </div>
                 </div>
               </div>

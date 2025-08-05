@@ -1,0 +1,456 @@
+// =============================================
+// SAUVEGARDE PARTIE COURS - RECONNAISSANCE
+// =============================================
+
+// États spécifiques au cours
+const [selectedNumber, setSelectedNumber] = useState('5');
+const [hasStarted, setHasStarted] = useState(false);
+const [animatingPoints, setAnimatingPoints] = useState<number[]>([]);
+const [countingNumber, setCountingNumber] = useState<number | null>(null);
+const [numbersData, setNumbersData] = useState<any>({});
+const [animatingFingers, setAnimatingFingers] = useState(false);
+const [animatingGroups, setAnimatingGroups] = useState(false);
+const [animatingStep, setAnimatingStep] = useState<string | null>(null);
+const [fingerCount, setFingerCount] = useState(0);
+
+// Liste de choix pour la sélection - réduite à 3 exemples
+const choiceNumbers = ['3', '7', '15'];
+
+// Fonction pour scroller vers une section
+const scrollToSection = (sectionId: string) => {
+  const element = document.getElementById(sectionId);
+  if (element) {
+    element.scrollIntoView({ 
+      behavior: 'smooth', 
+      block: 'center' 
+    });
+  }
+};
+
+// Fonction pour scroller vers l'illustration
+const scrollToIllustration = () => {
+  scrollToSection('number-illustration');
+};
+
+// Fonction pour scroller vers le tableau des nombres
+const scrollToNumberChoice = () => {
+  scrollToSection('number-choice-table');
+};
+
+// Fonction pour scroller vers les méthodes de comptage
+const scrollToCountingMethods = () => {
+  scrollToSection('counting-methods-section');
+};
+
+// Fonction pour expliquer le chapitre au démarrage
+const explainChapter = async () => {
+  stopSignalRef.current = false;
+  setIsPlayingVocal(true);
+  setHasStarted(true);
+
+  try {
+    // Détection Chrome locale pour l'audio
+    const isChrome = /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor);
+    console.log('Navigateur Chrome détecté:', isChrome);
+    
+    await playAudio("Bonjour, je suis Sam, Sam le pirate, avec mon ami Robotech, bienvenue dans le chapitre sur les nombres jusqu'à 20 !");
+    if (stopSignalRef.current) return;
+    await wait(1200);
+    
+    await playAudio("Nous allons t'apprendre à reconnaître les nombres !");
+    if (stopSignalRef.current) return;
+    await wait(1200);
+    
+    await playAudio("Tu découvriras plusieurs façons de compter :");
+    if (stopSignalRef.current) return;
+    await wait(1000);
+    
+    await playAudio("Avec des objets, avec tes doigts, et par groupes de 5 !");
+    if (stopSignalRef.current) return;
+    await wait(1200);
+    
+    scrollToNumberChoice();
+    setHighlightedElement('number-choice-table');
+    await playAudio("Commence par choisir un nombre dans le tableau !");
+    if (stopSignalRef.current) return;
+    await wait(1200);
+    
+    await playAudio("Clique sur chaque méthode pour voir comment elle fonctionne");
+    if (stopSignalRef.current) return;
+    await wait(1000);
+    
+    // Scroll automatique vers les méthodes de comptage
+    scrollToCountingMethods();
+    setHighlightedElement('counting-methods-section');
+    await wait(1000);
+    setHighlightedElement(null);
+    
+  } catch (error) {
+    console.error('Erreur dans explainChapter:', error);
+  } finally {
+    setIsPlayingVocal(false);
+  }
+};
+
+// Fonction pour expliquer un nombre spécifique avec animation
+const explainNumber = async (number: string) => {
+  stopAllVocalsAndAnimations();
+  await wait(200);
+  stopSignalRef.current = false;
+  setIsPlayingVocal(true);
+  setCountingNumber(num);
+
+  try {
+    await playAudio(`Très bien ! Tu as choisi le nombre ${number} !`);
+    if (stopSignalRef.current) return;
+    await wait(500);
+    
+    scrollToIllustration();
+    await wait(500);
+    
+    await playAudio(`Regarde bien ! Voici ${number} trésors de pirates !`);
+    if (stopSignalRef.current) return;
+    await wait(800);
+    
+    const num = parseInt(number);
+    const pirateObjectName = getPirateObjectName();
+    
+    setAnimatingPoints([]);
+    await wait(500);
+    
+    await playAudio(`Compte avec moi : `);
+    if (stopSignalRef.current) return;
+    await wait(300);
+    
+    // Animation de comptage
+    for (let i = 1; i <= num; i++) {
+      if (stopSignalRef.current) return;
+      
+      setAnimatingPoints(prev => [...prev, i]);
+      await playAudio(`${i}`);
+      
+      if (stopSignalRef.current) return;
+      await wait(400);
+    }
+    
+    if (stopSignalRef.current) return;
+    
+    await playAudio(`Parfait ! Tu as compté ${number} ${pirateObjectName} !`);
+    if (stopSignalRef.current) return;
+    await wait(1000);
+    
+    await playAudio("Maintenant essaie les différentes méthodes de comptage !");
+    if (stopSignalRef.current) return;
+    
+    scrollToCountingMethods();
+    
+  } catch (error) {
+    console.error('Erreur dans explainNumber:', error);
+  } finally {
+    setIsPlayingVocal(false);
+    setCountingNumber(null);
+  }
+};
+
+// JSX PARTIE COURS COMPLÈTE
+const CoursJSX = () => (
+  <div className="space-y-8">
+    {/* Image de Sam le Pirate avec bouton DÉMARRER */}
+    <div className="flex items-center justify-center gap-4 p-6 bg-gradient-to-r from-blue-100 to-cyan-100 rounded-xl shadow-lg">
+      {/* Image de Sam le Pirate */}
+      <div className={`relative flex-shrink-0 rounded-full bg-gradient-to-br from-blue-100 to-cyan-100 border-2 border-blue-200 shadow-md transition-all duration-300 ${
+        isPlayingVocal ? 'w-20 h-20 scale-105' : 'w-16 h-16'
+      }`} style={{
+        transform: 'translate(17px, -22px)'
+      }}>
+        <img 
+          src="/image/pirate.png" 
+          alt="Sam le Pirate" 
+          className="w-full h-full rounded-full object-cover"
+        />
+        {/* Megaphone animé quand il parle */}
+        {isPlayingVocal && (
+          <div className="absolute -top-1 -right-1 bg-red-500 text-white p-1 rounded-full shadow-lg">
+            <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.617.77L4.916 14H2a1 1 0 01-1-1V7a1 1 0 011-1h2.916l3.467-2.77a1 1 0 011.617.77zM14.657 2.929a1 1 0 011.414 0A9.972 9.972 0 0119 10a9.972 9.972 0 01-2.929 7.071 1 1 0 01-1.414-1.414A7.971 7.971 0 0017 10c0-2.21-.894-4.208-2.343-5.657a1 1 0 010-1.414zm-2.829 2.828a1 1 0 011.415 0A5.983 5.983 0 0115 10a5.983 5.983 0 01-1.757 4.243 1 1 0 01-1.415-1.414A3.983 3.983 0 0013 10a3.983 3.983 0 00-1.172-2.829 1 1 0 010-1.414z" clipRule="evenodd" />
+            </svg>
+          </div>
+        )}
+      </div>
+      
+      {/* Bouton Démarrer */}
+      <button
+        onClick={explainChapter}
+        disabled={isPlayingVocal}
+        className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-12 py-6 rounded-2xl font-bold text-2xl shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed animate-pulse"
+      >
+        <Play className="inline w-8 h-8 mr-3" />
+        🎯 DÉMARRER
+      </button>
+    </div>
+
+    {/* Indicateur audio global */}
+    {hasStarted && isPlayingVocal && (
+      <div className="fixed top-4 right-4 bg-blue-600 text-white px-4 py-2 rounded-full shadow-lg z-50 flex items-center space-x-2">
+        <Volume2 className="w-5 h-5 animate-pulse" />
+        <span className="font-bold">Sam parle...</span>
+      </div>
+    )}
+
+    {/* Introduction */}
+    <div 
+      className={`bg-white rounded-xl p-8 shadow-lg transition-all duration-500 ${
+        highlightedElement === 'intro-section' ? 'ring-4 ring-blue-400 bg-blue-50' : ''
+      }`}
+    >
+      <h2 className="text-2xl font-bold text-center mb-6 text-gray-900">
+        🔢 Apprendre à reconnaître les nombres de 1 à 20
+      </h2>
+      
+      <div className="bg-blue-50 rounded-lg p-6 mb-6">
+        <p className="text-lg text-center text-blue-800 font-semibold mb-4">
+          Salut ! Je suis Sam le Pirate ! 🏴‍☠️ Avec Robotech, nous allons t'apprendre à reconnaître tous les nombres !
+        </p>
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+          <div className="bg-white rounded-lg p-4">
+            <div className="text-3xl mb-2">🟡</div>
+            <p className="font-bold text-blue-600">Avec des objets</p>
+            <p className="text-sm text-gray-600">Compte les trésors !</p>
+          </div>
+          <div className="bg-white rounded-lg p-4">
+            <div className="text-3xl mb-2">✋</div>
+            <p className="font-bold text-green-600">Avec tes doigts</p>
+            <p className="text-sm text-gray-600">Use tes mains !</p>
+          </div>
+          <div className="bg-white rounded-lg p-4">
+            <div className="text-3xl mb-2">🔢</div>
+            <p className="font-bold text-purple-600">Par groupes</p>
+            <p className="text-sm text-gray-600">Groupe par 5 !</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {/* Sélecteur de nombre principal */}
+    {/* UN SEUL tableau unifié */}
+    <div 
+      id="number-choice-table"
+      className={`bg-white rounded-xl p-8 shadow-lg transition-all duration-500 ${
+        highlightedElement === 'number-choice-table' ? 'ring-4 ring-green-400 bg-green-50' : ''
+      }`}
+    >
+      <h2 className="text-2xl font-bold text-center mb-6 text-gray-900">
+        🎯 Choisis un nombre
+      </h2>
+      
+      <div className="grid grid-cols-4 md:grid-cols-5 gap-3 max-w-4xl mx-auto">
+        {Array.from({ length: 20 }, (_, i) => i + 1).map((num) => (
+          <button
+            key={num}
+            onClick={() => {
+              setSelectedNumber(num.toString());
+              explainNumber(num.toString());
+            }}
+            className={`aspect-square p-4 rounded-lg font-bold text-xl transition-all ${
+              selectedNumber === num.toString()
+                ? 'bg-blue-500 text-white shadow-lg scale-105'
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+            }`}
+          >
+            {num}
+          </button>
+        ))}
+      </div>
+    </div>
+
+    {/* Affichage du nombre sélectionné */}
+    <div 
+      id="number-illustration"
+      className={`bg-white rounded-xl p-8 shadow-lg transition-all duration-500 ${
+        countingNumber ? 'ring-4 ring-orange-400 bg-orange-50' : ''
+      }`}
+    >
+      <h2 className="text-2xl font-bold text-center mb-6 text-gray-900">
+        🔍 Le nombre {selectedNumber}
+      </h2>
+      
+      <div className="bg-blue-50 rounded-lg p-6">
+        <div className="text-center space-y-6">
+          <div className="text-8xl font-bold text-blue-500">
+            {selectedNumber}
+          </div>
+          
+          <div className="flex justify-center flex-wrap gap-2">
+            {renderCircles(selectedNumber)}
+          </div>
+
+          <div 
+            className={`text-xl font-bold text-gray-700 transition-all duration-500 ${
+              countingNumber ? 'text-orange-600 scale-110' : ''
+            }`}
+          >
+            {selectedNumber} trésors de pirates ! 🏴‍☠️
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {/* Différentes façons de compter */}
+    <div 
+      id="counting-methods-section"
+      className={`bg-white rounded-xl p-8 shadow-lg transition-all duration-500 ${
+        highlightedElement === 'counting-methods-section' ? 'ring-4 ring-purple-400 bg-purple-50' : ''
+      }`}
+    >
+      <h2 className="text-2xl font-bold text-center mb-6 text-gray-900">
+        📚 Différentes façons de compter
+      </h2>
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Avec les doigts */}
+        <div 
+          className={`bg-green-50 rounded-lg p-6 cursor-pointer transition-all duration-300 ${
+            animatingFingers ? 'ring-4 ring-green-400 bg-green-100' : 'hover:bg-green-100'
+          }`}
+        >
+          <h3 className="text-xl font-bold mb-4 text-green-800">
+            ✋ Avec tes doigts
+          </h3>
+          <div className="text-center">
+            <div className="text-6xl mb-4">
+              {fingerCount === 0 ? '👐' : 
+               fingerCount <= 5 ? '🖐️' : 
+               fingerCount <= 10 ? '🙌' : '🤚👋'}
+            </div>
+            <p className="text-lg text-green-700">
+              {animatingFingers ? `${fingerCount} doigt${fingerCount > 1 ? 's' : ''}` : 'Clique pour compter !'}
+            </p>
+          </div>
+        </div>
+
+        {/* Avec des groupes de 5 */}
+        <div 
+          className={`bg-purple-50 rounded-lg p-6 cursor-pointer transition-all duration-300 ${
+            animatingGroups ? 'ring-4 ring-purple-400 bg-purple-100' : 'hover:bg-purple-100'
+          }`}
+        >
+          <h3 className="text-xl font-bold mb-4 text-purple-800">
+            🔢 Par groupes de 5
+          </h3>
+          <div className="text-center">
+            <div className="flex justify-center items-center gap-4 text-2xl">
+              {(() => {
+                const num = parseInt(selectedNumber);
+                const groups = Math.floor(num / 5);
+                const remainder = num % 5;
+                const elements = [];
+
+                // Groupes de 5
+                for (let g = 0; g < groups; g++) {
+                  elements.push(
+                    <div key={`group-${g}`} className={`flex ${animatingGroups && animatingStep === 'groups' ? 'animate-pulse scale-110' : ''}`}>
+                      {Array.from({ length: 5 }, (_, i) => (
+                        <span key={i} className="text-blue-500">🟡</span>
+                      ))}
+                    </div>
+                  );
+                }
+
+                // Séparateur
+                if (groups > 0 && remainder > 0) {
+                  elements.push(
+                    <span key="separator" className={`mx-2 text-2xl font-bold text-purple-600 ${animatingGroups ? 'opacity-70' : ''}`}>|</span>
+                  );
+                }
+
+                // Unités restantes
+                if (remainder > 0) {
+                  const remainderElements = [];
+                  for (let r = 0; r < remainder; r++) {
+                    remainderElements.push(
+                      <span key={r} className="text-orange-500">🟡</span>
+                    );
+                  }
+                  elements.push(
+                    <div key="remainder" className={`flex ${animatingGroups && animatingStep === 'remainder' ? 'animate-pulse scale-110' : ''}`}>
+                      {remainderElements}
+                    </div>
+                  );
+                }
+
+                return elements;
+              })()}
+            </div>
+            <p className="text-lg text-purple-700 mt-2">
+              {animatingGroups ? 
+                `${Math.floor(parseInt(selectedNumber) / 5)} groupe${Math.floor(parseInt(selectedNumber) / 5) > 1 ? 's' : ''} + ${parseInt(selectedNumber) % 5}` : 
+                'Clique pour grouper !'
+              }
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-6 text-center">
+        <p className="text-lg text-gray-600 font-semibold">
+          Clique sur chaque méthode pour voir comment compter {selectedNumber} !
+        </p>
+      </div>
+    </div>
+
+    {/* Conseils pratiques */}
+    <div className="bg-white rounded-xl p-8 shadow-lg">
+      <h2 className="text-2xl font-bold text-center mb-6 text-gray-900">
+        💡 Conseils de Sam le Pirate
+      </h2>
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="bg-blue-50 rounded-lg p-6">
+          <h3 className="text-xl font-bold mb-4 text-blue-800">
+            🎯 Pour bien compter
+          </h3>
+          <ul className="space-y-2 text-blue-700">
+            <li>• Compte un par un avec ton doigt</li>
+            <li>• Utilise tes mains pour les petits nombres</li>
+            <li>• Regarde bien tous les trésors de pirates</li>
+            <li>• Compte lentement sans te tromper</li>
+          </ul>
+        </div>
+        
+        <div className="bg-yellow-50 rounded-lg p-6 border-2 border-yellow-300">
+          <h3 className="text-xl font-bold mb-4 text-yellow-800">
+            🏴‍☠️ Astuces de Sam le Pirate
+          </h3>
+          <ul className="space-y-2 text-yellow-700">
+            <li>• 🟡 = 1 pièce d'or (compte chaque pièce)</li>
+            <li>• Compte d'abord les 🟡 de gauche à droite</li>
+            <li>• Groupe par 5 pièces avec tes doigts ✋</li>
+            <li>• Vérifie toujours ton trésor de pirates !</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
+// Arrêter les vocaux quand on change d'onglet ou de page
+useEffect(() => {
+  const handleVisibilityChange = () => {
+    if (document.hidden) {
+      stopAllVocalsAndAnimations();
+    }
+  };
+
+  const handleBeforeUnload = () => {
+    stopAllVocalsAndAnimations();
+  };
+
+  document.addEventListener('visibilitychange', handleVisibilityChange);
+  window.addEventListener('beforeunload', handleBeforeUnload);
+
+  return () => {
+    document.removeEventListener('visibilitychange', handleVisibilityChange);
+    window.removeEventListener('beforeunload', handleBeforeUnload);
+  };
+}, []);

@@ -28,6 +28,10 @@ export default function PoserAdditionCP() {
   const [showCompletionModal, setShowCompletionModal] = useState(false);
   const [finalScore, setFinalScore] = useState(0);
   
+  // États pour Sam le Pirate
+  const [samSizeExpanded, setSamSizeExpanded] = useState(false);
+  const [imageError, setImageError] = useState(false);
+  
   // Refs pour gérer l'audio
   const stopSignalRef = useRef(false);
   const currentAudioRef = useRef<SpeechSynthesisUtterance | null>(null);
@@ -122,6 +126,7 @@ export default function PoserAdditionCP() {
     setCalculationStep(null);
     setShowingCarry(false);
     setPartialResults({units: null, tens: null, hundreds: null});
+    setSamSizeExpanded(false);
   };
 
   // Fonction pour jouer l'audio
@@ -177,6 +182,46 @@ export default function PoserAdditionCP() {
         resolve();
       }, ms);
     });
+  };
+
+  // Fonction pour expliquer le chapitre dans le cours avec Sam
+  const explainChapterWithSam = async () => {
+    if (isPlayingVocal) return;
+    
+    stopAllVocalsAndAnimations();
+    await wait(300);
+    stopSignalRef.current = false;
+    setIsPlayingVocal(true);
+    setSamSizeExpanded(true);
+    
+    try {
+      await playAudio("Bonjour ! Aujourd'hui, nous allons apprendre à poser une addition !", true);
+      if (stopSignalRef.current) return;
+      
+      await wait(1000);
+      if (stopSignalRef.current) return;
+      
+      await playAudio("Poser une addition, c'est aligner les nombres en colonnes pour calculer plus facilement, nom d'une jambe en bois !", true);
+      if (stopSignalRef.current) return;
+      
+      await wait(1200);
+      if (stopSignalRef.current) return;
+      
+      await playAudio("Tu vas découvrir les additions sans retenue, avec retenue, et même avec de grands nombres !", true);
+      if (stopSignalRef.current) return;
+      
+      await wait(1500);
+      if (stopSignalRef.current) return;
+      
+      await playAudio("Souviens-toi : D pour dizaines, U pour unités ! Et on commence toujours par la droite !", true);
+      if (stopSignalRef.current) return;
+      
+    } catch (error) {
+      console.error('Erreur dans explainChapterWithSam:', error);
+    } finally {
+      setIsPlayingVocal(false);
+      setSamSizeExpanded(false);
+    }
   };
 
   // Fonction pour expliquer un exemple spécifique avec animations interactives
@@ -717,6 +762,39 @@ export default function PoserAdditionCP() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-teal-50">
+      {/* Animation CSS personnalisée pour les icônes */}
+      <style dangerouslySetInnerHTML={{
+        __html: `
+          @keyframes subtle-glow {
+            0%, 100% {
+              opacity: 0.8;
+              transform: scale(1);
+              filter: brightness(1);
+            }
+            50% {
+              opacity: 1;
+              transform: scale(1.05);
+              filter: brightness(1.1);
+            }
+          }
+        `
+      }} />
+      
+      {/* Bouton flottant de Sam - visible uniquement quand Sam parle */}
+      {isPlayingVocal && (
+        <div className="fixed top-4 right-4 z-[60]">
+          <button
+            onClick={stopAllVocalsAndAnimations}
+            className="bg-red-600 hover:bg-red-700 text-white rounded-full p-3 shadow-lg animate-pulse"
+            title="Arrêter Sam"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+      )}
+      
       <div className="max-w-6xl mx-auto px-3 sm:px-4 py-4 sm:py-8">
       {/* Header */}
         <div className="mb-6 sm:mb-8">
@@ -735,17 +813,64 @@ export default function PoserAdditionCP() {
         </div>
       </div>
 
-        {/* Bouton Démarrer la leçon */}
-        <div className="bg-gradient-to-r from-green-500 to-blue-500 rounded-xl shadow-lg p-6 mb-8 text-center">
-          <h2 className="text-2xl font-bold text-white mb-4">🎯 Découvrir les additions posées</h2>
-          <p className="text-green-100 mb-6 text-lg">
+        {/* Section avec Sam le Pirate et boutons */}
+        <div className="bg-gradient-to-r from-green-500 to-blue-500 rounded-xl shadow-lg p-3 sm:p-6 mb-6 sm:mb-8">
+          {/* Image de Sam le Pirate avec bouton DÉMARRER */}
+          <div className="flex items-center justify-center gap-2 sm:gap-4 mb-3 sm:mb-4">
+            {/* Image de Sam le Pirate */}
+            <div className={`relative transition-all duration-500 border-2 border-white rounded-full bg-gradient-to-br from-green-100 to-teal-100 ${
+              isPlayingVocal
+                  ? 'w-14 sm:w-24 h-14 sm:h-24' // When speaking - plus petit sur mobile
+                : samSizeExpanded
+                    ? 'w-12 sm:w-32 h-12 sm:h-32' // Enlarged - plus petit sur mobile
+                    : 'w-10 sm:w-20 h-10 sm:h-20' // Normal - plus petit sur mobile
+            } flex items-center justify-center hover:scale-105 cursor-pointer`}>
+              {!imageError && (
+                <img 
+                  src="/images/pirate-small.png"
+                  alt="Sam le Pirate"
+                  className="w-full h-full object-cover rounded-full"
+                  onError={() => setImageError(true)}
+                />
+              )}
+              {imageError && (
+                <div className="text-lg sm:text-2xl">🏴‍☠️</div>
+              )}
+              
+              {/* Megaphone animé quand Sam parle */}
+              {isPlayingVocal && (
+                <div className="absolute -top-1 -right-1 sm:-top-2 sm:-right-2 bg-red-500 rounded-full p-1 sm:p-2 shadow-lg animate-bounce">
+                  <svg className="w-2 h-2 sm:w-4 sm:h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M18 3a1 1 0 00-1.447-.894L8.763 6H5a3 3 0 000 6h3.763l7.79 3.894A1 1 0 0018 15V3zM14 8.59c0 1.2.8 2.27 2 2.27v.64c-1.77 0-3.2-1.4-3.2-3.14 0-1.74 1.43-3.14 3.2-3.14v.64c-1.2 0-2 1.07-2 2.27z" clipRule="evenodd" />
+                  </svg>
+                </div>
+              )}
+            </div>
+
+            {/* Bouton DÉMARRER avec Sam */}
+            <button
+              onClick={explainChapterWithSam}
+              disabled={isPlayingVocal}
+              className={`px-3 sm:px-6 py-2 sm:py-3 rounded-lg font-bold text-sm sm:text-lg shadow-lg transition-all ${
+                isPlayingVocal
+                  ? 'bg-gray-400 text-gray-200 cursor-not-allowed'
+                  : 'bg-white text-green-600 hover:bg-green-50 hover:scale-105'
+              } ${!hasStarted && !isPlayingVocal ? 'animate-pulse' : ''}`}
+            >
+              <Play className="w-3 h-3 sm:w-5 sm:h-5 inline-block mr-1 sm:mr-2" />
+              {isPlayingVocal ? 'Sam explique...' : 'DÉMARRER'}
+            </button>
+          </div>
+
+          <h2 className="text-lg sm:text-2xl font-bold text-white mb-2 sm:mb-4 text-center">🎯 Découvrir les additions posées</h2>
+          <p className="text-green-100 mb-3 sm:mb-6 text-sm sm:text-lg text-center">
             Présentation rapide des techniques disponibles sur cette page !
           </p>
-          <div className="flex gap-4 justify-center">
+          <div className="flex gap-2 sm:gap-4 justify-center">
             <button
               onClick={startLessonPresentation}
               disabled={isAnimationRunning}
-              className={`px-8 py-4 rounded-xl font-bold text-xl transition-all ${
+              className={`px-4 sm:px-8 py-3 sm:py-4 rounded-xl font-bold text-sm sm:text-xl transition-all ${
                 isAnimationRunning 
                   ? 'bg-gray-400 text-gray-200 cursor-not-allowed' 
                   : 'bg-white text-green-600 hover:bg-green-50 hover:scale-105 shadow-lg'
@@ -757,7 +882,7 @@ export default function PoserAdditionCP() {
             {isAnimationRunning && (
               <button
                 onClick={stopAllVocalsAndAnimations}
-                className="px-6 py-4 rounded-xl font-bold text-xl bg-red-500 text-white hover:bg-red-600 shadow-lg transition-all"
+                className="px-3 sm:px-6 py-3 sm:py-4 rounded-xl font-bold text-sm sm:text-xl bg-red-500 text-white hover:bg-red-600 shadow-lg transition-all"
               >
                 ⏹️ Arrêter
               </button>
@@ -803,16 +928,23 @@ export default function PoserAdditionCP() {
             {/* Introduction */}
             <div 
               id="intro-section"
-              className={`bg-white rounded-xl p-8 shadow-lg transition-all duration-1000 ${
+              className={`bg-white rounded-xl p-3 sm:p-8 shadow-lg transition-all duration-1000 ${
                 highlightedElement === 'intro-section' ? 'ring-4 ring-green-400 bg-green-50 scale-105' : ''
               }`}
             >
-              <div className="text-center mb-6">
-                <div className="text-6xl mb-4">📝</div>
-                <h2 className="text-2xl font-bold text-gray-900 mb-4">
-                  Qu'est-ce que poser une addition ?
-                </h2>
-                <p className="text-lg text-gray-600">
+              <div className="text-center mb-3 sm:mb-6">
+                <div className="text-3xl sm:text-6xl mb-2 sm:mb-4">📝</div>
+                <div className="flex items-center justify-center gap-1 sm:gap-3 mb-3 sm:mb-4">
+                  <h2 className="text-base sm:text-2xl font-bold text-gray-900">
+                    Qu'est-ce que poser une addition ?
+                  </h2>
+                  {/* Icône d'animation pour l'introduction */}
+                  <div className="bg-gradient-to-r from-green-500 to-teal-600 text-white rounded-full w-6 h-6 sm:w-12 sm:h-12 flex items-center justify-center text-xs sm:text-xl font-bold shadow-lg hover:scale-110 cursor-pointer transition-all duration-300 ring-2 ring-green-300" 
+                       style={{animation: 'subtle-glow 2s infinite'}}>
+                    📝
+                  </div>
+                </div>
+                <p className="text-sm sm:text-lg text-gray-600">
                   C'est aligner les nombres en colonnes pour calculer plus facilement !
                 </p>
             </div>
@@ -870,13 +1002,20 @@ export default function PoserAdditionCP() {
             {/* Autres exemples */}
             <div 
               id="examples-section"
-              className={`bg-white rounded-xl p-8 shadow-lg transition-all duration-1000 ${
+              className={`bg-white rounded-xl p-3 sm:p-8 shadow-lg transition-all duration-1000 ${
                 highlightedElement === 'examples-section' ? 'ring-4 ring-blue-400 bg-blue-50 scale-105' : ''
               }`}
             >
-              <h2 className="text-2xl font-bold text-center mb-6 text-gray-900">
-                🌟 Autres exemples d'additions posées
-              </h2>
+              <div className="flex items-center justify-center gap-1 sm:gap-3 mb-3 sm:mb-6">
+                <h2 className="text-base sm:text-2xl font-bold text-gray-900">
+                  🌟 Autres exemples d'additions posées
+                </h2>
+                {/* Icône d'animation pour les exemples */}
+                <div className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-full w-6 h-6 sm:w-12 sm:h-12 flex items-center justify-center text-xs sm:text-xl font-bold shadow-lg hover:scale-110 cursor-pointer transition-all duration-300 ring-2 ring-blue-300" 
+                     style={{animation: 'subtle-glow 2s infinite'}}>
+                  🌟
+                </div>
+              </div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {additionExamples.map((example, index) => (
@@ -913,25 +1052,25 @@ export default function PoserAdditionCP() {
             </div>
 
             {/* Guide pratique */}
-            <div className="bg-gradient-to-r from-green-400 to-teal-500 rounded-xl p-6 text-white">
-              <h3 className="text-xl font-bold mb-4 text-center">
+            <div className="bg-gradient-to-r from-green-400 to-teal-500 rounded-xl p-3 sm:p-6 text-white">
+              <h3 className="text-base sm:text-xl font-bold mb-3 sm:mb-4 text-center">
                 💡 Guide pour poser une addition
               </h3>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-2 sm:gap-4 text-center">
                 <div>
-                  <div className="text-3xl mb-2">1️⃣</div>
-                  <div className="font-bold">Aligner</div>
-                  <div className="text-sm">Unités sous unités, dizaines sous dizaines</div>
+                  <div className="text-2xl sm:text-3xl mb-1 sm:mb-2">1️⃣</div>
+                  <div className="font-bold text-sm sm:text-base">Aligner</div>
+                  <div className="text-xs sm:text-sm">Unités sous unités, dizaines sous dizaines</div>
               </div>
                 <div>
-                  <div className="text-3xl mb-2">2️⃣</div>
-                  <div className="font-bold">Calculer</div>
-                  <div className="text-sm">Commence par la droite (unités)</div>
+                  <div className="text-2xl sm:text-3xl mb-1 sm:mb-2">2️⃣</div>
+                  <div className="font-bold text-sm sm:text-base">Calculer</div>
+                  <div className="text-xs sm:text-sm">Commence par la droite (unités)</div>
             </div>
                 <div>
-                  <div className="text-3xl mb-2">3️⃣</div>
-                  <div className="font-bold">Retenue</div>
-                  <div className="text-sm">Si ≥ 10, écris l'unité et retiens</div>
+                  <div className="text-2xl sm:text-3xl mb-1 sm:mb-2">3️⃣</div>
+                  <div className="font-bold text-sm sm:text-base">Retenue</div>
+                  <div className="text-xs sm:text-sm">Si ≥ 10, écris l'unité et retiens</div>
                 </div>
               </div>
             </div>

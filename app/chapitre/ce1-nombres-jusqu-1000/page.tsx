@@ -21,9 +21,9 @@ export default function CE1NombresJusqu1000Page() {
   const sections = [
     {
       id: 'lire',
-      title: 'Lire un nombre',
-      description: 'Apprendre à lire les nombres jusqu\'à 1000',
-      icon: '👁️',
+      title: 'Lire et écrire un nombre',
+      description: 'Apprendre à lire et écrire les nombres jusqu\'à 1000',
+      icon: '📚',
       duration: '6 min',
       xp: 8,
       color: 'from-green-500 to-emerald-500',
@@ -31,9 +31,9 @@ export default function CE1NombresJusqu1000Page() {
     },
     {
       id: 'ecrire',
-      title: 'Écrire un nombre',
-      description: 'Écrire les nombres en chiffres',
-      icon: '✏️',
+      title: 'Passer des lettres aux chiffres',
+      description: 'Transformer les mots en chiffres',
+      icon: '🔤➡️🔢',
       duration: '8 min',
       xp: 12,
       color: 'from-blue-500 to-cyan-500',
@@ -151,10 +151,10 @@ export default function CE1NombresJusqu1000Page() {
           
           <div className="bg-white rounded-xl p-6 shadow-lg text-center">
             <h1 className="text-4xl font-bold text-gray-900 mb-4">
-              🔢 Les nombres jusqu'à 1000 !
+              📚 Apprendre à lire et écrire des nombres
             </h1>
             <p className="text-lg text-gray-600 mb-6">
-              Découvre les nombres de 0 à 1000 et apprends à les maîtriser !
+              Découvre comment lire et écrire tous les nombres jusqu'à 1000 !
             </p>
             <div className="text-xl mb-6">
               <span className="bg-yellow-200 px-4 py-2 rounded-full font-bold text-gray-800">

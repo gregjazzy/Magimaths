@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
+import { AnalyticsProvider } from '@/lib/AnalyticsProvider'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -17,8 +18,6 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  maximumScale: 1,
-  userScalable: false,
 }
 
 // Composant client pour nettoyer le cache et détecter les problèmes de navigation
@@ -55,8 +54,10 @@ export default function RootLayout({
   return (
     <html lang="fr">
       <body className={inter.className}>
-        <NavigationProtection />
-        {children}
+        <AnalyticsProvider>
+          <NavigationProtection />
+          {children}
+        </AnalyticsProvider>
       </body>
     </html>
   )

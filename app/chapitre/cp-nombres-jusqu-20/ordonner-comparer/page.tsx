@@ -391,12 +391,12 @@ export default function OrdonnerComparerCP() {
     
     // Rappel de la règle avant la conclusion
     await playAudio("Rappelez-vous, le symbole pique toujours le plus petit nombre !");
-    if (stopSignalRef.current) return;
+      if (stopSignalRef.current) return;
     await wait(800);
     
     // Redire l'expression complète
     await playAudio("Donc 7 est plus grand que 3 !");
-      if (stopSignalRef.current) return;
+    if (stopSignalRef.current) return;
     await wait(1000);
     
     setHighlightedSymbol(null);
@@ -429,7 +429,7 @@ export default function OrdonnerComparerCP() {
     await wait(800);
     await playAudio("Et pour l'égalité, les deux nombres sont identiques !");
     if (stopSignalRef.current) return;
-      
+    
     await wait(500);
     setHighlightedSymbol('=');
     await playAudio("Regardez ! Les deux cinq sont exactement pareils !");
@@ -482,7 +482,7 @@ export default function OrdonnerComparerCP() {
     scrollToActivity();
     await playAudio("Maintenant, tu peux choisir ton activité ! Clique sur ce que tu veux apprendre !");
     if (stopSignalRef.current) return;
-      
+    
     await wait(1000);
     
     // Présenter la première activité
@@ -497,7 +497,7 @@ export default function OrdonnerComparerCP() {
     await playAudio("Ou alors ordonner les nombres !");
     if (stopSignalRef.current) return;
     
-    await wait(1200);
+      await wait(1200);
     setHighlightedElement(null);
     
     // Scroll vers le haut et présenter les exercices
@@ -508,9 +508,9 @@ export default function OrdonnerComparerCP() {
     setHighlightedElement('navigation-tabs');
     await playAudio("Maintenant tu peux aller où tu veux pour regarder le cours ou faire des exercices !");
     if (stopSignalRef.current) return;
-    
+      
     await wait(1000);
-    setHighlightedElement(null);
+      setHighlightedElement(null);
   };
 
   const explainComparison = async () => {
@@ -861,8 +861,7 @@ export default function OrdonnerComparerCP() {
 
   // Fonction pour féliciter avec audio pour les bonnes réponses
   const celebrateCorrectAnswer = async () => {
-    if (stopSignalRef.current) return;
-    
+    // Forcer la réactivation pour permettre les encouragements même après stopAll
     stopSignalRef.current = false;
     setIsPlayingVocal(true);
     
@@ -1179,8 +1178,6 @@ export default function OrdonnerComparerCP() {
   }, [currentExercise]);
 
   const handleAnswerClick = async (answer: string) => {
-    stopAllVocalsAndAnimations(); // Stop any ongoing audio first
-    
     setUserAnswer(answer);
     
     // Nouvelle logique de validation pour les exercices de rangement
@@ -1194,6 +1191,12 @@ export default function OrdonnerComparerCP() {
     setIsCorrect(correct);
     
     if (correct && !answeredCorrectly.has(currentExercise)) {
+      // Arrêter seulement les animations, pas l'audio pour laisser Sam parler
+      setAnimatingComparison(false);
+      setAnimatingRangement(false);
+      setAnimatingStep(null);
+      setHighlightedElement(null);
+      
       setScore(prevScore => prevScore + 1);
       setAnsweredCorrectly(prev => {
         const newSet = new Set(prev);
@@ -1201,7 +1204,10 @@ export default function OrdonnerComparerCP() {
         return newSet;
       });
       
-      // Passage automatique direct sans attendre Sam (évite les conflits avec stopAllVocalsAndAnimations)
+      // Célébrer avec Sam le Pirate d'abord
+      await celebrateCorrectAnswer();
+      
+      // Passage automatique après l'encouragement de Sam
       setTimeout(() => {
         if (currentExercise + 1 < exercises.length) {
           // Prochain exercice
@@ -1214,11 +1220,10 @@ export default function OrdonnerComparerCP() {
           setShowCompletionModal(true);
           saveProgress(score + 1, exercises.length);
         }
-      }, 1500);
-      
-      // Célébrer avec Sam le Pirate (mais sans bloquer le passage automatique)
-      celebrateCorrectAnswer(); // Pas de await pour éviter les blocages
+      }, 800);
     } else if (!correct) {
+      // Pour les mauvaises réponses, on peut arrêter l'audio
+      stopAllVocalsAndAnimations();
       // Expliquer l'erreur avec Sam le Pirate
       await explainWrongAnswer();
     }
@@ -1710,10 +1715,10 @@ export default function OrdonnerComparerCP() {
                     
                             {/* Animation pour l'égalité */}
         {highlightedSymbol === '=' && (
-          <>
+                      <>
             <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 text-green-500 text-sm sm:text-lg animate-pulse">✨</div>
-          </>
-        )}
+                      </>
+                    )}
                   </div>
                   
                   <p className={`text-xs sm:text-sm text-gray-600 ${
@@ -1839,7 +1844,7 @@ export default function OrdonnerComparerCP() {
                       ? 'bg-pink-500 text-white shadow-lg scale-105'
                       : highlightedElement === 'comparer-button' 
                         ? 'bg-pink-300 text-white ring-4 ring-pink-400 scale-105'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}
                 >
                   ⚖️ Comparer deux nombres
@@ -2241,10 +2246,10 @@ export default function OrdonnerComparerCP() {
             {SamPirateIntroJSX()}
 
             {/* Indicateur de progression mobile - sticky en haut */}
-            <div className="sticky top-0 z-10 bg-white/95 backdrop-blur-sm border-b border-gray-200 p-3 sm:hidden">
+            <div className="block md:hidden sticky top-0 z-10 bg-white/95 backdrop-blur-sm border-b border-gray-200 p-3">
               <div className="text-center mb-2">
                 <div className="text-sm font-bold text-gray-700 mb-1">
-                  Exercice {currentExercise + 1}/{exercises.length}
+                  Exercice {currentExercise + 1} sur {exercises.length}
                 </div>
                 <div className="text-sm font-bold text-pink-600 mb-2">
                   Score : {score}/{exercises.length}
@@ -2255,6 +2260,47 @@ export default function OrdonnerComparerCP() {
                   className="bg-pink-500 h-2 rounded-full transition-all duration-500"
                   style={{ width: `${((currentExercise + 1) / exercises.length) * 100}%` }}
                 ></div>
+              </div>
+            </div>
+
+            {/* Header exercices desktop */}
+            <div className="hidden md:block bg-white rounded-xl p-3 sm:p-6 shadow-lg">
+              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-2 sm:mb-4 gap-2 sm:gap-0">
+                <h2 className="text-lg sm:text-2xl font-bold text-gray-900 text-center sm:text-left">
+                  ✏️ Exercice {currentExercise + 1} sur {exercises.length}
+                </h2>
+                <button
+                  onClick={() => {
+                    // Reset pour recommencer depuis le début
+                    setCurrentExercise(0);
+                    setScore(0);
+                    setUserAnswer('');
+                    setIsCorrect(null);
+                    setAnsweredCorrectly(new Set());
+                    setShowCompletionModal(false);
+                    setFinalScore(0);
+                    stopAllVocalsAndAnimations();
+                  }}
+                  className="hidden sm:block bg-gray-500 text-white px-4 py-2 rounded-lg font-bold hover:bg-gray-600 transition-colors"
+                >
+                  <span className="inline w-4 h-4 mr-2">🔄</span>
+                  Recommencer
+                </button>
+              </div>
+              
+              {/* Barre de progression */}
+              <div className="w-full bg-gray-200 rounded-full h-3 sm:h-4 mb-2 sm:mb-3">
+                <div 
+                  className="bg-pink-500 h-3 sm:h-4 rounded-full transition-all duration-500"
+                  style={{ width: `${((currentExercise + 1) / exercises.length) * 100}%` }}
+                ></div>
+              </div>
+              
+              {/* Score */}
+              <div className="text-center">
+                <div className="text-lg sm:text-xl font-bold text-pink-600">
+                  Score : {score}/{exercises.length}
+                </div>
               </div>
             </div>
 

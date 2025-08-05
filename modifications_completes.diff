@@ -1,0 +1,64 @@
+diff --git a/app/chapitre/cp-nombres-jusqu-20/reconnaissance/page.tsx b/app/chapitre/cp-nombres-jusqu-20/reconnaissance/page.tsx
+index 6e712b0..6001742 100644
+--- a/app/chapitre/cp-nombres-jusqu-20/reconnaissance/page.tsx
++++ b/app/chapitre/cp-nombres-jusqu-20/reconnaissance/page.tsx
+@@ -19,6 +19,7 @@ export default function ReconnaissanceNombresCP() {
+   const [isPlayingVocal, setIsPlayingVocal] = useState(false);
+   const [highlightedElement, setHighlightedElement] = useState<string | null>(null);
+   const [hasStarted, setHasStarted] = useState(false);
++  const [samSizeExpanded, setSamSizeExpanded] = useState(false); // Pour garder la taille de Sam
+   const [animatingPoints, setAnimatingPoints] = useState<number[]>([]);
+   const [countingNumber, setCountingNumber] = useState<number | null>(null);
+   const [isClient, setIsClient] = useState(false);
+@@ -29,10 +30,51 @@ export default function ReconnaissanceNombresCP() {
+   const [animatingStep, setAnimatingStep] = useState<string | null>(null);
+   const [fingerCount, setFingerCount] = useState(0);
+   
++  // États pour les exercices améliorés avec Sam le Pirate
++  const [exerciseStarted, setExerciseStarted] = useState(false);
++  const [showNextButton, setShowNextButton] = useState(false);
++  const [highlightNextButton, setHighlightNextButton] = useState(false);
++  const [isExplainingError, setIsExplainingError] = useState(false);
++  
++  // États pour l'introduction de Sam le Pirate
++  const [pirateIntroStarted, setPirateIntroStarted] = useState(false);
++  const [showExercisesList, setShowExercisesList] = useState(false);
++  const [highlightNumber3, setHighlightNumber3] = useState(false);
++  const [showFinalNumber, setShowFinalNumber] = useState(false);
++  const [finalNumber, setFinalNumber] = useState<string>('');
++  
+   // Refs pour contrôler les vocaux et animations
+   const stopSignalRef = useRef(false);
+   const currentAudioRef = useRef<SpeechSynthesisUtterance | null>(null);
+ 
++  // Expressions de pirate personnalisées pour chaque exercice incorrect
++  const pirateExpressions = [
++    "Par ma barbe de pirate", // exercice 1
++    "Humm ça n'est pas vraiment ça", // exercice 2  
++    "Nom d'un alligator", // exercice 3
++    "Saperlipopette", // exercice 4
++    "Mille sabords", // exercice 5
++    "Morbleu", // exercice 6
++    "Tonnerre de Brest", // exercice 7
++    "Par tous les diables des mers", // exercice 8
++    "Sacré mille tonnerres", // exercice 9
++    "Bigre et bigre" // exercice 10
++  ];
++
++  // Compliments variés pour les bonnes réponses
++  const correctAnswerCompliments = [
++    "Bravo",
++    "Magnifique", 
++    "Parfait",
++    "Époustouflant",
++    "Formidable",
++    "Incroyable",
++    "Fantastique",
++    "Génial",
++    "Excellent",
++    "Superbe"
++  ];
++
+   // Fonction pour mélanger un tableau
+   const shuffleArray = (array: string[]) => {
+     const shuffled = [...array];

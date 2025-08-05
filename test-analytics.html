@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Analytics - MagiMaths</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        .button { background: #3b82f6; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; margin: 5px; }
+        .button:hover { background: #2563eb; }
+        .result { background: #f3f4f6; padding: 15px; margin: 10px 0; border-radius: 5px; white-space: pre-wrap; }
+        .success { border-left: 4px solid #10b981; }
+        .error { border-left: 4px solid #ef4444; }
+        .status { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 12px; margin-left: 10px; }
+        .status.green { background: #dcfce7; color: #166534; }
+        .status.red { background: #fecaca; color: #991b1b; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Test du Système Analytics</h1>
+    <p>Utilisez cette page pour tester toutes les fonctionnalités analytics avant le déploiement.</p>
+
+    <div id="status">
+        <h2>État du Système</h2>
+        <p>Backend: <span id="backend-status" class="status">Vérification...</span></p>
+        <p>Base de données: <span id="db-status" class="status">Vérification...</span></p>
+        <p>Tracking: <span id="tracking-status" class="status">Vérification...</span></p>
+    </div>
+
+    <div>
+        <h2>🔄 Tests de Base</h2>
+        <button class="button" onclick="testVisitorTracking()">1. Tester Tracking Visiteur</button>
+        <button class="button" onclick="testPageView()">2. Tester Vue de Page</button>
+        <button class="button" onclick="simulateMultipleVisits()">3. Simuler Visites Multiples</button>
+    </div>
+
+    <div>
+        <h2>📊 Récupération de Données</h2>
+        <button class="button" onclick="getDailyStats()">Stats Quotidiennes</button>
+        <button class="button" onclick="getMonthlyStats()">Stats Mensuelles</button>
+        <button class="button" onclick="getDashboardData()">Dashboard Complet</button>
+    </div>
+
+    <div>
+        <h2>🚨 Tests d'Alertes</h2>
+        <button class="button" onclick="detectAlerts()">Détecter Alertes</button>
+        <button class="button" onclick="getActiveAlerts()">Voir Alertes Actives</button>
+        <button class="button" onclick="simulateSuspiciousActivity()">Simuler Activité Suspecte</button>
+    </div>
+
+    <div>
+        <h2>🗄️ Base de Données</h2>
+        <button class="button" onclick="checkTables()">Vérifier Tables</button>
+        <button class="button" onclick="getVisitorSessions()">Voir Sessions Visiteurs</button>
+        <button class="button" onclick="getPageAnalytics()">Voir Analytics Pages</button>
+    </div>
+
+    <div id="results">
+        <h2>📝 Résultats</h2>
+        <div id="output"></div>
+    </div>
+
+    <script>
+        // Configuration
+        const API_BASE = window.location.origin;
+        let visitorSessionId = null;
+
+        // Fonction utilitaire pour afficher les résultats
+        function displayResult(title, data, isError = false) {
+            const output = document.getElementById('output');
+            const resultDiv = document.createElement('div');
+            resultDiv.className = 'result ' + (isError ? 'error' : 'success');
+            resultDiv.innerHTML = `<strong>${title}</strong>\n${JSON.stringify(data, null, 2)}`;
+            output.appendChild(resultDiv);
+            output.scrollTop = output.scrollHeight;
+        }
+
+        function updateStatus(element, text, isSuccess) {
+            const el = document.getElementById(element);
+            el.textContent = text;
+            el.className = 'status ' + (isSuccess ? 'green' : 'red');
+        }
+
+        // Vérifications initiales
+        async function checkSystemStatus() {
+            try {
+                // Test backend
+                const response = await fetch(`${API_BASE}/api/analytics/dashboard`);
+                updateStatus('backend-status', 'En ligne', response.ok);
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    updateStatus('db-status', 'Connectée', true);
+                    updateStatus('tracking-status', 'Prêt', true);
+                } else {
+                    updateStatus('db-status', 'Erreur', false);
+                    updateStatus('tracking-status', 'Erreur', false);
+                }
+            } catch (error) {
+                updateStatus('backend-status', 'Hors ligne', false);
+                updateStatus('db-status', 'Erreur', false);
+                updateStatus('tracking-status', 'Erreur', false);
+            }
+        }
+
+        // Tests de tracking
+        async function testVisitorTracking() {
+            try {
+                const response = await fetch(`${API_BASE}/api/analytics/visit`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                
+                const data = await response.json();
+                visitorSessionId = data.visitorSessionId;
+                displayResult('✅ Tracking Visiteur', data);
+            } catch (error) {
+                displayResult('❌ Erreur Tracking Visiteur', error, true);
+            }
+        }
+
+        async function testPageView() {
+            if (!visitorSessionId) {
+                await testVisitorTracking();
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/api/analytics/page-view`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        visitorSessionId,
+                        pageType: 'chapter',
+                        pageId: 'test-chapter-analytics',
+                        pageTitle: 'Test Analytics Chapter',
+                        classLevel: 'cp',
+                        timeSpent: 120
+                    })
+                });
+                
+                const data = await response.json();
+                displayResult('✅ Vue de Page Trackée', data);
+            } catch (error) {
+                displayResult('❌ Erreur Vue de Page', error, true);
+            }
+        }
+
+        async function simulateMultipleVisits() {
+            displayResult('🔄 Simulation Visites Multiples', 'Démarrage...');
+            
+            for (let i = 0; i < 15; i++) {
+                await fetch(`${API_BASE}/api/analytics/visit`, { method: 'POST' });
+                await new Promise(resolve => setTimeout(resolve, 100));
+            }
+            
+            displayResult('✅ Visites Multiples Simulées', '15 visites créées');
+        }
+
+        // Récupération de données
+        async function getDailyStats() {
+            try {
+                const response = await fetch(`${API_BASE}/api/analytics/daily-stats?days=7`);
+                const data = await response.json();
+                displayResult('📊 Stats Quotidiennes (7 jours)', data);
+            } catch (error) {
+                displayResult('❌ Erreur Stats Quotidiennes', error, true);
+            }
+        }
+
+        async function getMonthlyStats() {
+            try {
+                const response = await fetch(`${API_BASE}/api/analytics/monthly-stats?months=3`);
+                const data = await response.json();
+                displayResult('📊 Stats Mensuelles (3 mois)', data);
+            } catch (error) {
+                displayResult('❌ Erreur Stats Mensuelles', error, true);
+            }
+        }
+
+        async function getDashboardData() {
+            try {
+                const response = await fetch(`${API_BASE}/api/analytics/dashboard`);
+                const data = await response.json();
+                displayResult('📊 Dashboard Complet', data);
+            } catch (error) {
+                displayResult('❌ Erreur Dashboard', error, true);
+            }
+        }
+
+        // Tests d'alertes
+        async function detectAlerts() {
+            try {
+                const response = await fetch(`${API_BASE}/api/analytics/alerts?action=detect`);
+                const data = await response.json();
+                displayResult('🚨 Détection Alertes', data);
+            } catch (error) {
+                displayResult('❌ Erreur Détection Alertes', error, true);
+            }
+        }
+
+        async function getActiveAlerts() {
+            try {
+                const response = await fetch(`${API_BASE}/api/analytics/alerts?action=list`);
+                const data = await response.json();
+                displayResult('🚨 Alertes Actives', data);
+            } catch (error) {
+                displayResult('❌ Erreur Alertes Actives', error, true);
+            }
+        }
+
+        async function simulateSuspiciousActivity() {
+            displayResult('🚨 Simulation Activité Suspecte', 'Création de 25 visites rapides...');
+            
+            // Créer une session
+            const visitResponse = await fetch(`${API_BASE}/api/analytics/visit`, { method: 'POST' });
+            const visitData = await visitResponse.json();
+            const sessionId = visitData.visitorSessionId;
+            
+            // Créer 25 vues de pages rapidement
+            for (let i = 0; i < 25; i++) {
+                await fetch(`${API_BASE}/api/analytics/page-view`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        visitorSessionId: sessionId,
+                        pageType: 'chapter',
+                        pageId: `suspicious-${i}`,
+                        pageTitle: `Page Suspecte ${i}`,
+                        classLevel: 'test'
+                    })
+                });
+                await new Promise(resolve => setTimeout(resolve, 50));
+            }
+            
+            displayResult('✅ Activité Suspecte Simulée', '25 vues de pages en 1.25 secondes');
+        }
+
+        // Vérifications base de données
+        async function checkTables() {
+            // Simuler la vérification des tables via les APIs
+            try {
+                const tests = [
+                    { name: 'visitor_sessions', test: () => fetch(`${API_BASE}/api/analytics/visit`, { method: 'POST' }) },
+                    { name: 'page_analytics', test: () => fetch(`${API_BASE}/api/analytics/dashboard`) },
+                    { name: 'security_alerts', test: () => fetch(`${API_BASE}/api/analytics/alerts?action=list`) }
+                ];
+                
+                const results = {};
+                for (const test of tests) {
+                    try {
+                        const response = await test.test();
+                        results[test.name] = response.ok ? '✅ OK' : '❌ Erreur';
+                    } catch (error) {
+                        results[test.name] = '❌ Erreur';
+                    }
+                }
+                
+                displayResult('🗄️ Vérification Tables', results);
+            } catch (error) {
+                displayResult('❌ Erreur Vérification Tables', error, true);
+            }
+        }
+
+        async function getVisitorSessions() {
+            try {
+                const response = await fetch(`${API_BASE}/api/analytics/dashboard`);
+                const data = await response.json();
+                displayResult('👥 Sessions Visiteurs', {
+                    total: data.totalVisitors,
+                    weekly: data.weeklyStats,
+                    countries: data.visitorsByCountry
+                });
+            } catch (error) {
+                displayResult('❌ Erreur Sessions Visiteurs', error, true);
+            }
+        }
+
+        async function getPageAnalytics() {
+            try {
+                const response = await fetch(`${API_BASE}/api/analytics/dashboard`);
+                const data = await response.json();
+                displayResult('📄 Analytics Pages', {
+                    totalViews: data.totalPageViews,
+                    topClasses: data.topClasses,
+                    topChapters: data.topChapters
+                });
+            } catch (error) {
+                displayResult('❌ Erreur Analytics Pages', error, true);
+            }
+        }
+
+        // Initialisation
+        window.onload = function() {
+            checkSystemStatus();
+            displayResult('🚀 Page de Test Chargée', 'Système prêt pour les tests');
+        };
+    </script>
+</body>
+</html>

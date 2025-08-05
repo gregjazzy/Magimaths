@@ -4,9 +4,18 @@ import { useState } from 'react'
 import { ChevronLeft, Clock, Trophy, BookOpen, Play } from 'lucide-react'
 import Link from 'next/link'
 import { getChaptersByClass } from '@/lib/chapters'
+import { useAnalytics } from '@/lib/useAnalytics'
 
 export default function QuatrièmePage() {
   const [hoveredChapter, setHoveredChapter] = useState<string | null>(null)
+  
+  // ✅ Tracking automatique des visites sur la page 4ème
+  useAnalytics({
+    pageType: 'class',
+    pageId: '4eme',
+    pageTitle: 'Classe 4ème',
+    classLevel: '4eme'
+  });
   
   const quatriemeChapters = getChaptersByClass('4eme').filter(chapter => 
     !['4eme-calcul-litteral-expressions-regles', 

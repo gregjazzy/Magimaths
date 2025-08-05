@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Réinitialiser XP Reconnaissance</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 600px; margin: 50px auto; padding: 20px; }
+        button { background: #3b82f6; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; margin: 10px; }
+        button:hover { background: #2563eb; }
+        .result { background: #f3f4f6; padding: 15px; border-radius: 5px; margin: 15px 0; }
+        .success { color: #16a34a; }
+        .error { color: #dc2626; }
+    </style>
+</head>
+<body>
+    <h1>🏴‍☠️ Réinitialiser XP pour Reconnaissance</h1>
+    
+    <p>Cet outil va réinitialiser les données XP pour la section "reconnaissance" pour permettre une lecture propre des nouvelles données.</p>
+    
+    <button onclick="resetRecognitionXP()">Réinitialiser Recognition XP</button>
+    <button onclick="viewCurrentData()">Voir les données actuelles</button>
+    
+    <div id="result" class="result" style="display:none;"></div>
+
+    <script>
+        function resetRecognitionXP() {
+            try {
+                // Supprimer uniquement les données de reconnaissance
+                const existingProgress = localStorage.getItem('cp-nombres-20-progress');
+                if (existingProgress) {
+                    const progress = JSON.parse(existingProgress);
+                    
+                    if (Array.isArray(progress)) {
+                        // Format tableau - supprimer l'entrée reconnaissance
+                        const newProgress = progress.filter(p => p.sectionId !== 'reconnaissance');
+                        localStorage.setItem('cp-nombres-20-progress', JSON.stringify(newProgress));
+                    } else {
+                        // Format objet - supprimer la clé reconnaissance
+                        delete progress.reconnaissance;
+                        localStorage.setItem('cp-nombres-20-progress', JSON.stringify(progress));
+                    }
+                }
+                
+                showResult('✅ Données XP de reconnaissance réinitialisées avec succès !', 'success');
+            } catch (error) {
+                showResult('❌ Erreur: ' + error.message, 'error');
+            }
+        }
+        
+        function viewCurrentData() {
+            try {
+                const data = localStorage.getItem('cp-nombres-20-progress');
+                if (data) {
+                    const parsed = JSON.parse(data);
+                    showResult('📊 Données actuelles:\n' + JSON.stringify(parsed, null, 2), '');
+                } else {
+                    showResult('📭 Aucune donnée trouvée dans localStorage', '');
+                }
+            } catch (error) {
+                showResult('❌ Erreur lors de la lecture: ' + error.message, 'error');
+            }
+        }
+        
+        function showResult(message, type) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = '<pre>' + message + '</pre>';
+            resultDiv.className = 'result ' + type;
+        }
+    </script>
+</body>
+</html>

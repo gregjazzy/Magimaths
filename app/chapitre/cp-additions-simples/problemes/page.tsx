@@ -22,6 +22,10 @@ export default function ProblemesAddition() {
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
   const [score, setScore] = useState(0);
   const [showCompletionModal, setShowCompletionModal] = useState(false);
+  
+  // États pour Sam le Pirate
+  const [samSizeExpanded, setSamSizeExpanded] = useState(false);
+  const [imageError, setImageError] = useState(false);
 
   // Refs pour gérer l'audio
   const stopSignalRef = useRef(false);
@@ -292,6 +296,7 @@ export default function ProblemesAddition() {
     setCurrentExample(null);
     setHighlightedExamples([]);
     setHighlightNumbersInStory(false);
+    setSamSizeExpanded(false);
   };
 
   // Fonction pour jouer l'audio avec voix féminine française
@@ -383,6 +388,46 @@ export default function ProblemesAddition() {
         });
       }
     }, 300);
+  };
+
+  // Fonction pour expliquer le chapitre dans le cours avec Sam
+  const explainChapterWithSam = async () => {
+    if (isPlayingVocal) return;
+    
+    stopAllVocalsAndAnimations();
+    await wait(300);
+    stopSignalRef.current = false;
+    setIsPlayingVocal(true);
+    setSamSizeExpanded(true);
+    
+    try {
+      await playAudio("Ahoy ! Aujourd'hui, nous allons apprendre à résoudre des problèmes d'addition !");
+      if (stopSignalRef.current) return;
+      
+      await wait(1000);
+      if (stopSignalRef.current) return;
+      
+      await playAudio("Un problème d'addition, c'est une histoire avec des nombres cachés, nom d'une jambe en bois !");
+      if (stopSignalRef.current) return;
+      
+      await wait(1200);
+      if (stopSignalRef.current) return;
+      
+      await playAudio("Ta mission de pirate : trouver les nombres dans l'histoire et les additionner !");
+      if (stopSignalRef.current) return;
+      
+      await wait(1500);
+      if (stopSignalRef.current) return;
+      
+      await playAudio("Souviens-toi des 3 étapes : lire, chercher les nombres, puis calculer !");
+      if (stopSignalRef.current) return;
+      
+    } catch (error) {
+      console.error('Erreur dans explainChapterWithSam:', error);
+    } finally {
+      setIsPlayingVocal(false);
+      setSamSizeExpanded(false);
+    }
   };
 
   // Fonction pour expliquer le chapitre principal
@@ -645,6 +690,39 @@ export default function ProblemesAddition() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-red-100">
+      {/* Animation CSS personnalisée pour les icônes */}
+      <style dangerouslySetInnerHTML={{
+        __html: `
+          @keyframes subtle-glow {
+            0%, 100% {
+              opacity: 0.8;
+              transform: scale(1);
+              filter: brightness(1);
+            }
+            50% {
+              opacity: 1;
+              transform: scale(1.05);
+              filter: brightness(1.1);
+            }
+          }
+        `
+      }} />
+      
+      {/* Bouton flottant de Sam - visible uniquement quand Sam parle */}
+      {isPlayingVocal && (
+        <div className="fixed top-4 right-4 z-[60]">
+          <button
+            onClick={stopAllVocalsAndAnimations}
+            className="bg-red-600 hover:bg-red-700 text-white rounded-full p-3 shadow-lg animate-pulse"
+            title="Arrêter Sam"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+      )}
+      
       <div className="max-w-6xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8">
@@ -698,40 +776,92 @@ export default function ProblemesAddition() {
         </div>
 
         {!showExercises ? (
-          /* Section Cours */
-          <div className="space-y-8">
-            {/* Bouton COMMENCER */}
-            <div className="text-center mb-8">
+          /* COURS - MOBILE OPTIMISÉ */
+          <div className="space-y-2 sm:space-y-6">
+            {/* Image de Sam le Pirate avec bouton DÉMARRER */}
+            <div className="flex items-center justify-center gap-2 sm:gap-4 p-2 sm:p-4 mb-3 sm:mb-6">
+              {/* Image de Sam le Pirate */}
+              <div className={`relative transition-all duration-500 border-2 border-orange-300 rounded-full bg-gradient-to-br from-orange-100 to-red-100 ${
+                isPlayingVocal
+                    ? 'w-14 sm:w-24 h-14 sm:h-24' // When speaking - plus petit sur mobile
+                  : samSizeExpanded
+                      ? 'w-12 sm:w-32 h-12 sm:h-32' // Enlarged - plus petit sur mobile
+                      : 'w-10 sm:w-20 h-10 sm:h-20' // Normal - plus petit sur mobile
+              } flex items-center justify-center hover:scale-105 cursor-pointer`}>
+                {!imageError && (
+                  <img 
+                    src="/images/pirate-small.png"
+                    alt="Sam le Pirate"
+                    className="w-full h-full object-cover rounded-full"
+                    onError={() => setImageError(true)}
+                  />
+                )}
+                {imageError && (
+                  <div className="text-lg sm:text-2xl">🏴‍☠️</div>
+                )}
+                
+                {/* Megaphone animé quand Sam parle */}
+                {isPlayingVocal && (
+                  <div className="absolute -top-1 -right-1 sm:-top-2 sm:-right-2 bg-red-500 rounded-full p-1 sm:p-2 shadow-lg animate-bounce">
+                    <svg className="w-2 h-2 sm:w-4 sm:h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M18 3a1 1 0 00-1.447-.894L8.763 6H5a3 3 0 000 6h3.763l7.79 3.894A1 1 0 0018 15V3zM14 8.59c0 1.2.8 2.27 2 2.27v.64c-1.77 0-3.2-1.4-3.2-3.14 0-1.74 1.43-3.14 3.2-3.14v.64c-1.2 0-2 1.07-2 2.27z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                )}
+              </div>
+
+              {/* Bouton DÉMARRER avec Sam */}
+              <button
+                onClick={explainChapterWithSam}
+                disabled={isPlayingVocal}
+                className={`px-3 sm:px-6 py-2 sm:py-3 rounded-lg font-bold text-sm sm:text-lg shadow-lg transition-all ${
+                  isPlayingVocal
+                    ? 'bg-gray-400 text-gray-200 cursor-not-allowed'
+                    : 'bg-gradient-to-r from-orange-500 to-red-500 text-white hover:shadow-xl hover:scale-105'
+                } ${!hasStarted && !isPlayingVocal ? 'animate-pulse' : ''}`}
+              >
+                <Play className="w-3 h-3 sm:w-5 sm:h-5 inline-block mr-1 sm:mr-2" />
+                {isPlayingVocal ? 'Sam explique...' : 'DÉMARRER'}
+              </button>
+            </div>
+
+            {/* Bouton COMMENCER (animation complète) */}
+            <div className="text-center mb-3 sm:mb-8">
               <button
                 onClick={() => {
                   stopAllVocalsAndAnimations();
                   explainChapter();
                 }}
                 disabled={isAnimationRunning}
-                className={`px-8 py-4 rounded-xl font-bold text-xl shadow-lg transition-all transform ${
+                className={`px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-bold text-base sm:text-xl shadow-lg transition-all transform ${
                   isAnimationRunning 
                     ? 'bg-gray-400 text-gray-200 cursor-not-allowed' 
-                    : 'bg-gradient-to-r from-orange-500 to-red-500 text-white hover:shadow-xl hover:scale-105 animate-pulse'
-                }`}
+                    : 'bg-gradient-to-r from-orange-500 to-red-500 text-white hover:shadow-xl hover:scale-105'
+                } ${!hasStarted && !isAnimationRunning ? 'animate-pulse' : ''}`}
               >
-                {isAnimationRunning ? '⏳ Animation en cours...' : '▶️ COMMENCER !'}
+                {isAnimationRunning ? '⏳ Animation en cours...' : '▶️ COMMENCER (Animation complète) !'}
               </button>
             </div>
 
             {/* Introduction */}
             <div 
               id="intro-section"
-              className={`bg-white rounded-xl shadow-lg p-6 transition-all duration-300 ${
+              className={`bg-white rounded-xl shadow-lg p-3 sm:p-6 transition-all duration-300 ${
                 highlightedElement === 'intro' ? 'ring-4 ring-orange-400 bg-orange-50' : ''
               }`}
             >
-              <div className="flex items-center gap-3 mb-4">
-                <div className="p-2 bg-orange-100 rounded-lg">
-                  <Book className="w-6 h-6 text-orange-600" />
+              <div className="flex items-center gap-1 sm:gap-3 mb-3 sm:mb-4">
+                <div className="p-1 sm:p-2 bg-orange-100 rounded-lg">
+                  <Book className="w-4 h-4 sm:w-6 sm:h-6 text-orange-600" />
                 </div>
-                <h2 className="text-2xl font-bold text-gray-800">Qu'est-ce qu'un problème d'addition ?</h2>
+                <h2 className="text-base sm:text-2xl font-bold text-gray-800">Qu'est-ce qu'un problème d'addition ?</h2>
+                {/* Icône d'animation pour l'introduction */}
+                <div className="bg-gradient-to-r from-orange-500 to-red-600 text-white rounded-full w-6 h-6 sm:w-12 sm:h-12 flex items-center justify-center text-xs sm:text-xl font-bold shadow-lg hover:scale-110 cursor-pointer transition-all duration-300 ring-2 ring-orange-300" 
+                     style={{animation: 'subtle-glow 2s infinite'}}>
+                  🧮
+                </div>
               </div>
-              <p className="text-lg text-gray-700 leading-relaxed">
+              <p className="text-sm sm:text-lg text-gray-700 leading-relaxed">
                 Un problème d'addition raconte une histoire avec des nombres. 
                 Notre mission est de trouver ces nombres et de les additionner pour répondre à la question !
               </p>
@@ -740,15 +870,20 @@ export default function ProblemesAddition() {
             {/* Méthode */}
             <div 
               id="method-section"
-              className={`bg-white rounded-xl shadow-lg p-6 transition-all duration-300 ${
+              className={`bg-white rounded-xl shadow-lg p-3 sm:p-6 transition-all duration-300 ${
                 highlightedElement === 'method' ? 'ring-4 ring-orange-400 bg-orange-50' : ''
               }`}
             >
-              <div className="flex items-center gap-3 mb-6">
-                <div className="p-2 bg-purple-100 rounded-lg">
-                  <Target className="w-6 h-6 text-purple-600" />
+              <div className="flex items-center gap-1 sm:gap-3 mb-3 sm:mb-6">
+                <div className="p-1 sm:p-2 bg-purple-100 rounded-lg">
+                  <Target className="w-4 h-4 sm:w-6 sm:h-6 text-purple-600" />
                 </div>
-                <h2 className="text-2xl font-bold text-gray-800">Ma méthode en 3 étapes</h2>
+                <h2 className="text-base sm:text-2xl font-bold text-gray-800">Ma méthode en 3 étapes</h2>
+                {/* Icône d'animation pour la méthode */}
+                <div className="bg-gradient-to-r from-purple-500 to-indigo-600 text-white rounded-full w-6 h-6 sm:w-12 sm:h-12 flex items-center justify-center text-xs sm:text-xl font-bold shadow-lg hover:scale-110 cursor-pointer transition-all duration-300 ring-2 ring-purple-300" 
+                     style={{animation: 'subtle-glow 2s infinite'}}>
+                  🎯
+                </div>
               </div>
               
               <div className="space-y-4">
@@ -776,12 +911,12 @@ export default function ProblemesAddition() {
             </div>
 
             {/* Démonstration du soulignage */}
-            <div className="bg-white rounded-xl shadow-lg p-6">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="p-2 bg-yellow-100 rounded-lg">
-                  <span className="text-2xl">✏️</span>
+            <div className="bg-white rounded-xl shadow-lg p-3 sm:p-6">
+              <div className="flex items-center gap-1 sm:gap-3 mb-3 sm:mb-6">
+                <div className="p-1 sm:p-2 bg-yellow-100 rounded-lg">
+                  <span className="text-lg sm:text-2xl">✏️</span>
                 </div>
-                <h2 className="text-2xl font-bold text-gray-800">Démonstration : souligner les nombres</h2>
+                <h2 className="text-base sm:text-2xl font-bold text-gray-800">Démonstration : souligner les nombres</h2>
               </div>
               
               <div className="space-y-4">
@@ -805,13 +940,20 @@ export default function ProblemesAddition() {
             {/* Exemples */}
             <div 
               id="examples-section"
-              className={`bg-white rounded-xl shadow-lg p-6 transition-all duration-300 ${
+              className={`bg-white rounded-xl shadow-lg p-3 sm:p-6 transition-all duration-300 ${
                 highlightedElement === 'examples' ? 'ring-4 ring-orange-400 bg-orange-50' : ''
               }`}
             >
-              <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">
-                🎯 Choisis un problème à résoudre ensemble !
-              </h2>
+              <div className="flex items-center justify-center gap-1 sm:gap-3 mb-3 sm:mb-6">
+                <h2 className="text-base sm:text-2xl font-bold text-gray-800">
+                  🎯 Choisis un problème à résoudre ensemble !
+                </h2>
+                {/* Icône d'animation pour les exemples */}
+                <div className="bg-gradient-to-r from-green-500 to-teal-600 text-white rounded-full w-6 h-6 sm:w-12 sm:h-12 flex items-center justify-center text-xs sm:text-xl font-bold shadow-lg hover:scale-110 cursor-pointer transition-all duration-300 ring-2 ring-green-300" 
+                     style={{animation: 'subtle-glow 2s infinite'}}>
+                  🎯
+                </div>
+              </div>
               
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {problemExamples.map((example, index) => (

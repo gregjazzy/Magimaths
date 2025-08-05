@@ -3,6 +3,7 @@
 import React from 'react'
 import Link from 'next/link'
 import { ChevronLeft } from 'lucide-react'
+import { useAnalytics } from '@/lib/useAnalytics'
 
 const chapters = [
   {
@@ -115,6 +116,14 @@ const chapters = [
 ]
 
 export default function CPPage() {
+  // ✅ Tracking automatique des visites sur la page CP
+  useAnalytics({
+    pageType: 'class',
+    pageId: 'cp',
+    pageTitle: 'Classe CP - Cours Préparatoire',
+    classLevel: 'cp'
+  });
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-pink-50 relative overflow-hidden">
       {/* Header avec navigation */}
