@@ -1491,39 +1491,39 @@ export default function LireNombresCE1Page() {
                   </p>
                 </div>
 
-                {/* Paires simplifiées */}
+                {/* Paires colorées */}
                 <div className="space-y-6 mb-6">
-                  {/* Paire 1 */}
-                  <div className="bg-gray-50 rounded-lg p-4">
-                    <div className="flex items-center justify-center gap-4 sm:gap-8 mb-3">
+                  {/* Paire 1 - Rose/Bleu */}
+                  <div className="bg-gradient-to-r from-pink-100 to-blue-100 rounded-xl p-6 border-2 border-pink-200 shadow-lg">
+                    <div className="flex items-center justify-center gap-4 sm:gap-8 mb-4">
                       <button
                         onClick={() => {
                           setSelectedNumber('80');
                           setTimeout(() => scrollToElement('animation-section'), 100);
                         }}
-                        className="group relative bg-white border-2 border-gray-200 rounded-xl p-4 sm:p-6 hover:border-blue-300 hover:shadow-md transition-all min-w-[100px] sm:min-w-[120px]"
+                        className="group relative bg-gradient-to-br from-green-400 to-green-500 text-white border-2 border-green-300 rounded-xl p-4 sm:p-6 hover:from-green-500 hover:to-green-600 hover:shadow-xl transform hover:scale-105 transition-all min-w-[110px] sm:min-w-[130px]"
                       >
-                        <div className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">80</div>
-                        <div className="text-xs sm:text-sm text-gray-600">
-                          quatre-vingt<span id="s-80" className="text-green-600 font-bold text-base sm:text-lg">s</span>
+                        <div className="text-2xl sm:text-3xl font-bold mb-2">80</div>
+                        <div className="text-xs sm:text-sm">
+                          quatre-vingt<span id="s-80" className="text-yellow-200 font-extrabold text-lg sm:text-xl bg-green-700 px-1 rounded">s</span>
                         </div>
-                        <div className="absolute -top-2 -right-2 bg-green-500 text-white text-xs px-2 py-1 rounded-full">
+                        <div className="absolute -top-2 -right-2 bg-yellow-400 text-green-800 text-xs font-bold px-2 py-1 rounded-full border-2 border-yellow-300">
                           ✓ S
                         </div>
                       </button>
 
-                      <div className="text-xl sm:text-2xl text-gray-400">VS</div>
+                      <div className="text-2xl sm:text-3xl font-bold text-white bg-gradient-to-r from-pink-500 to-blue-500 px-4 py-2 rounded-full shadow-lg">VS</div>
 
                       <button
                         onClick={() => {
                           setSelectedNumber('83');
                           setTimeout(() => scrollToElement('animation-section'), 100);
                         }}
-                        className="group relative bg-white border-2 border-gray-200 rounded-xl p-4 sm:p-6 hover:border-blue-300 hover:shadow-md transition-all min-w-[100px] sm:min-w-[120px]"
+                        className="group relative bg-gradient-to-br from-red-400 to-red-500 text-white border-2 border-red-300 rounded-xl p-4 sm:p-6 hover:from-red-500 hover:to-red-600 hover:shadow-xl transform hover:scale-105 transition-all min-w-[110px] sm:min-w-[130px]"
                       >
-                        <div className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">83</div>
-                        <div className="text-xs sm:text-sm text-gray-600">quatre-vingt-trois</div>
-                        <div id="badge-83" className="absolute -top-2 -right-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full">
+                        <div className="text-2xl sm:text-3xl font-bold mb-2">83</div>
+                        <div className="text-xs sm:text-sm">quatre-vingt-trois</div>
+                        <div id="badge-83" className="absolute -top-2 -right-2 bg-yellow-400 text-red-800 text-xs font-bold px-2 py-1 rounded-full border-2 border-yellow-300">
                           ✗ pas S
                         </div>
                       </button>
@@ -1532,8 +1532,8 @@ export default function LireNombresCE1Page() {
                       <button
                         onClick={animateContrast80vs83}
                         disabled={isAnimating}
-                        className={`bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg font-bold text-xs transition-all ${
-                          isAnimating ? 'opacity-50 cursor-not-allowed' : ''
+                        className={`bg-gradient-to-r from-pink-500 to-blue-500 hover:from-pink-600 hover:to-blue-600 text-white px-6 py-3 rounded-xl font-bold text-sm shadow-lg transform hover:scale-105 transition-all ${
+                          isAnimating ? 'opacity-50 cursor-not-allowed scale-100' : ''
                         }`}
                       >
                         ✨ Comparer 80 vs 83
@@ -1541,37 +1541,37 @@ export default function LireNombresCE1Page() {
                     </div>
                   </div>
 
-                  {/* Paire 2 */}
-                  <div className="bg-gray-50 rounded-lg p-4">
-                    <div className="flex items-center justify-center gap-4 sm:gap-8 mb-3">
+                  {/* Paire 2 - Vert/Orange */}
+                  <div className="bg-gradient-to-r from-green-100 to-orange-100 rounded-xl p-6 border-2 border-green-200 shadow-lg">
+                    <div className="flex items-center justify-center gap-4 sm:gap-8 mb-4">
                       <button
                         onClick={() => {
                           setSelectedNumber('200');
                           setTimeout(() => scrollToElement('animation-section'), 100);
                         }}
-                        className="group relative bg-white border-2 border-gray-200 rounded-xl p-4 sm:p-6 hover:border-blue-300 hover:shadow-md transition-all min-w-[100px] sm:min-w-[120px]"
+                        className="group relative bg-gradient-to-br from-emerald-400 to-emerald-500 text-white border-2 border-emerald-300 rounded-xl p-4 sm:p-6 hover:from-emerald-500 hover:to-emerald-600 hover:shadow-xl transform hover:scale-105 transition-all min-w-[110px] sm:min-w-[130px]"
                       >
-                        <div className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">200</div>
-                        <div className="text-xs sm:text-sm text-gray-600">
-                          deux-cent<span id="s-200" className="text-green-600 font-bold text-base sm:text-lg">s</span>
+                        <div className="text-2xl sm:text-3xl font-bold mb-2">200</div>
+                        <div className="text-xs sm:text-sm">
+                          deux-cent<span id="s-200" className="text-yellow-200 font-extrabold text-lg sm:text-xl bg-emerald-700 px-1 rounded">s</span>
                         </div>
-                        <div className="absolute -top-2 -right-2 bg-green-500 text-white text-xs px-2 py-1 rounded-full">
+                        <div className="absolute -top-2 -right-2 bg-yellow-400 text-emerald-800 text-xs font-bold px-2 py-1 rounded-full border-2 border-yellow-300">
                           ✓ S
                         </div>
                       </button>
 
-                      <div className="text-xl sm:text-2xl text-gray-400">VS</div>
+                      <div className="text-2xl sm:text-3xl font-bold text-white bg-gradient-to-r from-green-500 to-orange-500 px-4 py-2 rounded-full shadow-lg">VS</div>
 
                       <button
                         onClick={() => {
                           setSelectedNumber('205');
                           setTimeout(() => scrollToElement('animation-section'), 100);
                         }}
-                        className="group relative bg-white border-2 border-gray-200 rounded-xl p-4 sm:p-6 hover:border-blue-300 hover:shadow-md transition-all min-w-[100px] sm:min-w-[120px]"
+                        className="group relative bg-gradient-to-br from-orange-400 to-orange-500 text-white border-2 border-orange-300 rounded-xl p-4 sm:p-6 hover:from-orange-500 hover:to-orange-600 hover:shadow-xl transform hover:scale-105 transition-all min-w-[110px] sm:min-w-[130px]"
                       >
-                        <div className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">205</div>
-                        <div className="text-xs sm:text-sm text-gray-600">deux-cent-cinq</div>
-                        <div id="badge-205" className="absolute -top-2 -right-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full">
+                        <div className="text-2xl sm:text-3xl font-bold mb-2">205</div>
+                        <div className="text-xs sm:text-sm">deux-cent-cinq</div>
+                        <div id="badge-205" className="absolute -top-2 -right-2 bg-yellow-400 text-orange-800 text-xs font-bold px-2 py-1 rounded-full border-2 border-yellow-300">
                           ✗ pas S
                         </div>
                       </button>
@@ -1580,8 +1580,8 @@ export default function LireNombresCE1Page() {
                       <button
                         onClick={animateContrast200vs205}
                         disabled={isAnimating}
-                        className={`bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg font-bold text-xs transition-all ${
-                          isAnimating ? 'opacity-50 cursor-not-allowed' : ''
+                        className={`bg-gradient-to-r from-green-500 to-orange-500 hover:from-green-600 hover:to-orange-600 text-white px-6 py-3 rounded-xl font-bold text-sm shadow-lg transform hover:scale-105 transition-all ${
+                          isAnimating ? 'opacity-50 cursor-not-allowed scale-100' : ''
                         }`}
                       >
                         ✨ Comparer 200 vs 205
@@ -1589,37 +1589,37 @@ export default function LireNombresCE1Page() {
                     </div>
                   </div>
 
-                  {/* Paire 3 */}
-                  <div className="bg-gray-50 rounded-lg p-4">
-                    <div className="flex items-center justify-center gap-4 sm:gap-8 mb-3">
+                  {/* Paire 3 - Violet/Cyan */}
+                  <div className="bg-gradient-to-r from-purple-100 to-cyan-100 rounded-xl p-6 border-2 border-purple-200 shadow-lg">
+                    <div className="flex items-center justify-center gap-4 sm:gap-8 mb-4">
                       <button
                         onClick={() => {
                           setSelectedNumber('300');
                           setTimeout(() => scrollToElement('animation-section'), 100);
                         }}
-                        className="group relative bg-white border-2 border-gray-200 rounded-xl p-4 sm:p-6 hover:border-blue-300 hover:shadow-md transition-all min-w-[100px] sm:min-w-[120px]"
+                        className="group relative bg-gradient-to-br from-violet-400 to-violet-500 text-white border-2 border-violet-300 rounded-xl p-4 sm:p-6 hover:from-violet-500 hover:to-violet-600 hover:shadow-xl transform hover:scale-105 transition-all min-w-[110px] sm:min-w-[130px]"
                       >
-                        <div className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">300</div>
-                        <div className="text-xs sm:text-sm text-gray-600">
-                          trois-cent<span id="s-300" className="text-green-600 font-bold text-base sm:text-lg">s</span>
+                        <div className="text-2xl sm:text-3xl font-bold mb-2">300</div>
+                        <div className="text-xs sm:text-sm">
+                          trois-cent<span id="s-300" className="text-yellow-200 font-extrabold text-lg sm:text-xl bg-violet-700 px-1 rounded">s</span>
                         </div>
-                        <div className="absolute -top-2 -right-2 bg-green-500 text-white text-xs px-2 py-1 rounded-full">
+                        <div className="absolute -top-2 -right-2 bg-yellow-400 text-violet-800 text-xs font-bold px-2 py-1 rounded-full border-2 border-yellow-300">
                           ✓ S
                         </div>
                       </button>
 
-                      <div className="text-xl sm:text-2xl text-gray-400">VS</div>
+                      <div className="text-2xl sm:text-3xl font-bold text-white bg-gradient-to-r from-violet-500 to-cyan-500 px-4 py-2 rounded-full shadow-lg">VS</div>
 
                       <button
                         onClick={() => {
                           setSelectedNumber('305');
                           setTimeout(() => scrollToElement('animation-section'), 100);
                         }}
-                        className="group relative bg-white border-2 border-gray-200 rounded-xl p-4 sm:p-6 hover:border-blue-300 hover:shadow-md transition-all min-w-[100px] sm:min-w-[120px]"
+                        className="group relative bg-gradient-to-br from-cyan-400 to-cyan-500 text-white border-2 border-cyan-300 rounded-xl p-4 sm:p-6 hover:from-cyan-500 hover:to-cyan-600 hover:shadow-xl transform hover:scale-105 transition-all min-w-[110px] sm:min-w-[130px]"
                       >
-                        <div className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">305</div>
-                        <div className="text-xs sm:text-sm text-gray-600">trois-cent-cinq</div>
-                        <div id="badge-305" className="absolute -top-2 -right-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full">
+                        <div className="text-2xl sm:text-3xl font-bold mb-2">305</div>
+                        <div className="text-xs sm:text-sm">trois-cent-cinq</div>
+                        <div id="badge-305" className="absolute -top-2 -right-2 bg-yellow-400 text-cyan-800 text-xs font-bold px-2 py-1 rounded-full border-2 border-yellow-300">
                           ✗ pas S
                         </div>
                       </button>
@@ -1628,8 +1628,8 @@ export default function LireNombresCE1Page() {
                       <button
                         onClick={animateContrast300vs305}
                         disabled={isAnimating}
-                        className={`bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-lg font-bold text-xs transition-all ${
-                          isAnimating ? 'opacity-50 cursor-not-allowed' : ''
+                        className={`bg-gradient-to-r from-violet-500 to-cyan-500 hover:from-violet-600 hover:to-cyan-600 text-white px-6 py-3 rounded-xl font-bold text-sm shadow-lg transform hover:scale-105 transition-all ${
+                          isAnimating ? 'opacity-50 cursor-not-allowed scale-100' : ''
                         }`}
                       >
                         ✨ Comparer 300 vs 305
@@ -1765,26 +1765,26 @@ export default function LireNombresCE1Page() {
                   )}
                 </div>
 
-                {/* Section piège spéciale : 90/91 */}
-                <div className="mt-6 p-4 bg-yellow-50 border-2 border-yellow-300 rounded-lg">
-                  <h4 className="text-center text-lg font-bold text-yellow-800 mb-4">
+                {/* Section piège spéciale : 90/91 - Style coloré */}
+                <div className="mt-6 p-6 bg-gradient-to-r from-yellow-100 to-red-100 border-2 border-yellow-300 rounded-xl shadow-lg">
+                  <h4 className="text-center text-xl font-bold text-red-700 mb-4">
                     ⚠️ Attention aux pièges !
                   </h4>
-                  <p className="text-center text-sm text-yellow-700 mb-4">
-                    Ces nombres ressemblent à "80" mais n'ont <span className="font-bold">PAS de S</span> !
+                  <p className="text-center text-sm text-red-600 mb-6 font-medium">
+                    Ces nombres ressemblent à "80" mais n'ont <span className="font-bold bg-red-200 px-2 py-1 rounded">PAS de S</span> !
                   </p>
                   
-                  <div className="flex items-center justify-center gap-4 sm:gap-8">
+                  <div className="flex items-center justify-center gap-4 sm:gap-8 mb-4">
                     <button
                       onClick={() => {
                         setSelectedNumber('90');
                         setTimeout(() => scrollToElement('animation-section'), 100);
                       }}
-                      className="group relative bg-white border-2 border-yellow-400 rounded-xl p-4 sm:p-6 hover:border-red-400 hover:shadow-md transition-all min-w-[100px] sm:min-w-[120px]"
+                      className="group relative bg-gradient-to-br from-amber-400 to-amber-500 text-white border-2 border-amber-300 rounded-xl p-4 sm:p-6 hover:from-amber-500 hover:to-amber-600 hover:shadow-xl transform hover:scale-105 transition-all min-w-[110px] sm:min-w-[130px]"
                     >
-                      <div className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">90</div>
-                      <div className="text-xs sm:text-sm text-gray-600">quatre-vingt-dix</div>
-                      <div className="absolute -top-2 -right-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full">
+                      <div className="text-2xl sm:text-3xl font-bold mb-2">90</div>
+                      <div className="text-xs sm:text-sm">quatre-vingt-dix</div>
+                      <div className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full border-2 border-red-400">
                         ⚠️ PAS S
                       </div>
                     </button>
@@ -1794,33 +1794,39 @@ export default function LireNombresCE1Page() {
                         setSelectedNumber('91');
                         setTimeout(() => scrollToElement('animation-section'), 100);
                       }}
-                      className="group relative bg-white border-2 border-yellow-400 rounded-xl p-4 sm:p-6 hover:border-red-400 hover:shadow-md transition-all min-w-[100px] sm:min-w-[120px]"
+                      className="group relative bg-gradient-to-br from-amber-400 to-amber-500 text-white border-2 border-amber-300 rounded-xl p-4 sm:p-6 hover:from-amber-500 hover:to-amber-600 hover:shadow-xl transform hover:scale-105 transition-all min-w-[110px] sm:min-w-[130px]"
                     >
-                      <div className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">91</div>
-                      <div className="text-xs sm:text-sm text-gray-600">quatre-vingt-onze</div>
-                      <div className="absolute -top-2 -right-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full">
+                      <div className="text-2xl sm:text-3xl font-bold mb-2">91</div>
+                      <div className="text-xs sm:text-sm">quatre-vingt-onze</div>
+                      <div className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full border-2 border-red-400">
                         ⚠️ PAS S
                       </div>
                     </button>
                   </div>
 
-                  <div className="text-center mt-4 p-3 bg-yellow-100 rounded-lg">
-                    <p className="text-xs text-yellow-800">
-                      <span className="font-bold">Pourquoi pas de S ?</span><br/>
+                  <div className="text-center p-4 bg-gradient-to-r from-yellow-200 to-red-200 rounded-xl border border-yellow-300">
+                    <p className="text-sm text-red-800 font-medium">
+                      <span className="font-bold text-red-900">Pourquoi pas de S ?</span><br/>
                       Parce qu'ils sont suivis de "dix" ou "onze" !<br/>
-                      <span className="italic">80 = exact → quatre-vingt<span className="font-bold text-green-600">s</span></span><br/>
-                      <span className="italic">90 = suivi de "dix" → quatre-vingt-dix</span>
+                      <span className="italic bg-green-100 px-2 py-1 rounded mt-1 inline-block">80 = exact → quatre-vingt<span className="font-bold text-green-600">s</span></span><br/>
+                      <span className="italic bg-red-100 px-2 py-1 rounded mt-1 inline-block">90 = suivi de "dix" → quatre-vingt-dix</span>
                     </p>
                   </div>
                 </div>
 
-                {/* Règle simple à la fin */}
-                <div className="text-center p-4 bg-gray-50 rounded-lg mt-6">
-                  <p className="text-sm text-gray-700">
-                    <span className="font-bold text-green-600">Avec S</span> : nombre exact (80, 200, 300...)
-                    <br/>
-                    <span className="font-bold text-red-600">Sans S</span> : suivi d'autre chose (83, 205, 305...)
-                  </p>
+                {/* Règle simple à la fin - Style coloré */}
+                <div className="text-center p-6 bg-gradient-to-r from-blue-50 to-green-50 rounded-xl border-2 border-blue-200 shadow-lg mt-6">
+                  <h4 className="text-lg font-bold text-gray-800 mb-3">📝 Règle à retenir</h4>
+                  <div className="space-y-2">
+                    <div className="bg-green-100 border border-green-300 rounded-lg p-3">
+                      <span className="font-bold text-green-700 text-base">✅ Avec S</span> : 
+                      <span className="text-green-600 ml-2">nombre exact (80, 200, 300...)</span>
+                    </div>
+                    <div className="bg-red-100 border border-red-300 rounded-lg p-3">
+                      <span className="font-bold text-red-700 text-base">❌ Sans S</span> : 
+                      <span className="text-red-600 ml-2">suivi d'autre chose (83, 205, 305...)</span>
+                    </div>
+                  </div>
                 </div>
               </div>
 
