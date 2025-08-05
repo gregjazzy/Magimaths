@@ -21,10 +21,19 @@ export default function EcrireNombresCE1Page() {
   const [characterSizeExpanded, setCharacterSizeExpanded] = useState(false);
   const [highlightedElement, setHighlightedElement] = useState<string | null>(null);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [selectedNumber, setSelectedNumber] = useState<{written: string, number: string, hint: string} | null>(null);
 
   // Refs pour contrôler les vocaux
   const stopSignalRef = useRef(false);
   const currentAudioRef = useRef<SpeechSynthesisUtterance | null>(null);
+
+  // Fonction pour scroller vers un élément
+  const scrollToElement = (elementId: string) => {
+    const element = document.getElementById(elementId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  };
 
   // Sauvegarder les progrès dans localStorage
   const saveProgress = (score: number, maxScore: number) => {
@@ -624,10 +633,12 @@ export default function EcrireNombresCE1Page() {
                   <button
                     key={index}
                     onClick={() => {
-                      // TODO: Add selected number logic
-                      // setTimeout(() => scrollToElement('animation-section'), 100);
+                      setSelectedNumber(exercise);
+                      setTimeout(() => scrollToElement('decomposition-section'), 100);
                     }}
-                    className="bg-gradient-to-br from-purple-500 to-pink-500 text-white p-2 sm:p-4 rounded-lg font-bold text-xs sm:text-base hover:from-purple-600 hover:to-pink-600 transition-all transform hover:scale-105 pulse-interactive min-h-[3rem] sm:min-h-[4rem] flex items-center justify-center"
+                    className={`bg-gradient-to-br from-purple-500 to-pink-500 text-white p-2 sm:p-4 rounded-lg font-bold text-xs sm:text-base hover:from-purple-600 hover:to-pink-600 transition-all transform hover:scale-105 pulse-interactive min-h-[3rem] sm:min-h-[4rem] flex items-center justify-center ${
+                      selectedNumber?.written === exercise.written ? 'ring-4 ring-yellow-400 scale-110' : ''
+                    }`}
                   >
                     {exercise.written}
                   </button>
@@ -638,6 +649,46 @@ export default function EcrireNombresCE1Page() {
                 Clique sur un nombre pour voir sa transformation magique ! ✨
               </div>
             </div>
+
+            {/* Section de décomposition */}
+            {selectedNumber && (
+              <div id="decomposition-section" className="bg-green-50 rounded-xl p-6 shadow-lg">
+                <h3 className="text-xl font-bold text-center mb-6 text-green-800">
+                  ✨ Transformation magique !
+                </h3>
+                
+                <div className="text-center mb-6">
+                  <div className="bg-white rounded-lg p-4 shadow-md mb-4">
+                    <div className="text-lg font-bold text-purple-600 mb-2">
+                      📝 Nombre en lettres :
+                    </div>
+                    <div className="text-2xl font-bold text-gray-800">
+                      {selectedNumber.written}
+                    </div>
+                  </div>
+                  
+                  <div className="text-4xl font-bold text-green-600 mb-2">⬇️</div>
+                  
+                  <div className="bg-white rounded-lg p-4 shadow-md">
+                    <div className="text-lg font-bold text-blue-600 mb-2">
+                      🔢 Nombre en chiffres :
+                    </div>
+                    <div className="text-4xl font-bold text-blue-600">
+                      {selectedNumber.number}
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="bg-white rounded-lg p-4 shadow-md">
+                  <div className="text-lg font-bold text-green-700 mb-3 text-center">
+                    🧩 Décomposition :
+                  </div>
+                  <div className="text-center text-gray-700">
+                    {selectedNumber.hint}
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Conseils */}
             <div className="bg-gradient-to-r from-yellow-400 to-orange-400 rounded-xl p-6 text-white">
@@ -866,7 +917,7 @@ export default function EcrireNombresCE1Page() {
               )}
               
               {/* Navigation */}
-              <div id="navigation-buttons" className="flex flex-col sm:flex-row justify-center space-y-3 sm:space-y-0 sm:space-x-4">
+              <div id="navigation-buttons" className="flex flex-col sm:flex-row justify-centrime la regle er space-y-3 sm:space-y-0 sm:space-x-4">
                 <button
                   id="previous-button"
                   onClick={() => setCurrentExercise(Math.max(0, currentExercise - 1))}
