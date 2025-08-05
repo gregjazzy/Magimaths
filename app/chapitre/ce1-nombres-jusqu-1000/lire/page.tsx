@@ -1358,7 +1358,11 @@ export default function LireNombresCE1Page() {
                         {/* Bouton d'animation */}
                         <button
                           id="animation-button"
-                          onClick={animateNumber}
+                          onClick={() => {
+                            animateNumber();
+                            // Scroll automatique vers l'animation
+                            setTimeout(() => scrollToElement('animation-section'), 100);
+                          }}
                           disabled={isAnimating || isPlayingVocal}
                           className={`bg-blue-500 text-white px-3 sm:px-6 py-1 sm:py-3 rounded-md sm:rounded-lg font-bold text-xs sm:text-sm hover:bg-blue-600 transition-colors disabled:opacity-50 mb-2 sm:mb-3 pulse-interactive flex items-center justify-center min-h-[2rem] sm:min-h-[3rem] ${
                             highlightedElement === 'animation-button' ? 'ring-4 ring-yellow-400 bg-blue-400 scale-110 animate-pulse' : ''
@@ -1576,7 +1580,11 @@ export default function LireNombresCE1Page() {
                     </div>
                     <div className="text-center">
                       <button
-                        onClick={animateContrast80vs83}
+                        onClick={() => {
+                          animateContrast80vs83();
+                          // Scroll automatique vers l'animation
+                          setTimeout(() => scrollToElement('animation-section'), 100);
+                        }}
                         disabled={isAnimating}
                         className={`bg-gradient-to-r from-pink-500 to-blue-500 hover:from-pink-600 hover:to-blue-600 text-white px-6 py-3 rounded-xl font-bold text-sm shadow-lg transform hover:scale-105 transition-all ${
                           isAnimating ? 'opacity-50 cursor-not-allowed scale-100' : ''
@@ -1624,7 +1632,11 @@ export default function LireNombresCE1Page() {
                     </div>
                     <div className="text-center">
                       <button
-                        onClick={animateContrast200vs205}
+                        onClick={() => {
+                          animateContrast200vs205();
+                          // Scroll automatique vers l'animation
+                          setTimeout(() => scrollToElement('animation-section'), 100);
+                        }}
                         disabled={isAnimating}
                         className={`bg-gradient-to-r from-green-500 to-orange-500 hover:from-green-600 hover:to-orange-600 text-white px-6 py-3 rounded-xl font-bold text-sm shadow-lg transform hover:scale-105 transition-all ${
                           isAnimating ? 'opacity-50 cursor-not-allowed scale-100' : ''
@@ -1672,7 +1684,11 @@ export default function LireNombresCE1Page() {
                     </div>
                     <div className="text-center">
                       <button
-                        onClick={animateContrast300vs305}
+                        onClick={() => {
+                          animateContrast300vs305();
+                          // Scroll automatique vers l'animation
+                          setTimeout(() => scrollToElement('animation-section'), 100);
+                        }}
                         disabled={isAnimating}
                         className={`bg-gradient-to-r from-violet-500 to-cyan-500 hover:from-violet-600 hover:to-cyan-600 text-white px-6 py-3 rounded-xl font-bold text-sm shadow-lg transform hover:scale-105 transition-all ${
                           isAnimating ? 'opacity-50 cursor-not-allowed scale-100' : ''
