@@ -1576,11 +1576,8 @@ export default function LireNombresCE1Page() {
                             
                             {/* Le nombre à analyser - plus compact */}
                             <div className="bg-white rounded-lg p-4 shadow-md mb-3 mx-auto max-w-xs">
-                              <div className="text-3xl font-bold text-gray-800 mb-2">
+                              <div className="text-3xl font-bold text-gray-800">
                                 {currentGameNumber.value}
-                              </div>
-                              <div className="text-sm text-gray-600">
-                                {currentGameNumber.reading}
                               </div>
                             </div>
                           </div>
