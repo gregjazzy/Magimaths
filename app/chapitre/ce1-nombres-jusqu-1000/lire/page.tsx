@@ -1757,7 +1757,7 @@ export default function LireNombresCE1Page() {
                               <div className="text-lg font-bold mb-1">
                                 {gameAnswer === currentGameNumber.hasS ? 'Bravo !' : 'Pas tout à fait...'}
                               </div>
-                              <div className="text-xs text-gray-700">
+                              <div className="text-xs text-gray-900">
                                 <span className="font-bold">
                                   {currentGameNumber.reading}
                                 </span>
