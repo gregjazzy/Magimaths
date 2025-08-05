@@ -1903,32 +1903,7 @@ export default function LireNombresCE1Page() {
                 </div>
               </div>
 
-              {/* Exemples délicats */}
-              <div className="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-lg sm:rounded-xl p-3 sm:p-6 text-white">
-                <h3 className="text-sm sm:text-xl font-bold mb-2 sm:mb-3">⚠️ Nombres délicats à retenir</h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 text-xs sm:text-base">
-                  <div className="bg-white bg-opacity-20 rounded-lg p-2 sm:p-3">
-                    <h4 className="font-bold mb-2">Les "quatre-vingts" :</h4>
-                    <ul className="space-y-1">
-                      <li>• <span className="font-bold">80</span> = quatre-vingts (avec s)</li>
-                      <li>• <span className="font-bold">81</span> = quatre-vingt-un (sans s)</li>
-                      <li>• <span className="font-bold">280</span> = deux-cent-quatre-vingts</li>
-                      <li>• <span className="font-bold">281</span> = deux-cent-quatre-vingt-un</li>
-                    </ul>
-                  </div>
 
-                  <div className="bg-white bg-opacity-20 rounded-lg p-2 sm:p-3">
-                    <h4 className="font-bold mb-2">Les pièges :</h4>
-                    <ul className="space-y-1">
-                      <li>• <span className="font-bold">71</span> = soixante-et-onze</li>
-                      <li>• <span className="font-bold">91</span> = quatre-vingt-onze</li>
-                      <li>• <span className="font-bold">101</span> = cent-un</li>
-                      <li>• <span className="font-bold">111</span> = cent-onze</li>
-                    </ul>
-                  </div>
-
-                </div>
-              </div>
             </div>
           ) : (
             /* EXERCICES */
