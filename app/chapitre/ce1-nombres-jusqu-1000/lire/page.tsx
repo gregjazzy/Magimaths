@@ -1397,18 +1397,18 @@ export default function LireNombresCE1Page() {
                 </div>
 
                 {/* Paires colorées */}
-                <div className="space-y-6 mb-6">
+                <div className="space-y-4 mb-4">
                   {/* Paire 1 - Rose/Bleu */}
-                  <div id="paire-80-83" className="bg-gradient-to-r from-pink-100 to-blue-100 rounded-xl p-6 border-2 border-pink-200 shadow-lg">
-                    <div className="flex items-center justify-center gap-4 sm:gap-8 mb-4">
+                  <div id="paire-80-83" className="bg-gradient-to-r from-pink-100 to-blue-100 rounded-lg p-4 border-2 border-pink-200 shadow-md">
+                    <div className="flex items-center justify-center gap-3 sm:gap-6 mb-3">
                       <button
                         onClick={() => {
                           setSelectedNumber('80');
                           setTimeout(() => scrollToElement('paire-80-83'), 100);
                         }}
-                        className="group relative bg-gradient-to-br from-green-400 to-green-500 text-white border-2 border-green-300 rounded-xl p-4 sm:p-6 hover:from-green-500 hover:to-green-600 hover:shadow-xl transform hover:scale-105 transition-all min-w-[110px] sm:min-w-[130px]"
+                        className="group relative bg-gradient-to-br from-green-400 to-green-500 text-white border-2 border-green-300 rounded-lg p-3 sm:p-4 hover:from-green-500 hover:to-green-600 hover:shadow-xl transform hover:scale-105 transition-all min-w-[90px] sm:min-w-[110px]"
                       >
-                        <div className="text-2xl sm:text-3xl font-bold mb-2">80</div>
+                        <div className="text-xl sm:text-2xl font-bold mb-1">80</div>
                         <div className="text-xs sm:text-sm">
                           quatre-vingt<span id="s-80" className="text-yellow-200 font-extrabold text-lg sm:text-xl bg-green-700 px-1 rounded">s</span>
                         </div>
@@ -1417,16 +1417,16 @@ export default function LireNombresCE1Page() {
                         </div>
                       </button>
 
-                      <div className="text-2xl sm:text-3xl font-bold text-white bg-gradient-to-r from-pink-500 to-blue-500 px-4 py-2 rounded-full shadow-lg">VS</div>
+                      <div className="text-xl sm:text-2xl font-bold text-white bg-gradient-to-r from-pink-500 to-blue-500 px-3 py-1 rounded-full shadow-md">VS</div>
 
                       <button
                         onClick={() => {
                           setSelectedNumber('83');
                           setTimeout(() => scrollToElement('paire-80-83'), 100);
                         }}
-                        className="group relative bg-gradient-to-br from-red-400 to-red-500 text-white border-2 border-red-300 rounded-xl p-4 sm:p-6 hover:from-red-500 hover:to-red-600 hover:shadow-xl transform hover:scale-105 transition-all min-w-[110px] sm:min-w-[130px]"
+                        className="group relative bg-gradient-to-br from-red-400 to-red-500 text-white border-2 border-red-300 rounded-lg p-3 sm:p-4 hover:from-red-500 hover:to-red-600 hover:shadow-xl transform hover:scale-105 transition-all min-w-[90px] sm:min-w-[110px]"
                       >
-                        <div className="text-2xl sm:text-3xl font-bold mb-2">83</div>
+                        <div className="text-xl sm:text-2xl font-bold mb-1">83</div>
                         <div className="text-xs sm:text-sm">quatre-vingt-trois</div>
                         <div id="badge-83" className="absolute -top-2 -right-2 bg-yellow-400 text-red-800 text-xs font-bold px-2 py-1 rounded-full border-2 border-yellow-300">
                           ✗ pas S
@@ -1437,16 +1437,16 @@ export default function LireNombresCE1Page() {
                   </div>
 
                   {/* Paire 2 - Vert/Orange */}
-                  <div id="paire-200-205" className="bg-gradient-to-r from-green-100 to-orange-100 rounded-xl p-6 border-2 border-green-200 shadow-lg">
-                    <div className="flex items-center justify-center gap-4 sm:gap-8 mb-4">
+                  <div id="paire-200-205" className="bg-gradient-to-r from-green-100 to-orange-100 rounded-lg p-4 border-2 border-green-200 shadow-md">
+                    <div className="flex items-center justify-center gap-3 sm:gap-6 mb-3">
                       <button
                         onClick={() => {
                           setSelectedNumber('200');
                           setTimeout(() => scrollToElement('paire-200-205'), 100);
                         }}
-                        className="group relative bg-gradient-to-br from-emerald-400 to-emerald-500 text-white border-2 border-emerald-300 rounded-xl p-4 sm:p-6 hover:from-emerald-500 hover:to-emerald-600 hover:shadow-xl transform hover:scale-105 transition-all min-w-[110px] sm:min-w-[130px]"
+                        className="group relative bg-gradient-to-br from-emerald-400 to-emerald-500 text-white border-2 border-emerald-300 rounded-lg p-3 sm:p-4 hover:from-emerald-500 hover:to-emerald-600 hover:shadow-xl transform hover:scale-105 transition-all min-w-[90px] sm:min-w-[110px]"
                       >
-                        <div className="text-2xl sm:text-3xl font-bold mb-2">200</div>
+                        <div className="text-xl sm:text-2xl font-bold mb-1">200</div>
                         <div className="text-xs sm:text-sm">
                           deux-cent<span id="s-200" className="text-yellow-200 font-extrabold text-lg sm:text-xl bg-emerald-700 px-1 rounded">s</span>
                         </div>
@@ -1455,16 +1455,16 @@ export default function LireNombresCE1Page() {
                         </div>
                       </button>
 
-                      <div className="text-2xl sm:text-3xl font-bold text-white bg-gradient-to-r from-green-500 to-orange-500 px-4 py-2 rounded-full shadow-lg">VS</div>
+                      <div className="text-xl sm:text-2xl font-bold text-white bg-gradient-to-r from-green-500 to-orange-500 px-3 py-1 rounded-full shadow-md">VS</div>
 
                       <button
                         onClick={() => {
                           setSelectedNumber('205');
                           setTimeout(() => scrollToElement('paire-200-205'), 100);
                         }}
-                        className="group relative bg-gradient-to-br from-orange-400 to-orange-500 text-white border-2 border-orange-300 rounded-xl p-4 sm:p-6 hover:from-orange-500 hover:to-orange-600 hover:shadow-xl transform hover:scale-105 transition-all min-w-[110px] sm:min-w-[130px]"
+                        className="group relative bg-gradient-to-br from-orange-400 to-orange-500 text-white border-2 border-orange-300 rounded-lg p-3 sm:p-4 hover:from-orange-500 hover:to-orange-600 hover:shadow-xl transform hover:scale-105 transition-all min-w-[90px] sm:min-w-[110px]"
                       >
-                        <div className="text-2xl sm:text-3xl font-bold mb-2">205</div>
+                        <div className="text-xl sm:text-2xl font-bold mb-1">205</div>
                         <div className="text-xs sm:text-sm">deux-cent-cinq</div>
                         <div id="badge-205" className="absolute -top-2 -right-2 bg-yellow-400 text-orange-800 text-xs font-bold px-2 py-1 rounded-full border-2 border-yellow-300">
                           ✗ pas S
@@ -1475,16 +1475,16 @@ export default function LireNombresCE1Page() {
                   </div>
 
                   {/* Paire 3 - Violet/Cyan */}
-                  <div id="paire-300-305" className="bg-gradient-to-r from-purple-100 to-cyan-100 rounded-xl p-6 border-2 border-purple-200 shadow-lg">
-                    <div className="flex items-center justify-center gap-4 sm:gap-8 mb-4">
+                  <div id="paire-300-305" className="bg-gradient-to-r from-purple-100 to-cyan-100 rounded-lg p-4 border-2 border-purple-200 shadow-md">
+                    <div className="flex items-center justify-center gap-3 sm:gap-6 mb-3">
                       <button
                         onClick={() => {
                           setSelectedNumber('300');
                           setTimeout(() => scrollToElement('paire-300-305'), 100);
                         }}
-                        className="group relative bg-gradient-to-br from-violet-400 to-violet-500 text-white border-2 border-violet-300 rounded-xl p-4 sm:p-6 hover:from-violet-500 hover:to-violet-600 hover:shadow-xl transform hover:scale-105 transition-all min-w-[110px] sm:min-w-[130px]"
+                        className="group relative bg-gradient-to-br from-violet-400 to-violet-500 text-white border-2 border-violet-300 rounded-lg p-3 sm:p-4 hover:from-violet-500 hover:to-violet-600 hover:shadow-xl transform hover:scale-105 transition-all min-w-[90px] sm:min-w-[110px]"
                       >
-                        <div className="text-2xl sm:text-3xl font-bold mb-2">300</div>
+                        <div className="text-xl sm:text-2xl font-bold mb-1">300</div>
                         <div className="text-xs sm:text-sm">
                           trois-cent<span id="s-300" className="text-yellow-200 font-extrabold text-lg sm:text-xl bg-violet-700 px-1 rounded">s</span>
                         </div>
@@ -1493,16 +1493,16 @@ export default function LireNombresCE1Page() {
                         </div>
                       </button>
 
-                      <div className="text-2xl sm:text-3xl font-bold text-white bg-gradient-to-r from-violet-500 to-cyan-500 px-4 py-2 rounded-full shadow-lg">VS</div>
+                      <div className="text-xl sm:text-2xl font-bold text-white bg-gradient-to-r from-violet-500 to-cyan-500 px-3 py-1 rounded-full shadow-md">VS</div>
 
                       <button
                         onClick={() => {
                           setSelectedNumber('305');
                           setTimeout(() => scrollToElement('paire-300-305'), 100);
                         }}
-                        className="group relative bg-gradient-to-br from-cyan-400 to-cyan-500 text-white border-2 border-cyan-300 rounded-xl p-4 sm:p-6 hover:from-cyan-500 hover:to-cyan-600 hover:shadow-xl transform hover:scale-105 transition-all min-w-[110px] sm:min-w-[130px]"
+                        className="group relative bg-gradient-to-br from-cyan-400 to-cyan-500 text-white border-2 border-cyan-300 rounded-lg p-3 sm:p-4 hover:from-cyan-500 hover:to-cyan-600 hover:shadow-xl transform hover:scale-105 transition-all min-w-[90px] sm:min-w-[110px]"
                       >
-                        <div className="text-2xl sm:text-3xl font-bold mb-2">305</div>
+                        <div className="text-xl sm:text-2xl font-bold mb-1">305</div>
                         <div className="text-xs sm:text-sm">trois-cent-cinq</div>
                         <div id="badge-305" className="absolute -top-2 -right-2 bg-yellow-400 text-cyan-800 text-xs font-bold px-2 py-1 rounded-full border-2 border-yellow-300">
                           ✗ pas S
