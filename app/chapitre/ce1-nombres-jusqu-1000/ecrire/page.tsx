@@ -893,21 +893,21 @@ export default function EcrireNombresCE1Page() {
                   <div className="text-2xl sm:text-4xl font-bold text-green-600 mb-1 sm:mb-2">⬇️</div>
                   
                   <div className="bg-white rounded-md sm:rounded-lg p-3 sm:p-4 shadow-md">
-                    <div className="text-sm sm:text-lg font-bold text-blue-600 mb-1 sm:mb-2">
-                      🔢 Nombre en chiffres :
+                    <div className="text-sm sm:text-lg font-bold text-green-700 mb-2 sm:mb-3 text-center">
+                      🧩 Décomposition :
                     </div>
-                    <div className="text-2xl sm:text-4xl font-bold text-blue-600">
-                      {selectedNumber.number}
+                    <div className="text-center text-gray-700 text-sm sm:text-base break-words">
+                      {selectedNumber.hint}
                     </div>
                   </div>
                 </div>
                 
                 <div className="bg-white rounded-md sm:rounded-lg p-3 sm:p-4 shadow-md">
-                  <div className="text-sm sm:text-lg font-bold text-green-700 mb-2 sm:mb-3 text-center">
-                    🧩 Décomposition :
+                  <div className="text-sm sm:text-lg font-bold text-blue-600 mb-1 sm:mb-2">
+                    🔢 Nombre en chiffres :
                   </div>
-                  <div className="text-center text-gray-700 text-sm sm:text-base break-words">
-                    {selectedNumber.hint}
+                  <div className="text-2xl sm:text-4xl font-bold text-blue-600">
+                    {selectedNumber.number}
                   </div>
                 </div>
               </div>
