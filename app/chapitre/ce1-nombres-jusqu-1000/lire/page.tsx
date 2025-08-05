@@ -1764,17 +1764,7 @@ export default function LireNombresCE1Page() {
                   </div>
                 </div>
 
-                <div className="text-center">
-                  <button
-                    onClick={animateContrastS}
-                    disabled={isPlayingVocal || isAnimating}
-                    className={`bg-white text-blue-600 px-6 py-4 sm:px-10 sm:py-5 rounded-xl font-bold text-base sm:text-xl hover:bg-gray-100 transition-all transform hover:scale-105 shadow-lg pulse-interactive ${
-                      (isPlayingVocal || isAnimating) ? 'opacity-50 cursor-not-allowed' : ''
-                    }`}
-                  >
-                    🎭 VOIR LES CONTRASTES EN ACTION ! 🎭
-                  </button>
-                </div>
+
               </div>
 
               {/* Règle sur les tirets */}
