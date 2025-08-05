@@ -261,63 +261,149 @@ export default function LireNombresCE1Page() {
     setIsAnimating(false);
   };
 
-  // Animation simple pour mettre en évidence les contrastes
-  const animateContrastS = async () => {
+  // Animation pour la paire 80 vs 83
+  const animateContrast80vs83 = async () => {
     setIsAnimating(true);
     
-    // 1. Animer tous les "s" verts (avec S)
-    const sElements = document.querySelectorAll('.text-green-600');
-    sElements.forEach((el, index) => {
-      setTimeout(() => {
-        if (el instanceof HTMLElement) {
-          el.style.animation = 'bounce 1.5s ease-in-out';
-          el.style.color = '#dc2626';
-          el.style.fontSize = '1.8em';
-          el.style.textShadow = '0 0 15px gold';
-          el.style.transform = 'scale(1.5)';
-          el.style.transition = 'all 0.4s';
-        }
-      }, index * 200);
-    });
+    // Animer le "s" de 80
+    const s80 = document.getElementById('s-80');
+    if (s80) {
+      s80.style.animation = 'bounce 1.5s ease-in-out';
+      s80.style.color = '#dc2626';
+      s80.style.fontSize = '2em';
+      s80.style.textShadow = '0 0 20px gold';
+      s80.style.transform = 'scale(2)';
+      s80.style.transition = 'all 0.4s';
+    }
     
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    await new Promise(resolve => setTimeout(resolve, 1500));
     
-    // 2. Remettre les S normaux
-    sElements.forEach(el => {
-      if (el instanceof HTMLElement) {
-        el.style.animation = '';
-        el.style.fontSize = '';
-        el.style.transform = '';
-        el.style.textShadow = '';
-        el.style.color = '#16a34a';
-      }
-    });
+    // Remettre le S normal
+    if (s80) {
+      s80.style.animation = '';
+      s80.style.fontSize = '';
+      s80.style.transform = '';
+      s80.style.textShadow = '';
+      s80.style.color = '#16a34a';
+    }
     
     await new Promise(resolve => setTimeout(resolve, 500));
     
-    // 3. Animer les badges "✗ pas S" (sans S)
-    const noSBadges = document.querySelectorAll('.bg-red-500');
-    noSBadges.forEach((el, index) => {
-      setTimeout(() => {
-        if (el instanceof HTMLElement) {
-          el.style.animation = 'pulse 1.5s ease-in-out';
-          el.style.transform = 'scale(1.4)';
-          el.style.boxShadow = '0 0 20px rgba(239, 68, 68, 0.8)';
-          el.style.transition = 'all 0.4s';
-        }
-      }, index * 300);
-    });
+    // Animer le badge de 83
+    const badge83 = document.getElementById('badge-83');
+    if (badge83) {
+      badge83.style.animation = 'pulse 1.5s ease-in-out';
+      badge83.style.transform = 'scale(1.6)';
+      badge83.style.boxShadow = '0 0 25px rgba(239, 68, 68, 0.9)';
+      badge83.style.transition = 'all 0.4s';
+    }
     
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    await new Promise(resolve => setTimeout(resolve, 1500));
     
-    // 4. Remettre les badges normaux
-    noSBadges.forEach(el => {
-      if (el instanceof HTMLElement) {
-        el.style.animation = '';
-        el.style.transform = '';
-        el.style.boxShadow = '';
-      }
-    });
+    // Remettre le badge normal
+    if (badge83) {
+      badge83.style.animation = '';
+      badge83.style.transform = '';
+      badge83.style.boxShadow = '';
+    }
+    
+    setIsAnimating(false);
+  };
+
+  // Animation pour la paire 200 vs 205
+  const animateContrast200vs205 = async () => {
+    setIsAnimating(true);
+    
+    // Animer le "s" de 200
+    const s200 = document.getElementById('s-200');
+    if (s200) {
+      s200.style.animation = 'bounce 1.5s ease-in-out';
+      s200.style.color = '#dc2626';
+      s200.style.fontSize = '2em';
+      s200.style.textShadow = '0 0 20px gold';
+      s200.style.transform = 'scale(2)';
+      s200.style.transition = 'all 0.4s';
+    }
+    
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    
+    // Remettre le S normal
+    if (s200) {
+      s200.style.animation = '';
+      s200.style.fontSize = '';
+      s200.style.transform = '';
+      s200.style.textShadow = '';
+      s200.style.color = '#16a34a';
+    }
+    
+    await new Promise(resolve => setTimeout(resolve, 500));
+    
+    // Animer le badge de 205
+    const badge205 = document.getElementById('badge-205');
+    if (badge205) {
+      badge205.style.animation = 'pulse 1.5s ease-in-out';
+      badge205.style.transform = 'scale(1.6)';
+      badge205.style.boxShadow = '0 0 25px rgba(239, 68, 68, 0.9)';
+      badge205.style.transition = 'all 0.4s';
+    }
+    
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    
+    // Remettre le badge normal
+    if (badge205) {
+      badge205.style.animation = '';
+      badge205.style.transform = '';
+      badge205.style.boxShadow = '';
+    }
+    
+    setIsAnimating(false);
+  };
+
+  // Animation pour la paire 300 vs 305
+  const animateContrast300vs305 = async () => {
+    setIsAnimating(true);
+    
+    // Animer le "s" de 300
+    const s300 = document.getElementById('s-300');
+    if (s300) {
+      s300.style.animation = 'bounce 1.5s ease-in-out';
+      s300.style.color = '#dc2626';
+      s300.style.fontSize = '2em';
+      s300.style.textShadow = '0 0 20px gold';
+      s300.style.transform = 'scale(2)';
+      s300.style.transition = 'all 0.4s';
+    }
+    
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    
+    // Remettre le S normal
+    if (s300) {
+      s300.style.animation = '';
+      s300.style.fontSize = '';
+      s300.style.transform = '';
+      s300.style.textShadow = '';
+      s300.style.color = '#16a34a';
+    }
+    
+    await new Promise(resolve => setTimeout(resolve, 500));
+    
+    // Animer le badge de 305
+    const badge305 = document.getElementById('badge-305');
+    if (badge305) {
+      badge305.style.animation = 'pulse 1.5s ease-in-out';
+      badge305.style.transform = 'scale(1.6)';
+      badge305.style.boxShadow = '0 0 25px rgba(239, 68, 68, 0.9)';
+      badge305.style.transition = 'all 0.4s';
+    }
+    
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    
+    // Remettre le badge normal
+    if (badge305) {
+      badge305.style.animation = '';
+      badge305.style.transform = '';
+      badge305.style.boxShadow = '';
+    }
     
     setIsAnimating(false);
   };
@@ -1331,130 +1417,160 @@ export default function LireNombresCE1Page() {
                   Comprendre le "S"
                 </h2>
                 
-                {/* Titre et bouton d'animation */}
+                {/* Titre simple */}
                 <div className="text-center mb-6">
                   <h3 className="text-lg sm:text-xl font-bold text-gray-800 mb-2">
                     Observe les différences :
                   </h3>
-                  <p className="text-sm text-gray-600 mb-4">
+                  <p className="text-sm text-gray-600">
                     Compare chaque paire pour comprendre la règle
                   </p>
-                  <button
-                    onClick={animateContrastS}
-                    disabled={isAnimating || isPlayingVocal}
-                    className={`bg-purple-500 hover:bg-purple-600 text-white px-6 py-3 rounded-lg font-bold text-sm transition-all pulse-interactive ${
-                      isAnimating || isPlayingVocal ? 'opacity-50 cursor-not-allowed' : ''
-                    }`}
-                  >
-                    ✨ Voir l'animation des contrastes
-                  </button>
                 </div>
 
                 {/* Paires simplifiées */}
                 <div className="space-y-6 mb-6">
                   {/* Paire 1 */}
-                  <div className="flex items-center justify-center gap-4 sm:gap-8">
-                    <button
-                      onClick={() => {
-                        setSelectedNumber('80');
-                        setTimeout(() => scrollToElement('animation-section'), 100);
-                      }}
-                      className="group relative bg-white border-2 border-gray-200 rounded-xl p-4 sm:p-6 hover:border-blue-300 hover:shadow-md transition-all min-w-[100px] sm:min-w-[120px]"
-                    >
-                      <div className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">80</div>
-                      <div className="text-xs sm:text-sm text-gray-600">
-                        quatre-vingt<span className="text-green-600 font-bold text-base sm:text-lg">s</span>
-                      </div>
-                      <div className="absolute -top-2 -right-2 bg-green-500 text-white text-xs px-2 py-1 rounded-full">
-                        ✓ S
-                      </div>
-                    </button>
+                  <div className="bg-gray-50 rounded-lg p-4">
+                    <div className="flex items-center justify-center gap-4 sm:gap-8 mb-3">
+                      <button
+                        onClick={() => {
+                          setSelectedNumber('80');
+                          setTimeout(() => scrollToElement('animation-section'), 100);
+                        }}
+                        className="group relative bg-white border-2 border-gray-200 rounded-xl p-4 sm:p-6 hover:border-blue-300 hover:shadow-md transition-all min-w-[100px] sm:min-w-[120px]"
+                      >
+                        <div className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">80</div>
+                        <div className="text-xs sm:text-sm text-gray-600">
+                          quatre-vingt<span id="s-80" className="text-green-600 font-bold text-base sm:text-lg">s</span>
+                        </div>
+                        <div className="absolute -top-2 -right-2 bg-green-500 text-white text-xs px-2 py-1 rounded-full">
+                          ✓ S
+                        </div>
+                      </button>
 
-                    <div className="text-xl sm:text-2xl text-gray-400">VS</div>
+                      <div className="text-xl sm:text-2xl text-gray-400">VS</div>
 
-                    <button
-                      onClick={() => {
-                        setSelectedNumber('83');
-                        setTimeout(() => scrollToElement('animation-section'), 100);
-                      }}
-                      className="group relative bg-white border-2 border-gray-200 rounded-xl p-4 sm:p-6 hover:border-blue-300 hover:shadow-md transition-all min-w-[100px] sm:min-w-[120px]"
-                    >
-                      <div className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">83</div>
-                      <div className="text-xs sm:text-sm text-gray-600">quatre-vingt-trois</div>
-                      <div className="absolute -top-2 -right-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full">
-                        ✗ pas S
-                      </div>
-                    </button>
+                      <button
+                        onClick={() => {
+                          setSelectedNumber('83');
+                          setTimeout(() => scrollToElement('animation-section'), 100);
+                        }}
+                        className="group relative bg-white border-2 border-gray-200 rounded-xl p-4 sm:p-6 hover:border-blue-300 hover:shadow-md transition-all min-w-[100px] sm:min-w-[120px]"
+                      >
+                        <div className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">83</div>
+                        <div className="text-xs sm:text-sm text-gray-600">quatre-vingt-trois</div>
+                        <div id="badge-83" className="absolute -top-2 -right-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full">
+                          ✗ pas S
+                        </div>
+                      </button>
+                    </div>
+                    <div className="text-center">
+                      <button
+                        onClick={animateContrast80vs83}
+                        disabled={isAnimating}
+                        className={`bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg font-bold text-xs transition-all ${
+                          isAnimating ? 'opacity-50 cursor-not-allowed' : ''
+                        }`}
+                      >
+                        ✨ Comparer 80 vs 83
+                      </button>
+                    </div>
                   </div>
 
                   {/* Paire 2 */}
-                  <div className="flex items-center justify-center gap-4 sm:gap-8">
-                    <button
-                      onClick={() => {
-                        setSelectedNumber('200');
-                        setTimeout(() => scrollToElement('animation-section'), 100);
-                      }}
-                      className="group relative bg-white border-2 border-gray-200 rounded-xl p-4 sm:p-6 hover:border-blue-300 hover:shadow-md transition-all min-w-[100px] sm:min-w-[120px]"
-                    >
-                      <div className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">200</div>
-                      <div className="text-xs sm:text-sm text-gray-600">
-                        deux-cent<span className="text-green-600 font-bold text-base sm:text-lg">s</span>
-                      </div>
-                      <div className="absolute -top-2 -right-2 bg-green-500 text-white text-xs px-2 py-1 rounded-full">
-                        ✓ S
-                      </div>
-                    </button>
+                  <div className="bg-gray-50 rounded-lg p-4">
+                    <div className="flex items-center justify-center gap-4 sm:gap-8 mb-3">
+                      <button
+                        onClick={() => {
+                          setSelectedNumber('200');
+                          setTimeout(() => scrollToElement('animation-section'), 100);
+                        }}
+                        className="group relative bg-white border-2 border-gray-200 rounded-xl p-4 sm:p-6 hover:border-blue-300 hover:shadow-md transition-all min-w-[100px] sm:min-w-[120px]"
+                      >
+                        <div className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">200</div>
+                        <div className="text-xs sm:text-sm text-gray-600">
+                          deux-cent<span id="s-200" className="text-green-600 font-bold text-base sm:text-lg">s</span>
+                        </div>
+                        <div className="absolute -top-2 -right-2 bg-green-500 text-white text-xs px-2 py-1 rounded-full">
+                          ✓ S
+                        </div>
+                      </button>
 
-                    <div className="text-xl sm:text-2xl text-gray-400">VS</div>
+                      <div className="text-xl sm:text-2xl text-gray-400">VS</div>
 
-                    <button
-                      onClick={() => {
-                        setSelectedNumber('205');
-                        setTimeout(() => scrollToElement('animation-section'), 100);
-                      }}
-                      className="group relative bg-white border-2 border-gray-200 rounded-xl p-4 sm:p-6 hover:border-blue-300 hover:shadow-md transition-all min-w-[100px] sm:min-w-[120px]"
-                    >
-                      <div className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">205</div>
-                      <div className="text-xs sm:text-sm text-gray-600">deux-cent-cinq</div>
-                      <div className="absolute -top-2 -right-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full">
-                        ✗ pas S
-                      </div>
-                    </button>
+                      <button
+                        onClick={() => {
+                          setSelectedNumber('205');
+                          setTimeout(() => scrollToElement('animation-section'), 100);
+                        }}
+                        className="group relative bg-white border-2 border-gray-200 rounded-xl p-4 sm:p-6 hover:border-blue-300 hover:shadow-md transition-all min-w-[100px] sm:min-w-[120px]"
+                      >
+                        <div className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">205</div>
+                        <div className="text-xs sm:text-sm text-gray-600">deux-cent-cinq</div>
+                        <div id="badge-205" className="absolute -top-2 -right-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full">
+                          ✗ pas S
+                        </div>
+                      </button>
+                    </div>
+                    <div className="text-center">
+                      <button
+                        onClick={animateContrast200vs205}
+                        disabled={isAnimating}
+                        className={`bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg font-bold text-xs transition-all ${
+                          isAnimating ? 'opacity-50 cursor-not-allowed' : ''
+                        }`}
+                      >
+                        ✨ Comparer 200 vs 205
+                      </button>
+                    </div>
                   </div>
 
                   {/* Paire 3 */}
-                  <div className="flex items-center justify-center gap-4 sm:gap-8">
-                    <button
-                      onClick={() => {
-                        setSelectedNumber('300');
-                        setTimeout(() => scrollToElement('animation-section'), 100);
-                      }}
-                      className="group relative bg-white border-2 border-gray-200 rounded-xl p-4 sm:p-6 hover:border-blue-300 hover:shadow-md transition-all min-w-[100px] sm:min-w-[120px]"
-                    >
-                      <div className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">300</div>
-                      <div className="text-xs sm:text-sm text-gray-600">
-                        trois-cent<span className="text-green-600 font-bold text-base sm:text-lg">s</span>
-                      </div>
-                      <div className="absolute -top-2 -right-2 bg-green-500 text-white text-xs px-2 py-1 rounded-full">
-                        ✓ S
-                      </div>
-                    </button>
+                  <div className="bg-gray-50 rounded-lg p-4">
+                    <div className="flex items-center justify-center gap-4 sm:gap-8 mb-3">
+                      <button
+                        onClick={() => {
+                          setSelectedNumber('300');
+                          setTimeout(() => scrollToElement('animation-section'), 100);
+                        }}
+                        className="group relative bg-white border-2 border-gray-200 rounded-xl p-4 sm:p-6 hover:border-blue-300 hover:shadow-md transition-all min-w-[100px] sm:min-w-[120px]"
+                      >
+                        <div className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">300</div>
+                        <div className="text-xs sm:text-sm text-gray-600">
+                          trois-cent<span id="s-300" className="text-green-600 font-bold text-base sm:text-lg">s</span>
+                        </div>
+                        <div className="absolute -top-2 -right-2 bg-green-500 text-white text-xs px-2 py-1 rounded-full">
+                          ✓ S
+                        </div>
+                      </button>
 
-                    <div className="text-xl sm:text-2xl text-gray-400">VS</div>
+                      <div className="text-xl sm:text-2xl text-gray-400">VS</div>
 
-                    <button
-                      onClick={() => {
-                        setSelectedNumber('305');
-                        setTimeout(() => scrollToElement('animation-section'), 100);
-                      }}
-                      className="group relative bg-white border-2 border-gray-200 rounded-xl p-4 sm:p-6 hover:border-blue-300 hover:shadow-md transition-all min-w-[100px] sm:min-w-[120px]"
-                    >
-                      <div className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">305</div>
-                      <div className="text-xs sm:text-sm text-gray-600">trois-cent-cinq</div>
-                      <div className="absolute -top-2 -right-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full">
-                        ✗ pas S
-                      </div>
-                    </button>
+                      <button
+                        onClick={() => {
+                          setSelectedNumber('305');
+                          setTimeout(() => scrollToElement('animation-section'), 100);
+                        }}
+                        className="group relative bg-white border-2 border-gray-200 rounded-xl p-4 sm:p-6 hover:border-blue-300 hover:shadow-md transition-all min-w-[100px] sm:min-w-[120px]"
+                      >
+                        <div className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">305</div>
+                        <div className="text-xs sm:text-sm text-gray-600">trois-cent-cinq</div>
+                        <div id="badge-305" className="absolute -top-2 -right-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full">
+                          ✗ pas S
+                        </div>
+                      </button>
+                    </div>
+                    <div className="text-center">
+                      <button
+                        onClick={animateContrast300vs305}
+                        disabled={isAnimating}
+                        className={`bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-lg font-bold text-xs transition-all ${
+                          isAnimating ? 'opacity-50 cursor-not-allowed' : ''
+                        }`}
+                      >
+                        ✨ Comparer 300 vs 305
+                      </button>
+                    </div>
                   </div>
                 </div>
 
