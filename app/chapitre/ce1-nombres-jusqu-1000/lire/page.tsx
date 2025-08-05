@@ -1486,36 +1486,6 @@ export default function LireNombresCE1Page() {
                 <h2 className="text-xl sm:text-2xl font-bold text-center mb-6 text-gray-800">
                   Avec ou sans S
                 </h2>
-
-                {/* RÈGLES COMPACTES DU "S" */}
-                <div className="mb-6">
-                  <div className="text-center mb-4">
-                    <p className="text-sm font-semibold text-gray-600">Pour vingt et cent</p>
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    {/* Avec S */}
-                    <div className="bg-green-100 border-2 border-green-300 rounded-lg p-4 text-center">
-                      <div className="flex items-center justify-center mb-2">
-                        <span className="text-green-600 text-xl font-bold mr-2">✅</span>
-                        <span className="font-bold text-green-800">Avec S</span>
-                      </div>
-                      <p className="text-sm text-green-700">
-                        nombre exact (80, 200, 300...)
-                      </p>
-                    </div>
-                    
-                    {/* Sans S */}
-                    <div className="bg-red-100 border-2 border-red-300 rounded-lg p-4 text-center">
-                      <div className="flex items-center justify-center mb-2">
-                        <span className="text-red-600 text-xl font-bold mr-2">❌</span>
-                        <span className="font-bold text-red-800">Sans S</span>
-                      </div>
-                      <p className="text-sm text-red-700">
-                        suivi d'autre chose (83, 205, 305...)
-                      </p>
-                    </div>
-                  </div>
-                </div>
                 
                 {/* Titre simple */}
                 <div className="text-center mb-6">
