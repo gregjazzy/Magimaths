@@ -270,134 +270,11 @@ export default function LireNombresCE1Page() {
     setIsAnimating(false);
   };
 
-  // Animation subtile pour la paire 80 vs 83
-  const animateContrast80vs83 = async () => {
-    setIsAnimating(true);
-    
-    const s80 = document.getElementById('s-80');
-    const badge83 = document.getElementById('badge-83');
-    
-    // Phase 1 : Mise en évidence douce du S de 80
-    if (s80) {
-      s80.style.transform = 'scale(1.4)';
-      s80.style.color = '#16a34a';
-      s80.style.background = '#dcfce7';
-      s80.style.borderRadius = '4px';
-      s80.style.padding = '4px 8px';
-      s80.style.transition = 'all 0.3s ease-out';
-    }
-    
-    await new Promise(resolve => setTimeout(resolve, 800));
-    
-    // Phase 2 : Mise en évidence du badge 83
-    if (badge83) {
-      badge83.style.transform = 'scale(1.2)';
-      badge83.style.boxShadow = '0 4px 12px rgba(239, 68, 68, 0.4)';
-      badge83.style.transition = 'all 0.3s ease-out';
-    }
-    
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    // Phase 3 : Retour à la normale
-    if (s80) {
-      s80.style.transform = '';
-      s80.style.background = '';
-      s80.style.padding = '';
-    }
-    
-    if (badge83) {
-      badge83.style.transform = '';
-      badge83.style.boxShadow = '';
-    }
-    
-    setIsAnimating(false);
-  };
 
-  // Animation subtile pour la paire 200 vs 205
-  const animateContrast200vs205 = async () => {
-    setIsAnimating(true);
-    
-    const s200 = document.getElementById('s-200');
-    const badge205 = document.getElementById('badge-205');
-    
-    // Phase 1 : Mise en évidence douce du S de 200
-    if (s200) {
-      s200.style.transform = 'scale(1.4)';
-      s200.style.color = '#16a34a';
-      s200.style.background = '#dcfce7';
-      s200.style.borderRadius = '4px';
-      s200.style.padding = '4px 8px';
-      s200.style.transition = 'all 0.3s ease-out';
-    }
-    
-    await new Promise(resolve => setTimeout(resolve, 800));
-    
-    // Phase 2 : Mise en évidence du badge 205
-    if (badge205) {
-      badge205.style.transform = 'scale(1.2)';
-      badge205.style.boxShadow = '0 4px 12px rgba(239, 68, 68, 0.4)';
-      badge205.style.transition = 'all 0.3s ease-out';
-    }
-    
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    // Phase 3 : Retour à la normale
-    if (s200) {
-      s200.style.transform = '';
-      s200.style.background = '';
-      s200.style.padding = '';
-    }
-    
-    if (badge205) {
-      badge205.style.transform = '';
-      badge205.style.boxShadow = '';
-    }
-    
-    setIsAnimating(false);
-  };
 
-  // Animation subtile pour la paire 300 vs 305
-  const animateContrast300vs305 = async () => {
-    setIsAnimating(true);
-    
-    const s300 = document.getElementById('s-300');
-    const badge305 = document.getElementById('badge-305');
-    
-    // Phase 1 : Mise en évidence douce du S de 300
-    if (s300) {
-      s300.style.transform = 'scale(1.4)';
-      s300.style.color = '#16a34a';
-      s300.style.background = '#dcfce7';
-      s300.style.borderRadius = '4px';
-      s300.style.padding = '4px 8px';
-      s300.style.transition = 'all 0.3s ease-out';
-    }
-    
-    await new Promise(resolve => setTimeout(resolve, 800));
-    
-    // Phase 2 : Mise en évidence du badge 305
-    if (badge305) {
-      badge305.style.transform = 'scale(1.2)';
-      badge305.style.boxShadow = '0 4px 12px rgba(239, 68, 68, 0.4)';
-      badge305.style.transition = 'all 0.3s ease-out';
-    }
-    
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    // Phase 3 : Retour à la normale
-    if (s300) {
-      s300.style.transform = '';
-      s300.style.background = '';
-      s300.style.padding = '';
-    }
-    
-    if (badge305) {
-      badge305.style.transform = '';
-      badge305.style.boxShadow = '';
-    }
-    
-    setIsAnimating(false);
-  };
+
+
+
 
   // 🎮 DONNÉES ET FONCTIONS DU MINI-JEU DU "S"
   const gameNumbers = [
@@ -1556,21 +1433,7 @@ export default function LireNombresCE1Page() {
                         </div>
                       </button>
                     </div>
-                    <div className="text-center">
-                      <button
-                        onClick={() => {
-                          animateContrast80vs83();
-                          // Scroll automatique vers cette paire de contraste
-                          setTimeout(() => scrollToElement('paire-80-83'), 100);
-                        }}
-                        disabled={isAnimating}
-                        className={`bg-gradient-to-r from-pink-500 to-blue-500 hover:from-pink-600 hover:to-blue-600 text-white px-6 py-3 rounded-xl font-bold text-sm shadow-lg transform hover:scale-105 transition-all ${
-                          isAnimating ? 'opacity-50 cursor-not-allowed scale-100' : ''
-                        }`}
-                      >
-                        ✨ Comparer 80 vs 83
-                      </button>
-                    </div>
+
                   </div>
 
                   {/* Paire 2 - Vert/Orange */}
@@ -1608,21 +1471,7 @@ export default function LireNombresCE1Page() {
                         </div>
                       </button>
                     </div>
-                    <div className="text-center">
-                      <button
-                        onClick={() => {
-                          animateContrast200vs205();
-                          // Scroll automatique vers cette paire de contraste
-                          setTimeout(() => scrollToElement('paire-200-205'), 100);
-                        }}
-                        disabled={isAnimating}
-                        className={`bg-gradient-to-r from-green-500 to-orange-500 hover:from-green-600 hover:to-orange-600 text-white px-6 py-3 rounded-xl font-bold text-sm shadow-lg transform hover:scale-105 transition-all ${
-                          isAnimating ? 'opacity-50 cursor-not-allowed scale-100' : ''
-                        }`}
-                      >
-                        ✨ Comparer 200 vs 205
-                      </button>
-                    </div>
+
                   </div>
 
                   {/* Paire 3 - Violet/Cyan */}
@@ -1660,21 +1509,7 @@ export default function LireNombresCE1Page() {
                         </div>
                       </button>
                     </div>
-                    <div className="text-center">
-                      <button
-                        onClick={() => {
-                          animateContrast300vs305();
-                          // Scroll automatique vers cette paire de contraste
-                          setTimeout(() => scrollToElement('paire-300-305'), 100);
-                        }}
-                        disabled={isAnimating}
-                        className={`bg-gradient-to-r from-violet-500 to-cyan-500 hover:from-violet-600 hover:to-cyan-600 text-white px-6 py-3 rounded-xl font-bold text-sm shadow-lg transform hover:scale-105 transition-all ${
-                          isAnimating ? 'opacity-50 cursor-not-allowed scale-100' : ''
-                        }`}
-                      >
-                        ✨ Comparer 300 vs 305
-                      </button>
-                    </div>
+
                   </div>
                 </div>
 
