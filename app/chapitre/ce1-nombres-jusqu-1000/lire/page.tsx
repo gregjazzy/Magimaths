@@ -1487,6 +1487,28 @@ export default function LireNombresCE1Page() {
                   Avec ou sans S
                 </h2>
                 
+                {/* Boîtes résumé des règles */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+                  <div className="bg-green-100 border-2 border-green-300 rounded-lg p-4 text-center">
+                    <div className="flex items-center justify-center mb-2">
+                      <span className="text-green-600 text-xl font-bold mr-2">✅</span>
+                      <span className="font-bold text-green-800">Avec S</span>
+                    </div>
+                    <p className="text-sm text-green-700">
+                      nombre exact (80, 200, 300...)
+                    </p>
+                  </div>
+                  <div className="bg-red-100 border-2 border-red-300 rounded-lg p-4 text-center">
+                    <div className="flex items-center justify-center mb-2">
+                      <span className="text-red-600 text-xl font-bold mr-2">❌</span>
+                      <span className="font-bold text-red-800">Sans S</span>
+                    </div>
+                    <p className="text-sm text-red-700">
+                      suivi d'autre chose (83, 205, 305...)
+                    </p>
+                  </div>
+                </div>
+                
                 {/* Titre simple */}
                 <div className="text-center mb-6">
                   <h3 className="text-lg sm:text-xl font-bold text-gray-800 mb-2">
