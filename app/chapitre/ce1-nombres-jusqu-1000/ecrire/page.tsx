@@ -27,13 +27,7 @@ export default function EcrireNombresCE1Page() {
   const stopSignalRef = useRef(false);
   const currentAudioRef = useRef<SpeechSynthesisUtterance | null>(null);
 
-  // Fonction pour scroller vers un élément
-  const scrollToElement = (elementId: string) => {
-    const element = document.getElementById(elementId);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
-  };
+
 
   // Sauvegarder les progrès dans localStorage
   const saveProgress = (score: number, maxScore: number) => {
