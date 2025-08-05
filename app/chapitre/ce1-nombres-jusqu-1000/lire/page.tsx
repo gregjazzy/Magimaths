@@ -1830,61 +1830,7 @@ export default function LireNombresCE1Page() {
                 </div>
               </div>
 
-              {/* SECTION SPÉCIALE : La règle d'or des "cents" ET "vingts" */}
-              <div id="cents-rule-section" className={`bg-gradient-to-r from-yellow-400 to-orange-500 rounded-lg sm:rounded-xl p-4 sm:p-8 text-white shadow-2xl transform transition-all ${
-                highlightedElement === 'cents-rule-section' ? 'ring-4 ring-yellow-400 bg-yellow-200 scale-105 animate-pulse' : ''
-              }`}>
-                <h3 className="text-xl sm:text-3xl font-bold mb-4 sm:mb-6 text-center">🎯 LES RÈGLES D'OR DU "S" 🎯</h3>
-                <p className="text-center text-base sm:text-lg mb-6 font-semibold">
-                  ⚡ SUPER IMPORTANT : Deux règles magiques à retenir ! ⚡
-                </p>
-                
-                {/* RÈGLE 1 : LES CENTS */}
-                <div className="mb-6">
-                  <h4 className="text-lg sm:text-2xl font-bold mb-4 text-center text-white">🏆 RÈGLE 1 : LES "CENTS" 🏆</h4>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="bg-green-500 bg-opacity-30 rounded-lg p-4 sm:p-6">
-                      <h5 className="font-bold mb-3 text-green-100 text-base sm:text-lg">✅ CENTAINES EXACTES = AVEC S</h5>
-                      <ul className="space-y-2 text-sm sm:text-base">
-                        <li><span className="font-bold">200</span> = deux-cent<span className="cents-s-highlight font-extrabold text-red-700 text-xl sm:text-2xl">s</span></li>
-                        <li><span className="font-bold">300</span> = trois-cent<span className="cents-s-highlight font-extrabold text-red-700 text-xl sm:text-2xl">s</span></li>
-                        <li><span className="font-bold">600</span> = six-cent<span className="cents-s-highlight font-extrabold text-red-700 text-xl sm:text-2xl">s</span></li>
-                      </ul>
-                    </div>
-                    <div className="bg-red-500 bg-opacity-30 rounded-lg p-4 sm:p-6">
-                      <h5 className="font-bold mb-3 text-red-100 text-base sm:text-lg">❌ PAS EXACTES = SANS S</h5>
-                      <ul className="space-y-2 text-sm sm:text-base">
-                        <li><span className="font-bold">201</span> = deux-cent<span className="cents-no-s-highlight font-extrabold text-yellow-300 text-xl sm:text-2xl">-</span>un</li>
-                        <li><span className="font-bold">305</span> = trois-cent<span className="cents-no-s-highlight font-extrabold text-yellow-300 text-xl sm:text-2xl">-</span>cinq</li>
-                        <li><span className="font-bold">678</span> = six-cent<span className="cents-no-s-highlight font-extrabold text-yellow-300 text-xl sm:text-2xl">-</span>soixante-dix-huit</li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
 
-                {/* RÈGLE 2 : LES QUATRE-VINGTS */}
-                <div className="mb-6">
-                  <h4 className="text-lg sm:text-2xl font-bold mb-4 text-center text-white">🏆 RÈGLE 2 : LES "QUATRE-VINGTS" 🏆</h4>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="bg-green-500 bg-opacity-30 rounded-lg p-4 sm:p-6">
-                      <h5 className="font-bold mb-3 text-green-100 text-base sm:text-lg">✅ À LA FIN = AVEC S</h5>
-                      <ul className="space-y-2 text-sm sm:text-base">
-                        <li><span className="font-bold">80</span> = quatre-vingt<span className="vingts-s-highlight font-extrabold text-red-700 text-xl sm:text-2xl">s</span></li>
-                        <li><span className="font-bold">580</span> = cinq-cent-quatre-vingt<span className="vingts-s-highlight font-extrabold text-red-700 text-xl sm:text-2xl">s</span></li>
-                      </ul>
-                    </div>
-                    <div className="bg-red-500 bg-opacity-30 rounded-lg p-4 sm:p-6">
-                      <h5 className="font-bold mb-3 text-red-100 text-base sm:text-lg">❌ SUIVI D'AUTRE CHOSE = SANS S</h5>
-                      <ul className="space-y-2 text-sm sm:text-base">
-                        <li><span className="font-bold">81</span> = quatre-vingt<span className="vingts-no-s-highlight font-extrabold text-yellow-300 text-xl sm:text-2xl">-</span>un</li>
-                        <li><span className="font-bold">583</span> = cinq-cent-quatre-vingt<span className="vingts-no-s-highlight font-extrabold text-yellow-300 text-xl sm:text-2xl">-</span>trois</li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-
-
-              </div>
 
               {/* QCM ÉLÉGANT : AVEC OU SANS S */}
               <div id="contrast-s-section" className={`bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl p-6 text-white shadow-xl transform transition-all ${
@@ -2106,6 +2052,52 @@ export default function LireNombresCE1Page() {
                   </div>
                 </div>
 
+              </div>
+
+              {/* RÈGLES COMPACTES DU "S" */}
+              <div className="bg-gradient-to-r from-green-500 to-blue-500 rounded-lg p-4 text-white shadow-lg mb-6">
+                <h3 className="text-lg font-bold text-center mb-4">📋 Règles du "S" - Résumé</h3>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                  {/* Règle CENTS */}
+                  <div className="bg-white bg-opacity-20 rounded-lg p-3">
+                    <h4 className="font-bold mb-2 text-center">🏆 Les CENTS</h4>
+                    <div className="space-y-1">
+                      <div className="flex justify-between">
+                        <span><strong>200, 300, 600</strong></span>
+                        <span className="text-green-200">→ avec <span className="font-bold text-yellow-300">S</span></span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span><strong>201, 305, 678</strong></span>
+                        <span className="text-red-200">→ sans S</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Règle QUATRE-VINGTS */}
+                  <div className="bg-white bg-opacity-20 rounded-lg p-3">
+                    <h4 className="font-bold mb-2 text-center">🏆 Les QUATRE-VINGTS</h4>
+                    <div className="space-y-1">
+                      <div className="flex justify-between">
+                        <span><strong>80, 580</strong></span>
+                        <span className="text-green-200">→ avec <span className="font-bold text-yellow-300">S</span></span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span><strong>81, 83, 90</strong></span>
+                        <span className="text-red-200">→ sans S</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Règle simple */}
+                <div className="text-center mt-4 p-3 bg-white bg-opacity-20 rounded-lg">
+                  <p className="text-sm">
+                    <span className="font-bold">💡 Astuce :</span> 
+                    <span className="text-green-200">Nombre exact = S</span> • 
+                    <span className="text-red-200">Suivi d'autre chose = pas de S</span>
+                  </p>
+                </div>
               </div>
 
               {/* Règle sur les tirets */}
