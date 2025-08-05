@@ -1522,12 +1522,12 @@ export default function LireNombresCE1Page() {
                 {/* Paires colorées */}
                 <div className="space-y-6 mb-6">
                   {/* Paire 1 - Rose/Bleu */}
-                  <div className="bg-gradient-to-r from-pink-100 to-blue-100 rounded-xl p-6 border-2 border-pink-200 shadow-lg">
+                  <div id="paire-80-83" className="bg-gradient-to-r from-pink-100 to-blue-100 rounded-xl p-6 border-2 border-pink-200 shadow-lg">
                     <div className="flex items-center justify-center gap-4 sm:gap-8 mb-4">
                       <button
                         onClick={() => {
                           setSelectedNumber('80');
-                          setTimeout(() => scrollToElement('animation-section'), 100);
+                          setTimeout(() => scrollToElement('paire-80-83'), 100);
                         }}
                         className="group relative bg-gradient-to-br from-green-400 to-green-500 text-white border-2 border-green-300 rounded-xl p-4 sm:p-6 hover:from-green-500 hover:to-green-600 hover:shadow-xl transform hover:scale-105 transition-all min-w-[110px] sm:min-w-[130px]"
                       >
@@ -1545,7 +1545,7 @@ export default function LireNombresCE1Page() {
                       <button
                         onClick={() => {
                           setSelectedNumber('83');
-                          setTimeout(() => scrollToElement('animation-section'), 100);
+                          setTimeout(() => scrollToElement('paire-80-83'), 100);
                         }}
                         className="group relative bg-gradient-to-br from-red-400 to-red-500 text-white border-2 border-red-300 rounded-xl p-4 sm:p-6 hover:from-red-500 hover:to-red-600 hover:shadow-xl transform hover:scale-105 transition-all min-w-[110px] sm:min-w-[130px]"
                       >
@@ -1560,8 +1560,8 @@ export default function LireNombresCE1Page() {
                       <button
                         onClick={() => {
                           animateContrast80vs83();
-                          // Scroll automatique vers les paires de contraste
-                          setTimeout(() => scrollToElement('traps-selector'), 100);
+                          // Scroll automatique vers cette paire de contraste
+                          setTimeout(() => scrollToElement('paire-80-83'), 100);
                         }}
                         disabled={isAnimating}
                         className={`bg-gradient-to-r from-pink-500 to-blue-500 hover:from-pink-600 hover:to-blue-600 text-white px-6 py-3 rounded-xl font-bold text-sm shadow-lg transform hover:scale-105 transition-all ${
@@ -1574,12 +1574,12 @@ export default function LireNombresCE1Page() {
                   </div>
 
                   {/* Paire 2 - Vert/Orange */}
-                  <div className="bg-gradient-to-r from-green-100 to-orange-100 rounded-xl p-6 border-2 border-green-200 shadow-lg">
+                  <div id="paire-200-205" className="bg-gradient-to-r from-green-100 to-orange-100 rounded-xl p-6 border-2 border-green-200 shadow-lg">
                     <div className="flex items-center justify-center gap-4 sm:gap-8 mb-4">
                       <button
                         onClick={() => {
                           setSelectedNumber('200');
-                          setTimeout(() => scrollToElement('animation-section'), 100);
+                          setTimeout(() => scrollToElement('paire-200-205'), 100);
                         }}
                         className="group relative bg-gradient-to-br from-emerald-400 to-emerald-500 text-white border-2 border-emerald-300 rounded-xl p-4 sm:p-6 hover:from-emerald-500 hover:to-emerald-600 hover:shadow-xl transform hover:scale-105 transition-all min-w-[110px] sm:min-w-[130px]"
                       >
@@ -1597,7 +1597,7 @@ export default function LireNombresCE1Page() {
                       <button
                         onClick={() => {
                           setSelectedNumber('205');
-                          setTimeout(() => scrollToElement('animation-section'), 100);
+                          setTimeout(() => scrollToElement('paire-200-205'), 100);
                         }}
                         className="group relative bg-gradient-to-br from-orange-400 to-orange-500 text-white border-2 border-orange-300 rounded-xl p-4 sm:p-6 hover:from-orange-500 hover:to-orange-600 hover:shadow-xl transform hover:scale-105 transition-all min-w-[110px] sm:min-w-[130px]"
                       >
@@ -1612,8 +1612,8 @@ export default function LireNombresCE1Page() {
                       <button
                         onClick={() => {
                           animateContrast200vs205();
-                          // Scroll automatique vers les paires de contraste
-                          setTimeout(() => scrollToElement('traps-selector'), 100);
+                          // Scroll automatique vers cette paire de contraste
+                          setTimeout(() => scrollToElement('paire-200-205'), 100);
                         }}
                         disabled={isAnimating}
                         className={`bg-gradient-to-r from-green-500 to-orange-500 hover:from-green-600 hover:to-orange-600 text-white px-6 py-3 rounded-xl font-bold text-sm shadow-lg transform hover:scale-105 transition-all ${
@@ -1626,12 +1626,12 @@ export default function LireNombresCE1Page() {
                   </div>
 
                   {/* Paire 3 - Violet/Cyan */}
-                  <div className="bg-gradient-to-r from-purple-100 to-cyan-100 rounded-xl p-6 border-2 border-purple-200 shadow-lg">
+                  <div id="paire-300-305" className="bg-gradient-to-r from-purple-100 to-cyan-100 rounded-xl p-6 border-2 border-purple-200 shadow-lg">
                     <div className="flex items-center justify-center gap-4 sm:gap-8 mb-4">
                       <button
                         onClick={() => {
                           setSelectedNumber('300');
-                          setTimeout(() => scrollToElement('animation-section'), 100);
+                          setTimeout(() => scrollToElement('paire-300-305'), 100);
                         }}
                         className="group relative bg-gradient-to-br from-violet-400 to-violet-500 text-white border-2 border-violet-300 rounded-xl p-4 sm:p-6 hover:from-violet-500 hover:to-violet-600 hover:shadow-xl transform hover:scale-105 transition-all min-w-[110px] sm:min-w-[130px]"
                       >
@@ -1649,7 +1649,7 @@ export default function LireNombresCE1Page() {
                       <button
                         onClick={() => {
                           setSelectedNumber('305');
-                          setTimeout(() => scrollToElement('animation-section'), 100);
+                          setTimeout(() => scrollToElement('paire-300-305'), 100);
                         }}
                         className="group relative bg-gradient-to-br from-cyan-400 to-cyan-500 text-white border-2 border-cyan-300 rounded-xl p-4 sm:p-6 hover:from-cyan-500 hover:to-cyan-600 hover:shadow-xl transform hover:scale-105 transition-all min-w-[110px] sm:min-w-[130px]"
                       >
@@ -1664,8 +1664,8 @@ export default function LireNombresCE1Page() {
                       <button
                         onClick={() => {
                           animateContrast300vs305();
-                          // Scroll automatique vers les paires de contraste
-                          setTimeout(() => scrollToElement('traps-selector'), 100);
+                          // Scroll automatique vers cette paire de contraste
+                          setTimeout(() => scrollToElement('paire-300-305'), 100);
                         }}
                         disabled={isAnimating}
                         className={`bg-gradient-to-r from-violet-500 to-cyan-500 hover:from-violet-600 hover:to-cyan-600 text-white px-6 py-3 rounded-xl font-bold text-sm shadow-lg transform hover:scale-105 transition-all ${
