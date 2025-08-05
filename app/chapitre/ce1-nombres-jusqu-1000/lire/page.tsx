@@ -1899,9 +1899,6 @@ export default function LireNombresCE1Page() {
                   <p className="font-semibold">✅ Orthographe moderne :</p>
                   <ul className="space-y-1 ml-2">
                     <li>• Tous les nombres composés ont des tirets</li>
-                    <li>• <span className="font-bold">Vingt-et-un</span>, <span className="font-bold">trente-quatre</span></li>
-                    <li>• <span className="font-bold">Quatre-vingt-douze</span>, <span className="font-bold">cent-vingt-trois</span></li>
-                    <li>• <span className="font-bold">Deux-cent-cinquante-six</span>, <span className="font-bold">neuf-cent-quatre-vingt-dix</span></li>
                   </ul>
                 </div>
               </div>
