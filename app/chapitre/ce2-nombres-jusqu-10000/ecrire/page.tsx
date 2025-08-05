@@ -311,6 +311,9 @@ export default function EcrireNombresCE2Page() {
                   value={userAnswer}
                   onChange={(e) => setUserAnswer(e.target.value)}
                   placeholder="Écris le nombre en chiffres..."
+                  autoComplete="off"
+                  autoCorrect="off"
+                  spellCheck="false"
                   className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg text-center text-2xl font-bold focus:border-cyan-500 focus:outline-none bg-white text-gray-900"
                 />
               </div>

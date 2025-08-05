@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, CheckCircle, XCircle, RotateCcw, Lightbulb, Play, Pause, Volume2 } from 'lucide-react';
+import { ArrowLeft, CheckCircle, XCircle, RotateCcw, Play, Pause, Volume2 } from 'lucide-react';
 
 export default function EcrireNombresCE1Page() {
   const [currentExercise, setCurrentExercise] = useState(0);
@@ -11,7 +11,7 @@ export default function EcrireNombresCE1Page() {
   const [showExercises, setShowExercises] = useState(false);
   const [score, setScore] = useState(0);
   const [answeredCorrectly, setAnsweredCorrectly] = useState<Set<number>>(new Set());
-  const [showHint, setShowHint] = useState(false);
+
   const [showCompletionModal, setShowCompletionModal] = useState(false);
   const [finalScore, setFinalScore] = useState(0);
 
@@ -21,11 +21,22 @@ export default function EcrireNombresCE1Page() {
   const [characterSizeExpanded, setCharacterSizeExpanded] = useState(false);
   const [highlightedElement, setHighlightedElement] = useState<string | null>(null);
   const [isAnimating, setIsAnimating] = useState(false);
-  const [selectedNumber, setSelectedNumber] = useState<{written: string, number: string, hint: string} | null>(null);
+
 
   // États pour l'animation des exemples
   const [exampleAnimating, setExampleAnimating] = useState<string | null>(null);
   const [exampleStep, setExampleStep] = useState(0);
+
+  // États pour le glisser-déposer interactif
+  const [dragDropExercise, setDragDropExercise] = useState<{written: string, number: string} | null>(null);
+  const [draggedElements, setDraggedElements] = useState<{[key: string]: string}>({});
+  const [completedDropZones, setCompletedDropZones] = useState<string[]>([]);
+  const [showFinalConstruction, setShowFinalConstruction] = useState(false);
+  
+  // États pour le support tactile mobile
+  const [touchDragElement, setTouchDragElement] = useState<any>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
 
   // Refs pour contrôler les vocaux
   const stopSignalRef = useRef(false);
@@ -80,6 +91,37 @@ export default function EcrireNombresCE1Page() {
     setIsPlayingVocal(false);
     setIsAnimating(false);
     setHighlightedElement(null);
+    
+    // Nettoyer les illuminations de glisser-déposer
+    document.querySelectorAll('[data-drag-part]').forEach(element => {
+      (element as HTMLElement).style.boxShadow = '';
+      (element as HTMLElement).style.transform = '';
+    });
+    
+    // Nettoyer les illuminations des zones de dépôt
+    document.querySelectorAll('[data-drop-zone]').forEach(element => {
+      (element as HTMLElement).style.boxShadow = '';
+      (element as HTMLElement).style.transform = '';
+      (element as HTMLElement).style.borderColor = '';
+      (element as HTMLElement).style.borderWidth = '';
+    });
+    
+    // Nettoyer les encadrés de valeurs positionnelles créés dynamiquement
+    document.querySelectorAll('[id*="-value-box-"]').forEach(element => {
+      element.remove();
+    });
+    
+    // Nettoyer les états tactiles
+    setTouchDragElement(null);
+    setIsDragging(false);
+    setDragOffset({ x: 0, y: 0 });
+    
+    // Nettoyer les styles tactiles sur les éléments draggables
+    document.querySelectorAll('[data-drag-part]').forEach(element => {
+      const htmlElement = element as HTMLElement;
+      htmlElement.style.opacity = '';
+      htmlElement.style.zIndex = '';
+    });
   };
 
   // Fonction pour scroller vers un élément
@@ -294,6 +336,318 @@ export default function EcrireNombresCE1Page() {
     }
   };
 
+  // Fonction pour décomposer un nombre en parties pour le glisser-déposer
+  const decomposeDragDropNumber = (written: string, number: string) => {
+    const num = parseInt(number);
+    const centaines = Math.floor(num / 100);
+    const dizaines = Math.floor((num % 100) / 10);
+    const unites = num % 10;
+
+    // Décomposition des mots français
+    const parts = [];
+    
+    // Traitement des centaines
+    if (centaines > 0) {
+      let centaineText = '';
+      if (centaines === 1) {
+        centaineText = 'cent';
+      } else {
+        const centaineWords = ['', 'un', 'deux', 'trois', 'quatre', 'cinq', 'six', 'sept', 'huit', 'neuf'];
+        centaineText = `${centaineWords[centaines]} cent`;
+      }
+      parts.push({
+        text: centaineText,
+        value: centaines.toString(),
+        position: 'centaines',
+        color: 'red'
+      });
+    }
+
+    // Traitement des dizaines
+    if (dizaines > 0) {
+      let dizaineText = '';
+      if (dizaines === 1) {
+        dizaineText = 'dix';
+      } else if (dizaines === 2) {
+        dizaineText = 'vingt';
+      } else if (dizaines === 3) {
+        dizaineText = 'trente';
+      } else if (dizaines === 4) {
+        dizaineText = 'quarante';
+      } else if (dizaines === 5) {
+        dizaineText = 'cinquante';
+      } else if (dizaines === 6) {
+        dizaineText = 'soixante';
+      } else if (dizaines === 7) {
+        dizaineText = 'soixante-dix';
+      } else if (dizaines === 8) {
+        dizaineText = 'quatre-vingt';
+      } else if (dizaines === 9) {
+        dizaineText = 'quatre-vingt-dix';
+      }
+      
+      parts.push({
+        text: dizaineText,
+        value: dizaines.toString(),
+        position: 'dizaines',
+        color: 'blue'
+      });
+    }
+
+    // Traitement des unités
+    if (unites > 0) {
+      const uniteWords = ['', 'un', 'deux', 'trois', 'quatre', 'cinq', 'six', 'sept', 'huit', 'neuf'];
+      parts.push({
+        text: uniteWords[unites],
+        value: unites.toString(),
+        position: 'unites',
+        color: 'green'
+      });
+    }
+
+    return parts;
+  };
+
+  // Fonctions de glisser-déposer
+  const handleDragStart = (e: React.DragEvent, part: any) => {
+    e.dataTransfer.setData('text/plain', JSON.stringify(part));
+    e.dataTransfer.effectAllowed = 'move';
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+  };
+
+  const handleDrop = (e: React.DragEvent, targetPosition: string) => {
+    e.preventDefault();
+    const partData = JSON.parse(e.dataTransfer.getData('text/plain'));
+    
+    if (partData.position === targetPosition) {
+      setDraggedElements(prev => ({
+        ...prev,
+        [targetPosition]: partData.value
+      }));
+      
+      setCompletedDropZones(prev => [...prev, targetPosition]);
+      
+      // Vérifier si tous les éléments sont placés
+      const allParts = decomposeDragDropNumber(dragDropExercise!.written, dragDropExercise!.number);
+      if (completedDropZones.length + 1 >= allParts.length) {
+        setTimeout(() => {
+          setShowFinalConstruction(true);
+        }, 500);
+      }
+    }
+  };
+
+  // Fonctions de support tactile pour mobile
+  const handleTouchStart = (e: React.TouchEvent, part: any) => {
+    if (completedDropZones.includes(part.position)) return;
+    
+    e.preventDefault();
+    const touch = e.touches[0];
+    const element = e.currentTarget as HTMLElement;
+    const rect = element.getBoundingClientRect();
+    
+    setTouchDragElement(part);
+    setIsDragging(true);
+    setDragOffset({
+      x: touch.clientX - rect.left,
+      y: touch.clientY - rect.top
+    });
+    
+    // Ajouter style de glissement
+    element.style.transform = 'scale(1.1)';
+    element.style.opacity = '0.8';
+    element.style.zIndex = '1000';
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!isDragging || !touchDragElement) return;
+    
+    e.preventDefault();
+    const touch = e.touches[0];
+    
+    // Trouver l'élément sous le doigt
+    const elementBelow = document.elementFromPoint(touch.clientX, touch.clientY);
+    const dropZone = elementBelow?.closest('[data-drop-zone]');
+    
+    // Illuminer la zone de dépôt si elle correspond
+    document.querySelectorAll('[data-drop-zone]').forEach(zone => {
+      const zoneElement = zone as HTMLElement;
+      if (zone === dropZone && zone.getAttribute('data-drop-zone') === touchDragElement.position) {
+        zoneElement.style.boxShadow = '0 0 20px rgba(34, 197, 94, 0.6)';
+        zoneElement.style.transform = 'scale(1.02)';
+        zoneElement.style.borderColor = '#22c55e';
+        zoneElement.style.borderWidth = '3px';
+      } else {
+        zoneElement.style.boxShadow = '';
+        zoneElement.style.transform = '';
+        zoneElement.style.borderColor = '';
+        zoneElement.style.borderWidth = '';
+      }
+    });
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (!isDragging || !touchDragElement) return;
+    
+    e.preventDefault();
+    const touch = e.changedTouches[0];
+    
+    // Trouver l'élément sous le doigt
+    const elementBelow = document.elementFromPoint(touch.clientX, touch.clientY);
+    const dropZone = elementBelow?.closest('[data-drop-zone]');
+    const targetPosition = dropZone?.getAttribute('data-drop-zone');
+    
+    // Nettoyer les styles
+    const dragElement = e.currentTarget as HTMLElement;
+    dragElement.style.transform = '';
+    dragElement.style.opacity = '';
+    dragElement.style.zIndex = '';
+    
+    // Nettoyer les illuminations
+    document.querySelectorAll('[data-drop-zone]').forEach(zone => {
+      const zoneElement = zone as HTMLElement;
+      zoneElement.style.boxShadow = '';
+      zoneElement.style.transform = '';
+      zoneElement.style.borderColor = '';
+      zoneElement.style.borderWidth = '';
+    });
+    
+    // Effectuer le dépôt si la zone est correcte
+    if (targetPosition && targetPosition === touchDragElement.position) {
+      setDraggedElements(prev => ({
+        ...prev,
+        [targetPosition]: touchDragElement.value
+      }));
+      
+      setCompletedDropZones(prev => [...prev, targetPosition]);
+      
+      // Vérifier si tous les éléments sont placés
+      const allParts = decomposeDragDropNumber(dragDropExercise!.written, dragDropExercise!.number);
+      if (completedDropZones.length + 1 >= allParts.length) {
+        setTimeout(() => {
+          setShowFinalConstruction(true);
+        }, 500);
+      }
+    }
+    
+    // Réinitialiser les États tactiles
+    setTouchDragElement(null);
+    setIsDragging(false);
+    setDragOffset({ x: 0, y: 0 });
+  };
+
+  // Réinitialiser l'exercice de glisser-déposer
+  const resetDragDrop = () => {
+    setDraggedElements({});
+    setCompletedDropZones([]);
+    setShowFinalConstruction(false);
+    
+    // Réinitialiser les états tactiles
+    setTouchDragElement(null);
+    setIsDragging(false);
+    setDragOffset({ x: 0, y: 0 });
+    
+    // Nettoyer les illuminations de glisser-déposer
+    document.querySelectorAll('[data-drag-part]').forEach(element => {
+      (element as HTMLElement).style.boxShadow = '';
+      (element as HTMLElement).style.transform = '';
+    });
+    
+    // Nettoyer les illuminations des zones de dépôt
+    document.querySelectorAll('[data-drop-zone]').forEach(element => {
+      (element as HTMLElement).style.boxShadow = '';
+      (element as HTMLElement).style.transform = '';
+      (element as HTMLElement).style.borderColor = '';
+      (element as HTMLElement).style.borderWidth = '';
+    });
+  };
+
+  // Mode d'emploi vocal court pour le glisser-déposer avec illumination des zones
+  const playDragDropInstructions = async (selectedNumber: string, numberData: {written: string, number: string}) => {
+    stopSignalRef.current = false;
+    
+    // Décomposer le nombre pour savoir quelles zones illuminer
+    const parts = decomposeDragDropNumber(numberData.written, numberData.number);
+    
+    // Partie 1: Introduction
+    await playAudio(`Parfait ! Tu as choisi ${selectedNumber}.`);
+    if (stopSignalRef.current) return;
+    
+    // Attendre un peu
+    await new Promise(resolve => setTimeout(resolve, 300));
+    if (stopSignalRef.current) return;
+    
+    // Partie 2: Expliquer la décomposition en illuminant les zones correspondantes
+    await playAudio(`On a décomposé le mot en couleurs.`);
+    if (stopSignalRef.current) return;
+    
+    // Attendre un peu avant d'illuminer les zones
+    await new Promise(resolve => setTimeout(resolve, 300));
+    if (stopSignalRef.current) return;
+    
+    // Illuminer chaque zone du tableau dans l'ordre logique (centaines → dizaines → unités)
+    const orderedPositions = ['centaines', 'dizaines', 'unites'];
+    const existingParts = parts.reduce((acc, part) => {
+      acc[part.position] = part;
+      return acc;
+    }, {} as {[key: string]: any});
+    
+    for (const position of orderedPositions) {
+      if (stopSignalRef.current) break;
+      
+      // Vérifier si cette position existe dans le nombre
+      if (existingParts[position]) {
+        // Illuminer la zone correspondante 200ms AVANT de parler
+        const zoneElement = document.querySelector(`[data-drop-zone="${position}"]`);
+        if (zoneElement) {
+          (zoneElement as HTMLElement).style.boxShadow = '0 0 25px rgba(255, 215, 0, 0.9)';
+          (zoneElement as HTMLElement).style.transform = 'scale(1.05)';
+          (zoneElement as HTMLElement).style.borderColor = '#fbbf24';
+          (zoneElement as HTMLElement).style.borderWidth = '3px';
+        }
+        
+        // Attendre un peu pour que l'utilisateur voie l'illumination AVANT la parole
+        await new Promise(resolve => setTimeout(resolve, 200));
+        if (stopSignalRef.current) break;
+        
+        // Parler de cette partie
+        let partDescription = '';
+        if (position === 'centaines') {
+          partDescription = `Les centaines vont ici`;
+        } else if (position === 'dizaines') {
+          partDescription = `Les dizaines vont ici`;
+        } else if (position === 'unites') {
+          partDescription = `Les unités vont ici`;
+        }
+        
+        await playAudio(partDescription);
+        if (stopSignalRef.current) break;
+        
+        // Attendre un peu avant de passer à la suivante
+        await new Promise(resolve => setTimeout(resolve, 400));
+        
+        // Désilluminer cette zone
+        if (zoneElement) {
+          (zoneElement as HTMLElement).style.boxShadow = '';
+          (zoneElement as HTMLElement).style.transform = '';
+          (zoneElement as HTMLElement).style.borderColor = '';
+          (zoneElement as HTMLElement).style.borderWidth = '';
+        }
+        
+        await new Promise(resolve => setTimeout(resolve, 200));
+      }
+    }
+    
+    // Partie 3: Instructions finales
+    if (!stopSignalRef.current) {
+      await playAudio(`Maintenant, fais glisser chaque partie colorée vers sa zone !`);
+    }
+  };
+
   const examples = [
     { written: 'Cent vingt-trois', number: '123' },
     { written: 'Quatre-vingt-sept', number: '87' },
@@ -301,21 +655,21 @@ export default function EcrireNombresCE1Page() {
   ];
 
   const exercises = [
-    { written: 'Cent quarante-cinq', number: '145', hint: 'Cent = 1 centaine, quarante = 4 dizaines, cinq = 5 unités' },
-    { written: 'Deux cent soixante-sept', number: '267', hint: 'Deux cent = 2 centaines, soixante = 6 dizaines, sept = 7 unités' },
-    { written: 'Trois cent quatre-vingt-neuf', number: '389', hint: 'Trois cent = 3 centaines, quatre-vingt = 8 dizaines, neuf = 9 unités' },
-    { written: 'Quatre cent douze', number: '412', hint: 'Quatre cent = 4 centaines, douze = 1 dizaine et 2 unités' },
-    { written: 'Cinq cent trente-quatre', number: '534', hint: 'Cinq cent = 5 centaines, trente = 3 dizaines, quatre = 4 unités' },
-    { written: 'Six cent cinquante-huit', number: '658', hint: 'Six cent = 6 centaines, cinquante = 5 dizaines, huit = 8 unités' },
-    { written: 'Sept cent vingt-trois', number: '723', hint: 'Sept cent = 7 centaines, vingt = 2 dizaines, trois = 3 unités' },
-    { written: 'Huit cent quarante-six', number: '846', hint: 'Huit cent = 8 centaines, quarante = 4 dizaines, six = 6 unités' },
-    { written: 'Neuf cent sept', number: '907', hint: 'Neuf cent = 9 centaines, zéro dizaine, sept = 7 unités' },
-    { written: 'Trois cent cinquante', number: '350', hint: 'Trois cent = 3 centaines, cinquante = 5 dizaines, zéro unité' },
-    { written: 'Quatre cents', number: '400', hint: 'Quatre cents = 4 centaines exactes' },
-    { written: 'Cinq cent un', number: '501', hint: 'Cinq cent = 5 centaines, zéro dizaine, un = 1 unité' },
-    { written: 'Six cent dix', number: '610', hint: 'Six cent = 6 centaines, dix = 1 dizaine, zéro unité' },
-    { written: 'Sept cent vingt', number: '720', hint: 'Sept cent = 7 centaines, vingt = 2 dizaines, zéro unité' },
-    { written: 'Huit cent quatre-vingts', number: '880', hint: 'Huit cent = 8 centaines, quatre-vingts = 8 dizaines' }
+    { written: 'Cent quarante-cinq', number: '145' },
+    { written: 'Deux cent soixante-sept', number: '267' },
+    { written: 'Trois cent quatre-vingt-neuf', number: '389' },
+    { written: 'Quatre cent douze', number: '412' },
+    { written: 'Cinq cent trente-quatre', number: '534' },
+    { written: 'Six cent cinquante-huit', number: '658' },
+    { written: 'Sept cent vingt-trois', number: '723' },
+    { written: 'Huit cent quarante-six', number: '846' },
+    { written: 'Neuf cent sept', number: '907' },
+    { written: 'Trois cent cinquante', number: '350' },
+    { written: 'Quatre cents', number: '400' },
+    { written: 'Cinq cent un', number: '501' },
+    { written: 'Six cent dix', number: '610' },
+    { written: 'Sept cent vingt', number: '720' },
+    { written: 'Huit cent quatre-vingts', number: '880' }
   ];
 
   // 🎯 ANIMATION AVEC TABLEAU PÉDAGOGIQUE
@@ -398,8 +752,10 @@ export default function EcrireNombresCE1Page() {
         
         const digit = example.digits.find(d => d.position === position);
         if (digit) { // Traiter tous les chiffres, même les zéros
-          // Illuminer LE CHIFFRE SPÉCIFIQUE (pas toute la colonne)
+          // ILLUMINER D'ABORD LE CHIFFRE SPÉCIFIQUE ET AFFICHER L'ENCADRÉ
           const digitElement = document.getElementById(`${exampleType}-table-${position}`);
+          const columnElement = document.getElementById(`${exampleType}-column-${position}`);
+          
           if (digitElement) {
             digitElement.style.transition = 'all 0.8s ease';
             digitElement.style.background = 'linear-gradient(135deg, #fbbf24, #f59e0b)';
@@ -410,20 +766,61 @@ export default function EcrireNombresCE1Page() {
             digitElement.style.fontWeight = 'bold';
           }
           
-          // Lecture vocale simple de la valeur positionnelle
-          if (digit.value !== '0') {
+          // AFFICHER L'ENCADRÉ DE VALEUR POSITIONNELLE IMMÉDIATEMENT (sauf pour les zéros)
+          if (columnElement && digit.value !== '0') {
             let positionalValue = '';
-            let positionalText = '';
+            let colorClass = '';
             
             if (position === 'centaines') {
               positionalValue = `${digit.value}00`;
-              positionalText = `${digit.value} centaine${digit.value > '1' ? 's' : ''} ça fait ${positionalValue}`;
+              colorClass = 'text-red-500 bg-red-100';
             } else if (position === 'dizaines') {
               positionalValue = `${digit.value}0`;
-              positionalText = `${digit.value} dizaine${digit.value > '1' ? 's' : ''} ça fait ${positionalValue}`;
-            } else if (position === 'unités') {
+              colorClass = 'text-blue-500 bg-blue-100';
+            } else if (position === 'unites') {
               positionalValue = digit.value;
-              positionalText = `${digit.value} unité${digit.value > '1' ? 's' : ''} ça fait ${positionalValue}`;
+              colorClass = 'text-green-500 bg-green-100';
+            }
+            
+            // Créer et afficher l'encadré de valeur
+            const valueBox = document.createElement('div');
+            valueBox.className = `text-lg font-semibold ${colorClass} px-2 py-1 rounded mb-2`;
+            valueBox.textContent = positionalValue;
+            valueBox.id = `${exampleType}-value-box-${position}`;
+            
+            // Insérer l'encadré au bon endroit dans la colonne
+            const digitContainer = columnElement.querySelector(`#${exampleType}-table-${position}`);
+            if (digitContainer && digitContainer.parentNode) {
+              digitContainer.parentNode.insertBefore(valueBox, digitContainer);
+            }
+          } else if (digit.value === '0' && position === 'centaines' && columnElement) {
+            // Pour les centaines à 0, afficher un tiret ou vide au lieu d'un encadré
+            const valueBox = document.createElement('div');
+            valueBox.className = `text-sm text-gray-400 mb-2`;
+            valueBox.textContent = '-';
+            valueBox.id = `${exampleType}-value-box-${position}`;
+            
+            // Insérer l'élément au bon endroit dans la colonne
+            const digitContainer = columnElement.querySelector(`#${exampleType}-table-${position}`);
+            if (digitContainer && digitContainer.parentNode) {
+              digitContainer.parentNode.insertBefore(valueBox, digitContainer);
+            }
+          }
+          
+          // Attendre 300ms pour que l'utilisateur voie l'illumination ET l'encadré AVANT la parole
+          await new Promise(resolve => setTimeout(resolve, 300));
+          if (stopSignalRef.current) break;
+          
+          // PUIS lecture vocale simple de la valeur positionnelle
+          if (digit.value !== '0') {
+            let positionalText = '';
+            
+            if (position === 'centaines') {
+              positionalText = `${digit.value} centaine${digit.value > '1' ? 's' : ''} ça fait ${digit.value}00`;
+            } else if (position === 'dizaines') {
+              positionalText = `${digit.value} dizaine${digit.value > '1' ? 's' : ''} ça fait ${digit.value}0`;
+            } else if (position === 'unités') {
+              positionalText = `${digit.value} unité${digit.value > '1' ? 's' : ''} ça fait ${digit.value}`;
             }
             
             // Lecture vocale simple
@@ -493,7 +890,6 @@ export default function EcrireNombresCE1Page() {
             setCurrentExercise(Math.min(currentExercise + 1, exercises.length - 1));
             setUserAnswer('');
             setIsCorrect(null);
-            setShowHint(false);
           } else {
             // Dernier exercice terminé, afficher la modale
             const finalScoreValue = score + (!answeredCorrectly.has(currentExercise) ? 1 : 0);
@@ -512,7 +908,6 @@ export default function EcrireNombresCE1Page() {
         setCurrentExercise(Math.min(currentExercise + 1, exercises.length - 1));
         setUserAnswer('');
         setIsCorrect(null);
-        setShowHint(false);
       } else {
         // Dernier exercice, afficher la modale
         setFinalScore(score);
@@ -529,14 +924,12 @@ export default function EcrireNombresCE1Page() {
       setCurrentExercise(currentExercise + 1);
       setUserAnswer('');
       setIsCorrect(null);
-      setShowHint(false);
     }
   };
 
   const resetExercise = () => {
     setUserAnswer('');
     setIsCorrect(null);
-    setShowHint(false);
   };
 
   const resetAll = () => {
@@ -544,7 +937,6 @@ export default function EcrireNombresCE1Page() {
     setUserAnswer('');
     setIsCorrect(null);
     setScore(0);
-    setShowHint(false);
     setAnsweredCorrectly(new Set());
     setShowCompletionModal(false);
     setFinalScore(0);
@@ -622,15 +1014,15 @@ export default function EcrireNombresCE1Page() {
       )}
 
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-100">
-      <div className="max-w-6xl mx-auto px-4 py-8">
+      <div className="max-w-6xl mx-auto px-4 py-4 sm:py-8">
         {/* Header */}
-        <div className="mb-8">
+        <div className="mb-4 sm:mb-8">
           <Link href="/chapitre/ce1-nombres-jusqu-1000" className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors mb-4" onClick={stopAllVocalsAndAnimations}>
             <ArrowLeft className="w-4 h-4" />
             <span>Retour au chapitre</span>
           </Link>
           
-          <div className="bg-white rounded-xl p-6 shadow-lg text-center">
+          <div className="bg-white rounded-xl p-4 sm:p-6 shadow-lg text-center">
             <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
               🔤➡️🔢 Passer des lettres aux chiffres
             </h1>
@@ -641,12 +1033,12 @@ export default function EcrireNombresCE1Page() {
         </div>
 
         {/* Navigation entre cours et exercices */}
-        <div id="tab-navigation" className="flex justify-center mb-8">
+        <div id="tab-navigation" className="flex justify-center mb-4 sm:mb-8">
           <div className="bg-white rounded-lg p-1 shadow-md">
             <button
               id="tab-cours"
               onClick={() => setShowExercises(false)}
-              className={`px-6 py-3 rounded-lg font-bold transition-all pulse-interactive ${
+              className={`px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-bold transition-all pulse-interactive ${
                 !showExercises 
                   ? 'bg-blue-500 text-white shadow-md' 
                   : 'text-gray-600 hover:bg-gray-100'
@@ -657,7 +1049,7 @@ export default function EcrireNombresCE1Page() {
             <button
               id="tab-exercices"
               onClick={() => setShowExercises(true)}
-              className={`px-6 py-3 rounded-lg font-bold transition-all pulse-interactive ${
+              className={`px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-bold transition-all pulse-interactive ${
                 showExercises 
                   ? 'bg-green-500 text-white shadow-md' 
                   : 'text-gray-600 hover:bg-gray-100'
@@ -670,9 +1062,9 @@ export default function EcrireNombresCE1Page() {
 
         {!showExercises ? (
           /* COURS */
-          <div className="space-y-4 sm:space-y-8">
+          <div className="space-y-3 sm:space-y-8">
             {/* Personnage Minecraft avec bouton DÉMARRER */}
-            <div className="flex flex-row items-center justify-center gap-3 sm:gap-6 p-3 sm:p-4 mb-4 sm:mb-6">
+            <div className="flex flex-row items-center justify-center gap-3 sm:gap-6 p-2 sm:p-4 mb-3 sm:mb-6">
               {/* Image du personnage Minecraft */}
               <div className={`relative transition-all duration-500 border-4 border-green-300 rounded-full bg-gradient-to-br from-green-100 to-emerald-100 shadow-lg ${
                 isPlayingVocal
@@ -716,27 +1108,27 @@ export default function EcrireNombresCE1Page() {
             </div>
 
             {/* Règles de base */}
-            <div id="rules-section" className={`bg-white rounded-lg sm:rounded-xl p-4 sm:p-6 shadow-lg ${
+            <div id="rules-section" className={`bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 shadow-lg ${
               highlightedElement === 'rules-section' ? 'ring-4 ring-yellow-400 bg-yellow-200 scale-105 animate-pulse' : ''
             }`}>
-              <h2 className="text-lg sm:text-2xl font-bold text-center mb-4 sm:mb-6 text-gray-900">
+              <h2 className="text-lg sm:text-2xl font-bold text-center mb-3 sm:mb-4 text-gray-900">
                 📝 Les règles pour écrire un nombre
               </h2>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="bg-green-50 rounded-lg p-4 text-center">
-                  <div className="text-3xl mb-3">1️⃣</div>
-                  <h3 className="font-bold text-green-800 mb-2">Les centaines</h3>
-                  <p className="text-green-700">Cent, deux cent, trois cent...</p>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4">
+                <div className="bg-green-50 rounded-lg p-3 text-center">
+                  <div className="text-2xl mb-2">1️⃣</div>
+                  <h3 className="font-bold text-green-800 mb-1">Les centaines</h3>
+                  <p className="text-sm text-green-700">Cent, deux cent, trois cent...</p>
                 </div>
-                <div className="bg-blue-50 rounded-lg p-4 text-center">
-                  <div className="text-3xl mb-3">2️⃣</div>
-                  <h3 className="font-bold text-blue-800 mb-2">Les dizaines</h3>
-                  <p className="text-blue-700">Vingt, trente, quarante...</p>
+                <div className="bg-blue-50 rounded-lg p-3 text-center">
+                  <div className="text-2xl mb-2">2️⃣</div>
+                  <h3 className="font-bold text-blue-800 mb-1">Les dizaines</h3>
+                  <p className="text-sm text-blue-700">Vingt, trente, quarante...</p>
                 </div>
-                <div className="bg-purple-50 rounded-lg p-4 text-center">
-                  <div className="text-3xl mb-3">3️⃣</div>
-                  <h3 className="font-bold text-purple-800 mb-2">Les unités</h3>
-                  <p className="text-purple-700">Un, deux, trois...</p>
+                <div className="bg-purple-50 rounded-lg p-3 text-center">
+                  <div className="text-2xl mb-2">3️⃣</div>
+                  <h3 className="font-bold text-purple-800 mb-1">Les unités</h3>
+                  <p className="text-sm text-purple-700">Un, deux, trois...</p>
                 </div>
               </div>
             </div>
@@ -781,34 +1173,19 @@ export default function EcrireNombresCE1Page() {
                         <div className="p-2 text-xs font-bold text-green-700">Unités</div>
                       </div>
                       <div className="grid grid-cols-3 bg-white min-h-[4rem]">
-                        <div id="cent-vingt-trois-column-centaines" className="p-2 border-r border-gray-300 flex flex-col items-center justify-center">
+                                                <div id="cent-vingt-trois-column-centaines" className="p-2 border-r border-gray-300 flex flex-col items-center justify-center">
                     {exampleStep >= 2 && exampleAnimating === 'cent-vingt-trois' && (
-                            <>
-                              <div id="cent-vingt-trois-table-centaines" className="text-2xl font-bold text-red-600 mb-1">1</div>
-                              {exampleStep >= 3 && (
-                                <div className="text-sm font-semibold text-red-500 bg-red-100 px-2 py-1 rounded">100</div>
-                              )}
-                            </>
+                              <div id="cent-vingt-trois-table-centaines" className="text-2xl font-bold text-red-600 mb-2">1</div>
                           )}
                       </div>
                         <div id="cent-vingt-trois-column-dizaines" className="p-2 border-r border-gray-300 flex flex-col items-center justify-center">
                           {exampleStep >= 2 && exampleAnimating === 'cent-vingt-trois' && (
-                            <>
-                              <div id="cent-vingt-trois-table-dizaines" className="text-2xl font-bold text-blue-600 mb-1">2</div>
-                              {exampleStep >= 3 && (
-                                <div className="text-sm font-semibold text-blue-500 bg-blue-100 px-2 py-1 rounded">20</div>
-                              )}
-                            </>
+                              <div id="cent-vingt-trois-table-dizaines" className="text-2xl font-bold text-blue-600 mb-2">2</div>
                           )}
                         </div>
                         <div id="cent-vingt-trois-column-unités" className="p-2 flex flex-col items-center justify-center">
                           {exampleStep >= 2 && exampleAnimating === 'cent-vingt-trois' && (
-                            <>
-                              <div id="cent-vingt-trois-table-unités" className="text-2xl font-bold text-green-600 mb-1">3</div>
-                              {exampleStep >= 3 && (
-                                <div className="text-sm font-semibold text-green-500 bg-green-100 px-2 py-1 rounded">3</div>
-                              )}
-                            </>
+                              <div id="cent-vingt-trois-table-unités" className="text-2xl font-bold text-green-600 mb-2">3</div>
                           )}
                         </div>
                   </div>
@@ -853,34 +1230,19 @@ export default function EcrireNombresCE1Page() {
                         <div className="p-2 text-xs font-bold text-green-700">Unités</div>
                       </div>
                       <div className="grid grid-cols-3 bg-white min-h-[4rem]">
-                        <div id="quatre-vingt-sept-column-centaines" className="p-2 border-r border-gray-300 flex flex-col items-center justify-center">
+                                                <div id="quatre-vingt-sept-column-centaines" className="p-2 border-r border-gray-300 flex flex-col items-center justify-center">
                     {exampleStep >= 2 && exampleAnimating === 'quatre-vingt-sept' && (
-                            <>
-                              <div id="quatre-vingt-sept-table-centaines" className="text-2xl font-bold text-gray-400 mb-1">0</div>
-                              {exampleStep >= 3 && (
-                                <div className="text-xs text-gray-400">-</div>
-                              )}
-                            </>
+                              <div id="quatre-vingt-sept-table-centaines" className="text-2xl font-bold text-gray-400 mb-2">0</div>
                           )}
                       </div>
                         <div id="quatre-vingt-sept-column-dizaines" className="p-2 border-r border-gray-300 flex flex-col items-center justify-center">
                           {exampleStep >= 2 && exampleAnimating === 'quatre-vingt-sept' && (
-                            <>
-                              <div id="quatre-vingt-sept-table-dizaines" className="text-2xl font-bold text-blue-600 mb-1">8</div>
-                              {exampleStep >= 3 && (
-                                <div className="text-sm font-semibold text-blue-500 bg-blue-100 px-2 py-1 rounded">80</div>
-                              )}
-                            </>
+                              <div id="quatre-vingt-sept-table-dizaines" className="text-2xl font-bold text-blue-600 mb-2">8</div>
                           )}
                         </div>
                         <div id="quatre-vingt-sept-column-unités" className="p-2 flex flex-col items-center justify-center">
                           {exampleStep >= 2 && exampleAnimating === 'quatre-vingt-sept' && (
-                            <>
-                              <div id="quatre-vingt-sept-table-unités" className="text-2xl font-bold text-green-600 mb-1">7</div>
-                              {exampleStep >= 3 && (
-                                <div className="text-sm font-semibold text-green-500 bg-green-100 px-2 py-1 rounded">7</div>
-                              )}
-                            </>
+                              <div id="quatre-vingt-sept-table-unités" className="text-2xl font-bold text-green-600 mb-2">7</div>
                           )}
                         </div>
                   </div>
@@ -925,34 +1287,19 @@ export default function EcrireNombresCE1Page() {
                         <div className="p-2 text-xs font-bold text-green-700">Unités</div>
                       </div>
                       <div className="grid grid-cols-3 bg-white min-h-[4rem]">
-                        <div id="deux-cent-soixante-sept-column-centaines" className="p-2 border-r border-gray-300 flex flex-col items-center justify-center">
+                                                <div id="deux-cent-soixante-sept-column-centaines" className="p-2 border-r border-gray-300 flex flex-col items-center justify-center">
                           {exampleStep >= 2 && exampleAnimating === 'deux-cent-soixante-sept' && (
-                            <>
-                              <div id="deux-cent-soixante-sept-table-centaines" className="text-2xl font-bold text-red-600 mb-1">2</div>
-                              {exampleStep >= 3 && (
-                                <div className="text-sm font-semibold text-red-500 bg-red-100 px-2 py-1 rounded">200</div>
-                              )}
-                            </>
+                              <div id="deux-cent-soixante-sept-table-centaines" className="text-2xl font-bold text-red-600 mb-2">2</div>
                     )}
                   </div>
                         <div id="deux-cent-soixante-sept-column-dizaines" className="p-2 border-r border-gray-300 flex flex-col items-center justify-center">
                           {exampleStep >= 2 && exampleAnimating === 'deux-cent-soixante-sept' && (
-                            <>
-                              <div id="deux-cent-soixante-sept-table-dizaines" className="text-2xl font-bold text-blue-600 mb-1">6</div>
-                              {exampleStep >= 3 && (
-                                <div className="text-sm font-semibold text-blue-500 bg-blue-100 px-2 py-1 rounded">60</div>
-                              )}
-                            </>
+                              <div id="deux-cent-soixante-sept-table-dizaines" className="text-2xl font-bold text-blue-600 mb-2">6</div>
                           )}
                         </div>
                         <div id="deux-cent-soixante-sept-column-unités" className="p-2 flex flex-col items-center justify-center">
                           {exampleStep >= 2 && exampleAnimating === 'deux-cent-soixante-sept' && (
-                            <>
-                              <div id="deux-cent-soixante-sept-table-unités" className="text-2xl font-bold text-green-600 mb-1">7</div>
-                              {exampleStep >= 3 && (
-                                <div className="text-sm font-semibold text-green-500 bg-green-100 px-2 py-1 rounded">7</div>
-                              )}
-                            </>
+                              <div id="deux-cent-soixante-sept-table-unités" className="text-2xl font-bold text-green-600 mb-2">7</div>
                           )}
                         </div>
                       </div>
@@ -977,79 +1324,254 @@ export default function EcrireNombresCE1Page() {
               </div>
             </div>
 
-            {/* Section interactive - Choix d'un nombre à transformer */}
+            {/* Section interactive - Glisser-déposer */}
             <div id="interactive-section" className={`bg-white rounded-lg sm:rounded-xl p-4 sm:p-6 shadow-lg ${
               highlightedElement === 'interactive-section' ? 'ring-4 ring-yellow-400 bg-yellow-200 scale-105 animate-pulse' : ''
             }`}>
               <h2 className="text-lg sm:text-2xl font-bold text-center mb-4 sm:mb-6 text-gray-900">
-                🎯 Atelier de transformation
+                🎯 Atelier de glisser-déposer
               </h2>
               <p className="text-center text-sm sm:text-base text-gray-600 mb-4 sm:mb-6">
-                Choisis un nombre en lettres et découvres sa transformation en chiffres !
+                Fais glisser chaque partie du nombre vers sa colonne et regarde la transformation !
               </p>
               
-              {/* Sélecteur de nombres */}
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 sm:gap-4 mb-4 sm:mb-6">
-                {exercises.slice(0, 8).map((exercise, index) => (
+              {/* Sélecteur de nombres pour glisser-déposer - Toujours visible */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 mb-4 sm:mb-6">
+                {[
+                  { written: 'Cent cinquante-quatre', number: '154' },
+                  { written: 'Trois cent vingt-huit', number: '328' },
+                  { written: 'Quatre cent soixante-quinze', number: '475' },
+                  { written: 'Six cent trente-neuf', number: '639' },
+                  { written: 'Huit cent quarante-deux', number: '842' },
+                  { written: 'Neuf cent soixante-six', number: '966' }
+                ].map((exercise, index) => (
                   <button
                     key={index}
-                    onClick={() => {
-                      setSelectedNumber(exercise);
-                      setTimeout(() => scrollToElement('decomposition-section'), 100);
+                    onClick={async () => {
+                      const isNewSelection = !dragDropExercise || dragDropExercise.written !== exercise.written;
+                      
+                      setDragDropExercise(exercise);
+                      resetDragDrop();
+                      setTimeout(() => scrollToElement('drag-drop-area'), 100);
+                      
+                      // Jouer le mode d'emploi vocal court seulement si c'est un nouveau nombre
+                      if (isNewSelection) {
+                        await playDragDropInstructions(exercise.written, exercise);
+                      }
                     }}
-                    className={`bg-gradient-to-br from-purple-500 to-pink-500 text-white p-2 sm:p-4 rounded-lg font-bold text-xs sm:text-base hover:from-purple-600 hover:to-pink-600 transition-all transform hover:scale-105 pulse-interactive min-h-[3rem] sm:min-h-[4rem] flex items-center justify-center ${
-                      selectedNumber?.written === exercise.written ? 'ring-4 ring-yellow-400 scale-110' : ''
-                    }`}
+                    disabled={isPlayingVocal}
+                    className={`bg-gradient-to-br from-purple-500 to-pink-500 text-white p-3 sm:p-4 rounded-lg font-bold text-sm sm:text-base hover:from-purple-600 hover:to-pink-600 transition-all transform hover:scale-105 pulse-interactive min-h-[4rem] flex items-center justify-center ${
+                      dragDropExercise?.written === exercise.written ? 'ring-4 ring-yellow-400 scale-110' : ''
+                    } ${isPlayingVocal ? 'opacity-75 cursor-not-allowed' : ''}`}
                   >
                     {exercise.written}
                   </button>
                 ))}
               </div>
               
-              <div className="text-center text-xs sm:text-sm text-gray-500">
-                Clique sur un nombre pour voir sa transformation magique ! ✨
+              <div className="text-center text-xs sm:text-sm text-gray-500 mb-6">
+                {isPlayingVocal ? 
+                  '🎤 Mode d\'emploi en cours... Écoute bien !' : 
+                  'Choisis un nombre pour commencer l\'exercice de glisser-déposer ! ✨'
+                }
               </div>
+
+              {/* Zone de glisser-déposer - Apparaît seulement si un nombre est sélectionné */}
+              {dragDropExercise && (
+                <div id="drag-drop-area" className="space-y-6">
+                  {/* Titre du nombre sélectionné */}
+                  <div className="text-center">
+                    <h3 className="text-xl font-bold text-purple-700 mb-2">
+                      {dragDropExercise.written}
+                    </h3>
+                    <p className="text-gray-600">Fais glisser chaque partie vers sa colonne !</p>
+                  </div>
+                  
+                  {/* Parties à glisser */}
+                  <div className="bg-purple-50 rounded-lg p-4">
+                    <h4 className="font-bold text-gray-700 mb-3 text-center">Parties du nombre :</h4>
+                    <div className="text-sm text-gray-600 mb-3 text-center">
+                      💡 <span className="font-medium">Sur mobile :</span> Appuie et maintiens pour faire glisser
+                    </div>
+                    <div className="flex flex-wrap justify-center gap-3">
+                      {decomposeDragDropNumber(dragDropExercise.written, dragDropExercise.number).map((part, index) => (
+                        <div
+                          key={index}
+                          data-drag-part={index}
+                          draggable
+                          onDragStart={(e) => handleDragStart(e, part)}
+                          onTouchStart={(e) => handleTouchStart(e, part)}
+                          onTouchMove={handleTouchMove}
+                          onTouchEnd={handleTouchEnd}
+                          className={`px-4 py-2 rounded-lg font-bold cursor-grab active:cursor-grabbing transition-all duration-300 transform hover:scale-105 touch-manipulation ${
+                            part.color === 'red' 
+                              ? 'bg-red-200 text-red-800 border-2 border-red-300' 
+                              : part.color === 'blue'
+                              ? 'bg-blue-200 text-blue-800 border-2 border-blue-300'
+                              : 'bg-green-200 text-green-800 border-2 border-green-300'
+                          } ${completedDropZones.includes(part.position) ? 'opacity-50 cursor-not-allowed' : ''}`}
+                          style={{
+                            display: completedDropZones.includes(part.position) ? 'none' : 'block',
+                            touchAction: 'none'
+                          }}
+                        >
+                          {part.text}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  {/* Tableau de placement */}
+                  <div className="bg-gradient-to-r from-blue-50 to-green-50 rounded-lg p-4 border-2 border-dashed border-gray-300">
+                    <h4 className="font-bold text-gray-700 mb-4 text-center">Tableau de placement :</h4>
+                    <div className="grid grid-cols-3 gap-4">
+                      {/* Colonne Centaines */}
+                      <div 
+                        data-drop-zone="centaines"
+                        className="bg-white rounded-lg p-4 min-h-[120px] border-2 border-dashed border-red-300 flex flex-col items-center justify-center transition-all duration-300 touch-manipulation"
+                        onDragOver={handleDragOver}
+                        onDrop={(e) => handleDrop(e, 'centaines')}
+                        onTouchMove={handleTouchMove}
+                        style={{
+                          backgroundColor: draggedElements.centaines ? '#fee2e2' : 'white',
+                          borderColor: draggedElements.centaines ? '#ef4444' : '#fca5a5',
+                          touchAction: 'none'
+                        }}
+                      >
+                        <div className="font-bold text-gray-700 mb-2">Centaines</div>
+                        {draggedElements.centaines ? (
+                          <>
+                            <div className="text-3xl font-bold text-red-600 mb-2">
+                              {draggedElements.centaines}
+                            </div>
+                            <div className="text-lg font-semibold text-red-500 bg-red-100 px-2 py-1 rounded">
+                              {draggedElements.centaines}00
+                            </div>
+                          </>
+                        ) : (
+                          <div className="text-gray-400 text-center text-sm">
+                            Glisse ici<br/>les centaines
+                          </div>
+                        )}
+                      </div>
+                      
+                      {/* Colonne Dizaines */}
+                      <div 
+                        data-drop-zone="dizaines"
+                        className="bg-white rounded-lg p-4 min-h-[120px] border-2 border-dashed border-blue-300 flex flex-col items-center justify-center transition-all duration-300 touch-manipulation"
+                        onDragOver={handleDragOver}
+                        onDrop={(e) => handleDrop(e, 'dizaines')}
+                        onTouchMove={handleTouchMove}
+                        style={{
+                          backgroundColor: draggedElements.dizaines ? '#dbeafe' : 'white',
+                          borderColor: draggedElements.dizaines ? '#3b82f6' : '#93c5fd',
+                          touchAction: 'none'
+                        }}
+                      >
+                        <div className="font-bold text-gray-700 mb-2">Dizaines</div>
+                        {draggedElements.dizaines ? (
+                          <>
+                            <div className="text-3xl font-bold text-blue-600 mb-2">
+                              {draggedElements.dizaines}
+                            </div>
+                            <div className="text-lg font-semibold text-blue-500 bg-blue-100 px-2 py-1 rounded">
+                              {draggedElements.dizaines}0
+                            </div>
+                          </>
+                        ) : (
+                          <div className="text-gray-400 text-center text-sm">
+                            Glisse ici<br/>les dizaines
+                          </div>
+                        )}
+                      </div>
+                      
+                      {/* Colonne Unités */}
+                      <div 
+                        data-drop-zone="unites"
+                        className="bg-white rounded-lg p-4 min-h-[120px] border-2 border-dashed border-green-300 flex flex-col items-center justify-center transition-all duration-300 touch-manipulation"
+                        onDragOver={handleDragOver}
+                        onDrop={(e) => handleDrop(e, 'unites')}
+                        onTouchMove={handleTouchMove}
+                        style={{
+                          backgroundColor: draggedElements.unites ? '#dcfce7' : 'white',
+                          borderColor: draggedElements.unites ? '#22c55e' : '#86efac',
+                          touchAction: 'none'
+                        }}
+                      >
+                        <div className="font-bold text-gray-700 mb-2">Unités</div>
+                        {draggedElements.unites ? (
+                          <>
+                            <div className="text-3xl font-bold text-green-600 mb-2">
+                              {draggedElements.unites}
+                            </div>
+                            <div className="text-lg font-semibold text-green-500 bg-green-100 px-2 py-1 rounded">
+                              {draggedElements.unites}
+                            </div>
+                          </>
+                        ) : (
+                          <div className="text-gray-400 text-center text-sm">
+                            Glisse ici<br/>les unités
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Construction finale */}
+                  {showFinalConstruction && (
+                    <div className="bg-yellow-50 rounded-lg p-4 border-2 border-yellow-300 animate-pulse">
+                      <h4 className="font-bold text-gray-700 mb-3 text-center">🎉 Construction finale :</h4>
+                      <div className="text-center">
+                        <div className="text-lg font-bold text-gray-700 mb-2">
+                          {draggedElements.centaines ? `${draggedElements.centaines}00` : '0'} + {draggedElements.dizaines ? `${draggedElements.dizaines}0` : '0'} + {draggedElements.unites || '0'} = {dragDropExercise.number}
+                        </div>
+                        <div className="text-2xl font-bold text-blue-600">
+                          Bravo ! {dragDropExercise.written} = {dragDropExercise.number}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* Boutons d'action */}
+                  <div className="flex justify-center gap-4">
+                    <button
+                      onClick={resetDragDrop}
+                      className="bg-gray-500 text-white px-4 py-2 rounded-lg font-bold hover:bg-gray-600 transition-colors"
+                    >
+                      Recommencer
+                    </button>
+                    <button
+                      onClick={() => {
+                        setDragDropExercise(null);
+                        resetDragDrop();
+                        stopAllVocalsAndAnimations();
+                        
+                        // Scroll vers le titre de l'atelier sur mobile
+                        setTimeout(() => {
+                          const interactiveSection = document.getElementById('interactive-section');
+                          if (interactiveSection) {
+                            // Détection mobile
+                            const isMobile = window.innerWidth <= 768;
+                            if (isMobile) {
+                              interactiveSection.scrollIntoView({ 
+                                behavior: 'smooth', 
+                                block: 'start',
+                                inline: 'nearest'
+                              });
+                            }
+                          }
+                        }, 100);
+                      }}
+                      className="bg-purple-500 text-white px-4 py-2 rounded-lg font-bold hover:bg-purple-600 transition-colors"
+                    >
+                      Choisir un autre nombre
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
 
-            {/* Section de décomposition */}
-            {selectedNumber && (
-              <div id="decomposition-section" className="bg-green-50 rounded-lg sm:rounded-xl p-4 sm:p-6 shadow-lg">
-                <h3 className="text-lg sm:text-xl font-bold text-center mb-4 sm:mb-6 text-green-800">
-                  ✨ Transformation magique !
-                </h3>
-                
-                <div className="text-center mb-4 sm:mb-6">
-                  <div className="bg-white rounded-md sm:rounded-lg p-3 sm:p-4 shadow-md mb-3 sm:mb-4">
-                    <div className="text-sm sm:text-lg font-bold text-purple-600 mb-1 sm:mb-2">
-                      📝 Nombre en lettres :
-                    </div>
-                    <div className="text-lg sm:text-2xl font-bold text-gray-800 break-words">
-                      {selectedNumber.written}
-                    </div>
-                  </div>
-                  
-                  <div className="text-2xl sm:text-4xl font-bold text-green-600 mb-1 sm:mb-2">⬇️</div>
-                  
-                  <div className="bg-white rounded-md sm:rounded-lg p-3 sm:p-4 shadow-md">
-                    <div className="text-sm sm:text-lg font-bold text-green-700 mb-2 sm:mb-3 text-center">
-                      🧩 Décomposition :
-                    </div>
-                    <div className="text-center text-gray-700 text-sm sm:text-base break-words">
-                      {selectedNumber.hint}
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="bg-white rounded-md sm:rounded-lg p-3 sm:p-4 shadow-md">
-                  <div className="text-sm sm:text-lg font-bold text-blue-600 mb-1 sm:mb-2">
-                    🔢 Nombre en chiffres :
-                  </div>
-                  <div className="text-2xl sm:text-4xl font-bold text-blue-600">
-                    {selectedNumber.number}
-                  </div>
-                </div>
-              </div>
-            )}
+
 
             {/* Conseils */}
             <div className="bg-gradient-to-r from-yellow-400 to-orange-400 rounded-xl p-6 text-white">
@@ -1116,9 +1638,9 @@ export default function EcrireNombresCE1Page() {
           </div>
         ) : (
           /* EXERCICES */
-          <div className="space-y-4 sm:space-y-8">
+          <div className="space-y-3 sm:space-y-8">
             {/* Personnage Minecraft avec bouton DÉMARRER */}
-            <div className="flex flex-row items-center justify-center gap-3 sm:gap-6 p-3 sm:p-4 mb-4 sm:mb-6">
+            <div className="flex flex-row items-center justify-center gap-3 sm:gap-6 p-2 sm:p-4 mb-3 sm:mb-6">
               {/* Image du personnage Minecraft */}
               <div className={`relative transition-all duration-500 border-4 border-green-300 rounded-full bg-gradient-to-br from-green-100 to-emerald-100 shadow-lg ${
                 isPlayingVocal
@@ -1165,34 +1687,24 @@ export default function EcrireNombresCE1Page() {
             <div id="score-section" className={`bg-white rounded-lg sm:rounded-xl p-4 sm:p-6 shadow-lg ${
               highlightedElement === 'score-section' ? 'ring-4 ring-yellow-400 bg-yellow-200 scale-105' : ''
             }`}>
-              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4 space-y-3 sm:space-y-0">
+              <div className="flex flex-row justify-between items-center mb-4">
                 <h2 className="text-lg sm:text-2xl font-bold text-gray-900">
                   ✏️ Exercice {currentExercise + 1} sur {exercises.length}
                 </h2>
-                <button
-                  onClick={resetAll}
-                  className="bg-gray-500 text-white px-3 py-2 sm:px-4 sm:py-2 rounded-lg font-bold hover:bg-gray-600 transition-colors text-sm sm:text-base pulse-interactive"
-                >
-                  <RotateCcw className="inline w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-                  Recommencer
-                </button>
-              </div>
-              
-              {/* Barre de progression */}
-              <div className="w-full bg-gray-200 rounded-full h-2 sm:h-3 mb-3">
-                <div 
-                  className="bg-green-500 h-2 sm:h-3 rounded-full transition-all duration-500"
-                  style={{ width: `${((currentExercise + 1) / exercises.length) * 100}%` }}
-                ></div>
-              </div>
-              
-              {/* Score sous la barre */}
-              <div className="text-center">
-                <div id="score-display" className={`text-base sm:text-lg font-bold text-green-600 ${
+                {/* Score sur la même ligne */}
+                <div className={`text-sm sm:text-lg font-bold text-green-600 ${
                   highlightedElement === 'score-display' ? 'ring-4 ring-yellow-400 bg-yellow-200 scale-105' : ''
                 }`}>
                   Score : {score}/{exercises.length}
                 </div>
+              </div>
+              
+              {/* Barre de progression */}
+              <div className="w-full bg-gray-200 rounded-full h-2 sm:h-3">
+                <div 
+                  className="bg-green-500 h-2 sm:h-3 rounded-full transition-all duration-500"
+                  style={{ width: `${((currentExercise + 1) / exercises.length) * 100}%` }}
+                ></div>
               </div>
             </div>
 
@@ -1219,6 +1731,9 @@ export default function EcrireNombresCE1Page() {
                   value={userAnswer}
                   onChange={(e) => setUserAnswer(e.target.value)}
                   placeholder="Écris le nombre en chiffres..."
+                  autoComplete="off"
+                  autoCorrect="off"
+                  spellCheck="false"
                   className={`w-full p-3 sm:p-4 border-2 border-gray-300 rounded-lg text-center text-lg sm:text-xl font-bold focus:border-blue-500 focus:outline-none bg-white text-gray-900 ${
                     highlightedElement === 'answer-input' ? 'ring-4 ring-yellow-400 bg-yellow-200 scale-105' : ''
                   }`}
@@ -1226,13 +1741,7 @@ export default function EcrireNombresCE1Page() {
               </div>
               
               <div className="flex justify-center space-x-2 sm:space-x-4 mb-4 sm:mb-6">
-                <button
-                  onClick={() => setShowHint(!showHint)}
-                  className="bg-yellow-500 text-white px-3 py-2 sm:px-6 sm:py-3 rounded-lg font-bold hover:bg-yellow-600 transition-colors text-sm sm:text-base pulse-interactive"
-                >
-                  <Lightbulb className="inline w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-                  Indice
-                </button>
+
                 <button
                   id="erase-button"
                   onClick={resetExercise}
@@ -1244,15 +1753,7 @@ export default function EcrireNombresCE1Page() {
                 </button>
               </div>
 
-              {/* Indice */}
-              {showHint && (
-                <div className="bg-yellow-50 rounded-lg p-4 mb-6">
-                  <div className="flex items-center justify-center space-x-2 text-yellow-800">
-                    <Lightbulb className="w-5 h-5" />
-                    <span className="font-bold">{exercises[currentExercise].hint}</span>
-                  </div>
-                </div>
-              )}
+
               
               {/* Résultat */}
               {isCorrect !== null && (
