@@ -1538,8 +1538,8 @@ export default function LireNombresCE1Page() {
                       <button
                         onClick={() => {
                           animateContrast80vs83();
-                          // Scroll automatique vers l'animation
-                          setTimeout(() => scrollToElement('animation-section'), 100);
+                          // Scroll automatique vers les paires de contraste
+                          setTimeout(() => scrollToElement('traps-selector'), 100);
                         }}
                         disabled={isAnimating}
                         className={`bg-gradient-to-r from-pink-500 to-blue-500 hover:from-pink-600 hover:to-blue-600 text-white px-6 py-3 rounded-xl font-bold text-sm shadow-lg transform hover:scale-105 transition-all ${
@@ -1590,8 +1590,8 @@ export default function LireNombresCE1Page() {
                       <button
                         onClick={() => {
                           animateContrast200vs205();
-                          // Scroll automatique vers l'animation
-                          setTimeout(() => scrollToElement('animation-section'), 100);
+                          // Scroll automatique vers les paires de contraste
+                          setTimeout(() => scrollToElement('traps-selector'), 100);
                         }}
                         disabled={isAnimating}
                         className={`bg-gradient-to-r from-green-500 to-orange-500 hover:from-green-600 hover:to-orange-600 text-white px-6 py-3 rounded-xl font-bold text-sm shadow-lg transform hover:scale-105 transition-all ${
@@ -1642,8 +1642,8 @@ export default function LireNombresCE1Page() {
                       <button
                         onClick={() => {
                           animateContrast300vs305();
-                          // Scroll automatique vers l'animation
-                          setTimeout(() => scrollToElement('animation-section'), 100);
+                          // Scroll automatique vers les paires de contraste
+                          setTimeout(() => scrollToElement('traps-selector'), 100);
                         }}
                         disabled={isAnimating}
                         className={`bg-gradient-to-r from-violet-500 to-cyan-500 hover:from-violet-600 hover:to-cyan-600 text-white px-6 py-3 rounded-xl font-bold text-sm shadow-lg transform hover:scale-105 transition-all ${
