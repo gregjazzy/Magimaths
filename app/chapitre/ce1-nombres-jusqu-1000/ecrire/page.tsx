@@ -646,38 +646,38 @@ export default function EcrireNombresCE1Page() {
 
             {/* Section de décomposition */}
             {selectedNumber && (
-              <div id="decomposition-section" className="bg-green-50 rounded-xl p-6 shadow-lg">
-                <h3 className="text-xl font-bold text-center mb-6 text-green-800">
+              <div id="decomposition-section" className="bg-green-50 rounded-lg sm:rounded-xl p-4 sm:p-6 shadow-lg">
+                <h3 className="text-lg sm:text-xl font-bold text-center mb-4 sm:mb-6 text-green-800">
                   ✨ Transformation magique !
                 </h3>
                 
-                <div className="text-center mb-6">
-                  <div className="bg-white rounded-lg p-4 shadow-md mb-4">
-                    <div className="text-lg font-bold text-purple-600 mb-2">
+                <div className="text-center mb-4 sm:mb-6">
+                  <div className="bg-white rounded-md sm:rounded-lg p-3 sm:p-4 shadow-md mb-3 sm:mb-4">
+                    <div className="text-sm sm:text-lg font-bold text-purple-600 mb-1 sm:mb-2">
                       📝 Nombre en lettres :
                     </div>
-                    <div className="text-2xl font-bold text-gray-800">
+                    <div className="text-lg sm:text-2xl font-bold text-gray-800 break-words">
                       {selectedNumber.written}
                     </div>
                   </div>
                   
-                  <div className="text-4xl font-bold text-green-600 mb-2">⬇️</div>
+                  <div className="text-2xl sm:text-4xl font-bold text-green-600 mb-1 sm:mb-2">⬇️</div>
                   
-                  <div className="bg-white rounded-lg p-4 shadow-md">
-                    <div className="text-lg font-bold text-blue-600 mb-2">
+                  <div className="bg-white rounded-md sm:rounded-lg p-3 sm:p-4 shadow-md">
+                    <div className="text-sm sm:text-lg font-bold text-blue-600 mb-1 sm:mb-2">
                       🔢 Nombre en chiffres :
                     </div>
-                    <div className="text-4xl font-bold text-blue-600">
+                    <div className="text-2xl sm:text-4xl font-bold text-blue-600">
                       {selectedNumber.number}
                     </div>
                   </div>
                 </div>
                 
-                <div className="bg-white rounded-lg p-4 shadow-md">
-                  <div className="text-lg font-bold text-green-700 mb-3 text-center">
+                <div className="bg-white rounded-md sm:rounded-lg p-3 sm:p-4 shadow-md">
+                  <div className="text-sm sm:text-lg font-bold text-green-700 mb-2 sm:mb-3 text-center">
                     🧩 Décomposition :
                   </div>
-                  <div className="text-center text-gray-700">
+                  <div className="text-center text-gray-700 text-sm sm:text-base break-words">
                     {selectedNumber.hint}
                   </div>
                 </div>
