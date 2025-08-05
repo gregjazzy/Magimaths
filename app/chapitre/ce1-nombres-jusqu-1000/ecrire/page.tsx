@@ -320,7 +320,7 @@ export default function EcrireNombresCE1Page() {
 
   // 🎯 ANIMATION ÉLABORÉE DES EXEMPLES
   const animateExample = async (exampleType: string) => {
-    if (isAnimating || exampleAnimating) return;
+    if (isAnimating) return;
     
     setExampleAnimating(exampleType);
     setExampleStep(0);
@@ -434,9 +434,8 @@ export default function EcrireNombresCE1Page() {
     } catch (error) {
       console.error('Erreur animation exemple:', error);
     } finally {
+      // On garde l'animation affichée et on désactive juste isAnimating
       setTimeout(() => {
-        setExampleAnimating(null);
-        setExampleStep(0);
         setIsAnimating(false);
       }, 1000);
     }
@@ -727,8 +726,8 @@ export default function EcrireNombresCE1Page() {
                 {/* Exemple 1: Cent vingt-trois */}
                 <div 
                   id="cent-vingt-trois-container" 
-                  className={`relative bg-white rounded-lg p-4 shadow-md border-2 cursor-pointer transition-all hover:shadow-lg ${
-                    exampleAnimating === 'cent-vingt-trois' ? 'border-purple-400 bg-purple-50' : 'border-purple-200 hover:border-purple-300'
+                  className={`relative bg-white rounded-lg p-4 shadow-lg cursor-pointer transition-all transform hover:scale-105 hover:shadow-xl pulse-interactive ${
+                    exampleAnimating === 'cent-vingt-trois' ? 'border-2 border-purple-400 bg-purple-50 scale-105 shadow-2xl' : 'border-2 border-purple-200 hover:border-purple-300'
                   }`}
                   onClick={() => animateExample('cent-vingt-trois')}
                 >
@@ -765,8 +764,8 @@ export default function EcrireNombresCE1Page() {
                 {/* Exemple 2: Quatre-vingt-sept */}
                 <div 
                   id="quatre-vingt-sept-container"
-                  className={`relative bg-white rounded-lg p-4 shadow-md border-2 cursor-pointer transition-all hover:shadow-lg ${
-                    exampleAnimating === 'quatre-vingt-sept' ? 'border-purple-400 bg-purple-50' : 'border-purple-200 hover:border-purple-300'
+                  className={`relative bg-white rounded-lg p-4 shadow-lg cursor-pointer transition-all transform hover:scale-105 hover:shadow-xl pulse-interactive ${
+                    exampleAnimating === 'quatre-vingt-sept' ? 'border-2 border-purple-400 bg-purple-50 scale-105 shadow-2xl' : 'border-2 border-purple-200 hover:border-purple-300'
                   }`}
                   onClick={() => animateExample('quatre-vingt-sept')}
                 >
@@ -801,8 +800,8 @@ export default function EcrireNombresCE1Page() {
                 {/* Exemple 3: Mille */}
                 <div 
                   id="mille-container"
-                  className={`relative bg-white rounded-lg p-4 shadow-md border-2 cursor-pointer transition-all hover:shadow-lg ${
-                    exampleAnimating === 'mille' ? 'border-purple-400 bg-purple-50' : 'border-purple-200 hover:border-purple-300'
+                  className={`relative bg-white rounded-lg p-4 shadow-lg cursor-pointer transition-all transform hover:scale-105 hover:shadow-xl pulse-interactive ${
+                    exampleAnimating === 'mille' ? 'border-2 border-purple-400 bg-purple-50 scale-105 shadow-2xl' : 'border-2 border-purple-200 hover:border-purple-300'
                   }`}
                   onClick={() => animateExample('mille')}
                 >
