@@ -488,12 +488,27 @@ export default function LireNombresCE1Page() {
         
         if (stopSignalRef.current) return;
         scrollToElement('traps-selector');
-        await playAudio("Mais attention ! Plus bas, il y a une section CONTRASTES pour bien comprendre la différence !");
+        await playAudio("Mais attention ! Plus bas, il y a une section spéciale : Avec ou sans S pour vingt et cent !");
         if (stopSignalRef.current) return;
         await new Promise(resolve => setTimeout(resolve, 500));
         
         if (stopSignalRef.current) return;
-        await playAudio("Tu vois ? 80 avec S contre 83 sans S ! 200 avec S contre 205 sans S ! C'est le contraste parfait !");
+        await playAudio("D'abord, tu vois deux boîtes résumé : une verte pour AVEC S et une rouge pour SANS S !");
+        if (stopSignalRef.current) return;
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        if (stopSignalRef.current) return;
+        await playAudio("Ensuite, tu peux observer les contrastes : 80 avec S contre 83 sans S ! 200 avec S contre 205 sans S !");
+        if (stopSignalRef.current) return;
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        if (stopSignalRef.current) return;
+        await playAudio("Clique sur un nombre coloré pour le sélectionner et voir son animation dans le tableau !");
+        if (stopSignalRef.current) return;
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        if (stopSignalRef.current) return;
+        await playAudio("Et encore plus bas, il y a un mini-jeu super ! Le Défi du S ! Tu vois juste un chiffre et tu dois deviner s'il prend un S ou pas !");
         if (stopSignalRef.current) return;
         await new Promise(resolve => setTimeout(resolve, 500));
         
