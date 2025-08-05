@@ -270,193 +270,73 @@ export default function LireNombresCE1Page() {
     await playAudio("Attention petit maître ! Voici la leçon des contrastes ! Tu vas comprendre la différence !");
     if (stopSignalRef.current) { setIsAnimating(false); setIsPlayingVocal(false); return; }
     
-    // Scroll vers la section des contrastes
-    scrollToElement('contrast-s-section');
-    await new Promise(resolve => setTimeout(resolve, 500));
-    
-    // Mettre en surbrillance la section
-    setHighlightedElement('contrast-s-section');
-    await playAudio("Regarde bien ! Chaque paire montre exactement pourquoi un nombre a un S et l'autre non !");
-    if (stopSignalRef.current) { setHighlightedElement(null); setIsAnimating(false); setIsPlayingVocal(false); return; }
-    
-    await new Promise(resolve => setTimeout(resolve, 500));
+    await new Promise(resolve => setTimeout(resolve, 1000));
     
     // Animation paire 1: 80 vs 83
     await playAudio("Paire 1 : 80 contre 83 ! Regarde la différence !");
-    if (stopSignalRef.current) { setHighlightedElement(null); setIsAnimating(false); setIsPlayingVocal(false); return; }
+    if (stopSignalRef.current) { setIsAnimating(false); setIsPlayingVocal(false); return; }
     
-    const contrastSElements = document.querySelectorAll('.contrast-s-highlight');
-    const contrastNoSElements = document.querySelectorAll('.contrast-no-s-highlight');
+    // Animer tous les "s" verts dans les paires
+    const sElements = document.querySelectorAll('.text-green-600');
+    sElements.forEach((el, index) => {
+      setTimeout(() => {
+        if (el instanceof HTMLElement) {
+          el.style.animation = 'bounce 1s ease-in-out';
+          el.style.color = '#dc2626';
+          el.style.fontSize = '2em';
+          el.style.textShadow = '0 0 20px gold, 0 0 40px orange';
+          el.style.transform = 'scale(1.8)';
+          el.style.transition = 'all 0.3s';
+        }
+      }, index * 300);
+    });
     
-    // Animation du premier S (80)
-    if (contrastSElements.length > 0) {
-      const el = contrastSElements[0] as HTMLElement;
-      el.style.animation = 'bounce-subtle 2s ease-in-out';
-      el.style.color = '#dc2626'; 
-      el.style.fontSize = '3em';
-      el.style.fontWeight = '900';
-      el.style.textShadow = '0 0 25px gold, 0 0 50px orange';
-      el.style.transform = 'scale(2.5)';
-      el.style.transition = 'all 0.5s';
-      
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      await playAudio("80 = quatre-vingts ! Rien après quatre-vingt, alors on met un S !");
-      if (stopSignalRef.current) { setHighlightedElement(null); setIsAnimating(false); setIsPlayingVocal(false); return; }
-      
-      // Remettre normal
-      el.style.animation = '';
-      el.style.fontSize = '';
-      el.style.transform = '';
-      el.style.textShadow = '';
-    }
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    await playAudio("80, 200, 300 = nombres exacts ! Ils finissent par quatre-vingt ou cent, alors ils prennent un S !");
+    if (stopSignalRef.current) { setIsAnimating(false); setIsPlayingVocal(false); return; }
     
-    await new Promise(resolve => setTimeout(resolve, 500));
-    
-    // Animation du premier tiret (83)
-    if (contrastNoSElements.length > 0) {
-      const el = contrastNoSElements[0] as HTMLElement;
-      el.style.animation = 'pulse-subtle 2s ease-in-out';
-      el.style.color = '#fbbf24'; 
-      el.style.fontSize = '3em';
-      el.style.fontWeight = '900';
-      el.style.textShadow = '0 0 25px yellow, 0 0 50px orange';
-      el.style.transform = 'scale(2.5)';
-      el.style.transition = 'all 0.5s';
-      
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      await playAudio("Mais 83 = quatre-vingt-trois ! Suivi de trois, alors PAS de S, juste un tiret !");
-      if (stopSignalRef.current) { setHighlightedElement(null); setIsAnimating(false); setIsPlayingVocal(false); return; }
-      
-      // Remettre normal
-      el.style.animation = '';
-      el.style.fontSize = '';
-      el.style.transform = '';
-      el.style.textShadow = '';
-    }
-    
-    await new Promise(resolve => setTimeout(resolve, 800));
-    
-    // Animation paire 2: 200 vs 205
-    await playAudio("Paire 2 : 200 contre 205 ! Même principe avec les centaines !");
-    if (stopSignalRef.current) { setHighlightedElement(null); setIsAnimating(false); setIsPlayingVocal(false); return; }
-    
-    // Animation du deuxième S (200)
-    if (contrastSElements.length > 1) {
-      const el = contrastSElements[1] as HTMLElement;
-      el.style.animation = 'bounce-subtle 2s ease-in-out';
-      el.style.color = '#dc2626'; 
-      el.style.fontSize = '3em';
-      el.style.fontWeight = '900';
-      el.style.textShadow = '0 0 25px gold, 0 0 50px orange';
-      el.style.transform = 'scale(2.5)';
-      el.style.transition = 'all 0.5s';
-      
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      await playAudio("200 = deux-cents ! Centaine exacte, alors S !");
-      if (stopSignalRef.current) { setHighlightedElement(null); setIsAnimating(false); setIsPlayingVocal(false); return; }
-      
-      // Remettre normal
-      el.style.animation = '';
-      el.style.fontSize = '';
-      el.style.transform = '';
-      el.style.textShadow = '';
-    }
-    
-    await new Promise(resolve => setTimeout(resolve, 500));
-    
-    // Animation du deuxième tiret (205)
-    if (contrastNoSElements.length > 1) {
-      const el = contrastNoSElements[1] as HTMLElement;
-      el.style.animation = 'pulse-subtle 2s ease-in-out';
-      el.style.color = '#fbbf24'; 
-      el.style.fontSize = '3em';
-      el.style.fontWeight = '900';
-      el.style.textShadow = '0 0 25px yellow, 0 0 50px orange';
-      el.style.transform = 'scale(2.5)';
-      el.style.transition = 'all 0.5s';
-      
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      await playAudio("Mais 205 = deux-cent-cinq ! Pas exacte car suivie de cinq, alors PAS de S !");
-      if (stopSignalRef.current) { setHighlightedElement(null); setIsAnimating(false); setIsPlayingVocal(false); return; }
-      
-      // Remettre normal
-      el.style.animation = '';
-      el.style.fontSize = '';
-      el.style.transform = '';
-      el.style.textShadow = '';
-    }
-    
-    await new Promise(resolve => setTimeout(resolve, 800));
-    
-    // Animation paire 3: 690 et 691
-    await playAudio("Paire 3 : 690 et 691 ! Tous les deux sans S car quatre-vingt est suivi !");
-    if (stopSignalRef.current) { setHighlightedElement(null); setIsAnimating(false); setIsPlayingVocal(false); return; }
-    
-    // Animation des derniers tirets (690, 691)
-    for (let i = 2; i < contrastNoSElements.length && i < 4; i++) {
-      if (stopSignalRef.current) break;
-      const el = contrastNoSElements[i] as HTMLElement;
-      el.style.animation = 'pulse-subtle 1s ease-in-out';
-      el.style.color = '#fbbf24'; 
-      el.style.fontSize = '2em';
-      el.style.fontWeight = '900';
-      el.style.textShadow = '0 0 15px yellow, 0 0 30px orange';
-      el.style.transform = 'scale(1.8)';
-      el.style.transition = 'all 0.3s';
-      
-      await new Promise(resolve => setTimeout(resolve, 800));
-      
-      // Remettre normal
-      el.style.animation = '';
-      el.style.fontSize = '';
-      el.style.transform = '';
-      el.style.textShadow = '';
-      
-      await new Promise(resolve => setTimeout(resolve, 200));
-    }
-    
-    await playAudio("690 = six-cent-quatre-vingt-dix et 691 = six-cent-quatre-vingt-onze ! Quatre-vingt suivi, alors pas de S !");
-    if (stopSignalRef.current) { setHighlightedElement(null); setIsAnimating(false); setIsPlayingVocal(false); return; }
-    
-    await new Promise(resolve => setTimeout(resolve, 500));
-    
-    // Animation finale : tous les éléments ensemble
-    await playAudio("Tu vois maintenant ? Les contrastes sont clairs : avec S quand c'est fini, sans S quand c'est suivi !");
-    if (stopSignalRef.current) { setHighlightedElement(null); setIsAnimating(false); setIsPlayingVocal(false); return; }
-    
-    // Grande finale avec tous les éléments
-    const allElements = [...Array.from(contrastSElements), ...Array.from(contrastNoSElements)];
-    for (let i = 0; i < 3; i++) {
-      if (stopSignalRef.current) break;
-      allElements.forEach(element => {
-        const el = element as HTMLElement;
-        el.style.backgroundColor = '#fef3c7';
-        el.style.color = '#dc2626';
-        el.style.fontWeight = '900';
-        el.style.transform = 'scale(1.4)';
-        el.style.transition = 'all 0.3s';
-        el.style.borderRadius = '8px';
-        el.style.padding = '4px 8px';
-        el.style.boxShadow = '0 0 20px gold';
-      });
-      await new Promise(resolve => setTimeout(resolve, 600));
-      allElements.forEach(element => {
-        const el = element as HTMLElement;
-        el.style.backgroundColor = '';
-        el.style.color = '';
-        el.style.fontWeight = '';
+    // Remettre les S normaux
+    sElements.forEach(el => {
+      if (el instanceof HTMLElement) {
+        el.style.animation = '';
+        el.style.fontSize = '';
         el.style.transform = '';
-        el.style.transition = '';
-        el.style.borderRadius = '';
-        el.style.padding = '';
-        el.style.boxShadow = '';
-      });
-      await new Promise(resolve => setTimeout(resolve, 400));
-    }
+        el.style.textShadow = '';
+        el.style.color = '#16a34a'; // Remettre en vert
+      }
+    });
     
-    await playAudio("Parfait ! Maintenant tu es un maître des contrastes ! Tu sauras toujours quand mettre un S !");
+    await new Promise(resolve => setTimeout(resolve, 1000));
     
-    setHighlightedElement(null);
+    // Maintenant animer les badges "✗ pas S"
+    await playAudio("Maintenant regarde les autres : 83, 205, 305 ! Ils sont suivis d'autre chose, alors PAS de S !");
+    if (stopSignalRef.current) { setIsAnimating(false); setIsPlayingVocal(false); return; }
+    
+    const noSBadges = document.querySelectorAll('.bg-red-500');
+    noSBadges.forEach((el, index) => {
+      setTimeout(() => {
+        if (el instanceof HTMLElement) {
+          el.style.animation = 'pulse 1s ease-in-out';
+          el.style.transform = 'scale(1.3)';
+          el.style.transition = 'all 0.3s';
+        }
+      }, index * 400);
+    });
+    
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    
+    // Remettre les badges normaux
+    noSBadges.forEach(el => {
+      if (el instanceof HTMLElement) {
+        el.style.animation = '';
+        el.style.transform = '';
+      }
+    });
+    
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    await playAudio("Tu vois maintenant la différence ? C'est le secret du S !");
+    if (stopSignalRef.current) { setIsAnimating(false); setIsPlayingVocal(false); return; }
+    
     setIsAnimating(false);
     setIsPlayingVocal(false);
   };
@@ -1470,14 +1350,23 @@ export default function LireNombresCE1Page() {
                   Comprendre le "S"
                 </h2>
                 
-                {/* Titre simple et clair */}
-                <div className="text-center mb-4">
+                {/* Titre et bouton d'animation */}
+                <div className="text-center mb-6">
                   <h3 className="text-lg sm:text-xl font-bold text-gray-800 mb-2">
                     Observe les différences :
                   </h3>
-                  <p className="text-sm text-gray-600">
+                  <p className="text-sm text-gray-600 mb-4">
                     Compare chaque paire pour comprendre la règle
                   </p>
+                  <button
+                    onClick={animateContrastS}
+                    disabled={isAnimating || isPlayingVocal}
+                    className={`bg-purple-500 hover:bg-purple-600 text-white px-6 py-3 rounded-lg font-bold text-sm transition-all pulse-interactive ${
+                      isAnimating || isPlayingVocal ? 'opacity-50 cursor-not-allowed' : ''
+                    }`}
+                  >
+                    ✨ Voir l'animation des contrastes
+                  </button>
                 </div>
 
                 {/* Paires simplifiées */}
@@ -1637,18 +1526,7 @@ export default function LireNombresCE1Page() {
                   </div>
                 </div>
 
-                {/* Bouton d'animation des contrastes */}
-                <div className="text-center mb-4">
-                  <button
-                    onClick={animateContrastS}
-                    disabled={isAnimating || isPlayingVocal}
-                    className={`bg-purple-500 hover:bg-purple-600 text-white px-6 py-3 rounded-lg font-bold text-sm transition-all pulse-interactive ${
-                      isAnimating || isPlayingVocal ? 'opacity-50 cursor-not-allowed' : ''
-                    }`}
-                  >
-                    ✨ Voir l'animation des contrastes
-                  </button>
-                </div>
+
 
                 {/* Règle simple à la fin */}
                 <div className="text-center p-4 bg-gray-50 rounded-lg">
@@ -1700,7 +1578,6 @@ export default function LireNombresCE1Page() {
                       <h5 className="font-bold mb-3 text-green-100 text-base sm:text-lg">✅ À LA FIN = AVEC S</h5>
                       <ul className="space-y-2 text-sm sm:text-base">
                         <li><span className="font-bold">80</span> = quatre-vingt<span className="vingts-s-highlight font-extrabold text-red-300 text-xl sm:text-2xl">s</span></li>
-                        <li><span className="font-bold">380</span> = trois-cent-quatre-vingt<span className="vingts-s-highlight font-extrabold text-red-300 text-xl sm:text-2xl">s</span></li>
                         <li><span className="font-bold">580</span> = cinq-cent-quatre-vingt<span className="vingts-s-highlight font-extrabold text-red-300 text-xl sm:text-2xl">s</span></li>
                       </ul>
                     </div>
@@ -1708,7 +1585,6 @@ export default function LireNombresCE1Page() {
                       <h5 className="font-bold mb-3 text-red-100 text-base sm:text-lg">❌ SUIVI D'AUTRE CHOSE = SANS S</h5>
                       <ul className="space-y-2 text-sm sm:text-base">
                         <li><span className="font-bold">81</span> = quatre-vingt<span className="vingts-no-s-highlight font-extrabold text-yellow-300 text-xl sm:text-2xl">-</span>un</li>
-                        <li><span className="font-bold">390</span> = trois-cent-quatre-vingt<span className="vingts-no-s-highlight font-extrabold text-yellow-300 text-xl sm:text-2xl">-</span>dix</li>
                         <li><span className="font-bold">583</span> = cinq-cent-quatre-vingt<span className="vingts-no-s-highlight font-extrabold text-yellow-300 text-xl sm:text-2xl">-</span>trois</li>
                       </ul>
                     </div>
