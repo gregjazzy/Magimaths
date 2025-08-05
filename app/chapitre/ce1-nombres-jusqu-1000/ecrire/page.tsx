@@ -712,108 +712,10 @@ export default function EcrireNombresCE1Page() {
               </div>
             </div>
 
-            {/* Exemples interactifs */}
-            <div id="examples-section" className={`bg-white rounded-lg sm:rounded-xl p-4 sm:p-6 shadow-lg ${
+            {/* Exemples interactifs avec animations */}
+            <div id="examples-section" className={`bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg sm:rounded-xl p-4 sm:p-6 shadow-lg border border-purple-200 ${
               highlightedElement === 'examples-section' ? 'ring-4 ring-yellow-400 bg-yellow-200 scale-105 animate-pulse' : ''
             }`}>
-              <h2 className="text-lg sm:text-2xl font-bold text-center mb-4 sm:mb-6 text-gray-900">
-                🎯 Exemples pour comprendre
-              </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {examples.map((example, index) => (
-                  <div key={index} className="bg-gray-50 rounded-lg p-4">
-                    <div className="text-center">
-                      <div className="text-lg font-bold text-blue-600 mb-2">
-                        {example.written}
-                      </div>
-                      <div className="text-xl font-bold text-red-600">
-                        ↓
-                      </div>
-                      <div className="text-2xl font-bold text-green-600">
-                        {example.number}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Section interactive - Choix d'un nombre à transformer */}
-            <div id="interactive-section" className={`bg-white rounded-lg sm:rounded-xl p-4 sm:p-6 shadow-lg ${
-              highlightedElement === 'interactive-section' ? 'ring-4 ring-yellow-400 bg-yellow-200 scale-105 animate-pulse' : ''
-            }`}>
-              <h2 className="text-lg sm:text-2xl font-bold text-center mb-4 sm:mb-6 text-gray-900">
-                🎯 Atelier de transformation
-              </h2>
-              <p className="text-center text-sm sm:text-base text-gray-600 mb-4 sm:mb-6">
-                Choisis un nombre en lettres et découvres sa transformation en chiffres !
-              </p>
-              
-              {/* Sélecteur de nombres */}
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 sm:gap-4 mb-4 sm:mb-6">
-                {exercises.slice(0, 8).map((exercise, index) => (
-                  <button
-                    key={index}
-                    onClick={() => {
-                      setSelectedNumber(exercise);
-                      setTimeout(() => scrollToElement('decomposition-section'), 100);
-                    }}
-                    className={`bg-gradient-to-br from-purple-500 to-pink-500 text-white p-2 sm:p-4 rounded-lg font-bold text-xs sm:text-base hover:from-purple-600 hover:to-pink-600 transition-all transform hover:scale-105 pulse-interactive min-h-[3rem] sm:min-h-[4rem] flex items-center justify-center ${
-                      selectedNumber?.written === exercise.written ? 'ring-4 ring-yellow-400 scale-110' : ''
-                    }`}
-                  >
-                    {exercise.written}
-                  </button>
-                ))}
-              </div>
-              
-              <div className="text-center text-xs sm:text-sm text-gray-500">
-                Clique sur un nombre pour voir sa transformation magique ! ✨
-              </div>
-            </div>
-
-            {/* Section de décomposition */}
-            {selectedNumber && (
-              <div id="decomposition-section" className="bg-green-50 rounded-lg sm:rounded-xl p-4 sm:p-6 shadow-lg">
-                <h3 className="text-lg sm:text-xl font-bold text-center mb-4 sm:mb-6 text-green-800">
-                  ✨ Transformation magique !
-                </h3>
-                
-                <div className="text-center mb-4 sm:mb-6">
-                  <div className="bg-white rounded-md sm:rounded-lg p-3 sm:p-4 shadow-md mb-3 sm:mb-4">
-                    <div className="text-sm sm:text-lg font-bold text-purple-600 mb-1 sm:mb-2">
-                      📝 Nombre en lettres :
-                    </div>
-                    <div className="text-lg sm:text-2xl font-bold text-gray-800 break-words">
-                      {selectedNumber.written}
-                    </div>
-                  </div>
-                  
-                  <div className="text-2xl sm:text-4xl font-bold text-green-600 mb-1 sm:mb-2">⬇️</div>
-                  
-                  <div className="bg-white rounded-md sm:rounded-lg p-3 sm:p-4 shadow-md">
-                    <div className="text-sm sm:text-lg font-bold text-blue-600 mb-1 sm:mb-2">
-                      🔢 Nombre en chiffres :
-                    </div>
-                    <div className="text-2xl sm:text-4xl font-bold text-blue-600">
-                      {selectedNumber.number}
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="bg-white rounded-md sm:rounded-lg p-3 sm:p-4 shadow-md">
-                  <div className="text-sm sm:text-lg font-bold text-green-700 mb-2 sm:mb-3 text-center">
-                    🧩 Décomposition :
-                  </div>
-                  <div className="text-center text-gray-700 text-sm sm:text-base break-words">
-                    {selectedNumber.hint}
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* SECTION EXEMPLES POUR COMPRENDRE */}
-            <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg sm:rounded-xl p-4 sm:p-6 shadow-lg border border-purple-200 mb-6">
               <h2 className="text-xl sm:text-2xl font-bold text-center mb-6 text-purple-800">
                 🎯 Exemples pour comprendre
               </h2>
@@ -937,6 +839,80 @@ export default function EcrireNombresCE1Page() {
                 </p>
               </div>
             </div>
+
+            {/* Section interactive - Choix d'un nombre à transformer */}
+            <div id="interactive-section" className={`bg-white rounded-lg sm:rounded-xl p-4 sm:p-6 shadow-lg ${
+              highlightedElement === 'interactive-section' ? 'ring-4 ring-yellow-400 bg-yellow-200 scale-105 animate-pulse' : ''
+            }`}>
+              <h2 className="text-lg sm:text-2xl font-bold text-center mb-4 sm:mb-6 text-gray-900">
+                🎯 Atelier de transformation
+              </h2>
+              <p className="text-center text-sm sm:text-base text-gray-600 mb-4 sm:mb-6">
+                Choisis un nombre en lettres et découvres sa transformation en chiffres !
+              </p>
+              
+              {/* Sélecteur de nombres */}
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 sm:gap-4 mb-4 sm:mb-6">
+                {exercises.slice(0, 8).map((exercise, index) => (
+                  <button
+                    key={index}
+                    onClick={() => {
+                      setSelectedNumber(exercise);
+                      setTimeout(() => scrollToElement('decomposition-section'), 100);
+                    }}
+                    className={`bg-gradient-to-br from-purple-500 to-pink-500 text-white p-2 sm:p-4 rounded-lg font-bold text-xs sm:text-base hover:from-purple-600 hover:to-pink-600 transition-all transform hover:scale-105 pulse-interactive min-h-[3rem] sm:min-h-[4rem] flex items-center justify-center ${
+                      selectedNumber?.written === exercise.written ? 'ring-4 ring-yellow-400 scale-110' : ''
+                    }`}
+                  >
+                    {exercise.written}
+                  </button>
+                ))}
+              </div>
+              
+              <div className="text-center text-xs sm:text-sm text-gray-500">
+                Clique sur un nombre pour voir sa transformation magique ! ✨
+              </div>
+            </div>
+
+            {/* Section de décomposition */}
+            {selectedNumber && (
+              <div id="decomposition-section" className="bg-green-50 rounded-lg sm:rounded-xl p-4 sm:p-6 shadow-lg">
+                <h3 className="text-lg sm:text-xl font-bold text-center mb-4 sm:mb-6 text-green-800">
+                  ✨ Transformation magique !
+                </h3>
+                
+                <div className="text-center mb-4 sm:mb-6">
+                  <div className="bg-white rounded-md sm:rounded-lg p-3 sm:p-4 shadow-md mb-3 sm:mb-4">
+                    <div className="text-sm sm:text-lg font-bold text-purple-600 mb-1 sm:mb-2">
+                      📝 Nombre en lettres :
+                    </div>
+                    <div className="text-lg sm:text-2xl font-bold text-gray-800 break-words">
+                      {selectedNumber.written}
+                    </div>
+                  </div>
+                  
+                  <div className="text-2xl sm:text-4xl font-bold text-green-600 mb-1 sm:mb-2">⬇️</div>
+                  
+                  <div className="bg-white rounded-md sm:rounded-lg p-3 sm:p-4 shadow-md">
+                    <div className="text-sm sm:text-lg font-bold text-blue-600 mb-1 sm:mb-2">
+                      🔢 Nombre en chiffres :
+                    </div>
+                    <div className="text-2xl sm:text-4xl font-bold text-blue-600">
+                      {selectedNumber.number}
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="bg-white rounded-md sm:rounded-lg p-3 sm:p-4 shadow-md">
+                  <div className="text-sm sm:text-lg font-bold text-green-700 mb-2 sm:mb-3 text-center">
+                    🧩 Décomposition :
+                  </div>
+                  <div className="text-center text-gray-700 text-sm sm:text-base break-words">
+                    {selectedNumber.hint}
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Conseils */}
             <div className="bg-gradient-to-r from-yellow-400 to-orange-400 rounded-xl p-6 text-white">
