@@ -1489,6 +1489,9 @@ export default function LireNombresCE1Page() {
 
                 {/* RÈGLES COMPACTES DU "S" */}
                 <div className="mb-6">
+                  <div className="text-center mb-4">
+                    <p className="text-sm font-semibold text-gray-600">Pour vingt et cent</p>
+                  </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     {/* Avec S */}
                     <div className="bg-green-100 border-2 border-green-300 rounded-lg p-4 text-center">
