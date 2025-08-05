@@ -1836,13 +1836,13 @@ export default function LireNombresCE1Page() {
                 <div className="text-center p-6 bg-gradient-to-r from-blue-50 to-green-50 rounded-xl border-2 border-blue-200 shadow-lg mt-6">
                   <h4 className="text-lg font-bold text-gray-800 mb-3">📝 Règle à retenir</h4>
                   <div className="space-y-2">
-                    <div className="bg-green-100 border border-green-300 rounded-lg p-3">
-                      <span className="font-bold text-green-700 text-base">✅ Avec S</span> : 
-                      <span className="text-green-600 ml-2">nombre exact (80, 200, 300...)</span>
+                    <div className="bg-green-100 border border-green-300 rounded-lg p-2">
+                      <span className="font-bold text-green-700 text-sm">✅ Avec S</span> : 
+                      <span className="text-green-600 ml-1 text-sm">nombre exact (80, 200, 300...)</span>
                     </div>
-                    <div className="bg-red-100 border border-red-300 rounded-lg p-3">
-                      <span className="font-bold text-red-700 text-base">❌ Sans S</span> : 
-                      <span className="text-red-600 ml-2">suivi d'autre chose (83, 205, 305...)</span>
+                    <div className="bg-red-100 border border-red-300 rounded-lg p-2">
+                      <span className="font-bold text-red-700 text-sm">❌ Sans S</span> : 
+                      <span className="text-red-600 ml-1 text-sm">suivi d'autre chose (83, 205, 305...)</span>
                     </div>
                   </div>
                 </div>
