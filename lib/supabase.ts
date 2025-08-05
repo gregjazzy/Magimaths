@@ -51,26 +51,40 @@ export type Database = {
   }
 }
 
-// Variables d'environnement avec fallbacks pour le build
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://temp.supabase.co'
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'temp_key_for_build'
+// Créer un client mock pour éviter les erreurs de build
+const createMockClient = () => ({
+  from: () => ({
+    select: () => ({ data: null, error: new Error('Supabase not configured') }),
+    insert: () => ({ data: null, error: new Error('Supabase not configured') }),
+    update: () => ({ data: null, error: new Error('Supabase not configured') }),
+    delete: () => ({ data: null, error: new Error('Supabase not configured') }),
+    eq: () => ({ data: null, error: new Error('Supabase not configured') }),
+    not: () => ({ data: null, error: new Error('Supabase not configured') }),
+  }),
+  rpc: () => Promise.resolve({ data: null, error: new Error('Supabase not configured') }),
+  auth: {
+    getUser: () => Promise.resolve({ data: { user: null }, error: null }),
+    signInWithPassword: () => Promise.resolve({ data: null, error: new Error('Supabase not configured') }),
+    signOut: () => Promise.resolve({ error: null }),
+    onAuthStateChange: () => ({ data: { subscription: { unsubscribe: () => {} } } }),
+  }
+})
 
-export const supabase = createClientComponentClient<Database>()
+// Variables d'environnement avec fallbacks pour le build
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+// Export conditionnel selon la disponibilité des variables d'environnement
+export const supabase = supabaseUrl && supabaseKey 
+  ? createClientComponentClient<Database>()
+  : createMockClient() as any
 
 // Pour les API routes - création d'un client côté serveur
 export function createClient() {
-  // Si les vraies variables d'environnement ne sont pas disponibles, utiliser les fallbacks
-  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
-    // Return a mock client that won't actually connect but allows build to pass
-    return {
-      from: () => ({
-        select: () => ({ data: null, error: new Error('Supabase not configured') }),
-        insert: () => ({ data: null, error: new Error('Supabase not configured') }),
-        update: () => ({ data: null, error: new Error('Supabase not configured') }),
-        delete: () => ({ data: null, error: new Error('Supabase not configured') }),
-      }),
-      rpc: () => Promise.resolve({ data: null, error: new Error('Supabase not configured') }),
-    } as any
+  // Si les vraies variables d'environnement ne sont pas disponibles, utiliser le mock
+  if (!supabaseUrl || !supabaseKey) {
+    console.warn('⚠️ Variables Supabase manquantes - utilisation du client mock')
+    return createMockClient() as any
   }
   
   return createClientComponentClient<Database>()
