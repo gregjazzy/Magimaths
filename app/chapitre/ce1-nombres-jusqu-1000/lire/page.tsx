@@ -1886,188 +1886,223 @@ export default function LireNombresCE1Page() {
 
               </div>
 
-              {/* MINI QCM EN LIGNE : AVEC OU SANS S */}
-              <div id="contrast-s-section" className={`bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg p-4 text-white shadow-lg transform transition-all ${
+              {/* QCM ÉLÉGANT : AVEC OU SANS S */}
+              <div id="contrast-s-section" className={`bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl p-6 text-white shadow-xl transform transition-all ${
                 highlightedElement === 'contrast-s-section' ? 'ring-4 ring-blue-400 bg-blue-200 scale-105 animate-pulse' : ''
               }`}>
-                <h3 className="text-lg font-bold mb-4 text-center">🎯 Mini QCM : AVEC OU SANS "S" ?</h3>
+                <div className="text-center mb-6">
+                  <h3 className="text-xl font-bold mb-2">🎯 À toi de jouer !</h3>
+                  <p className="text-sm opacity-90">Clique sur ta réponse pour chaque nombre</p>
+                </div>
                 
-                {/* Questions en ligne compactes */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                {/* Questions élégantes */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                   {/* Question 1: 80 */}
-                  <div className="bg-white bg-opacity-20 rounded-lg p-3">
-                    <div className="text-center mb-2">
-                      <div className="text-xl font-bold">80</div>
-                      <div className="text-xs opacity-75">quatre-vingt...</div>
+                  <div className="bg-white rounded-xl p-4 text-gray-800 shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1">
+                    <div className="text-center mb-4">
+                      <div className="text-3xl font-bold text-blue-600 mb-1">80</div>
+                      <div className="text-sm text-gray-600 mb-3">quatre-vingt...</div>
+                      <div className="text-xs text-gray-500">Prend-il un "S" ?</div>
                     </div>
-                    <div className="flex gap-1">
+                    
+                    <div className="space-y-2">
                       <button
                         onClick={() => {
-                          const btn = document.querySelector('[data-answer="80-avec"]') as HTMLElement;
-                          const btn2 = document.querySelector('[data-answer="80-sans"]') as HTMLElement;
-                          if (btn && btn2) {
-                            btn.className = 'bg-green-500 text-white px-2 py-1 rounded text-xs font-bold flex-1';
-                            btn.innerHTML = '✅ Oui !';
-                            btn2.className = 'bg-gray-400 text-gray-200 px-2 py-1 rounded text-xs opacity-50 flex-1';
-                            btn2.disabled = true;
-                            (btn as any).disabled = true;
+                          const container = document.querySelector('[data-container="80"]') as HTMLElement;
+                          if (container) {
+                            container.innerHTML = `
+                              <div class="text-center p-4">
+                                <div class="text-6xl mb-2">✅</div>
+                                <div class="text-lg font-bold text-green-600 mb-1">Exact !</div>
+                                <div class="text-sm text-gray-600">80 = quatre-vingt<span class="font-bold text-green-600">s</span></div>
+                                <div class="text-xs text-gray-500 mt-2">Nombre exact → avec S</div>
+                              </div>
+                            `;
                           }
                         }}
                         data-answer="80-avec"
-                        className="bg-green-400 hover:bg-green-500 text-white px-2 py-1 rounded text-xs font-bold flex-1 transition-all"
+                        className="w-full bg-gradient-to-r from-green-400 to-green-500 hover:from-green-500 hover:to-green-600 text-white py-2 px-4 rounded-lg font-semibold transition-all transform hover:scale-105 shadow-md"
                       >
-                        ✅ S
+                        ✨ Avec "S"
                       </button>
                       <button
                         onClick={() => {
-                          const btn = document.querySelector('[data-answer="80-sans"]') as HTMLElement;
-                          const btn2 = document.querySelector('[data-answer="80-avec"]') as HTMLElement;
-                          if (btn && btn2) {
-                            btn.className = 'bg-red-500 text-white px-2 py-1 rounded text-xs font-bold flex-1';
-                            btn.innerHTML = '❌ Non';
-                            btn2.className = 'bg-gray-400 text-gray-200 px-2 py-1 rounded text-xs opacity-50 flex-1';
-                            btn2.disabled = true;
-                            (btn as any).disabled = true;
+                          const container = document.querySelector('[data-container="80"]') as HTMLElement;
+                          if (container) {
+                            container.innerHTML = `
+                              <div class="text-center p-4">
+                                <div class="text-6xl mb-2">😅</div>
+                                <div class="text-lg font-bold text-red-500 mb-1">Pas tout à fait...</div>
+                                <div class="text-sm text-gray-600">80 = quatre-vingt<span class="font-bold text-green-600">s</span></div>
+                                <div class="text-xs text-gray-500 mt-2">Nombre exact → avec S</div>
+                              </div>
+                            `;
                           }
                         }}
                         data-answer="80-sans"
-                        className="bg-red-400 hover:bg-red-500 text-white px-2 py-1 rounded text-xs font-bold flex-1 transition-all"
+                        className="w-full bg-gradient-to-r from-red-400 to-red-500 hover:from-red-500 hover:to-red-600 text-white py-2 px-4 rounded-lg font-semibold transition-all transform hover:scale-105 shadow-md"
                       >
-                        ❌ Pas S
+                        🚫 Sans "S"
                       </button>
                     </div>
+                    
+                    <div data-container="80"></div>
                   </div>
 
                   {/* Question 2: 83 */}
-                  <div className="bg-white bg-opacity-20 rounded-lg p-3">
-                    <div className="text-center mb-2">
-                      <div className="text-xl font-bold">83</div>
-                      <div className="text-xs opacity-75">quatre-vingt-trois</div>
+                  <div className="bg-white rounded-xl p-4 text-gray-800 shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1">
+                    <div className="text-center mb-4">
+                      <div className="text-3xl font-bold text-blue-600 mb-1">83</div>
+                      <div className="text-sm text-gray-600 mb-3">quatre-vingt-trois</div>
+                      <div className="text-xs text-gray-500">Prend-il un "S" ?</div>
                     </div>
-                    <div className="flex gap-1">
+                    
+                    <div className="space-y-2">
                       <button
                         onClick={() => {
-                          const btn = document.querySelector('[data-answer="83-avec"]') as HTMLElement;
-                          const btn2 = document.querySelector('[data-answer="83-sans"]') as HTMLElement;
-                          if (btn && btn2) {
-                            btn.className = 'bg-red-500 text-white px-2 py-1 rounded text-xs font-bold flex-1';
-                            btn.innerHTML = '❌ Non';
-                            btn2.className = 'bg-gray-400 text-gray-200 px-2 py-1 rounded text-xs opacity-50 flex-1';
-                            btn2.disabled = true;
-                            (btn as any).disabled = true;
+                          const container = document.querySelector('[data-container="83"]') as HTMLElement;
+                          if (container) {
+                            container.innerHTML = `
+                              <div class="text-center p-4">
+                                <div class="text-6xl mb-2">😅</div>
+                                <div class="text-lg font-bold text-red-500 mb-1">Pas tout à fait...</div>
+                                <div class="text-sm text-gray-600">83 = quatre-vingt-trois</div>
+                                <div class="text-xs text-gray-500 mt-2">Suivi de "trois" → sans S</div>
+                              </div>
+                            `;
                           }
                         }}
                         data-answer="83-avec"
-                        className="bg-green-400 hover:bg-green-500 text-white px-2 py-1 rounded text-xs font-bold flex-1 transition-all"
+                        className="w-full bg-gradient-to-r from-green-400 to-green-500 hover:from-green-500 hover:to-green-600 text-white py-2 px-4 rounded-lg font-semibold transition-all transform hover:scale-105 shadow-md"
                       >
-                        ✅ S
+                        ✨ Avec "S"
                       </button>
                       <button
                         onClick={() => {
-                          const btn = document.querySelector('[data-answer="83-sans"]') as HTMLElement;
-                          const btn2 = document.querySelector('[data-answer="83-avec"]') as HTMLElement;
-                          if (btn && btn2) {
-                            btn.className = 'bg-green-500 text-white px-2 py-1 rounded text-xs font-bold flex-1';
-                            btn.innerHTML = '✅ Oui !';
-                            btn2.className = 'bg-gray-400 text-gray-200 px-2 py-1 rounded text-xs opacity-50 flex-1';
-                            btn2.disabled = true;
-                            (btn as any).disabled = true;
+                          const container = document.querySelector('[data-container="83"]') as HTMLElement;
+                          if (container) {
+                            container.innerHTML = `
+                              <div class="text-center p-4">
+                                <div class="text-6xl mb-2">✅</div>
+                                <div class="text-lg font-bold text-green-600 mb-1">Exact !</div>
+                                <div class="text-sm text-gray-600">83 = quatre-vingt-trois</div>
+                                <div class="text-xs text-gray-500 mt-2">Suivi de "trois" → sans S</div>
+                              </div>
+                            `;
                           }
                         }}
                         data-answer="83-sans"
-                        className="bg-red-400 hover:bg-red-500 text-white px-2 py-1 rounded text-xs font-bold flex-1 transition-all"
+                        className="w-full bg-gradient-to-r from-red-400 to-red-500 hover:from-red-500 hover:to-red-600 text-white py-2 px-4 rounded-lg font-semibold transition-all transform hover:scale-105 shadow-md"
                       >
-                        ❌ Pas S
+                        🚫 Sans "S"
                       </button>
                     </div>
+                    
+                    <div data-container="83"></div>
                   </div>
 
                   {/* Question 3: 200 */}
-                  <div className="bg-white bg-opacity-20 rounded-lg p-3">
-                    <div className="text-center mb-2">
-                      <div className="text-xl font-bold">200</div>
-                      <div className="text-xs opacity-75">deux-cent...</div>
+                  <div className="bg-white rounded-xl p-4 text-gray-800 shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1">
+                    <div className="text-center mb-4">
+                      <div className="text-3xl font-bold text-blue-600 mb-1">200</div>
+                      <div className="text-sm text-gray-600 mb-3">deux-cent...</div>
+                      <div className="text-xs text-gray-500">Prend-il un "S" ?</div>
                     </div>
-                    <div className="flex gap-1">
+                    
+                    <div className="space-y-2">
                       <button
                         onClick={() => {
-                          const btn = document.querySelector('[data-answer="200-avec"]') as HTMLElement;
-                          const btn2 = document.querySelector('[data-answer="200-sans"]') as HTMLElement;
-                          if (btn && btn2) {
-                            btn.className = 'bg-green-500 text-white px-2 py-1 rounded text-xs font-bold flex-1';
-                            btn.innerHTML = '✅ Oui !';
-                            btn2.className = 'bg-gray-400 text-gray-200 px-2 py-1 rounded text-xs opacity-50 flex-1';
-                            btn2.disabled = true;
-                            (btn as any).disabled = true;
+                          const container = document.querySelector('[data-container="200"]') as HTMLElement;
+                          if (container) {
+                            container.innerHTML = `
+                              <div class="text-center p-4">
+                                <div class="text-6xl mb-2">✅</div>
+                                <div class="text-lg font-bold text-green-600 mb-1">Exact !</div>
+                                <div class="text-sm text-gray-600">200 = deux-cent<span class="font-bold text-green-600">s</span></div>
+                                <div class="text-xs text-gray-500 mt-2">Centaine exacte → avec S</div>
+                              </div>
+                            `;
                           }
                         }}
                         data-answer="200-avec"
-                        className="bg-green-400 hover:bg-green-500 text-white px-2 py-1 rounded text-xs font-bold flex-1 transition-all"
+                        className="w-full bg-gradient-to-r from-green-400 to-green-500 hover:from-green-500 hover:to-green-600 text-white py-2 px-4 rounded-lg font-semibold transition-all transform hover:scale-105 shadow-md"
                       >
-                        ✅ S
+                        ✨ Avec "S"
                       </button>
                       <button
                         onClick={() => {
-                          const btn = document.querySelector('[data-answer="200-sans"]') as HTMLElement;
-                          const btn2 = document.querySelector('[data-answer="200-avec"]') as HTMLElement;
-                          if (btn && btn2) {
-                            btn.className = 'bg-red-500 text-white px-2 py-1 rounded text-xs font-bold flex-1';
-                            btn.innerHTML = '❌ Non';
-                            btn2.className = 'bg-gray-400 text-gray-200 px-2 py-1 rounded text-xs opacity-50 flex-1';
-                            btn2.disabled = true;
-                            (btn as any).disabled = true;
+                          const container = document.querySelector('[data-container="200"]') as HTMLElement;
+                          if (container) {
+                            container.innerHTML = `
+                              <div class="text-center p-4">
+                                <div class="text-6xl mb-2">😅</div>
+                                <div class="text-lg font-bold text-red-500 mb-1">Pas tout à fait...</div>
+                                <div class="text-sm text-gray-600">200 = deux-cent<span class="font-bold text-green-600">s</span></div>
+                                <div class="text-xs text-gray-500 mt-2">Centaine exacte → avec S</div>
+                              </div>
+                            `;
                           }
                         }}
                         data-answer="200-sans"
-                        className="bg-red-400 hover:bg-red-500 text-white px-2 py-1 rounded text-xs font-bold flex-1 transition-all"
+                        className="w-full bg-gradient-to-r from-red-400 to-red-500 hover:from-red-500 hover:to-red-600 text-white py-2 px-4 rounded-lg font-semibold transition-all transform hover:scale-105 shadow-md"
                       >
-                        ❌ Pas S
+                        🚫 Sans "S"
                       </button>
                     </div>
+                    
+                    <div data-container="200"></div>
                   </div>
 
                   {/* Question 4: 690 */}
-                  <div className="bg-white bg-opacity-20 rounded-lg p-3">
-                    <div className="text-center mb-2">
-                      <div className="text-xl font-bold">690</div>
-                      <div className="text-xs opacity-75">...quatre-vingt-dix</div>
+                  <div className="bg-white rounded-xl p-4 text-gray-800 shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1">
+                    <div className="text-center mb-4">
+                      <div className="text-3xl font-bold text-blue-600 mb-1">690</div>
+                      <div className="text-sm text-gray-600 mb-3">...quatre-vingt-dix</div>
+                      <div className="text-xs text-gray-500">Prend-il un "S" ?</div>
                     </div>
-                    <div className="flex gap-1">
+                    
+                    <div className="space-y-2">
                       <button
                         onClick={() => {
-                          const btn = document.querySelector('[data-answer="690-avec"]') as HTMLElement;
-                          const btn2 = document.querySelector('[data-answer="690-sans"]') as HTMLElement;
-                          if (btn && btn2) {
-                            btn.className = 'bg-red-500 text-white px-2 py-1 rounded text-xs font-bold flex-1';
-                            btn.innerHTML = '❌ Non';
-                            btn2.className = 'bg-gray-400 text-gray-200 px-2 py-1 rounded text-xs opacity-50 flex-1';
-                            btn2.disabled = true;
-                            (btn as any).disabled = true;
+                          const container = document.querySelector('[data-container="690"]') as HTMLElement;
+                          if (container) {
+                            container.innerHTML = `
+                              <div class="text-center p-4">
+                                <div class="text-6xl mb-2">😅</div>
+                                <div class="text-lg font-bold text-red-500 mb-1">Pas tout à fait...</div>
+                                <div class="text-sm text-gray-600">690 = six-cent-quatre-vingt-dix</div>
+                                <div class="text-xs text-gray-500 mt-2">Suivi de "dix" → sans S</div>
+                              </div>
+                            `;
                           }
                         }}
                         data-answer="690-avec"
-                        className="bg-green-400 hover:bg-green-500 text-white px-2 py-1 rounded text-xs font-bold flex-1 transition-all"
+                        className="w-full bg-gradient-to-r from-green-400 to-green-500 hover:from-green-500 hover:to-green-600 text-white py-2 px-4 rounded-lg font-semibold transition-all transform hover:scale-105 shadow-md"
                       >
-                        ✅ S
+                        ✨ Avec "S"
                       </button>
                       <button
                         onClick={() => {
-                          const btn = document.querySelector('[data-answer="690-sans"]') as HTMLElement;
-                          const btn2 = document.querySelector('[data-answer="690-avec"]') as HTMLElement;
-                          if (btn && btn2) {
-                            btn.className = 'bg-green-500 text-white px-2 py-1 rounded text-xs font-bold flex-1';
-                            btn.innerHTML = '✅ Oui !';
-                            btn2.className = 'bg-gray-400 text-gray-200 px-2 py-1 rounded text-xs opacity-50 flex-1';
-                            btn2.disabled = true;
-                            (btn as any).disabled = true;
+                          const container = document.querySelector('[data-container="690"]') as HTMLElement;
+                          if (container) {
+                            container.innerHTML = `
+                              <div class="text-center p-4">
+                                <div class="text-6xl mb-2">✅</div>
+                                <div class="text-lg font-bold text-green-600 mb-1">Exact !</div>
+                                <div class="text-sm text-gray-600">690 = six-cent-quatre-vingt-dix</div>
+                                <div class="text-xs text-gray-500 mt-2">Suivi de "dix" → sans S</div>
+                              </div>
+                            `;
                           }
                         }}
                         data-answer="690-sans"
-                        className="bg-red-400 hover:bg-red-500 text-white px-2 py-1 rounded text-xs font-bold flex-1 transition-all"
+                        className="w-full bg-gradient-to-r from-red-400 to-red-500 hover:from-red-500 hover:to-red-600 text-white py-2 px-4 rounded-lg font-semibold transition-all transform hover:scale-105 shadow-md"
                       >
-                        ❌ Pas S
+                        🚫 Sans "S"
                       </button>
                     </div>
+                    
+                    <div data-container="690"></div>
                   </div>
                 </div>
 
