@@ -33,10 +33,12 @@ export default function EcrireNombresCE1Page() {
   const [completedDropZones, setCompletedDropZones] = useState<string[]>([]);
   const [showFinalConstruction, setShowFinalConstruction] = useState(false);
   
-  // États pour le support tactile mobile
+  // États pour le support tactile mobile et drag visuel
   const [touchDragElement, setTouchDragElement] = useState<any>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
+  const [dragPosition, setDragPosition] = useState({ x: 0, y: 0 });
+  const [draggedElementId, setDraggedElementId] = useState<string | null>(null);
 
   // Refs pour contrôler les vocaux
   const stopSignalRef = useRef(false);
@@ -92,6 +94,15 @@ export default function EcrireNombresCE1Page() {
     setIsAnimating(false);
     setHighlightedElement(null);
     
+    // Réinitialiser les états d'animation des exemples
+    setExampleAnimating(null);
+    setExampleStep(0);
+    
+    // Réinitialiser le signal d'arrêt après un court délai pour permettre de nouvelles animations
+    setTimeout(() => {
+      stopSignalRef.current = false;
+    }, 100);
+    
     // Nettoyer les illuminations de glisser-déposer
     document.querySelectorAll('[data-drag-part]').forEach(element => {
       (element as HTMLElement).style.boxShadow = '';
@@ -111,10 +122,18 @@ export default function EcrireNombresCE1Page() {
       element.remove();
     });
     
-    // Nettoyer les états tactiles
+    // Nettoyer les états tactiles et de drag visuel
     setTouchDragElement(null);
     setIsDragging(false);
+    setDraggedElementId(null);
     setDragOffset({ x: 0, y: 0 });
+    setDragPosition({ x: 0, y: 0 });
+    
+    // Supprimer l'élément de drag visuel s'il existe
+    const dragElement = document.getElementById('visual-drag-element');
+    if (dragElement) {
+      document.body.removeChild(dragElement);
+    }
     
     // Nettoyer les styles tactiles sur les éléments draggables
     document.querySelectorAll('[data-drag-part]').forEach(element => {
@@ -412,6 +431,18 @@ export default function EcrireNombresCE1Page() {
   const handleDragStart = (e: React.DragEvent, part: any) => {
     e.dataTransfer.setData('text/plain', JSON.stringify(part));
     e.dataTransfer.effectAllowed = 'move';
+    
+    // Créer un élément fantôme personnalisé
+    const dragImage = e.currentTarget.cloneNode(true) as HTMLElement;
+    dragImage.style.transform = 'rotate(5deg)';
+    dragImage.style.opacity = '0.8';
+    document.body.appendChild(dragImage);
+    e.dataTransfer.setDragImage(dragImage, 50, 25);
+    
+    // Nettoyer l'élément fantôme après un délai
+    setTimeout(() => {
+      document.body.removeChild(dragImage);
+    }, 0);
   };
 
   const handleDragOver = (e: React.DragEvent) => {
@@ -452,15 +483,31 @@ export default function EcrireNombresCE1Page() {
     
     setTouchDragElement(part);
     setIsDragging(true);
+    setDraggedElementId(`drag-part-${part.position}`);
     setDragOffset({
       x: touch.clientX - rect.left,
       y: touch.clientY - rect.top
     });
+    setDragPosition({
+      x: touch.clientX - dragOffset.x,
+      y: touch.clientY - dragOffset.y
+    });
     
-    // Ajouter style de glissement
-    element.style.transform = 'scale(1.1)';
-    element.style.opacity = '0.8';
-    element.style.zIndex = '1000';
+    // Créer un élément de drag visuel
+    const dragElement = element.cloneNode(true) as HTMLElement;
+    dragElement.id = 'visual-drag-element';
+    dragElement.style.position = 'fixed';
+    dragElement.style.pointerEvents = 'none';
+    dragElement.style.zIndex = '9999';
+    dragElement.style.transform = 'scale(1.1) rotate(5deg)';
+    dragElement.style.opacity = '0.9';
+    dragElement.style.left = `${touch.clientX - dragOffset.x}px`;
+    dragElement.style.top = `${touch.clientY - dragOffset.y}px`;
+    dragElement.style.boxShadow = '0 10px 30px rgba(0,0,0,0.3)';
+    document.body.appendChild(dragElement);
+    
+    // Masquer l'élément original pendant le drag
+    element.style.opacity = '0.3';
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
@@ -468,6 +515,13 @@ export default function EcrireNombresCE1Page() {
     
     e.preventDefault();
     const touch = e.touches[0];
+    
+    // Mettre à jour la position de l'élément de drag visuel
+    const dragElement = document.getElementById('visual-drag-element');
+    if (dragElement) {
+      dragElement.style.left = `${touch.clientX - dragOffset.x}px`;
+      dragElement.style.top = `${touch.clientY - dragOffset.y}px`;
+    }
     
     // Trouver l'élément sous le doigt
     const elementBelow = document.elementFromPoint(touch.clientX, touch.clientY);
@@ -496,16 +550,20 @@ export default function EcrireNombresCE1Page() {
     e.preventDefault();
     const touch = e.changedTouches[0];
     
+    // Supprimer l'élément de drag visuel
+    const dragElement = document.getElementById('visual-drag-element');
+    if (dragElement) {
+      document.body.removeChild(dragElement);
+    }
+    
+    // Restaurer l'élément original
+    const originalElement = e.currentTarget as HTMLElement;
+    originalElement.style.opacity = '';
+    
     // Trouver l'élément sous le doigt
     const elementBelow = document.elementFromPoint(touch.clientX, touch.clientY);
     const dropZone = elementBelow?.closest('[data-drop-zone]');
     const targetPosition = dropZone?.getAttribute('data-drop-zone');
-    
-    // Nettoyer les styles
-    const dragElement = e.currentTarget as HTMLElement;
-    dragElement.style.transform = '';
-    dragElement.style.opacity = '';
-    dragElement.style.zIndex = '';
     
     // Nettoyer les illuminations
     document.querySelectorAll('[data-drop-zone]').forEach(zone => {
@@ -537,7 +595,9 @@ export default function EcrireNombresCE1Page() {
     // Réinitialiser les États tactiles
     setTouchDragElement(null);
     setIsDragging(false);
+    setDraggedElementId(null);
     setDragOffset({ x: 0, y: 0 });
+    setDragPosition({ x: 0, y: 0 });
   };
 
   // Réinitialiser l'exercice de glisser-déposer
@@ -546,10 +606,18 @@ export default function EcrireNombresCE1Page() {
     setCompletedDropZones([]);
     setShowFinalConstruction(false);
     
-    // Réinitialiser les états tactiles
+    // Réinitialiser les états tactiles et de drag visuel
     setTouchDragElement(null);
     setIsDragging(false);
+    setDraggedElementId(null);
     setDragOffset({ x: 0, y: 0 });
+    setDragPosition({ x: 0, y: 0 });
+    
+    // Supprimer l'élément de drag visuel s'il existe encore
+    const dragElement = document.getElementById('visual-drag-element');
+    if (dragElement) {
+      document.body.removeChild(dragElement);
+    }
     
     // Nettoyer les illuminations de glisser-déposer
     document.querySelectorAll('[data-drag-part]').forEach(element => {
@@ -566,12 +634,9 @@ export default function EcrireNombresCE1Page() {
     });
   };
 
-  // Mode d'emploi vocal court pour le glisser-déposer avec illumination des zones
+  // Mode d'emploi vocal court pour le glisser-déposer sans donner la réponse
   const playDragDropInstructions = async (selectedNumber: string, numberData: {written: string, number: string}) => {
     stopSignalRef.current = false;
-    
-    // Décomposer le nombre pour savoir quelles zones illuminer
-    const parts = decomposeDragDropNumber(numberData.written, numberData.number);
     
     // Partie 1: Introduction
     await playAudio(`Parfait ! Tu as choisi ${selectedNumber}.`);
@@ -581,71 +646,27 @@ export default function EcrireNombresCE1Page() {
     await new Promise(resolve => setTimeout(resolve, 300));
     if (stopSignalRef.current) return;
     
-    // Partie 2: Expliquer la décomposition en illuminant les zones correspondantes
-    await playAudio(`On a décomposé le mot en couleurs.`);
+    // Partie 2: Expliquer la décomposition sans donner les réponses
+    await playAudio(`J'ai décomposé le mot en parties colorées pour toi.`);
     if (stopSignalRef.current) return;
     
-    // Attendre un peu avant d'illuminer les zones
+    await new Promise(resolve => setTimeout(resolve, 500));
+    if (stopSignalRef.current) return;
+    
+    await playAudio(`Regarde bien les couleurs : rouge pour les centaines, bleu pour les dizaines, et vert pour les unités.`);
+    if (stopSignalRef.current) return;
+    
+    await new Promise(resolve => setTimeout(resolve, 500));
+    if (stopSignalRef.current) return;
+    
+    // Instructions finales - laisser l'élève découvrir
+    await playAudio(`À toi de jouer ! Fais glisser chaque partie colorée vers la bonne colonne du tableau !`);
+    if (stopSignalRef.current) return;
+    
     await new Promise(resolve => setTimeout(resolve, 300));
     if (stopSignalRef.current) return;
     
-    // Illuminer chaque zone du tableau dans l'ordre logique (centaines → dizaines → unités)
-    const orderedPositions = ['centaines', 'dizaines', 'unites'];
-    const existingParts = parts.reduce((acc, part) => {
-      acc[part.position] = part;
-      return acc;
-    }, {} as {[key: string]: any});
-    
-    for (const position of orderedPositions) {
-      if (stopSignalRef.current) break;
-      
-      // Vérifier si cette position existe dans le nombre
-      if (existingParts[position]) {
-        // Illuminer la zone correspondante 200ms AVANT de parler
-        const zoneElement = document.querySelector(`[data-drop-zone="${position}"]`);
-        if (zoneElement) {
-          (zoneElement as HTMLElement).style.boxShadow = '0 0 25px rgba(255, 215, 0, 0.9)';
-          (zoneElement as HTMLElement).style.transform = 'scale(1.05)';
-          (zoneElement as HTMLElement).style.borderColor = '#fbbf24';
-          (zoneElement as HTMLElement).style.borderWidth = '3px';
-        }
-        
-        // Attendre un peu pour que l'utilisateur voie l'illumination AVANT la parole
-        await new Promise(resolve => setTimeout(resolve, 200));
-        if (stopSignalRef.current) break;
-        
-        // Parler de cette partie
-        let partDescription = '';
-        if (position === 'centaines') {
-          partDescription = `Les centaines vont ici`;
-        } else if (position === 'dizaines') {
-          partDescription = `Les dizaines vont ici`;
-        } else if (position === 'unites') {
-          partDescription = `Les unités vont ici`;
-        }
-        
-        await playAudio(partDescription);
-        if (stopSignalRef.current) break;
-        
-        // Attendre un peu avant de passer à la suivante
-        await new Promise(resolve => setTimeout(resolve, 400));
-        
-        // Désilluminer cette zone
-        if (zoneElement) {
-          (zoneElement as HTMLElement).style.boxShadow = '';
-          (zoneElement as HTMLElement).style.transform = '';
-          (zoneElement as HTMLElement).style.borderColor = '';
-          (zoneElement as HTMLElement).style.borderWidth = '';
-        }
-        
-        await new Promise(resolve => setTimeout(resolve, 200));
-      }
-    }
-    
-    // Partie 3: Instructions finales
-    if (!stopSignalRef.current) {
-      await playAudio(`Maintenant, fais glisser chaque partie colorée vers sa zone !`);
-    }
+    await playAudio(`Réfléchis bien : où va chaque couleur ?`);
   };
 
   const examples = [
@@ -675,6 +696,9 @@ export default function EcrireNombresCE1Page() {
   // 🎯 ANIMATION AVEC TABLEAU PÉDAGOGIQUE
   const animateTableExample = async (exampleType: string) => {
     if (isAnimating) return;
+    
+    // Réinitialiser le signal d'arrêt pour permettre la nouvelle animation
+    stopSignalRef.current = false;
     
     setExampleAnimating(exampleType);
     setExampleStep(0);
@@ -714,12 +738,26 @@ export default function EcrireNombresCE1Page() {
     if (!example) return;
     
     try {
-      // Étape 1: Affichage du mot complet
+      // Étape 1: Affichage du mot complet avec explication vocale
       setExampleStep(1);
-      await new Promise(resolve => setTimeout(resolve, 1000));
       
-      // Étape 2: Faire glisser les chiffres vers le tableau
+      // Introduction vocale spécifique à chaque exemple
+      if (exampleType === 'cent-vingt-trois') {
+        await playAudio("Regardons ensemble comment décomposer 'Cent vingt-trois' !");
+      } else if (exampleType === 'quatre-vingt-sept') {
+        await playAudio("Découvrons comment décomposer 'Quatre-vingt-sept' !");
+      } else if (exampleType === 'deux-cent-soixante-sept') {
+        await playAudio("Explorons ensemble comment décomposer 'Deux cent soixante-sept' !");
+      }
+      
+      if (stopSignalRef.current) return;
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      // Étape 2: Faire glisser les chiffres vers le tableau avec explication
       setExampleStep(2);
+      await playAudio("Regardons chaque chiffre se placer dans sa colonne !");
+      if (stopSignalRef.current) return;
+      
       for (let i = 0; i < example.digits.length; i++) {
         if (stopSignalRef.current) break;
           await new Promise(resolve => setTimeout(resolve, 600));
@@ -743,6 +781,8 @@ export default function EcrireNombresCE1Page() {
       
       // Étape 3: Illumination séquentielle EN COMMENÇANT PAR LES CENTAINES
       setExampleStep(3);
+      await playAudio("Parfait ! Analysons chaque position et sa valeur !");
+      if (stopSignalRef.current) return;
       
       // STRICTEMENT dans l'ordre : CENTAINES → DIZAINES → UNITÉS
       const orderedPositions = ['centaines', 'dizaines', 'unités'];
@@ -811,20 +851,24 @@ export default function EcrireNombresCE1Page() {
           await new Promise(resolve => setTimeout(resolve, 300));
           if (stopSignalRef.current) break;
           
-          // PUIS lecture vocale simple de la valeur positionnelle
+          // PUIS lecture vocale détaillée de la valeur positionnelle
           if (digit.value !== '0') {
             let positionalText = '';
             
             if (position === 'centaines') {
-              positionalText = `${digit.value} centaine${digit.value > '1' ? 's' : ''} ça fait ${digit.value}00`;
+              positionalText = `Dans la colonne des centaines, j'ai le chiffre ${digit.value}. Cela représente ${digit.value} centaine${digit.value > '1' ? 's' : ''}, ce qui vaut ${digit.value}00 !`;
             } else if (position === 'dizaines') {
-              positionalText = `${digit.value} dizaine${digit.value > '1' ? 's' : ''} ça fait ${digit.value}0`;
+              positionalText = `Dans la colonne des dizaines, j'ai le chiffre ${digit.value}. Cela représente ${digit.value} dizaine${digit.value > '1' ? 's' : ''}, ce qui vaut ${digit.value}0 !`;
             } else if (position === 'unités') {
-              positionalText = `${digit.value} unité${digit.value > '1' ? 's' : ''} ça fait ${digit.value}`;
+              positionalText = `Dans la colonne des unités, j'ai le chiffre ${digit.value}. Cela représente ${digit.value} unité${digit.value > '1' ? 's' : ''}, ce qui vaut ${digit.value} !`;
             }
             
-            // Lecture vocale simple
+            // Lecture vocale détaillée
             await playAudio(positionalText);
+            if (stopSignalRef.current) break;
+          } else if (digit.value === '0' && position === 'centaines') {
+            // Explication spéciale pour les centaines à zéro
+            await playAudio("Dans la colonne des centaines, j'ai zéro. Cela signifie qu'il n'y a pas de centaines dans ce nombre !");
             if (stopSignalRef.current) break;
           }
           
@@ -847,13 +891,31 @@ export default function EcrireNombresCE1Page() {
       // Étape 4: Construction finale du nombre complet
       setExampleStep(4);
       
-      // Explication de l'addition finale selon l'exemple
+      // Explication de l'addition finale selon l'exemple avec plus de détails
       if (exampleType === 'cent-vingt-trois') {
-        await playAudio("Et maintenant, on additionne tout : cent plus vingt plus trois égale cent vingt-trois !");
+        await playAudio("Excellent ! Faisons le grand calcul final !");
+        if (stopSignalRef.current) return;
+        await new Promise(resolve => setTimeout(resolve, 800));
+        await playAudio("J'additionne toutes les valeurs : cent plus vingt plus trois égale cent vingt-trois !");
+        if (stopSignalRef.current) return;
+        await new Promise(resolve => setTimeout(resolve, 500));
+        await playAudio("Le mot 'Cent vingt-trois' devient le nombre 1-2-3 ! Fantastique !");
       } else if (exampleType === 'quatre-vingt-sept') {
-        await playAudio("Et maintenant, on additionne tout : zéro plus quatre-vingt plus sept égale quatre-vingt-sept !");
+        await playAudio("Parfait ! C'est l'heure du grand calcul final !");
+        if (stopSignalRef.current) return;
+        await new Promise(resolve => setTimeout(resolve, 800));
+        await playAudio("J'additionne toutes les valeurs : zéro plus quatre-vingt plus sept égale quatre-vingt-sept !");
+        if (stopSignalRef.current) return;
+        await new Promise(resolve => setTimeout(resolve, 500));
+        await playAudio("Le mot 'Quatre-vingt-sept' devient le nombre 8-7 ! Bravo !");
       } else if (exampleType === 'deux-cent-soixante-sept') {
-        await playAudio("Et maintenant, on additionne tout : deux cent plus soixante plus sept égale deux cent soixante-sept !");
+        await playAudio("Magnifique ! Place au calcul final le plus impressionnant !");
+        if (stopSignalRef.current) return;
+        await new Promise(resolve => setTimeout(resolve, 800));
+        await playAudio("J'additionne toutes les valeurs : deux cent plus soixante plus sept égale deux cent soixante-sept !");
+        if (stopSignalRef.current) return;
+        await new Promise(resolve => setTimeout(resolve, 500));
+        await playAudio("Le mot 'Deux cent soixante-sept' devient le nombre 2-6-7 ! Incroyable !");
       }
       
       if (stopSignalRef.current) return;
@@ -861,10 +923,12 @@ export default function EcrireNombresCE1Page() {
     } catch (error) {
       console.error('Erreur animation tableau:', error);
     } finally {
-      // On garde l'animation affichée et on désactive juste isAnimating
+      // Réinitialiser tous les états d'animation après un délai
       setTimeout(() => {
         setIsAnimating(false);
-      }, 1000);
+        setExampleAnimating(null);
+        setExampleStep(0);
+      }, 2000); // Laisser 2 secondes pour voir le résultat final
     }
   };
 
@@ -1141,24 +1205,35 @@ export default function EcrireNombresCE1Page() {
                 🎯 Tableau de placement des nombres
               </h2>
               <p className="text-center text-gray-600 mb-6">
-                Regarde les chiffres glisser vers leurs colonnes et écoute la lecture !
+                Clique sur "Démarre" pour chaque exemple et écoute l'explication complète !
               </p>
               
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Exemple 1: Cent vingt-trois */}
                 <div 
                   id="cent-vingt-trois-container" 
-                  className={`bg-white rounded-lg p-4 shadow-lg cursor-pointer transition-all transform hover:scale-105 hover:shadow-xl pulse-interactive ${
+                  className={`bg-white rounded-lg p-4 shadow-lg transition-all transform hover:scale-105 hover:shadow-xl pulse-interactive ${
                     exampleAnimating === 'cent-vingt-trois' ? 'border-2 border-blue-400 bg-blue-50 scale-105 shadow-2xl' : 'border-2 border-blue-200 hover:border-blue-300'
                   }`}
-                  onClick={() => animateTableExample('cent-vingt-trois')}
                 >
                   <div className="text-center mb-4">
                     <h3 className="font-bold text-blue-700 mb-2">Cent vingt-trois</h3>
                     
+                    {/* Bouton Démarre */}
+                    <button
+                      onClick={() => animateTableExample('cent-vingt-trois')}
+                      disabled={isAnimating || isPlayingVocal}
+                      className={`mb-3 bg-gradient-to-r from-blue-500 to-purple-500 text-white px-4 py-2 rounded-lg font-bold text-sm shadow-lg hover:from-blue-600 hover:to-purple-600 transition-all transform hover:scale-105 pulse-interactive ${
+                        isAnimating || isPlayingVocal ? 'opacity-50 cursor-not-allowed' : ''
+                      }`}
+                    >
+                      <Play className="inline w-4 h-4 mr-1" />
+                      {exampleAnimating === 'cent-vingt-trois' ? '🎬 En cours...' : '🎯 Démarre'}
+                    </button>
+                    
                                         {/* Chiffres à placer - N'apparaissent qu'à l'étape 2 */}
                     {exampleStep >= 2 && exampleAnimating === 'cent-vingt-trois' && (
-                      <div className="flex justify-center gap-2 mb-4">
+                      <div className="flex justify-center gap-2 mb-4 mt-3">
                         <div id="cent-vingt-trois-digit-0" className="w-8 h-8 bg-red-200 rounded flex items-center justify-center font-bold text-red-800">1</div>
                         <div id="cent-vingt-trois-digit-1" className="w-8 h-8 bg-blue-200 rounded flex items-center justify-center font-bold text-blue-800">2</div>
                         <div id="cent-vingt-trois-digit-2" className="w-8 h-8 bg-green-200 rounded flex items-center justify-center font-bold text-green-800">3</div>
@@ -1205,17 +1280,28 @@ export default function EcrireNombresCE1Page() {
                 {/* Exemple 2: Quatre-vingt-sept */}
                 <div 
                   id="quatre-vingt-sept-container"
-                  className={`bg-white rounded-lg p-4 shadow-lg cursor-pointer transition-all transform hover:scale-105 hover:shadow-xl pulse-interactive ${
+                  className={`bg-white rounded-lg p-4 shadow-lg transition-all transform hover:scale-105 hover:shadow-xl pulse-interactive ${
                     exampleAnimating === 'quatre-vingt-sept' ? 'border-2 border-orange-400 bg-orange-50 scale-105 shadow-2xl' : 'border-2 border-orange-200 hover:border-orange-300'
                   }`}
-                  onClick={() => animateTableExample('quatre-vingt-sept')}
                 >
                   <div className="text-center mb-4">
                     <h3 className="font-bold text-orange-700 mb-2">Quatre-vingt-sept</h3>
                     
+                    {/* Bouton Démarre */}
+                    <button
+                      onClick={() => animateTableExample('quatre-vingt-sept')}
+                      disabled={isAnimating || isPlayingVocal}
+                      className={`mb-3 bg-gradient-to-r from-orange-500 to-red-500 text-white px-4 py-2 rounded-lg font-bold text-sm shadow-lg hover:from-orange-600 hover:to-red-600 transition-all transform hover:scale-105 pulse-interactive ${
+                        isAnimating || isPlayingVocal ? 'opacity-50 cursor-not-allowed' : ''
+                      }`}
+                    >
+                      <Play className="inline w-4 h-4 mr-1" />
+                      {exampleAnimating === 'quatre-vingt-sept' ? '🎬 En cours...' : '🎯 Démarre'}
+                    </button>
+                    
                                         {/* Chiffres à placer - N'apparaissent qu'à l'étape 2 */}
                     {exampleStep >= 2 && exampleAnimating === 'quatre-vingt-sept' && (
-                      <div className="flex justify-center gap-2 mb-4">
+                      <div className="flex justify-center gap-2 mb-4 mt-3">
                         <div id="quatre-vingt-sept-digit-0" className="w-8 h-8 bg-gray-200 rounded flex items-center justify-center font-bold text-gray-500">0</div>
                         <div id="quatre-vingt-sept-digit-1" className="w-8 h-8 bg-blue-200 rounded flex items-center justify-center font-bold text-blue-800">8</div>
                         <div id="quatre-vingt-sept-digit-2" className="w-8 h-8 bg-green-200 rounded flex items-center justify-center font-bold text-green-800">7</div>
@@ -1262,17 +1348,28 @@ export default function EcrireNombresCE1Page() {
                 {/* Exemple 3: Deux cent soixante-sept */}
                 <div 
                   id="deux-cent-soixante-sept-container"
-                  className={`bg-white rounded-lg p-4 shadow-lg cursor-pointer transition-all transform hover:scale-105 hover:shadow-xl pulse-interactive ${
+                  className={`bg-white rounded-lg p-4 shadow-lg transition-all transform hover:scale-105 hover:shadow-xl pulse-interactive ${
                     exampleAnimating === 'deux-cent-soixante-sept' ? 'border-2 border-purple-400 bg-purple-50 scale-105 shadow-2xl' : 'border-2 border-purple-200 hover:border-purple-300'
                   }`}
-                  onClick={() => animateTableExample('deux-cent-soixante-sept')}
                 >
                   <div className="text-center mb-4">
                     <h3 className="font-bold text-purple-700 mb-2">Deux cent soixante-sept</h3>
                     
+                    {/* Bouton Démarre */}
+                    <button
+                      onClick={() => animateTableExample('deux-cent-soixante-sept')}
+                      disabled={isAnimating || isPlayingVocal}
+                      className={`mb-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 rounded-lg font-bold text-sm shadow-lg hover:from-purple-600 hover:to-pink-600 transition-all transform hover:scale-105 pulse-interactive ${
+                        isAnimating || isPlayingVocal ? 'opacity-50 cursor-not-allowed' : ''
+                      }`}
+                    >
+                      <Play className="inline w-4 h-4 mr-1" />
+                      {exampleAnimating === 'deux-cent-soixante-sept' ? '🎬 En cours...' : '🎯 Démarre'}
+                    </button>
+                    
                                         {/* Chiffres à placer - N'apparaissent qu'à l'étape 2 */}
                     {exampleStep >= 2 && exampleAnimating === 'deux-cent-soixante-sept' && (
-                      <div className="flex justify-center gap-2 mb-4">
+                      <div className="flex justify-center gap-2 mb-4 mt-3">
                         <div id="deux-cent-soixante-sept-digit-0" className="w-8 h-8 bg-red-200 rounded flex items-center justify-center font-bold text-red-800">2</div>
                         <div id="deux-cent-soixante-sept-digit-1" className="w-8 h-8 bg-blue-200 rounded flex items-center justify-center font-bold text-blue-800">6</div>
                         <div id="deux-cent-soixante-sept-digit-2" className="w-8 h-8 bg-green-200 rounded flex items-center justify-center font-bold text-green-800">7</div>
@@ -1319,7 +1416,7 @@ export default function EcrireNombresCE1Page() {
               
               <div className="text-center mt-6">
                 <p className="text-sm text-blue-600 font-medium">
-                  🎯 Clique sur un exemple et regarde les chiffres se placer dans le bon ordre !
+                  🎯 Clique sur "Démarre" et regarde les chiffres se placer avec une explication vocale complète !
                 </p>
               </div>
             </div>
@@ -1384,7 +1481,7 @@ export default function EcrireNombresCE1Page() {
                     <h3 className="text-xl font-bold text-purple-700 mb-2">
                       {dragDropExercise.written}
                     </h3>
-                    <p className="text-gray-600">Fais glisser chaque partie vers sa colonne !</p>
+                    <p className="text-gray-600">Fais glisser chaque partie colorée du nombre vers la zone qui convient !</p>
                   </div>
                   
                   {/* Parties à glisser */}
