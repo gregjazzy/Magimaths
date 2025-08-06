@@ -28,6 +28,7 @@ export default function DecompositionNombresCE1Page() {
   // Refs pour contrôler les vocaux
   const stopSignalRef = useRef(false);
   const currentAudioRef = useRef<SpeechSynthesisUtterance | null>(null);
+  const currentAnimationIdRef = useRef<number>(0);
 
 
 
@@ -35,6 +36,35 @@ export default function DecompositionNombresCE1Page() {
   useEffect(() => {
     stopAllVocalsAndAnimations();
   }, [showExercises]);
+
+  // Fonction pour nettoyer tous les éléments d'animation
+  const cleanupAnimation = () => {
+    // Nettoyer le conteneur du nombre
+    const numberContainer = document.querySelector('.flex.space-x-1.sm\\:space-x-2');
+    if (numberContainer) {
+      numberContainer.classList.remove('animate-pulse', 'bg-yellow-400', 'rounded-lg', 'p-2', 'scale-110');
+    }
+    
+    // Nettoyer tous les chiffres individuels
+    for (let i = 0; i < 5; i++) {
+      const digit = document.getElementById(`demo-digit-${i}`);
+      if (digit) {
+        digit.classList.remove('animate-bounce', 'bg-red-300', 'bg-blue-300', 'bg-green-300', 'scale-125', 'ring-2', 'ring-red-500', 'ring-blue-500', 'ring-green-500');
+      }
+    }
+    
+    // Nettoyer le cadre du tableau
+    const decompositionTable = document.getElementById('decomposition-table');
+    if (decompositionTable) {
+      decompositionTable.classList.remove('animate-pulse', 'border-yellow-400', 'border-4', 'shadow-2xl', 'scale-105');
+    }
+    
+    // Nettoyer la conclusion
+    const verificationBox = document.getElementById('verification-box');
+    if (verificationBox) {
+      verificationBox.classList.remove('animate-pulse', 'bg-green-200', 'border-4', 'border-green-500', 'shadow-2xl', 'scale-105');
+    }
+  };
 
   // Fonction pour arrêter tous les vocaux et animations
   const stopAllVocalsAndAnimations = () => {
@@ -46,6 +76,8 @@ export default function DecompositionNombresCE1Page() {
     setIsPlayingVocal(false);
     setIsAnimating(false);
     setHighlightedElement(null);
+    // Nettoyer aussi les résidus visuels d'animations
+    cleanupAnimation();
   };
 
   // Fonction pour scroller vers un élément
@@ -315,121 +347,101 @@ export default function DecompositionNombresCE1Page() {
   };
 
   const animateDecomposition = async () => {
+    cleanupAnimation();
     setIsAnimating(true);
     
-    // Décomposer le nombre
-    const decomposed = decomposeNumber(selectedNumber);
-    
-    console.log('=== ENQUÊTE DÉCOMPOSITION ===');
-    console.log('Nombre sélectionné:', selectedNumber);
-    console.log('Type:', typeof selectedNumber);
-    console.log('Décomposition:', decomposed);
-    console.log('Chiffres du nombre:', selectedNumber.split(''));
-    
-    // Vérifier quels éléments existent vraiment
-    const allDigitElements = [];
-    for (let i = 0; i < 5; i++) {
-      const element = document.getElementById(`demo-digit-${i}`);
-      if (element) {
-        allDigitElements.push({
-          id: `demo-digit-${i}`,
-          text: element.textContent,
-          exists: true
-        });
-      } else {
-        allDigitElements.push({
-          id: `demo-digit-${i}`,
-          text: null,
-          exists: false
-        });
-      }
+    // ÉTAPE 1: Illuminer le nombre entier
+    const numberContainer = document.querySelector('.flex.space-x-1.sm\\:space-x-2');
+    if (numberContainer) {
+      numberContainer.classList.add('animate-pulse', 'bg-yellow-400', 'rounded-lg', 'p-2', 'scale-110');
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      numberContainer.classList.remove('animate-pulse', 'bg-yellow-400', 'rounded-lg', 'p-2', 'scale-110');
     }
-    console.log('Éléments demo-digit trouvés:', allDigitElements);
     
-    // ÉTAPE 1: Animer les CENTAINES
-    // Si le nombre a des centaines (>=100), illuminer le premier chiffre
-    if (parseInt(selectedNumber) >= 100) {
+    await new Promise(resolve => setTimeout(resolve, 300));
+    
+    // ÉTAPE 2: Animation des chiffres vers leurs colonnes
+    const digits = selectedNumber.split('');
+    
+    // Pour un nombre à 3 chiffres comme 234
+    if (digits.length >= 3) {
+      // Chiffre des centaines (premier chiffre)
       const firstDigit = document.getElementById('demo-digit-0');
       if (firstDigit) {
-        firstDigit.classList.add('animate-pulse', 'bg-yellow-400', 'text-black', 'rounded-lg', 'border-4', 'border-orange-500', 'shadow-2xl', 'scale-125');
-        await new Promise(resolve => setTimeout(resolve, 1200));
-        firstDigit.classList.remove('animate-pulse', 'bg-yellow-400', 'text-black', 'rounded-lg', 'border-4', 'border-orange-500', 'shadow-2xl', 'scale-125');
+        firstDigit.classList.add('animate-bounce', 'bg-red-300', 'scale-125', 'ring-2', 'ring-red-500');
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        firstDigit.classList.remove('animate-bounce', 'bg-red-300', 'scale-125', 'ring-2', 'ring-red-500');
+      }
+      
+      await new Promise(resolve => setTimeout(resolve, 200));
+      
+      // Chiffre des dizaines (deuxième chiffre)
+      const secondDigit = document.getElementById('demo-digit-1');
+      if (secondDigit) {
+        secondDigit.classList.add('animate-bounce', 'bg-blue-300', 'scale-125', 'ring-2', 'ring-blue-500');
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        secondDigit.classList.remove('animate-bounce', 'bg-blue-300', 'scale-125', 'ring-2', 'ring-blue-500');
+      }
+      
+      await new Promise(resolve => setTimeout(resolve, 200));
+      
+      // Chiffre des unités (troisième chiffre)
+      const thirdDigit = document.getElementById('demo-digit-2');
+      if (thirdDigit) {
+        thirdDigit.classList.add('animate-bounce', 'bg-green-300', 'scale-125', 'ring-2', 'ring-green-500');
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        thirdDigit.classList.remove('animate-bounce', 'bg-green-300', 'scale-125', 'ring-2', 'ring-green-500');
       }
     }
-    
-    // Illuminer la case centaines SEULEMENT si ce n'est pas 0
-    const centainesBox = document.getElementById('centaines-box');
-    if (centainesBox && decomposed.centaines !== '0') {
-      centainesBox.classList.add('animate-pulse', 'bg-red-400', 'border-4', 'border-red-600', 'shadow-2xl', 'scale-110', 'text-white');
-      await new Promise(resolve => setTimeout(resolve, 1200));
-      centainesBox.classList.remove('animate-pulse', 'bg-red-400', 'border-4', 'border-red-600', 'shadow-2xl', 'scale-110', 'text-white');
+    // Pour un nombre à 2 chiffres comme 49
+    else if (digits.length >= 2) {
+      // Chiffre des dizaines (premier chiffre)
+      const firstDigit = document.getElementById('demo-digit-0');
+      if (firstDigit) {
+        firstDigit.classList.add('animate-bounce', 'bg-blue-300', 'scale-125', 'ring-2', 'ring-blue-500');
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        firstDigit.classList.remove('animate-bounce', 'bg-blue-300', 'scale-125', 'ring-2', 'ring-blue-500');
+      }
+      
+      await new Promise(resolve => setTimeout(resolve, 200));
+      
+      // Chiffre des unités (deuxième chiffre)
+      const secondDigit = document.getElementById('demo-digit-1');
+      if (secondDigit) {
+        secondDigit.classList.add('animate-bounce', 'bg-green-300', 'scale-125', 'ring-2', 'ring-green-500');
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        secondDigit.classList.remove('animate-bounce', 'bg-green-300', 'scale-125', 'ring-2', 'ring-green-500');
+      }
+    }
+    // Pour un nombre à 1 chiffre
+    else {
+      // Chiffre des unités (seul chiffre)
+      const firstDigit = document.getElementById('demo-digit-0');
+      if (firstDigit) {
+        firstDigit.classList.add('animate-bounce', 'bg-green-300', 'scale-125', 'ring-2', 'ring-green-500');
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        firstDigit.classList.remove('animate-bounce', 'bg-green-300', 'scale-125', 'ring-2', 'ring-green-500');
+      }
     }
     
     await new Promise(resolve => setTimeout(resolve, 500));
     
-    // ÉTAPE 2: Animer les DIZAINES
-    // Trouver quel chiffre correspond aux dizaines
-    let dizainesDigitId = null;
-    if (parseInt(selectedNumber) >= 100) {
-      dizainesDigitId = 'demo-digit-1'; // 2ème chiffre pour nombres à 3 chiffres
-    } else if (parseInt(selectedNumber) >= 10) {
-      dizainesDigitId = 'demo-digit-0'; // 1er chiffre pour nombres à 2 chiffres
+    // ÉTAPE 3: Illuminer le cadre du tableau
+    const decompositionTable = document.getElementById('decomposition-table');
+    if (decompositionTable) {
+      decompositionTable.classList.add('animate-pulse', 'border-yellow-400', 'border-4', 'shadow-2xl', 'scale-105');
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      decompositionTable.classList.remove('animate-pulse', 'border-yellow-400', 'border-4', 'shadow-2xl', 'scale-105');
     }
     
-    if (dizainesDigitId && decomposed.dizaines !== '0') {
-      const dizainesDigit = document.getElementById(dizainesDigitId);
-      if (dizainesDigit) {
-        dizainesDigit.classList.add('animate-pulse', 'bg-yellow-400', 'text-black', 'rounded-lg', 'border-4', 'border-orange-500', 'shadow-2xl', 'scale-125');
-        await new Promise(resolve => setTimeout(resolve, 1200));
-        dizainesDigit.classList.remove('animate-pulse', 'bg-yellow-400', 'text-black', 'rounded-lg', 'border-4', 'border-orange-500', 'shadow-2xl', 'scale-125');
-      }
-    }
+    await new Promise(resolve => setTimeout(resolve, 300));
     
-    // Illuminer la case dizaines SEULEMENT si ce n'est pas 0
-    const dizainesBox = document.getElementById('dizaines-box');
-    if (dizainesBox && decomposed.dizaines !== '0') {
-      dizainesBox.classList.add('animate-pulse', 'bg-blue-500', 'border-4', 'border-blue-700', 'shadow-2xl', 'scale-110', 'text-white');
-      await new Promise(resolve => setTimeout(resolve, 1200));
-      dizainesBox.classList.remove('animate-pulse', 'bg-blue-500', 'border-4', 'border-blue-700', 'shadow-2xl', 'scale-110', 'text-white');
-    }
-    
-    await new Promise(resolve => setTimeout(resolve, 500));
-    
-    // ÉTAPE 3: Animer les UNITÉS
-    // Trouver quel chiffre correspond aux unités (toujours le dernier)
-    let unitesDigitId = null;
-    if (parseInt(selectedNumber) >= 100) {
-      unitesDigitId = 'demo-digit-2'; // 3ème chiffre pour nombres à 3 chiffres
-    } else if (parseInt(selectedNumber) >= 10) {
-      unitesDigitId = 'demo-digit-1'; // 2ème chiffre pour nombres à 2 chiffres
-    } else {
-      unitesDigitId = 'demo-digit-0'; // 1er chiffre pour nombres à 1 chiffre
-    }
-    
-    if (unitesDigitId) {
-      const unitesDigit = document.getElementById(unitesDigitId);
-      if (unitesDigit) {
-        unitesDigit.classList.add('animate-pulse', 'bg-yellow-400', 'text-black', 'rounded-lg', 'border-4', 'border-orange-500', 'shadow-2xl', 'scale-125');
-        await new Promise(resolve => setTimeout(resolve, 1200));
-        unitesDigit.classList.remove('animate-pulse', 'bg-yellow-400', 'text-black', 'rounded-lg', 'border-4', 'border-orange-500', 'shadow-2xl', 'scale-125');
-      }
-    }
-    
-    // Illuminer la case unités (toujours présente)
-    const unitesBox = document.getElementById('unites-box');
-    if (unitesBox) {
-      unitesBox.classList.add('animate-pulse', 'bg-green-500', 'border-4', 'border-green-700', 'shadow-2xl', 'scale-110', 'text-white');
-      await new Promise(resolve => setTimeout(resolve, 1200));
-      unitesBox.classList.remove('animate-pulse', 'bg-green-500', 'border-4', 'border-green-700', 'shadow-2xl', 'scale-110', 'text-white');
-    }
-    
-    // ÉTAPE FINALE: Mettre en surbrillance la vérification
-    await new Promise(resolve => setTimeout(resolve, 500));
+    // ÉTAPE 4: Illuminer la conclusion
     const verificationBox = document.getElementById('verification-box');
     if (verificationBox) {
-      verificationBox.classList.add('animate-pulse', 'bg-yellow-200', 'border-4', 'border-yellow-500', 'shadow-2xl', 'scale-105');
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      verificationBox.classList.remove('animate-pulse', 'bg-yellow-200', 'border-4', 'border-yellow-500', 'shadow-2xl', 'scale-105');
+      verificationBox.classList.add('animate-pulse', 'bg-green-200', 'border-4', 'border-green-500', 'shadow-2xl', 'scale-105');
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      verificationBox.classList.remove('animate-pulse', 'bg-green-200', 'border-4', 'border-green-500', 'shadow-2xl', 'scale-105');
     }
     
     setIsAnimating(false);
@@ -718,12 +730,8 @@ export default function DecompositionNombresCE1Page() {
                     key={example.number}
                     onClick={() => {
                       setSelectedNumber(example.number);
-                      // Lancer l'animation après un petit délai pour laisser le DOM se mettre à jour
-                      setTimeout(() => {
-                        animateDecomposition();
-                      }, 100);
+                      animateDecomposition();
                     }}
-                    disabled={isAnimating}
                     className={`p-2 sm:p-4 rounded-lg font-bold text-sm sm:text-xl transition-all disabled:opacity-50 min-h-[2.5rem] sm:min-h-[3rem] ${
                       selectedNumber === example.number
                         ? 'bg-purple-500 text-white shadow-lg scale-105'
@@ -759,50 +767,57 @@ export default function DecompositionNombresCE1Page() {
                 </div>
               </div>
 
-              {/* Flèches et décomposition */}
-              <div className="grid grid-cols-3 gap-1 sm:gap-2">
-                {/* Centaines */}
-                <div className="text-center">
-                  <div className="text-sm sm:text-lg mb-1">⬇️</div>
-                  <div className="bg-red-100 rounded-lg p-1 sm:p-2 transition-all duration-300" id="centaines-box">
-                    <div className="text-lg sm:text-xl font-bold text-red-600 mb-1">
-                      {decomposeNumber(selectedNumber).centaines}
-                    </div>
-                    <div className="font-bold text-red-800 text-xs">Centaines</div>
-                    <div className="text-xs text-red-700 hidden sm:block">
-                      {decomposeNumber(selectedNumber).centaines} × 100 = {parseInt(decomposeNumber(selectedNumber).centaines) * 100}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Dizaines */}
-                <div className="text-center">
-                  <div className="text-sm sm:text-lg mb-1">⬇️</div>
-                  <div className="bg-blue-100 rounded-lg p-1 sm:p-2 transition-all duration-300" id="dizaines-box">
-                    <div className="text-lg sm:text-xl font-bold text-blue-600 mb-1">
-                      {decomposeNumber(selectedNumber).dizaines}
-                    </div>
-                    <div className="font-bold text-blue-800 text-xs">Dizaines</div>
-                    <div className="text-xs text-blue-700 hidden sm:block">
-                      {decomposeNumber(selectedNumber).dizaines} × 10 = {parseInt(decomposeNumber(selectedNumber).dizaines) * 10}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Unités */}
-                <div className="text-center">
-                  <div className="text-sm sm:text-lg mb-1">⬇️</div>
-                  <div className="bg-green-100 rounded-lg p-1 sm:p-2 transition-all duration-300" id="unites-box">
-                    <div className="text-lg sm:text-xl font-bold text-green-600 mb-1">
-                      {decomposeNumber(selectedNumber).unites}
-                    </div>
-                    <div className="font-bold text-green-800 text-xs">Unités</div>
-                    <div className="text-xs text-green-700 hidden sm:block">
-                      {decomposeNumber(selectedNumber).unites} × 1 = {parseInt(decomposeNumber(selectedNumber).unites)}
-                    </div>
-                  </div>
-                </div>
+              {/* Flèches */}
+              <div className="flex justify-center space-x-8 sm:space-x-16 mb-2">
+                <div className="text-sm sm:text-lg">⬇️</div>
+                <div className="text-sm sm:text-lg">⬇️</div>
+                <div className="text-sm sm:text-lg">⬇️</div>
               </div>
+
+              {/* Vrai tableau avec bordures */}
+              <table id="decomposition-table" className="border-2 border-gray-400 mx-auto bg-white transition-all duration-300">
+                <thead>
+                  <tr>
+                    <th className="border-2 border-gray-400 px-4 py-2 bg-red-50 font-bold text-red-600 text-xs sm:text-sm">
+                      Centaines
+                    </th>
+                    <th className="border-2 border-gray-400 px-4 py-2 bg-blue-50 font-bold text-blue-600 text-xs sm:text-sm">
+                      Dizaines
+                    </th>
+                    <th className="border-2 border-gray-400 px-4 py-2 bg-green-50 font-bold text-green-600 text-xs sm:text-sm">
+                      Unités
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td className="border-2 border-gray-400 px-4 py-3 text-center bg-red-100">
+                      <div className="text-lg sm:text-xl font-bold text-red-600 mb-1">
+                        {decomposeNumber(selectedNumber).centaines}
+                      </div>
+                      <div className="text-xs text-red-700 hidden sm:block">
+                        {decomposeNumber(selectedNumber).centaines} × 100 = {parseInt(decomposeNumber(selectedNumber).centaines) * 100}
+                      </div>
+                    </td>
+                    <td className="border-2 border-gray-400 px-4 py-3 text-center bg-blue-100">
+                      <div className="text-lg sm:text-xl font-bold text-blue-600 mb-1">
+                        {decomposeNumber(selectedNumber).dizaines}
+                      </div>
+                      <div className="text-xs text-blue-700 hidden sm:block">
+                        {decomposeNumber(selectedNumber).dizaines} × 10 = {parseInt(decomposeNumber(selectedNumber).dizaines) * 10}
+                      </div>
+                    </td>
+                    <td className="border-2 border-gray-400 px-4 py-3 text-center bg-green-100">
+                      <div className="text-lg sm:text-xl font-bold text-green-600 mb-1">
+                        {decomposeNumber(selectedNumber).unites}
+                      </div>
+                      <div className="text-xs text-green-700 hidden sm:block">
+                        {decomposeNumber(selectedNumber).unites} × 1 = {parseInt(decomposeNumber(selectedNumber).unites)}
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
 
               {/* Vérification */}
               <div id="verification-box" className="mt-2 sm:mt-4 bg-yellow-50 rounded-lg p-2 sm:p-3 text-center transition-all duration-300">
