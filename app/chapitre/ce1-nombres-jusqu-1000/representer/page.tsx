@@ -788,7 +788,7 @@ export default function RepresenterNombresCE1Page() {
             </div>
 
             {/* Question */}
-            <div className="bg-white rounded-xl p-3 sm:p-6 md:p-8 shadow-lg">
+            <div className="bg-white rounded-xl p-3 sm:p-6 md:p-8 shadow-lg overflow-visible">
               <h3 className="text-base sm:text-lg md:text-xl font-bold mb-3 sm:mb-4 md:mb-6 text-center text-gray-900">
                 🎯 Place le nombre {exercises[currentExercise].number} sur la droite
               </h3>
@@ -800,43 +800,41 @@ export default function RepresenterNombresCE1Page() {
                 <div className="text-sm sm:text-base md:text-lg text-yellow-700 mb-1 sm:mb-2">
                   Clique sur la droite <span className="hidden sm:inline">pour placer ce nombre !</span>
                 </div>
-                <div className="text-xs sm:text-xs md:text-sm text-yellow-600 hidden sm:block">
+                <div className="text-xs sm:text-xs md:text-sm text-yellow-600">
                   Puis utilise les boutons -1 et +1 pour ajuster précisément 🎯
                 </div>
               </div>
 
-              {/* Droite numérique interactive */}
+              {/* Droite numérique avec boutons au-dessus des extrémités */}
               <div className="relative mb-3 sm:mb-6 md:mb-8 px-1 sm:px-4 md:px-16 mt-12 sm:mt-16 md:mt-24">
-                {/* Boutons d'ajustement */}
-                <div id="adjustment-buttons" className={highlightedElement === 'adjustment-buttons' ? 'ring-4 ring-yellow-400 bg-yellow-200 scale-105 animate-pulse rounded-lg' : ''}>
+                {/* Boutons positionnés au-dessus des extrémités */}
                 {userPosition !== null && (
                   <>
-                    {/* Bouton -1 à gauche */}
+                    {/* Bouton -1 au-dessus de l'extrémité gauche */}
                     <button
                       onClick={() => setUserPosition(Math.max(
                         ranges[exercises[currentExercise].range as keyof typeof ranges].min,
                         userPosition - 1
                       ))}
-                      className="absolute -left-2 sm:-left-1 md:left-0 top-1/2 transform -translate-y-1/2 bg-orange-500 text-white px-2 sm:px-2 md:px-3 py-1 sm:py-1 md:py-2 rounded-lg font-bold hover:bg-orange-600 transition-colors text-xs sm:text-sm md:text-lg shadow-lg z-10 min-h-[2rem] sm:min-h-[2.5rem]"
+                      className="absolute left-0 -top-12 sm:-top-14 md:-top-16 bg-orange-500 text-white px-2 sm:px-3 md:px-4 py-1 sm:py-2 md:py-3 rounded-lg font-bold hover:bg-orange-600 transition-colors text-xs sm:text-sm md:text-lg shadow-lg z-10"
                     >
                       -1
                     </button>
                     
-                    {/* Bouton +1 à droite */}
+                    {/* Bouton +1 au-dessus de l'extrémité droite */}
                     <button
                       onClick={() => setUserPosition(Math.min(
                         ranges[exercises[currentExercise].range as keyof typeof ranges].max,
                         userPosition + 1
                       ))}
-                      className="absolute -right-2 sm:-right-1 md:right-0 top-1/2 transform -translate-y-1/2 bg-orange-500 text-white px-2 sm:px-2 md:px-3 py-1 sm:py-1 md:py-2 rounded-lg font-bold hover:bg-orange-600 transition-colors text-xs sm:text-sm md:text-lg shadow-lg z-10 min-h-[2rem] sm:min-h-[2.5rem]"
+                      className="absolute right-0 -top-12 sm:-top-14 md:-top-16 bg-orange-500 text-white px-2 sm:px-3 md:px-4 py-1 sm:py-2 md:py-3 rounded-lg font-bold hover:bg-orange-600 transition-colors text-xs sm:text-sm md:text-lg shadow-lg z-10"
                     >
                       +1
                     </button>
-                    
-
                   </>
                 )}
-                </div>
+
+                <div id="adjustment-buttons" className={`relative ${highlightedElement === 'adjustment-buttons' ? 'ring-4 ring-yellow-400 bg-yellow-200 scale-105 animate-pulse rounded-lg' : ''}`}>
                 
                 <div 
                   id="exercise-number-line"
@@ -893,10 +891,8 @@ export default function RepresenterNombresCE1Page() {
                     </div>
                   )}
                 </div>
+                </div>
               </div>
-
-
-              
 
               
               {/* Résultat */}
