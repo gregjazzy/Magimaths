@@ -171,7 +171,7 @@ export default function OrdonnerComparerCE1() {
       }
       
       // Introduction
-      await playAudio(`Ahoy matelot ! Je vais t'expliquer comment comparer ${simulatorNum1} et ${simulatorNum2}. Suivons ma méthode étape par étape !`);
+      await playAudio(`Salut ! Je vais t'expliquer comment comparer ${simulatorNum1} et ${simulatorNum2}. Suivons ma méthode étape par étape !`);
       await new Promise(resolve => setTimeout(resolve, 500));
       
       // Étape 1 : Compter les chiffres
@@ -191,7 +191,7 @@ export default function OrdonnerComparerCE1() {
       
       if (num1Digits !== num2Digits) {
         const bigger = num1Digits > num2Digits ? simulatorNum1 : simulatorNum2;
-        await playAudio(`Parfait ! ${bigger} a plus de chiffres, donc ${bigger} est plus grand ! C'est fini, mille sabords !`);
+        await playAudio(`Parfait ! ${bigger} a plus de chiffres, donc ${bigger} est plus grand ! C'est fini !`);
       } else {
         await playAudio(`Les deux nombres ont le même nombre de chiffres. Passons à l'étape 2 !`);
         
@@ -333,7 +333,7 @@ export default function OrdonnerComparerCE1() {
         `Conclusion : ${simulatorNum1} est plus petit que ${simulatorNum2} !` :
         `Conclusion : ${simulatorNum1} et ${simulatorNum2} sont exactement égaux !`;
       
-      await playAudio(`${finalMessage} Tu as bien suivi ma méthode, bravo matelot ! Tu peux essayer avec d'autres nombres maintenant !`);
+      await playAudio(`${finalMessage} Tu as bien suivi ma méthode, bravo ! Tu peux essayer avec d'autres nombres maintenant !`);
       
     } catch (error) {
       console.error('Erreur lors de l\'explication vocale:', error);
@@ -346,10 +346,10 @@ export default function OrdonnerComparerCE1() {
   const stopSignalRef = useRef(false);
   const currentAudioRef = useRef<SpeechSynthesisUtterance | null>(null);
 
-  // Expressions de pirate aléatoires pour chaque exercice
-  const pirateExpressions = [
-    "Mille sabords", "Tonnerre de Brest", "Sacré matelot", "Par Neptune", "Sang de pirate",
-    "Mille millions de mille sabords", "Ventrebleu", "Sapristi", "Morbleu", "Fichtre"
+  // Expressions d'encouragement aléatoires pour chaque exercice
+  const minecraftExpressions = [
+    "Super génial", "Fantastique", "Excellent travail", "Parfait", "Bravo champion",
+    "Incroyable", "Formidable", "Magnifique", "Extraordinaire", "Impressionnant"
   ];
 
   // Compliments aléatoires pour les bonnes réponses
@@ -463,7 +463,7 @@ export default function OrdonnerComparerCE1() {
       setSamSizeExpanded(true);
       await wait(500);
       
-      await playAudio("Ahoy moussaillons ! Sam le pirate va vous apprendre la méthode secrète pour comparer les nombres jusqu'à 1000 !");
+      await playAudio("Salut les amis ! Je vais vous apprendre la méthode géniale pour comparer les nombres jusqu'à 1000 !");
       await wait(1000);
       
       // ÉTAPE 1: Compter les chiffres
@@ -762,7 +762,7 @@ export default function OrdonnerComparerCE1() {
     
     try {
       // Étape 1: Saluer et présenter les exercices
-      await playAudio("Salut matelot ! Je vais t'expliquer comment utiliser les exercices. C'est parti !");
+      await playAudio("Salut ! Je vais t'expliquer comment utiliser les exercices. C'est parti !");
       if (stopSignalRef.current) return;
       
       await wait(800);
@@ -833,7 +833,7 @@ export default function OrdonnerComparerCE1() {
       // Étape 9: Conclure
       setTutorialStep(8);
       setHighlightedElement('');
-      await playAudio("Et voilà ! Tu sais maintenant comment utiliser les exercices. À toi de jouer, matelot !");
+      await playAudio("Et voilà ! Tu sais maintenant comment utiliser les exercices. À toi de jouer !");
       
       await wait(1000);
       
@@ -856,7 +856,7 @@ export default function OrdonnerComparerCE1() {
     setSamSizeExpanded(true);
     
     // 1. Sam présente le chapitre
-    await playAudio("Salut matelot ! Je suis Sam le pirate et aujourd'hui je vais te présenter ce chapitre sur la comparaison des nombres jusqu'à 1000 !");
+    await playAudio("Salut ! Aujourd'hui je vais te présenter ce chapitre sur la comparaison des nombres jusqu'à 1000 !");
       if (stopSignalRef.current) return;
       
     // 2. Scroll vers la méthode + illuminer le bouton "Voir l'animation automatique"
@@ -913,7 +913,7 @@ export default function OrdonnerComparerCE1() {
     await wait(1000);
     setHighlightedElement('');
       setSamSizeExpanded(false);
-    await playAudio("Amuse-toi bien, matelot !");
+    await playAudio("Amuse-toi bien !");
     if (stopSignalRef.current) return;
     
     await wait(1000);
@@ -1013,9 +1013,9 @@ export default function OrdonnerComparerCE1() {
     setIsPlayingVocal(true);
     
     try {
-      // Expression de pirate personnalisée
-      const pirateExpression = pirateExpressions[currentExercise] || "Mille sabords";
-      await playAudio(pirateExpression + " !");
+      // Expression d'encouragement personnalisée
+          const minecraftExpression = minecraftExpressions[currentExercise] || "Super génial";
+    await playAudio(minecraftExpression + " !");
       if (stopSignalRef.current) return;
       
       await wait(800);
@@ -1521,11 +1521,11 @@ export default function OrdonnerComparerCE1() {
     setShowExercisesList(false);
   };
 
-  // JSX pour l'introduction de Sam le Pirate dans les exercices
+  // JSX pour l'introduction du personnage Minecraft dans les exercices
   const SamPirateIntroJSX = () => (
     <div className="flex justify-center p-1 mt-2">
       <div className="flex items-center gap-2">
-        {/* Image de Sam le Pirate */}
+        {/* Image du personnage Minecraft */}
         <div className={`relative flex-shrink-0 rounded-full bg-gradient-to-br from-blue-100 to-cyan-100 border-2 border-blue-200 shadow-md transition-all duration-300 ${
           isPlayingVocal
             ? 'w-20 sm:w-32 h-20 sm:h-32 scale-110 sm:scale-150' // When speaking - agrandi mobile
@@ -1534,8 +1534,8 @@ export default function OrdonnerComparerCE1() {
               : 'w-16 sm:w-20 h-16 sm:h-20' // Initial - agrandi mobile
         }`}>
             <img 
-              src="/image/pirate-small.png" 
-              alt="Sam le Pirate" 
+              src="/image/Minecraftstyle.png" 
+              alt="Personnage Minecraft" 
               className="w-full h-full rounded-full object-cover"
             />
           {/* Haut-parleur animé quand il parle */}
@@ -1583,7 +1583,7 @@ export default function OrdonnerComparerCE1() {
           {isPlayingVocal 
             ? <>🎤 <span className="animate-bounce">Sam parle...</span></> 
             : hasStarted
-              ? <>📖 <span className="animate-bounce">Mode d'emploi</span> 💡</>
+                              ? <>🎮 <span className="animate-bounce">Commencer</span> 💡</>
               : pirateIntroStarted
                 ? <>🔄 <span>Recommencer</span></>
                 : <>🚀 <span className="animate-bounce">COMMENCER</span> ✨</>
@@ -1650,8 +1650,8 @@ export default function OrdonnerComparerCE1() {
             {/* Image de Sam */}
             <div className="w-8 h-8 rounded-full overflow-hidden border-2 border-white/50">
               <img
-                src="/image/pirate-small.png"
-                alt="Sam le Pirate"
+                src="/image/Minecraftstyle.png"
+                alt="Personnage Minecraft"
                 className="w-full h-full object-cover"
               />
             </div>
@@ -1732,9 +1732,9 @@ export default function OrdonnerComparerCE1() {
         {!showExercises ? (
           /* COURS - MOBILE OPTIMISÉ */
           <div className="space-y-4 sm:space-y-8">
-            {/* Image de Sam le Pirate avec bouton DÉMARRER */}
+            {/* Image du personnage Minecraft avec bouton DÉMARRER */}
             <div className="flex items-center justify-center gap-3 sm:gap-4 p-4 sm:p-4 mb-6 sm:mb-8">
-              {/* Image de Sam le Pirate */}
+              {/* Image du personnage Minecraft */}
             <div className={`relative transition-all duration-500 border-2 border-blue-300 rounded-full bg-gradient-to-br from-blue-100 to-cyan-100 ${
                 isPlayingVocal
                     ? 'w-14 sm:w-24 h-14 sm:h-24' // When speaking - plus petit sur mobile
@@ -1743,8 +1743,8 @@ export default function OrdonnerComparerCE1() {
                       : 'w-12 sm:w-20 h-12 sm:h-20' // Initial - plus petit sur mobile
                 }`}>
                   <img 
-                    src="/image/pirate-small.png" 
-                    alt="Sam le Pirate" 
+                    src="/image/Minecraftstyle.png" 
+                    alt="Personnage Minecraft" 
                     className="w-full h-full rounded-full object-cover"
                   />
                 {/* Megaphone animé quand il parle */}
@@ -2486,7 +2486,7 @@ export default function OrdonnerComparerCE1() {
         ) : (
           /* EXERCICES - FLOW NORMAL */
           <div className="space-y-4 sm:space-y-8">
-            {/* Introduction de Sam le Pirate - toujours visible */}
+            {/* Introduction du personnage Minecraft - toujours visible */}
             {SamPirateIntroJSX()}
 
             {/* Indicateur de progression mobile - sticky en haut */}
