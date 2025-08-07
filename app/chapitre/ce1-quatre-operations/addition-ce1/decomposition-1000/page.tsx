@@ -889,22 +889,14 @@ export default function Decomposition1000CE1() {
     }
   };
 
-  // Fonction pour créer une correction animée avec des objets visuels pour les décompositions
+  // Fonction pour afficher une correction simple avec la formule
   const createAnimatedCorrection = async (exercise: any, answer1?: string, answer2?: string, answer3?: string) => {
     if (stopSignalRef.current) return;
     
-    console.log('Début correction animée pour décomposition:', exercise, 'avec réponses:', answer1, answer2);
-    
-    const { num1, num2, num3, result, objectEmoji, objectName, strategy } = parseExerciseNumbers(exercise, answer1, answer2, answer3);
-    
-    // Stocker les nombres pour l'affichage
-    setCorrectionNumbers({ num1, num2, result, objectEmoji, objectName, strategy });
-    
-    // Démarrer l'affichage de correction
+    // Afficher la correction simple
     setShowAnimatedCorrection(true);
-    setCorrectionStep(null); // Commencer sans étape pour montrer tous les objets
     
-    // Scroller pour garder la correction visible
+    // Scroller pour voir la correction
     setTimeout(() => {
       const correctionElement = document.getElementById('animated-correction');
       if (correctionElement) {
@@ -915,154 +907,18 @@ export default function Decomposition1000CE1() {
       }
     }, 100);
     
-    // Étape 1: Présentation du problème
-    const hasUserAnswer = answer1 && answer2;
-    if (hasUserAnswer) {
-      const userSum = parseInt(answer1) + parseInt(answer2);
-      if (userSum === result) {
-        await playAudio(`Je vais te montrer que ${answer1} plus ${answer2} égale bien ${result} !`);
-      } else {
-        await playAudio(`Tu as dit ${answer1} plus ${answer2} égale ${userSum}, mais ${result} se décompose autrement. Regarde !`);
-      }
-    } else {
-      if (strategy === 'Dizaines + Unités') {
-        await playAudio(`Je vais t'expliquer cette décomposition avec la technique des dizaines et unités !`);
-      } else if (strategy === 'Centaines + Dizaines + Unités') {
-        await playAudio(`Je vais t'expliquer cette décomposition avec centaines, dizaines et unités !`);
-      } else {
-        await playAudio(`Je vais t'expliquer cette décomposition avec des ${objectName} !`);
-      }
-    }
-    if (stopSignalRef.current) return;
-    await wait(1000);
-    
-    // Étape 2: Affichage de tous les objets ensemble
-    if (strategy === 'Dizaines + Unités') {
-      await playAudio(`Regarde ! Voici le nombre ${result} que nous allons décomposer.`);
-    } else {
-    await playAudio(`Regarde ! Voici ${result} ${objectName} en tout.`);
-    }
+    // Explication vocale simple
+    await playAudio(`Voici la correction pour décomposer ${exercise.number}.`);
     if (stopSignalRef.current) return;
     
-    // Montrer TOUS les objets d'abord (même couleur)
-    const allObjects = Array(result).fill('🟡');
-    setAnimatedObjects(allObjects);
-    await wait(1500);
+    await wait(2000);
     
-    // Étape 3: Séparation en première partie avec explication de la stratégie
-    setCorrectionStep('group1');
-    if (strategy === 'Dizaines + Unités') {
-      await playAudio(`Maintenant, j'utilise la technique des dizaines plus unités ! Je sépare les ${Math.floor(result / 10)} dizaines, soit ${num1}.`);
-    } else if (strategy === 'Centaines + Dizaines + Unités') {
-      await playAudio(`Maintenant, j'utilise la technique centaines, dizaines, unités ! Je commence par ${num1}.`);
-    } else {
-      await playAudio(`Maintenant, je vais faire une première partie de ${num1} ${objectName}.`);
-    }
-    if (stopSignalRef.current) return;
-    await wait(1500);
-    
-    // Étape 4: Séparation en deuxième partie
-    setCorrectionStep('group2');
-    if (strategy === 'Dizaines + Unités') {
-      await playAudio(`Et maintenant les unités restantes, soit ${num2}. C'est la technique dizaines plus unités !`);
-    } else if (strategy === 'Centaines + Dizaines + Unités') {
-      await playAudio(`Et maintenant ${num2}, puis ${num3 || 0}. C'est la technique centaines, dizaines, unités !`);
-    } else {
-      await playAudio(`Et une deuxième partie de ${num2} ${objectName}.`);
-    }
-    if (stopSignalRef.current) return;
-    await wait(1500);
-    
-    // Étape 5: Explication de la décomposition selon la stratégie
-    if (strategy === 'Dizaines + Unités') {
-      await playAudio(`Parfait ! ${num1} plus ${num2}, c'est ${Math.floor(result / 10)} dizaines plus ${result % 10} unités ! Technique réussie !`);
-    } else if (strategy === 'Centaines + Dizaines + Unités') {
-      await playAudio(`Parfait ! ${num1} plus ${num2} plus ${num3 || 0}, c'est bien la décomposition de ${result} ! Technique réussie !`);
-    } else {
-      await playAudio(`Parfait ! ${num1} plus ${num2}, c'est bien une façon de décomposer ${result} !`);
-    }
-    if (stopSignalRef.current) return;
-    await wait(1000);
-    
-    // Étape 6: Comptage interactif (seulement pour petits nombres)
-    if (result <= 20) {
-      setCorrectionStep('counting');
-      if (strategy === 'Dizaines + Unités') {
-        await playAudio(`Maintenant, vérifions notre décomposition !`);
-      } else {
-        await playAudio(`Maintenant, comptons ensemble toutes les ${objectName} pour vérifier !`);
-      }
-      if (stopSignalRef.current) return;
-      await wait(500);
-      
-      // Animation de comptage nombre par nombre avec objets qui bougent (seulement si <= 20)
-      if (result <= 20) {
-        for (let i = 1; i <= result; i++) {
-          if (stopSignalRef.current) return;
-          
-          // Mettre en évidence l'objet en cours de comptage
-          setCountingIndex(i - 1);
-          
-          // Dire le nombre
-          await playAudio(`${i}`);
-          await wait(600);
-        }
-        
-        // Remettre tous les objets en position normale
-        setCountingIndex(-1);
-      }
-    }
-    
-    // Étape 7: Résultat final
-    setCorrectionStep('result');
-    if (strategy === 'Dizaines + Unités') {
-      await playAudio(`Excellent ! ${num1} plus ${num2} égale bien ${result} ! La technique des dizaines et unités fonctionne parfaitement !`);
-    } else {
-      await playAudio(`Excellent ! Nous avons bien ${result} ${objectName} en tout !`);
-    }
-    if (stopSignalRef.current) return;
-    await wait(1000);
-    
-    await playAudio(`Donc ${result} = ${num1} + ${num2} est une bonne décomposition !`);
-    if (stopSignalRef.current) return;
-    await wait(1500);
-    
-    // Étape 8: Vérification finale (répéter l'opération)
-    await playAudio(`Vérifions ensemble : ${num1} plus ${num2} égale ${result} !`);
-    if (stopSignalRef.current) return;
-    await wait(1500);
-    
-    // Étape 9: Terminé
-    setCorrectionStep('complete');
-    
-    // Messages différents selon mobile/desktop
-    if (isMobile) {
-      await playAudio(`Appuie sur suivant pour un autre exercice !`);
-    } else {
-      await playAudio(`Maintenant tu peux cliquer sur suivant pour continuer !`);
-    }
-    
-    // Illuminer le bouton et scroller (plus prononcé sur mobile)
-    setHighlightNextButton(true);
-    
-    // Sur mobile, attendre un peu plus puis scroller vers le bouton
-    if (isMobile) {
-      setTimeout(() => {
-        // Scroll plus visible sur mobile
-        if (nextButtonRef.current) {
-          nextButtonRef.current.scrollIntoView({
-            behavior: 'smooth',
-            block: 'center',
-            inline: 'nearest'
-          });
-        }
-      }, 800);
-    } else {
-      setTimeout(() => {
-        scrollToNextButton();
-      }, 500);
-    }
+    // Fermer la correction après quelques secondes
+    setTimeout(() => {
+      setShowAnimatedCorrection(false);
+    }, 4000);
   };
+
 
   // Fonction pour féliciter avec audio pour les bonnes réponses
   const celebrateCorrectAnswer = async () => {
@@ -2329,26 +2185,48 @@ export default function Decomposition1000CE1() {
                 </div>
               )}
 
-              {/* Animation de correction pour les mauvaises réponses */}
+              {/* Correction simple avec formule */}
               {showAnimatedCorrection && (
                 <div 
                   id="animated-correction"
-                  className="bg-gradient-to-br from-purple-50 to-blue-50 rounded-xl p-3 sm:p-6 md:p-8 mb-4 border-2 border-purple-200 shadow-lg"
+                  className="bg-gradient-to-br from-green-50 to-blue-50 rounded-xl p-4 sm:p-6 mb-4 border-2 border-green-300 shadow-lg"
                 >
-                  {/* Titre de section adaptatif */}
-                  <div className="text-center mb-4 sm:mb-6">
-                    <div className="text-xs sm:text-base text-purple-600">
-                      {!correctionStep && "Voici le nombre complet..."}
-                      {correctionStep === 'group1' && (correctionNumbers?.strategy ? `Technique : ${correctionNumbers.strategy} - Première partie...` : "Première partie...")}
-                      {correctionStep === 'group2' && "Deuxième partie..."}
-                      {correctionStep === 'counting' && "Comptons ensemble !"}
-                      {correctionStep === 'result' && "Voici le résultat !"}
+                  <div className="text-center">
+                    <h3 className="text-lg sm:text-xl font-bold text-green-800 mb-4">
+                      💡 Correction
+                    </h3>
+                    
+                    {/* Affichage de la formule simple */}
+                    <div className="bg-white rounded-lg p-4 shadow-inner">
+                      {/* Ligne du haut : multiplications */}
+                      <div className="text-base sm:text-lg font-bold text-gray-800 mb-2">
+                        {exercises[currentExercise].strategy === 'Centaines + Dizaines + Unités' ? (
+                          <>
+                            {Math.floor(exercises[currentExercise].number / 100)} × 100 + {Math.floor((exercises[currentExercise].number % 100) / 10)} × 10 + {exercises[currentExercise].number % 10} × 1
+                          </>
+                        ) : (
+                          <>
+                            {Math.floor(exercises[currentExercise].number / 10)} × 10 + {exercises[currentExercise].number % 10} × 1
+                          </>
+                        )}
+                      </div>
+                      
+                      {/* Ligne du bas : résultat */}
+                      <div className="text-base sm:text-lg font-bold text-purple-600">
+                        {exercises[currentExercise].strategy === 'Centaines + Dizaines + Unités' ? (
+                          <>
+                            {Math.floor(exercises[currentExercise].number / 100) * 100} + {Math.floor((exercises[currentExercise].number % 100) / 10) * 10} + {exercises[currentExercise].number % 10} = {exercises[currentExercise].number}
+                          </>
+                        ) : (
+                          <>
+                            {Math.floor(exercises[currentExercise].number / 10) * 10} + {exercises[currentExercise].number % 10} = {exercises[currentExercise].number}
+                          </>
+                        )}
+                      </div>
                     </div>
                   </div>
-
-                  {/* Affichage adapté aux grands nombres */}
-                  {correctionNumbers && (
-                    <div className="flex justify-center mb-3 sm:mb-6">
+                </div>
+              )}
                       {correctionNumbers.result > 20 ? (
                         // Pour les grands nombres : représentation avec barres + objets
                         <div className="flex flex-col gap-4 items-center">
