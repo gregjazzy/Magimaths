@@ -77,44 +77,44 @@ export default function Decomposition1000CE1() {
   // Exemples de décompositions stratégiques (jusqu'à 1000)
   const decompositionExamples = [
     { 
-      number: 47, 
-      parts: [40, 7], 
+      number: 146, 
+      parts: [100, 40, 6], 
       item: '🔴', 
-      description: 'le nombre 47',
-      explanation: 'Décomposition par dizaines et unités : 47 = 4 dizaines + 7 unités = 40 + 7',
-      strategy: 'Dizaines + Unités'
+      description: 'le nombre 146',
+      explanation: 'Décomposition complète : 146 = 1 × 100 + 4 × 10 + 6 × 1 = 100 + 40 + 6',
+      strategy: 'Centaines + Dizaines + Unités'
     },
     { 
-      number: 68, 
-      parts: [60, 8], 
+      number: 839, 
+      parts: [800, 30, 9], 
       item: '🔵', 
-      description: 'le nombre 68',
-      explanation: 'Décomposition par dizaines et unités : 68 = 6 dizaines + 8 unités = 60 + 8',
-      strategy: 'Dizaines + Unités'
+      description: 'le nombre 839',
+      explanation: 'Décomposition complète : 839 = 8 × 100 + 3 × 10 + 9 × 1 = 800 + 30 + 9',
+      strategy: 'Centaines + Dizaines + Unités'
     },
     { 
-      number: 58, 
-      parts: [29, 29], 
+      number: 700, 
+      parts: [700, 0, 0], 
       item: '🟢', 
-      description: 'le nombre 58',
-      explanation: 'Décomposition en parties égales : 58 = 29 + 29 (deux moitiés identiques)',
-      strategy: 'Parties égales'
+      description: 'le nombre 700',
+      explanation: 'Décomposition avec zéros : 700 = 7 × 100 + 0 × 10 + 0 × 1 = 700 + 0 + 0',
+      strategy: 'Centaines rondes'
     },
     { 
-      number: 46, 
-      parts: [23, 23], 
+      number: 205, 
+      parts: [200, 0, 5], 
       item: '🟡', 
-      description: 'le nombre 46',
-      explanation: 'Décomposition en parties égales : 46 = 23 + 23 (deux moitiés identiques)',
-      strategy: 'Parties égales'
+      description: 'le nombre 205',
+      explanation: 'Décomposition avec zéro au milieu : 205 = 2 × 100 + 0 × 10 + 5 × 1 = 200 + 0 + 5',
+      strategy: 'Centaines + Unités'
     },
     { 
-      number: 83, 
-      parts: [80, 3], 
+      number: 483, 
+      parts: [400, 80, 3], 
       item: '🟣', 
-      description: 'le nombre 83',
-      explanation: 'Décomposition par dizaines et unités : 83 = 8 dizaines + 3 unités = 80 + 3',
-      strategy: 'Dizaines + Unités'
+      description: 'le nombre 483',
+      explanation: 'Décomposition complète : 483 = 4 × 100 + 8 × 10 + 3 × 1 = 400 + 80 + 3',
+      strategy: 'Centaines + Dizaines + Unités'
     }
   ];
 
@@ -348,6 +348,26 @@ export default function Decomposition1000CE1() {
     }
   };
 
+  // Fonction utilitaire pour afficher une décomposition à 3 parties
+  const renderDecomposition = (parts: number[]) => {
+    if (parts.length === 3) {
+      // Format: centaines + dizaines + unités
+      return `${parts[0]} + ${parts[1]} + ${parts[2]}`;
+    } else {
+      // Format legacy: 2 parties
+      return `${parts[0]} + ${parts[1]}`;
+    }
+  };
+
+  // Fonction utilitaire pour l'annonce audio des décompositions
+  const getAudioDecomposition = (parts: number[]) => {
+    if (parts.length === 3) {
+      return `${parts[0]} plus ${parts[1]} plus ${parts[2]}`;
+    } else {
+      return `${parts[0]} plus ${parts[1]}`;
+    }
+  };
+
   // Fonction pour rendre les objets avec animations (adaptée pour grands nombres)
   const renderCircles = (count: number, item: string, isHighlighted = false, hideCalculations = false) => {
     if (count <= 0) return null;
@@ -494,12 +514,12 @@ export default function Decomposition1000CE1() {
       
       await wait(1200);
       setDecompositionStep('parts');
-      await playAudio(`${example.number}, c'est ${Math.floor(example.number/10)} dizaines plus ${example.number%10} unités ! Donc ${example.parts[0]} plus ${example.parts[1]} !`);
+      await playAudio(`${example.number}, c'est une décomposition ! Donc ${getAudioDecomposition(example.parts)} !`);
       if (stopSignalRef.current) return;
       
       await wait(1500);
       setShowingProcess('grouping');
-      await playAudio("C'est la stratégie principale : dizaines plus unités !");
+      await playAudio("C'est la stratégie principale : centaines, dizaines et unités !");
       if (stopSignalRef.current) return;
       
       await wait(1800);
@@ -514,11 +534,11 @@ export default function Decomposition1000CE1() {
         await wait(800);
       }
       
-                              await playAudio(`${example.parts[0]} plus ${example.parts[1]} égale ${example.number} ! C'est une décomposition !`);
+                              await playAudio(`${getAudioDecomposition(example.parts)} égale ${example.number} ! C'est une décomposition !`);
       if (stopSignalRef.current) return;
       
       await wait(1500);
-      await playAudio(`En mathématiques, on écrit : ${example.number} = ${example.parts[0]} + ${example.parts[1]} !`);
+      await playAudio(`En mathématiques, on écrit : ${example.number} = ${renderDecomposition(example.parts)} !`);
       if (stopSignalRef.current) return;
       
       // 3. Présentation des autres exemples
@@ -547,7 +567,7 @@ export default function Decomposition1000CE1() {
       
       await wait(1200);
       setDecompositionStep('parts');
-      await playAudio(`${equalPartsExample.number} = ${equalPartsExample.parts[0]} + ${equalPartsExample.parts[1]} ! Deux parties identiques !`);
+      await playAudio(`${equalPartsExample.number} = ${renderDecomposition(equalPartsExample.parts)} ! Parties identiques !`);
       if (stopSignalRef.current) return;
       
       await wait(1800);
@@ -639,6 +659,8 @@ export default function Decomposition1000CE1() {
       
       if (example.strategy === 'Parties égales') {
         await playAudio(`Deux parties égales de ${example.parts[0]} chacune !`);
+      } else if (example.parts.length === 3) {
+        await playAudio(`Une partie de ${example.parts[0]}, une partie de ${example.parts[1]}, et une partie de ${example.parts[2]}.`);
       } else {
         await playAudio(`Une partie de ${example.parts[0]} et une partie de ${example.parts[1]}.`);
       }
@@ -656,7 +678,7 @@ export default function Decomposition1000CE1() {
       }
       
       setDecompositionStep('result');
-      await playAudio(`${example.parts[0]} plus ${example.parts[1]} égale ${example.number} !`);
+      await playAudio(`${getAudioDecomposition(example.parts)} égale ${example.number} !`);
       if (stopSignalRef.current) return;
       
       await wait(2000);
@@ -1688,7 +1710,7 @@ export default function Decomposition1000CE1() {
                   <div className="text-center mb-6">
                     <div className="text-lg sm:text-2xl font-bold text-purple-600 mb-2 sm:mb-4">
                       {currentExample !== null ? 
-                        `Exemple : ${decompositionExamples[currentExample].number} = ${decompositionExamples[currentExample].parts[0]} + ${decompositionExamples[currentExample].parts[1]}` 
+                        `Exemple : ${decompositionExamples[currentExample].number} = ${renderDecomposition(decompositionExamples[currentExample].parts)}` 
                         : 'Exemple : 47 = 40 + 7'
                       }
                 </div>
@@ -1775,10 +1797,10 @@ export default function Decomposition1000CE1() {
                             {renderCircles(decompositionExamples[currentExample].number, decompositionExamples[currentExample].item)}
                         </div>
                           <div className="text-xl sm:text-3xl font-bold text-green-800 mb-2">
-                            {decompositionExamples[currentExample].number} = {decompositionExamples[currentExample].parts[0]} + {decompositionExamples[currentExample].parts[1]}
+                            {decompositionExamples[currentExample].number} = {renderDecomposition(decompositionExamples[currentExample].parts)}
                       </div>
                           <div className="text-sm sm:text-lg text-green-600">
-                            {decompositionExamples[currentExample].parts[0]} + {decompositionExamples[currentExample].parts[1]} = {decompositionExamples[currentExample].number} !
+                            {renderDecomposition(decompositionExamples[currentExample].parts)} = {decompositionExamples[currentExample].number} !
                     </div>
                     </div>
                       )}
@@ -1845,7 +1867,7 @@ export default function Decomposition1000CE1() {
                 <div className="text-center">
                       <div className="text-lg sm:text-3xl mb-2">{example.item}</div>
                       <div className="font-bold text-lg text-gray-800 mb-2">
-                        {example.number} = {example.parts[0]} + {example.parts[1]}
+                        {example.number} = {renderDecomposition(example.parts)}
                   </div>
                       <div className="text-xs sm:text-sm text-blue-600 font-semibold mb-1">
                         📋 {example.strategy}
