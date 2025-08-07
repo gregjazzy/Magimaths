@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, CheckCircle, XCircle, RotateCcw, Lightbulb } from 'lucide-react';
 
@@ -26,7 +26,7 @@ function FractionMath({a, b, size = 'text-xl'}: {a: string|number, b: string|num
   );
 }
 
-export default function AdditionFractionsPage() {
+export default function CE2AdditionFractionsPage() {
   const [currentExercise, setCurrentExercise] = useState(0);
   const [numerator, setNumerator] = useState('');
   const [denominator, setDenominator] = useState('');
@@ -38,12 +38,22 @@ export default function AdditionFractionsPage() {
   const [showCompletionModal, setShowCompletionModal] = useState(false);
   const [finalScore, setFinalScore] = useState(0);
 
+  // États et références nécessaires selon readmeanim
+  const [isPlayingVocal, setIsPlayingVocal] = useState(false);
+  const [hasStarted, setHasStarted] = useState(false);
+  const [characterSizeExpanded, setCharacterSizeExpanded] = useState(false);
+  const [highlightedElement, setHighlightedElement] = useState<string | null>(null);
+  const [isAnimating, setIsAnimating] = useState(false);
+
+  const stopSignalRef = useRef(false);
+  const currentAudioRef = useRef<SpeechSynthesisUtterance | null>(null);
+
   // Fonction pour sauvegarder le progrès et calculer les XP
   const saveProgress = (finalScore: number) => {
-    const sectionId = 'addition';
+    const sectionId = 'ce2-addition';
     const maxScore = exercises.length;
     const percentage = finalScore / maxScore;
-    const baseXP = 15; // XP de base pour cette section
+    const baseXP = 20; // XP de base pour cette section CE2
     const earnedXP = Math.round(baseXP * percentage);
     
     const progressData = {
@@ -57,7 +67,7 @@ export default function AdditionFractionsPage() {
     };
 
     // Sauvegarder dans localStorage
-    const savedProgress = localStorage.getItem('ce1-fractions-simples-progress');
+    const savedProgress = localStorage.getItem('ce2-fractions-addition-progress');
     let allProgress = [];
     
     if (savedProgress) {
@@ -72,11 +82,149 @@ export default function AdditionFractionsPage() {
       allProgress.push(progressData);
     }
     
-    localStorage.setItem('ce1-fractions-simples-progress', JSON.stringify(allProgress));
+    localStorage.setItem('ce2-fractions-addition-progress', JSON.stringify(allProgress));
     
     // Déclencher un événement pour notifier les autres composants
     window.dispatchEvent(new Event('storage'));
   };
+
+  // Fonctions de contrôle vocal selon readmeanim
+  const stopAllVocalsAndAnimations = () => {
+    stopSignalRef.current = true;
+    setIsPlayingVocal(false);
+    setIsAnimating(false);
+    setHighlightedElement(null);
+    
+    if (currentAudioRef.current) {
+      window.speechSynthesis.cancel();
+      currentAudioRef.current = null;
+    }
+  };
+
+  const playAudio = (text: string): Promise<void> => {
+    return new Promise((resolve) => {
+      if (stopSignalRef.current) {
+        resolve();
+        return;
+      }
+
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'fr-FR';
+      utterance.rate = 0.9;
+      utterance.pitch = 1.1;
+      
+      currentAudioRef.current = utterance;
+      
+      utterance.onend = () => {
+        if (!stopSignalRef.current) {
+          setIsPlayingVocal(false);
+        }
+        resolve();
+      };
+      
+      utterance.onerror = () => {
+        if (!stopSignalRef.current) {
+          setIsPlayingVocal(false);
+        }
+        resolve();
+      };
+      
+      setIsPlayingVocal(true);
+      window.speechSynthesis.speak(utterance);
+    });
+  };
+
+  // Fonctions de scrolling et mise en évidence selon readmeanim
+  const scrollToElement = (elementId: string) => {
+    const element = document.getElementById(elementId);
+    if (element) {
+      element.scrollIntoView({ 
+        behavior: 'smooth', 
+        block: 'center' 
+      });
+    }
+  };
+
+  const highlightElement = (elementId: string) => {
+    setHighlightedElement(elementId);
+    setTimeout(() => {
+      if (!stopSignalRef.current) {
+        setHighlightedElement(null);
+      }
+    }, 3000);
+  };
+
+  const highlightElementsSequentially = async (elementIds: string[], delay: number = 1500) => {
+    for (const elementId of elementIds) {
+      if (stopSignalRef.current) break;
+      highlightElement(elementId);
+      await new Promise(resolve => setTimeout(resolve, delay));
+    }
+  };
+
+  // Structure du tutoriel avec scrolling selon readmeanim
+  const explainChapter = async () => {
+    stopSignalRef.current = false;
+    setIsAnimating(true);
+
+    if (!showExercises) {
+      // Mode COURS
+      await playAudio("Salut jeune architecte ! Bienvenue dans l'atelier des additions magiques !");
+      if (stopSignalRef.current) return;
+
+      scrollToElement('intro-section');
+      highlightElement('intro-section');
+      await playAudio("Ici, tu vas apprendre à additionner des fractions comme un vrai maître bâtisseur !");
+      if (stopSignalRef.current) return;
+
+      scrollToElement('rules-section');
+      highlightElement('rules-section');
+      await playAudio("Voici la règle d'or : pour additionner des fractions, on additionne les numérateurs et on garde le même dénominateur !");
+      if (stopSignalRef.current) return;
+
+      scrollToElement('examples-section');
+      highlightElement('examples-section');
+      await playAudio("Regarde bien ces exemples avec leurs dessins. Les cercles colorés t'aident à comprendre !");
+      if (stopSignalRef.current) return;
+
+      scrollToElement('method-section');
+      highlightElement('method-section');
+      await playAudio("Et voici la méthode en 4 étapes pour ne jamais te tromper ! Maintenant, passe aux exercices pour t'entraîner !");
+
+    } else {
+      // Mode EXERCICES
+      await playAudio("Parfait ! Tu es maintenant dans l'arène des défis mathématiques !");
+      if (stopSignalRef.current) return;
+
+      scrollToElement('progress-bar');
+      highlightElement('progress-bar');
+      await playAudio("Cette barre montre ta progression. Plus tu avances, plus tu deviens fort !");
+      if (stopSignalRef.current) return;
+
+      scrollToElement('question-zone');
+      highlightElement('question-zone');
+      await playAudio("Ici tu vois la question avec ses dessins magiques pour t'aider !");
+      if (stopSignalRef.current) return;
+
+      scrollToElement('answer-input');
+      highlightElement('answer-input');
+      await playAudio("Écris tes réponses dans ces cases : numérateur en haut, dénominateur en bas !");
+      if (stopSignalRef.current) return;
+
+      scrollToElement('action-buttons');
+      highlightElement('action-buttons');
+      await playAudio("Utilise ces boutons pour t'aider, effacer ou vérifier tes réponses ! Bonne chance, champion !");
+    }
+
+    setIsAnimating(false);
+  };
+
+  // useEffect pour arrêt automatique selon readmeanim
+  useEffect(() => {
+    return () => {
+      stopAllVocalsAndAnimations();
+    };
+  }, [showExercises, currentExercise]);
 
   const examples = [
     { 
@@ -234,7 +382,7 @@ export default function AdditionFractionsPage() {
             <FractionMath a={fraction1.split('/')[0]} b={fraction1.split('/')[1]} size="text-lg" />
           </div>
         </div>
-        <div className="text-3xl font-bold text-red-600">+</div>
+        <div className="text-3xl font-bold text-blue-600">+</div>
         <div className="text-center">
           <svg width="80" height="100" viewBox="0 0 80 100" className="mx-auto border-2 border-gray-300 rounded-lg">
             {renderFractionVisual(fraction2, 40, "#3b82f6")}
@@ -245,7 +393,7 @@ export default function AdditionFractionsPage() {
         </div>
         {result && (
           <>
-            <div className="text-3xl font-bold text-red-600">=</div>
+            <div className="text-3xl font-bold text-blue-600">=</div>
             <div className="text-center">
               <svg width="80" height="100" viewBox="0 0 80 100" className="mx-auto border-2 border-gray-300 rounded-lg">
                 {renderFractionVisual(result, 40, "#10b981")}
@@ -276,12 +424,14 @@ export default function AdditionFractionsPage() {
 
       if (correct) {
         setTimeout(() => {
+          scrollToElement('result-feedback');
           if (currentExercise + 1 < exercises.length) {
             setCurrentExercise(Math.min(currentExercise + 1, exercises.length - 1));
             setNumerator('');
             setDenominator('');
             setIsCorrect(null);
             setShowHint(false);
+            setTimeout(() => scrollToElement('question-zone'), 100);
           } else {
             const newFinalScore = score + (!answeredCorrectly.has(currentExercise) ? 1 : 0);
             setFinalScore(newFinalScore);
@@ -289,6 +439,8 @@ export default function AdditionFractionsPage() {
             setShowCompletionModal(true);
           }
         }, 1500);
+      } else {
+        setTimeout(() => scrollToElement('result-feedback'), 100);
       }
   };
 
@@ -300,6 +452,7 @@ export default function AdditionFractionsPage() {
         setDenominator('');
         setIsCorrect(null);
         setShowHint(false);
+        setTimeout(() => scrollToElement('question-zone'), 100);
       } else {
         setFinalScore(score);
         saveProgress(score); // Sauvegarder les XP
@@ -328,13 +481,13 @@ export default function AdditionFractionsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-red-50 to-pink-100">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-green-100">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
         {/* Header */}
         <div className="mb-6 sm:mb-8">
-          <Link href="/chapitre/ce1-fractions-simples" className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors mb-4 touch-manipulation">
+          <Link href="/chapitre/ce2-fractions-mesures" className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors mb-4 touch-manipulation">
             <ArrowLeft className="w-4 h-4" />
-            <span>Retour au chapitre</span>
+            <span>Retour aux fractions et mesures</span>
           </Link>
           
           <div className="bg-white rounded-xl p-4 sm:p-6 shadow-lg text-center">
@@ -342,31 +495,93 @@ export default function AdditionFractionsPage() {
               🧮 Addition de fractions simples
             </h1>
             <p className="text-base sm:text-lg text-gray-600">
-              Apprends à additionner des fractions qui ont le même dénominateur !
+              Apprends à additionner des fractions qui ont le même dénominateur ! (Niveau CE2)
             </p>
-              </div>
+          </div>
+        </div>
+
+        {/* Personnage Minecraft avec bouton DÉMARRER selon readmeanim */}
+        <div className="bg-gradient-to-r from-green-400 to-blue-500 rounded-xl p-6 shadow-lg mb-8">
+          <div className="flex items-center justify-center gap-6 flex-wrap">
+            <div id="minecraft-character" className={`relative transition-all duration-500 border-4 border-green-300 rounded-full bg-gradient-to-br from-green-100 to-emerald-100 shadow-lg ${
+              isPlayingVocal
+                ? 'w-20 sm:w-24 h-20 sm:h-24' // Quand il parle - plus gros
+                : characterSizeExpanded
+                  ? 'w-16 sm:w-20 h-16 sm:h-20' // Après DÉMARRER - normal
+                  : 'w-12 sm:w-16 h-12 sm:h-16' // Initial - plus petit
+            }`}>
+              <img
+                src="/image/Minecraftstyle.png"
+                alt="Personnage Minecraft"
+                className="w-full h-full rounded-full object-cover"
+              />
+              {/* Mégaphone quand il parle */}
+              {isPlayingVocal && (
+                <div className="absolute -top-1 -right-1 bg-red-500 text-white p-1 rounded-full shadow-lg">
+                  <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.617.77L4.916 14H2a1 1 0 01-1-1V7a1 1 0 011-1h2.916l3.467-2.77a1 1 0 011.617.77zM14.657 2.929a1 1 0 011.414 0A9.972 9.972 0 0119 10a9.972 9.972 0 01-2.929 7.071 1 1 0 01-1.414-1.414A7.971 7.971 0 0017 10c0-2.21-.894-4.208-2.343-5.657a1 1 0 010-1.414zm-2.829 2.828a1 1 0 011.415 0A5.983 5.983 0 0115 10a5.983 5.983 0 01-1.757 4.243 1 1 0 01-1.415-1.414A3.983 3.983 0 0013 10a3.983 3.983 0 00-1.172-2.829 1 1 0 010-1.414z" clipRule="evenodd" />
+                  </svg>
+                </div>
+              )}
             </div>
+            
+            <button
+              id="start-button"
+              onClick={() => {
+                setHasStarted(true);
+                setCharacterSizeExpanded(true);
+                explainChapter();
+              }}
+              disabled={isPlayingVocal}
+              className="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-4 px-8 rounded-lg text-xl shadow-lg transition-all pulse-interactive-yellow disabled:opacity-50 flex items-center justify-center"
+            >
+              🚀 DÉMARRER
+            </button>
+          </div>
+        </div>
+
+        {/* Bouton STOP flottant global selon readmeanim */}
+        {(isPlayingVocal || isAnimating) && (
+          <button
+            onClick={stopAllVocalsAndAnimations}
+            className="fixed top-4 right-4 z-[60] bg-red-500 hover:bg-red-600 text-white p-3 rounded-full shadow-lg transition-all flex items-center gap-2 pulse-interactive-gray"
+          >
+            <div className="w-8 h-8 relative">
+              <img
+                src="/image/Minecraftstyle.png"
+                alt="Stop"
+                className="w-full h-full rounded-full object-cover"
+              />
+            </div>
+            <span className="font-bold text-sm">Stop</span>
+            <div className="w-3 h-3 bg-white rounded animate-pulse"></div>
+          </button>
+        )}
 
         {/* Onglets Cours/Exercices */}
-        <div className="flex justify-center mb-6 sm:mb-8">
+        <div id="tab-navigation" className={`flex justify-center mb-6 sm:mb-8 ${highlightedElement === 'tab-navigation' ? 'animate-pulse bg-yellow-200 rounded-xl p-2' : ''}`}>
           <div className="bg-white rounded-lg p-1 shadow-md">
             <button
+              id="tab-cours"
               onClick={() => setShowExercises(false)}
-              className={`px-6 py-3 rounded-lg font-bold transition-all ${
+              disabled={isPlayingVocal}
+              className={`px-6 py-3 rounded-lg font-bold transition-all pulse-interactive ${
                 !showExercises 
                   ? 'bg-blue-500 text-white shadow-md' 
                   : 'text-gray-600 hover:bg-gray-100'
-              }`}
+              } disabled:opacity-50 ${highlightedElement === 'tab-cours' ? 'animate-pulse bg-yellow-200' : ''}`}
             >
               📖 Cours
             </button>
             <button
+              id="tab-exercices"
               onClick={() => setShowExercises(true)}
-              className={`px-6 py-3 rounded-lg font-bold transition-all ${
+              disabled={isPlayingVocal}
+              className={`px-6 py-3 rounded-lg font-bold transition-all pulse-interactive ${
                 showExercises 
                   ? 'bg-green-500 text-white shadow-md' 
                   : 'text-gray-600 hover:bg-gray-100'
-              }`}
+              } disabled:opacity-50 ${highlightedElement === 'tab-exercices' ? 'animate-pulse bg-yellow-200' : ''}`}
             >
               ✏️ Exercices ({score}/{exercises.length})
             </button>
@@ -376,8 +591,15 @@ export default function AdditionFractionsPage() {
         {!showExercises ? (
           /* COURS */
           <div className="space-y-8">
+            {/* Introduction */}
+            <div id="intro-section" className={`bg-gradient-to-r from-blue-400 to-green-500 rounded-xl p-6 text-white text-center ${highlightedElement === 'intro-section' ? 'animate-pulse ring-4 ring-yellow-300' : ''}`}>
+              <div className="text-6xl mb-4">🧮</div>
+              <h2 className="text-3xl font-bold mb-4">L'atelier des additions magiques !</h2>
+              <p className="text-xl">Découvre comment additionner des fractions comme un vrai maître bâtisseur !</p>
+            </div>
+
             {/* Règle principale */}
-            <div className="bg-white rounded-xl p-6 shadow-lg">
+            <div id="rules-section" className={`bg-white rounded-xl p-6 shadow-lg ${highlightedElement === 'rules-section' ? 'animate-pulse ring-4 ring-yellow-300' : ''}`}>
               <h2 className="text-2xl font-bold text-center mb-6 text-gray-900">
                 🎯 Règle d'or pour additionner des fractions
               </h2>
@@ -397,7 +619,7 @@ export default function AdditionFractionsPage() {
             </div>
 
             {/* Exemples visuels */}
-            <div className="bg-white rounded-xl p-6 shadow-lg">
+            <div id="examples-section" className={`bg-white rounded-xl p-6 shadow-lg ${highlightedElement === 'examples-section' ? 'animate-pulse ring-4 ring-yellow-300' : ''}`}>
               <h2 className="text-2xl font-bold text-center mb-6 text-gray-900">
                 📚 Exemples avec visualisation
               </h2>
@@ -422,7 +644,7 @@ export default function AdditionFractionsPage() {
                   </div>
                 ))}
               </div>
-                </div>
+            </div>
 
             {/* Conseils pratiques */}
             <div className="bg-gradient-to-r from-yellow-400 to-orange-400 rounded-xl p-6 text-white">
@@ -443,7 +665,7 @@ export default function AdditionFractionsPage() {
                   </li>
                 </ul>
                 <ul className="space-y-2">
-                                     <li className="flex items-start">
+                  <li className="flex items-start">
                      <span className="text-yellow-200 mr-2">•</span>
                      <span className="flex items-center">
                        Exemple : 
@@ -469,7 +691,7 @@ export default function AdditionFractionsPage() {
             </div>
 
             {/* Méthode étape par étape */}
-            <div className="bg-white rounded-xl p-6 shadow-lg">
+            <div id="method-section" className={`bg-white rounded-xl p-6 shadow-lg ${highlightedElement === 'method-section' ? 'animate-pulse ring-4 ring-yellow-300' : ''}`}>
               <h2 className="text-2xl font-bold text-center mb-6 text-gray-900">
                 📝 Méthode étape par étape
               </h2>
@@ -508,7 +730,8 @@ export default function AdditionFractionsPage() {
                 </h2>
                 <button
                   onClick={resetAll}
-                  className="bg-gray-500 text-white px-4 py-2 rounded-lg font-bold hover:bg-gray-600 transition-colors"
+                  disabled={isPlayingVocal}
+                  className="bg-gray-500 text-white px-4 py-2 rounded-lg font-bold hover:bg-gray-600 transition-colors pulse-interactive disabled:opacity-50"
                 >
                   <RotateCcw className="inline w-4 h-4 mr-2" />
                   Recommencer
@@ -516,24 +739,24 @@ export default function AdditionFractionsPage() {
               </div>
               
               {/* Barre de progression */}
-              <div className="w-full bg-gray-200 rounded-full h-3 mb-3">
+              <div id="progress-bar" className={`w-full bg-gray-200 rounded-full h-3 mb-3 ${highlightedElement === 'progress-bar' ? 'animate-pulse ring-4 ring-yellow-300' : ''}`}>
                 <div 
-                  className="bg-red-500 h-3 rounded-full transition-all duration-500"
+                  className="bg-blue-500 h-3 rounded-full transition-all duration-500"
                   style={{ width: `${((currentExercise + 1) / exercises.length) * 100}%` }}
                 ></div>
               </div>
               
               {/* Score sous la barre */}
               <div className="text-center">
-                <div className="text-lg font-bold text-red-600">
+                <div className="text-lg font-bold text-blue-600">
                   Score : {score}/{exercises.length}
                 </div>
               </div>
             </div>
 
             {/* Question */}
-            <div className="bg-white rounded-xl p-6 shadow-lg">
-                             <div className="text-center mb-6">
+            <div id="question-zone" className={`bg-white rounded-xl p-6 shadow-lg ${highlightedElement === 'question-zone' ? 'animate-pulse ring-4 ring-yellow-300' : ''}`}>
+              <div className="text-center mb-6">
                  <h3 className="text-2xl font-bold text-gray-900 mb-6">
                    {exercises[currentExercise].hasVisual && exercises[currentExercise].fraction1 && exercises[currentExercise].fraction2 ? (
                      <div className="flex items-center justify-center space-x-3">
@@ -559,7 +782,7 @@ export default function AdditionFractionsPage() {
                   </div>
                 )}
 
-                                 {/* Expression mathématique si applicable */}
+                {/* Expression mathématique si applicable */}
                  {exercises[currentExercise].mathExpression && (
                    <div className="text-3xl font-bold text-gray-800 mb-6">
                      {(() => {
@@ -593,8 +816,8 @@ export default function AdditionFractionsPage() {
                    </div>
                  )}
 
-                                 {/* Template de réponse fraction */}
-                 <div className="flex flex-col items-center mb-6">
+                {/* Template de réponse fraction */}
+                 <div id="answer-input" className={`flex flex-col items-center mb-6 ${highlightedElement === 'answer-input' ? 'animate-pulse ring-4 ring-yellow-300 rounded-lg p-4' : ''}`}>
                    <div className="flex flex-col items-center bg-gray-50 rounded-lg p-6 border-2 border-gray-300">
                      <input
                        type="text"
@@ -606,8 +829,8 @@ export default function AdditionFractionsPage() {
                          }
                        }}
                        placeholder="?"
-                       className="w-16 sm:w-20 h-12 sm:h-14 text-center text-lg sm:text-xl font-bold border-2 border-gray-300 rounded-lg focus:border-red-500 focus:outline-none mb-2 touch-manipulation"
-                       disabled={isCorrect !== null}
+                       className="w-16 sm:w-20 h-12 sm:h-14 text-center text-lg sm:text-xl font-bold border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none mb-2 touch-manipulation"
+                       disabled={isCorrect !== null || isPlayingVocal}
                      />
                      <div className="w-20 sm:w-24 h-1 bg-gray-800 mb-2"></div>
                      <input
@@ -620,13 +843,13 @@ export default function AdditionFractionsPage() {
                          }
                        }}
                        placeholder="?"
-                       className="w-16 sm:w-20 h-12 sm:h-14 text-center text-lg sm:text-xl font-bold border-2 border-gray-300 rounded-lg focus:border-red-500 focus:outline-none touch-manipulation"
-                       disabled={isCorrect !== null}
+                       className="w-16 sm:w-20 h-12 sm:h-14 text-center text-lg sm:text-xl font-bold border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none touch-manipulation"
+                       disabled={isCorrect !== null || isPlayingVocal}
                      />
                    </div>
                  </div>
 
-                                 {/* Affichage de l'indice */}
+                {/* Affichage de l'indice */}
                  {showHint && (
                    <div className="bg-yellow-100 border-l-4 border-yellow-500 p-4 mb-4 rounded">
                      <div className="flex">
@@ -637,31 +860,37 @@ export default function AdditionFractionsPage() {
                  )}
 
                  {/* Navigation */}
-                 <div className="flex flex-col sm:flex-row justify-center items-center gap-2 sm:gap-4 mt-4">
+                 <div id="action-buttons" className={`flex flex-col sm:flex-row justify-center items-center gap-2 sm:gap-4 mt-4 ${highlightedElement === 'action-buttons' ? 'animate-pulse ring-4 ring-yellow-300 rounded-lg p-4' : ''}`}>
                    {/* Bouton indice */}
                    {!showHint && isCorrect === null && (
               <button
+                       id="hint-button"
                        onClick={() => setShowHint(true)}
-                       className="bg-yellow-500 text-white px-4 py-3 sm:px-6 sm:py-3 rounded-lg font-bold hover:bg-yellow-600 transition-colors w-full sm:w-auto touch-manipulation min-h-[44px]"
+                       disabled={isPlayingVocal}
+                       className="bg-yellow-500 text-white px-4 py-3 sm:px-6 sm:py-3 rounded-lg font-bold hover:bg-yellow-600 transition-colors pulse-interactive w-full sm:w-auto touch-manipulation min-h-[44px] disabled:opacity-50"
               >
                 <Lightbulb className="inline w-4 h-4 mr-2" />
                        Aide
               </button>
                    )}
               <button
+                id="reset-exercise-button"
                 onClick={resetExercise}
-                     className="bg-gray-500 text-white px-4 py-3 sm:px-6 sm:py-3 rounded-lg font-bold hover:bg-gray-600 transition-colors w-full sm:w-auto touch-manipulation min-h-[44px]"
+                disabled={isPlayingVocal}
+                     className="bg-gray-500 text-white px-4 py-3 sm:px-6 sm:py-3 rounded-lg font-bold hover:bg-gray-600 transition-colors pulse-interactive w-full sm:w-auto touch-manipulation min-h-[44px] disabled:opacity-50"
               >
                 Effacer
               </button>
                    <button
+                     id="prev-exercise-button"
                      onClick={() => setCurrentExercise(Math.max(0, currentExercise - 1))}
-                     disabled={currentExercise === 0}
-                     className="bg-gray-600 text-white px-4 py-3 sm:px-6 sm:py-3 rounded-lg font-bold hover:bg-gray-700 transition-colors disabled:opacity-50 w-full sm:w-auto touch-manipulation min-h-[44px]"
+                     disabled={currentExercise === 0 || isPlayingVocal}
+                     className="bg-gray-600 text-white px-4 py-3 sm:px-6 sm:py-3 rounded-lg font-bold hover:bg-gray-700 transition-colors pulse-interactive disabled:opacity-50 w-full sm:w-auto touch-manipulation min-h-[44px]"
                    >
                      ← Précédent
                    </button>
                    <button
+                     id="check-next-button"
                      onClick={() => {
                        // Si l'utilisateur a rempli les champs mais n'a pas encore vérifié, on vérifie d'abord
                        if (numerator.trim() && denominator.trim() && isCorrect === null) {
@@ -670,8 +899,8 @@ export default function AdditionFractionsPage() {
                          handleNext();
                        }
                      }}
-                     disabled={isCorrect === null && (!numerator.trim() || !denominator.trim())}
-                     className="bg-red-500 text-white px-4 py-3 sm:px-6 sm:py-3 rounded-lg font-bold hover:bg-red-600 transition-colors disabled:opacity-50 w-full sm:w-auto touch-manipulation min-h-[44px]"
+                     disabled={(isCorrect === null && (!numerator.trim() || !denominator.trim())) || isPlayingVocal}
+                     className="bg-blue-500 text-white px-4 py-3 sm:px-6 sm:py-3 rounded-lg font-bold hover:bg-blue-600 transition-colors pulse-interactive disabled:opacity-50 w-full sm:w-auto touch-manipulation min-h-[44px]"
                    >
                      {numerator.trim() && denominator.trim() && isCorrect === null 
                        ? '✅ Vérifier' 
@@ -684,7 +913,7 @@ export default function AdditionFractionsPage() {
 
               {/* Résultat */}
             {isCorrect !== null && (
-                <div className={`p-4 rounded-lg ${
+                <div id="result-feedback" className={`p-4 rounded-lg ${
                   isCorrect ? 'bg-green-600 text-white' : 'bg-red-600 text-white'
               }`}>
                 <div className="flex items-center justify-center space-x-2">
@@ -705,8 +934,6 @@ export default function AdditionFractionsPage() {
               </div>
             )}
             </div>
-
-
           </div>
         )}
 
@@ -726,8 +953,8 @@ export default function AdditionFractionsPage() {
                   if (percentage >= 70) return { 
                     title: "🎯 Très bien !", 
                     message: "Tu comprends bien les fractions !", 
-                    color: "text-red-600",
-                    bgColor: "bg-red-50" 
+                    color: "text-blue-600",
+                    bgColor: "bg-blue-50" 
                   };
                   if (percentage >= 50) return { 
                     title: "📚 En progression !", 
@@ -748,12 +975,12 @@ export default function AdditionFractionsPage() {
                     <div className="text-6xl mb-4">{percentage >= 70 ? "🎉" : percentage >= 50 ? "😊" : "📖"}</div>
                     <h3 className={`text-2xl font-bold mb-3 ${result.color}`}>{result.title}</h3>
                     <p className={`text-lg mb-4 ${result.color}`}>{result.message}</p>
-                                         <p className={`text-xl font-bold mb-4 ${result.color}`}>
+                    <p className={`text-xl font-bold mb-4 ${result.color}`}>
                        Score final : {finalScore}/{exercises.length} ({percentage}%)
                      </p>
                      <div className="bg-yellow-100 rounded-lg p-4 mb-6">
                        <p className="text-lg font-bold text-yellow-800">
-                         🌟 {Math.round(15 * (finalScore / exercises.length))} XP gagnés !
+                         🌟 {Math.round(20 * (finalScore / exercises.length))} XP gagnés !
                 </p>
               </div>
                     <div className="flex flex-col sm:flex-row gap-3 sm:gap-3 justify-center">
@@ -768,7 +995,7 @@ export default function AdditionFractionsPage() {
                           setShowCompletionModal(false);
                           resetAll();
                         }}
-                        className="bg-red-500 text-white px-4 py-3 sm:px-6 sm:py-3 rounded-xl font-bold hover:bg-red-600 transition-colors touch-manipulation min-h-[44px] w-full sm:w-auto"
+                        className="bg-blue-500 text-white px-4 py-3 sm:px-6 sm:py-3 rounded-xl font-bold hover:bg-blue-600 transition-colors touch-manipulation min-h-[44px] w-full sm:w-auto"
                       >
                         Recommencer
                       </button>
@@ -782,4 +1009,4 @@ export default function AdditionFractionsPage() {
       </div>
     </div>
   );
-} 
+}

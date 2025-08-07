@@ -32,22 +32,22 @@ function ComparaisonAnimation2() {
   const [step, setStep] = useState(0);
 
   return (
-    <div className="bg-white rounded-xl p-6 shadow-lg border-2 border-orange-200">
-      <div className="bg-orange-50 rounded-lg p-4 mb-6">
-        <p className="text-center text-lg font-bold text-orange-800">
+    <div className="bg-white rounded-xl p-3 sm:p-6 shadow-lg border-2 border-orange-200">
+      <div className="bg-orange-50 rounded-lg p-2 sm:p-4 mb-3 sm:mb-6">
+        <p className="text-center text-sm sm:text-lg font-bold text-orange-800">
           ⚠️ <strong>Règle à retenir :</strong> Si le dénominateur est égal, c'est la fraction avec le numérateur le plus GRAND qui est la plus GRANDE !
         </p>
-        <p className="text-center text-sm text-orange-700 mt-2">
+        <p className="text-center text-xs sm:text-sm text-orange-700 mt-1 sm:mt-2">
           Exemple : 2/4 vs 1/4 → même dénominateur (4), mais 2 &gt; 1, donc 2/4 &gt; 1/4
         </p>
       </div>
       
-      <div className="flex justify-center mb-6">
-        <div className="flex items-center space-x-8">
+      <div className="flex justify-center mb-3 sm:mb-6">
+        <div className="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-8">
           {/* Gâteau 2/4 */}
           <div className="text-center">
-            <div className="relative w-32 h-32 mx-auto mb-4">
-              <svg width="128" height="128" viewBox="0 0 128 128" className="rounded-full">
+            <div className="relative w-24 sm:w-32 h-24 sm:h-32 mx-auto mb-2 sm:mb-4">
+              <svg width="100%" height="100%" viewBox="0 0 128 128" className="rounded-full">
                 {/* Gâteau entier */}
                 <circle cx="64" cy="64" r="60" fill="#F59E0B" stroke="#D97706" strokeWidth="4"/>
                 {/* Lignes de division */}
@@ -63,24 +63,24 @@ function ComparaisonAnimation2() {
                 />
               </svg>
             </div>
-            <div className="text-2xl mb-2">
-              <FractionMath a="2" b="4" size="text-2xl" />
+            <div className="text-lg sm:text-2xl mb-1 sm:mb-2">
+              <FractionMath a="2" b="4" size="text-lg sm:text-2xl" />
             </div>
-            <p className="text-lg font-bold text-green-600">
+            <p className="text-sm sm:text-lg font-bold text-green-600">
               {step >= 1 ? "Numérateur : 2" : ""}
               {step >= 3 ? " → Plus grande !" : ""}
             </p>
           </div>
 
           {/* VS */}
-          <div className={`text-4xl font-bold transition-all duration-500 ${step >= 3 ? 'text-purple-600 scale-125' : 'text-gray-400'}`}>
+          <div className={`text-2xl sm:text-4xl font-bold transition-all duration-500 ${step >= 3 ? 'text-purple-600 scale-125' : 'text-gray-400'}`}>
             VS
           </div>
 
           {/* Gâteau 1/4 */}
           <div className="text-center">
-            <div className="relative w-32 h-32 mx-auto mb-4">
-              <svg width="128" height="128" viewBox="0 0 128 128" className="rounded-full">
+            <div className="relative w-24 sm:w-32 h-24 sm:h-32 mx-auto mb-2 sm:mb-4">
+              <svg width="100%" height="100%" viewBox="0 0 128 128" className="rounded-full">
                 {/* Gâteau entier */}
                 <circle cx="64" cy="64" r="60" fill="#F59E0B" stroke="#D97706" strokeWidth="4"/>
                 {/* Lignes de division */}
@@ -96,10 +96,10 @@ function ComparaisonAnimation2() {
                 />
               </svg>
             </div>
-            <div className="text-2xl mb-2">
-              <FractionMath a="1" b="4" size="text-2xl" />
+            <div className="text-lg sm:text-2xl mb-1 sm:mb-2">
+              <FractionMath a="1" b="4" size="text-lg sm:text-2xl" />
             </div>
-            <p className="text-lg font-bold text-red-600">
+            <p className="text-sm sm:text-lg font-bold text-red-600">
               {step >= 1 ? "Numérateur : 1" : ""}
               {step >= 3 ? " → Plus petite !" : ""}
             </p>
@@ -108,37 +108,37 @@ function ComparaisonAnimation2() {
       </div>
 
       {/* Explication étape par étape */}
-      <div className="text-center mb-6">
+      <div className="text-center mb-3 sm:mb-6">
         {step === 0 && (
-          <p className="text-xl text-gray-700">
+          <p className="text-sm sm:text-xl text-gray-700">
             🍰 Voici deux gâteaux identiques coupés en 4 parts égales
           </p>
         )}
         {step === 1 && (
           <div>
-            <p className="text-xl text-blue-700 mb-2">
+            <p className="text-sm sm:text-xl text-blue-700 mb-1 sm:mb-2">
               🔢 Première fraction : numérateur = 2, dénominateur = 4
             </p>
-            <p className="text-xl text-blue-700">
+            <p className="text-sm sm:text-xl text-blue-700">
               🔢 Deuxième fraction : numérateur = 1, dénominateur = 4
             </p>
           </div>
         )}
         {step === 2 && (
-          <p className="text-xl text-purple-700">
+          <p className="text-sm sm:text-xl text-purple-700">
             ⚖️ Même dénominateur (4), mais lequel a le plus grand numérateur ?
           </p>
         )}
         {step >= 3 && (
           <div>
-            <p className="text-xl text-green-700 mb-2">
+            <p className="text-sm sm:text-xl text-green-700 mb-1 sm:mb-2">
               🏆 <strong>2/4 est plus grand que 1/4</strong>
             </p>
-            <p className="text-lg text-gray-600">
+            <p className="text-sm sm:text-lg text-gray-600">
               2 &gt; 1, donc 2/4 &gt; 1/4
             </p>
-            <div className="bg-yellow-100 rounded-lg p-3 mt-4">
-              <p className="text-sm font-bold text-yellow-800">
+            <div className="bg-yellow-100 rounded-lg p-2 sm:p-3 mt-2 sm:mt-4">
+              <p className="text-xs sm:text-sm font-bold text-yellow-800">
                 💡 Dénominateur égal → Plus grand numérateur = Plus grande fraction !
               </p>
             </div>
@@ -147,18 +147,18 @@ function ComparaisonAnimation2() {
       </div>
 
       {/* Contrôles */}
-      <div className="flex justify-center space-x-4">
+      <div className="flex justify-center space-x-2 sm:space-x-4">
         <button
           onClick={() => setStep(prev => Math.max(0, prev - 1))}
           disabled={step === 0}
-          className="bg-gray-500 text-white px-4 py-2 rounded-lg font-bold hover:bg-gray-600 disabled:opacity-50"
+          className="bg-gray-500 text-white px-2 sm:px-4 py-1 sm:py-2 rounded-lg text-sm sm:text-base font-bold hover:bg-gray-600 disabled:opacity-50"
         >
           ← Précédent
         </button>
         <button
           onClick={() => setStep(prev => Math.min(3, prev + 1))}
           disabled={step === 3}
-          className={`bg-orange-500 text-white px-4 py-2 rounded-lg font-bold hover:bg-orange-600 disabled:opacity-50 ${
+          className={`bg-orange-500 text-white px-2 sm:px-4 py-1 sm:py-2 rounded-lg text-sm sm:text-base font-bold hover:bg-orange-600 disabled:opacity-50 ${
             step < 3 ? 'animate-pulse shadow-lg shadow-orange-300' : ''
           }`}
         >
@@ -234,50 +234,50 @@ function ComparaisonAnimation3() {
   };
 
   return (
-    <div className="bg-white rounded-xl p-6 shadow-lg border-2 border-orange-200">
-             <div className="bg-orange-50 rounded-lg p-4 mb-6">
-         <p className="text-center text-lg font-bold text-orange-800">
+    <div className="bg-white rounded-xl p-3 sm:p-6 shadow-lg border-2 border-orange-200">
+             <div className="bg-orange-50 rounded-lg p-2 sm:p-4 mb-3 sm:mb-6">
+         <p className="text-center text-sm sm:text-lg font-bold text-orange-800">
            ⚠️ <strong>Règle à retenir :</strong> Si le numérateur est égal, c'est la fraction avec le dénominateur le plus GRAND qui est la plus PETITE !
          </p>
-         <p className="text-center text-sm text-orange-700 mt-2">
+         <p className="text-center text-xs sm:text-sm text-orange-700 mt-1 sm:mt-2">
            Exemple : 1/3 vs 1/6 → même numérateur (1), mais 6 &gt; 3, donc 1/6 &lt; 1/3
          </p>
        </div>
       
-      <div className="flex justify-center mb-6">
-        <div className="flex items-center space-x-8">
+      <div className="flex justify-center mb-3 sm:mb-6">
+        <div className="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-8">
           {/* Gâteau 1/3 */}
           <div className="text-center">
-            <div className="relative w-32 h-32 mx-auto mb-4">
-              <svg width="128" height="128" viewBox="0 0 128 128" className="rounded-full">
+            <div className="relative w-24 sm:w-32 h-24 sm:h-32 mx-auto mb-2 sm:mb-4">
+              <svg width="100%" height="100%" viewBox="0 0 128 128" className="rounded-full">
                 {renderThirds(step >= 2)}
               </svg>
             </div>
-            <div className="text-2xl mb-2">
-              <FractionMath a="1" b="3" size="text-2xl" />
+            <div className="text-lg sm:text-2xl mb-1 sm:mb-2">
+              <FractionMath a="1" b="3" size="text-lg sm:text-2xl" />
             </div>
-                         <p className="text-lg font-bold text-green-600">
+                         <p className="text-sm sm:text-lg font-bold text-green-600">
                {step >= 1 ? "Dénominateur : 3" : ""}
                {step >= 3 ? " → Plus grande !" : ""}
              </p>
           </div>
 
           {/* VS */}
-          <div className={`text-4xl font-bold transition-all duration-500 ${step >= 3 ? 'text-purple-600 scale-125' : 'text-gray-400'}`}>
+          <div className={`text-2xl sm:text-4xl font-bold transition-all duration-500 ${step >= 3 ? 'text-purple-600 scale-125' : 'text-gray-400'}`}>
             VS
           </div>
 
           {/* Gâteau 1/6 */}
           <div className="text-center">
-            <div className="relative w-32 h-32 mx-auto mb-4">
-              <svg width="128" height="128" viewBox="0 0 128 128" className="rounded-full">
+            <div className="relative w-24 sm:w-32 h-24 sm:h-32 mx-auto mb-2 sm:mb-4">
+              <svg width="100%" height="100%" viewBox="0 0 128 128" className="rounded-full">
                 {renderSixths(step >= 2)}
               </svg>
             </div>
-            <div className="text-2xl mb-2">
-              <FractionMath a="1" b="6" size="text-2xl" />
+            <div className="text-lg sm:text-2xl mb-1 sm:mb-2">
+              <FractionMath a="1" b="6" size="text-lg sm:text-2xl" />
             </div>
-                         <p className="text-lg font-bold text-red-600">
+                         <p className="text-sm sm:text-lg font-bold text-red-600">
                {step >= 1 ? "Dénominateur : 6" : ""}
                {step >= 3 ? " → Plus petite !" : ""}
              </p>
@@ -286,37 +286,37 @@ function ComparaisonAnimation3() {
       </div>
 
       {/* Explication étape par étape */}
-      <div className="text-center mb-6">
+      <div className="text-center mb-3 sm:mb-6">
         {step === 0 && (
-          <p className="text-xl text-gray-700">
+          <p className="text-sm sm:text-xl text-gray-700">
             🍰 Voici deux gâteaux identiques coupés différemment
           </p>
         )}
         {step === 1 && (
           <div>
-            <p className="text-xl text-blue-700 mb-2">
+            <p className="text-sm sm:text-xl text-blue-700 mb-1 sm:mb-2">
               🔢 Première fraction : numérateur = 1, dénominateur = 3
             </p>
-            <p className="text-xl text-blue-700">
+            <p className="text-sm sm:text-xl text-blue-700">
               🔢 Deuxième fraction : numérateur = 1, dénominateur = 6
             </p>
           </div>
         )}
         {step === 2 && (
-          <p className="text-xl text-purple-700">
+          <p className="text-sm sm:text-xl text-purple-700">
             ⚖️ Même numérateur (1), mais lequel a le plus grand dénominateur ?
           </p>
         )}
         {step >= 3 && (
           <div>
-            <p className="text-xl text-green-700 mb-2">
+            <p className="text-sm sm:text-xl text-green-700 mb-1 sm:mb-2">
               🏆 <strong>1/3 est plus grand que 1/6</strong>
             </p>
-            <p className="text-lg text-gray-600">
+            <p className="text-sm sm:text-lg text-gray-600">
               6 &gt; 3, donc 1/6 &lt; 1/3
             </p>
-            <div className="bg-yellow-100 rounded-lg p-3 mt-4">
-              <p className="text-sm font-bold text-yellow-800">
+            <div className="bg-yellow-100 rounded-lg p-2 sm:p-3 mt-2 sm:mt-4">
+              <p className="text-xs sm:text-sm font-bold text-yellow-800">
                 💡 Numérateur égal → Plus grand dénominateur = Plus petite fraction !
               </p>
             </div>
@@ -325,18 +325,18 @@ function ComparaisonAnimation3() {
       </div>
 
       {/* Contrôles */}
-      <div className="flex justify-center space-x-4">
+      <div className="flex justify-center space-x-2 sm:space-x-4">
         <button
           onClick={() => setStep(prev => Math.max(0, prev - 1))}
           disabled={step === 0}
-          className="bg-gray-500 text-white px-4 py-2 rounded-lg font-bold hover:bg-gray-600 disabled:opacity-50"
+          className="bg-gray-500 text-white px-2 sm:px-4 py-1 sm:py-2 rounded-lg text-sm sm:text-base font-bold hover:bg-gray-600 disabled:opacity-50"
         >
           ← Précédent
         </button>
         <button
           onClick={() => setStep(prev => Math.min(3, prev + 1))}
           disabled={step === 3}
-          className="bg-orange-500 text-white px-4 py-2 rounded-lg font-bold hover:bg-orange-600 disabled:opacity-50"
+          className="bg-orange-500 text-white px-2 sm:px-4 py-1 sm:py-2 rounded-lg text-sm sm:text-base font-bold hover:bg-orange-600 disabled:opacity-50"
         >
           Suivant →
         </button>
@@ -812,13 +812,13 @@ function MiniJeuComparaison() {
 
   if (gameStep >= gameQuestions.length) {
     return (
-      <div className="bg-gradient-to-r from-green-400 to-blue-500 rounded-xl p-6 text-white text-center">
-        <div className="text-6xl mb-4">🏆</div>
-        <h2 className="text-2xl font-bold mb-4">Bravo champion !</h2>
-        <p className="text-xl mb-4">Score : {score}/{gameQuestions.length}</p>
+      <div className="bg-gradient-to-r from-green-400 to-blue-500 rounded-xl p-3 sm:p-6 text-white text-center">
+        <div className="text-4xl sm:text-6xl mb-2 sm:mb-4">🏆</div>
+        <h2 className="text-lg sm:text-2xl font-bold mb-2 sm:mb-4">Bravo champion !</h2>
+        <p className="text-sm sm:text-xl mb-3 sm:mb-4">Score : {score}/{gameQuestions.length}</p>
         <button
           onClick={resetGame}
-          className="bg-white text-green-600 px-6 py-3 rounded-lg font-bold hover:bg-gray-100"
+          className="bg-white text-green-600 px-3 sm:px-6 py-2 sm:py-3 rounded-lg text-sm sm:text-base font-bold hover:bg-gray-100"
         >
           🔄 Recommencer
         </button>
@@ -829,39 +829,39 @@ function MiniJeuComparaison() {
   const question = gameQuestions[gameStep];
 
   return (
-    <div className="bg-gradient-to-r from-indigo-400 to-purple-500 rounded-xl p-6 text-white">
-      <h2 className="text-2xl font-bold text-center mb-6">
+    <div className="bg-gradient-to-r from-indigo-400 to-purple-500 rounded-xl p-3 sm:p-6 text-white">
+      <h2 className="text-lg sm:text-2xl font-bold text-center mb-3 sm:mb-6">
         🎮 Mini-jeu : Question {gameStep + 1}/{gameQuestions.length}
       </h2>
       
-      <div className="text-center mb-4">
-        <div className="bg-white bg-opacity-20 rounded-lg px-4 py-2 inline-block">
-          <p className="text-sm">
+      <div className="text-center mb-2 sm:mb-4">
+        <div className="bg-white bg-opacity-20 rounded-lg px-2 sm:px-4 py-1 sm:py-2 inline-block">
+          <p className="text-xs sm:text-sm">
                             📊 Teste les 2 règles : numérateur égal ou dénominateur égal !
           </p>
         </div>
       </div>
       
-      <div className="text-center mb-6">
-        <p className="text-xl mb-4">Qui est le plus grand ?</p>
-        <div className="flex items-center justify-center space-x-8">
-          <div className="text-4xl">
-            <FractionMath a={question.f1.split('/')[0]} b={question.f1.split('/')[1]} size="text-4xl" />
+      <div className="text-center mb-3 sm:mb-6">
+        <p className="text-sm sm:text-xl mb-2 sm:mb-4">Qui est le plus grand ?</p>
+        <div className="flex flex-col sm:flex-row items-center justify-center space-y-2 sm:space-y-0 sm:space-x-8">
+          <div className="text-2xl sm:text-4xl">
+            <FractionMath a={question.f1.split('/')[0]} b={question.f1.split('/')[1]} size="text-2xl sm:text-4xl" />
           </div>
-          <div className="text-4xl">?</div>
-          <div className="text-4xl">
-            <FractionMath a={question.f2.split('/')[0]} b={question.f2.split('/')[1]} size="text-4xl" />
+          <div className="text-2xl sm:text-4xl">?</div>
+          <div className="text-2xl sm:text-4xl">
+            <FractionMath a={question.f2.split('/')[0]} b={question.f2.split('/')[1]} size="text-2xl sm:text-4xl" />
           </div>
         </div>
       </div>
 
       {!feedback ? (
-        <div className="flex justify-center space-x-4">
+        <div className="flex justify-center space-x-2 sm:space-x-4">
           {['<', '=', '>'].map((symbol) => (
             <button
               key={symbol}
               onClick={() => handleAnswer(symbol)}
-              className="w-16 h-16 text-2xl font-bold rounded-lg bg-white text-purple-600 hover:bg-gray-100 transition-colors"
+              className="w-12 h-12 sm:w-16 sm:h-16 text-lg sm:text-2xl font-bold rounded-lg bg-white text-purple-600 hover:bg-gray-100 transition-colors touch-manipulation"
             >
               {symbol}
             </button>
@@ -869,12 +869,12 @@ function MiniJeuComparaison() {
         </div>
       ) : (
         <div className="text-center">
-          <p className="text-xl font-bold">{feedback}</p>
+          <p className="text-sm sm:text-xl font-bold">{feedback}</p>
         </div>
       )}
       
-      <div className="text-center mt-4">
-        <p className="text-lg">Score : {score}/{gameQuestions.length}</p>
+      <div className="text-center mt-2 sm:mt-4">
+        <p className="text-sm sm:text-lg">Score : {score}/{gameQuestions.length}</p>
       </div>
     </div>
   );
@@ -1216,17 +1216,17 @@ export default function ComparaisonFractionsPage() {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
         {/* Header */}
         <div className="mb-6 sm:mb-8">
-          <Link href="/chapitre/ce1-fractions-simples" className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors mb-4 touch-manipulation">
+          <Link href="/chapitre/ce2-fractions-bande-unite" className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors mb-4 touch-manipulation">
             <ArrowLeft className="w-4 h-4" />
-            <span>Retour au chapitre</span>
+            <span>Retour aux fractions et bandes unité</span>
           </Link>
           
           <div className="bg-white rounded-xl p-4 sm:p-6 shadow-lg text-center">
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-3 sm:mb-4">
-              ⚖️ Comparaison de fractions simples
+              ⚖️ Comparaison de fractions - CE2
             </h1>
             <p className="text-base sm:text-lg text-gray-600">
-              Apprends à comparer des fractions simples !
+              Découvre comment comparer des fractions en CE2 !
             </p>
           </div>
         </div>
@@ -1259,95 +1259,69 @@ export default function ComparaisonFractionsPage() {
 
         {!showExercises ? (
           /* COURS */
-          <div className="space-y-8">
+          <div className="space-y-4 sm:space-y-8">
             {/* Introduction ludique */}
-            <div className="bg-gradient-to-r from-purple-400 to-pink-500 rounded-xl p-6 text-white text-center">
-              <div className="text-6xl mb-4">🍰</div>
-              <h2 className="text-3xl font-bold mb-4">Le concours des gâteaux !</h2>
-              <p className="text-xl">
+            <div className="bg-gradient-to-r from-purple-400 to-pink-500 rounded-xl p-3 sm:p-6 text-white text-center">
+              <div className="text-4xl sm:text-6xl mb-2 sm:mb-4">🍰</div>
+              <h2 className="text-xl sm:text-3xl font-bold mb-2 sm:mb-4">Le concours des gâteaux !</h2>
+              <p className="text-sm sm:text-xl">
                 Qui a la plus grosse part de gâteau ? C'est parti pour comparer !
               </p>
             </div>
 
             {/* Section 1: Animations avec dessins (pie charts) */}
-            <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-6 mb-8">
-              <h2 className="text-3xl font-bold text-center mb-2 text-blue-900">
+            <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-3 sm:p-6 mb-4 sm:mb-8">
+              <h2 className="text-xl sm:text-3xl font-bold text-center mb-1 sm:mb-2 text-blue-900">
                 🍰 Apprendre avec des dessins
               </h2>
-              <p className="text-center text-lg text-blue-700 mb-6">
+              <p className="text-center text-sm sm:text-lg text-blue-700 mb-3 sm:mb-6">
                 Regardons les parts de gâteaux pour mieux comprendre !
               </p>
               
                              {/* Cas 1: Numérateur égal (avec dessins) */}
-               <div className="mb-8">
-                 <h3 className="text-2xl font-bold text-center mb-4 text-green-800">
+               <div className="mb-4 sm:mb-8">
+                 <h3 className="text-lg sm:text-2xl font-bold text-center mb-2 sm:mb-4 text-green-800">
                    📊 Cas 1 : Quand le numérateur est égal
                  </h3>
-                 <div className="space-y-6">
+                 <div className="space-y-3 sm:space-y-6">
                    <ComparaisonAnimation3 />
                  </div>
                </div>
 
               {/* Cas 2: Dénominateur égal (avec dessins) */}
               <div>
-                <h3 className="text-2xl font-bold text-center mb-4 text-orange-800">
+                <h3 className="text-lg sm:text-2xl font-bold text-center mb-2 sm:mb-4 text-orange-800">
                   📊 Cas 2 : Quand le dénominateur est égal
                 </h3>
                 <ComparaisonAnimation2 />
               </div>
             </div>
 
-            {/* Section 2: Animations purement mathématiques */}
-            <div className="bg-gradient-to-r from-indigo-50 to-cyan-50 rounded-xl p-6 mb-8">
-              <h2 className="text-3xl font-bold text-center mb-2 text-indigo-900">
-                🔢 Apprendre avec les mathématiques pures
-              </h2>
-              <p className="text-center text-lg text-indigo-700 mb-6">
-                Appliquons la règle directement sur les fractions !
-              </p>
-              
-                             {/* Cas 1: Numérateur égal (version mathématique) */}
-               <div className="mb-8">
-                 <h3 className="text-2xl font-bold text-center mb-4 text-blue-800">
-                   🔢 Cas 1 : Quand le numérateur est égal
-                 </h3>
-                 <AnimationRegleMathematique />
-               </div>
-
-               {/* Cas 2: Dénominateur égal (version mathématique) */}
-               <div>
-                 <h3 className="text-2xl font-bold text-center mb-4 text-orange-800">
-                   🔢 Cas 2 : Quand le dénominateur est égal
-                 </h3>
-                 <AnimationRegleMathematique2 />
-               </div>
-             </div>
-
             {/* Résumé simple */}
-            <div className="bg-white rounded-xl p-6 shadow-lg">
-              <h2 className="text-2xl font-bold text-center mb-6 text-gray-900">
+            <div className="bg-white rounded-xl p-3 sm:p-6 shadow-lg">
+              <h2 className="text-lg sm:text-2xl font-bold text-center mb-3 sm:mb-6 text-gray-900">
                 🏆 Ce qu'il faut retenir
               </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="bg-blue-50 rounded-xl p-6 border-2 border-blue-200">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-6">
+                <div className="bg-blue-50 rounded-xl p-3 sm:p-6 border-2 border-blue-200">
                   <div className="text-center">
-                    <div className="text-4xl mb-3">🔢</div>
-                    <h3 className="text-xl font-bold text-blue-800 mb-3">Règle n°1 - Numérateur égal</h3>
-                    <p className="text-blue-700 text-base">
+                    <div className="text-2xl sm:text-4xl mb-2 sm:mb-3">🔢</div>
+                    <h3 className="text-sm sm:text-xl font-bold text-blue-800 mb-2 sm:mb-3">Règle n°1 - Numérateur égal</h3>
+                    <p className="text-blue-700 text-xs sm:text-base">
                       Si le <strong>numérateur est égal</strong>, plus le dénominateur est grand, plus la fraction est <strong>petite</strong> !
                       <br/>
-                      <span className="text-sm font-bold mt-2 block">(1/3 &gt; 1/6 car 6 &gt; 3)</span>
+                      <span className="text-xs sm:text-sm font-bold mt-1 sm:mt-2 block">(1/3 &gt; 1/6 car 6 &gt; 3)</span>
                     </p>
                   </div>
                 </div>
-                <div className="bg-orange-50 rounded-xl p-6 border-2 border-orange-200">
+                <div className="bg-orange-50 rounded-xl p-3 sm:p-6 border-2 border-orange-200">
                   <div className="text-center">
-                    <div className="text-4xl mb-3">🧮</div>
-                    <h3 className="text-xl font-bold text-orange-800 mb-3">Règle n°2 - Dénominateur égal</h3>
-                    <p className="text-orange-700 text-base">
+                    <div className="text-2xl sm:text-4xl mb-2 sm:mb-3">🧮</div>
+                    <h3 className="text-sm sm:text-xl font-bold text-orange-800 mb-2 sm:mb-3">Règle n°2 - Dénominateur égal</h3>
+                    <p className="text-orange-700 text-xs sm:text-base">
                       Si le <strong>dénominateur est égal</strong>, plus le numérateur est grand, plus la fraction est <strong>grande</strong> !
                       <br/>
-                      <span className="text-sm font-bold mt-2 block">(2/4 &gt; 1/4 car 2 &gt; 1)</span>
+                      <span className="text-xs sm:text-sm font-bold mt-1 sm:mt-2 block">(2/4 &gt; 1/4 car 2 &gt; 1)</span>
                     </p>
                   </div>
                 </div>
