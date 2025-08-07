@@ -159,18 +159,18 @@ export default function Decomposition1000CE1() {
     95: [[1, 94], [2, 93], [3, 92], [4, 91], [5, 90], [6, 89], [7, 88], [8, 87], [9, 86], [10, 85], [11, 84], [12, 83], [13, 82], [14, 81], [15, 80], [16, 79], [17, 78], [18, 77], [19, 76], [20, 75], [21, 74], [22, 73], [23, 72], [24, 71], [25, 70], [26, 69], [27, 68], [28, 67], [29, 66], [30, 65], [31, 64], [32, 63], [33, 62], [34, 61], [35, 60], [36, 59], [37, 58], [38, 57], [39, 56], [40, 55], [41, 54], [42, 53], [43, 52], [44, 51], [45, 50], [46, 49], [47, 48], [48, 47], [49, 46], [50, 45], [51, 44], [52, 43], [53, 42], [54, 41], [55, 40], [56, 39], [57, 38], [58, 37], [59, 36], [60, 35], [61, 34], [62, 33], [63, 32], [64, 31], [65, 30], [66, 29], [67, 28], [68, 27], [69, 26], [70, 25], [71, 24], [72, 23], [73, 22], [74, 21], [75, 20], [76, 19], [77, 18], [78, 17], [79, 16], [80, 15], [81, 14], [82, 13], [83, 12], [84, 11], [85, 10], [86, 9], [87, 8], [88, 7], [89, 6], [90, 5], [91, 4], [92, 3], [93, 2], [94, 1]]
   };
 
-  // Exercices de décomposition stratégique (jusqu'à 100)
+  // Exercices de décomposition stratégique (jusqu'à 1000)
   const exercises = [
-    { question: 'Décompose 47 en deux parties', number: 47, strategy: 'Dizaines + Unités', correctAnswer: [40, 7] },
-    { question: 'Décompose 58 en deux parties', number: 58, strategy: 'Parties égales', correctAnswer: [29, 29] },
-    { question: 'Décompose 73 en deux parties', number: 73, strategy: 'Dizaines + Unités', correctAnswer: [70, 3] },
-    { question: 'Décompose 84 en deux parties', number: 84, strategy: 'Parties égales', correctAnswer: [42, 42] },
-    { question: 'Décompose 29 en deux parties', number: 29, strategy: 'Dizaines + Unités', correctAnswer: [20, 9] },
-    { question: 'Décompose 46 en deux parties', number: 46, strategy: 'Parties égales', correctAnswer: [23, 23] },
-    { question: 'Décompose 95 en deux parties', number: 95, strategy: 'Dizaines + Unités', correctAnswer: [90, 5] },
-    { question: 'Décompose 68 en deux parties', number: 68, strategy: 'Parties égales', correctAnswer: [34, 34] },
-    { question: 'Décompose 52 en deux parties', number: 52, strategy: 'Dizaines + Unités', correctAnswer: [50, 2] },
-    { question: 'Décompose 76 en deux parties', number: 76, strategy: 'Parties égales', correctAnswer: [38, 38] }
+    { question: 'Décompose 47', number: 47, strategy: 'Dizaines + Unités', correctAnswer: [40, 7] },
+    { question: 'Décompose 58', number: 58, strategy: 'Dizaines + Unités', correctAnswer: [50, 8] },
+    { question: 'Décompose 73', number: 73, strategy: 'Dizaines + Unités', correctAnswer: [70, 3] },
+    { question: 'Décompose 84', number: 84, strategy: 'Dizaines + Unités', correctAnswer: [80, 4] },
+    { question: 'Décompose 146', number: 146, strategy: 'Centaines + Dizaines + Unités', correctAnswer: [100, 40, 6] },
+    { question: 'Décompose 95', number: 95, strategy: 'Dizaines + Unités', correctAnswer: [90, 5] },
+    { question: 'Décompose 283', number: 283, strategy: 'Centaines + Dizaines + Unités', correctAnswer: [200, 80, 3] },
+    { question: 'Décompose 52', number: 52, strategy: 'Dizaines + Unités', correctAnswer: [50, 2] },
+    { question: 'Décompose 459', number: 459, strategy: 'Centaines + Dizaines + Unités', correctAnswer: [400, 50, 9] },
+    { question: 'Décompose 67', number: 67, strategy: 'Dizaines + Unités', correctAnswer: [60, 7] }
   ];
 
   // Fonction pour arrêter toutes les animations et vocaux
@@ -307,9 +307,9 @@ export default function Decomposition1000CE1() {
     if (exercise.strategy === 'Dizaines + Unités') {
       objectEmoji = '🔢';
       objectName = 'unités';
-    } else if (exercise.strategy === 'Parties égales') {
-      objectEmoji = '🟡';
-      objectName = 'éléments';
+    } else if (exercise.strategy === 'Centaines + Dizaines + Unités') {
+      objectEmoji = '🏢';
+      objectName = 'unités';
     }
     
     // Si on a des réponses utilisateur, on les utilise
@@ -717,22 +717,36 @@ export default function Decomposition1000CE1() {
       if (stopSignalRef.current) return;
       
       await wait(1200);
-      await playAudio("Il y a aussi une deuxième stratégie : les parties égales !");
+      await playAudio("Maintenant, passons aux nombres à 3 chiffres avec les centaines !");
       if (stopSignalRef.current) return;
       
       await wait(1500);
-      // Montrer un exemple de parties égales (58 = 29 + 29)
-      setCurrentExample(2); // Index 2 = 58 = 29 + 29
-      const equalPartsExample = decompositionExamples[2];
-      setDecompositionStep('number');
-      setHighlightedNumber(equalPartsExample.number);
+      // Montrer un exemple avec centaines (146 = 100 + 40 + 6)
+      setCurrentExample(2); // Index 2 = 146 = 100 + 40 + 6
+      const centainesExample = decompositionExamples[2];
+      setTableAnimationStep('initial');
       
-      await playAudio(`Par exemple, ${equalPartsExample.number} peut se décomposer en deux parties égales !`);
+      await playAudio(`Par exemple, ${centainesExample.number} peut se décomposer avec centaines, dizaines et unités !`);
       if (stopSignalRef.current) return;
       
-      await wait(1200);
-      setDecompositionStep('parts');
-      await playAudio(`${equalPartsExample.number} = ${renderDecomposition(equalPartsExample.parts)} ! Parties identiques !`);
+      await wait(1800);
+      setTableAnimationStep('table');
+      await playAudio("Je place le nombre dans le tableau : centaines, dizaines, unités !");
+      if (stopSignalRef.current) return;
+      
+      await wait(1500);
+      setTableAnimationStep('digits');
+      await playAudio(`${centainesExample.number} : 1 centaine, 4 dizaines, 6 unités !`);
+      if (stopSignalRef.current) return;
+      
+      await wait(1500);
+      setTableAnimationStep('multiplications');
+      await playAudio("Je multiplie : 1 fois 100, 4 fois 10, 6 fois 1 !");
+      if (stopSignalRef.current) return;
+      
+      await wait(1500);
+      setTableAnimationStep('addition');
+      await playAudio(`${centainesExample.number} = ${renderDecomposition(centainesExample.parts)} !`);
       if (stopSignalRef.current) return;
       
       await wait(1800);
@@ -812,8 +826,8 @@ export default function Decomposition1000CE1() {
       // Adapter l'explication selon la stratégie
       if (example.strategy === 'Dizaines + Unités') {
         await playAudio(`Avec la stratégie dizaines plus unités : ${example.number}, c'est ${Math.floor(example.number/10)} dizaines plus ${example.number%10} unités !`);
-      } else if (example.strategy === 'Parties égales') {
-        await playAudio(`Avec la stratégie parties égales : je peux faire deux parties identiques !`);
+      } else if (example.strategy === 'Centaines + Dizaines + Unités') {
+        await playAudio(`Avec la stratégie centaines plus dizaines plus unités : je décompose en 3 parties !`);
       } else {
         await playAudio("Je vais le séparer en deux parties.");
       }
@@ -822,8 +836,8 @@ export default function Decomposition1000CE1() {
       await wait(1500);
       setDecompositionStep('parts');
       
-      if (example.strategy === 'Parties égales') {
-        await playAudio(`Deux parties égales de ${example.parts[0]} chacune !`);
+      if (example.strategy === 'Centaines + Dizaines + Unités') {
+        await playAudio(`Une partie de ${example.parts[0]}, une partie de ${example.parts[1]}, et une partie de ${example.parts[2]}.`);
       } else if (example.parts.length === 3) {
         await playAudio(`Une partie de ${example.parts[0]}, une partie de ${example.parts[1]}, et une partie de ${example.parts[2]}.`);
       } else {
@@ -900,10 +914,10 @@ export default function Decomposition1000CE1() {
     } else {
       if (strategy === 'Dizaines + Unités') {
         await playAudio(`Je vais t'expliquer cette décomposition avec la technique des dizaines et unités !`);
-      } else if (strategy === 'Parties égales') {
+      } else if (strategy === 'Centaines + Dizaines + Unités') {
+        await playAudio(`Je vais t'expliquer cette décomposition avec centaines, dizaines et unités !`);
+      } else {
         await playAudio(`Je vais t'expliquer cette décomposition avec des ${objectName} !`);
-    } else {
-      await playAudio(`Je vais t'expliquer cette décomposition avec des ${objectName} !`);
       }
     }
     if (stopSignalRef.current) return;
@@ -926,8 +940,8 @@ export default function Decomposition1000CE1() {
     setCorrectionStep('group1');
     if (strategy === 'Dizaines + Unités') {
       await playAudio(`Maintenant, j'utilise la technique des dizaines plus unités ! Je sépare les ${Math.floor(result / 10)} dizaines, soit ${num1}.`);
-    } else if (strategy === 'Parties égales') {
-      await playAudio(`Maintenant, j'utilise la technique des parties égales ! Je fais une première partie de ${num1}.`);
+    } else if (strategy === 'Centaines + Dizaines + Unités') {
+      await playAudio(`Maintenant, j'utilise la technique centaines, dizaines, unités ! Je commence par ${num1}.`);
     } else {
       await playAudio(`Maintenant, je vais faire une première partie de ${num1} ${objectName}.`);
     }
@@ -938,8 +952,8 @@ export default function Decomposition1000CE1() {
     setCorrectionStep('group2');
     if (strategy === 'Dizaines + Unités') {
       await playAudio(`Et maintenant les unités restantes, soit ${num2}. C'est la technique dizaines plus unités !`);
-    } else if (strategy === 'Parties égales') {
-      await playAudio(`Et une deuxième partie égale de ${num2}. Regarde : ${num1} égale ${num2} ! C'est la technique des parties égales !`);
+    } else if (strategy === 'Centaines + Dizaines + Unités') {
+      await playAudio(`Et maintenant ${num2}, puis ${num3 || 0}. C'est la technique centaines, dizaines, unités !`);
     } else {
       await playAudio(`Et une deuxième partie de ${num2} ${objectName}.`);
     }
@@ -949,16 +963,16 @@ export default function Decomposition1000CE1() {
     // Étape 5: Explication de la décomposition selon la stratégie
     if (strategy === 'Dizaines + Unités') {
       await playAudio(`Parfait ! ${num1} plus ${num2}, c'est ${Math.floor(result / 10)} dizaines plus ${result % 10} unités ! Technique réussie !`);
-    } else if (strategy === 'Parties égales') {
-      await playAudio(`Parfait ! ${num1} plus ${num2}, ce sont bien deux parties égales de ${result} ! Technique réussie !`);
+    } else if (strategy === 'Centaines + Dizaines + Unités') {
+      await playAudio(`Parfait ! ${num1} plus ${num2} plus ${num3 || 0}, c'est bien la décomposition de ${result} ! Technique réussie !`);
     } else {
-    await playAudio(`Parfait ! ${num1} plus ${num2}, c'est bien une façon de décomposer ${result} !`);
+      await playAudio(`Parfait ! ${num1} plus ${num2}, c'est bien une façon de décomposer ${result} !`);
     }
     if (stopSignalRef.current) return;
     await wait(1000);
     
-    // Étape 6: Comptage interactif (seulement pour petits nombres ou parties égales)
-    if (result <= 20 || strategy === 'Parties égales') {
+    // Étape 6: Comptage interactif (seulement pour petits nombres)
+    if (result <= 20) {
       setCorrectionStep('counting');
       if (strategy === 'Dizaines + Unités') {
         await playAudio(`Maintenant, vérifions notre décomposition !`);
@@ -1119,9 +1133,12 @@ export default function Decomposition1000CE1() {
       const isValidSum = (num1 + num2) === target;
       const usesMultipleOf10 = (num1 % 10 === 0) || (num2 % 10 === 0);
       correct = isValidSum && usesMultipleOf10;
-    } else if (exercise.strategy === 'Parties égales') {
-      // Pour la stratégie parties égales, accepter uniquement si les deux parties sont égales
-      correct = (num1 === num2) && (num1 + num2 === target);
+    } else if (exercise.strategy === 'Centaines + Dizaines + Unités') {
+      // Pour les nombres à 3 chiffres, vérifier la décomposition canonique
+      const num3 = parseInt(userAnswer3) || 0;
+      const isValidSum = (num1 + num2 + num3) === target;
+      const isCanonical = (num1 % 100 === 0) && (num2 % 10 === 0);
+      correct = isValidSum && isCanonical;
     } else {
       // Fallback : vérifier simplement que la somme est correcte
       correct = isValidDecomposition(num1, num2, target);
@@ -2070,7 +2087,7 @@ export default function Decomposition1000CE1() {
                         await new Promise(resolve => setTimeout(resolve, 1800));
                         if (stopSignalRef.current) return;
                         
-                        await playAudio("Deuxième stratégie : Les parties égales, quand c'est possible ! Par exemple, 58 égale 29 plus 29 !");
+                        await playAudio("Deuxième stratégie : Les centaines ! Par exemple, 146 égale 100 plus 40 plus 6 !");
                         if (stopSignalRef.current) return;
                         
                         await new Promise(resolve => setTimeout(resolve, 1500));
@@ -2099,10 +2116,10 @@ export default function Decomposition1000CE1() {
                   <div className="text-xs text-gray-600 mt-1">La stratégie principale</div>
             </div>
                 <div>
-                  <div className="text-3xl sm:text-4xl mb-3">⚖️</div>
-                  <div className="font-bold text-lg">Parties égales</div>
-                  <div className="text-sm mt-2">58 = 29 + 29</div>
-                  <div className="text-xs text-gray-600 mt-1">Quand c'est possible</div>
+                  <div className="text-3xl sm:text-4xl mb-3">🏢</div>
+                  <div className="font-bold text-lg">Centaines</div>
+                  <div className="text-sm mt-2">146 = 100 + 40 + 6</div>
+                  <div className="text-xs text-gray-600 mt-1">Nombres à 3 chiffres</div>
                 </div>
               </div>
             </div>
