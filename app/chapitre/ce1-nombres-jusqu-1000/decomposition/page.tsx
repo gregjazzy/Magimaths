@@ -259,21 +259,21 @@ export default function DecompositionNombresCE1Page() {
       
       if (stopSignalRef.current) return;
       scrollToElement('positions-explanation');
-      await playAudio("D'abord, les positions des chiffres ! Chaque position a sa valeur spéciale !");
+      await playAudio("D'abord, les positions des chiffres et leurs valeurs !");
       if (stopSignalRef.current) return;
       highlightElement('positions-explanation', 3000);
       await new Promise(resolve => setTimeout(resolve, 500));
       
       if (stopSignalRef.current) return;
       scrollToElement('number-selector');
-      await playAudio("Ensuite, tu peux choisir un nombre pour voir sa décomposition en direct !");
+      await playAudio("Ensuite, choisis un nombre pour voir sa décomposition !");
       if (stopSignalRef.current) return;
       highlightElement('number-selector', 3000);
       await new Promise(resolve => setTimeout(resolve, 500));
       
       if (stopSignalRef.current) return;
       scrollToElement('decomposition-demo');
-      await playAudio("Et voici la magie ! Regarde comment le nombre se décompose avec l'animation !");
+      await playAudio("Et enfin, la démonstration complète en 3 étapes !");
       if (stopSignalRef.current) return;
       highlightElement('decomposition-demo', 3000);
       await new Promise(resolve => setTimeout(resolve, 500));
@@ -450,23 +450,15 @@ export default function DecompositionNombresCE1Page() {
   const handleNext = () => {
     // Si aucune réponse vérifiée encore, on vérifie
     if (isCorrect === null) {
-      let correct = false;
-      
-      if (exerciseType === 'decompose') {
-        const correctResult = decomposeNumber(exercises[currentExercise].number);
-        correct = 
-          userAnswers.centaines === correctResult.centaines &&
-          userAnswers.dizaines === correctResult.dizaines &&
-          userAnswers.unites === correctResult.unites;
-      } else {
-        // compose exercise
-        const correctNumber = composeExercises[currentExercise].number;
-        correct = userNumber.trim() === correctNumber;
-      }
+      const correctResult = decomposeNumber(exercises[currentExercise].number);
+      const correct = 
+        userAnswers.centaines === correctResult.centaines &&
+        userAnswers.dizaines === correctResult.dizaines &&
+        userAnswers.unites === correctResult.unites;
       
       setIsCorrect(correct);
       
-      const exerciseKey = `${exerciseType}-${currentExercise}`;
+      const exerciseKey = `decompose-${currentExercise}`;
       
       if (correct && !answeredCorrectly.has(exerciseKey)) {
         setScore(prevScore => prevScore + 1);
@@ -480,11 +472,9 @@ export default function DecompositionNombresCE1Page() {
       // Si bonne réponse → passage automatique après 1.5s
       if (correct) {
         setTimeout(() => {
-          const maxExercises = exerciseType === 'decompose' ? exercises.length : composeExercises.length;
-          if (currentExercise + 1 < maxExercises) {
-            setCurrentExercise(Math.min(currentExercise + 1, maxExercises - 1));
+          if (currentExercise + 1 < exercises.length) {
+            setCurrentExercise(Math.min(currentExercise + 1, exercises.length - 1));
             setUserAnswers({ centaines: '', dizaines: '', unites: '' });
-            setUserNumber('');
             setIsCorrect(null);
           } else {
             // Dernier exercice terminé, afficher la modale
@@ -493,19 +483,16 @@ export default function DecompositionNombresCE1Page() {
             setShowCompletionModal(true);
             
             // Sauvegarder les progrès
-            const maxExercises = exerciseType === 'decompose' ? exercises.length : composeExercises.length;
-            saveProgress(finalScoreValue, maxExercises);
+            saveProgress(finalScoreValue, exercises.length);
           }
         }, 1500);
       }
       // Si mauvaise réponse, on affiche la correction et on attend le clic suivant
     } else {
       // Réponse déjà vérifiée, on passe au suivant
-      const maxExercises = exerciseType === 'decompose' ? exercises.length : composeExercises.length;
-      if (currentExercise + 1 < maxExercises) {
-        setCurrentExercise(Math.min(currentExercise + 1, maxExercises - 1));
+      if (currentExercise + 1 < exercises.length) {
+        setCurrentExercise(Math.min(currentExercise + 1, exercises.length - 1));
         setUserAnswers({ centaines: '', dizaines: '', unites: '' });
-        setUserNumber('');
         setIsCorrect(null);
       } else {
         // Dernier exercice, afficher la modale
@@ -513,32 +500,27 @@ export default function DecompositionNombresCE1Page() {
         setShowCompletionModal(true);
         
         // Sauvegarder les progrès
-        const maxExercises = exerciseType === 'decompose' ? exercises.length : composeExercises.length;
-        saveProgress(score, maxExercises);
+        saveProgress(score, exercises.length);
       }
     }
   };
 
   const nextExercise = () => {
-    const maxExercises = exerciseType === 'decompose' ? exercises.length : composeExercises.length;
-    if (currentExercise < maxExercises - 1) {
+    if (currentExercise < exercises.length - 1) {
       setCurrentExercise(currentExercise + 1);
       setUserAnswers({ centaines: '', dizaines: '', unites: '' });
-      setUserNumber('');
       setIsCorrect(null);
     }
   };
 
   const resetExercise = () => {
     setUserAnswers({ centaines: '', dizaines: '', unites: '' });
-    setUserNumber('');
     setIsCorrect(null);
   };
 
   const resetAll = () => {
     setCurrentExercise(0);
     setUserAnswers({ centaines: '', dizaines: '', unites: '' });
-    setUserNumber('');
     setIsCorrect(null);
     setScore(0);
     setAnsweredCorrectly(new Set());
@@ -546,14 +528,7 @@ export default function DecompositionNombresCE1Page() {
     setFinalScore(0);
   };
 
-  const switchExerciseType = (type: 'decompose' | 'compose') => {
-    setExerciseType(type);
-    setCurrentExercise(0);
-    setUserAnswers({ centaines: '', dizaines: '', unites: '' });
-    setUserNumber('');
-    setIsCorrect(null);
-    setAnsweredCorrectly(new Set());
-  };
+
 
   const updateAnswer = (type: 'centaines' | 'dizaines' | 'unites', value: string) => {
     setUserAnswers(prev => ({ ...prev, [type]: value }));
@@ -700,19 +675,54 @@ export default function DecompositionNombresCE1Page() {
                   <div className="text-lg sm:text-2xl mb-1">💯</div>
                   <h3 className="font-bold text-red-800 mb-1 text-xs sm:text-sm">Centaines</h3>
                   <p className="text-red-700 text-xs hidden sm:block">Le chiffre de gauche</p>
-                  <p className="text-red-700 text-xs hidden sm:block">Vaut × 100</p>
+                  <p className="text-red-700 text-xs sm:block font-bold">Vaut × 100</p>
                 </div>
                 <div className="bg-blue-50 rounded-lg p-2 sm:p-3 text-center">
                   <div className="text-lg sm:text-2xl mb-1">🔟</div>
                   <h3 className="font-bold text-blue-800 mb-1 text-xs sm:text-sm">Dizaines</h3>
                   <p className="text-blue-700 text-xs hidden sm:block">Le chiffre du milieu</p>
-                  <p className="text-blue-700 text-xs hidden sm:block">Vaut × 10</p>
+                  <p className="text-blue-700 text-xs sm:block font-bold">Vaut × 10</p>
                 </div>
                 <div className="bg-green-50 rounded-lg p-2 sm:p-3 text-center">
                   <div className="text-lg sm:text-2xl mb-1">1️⃣</div>
                   <h3 className="font-bold text-green-800 mb-1 text-xs sm:text-sm">Unités</h3>
                   <p className="text-green-700 text-xs hidden sm:block">Le chiffre de droite</p>
-                  <p className="text-green-700 text-xs hidden sm:block">Vaut × 1</p>
+                  <p className="text-green-700 text-xs sm:block font-bold">Vaut × 1</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Section explicative sur la multiplication */}
+            <div className="bg-gradient-to-br from-yellow-50 to-orange-100 rounded-xl p-3 sm:p-6 shadow-lg border-2 border-yellow-300">
+              <h2 className="text-base sm:text-xl font-bold text-center mb-2 sm:mb-4 text-yellow-800">
+                🔢 Pourquoi multiplier ? 
+              </h2>
+              <div className="bg-white rounded-lg p-3 sm:p-4 mb-3 sm:mb-4">
+                <p className="text-xs sm:text-sm text-gray-700 mb-2 sm:mb-3 text-center">
+                  <strong>Règle importante :</strong> Chaque position a une valeur différente !
+                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-4">
+                  <div className="bg-red-50 border-2 border-red-200 rounded-lg p-2 sm:p-3 text-center">
+                    <div className="text-sm sm:text-base font-bold text-red-700 mb-1">2 centaines</div>
+                    <div className="text-xs sm:text-sm text-red-600">= 2 × 100</div>
+                    <div className="text-base sm:text-lg font-bold text-red-800">= 200</div>
+                  </div>
+                  <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-2 sm:p-3 text-center">
+                    <div className="text-sm sm:text-base font-bold text-blue-700 mb-1">3 dizaines</div>
+                    <div className="text-xs sm:text-sm text-blue-600">= 3 × 10</div>
+                    <div className="text-base sm:text-lg font-bold text-blue-800">= 30</div>
+                  </div>
+                  <div className="bg-green-50 border-2 border-green-200 rounded-lg p-2 sm:p-3 text-center">
+                    <div className="text-sm sm:text-base font-bold text-green-700 mb-1">4 unités</div>
+                    <div className="text-xs sm:text-sm text-green-600">= 4 × 1</div>
+                    <div className="text-base sm:text-lg font-bold text-green-800">= 4</div>
+                  </div>
+                </div>
+              </div>
+              <div className="bg-purple-100 border-2 border-purple-300 rounded-lg p-2 sm:p-3 text-center">
+                <div className="text-xs sm:text-sm text-purple-700 mb-1">Résultat final :</div>
+                <div className="text-sm sm:text-lg font-bold text-purple-800">
+                  200 + 30 + 4 = 234
                 </div>
               </div>
             </div>
@@ -774,73 +784,146 @@ export default function DecompositionNombresCE1Page() {
                 <div className="text-sm sm:text-lg">⬇️</div>
               </div>
 
-              {/* Vrai tableau avec bordures */}
-              <table id="decomposition-table" className="border-2 border-gray-400 mx-auto bg-white transition-all duration-300">
-                <thead>
-                  <tr>
-                    <th className="border-2 border-gray-400 px-4 py-2 bg-red-50 font-bold text-red-600 text-xs sm:text-sm">
-                      Centaines
-                    </th>
-                    <th className="border-2 border-gray-400 px-4 py-2 bg-blue-50 font-bold text-blue-600 text-xs sm:text-sm">
-                      Dizaines
-                    </th>
-                    <th className="border-2 border-gray-400 px-4 py-2 bg-green-50 font-bold text-green-600 text-xs sm:text-sm">
-                      Unités
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td className="border-2 border-gray-400 px-4 py-3 text-center bg-red-100">
-                      <div className="text-lg sm:text-xl font-bold text-red-600 mb-1">
-                        {decomposeNumber(selectedNumber).centaines}
-                      </div>
-                      <div className="text-xs text-red-700 hidden sm:block">
-                        {decomposeNumber(selectedNumber).centaines} × 100 = {parseInt(decomposeNumber(selectedNumber).centaines) * 100}
-                      </div>
-                    </td>
-                    <td className="border-2 border-gray-400 px-4 py-3 text-center bg-blue-100">
-                      <div className="text-lg sm:text-xl font-bold text-blue-600 mb-1">
-                        {decomposeNumber(selectedNumber).dizaines}
-                      </div>
-                      <div className="text-xs text-blue-700 hidden sm:block">
-                        {decomposeNumber(selectedNumber).dizaines} × 10 = {parseInt(decomposeNumber(selectedNumber).dizaines) * 10}
-                      </div>
-                    </td>
-                    <td className="border-2 border-gray-400 px-4 py-3 text-center bg-green-100">
-                      <div className="text-lg sm:text-xl font-bold text-green-600 mb-1">
-                        {decomposeNumber(selectedNumber).unites}
-                      </div>
-                      <div className="text-xs text-green-700 hidden sm:block">
-                        {decomposeNumber(selectedNumber).unites} × 1 = {parseInt(decomposeNumber(selectedNumber).unites)}
-                      </div>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+              {/* Tableau de décomposition amélioré */}
+              <div className="bg-white rounded-lg p-2 sm:p-4 border-2 border-gray-300 mb-4">
+                <h4 className="text-sm sm:text-base font-bold text-center text-gray-800 mb-3">
+                  📋 Étape 1 : Séparer les chiffres
+                </h4>
+                <table id="decomposition-table" className="border-2 border-gray-400 mx-auto bg-white transition-all duration-300">
+                  <thead>
+                    <tr>
+                      <th className="border-2 border-gray-400 px-3 sm:px-4 py-2 bg-red-50 font-bold text-red-600 text-xs sm:text-sm">
+                        Centaines
+                      </th>
+                      <th className="border-2 border-gray-400 px-3 sm:px-4 py-2 bg-blue-50 font-bold text-blue-600 text-xs sm:text-sm">
+                        Dizaines
+                      </th>
+                      <th className="border-2 border-gray-400 px-3 sm:px-4 py-2 bg-green-50 font-bold text-green-600 text-xs sm:text-sm">
+                        Unités
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td className="border-2 border-gray-400 px-3 sm:px-4 py-3 text-center bg-red-100">
+                        <div className="text-xl sm:text-2xl font-bold text-red-600">
+                          {decomposeNumber(selectedNumber).centaines}
+                        </div>
+                      </td>
+                      <td className="border-2 border-gray-400 px-3 sm:px-4 py-3 text-center bg-blue-100">
+                        <div className="text-xl sm:text-2xl font-bold text-blue-600">
+                          {decomposeNumber(selectedNumber).dizaines}
+                        </div>
+                      </td>
+                      <td className="border-2 border-gray-400 px-3 sm:px-4 py-3 text-center bg-green-100">
+                        <div className="text-xl sm:text-2xl font-bold text-green-600">
+                          {decomposeNumber(selectedNumber).unites}
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
 
-              {/* Vérification */}
-              <div id="verification-box" className="mt-2 sm:mt-4 bg-yellow-50 rounded-lg p-2 sm:p-3 text-center transition-all duration-300">
-                <h4 className="font-bold text-yellow-800 mb-1 text-xs sm:text-sm">✅ Vérification :</h4>
-                <div className="text-xs sm:text-sm text-yellow-900">
-                  {parseInt(decomposeNumber(selectedNumber).centaines) * 100} + {parseInt(decomposeNumber(selectedNumber).dizaines) * 10} + {parseInt(decomposeNumber(selectedNumber).unites)} = {selectedNumber}
+              {/* Étape 2: Les multiplications */}
+              <div className="bg-orange-50 rounded-lg p-2 sm:p-4 border-2 border-orange-300 mb-4">
+                <h4 className="text-sm sm:text-base font-bold text-center text-orange-800 mb-3">
+                  🔢 Étape 2 : Multiplier par la valeur de chaque position
+                </h4>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-4">
+                  <div className="bg-red-100 border-2 border-red-300 rounded-lg p-2 sm:p-3 text-center">
+                    <div className="text-sm sm:text-base font-bold text-red-700 mb-1">
+                      {decomposeNumber(selectedNumber).centaines} centaines
+                    </div>
+                    <div className="text-xs sm:text-sm text-red-600 mb-1">
+                      = {decomposeNumber(selectedNumber).centaines} × 100
+                    </div>
+                    <div className="text-base sm:text-lg font-bold text-red-800 bg-red-200 rounded px-2 py-1">
+                      = {parseInt(decomposeNumber(selectedNumber).centaines) * 100}
+                    </div>
+                  </div>
+                  <div className="bg-blue-100 border-2 border-blue-300 rounded-lg p-2 sm:p-3 text-center">
+                    <div className="text-sm sm:text-base font-bold text-blue-700 mb-1">
+                      {decomposeNumber(selectedNumber).dizaines} dizaines
+                    </div>
+                    <div className="text-xs sm:text-sm text-blue-600 mb-1">
+                      = {decomposeNumber(selectedNumber).dizaines} × 10
+                    </div>
+                    <div className="text-base sm:text-lg font-bold text-blue-800 bg-blue-200 rounded px-2 py-1">
+                      = {parseInt(decomposeNumber(selectedNumber).dizaines) * 10}
+                    </div>
+                  </div>
+                  <div className="bg-green-100 border-2 border-green-300 rounded-lg p-2 sm:p-3 text-center">
+                    <div className="text-sm sm:text-base font-bold text-green-700 mb-1">
+                      {decomposeNumber(selectedNumber).unites} unités
+                    </div>
+                    <div className="text-xs sm:text-sm text-green-600 mb-1">
+                      = {decomposeNumber(selectedNumber).unites} × 1
+                    </div>
+                    <div className="text-base sm:text-lg font-bold text-green-800 bg-green-200 rounded px-2 py-1">
+                      = {parseInt(decomposeNumber(selectedNumber).unites)}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Étape 3: La vérification */}
+              <div id="verification-box" className="bg-green-50 rounded-lg p-3 sm:p-6 border-2 border-green-300 transition-all duration-300">
+                <h4 className="text-base sm:text-xl font-bold text-center text-green-800 mb-4 sm:mb-6">
+                  ✅ Étape 3 : L'ESSENTIEL - La formule complète !
+                </h4>
+                
+                {/* Formule principale mise en évidence */}
+                <div className="bg-gradient-to-r from-green-100 to-emerald-100 rounded-xl p-4 sm:p-6 border-2 border-green-400 mb-4">
+                  <div className="text-center">
+                    <div className="text-xs sm:text-sm text-green-700 font-bold mb-2">
+                      🔥 FORMULE À RETENIR :
+                    </div>
+                    <div className="text-lg sm:text-3xl font-black text-green-800 mb-3 sm:mb-4 break-all">
+                      {selectedNumber} = {decomposeNumber(selectedNumber).centaines} × 100 + {decomposeNumber(selectedNumber).dizaines} × 10 + {decomposeNumber(selectedNumber).unites} × 1
+                    </div>
+                    <div className="text-xs sm:text-sm text-green-600 mb-3">
+                      ⬇️ Ce qui donne ⬇️
+                    </div>
+                    <div className="text-base sm:text-xl font-bold text-green-700 mb-2">
+                      {selectedNumber} = {parseInt(decomposeNumber(selectedNumber).centaines) * 100} + {parseInt(decomposeNumber(selectedNumber).dizaines) * 10} + {parseInt(decomposeNumber(selectedNumber).unites)}
+                    </div>
+                    <div className="text-xl sm:text-3xl font-black text-green-800 bg-green-200 rounded-lg py-2 sm:py-3 px-4 inline-block border-2 border-green-500">
+                      = {selectedNumber} ✓
+                    </div>
+                  </div>
+                </div>
+
+                <div className="text-center">
+                  <div className="text-xs sm:text-base text-green-600 font-bold bg-white rounded-lg py-2 px-3 inline-block border border-green-300">
+                    🎉 Le nombre est parfaitement reconstitué !
+                  </div>
                 </div>
               </div>
 
 
             </div>
 
-            {/* Conseils */}
+            {/* Conseils améliorés */}
             <div className="bg-gradient-to-r from-indigo-400 to-purple-400 rounded-xl p-3 sm:p-6 text-white">
-              <h3 className="text-sm sm:text-xl font-bold mb-2 sm:mb-3">💡 Astuces pour décomposer</h3>
-              <ul className="space-y-1 sm:space-y-2 text-xs sm:text-base">
-                <li className="hidden sm:block">• Le premier chiffre (à gauche) = les centaines</li>
-                <li className="hidden sm:block">• Le deuxième chiffre (au milieu) = les dizaines</li>
-                <li className="hidden sm:block">• Le troisième chiffre (à droite) = les unités</li>
-                <li className="block sm:hidden">• Gauche = centaines, milieu = dizaines, droite = unités</li>
-                <li>• Si il n'y a que 2 chiffres, il n'y a pas de centaines</li>
-                <li>• Le zéro signifie "aucun" dans cette position</li>
-              </ul>
+              <h3 className="text-sm sm:text-xl font-bold mb-2 sm:mb-3">💡 Les 3 étapes pour décomposer un nombre</h3>
+              <div className="space-y-2 sm:space-y-3">
+                <div className="bg-white/20 rounded-lg p-2 sm:p-3">
+                  <div className="font-bold text-sm sm:text-base mb-1">1️⃣ Séparer les chiffres :</div>
+                  <div className="text-xs sm:text-sm">Gauche = centaines, milieu = dizaines, droite = unités</div>
+                </div>
+                <div className="bg-white/20 rounded-lg p-2 sm:p-3">
+                  <div className="font-bold text-sm sm:text-base mb-1">2️⃣ Multiplier par la valeur :</div>
+                  <div className="text-xs sm:text-sm">Centaines × 100, dizaines × 10, unités × 1</div>
+                </div>
+                <div className="bg-white/20 rounded-lg p-2 sm:p-3">
+                  <div className="font-bold text-sm sm:text-base mb-1">3️⃣ Vérifier en additionnant :</div>
+                  <div className="text-xs sm:text-sm">Additionne tous les résultats pour retrouver le nombre</div>
+                </div>
+                <div className="text-xs sm:text-sm pt-2 border-t border-white/30">
+                  <strong>Rappel :</strong> Le zéro signifie "aucun" dans cette position
+                </div>
+              </div>
             </div>
           </div>
         ) : (
@@ -890,69 +973,27 @@ export default function DecompositionNombresCE1Page() {
               </div>
             </div>
             
-            {/* Sélecteur type d'exercice - GLOBAL */}
-            <div className="bg-white rounded-xl p-3 sm:p-4 shadow-lg mb-4 sm:mb-6">
-              <div className="text-center mb-3 sm:mb-4">
-                <h3 className="text-sm sm:text-lg font-bold text-gray-800 mb-1 sm:mb-2">🎯 Choisis ton type d'exercice :</h3>
-                <p className="text-xs sm:text-sm text-gray-600 hidden sm:block">Deux façons différentes de travailler avec les nombres !</p>
-              </div>
-              <div id="exercise-type-selector" className={`flex justify-center ${
-                highlightedElement === 'exercise-type-selector' ? 'ring-4 ring-yellow-400 bg-yellow-200 scale-105 animate-pulse rounded-lg' : ''
-              }`}>
-                <div className="bg-gray-100 rounded-lg p-1">
-                  <button
-                    onClick={() => switchExerciseType('decompose')}
-                    className={`px-2 sm:px-4 py-2 sm:py-3 rounded-lg font-bold transition-all text-center min-h-[3rem] sm:min-h-[4rem] ${
-                      exerciseType === 'decompose' 
-                        ? 'bg-purple-500 text-white shadow-md' 
-                        : 'text-gray-600 hover:bg-gray-200'
-                    }`}
-                  >
-                    <div className="text-xs sm:text-base">🧩 Décomposer</div>
-                    <div className="text-xs opacity-75 mt-1">234 → 2, 3, 4</div>
-                  </button>
-                  <button
-                    onClick={() => switchExerciseType('compose')}
-                    className={`px-2 sm:px-4 py-2 sm:py-3 rounded-lg font-bold transition-all text-center min-h-[3rem] sm:min-h-[4rem] ${
-                      exerciseType === 'compose' 
-                        ? 'bg-green-500 text-white shadow-md' 
-                        : 'text-gray-600 hover:bg-gray-200'
-                    }`}
-                  >
-                    <div className="text-xs sm:text-base">🔢 Composer</div>
-                    <div className="text-xs opacity-75 mt-1">2, 3, 4 → 234</div>
-                  </button>
-                </div>
-              </div>
-            </div>
+
 
             {/* Header exercices */}
             <div id="exercise-header" className={`bg-white rounded-xl p-6 shadow-lg ${
               highlightedElement === 'exercise-header' ? 'ring-4 ring-yellow-400 bg-yellow-200 scale-105 animate-pulse' : ''
             }`}>
               <div className="flex justify-between items-center mb-4">
-                <h2 className="text-2xl font-bold text-gray-900">
-                  ✏️ Exercice {currentExercise + 1} sur {exerciseType === 'decompose' ? exercises.length : composeExercises.length}
+                <h2 className="text-xl font-bold text-gray-900">
+                  🧩 Exercice {currentExercise + 1} sur {exercises.length}
                 </h2>
+                <div className="text-lg font-bold text-purple-600">
+                  Score : {score}/{exercises.length}
+                </div>
               </div>
               
               {/* Barre de progression */}
-              <div className="w-full bg-gray-200 rounded-full h-3 mb-3">
+              <div className="w-full bg-gray-200 rounded-full h-3">
                 <div 
-                  className={`h-3 rounded-full transition-all duration-500 ${
-                    exerciseType === 'decompose' ? 'bg-purple-500' : 'bg-green-500'
-                  }`}
-                  style={{ width: `${((currentExercise + 1) / (exerciseType === 'decompose' ? exercises.length : composeExercises.length)) * 100}%` }}
+                  className="h-3 rounded-full transition-all duration-500 bg-purple-500"
+                  style={{ width: `${((currentExercise + 1) / exercises.length) * 100}%` }}
                 ></div>
-              </div>
-              
-              {/* Score sous la barre */}
-              <div className="text-center">
-                <div className={`text-lg font-bold ${
-                  exerciseType === 'decompose' ? 'text-purple-600' : 'text-green-600'
-                }`}>
-                  Score : {score}/{(exerciseType === 'decompose' ? exercises.length : composeExercises.length)}
-                </div>
               </div>
             </div>
 
@@ -960,109 +1001,80 @@ export default function DecompositionNombresCE1Page() {
             <div id="exercise-question" className={`bg-white rounded-xl p-4 md:p-8 shadow-lg text-center ${
               highlightedElement === 'exercise-question' ? 'ring-4 ring-yellow-400 bg-yellow-200 scale-105 animate-pulse' : ''
             }`}>
-              {exerciseType === 'decompose' ? (
-                <>
-                  <h3 className="text-lg md:text-xl font-bold mb-4 md:mb-6 text-gray-900">
-                    🧩 Décompose ce nombre
-                  </h3>
-                  
-                  <div className="text-4xl md:text-6xl font-bold text-purple-600 mb-6 md:mb-8">
-                    {exercises[currentExercise].number}
+              <h3 className="text-lg md:text-xl font-bold mb-4 md:mb-6 text-gray-900">
+                🧩 Décompose ce nombre
+              </h3>
+              
+              <div className="text-4xl md:text-6xl font-bold text-purple-600 mb-6 md:mb-8">
+                {exercises[currentExercise].number}
+              </div>
+              
+              {/* Format de réponse mis en évidence */}
+              <div className="bg-gradient-to-r from-purple-100 to-pink-100 rounded-xl p-3 md:p-4 mb-4 border-2 border-purple-300">
+                <div className="text-center mb-3">
+                  <div className="text-sm md:text-base font-bold text-purple-800 mb-2">
+                    📝 Format de réponse à respecter :
                   </div>
-                  
-                  {/* Champs de saisie pour décomposition */}
-                  <div className="grid grid-cols-3 gap-2 md:gap-6 max-w-2xl mx-auto mb-6 md:mb-8">
-                    <div className="text-center">
-                      <label className="block font-bold text-red-600 mb-1 md:mb-2 text-sm md:text-base">Centaines</label>
-                      <input
-                        type="text"
-                        value={userAnswers.centaines}
-                        onChange={(e) => updateAnswer('centaines', e.target.value)}
-                        placeholder="?"
-                        className="w-16 h-16 md:w-20 md:h-20 mx-auto border-2 border-red-300 rounded-lg text-center text-xl md:text-2xl font-bold focus:border-red-500 focus:outline-none bg-white text-gray-900"
-                        maxLength={2}
-                      />
-                    </div>
-                    <div className="text-center">
-                      <label className="block font-bold text-blue-600 mb-1 md:mb-2 text-sm md:text-base">Dizaines</label>
-                      <input
-                        type="text"
-                        value={userAnswers.dizaines}
-                        onChange={(e) => updateAnswer('dizaines', e.target.value)}
-                        placeholder="?"
-                        className="w-16 h-16 md:w-20 md:h-20 mx-auto border-2 border-blue-300 rounded-lg text-center text-xl md:text-2xl font-bold focus:border-blue-500 focus:outline-none bg-white text-gray-900"
-                        maxLength={1}
-                      />
-                    </div>
-                    <div className="text-center">
-                      <label className="block font-bold text-green-600 mb-1 md:mb-2 text-sm md:text-base">Unités</label>
-                      <input
-                        type="text"
-                        value={userAnswers.unites}
-                        onChange={(e) => updateAnswer('unites', e.target.value)}
-                        placeholder="?"
-                        className="w-16 h-16 md:w-20 md:h-20 mx-auto border-2 border-green-300 rounded-lg text-center text-xl md:text-2xl font-bold focus:border-green-500 focus:outline-none bg-white text-gray-900"
-                        maxLength={1}
-                      />
-                    </div>
+                  <div className="text-lg md:text-xl font-black text-purple-900 bg-white rounded-lg py-2 px-4 inline-block border-2 border-purple-400">
+                    {exercises[currentExercise].number} = ___ × 100 + ___ × 10 + ___ × 1
                   </div>
-                </>
-              ) : (
-                <>
-                  <h3 className="text-lg md:text-xl font-bold mb-4 md:mb-6 text-gray-900">
-                    🔢 Trouve le nombre avec cette décomposition
-                  </h3>
-                  
-                  {/* Affichage de la décomposition */}
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-6 max-w-2xl mx-auto mb-8">
-                    <div className="text-center">
-                      <div className="bg-red-100 rounded-lg p-1 md:p-4">
-                        <div className="text-xl md:text-3xl font-bold text-red-600 mb-1 md:mb-2">
-                          {composeExercises[currentExercise].centaines}
-                        </div>
-                        <div className="font-bold text-red-800 text-sm md:text-base">Centaines</div>
-                      </div>
+                </div>
+              </div>
+
+              {/* Champs de saisie pour décomposition */}
+              <div className="grid grid-cols-3 gap-3 md:gap-6 max-w-2xl mx-auto mb-6 md:mb-8">
+                <div className="text-center">
+                  <div className="bg-red-50 rounded-xl p-3 md:p-4 border-2 border-red-300">
+                    <label className="block font-bold text-red-600 mb-2 text-sm md:text-base">Centaines</label>
+                    <div className="bg-red-200 rounded-lg p-2 mb-3 border border-red-400">
+                      <div className="text-lg md:text-xl font-black text-red-800">× 100</div>
+                      <div className="text-xs text-red-700">à multiplier par</div>
                     </div>
-                    <div className="text-center">
-                      <div className="bg-blue-100 rounded-lg p-1 md:p-4">
-                        <div className="text-xl md:text-3xl font-bold text-blue-600 mb-1 md:mb-2">
-                          {composeExercises[currentExercise].dizaines}
-                        </div>
-                        <div className="font-bold text-blue-800 text-sm md:text-base">Dizaines</div>
-                      </div>
-                    </div>
-                    <div className="text-center">
-                      <div className="bg-green-100 rounded-lg p-1 md:p-4">
-                        <div className="text-xl md:text-3xl font-bold text-green-600 mb-1 md:mb-2">
-                          {composeExercises[currentExercise].unites}
-                        </div>
-                        <div className="font-bold text-green-800 text-sm md:text-base">Unités</div>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  {/* Champ de saisie pour le nombre */}
-                  <div className="max-w-md mx-auto mb-6 md:mb-8">
                     <input
                       type="text"
-                      value={userNumber}
-                      onChange={(e) => setUserNumber(e.target.value)}
-                      placeholder="Écris le nombre ici..."
-                      className="w-full px-3 md:px-4 py-3 md:py-4 border-2 border-green-300 rounded-lg text-center text-2xl md:text-3xl font-bold focus:border-green-500 focus:outline-none bg-white text-gray-900"
-                      maxLength={4}
+                      value={userAnswers.centaines}
+                      onChange={(e) => updateAnswer('centaines', e.target.value)}
+                      placeholder="?"
+                      className="w-16 h-16 md:w-20 md:h-20 mx-auto border-3 border-red-400 rounded-lg text-center text-xl md:text-2xl font-bold focus:border-red-600 focus:outline-none bg-white text-gray-900 shadow-lg"
+                      maxLength={2}
                     />
-                    
-                    {/* Reconnaissance vocale */}
-                    <div className="border-t border-gray-200 pt-4 mt-4">
-                      <VoiceInput
-                        onTranscript={(transcript) => setUserNumber(transcript)}
-                        placeholder="Ou dites le nombre à voix haute..."
-                        className="justify-center"
-                      />
-                    </div>
                   </div>
-                </>
-              )}
+                </div>
+                <div className="text-center">
+                  <div className="bg-blue-50 rounded-xl p-3 md:p-4 border-2 border-blue-300">
+                    <label className="block font-bold text-blue-600 mb-2 text-sm md:text-base">Dizaines</label>
+                    <div className="bg-blue-200 rounded-lg p-2 mb-3 border border-blue-400">
+                      <div className="text-lg md:text-xl font-black text-blue-800">× 10</div>
+                      <div className="text-xs text-blue-700">à multiplier par</div>
+                    </div>
+                    <input
+                      type="text"
+                      value={userAnswers.dizaines}
+                      onChange={(e) => updateAnswer('dizaines', e.target.value)}
+                      placeholder="?"
+                      className="w-16 h-16 md:w-20 md:h-20 mx-auto border-3 border-blue-400 rounded-lg text-center text-xl md:text-2xl font-bold focus:border-blue-600 focus:outline-none bg-white text-gray-900 shadow-lg"
+                      maxLength={1}
+                    />
+                  </div>
+                </div>
+                <div className="text-center">
+                  <div className="bg-green-50 rounded-xl p-3 md:p-4 border-2 border-green-300">
+                    <label className="block font-bold text-green-600 mb-2 text-sm md:text-base">Unités</label>
+                    <div className="bg-green-200 rounded-lg p-2 mb-3 border border-green-400">
+                      <div className="text-lg md:text-xl font-black text-green-800">× 1</div>
+                      <div className="text-xs text-green-700">à multiplier par</div>
+                    </div>
+                    <input
+                      type="text"
+                      value={userAnswers.unites}
+                      onChange={(e) => updateAnswer('unites', e.target.value)}
+                      placeholder="?"
+                      className="w-16 h-16 md:w-20 md:h-20 mx-auto border-3 border-green-400 rounded-lg text-center text-xl md:text-2xl font-bold focus:border-green-600 focus:outline-none bg-white text-gray-900 shadow-lg"
+                      maxLength={1}
+                    />
+                  </div>
+                </div>
+              </div>
               
               <div className="flex justify-center space-x-4 mb-4 md:mb-6">
                 <button
@@ -1078,25 +1090,44 @@ export default function DecompositionNombresCE1Page() {
                 <div className={`p-4 rounded-lg mb-6 ${
                   isCorrect ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
                 }`}>
-                  <div className="flex items-center justify-center space-x-2">
-                    {isCorrect ? (
-                      <>
-                        <CheckCircle className="w-6 h-6" />
-                        <span className="font-bold">
-                          {exerciseType === 'decompose' 
-                            ? 'Super ! Tu as bien décomposé le nombre !' 
-                            : 'Excellent ! Tu as trouvé le bon nombre !'}
+                  <div className="text-center space-y-3">
+                    <div className="flex items-center justify-center space-x-2">
+                      {isCorrect ? (
+                        <>
+                          <CheckCircle className="w-6 h-6" />
+                                                  <span className="font-bold">
+                          Super ! Tu as bien décomposé le nombre !
                         </span>
-                      </>
-                    ) : (
-                      <>
-                        <XCircle className="w-6 h-6" />
-                        <span className="font-bold">
-                          {exerciseType === 'decompose' 
-                            ? `Pas tout à fait... La bonne réponse est : ${exercises[currentExercise].centaines} centaines, ${exercises[currentExercise].dizaines} dizaines, ${exercises[currentExercise].unites} unités`
-                            : `Pas tout à fait... La bonne réponse est : ${composeExercises[currentExercise].number}`}
-                        </span>
-                      </>
+                        </>
+                      ) : (
+                        <>
+                          <XCircle className="w-6 h-6" />
+                          <span className="font-bold">Pas tout à fait...</span>
+                        </>
+                      )}
+                    </div>
+                    
+                    {/* Affichage de la correction avec formule */}
+                    {!isCorrect && (
+                      <div className="bg-white rounded-lg p-3 border border-red-300">
+                        <div className="text-sm font-bold text-red-700 mb-2">La bonne réponse :</div>
+                        <div className="text-xs text-red-600 mb-1">
+                          {exercises[currentExercise].centaines} centaines, {exercises[currentExercise].dizaines} dizaines, {exercises[currentExercise].unites} unités
+                        </div>
+                        <div className="text-sm font-bold text-red-800 bg-red-50 rounded p-2">
+                          {exercises[currentExercise].number} = {exercises[currentExercise].centaines} × 100 + {exercises[currentExercise].dizaines} × 10 + {exercises[currentExercise].unites} × 1
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Affichage de la formule même en cas de succès */}
+                    {isCorrect && (
+                      <div className="bg-white rounded-lg p-3 border border-green-300">
+                        <div className="text-sm font-bold text-green-700 mb-1">🎉 Formule correcte :</div>
+                        <div className="text-sm font-bold text-green-800">
+                          {exercises[currentExercise].number} = {exercises[currentExercise].centaines} × 100 + {exercises[currentExercise].dizaines} × 10 + {exercises[currentExercise].unites} × 1
+                        </div>
+                      </div>
                     )}
                   </div>
                 </div>
@@ -1115,17 +1146,9 @@ export default function DecompositionNombresCE1Page() {
                   id="verify-button"
                   onClick={handleNext}
                   disabled={
-                    isCorrect === null && (
-                      exerciseType === 'decompose' 
-                        ? (!userAnswers.centaines || !userAnswers.dizaines || userAnswers.unites === '')
-                        : !userNumber.trim()
-                    )
+                    isCorrect === null && (!userAnswers.centaines || !userAnswers.dizaines || userAnswers.unites === '')
                   }
-                  className={`text-white px-4 md:px-6 py-2 md:py-3 rounded-lg font-bold transition-colors disabled:opacity-50 text-sm md:text-base ${
-                    exerciseType === 'decompose' 
-                      ? 'bg-pink-500 hover:bg-pink-600' 
-                      : 'bg-lime-500 hover:bg-lime-600'
-                  } ${
+                  className={`text-white px-4 md:px-6 py-2 md:py-3 rounded-lg font-bold transition-colors disabled:opacity-50 text-sm md:text-base bg-pink-500 hover:bg-pink-600 ${
                     highlightedElement === 'verify-button' ? 'ring-4 ring-yellow-400 bg-yellow-300 scale-110 animate-pulse' : ''
                   }`}
                 >
@@ -1143,13 +1166,13 @@ export default function DecompositionNombresCE1Page() {
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-2xl p-8 max-w-md w-full text-center shadow-2xl transform transition-all">
               {(() => {
-                const totalExercises = exerciseType === 'decompose' ? exercises.length : composeExercises.length;
+                const totalExercises = exercises.length;
                 const percentage = Math.round((finalScore / totalExercises) * 100);
                 const getMessage = () => {
-                  if (percentage >= 90) return { title: "🎉 Excellent !", message: `Tu maîtrises parfaitement ${exerciseType === 'decompose' ? 'la décomposition' : 'la composition'} des nombres jusqu'à 1000 !`, emoji: "🎉" };
-                  if (percentage >= 70) return { title: "👏 Bien joué !", message: `Tu sais bien ${exerciseType === 'decompose' ? 'décomposer' : 'composer'} les nombres ! Continue comme ça !`, emoji: "👏" };
+                  if (percentage >= 90) return { title: "🎉 Excellent !", message: "Tu maîtrises parfaitement la décomposition des nombres jusqu'à 1000 !", emoji: "🎉" };
+                  if (percentage >= 70) return { title: "👏 Bien joué !", message: "Tu sais bien décomposer les nombres ! Continue comme ça !", emoji: "👏" };
                   if (percentage >= 50) return { title: "👍 C'est un bon début !", message: "Tu progresses bien. Entraîne-toi encore un peu !", emoji: "😊" };
-                  return { title: "💪 Continue à t'entraîner !", message: `Recommence les exercices pour mieux maîtriser ${exerciseType === 'decompose' ? 'la décomposition' : 'la composition'} des nombres.`, emoji: "📚" };
+                  return { title: "💪 Continue à t'entraîner !", message: "Recommence les exercices pour mieux maîtriser la décomposition des nombres.", emoji: "📚" };
                 };
                 const result = getMessage();
                 return (
