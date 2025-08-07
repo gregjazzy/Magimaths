@@ -77,43 +77,43 @@ export default function Decomposition1000CE1() {
   // Exemples de décompositions stratégiques (jusqu'à 1000)
   const decompositionExamples = [
     { 
+      number: 47, 
+      parts: [40, 7], 
+      item: '🔴', 
+      description: 'le nombre 47',
+      explanation: 'Décomposition par dizaines et unités : 47 = 4 × 10 + 7 × 1 = 40 + 7',
+      strategy: 'Dizaines + Unités'
+    },
+    { 
+      number: 83, 
+      parts: [80, 3], 
+      item: '🔵', 
+      description: 'le nombre 83',
+      explanation: 'Décomposition par dizaines et unités : 83 = 8 × 10 + 3 × 1 = 80 + 3',
+      strategy: 'Dizaines + Unités'
+    },
+    { 
       number: 146, 
       parts: [100, 40, 6], 
-      item: '🔴', 
+      item: '🟢', 
       description: 'le nombre 146',
       explanation: 'Décomposition complète : 146 = 1 × 100 + 4 × 10 + 6 × 1 = 100 + 40 + 6',
       strategy: 'Centaines + Dizaines + Unités'
     },
     { 
-      number: 839, 
-      parts: [800, 30, 9], 
-      item: '🔵', 
-      description: 'le nombre 839',
-      explanation: 'Décomposition complète : 839 = 8 × 100 + 3 × 10 + 9 × 1 = 800 + 30 + 9',
-      strategy: 'Centaines + Dizaines + Unités'
-    },
-    { 
       number: 700, 
       parts: [700, 0, 0], 
-      item: '🟢', 
+      item: '🟡', 
       description: 'le nombre 700',
       explanation: 'Décomposition avec zéros : 700 = 7 × 100 + 0 × 10 + 0 × 1 = 700 + 0 + 0',
       strategy: 'Centaines rondes'
     },
     { 
-      number: 205, 
-      parts: [200, 0, 5], 
-      item: '🟡', 
-      description: 'le nombre 205',
-      explanation: 'Décomposition avec zéro au milieu : 205 = 2 × 100 + 0 × 10 + 5 × 1 = 200 + 0 + 5',
-      strategy: 'Centaines + Unités'
-    },
-    { 
-      number: 483, 
-      parts: [400, 80, 3], 
+      number: 839, 
+      parts: [800, 30, 9], 
       item: '🟣', 
-      description: 'le nombre 483',
-      explanation: 'Décomposition complète : 483 = 4 × 100 + 8 × 10 + 3 × 1 = 400 + 80 + 3',
+      description: 'le nombre 839',
+      explanation: 'Décomposition complète : 839 = 8 × 100 + 3 × 10 + 9 × 1 = 800 + 30 + 9',
       strategy: 'Centaines + Dizaines + Unités'
     }
   ];
@@ -366,6 +366,72 @@ export default function Decomposition1000CE1() {
     } else {
       return `${parts[0]} plus ${parts[1]}`;
     }
+  };
+
+  // Fonction pour afficher le tableau de décomposition par positions
+  const renderDecompositionTable = (number: number, isAnimated = false) => {
+    const hundreds = Math.floor(number / 100);
+    const tens = Math.floor((number % 100) / 10);
+    const units = number % 10;
+
+    return (
+      <div className="flex flex-col items-center space-y-4">
+        {/* Tableau des positions */}
+        <div className="grid grid-cols-3 gap-4 bg-white rounded-lg p-4 shadow-lg border-2 border-purple-300">
+          {/* En-têtes */}
+          <div className="text-center bg-purple-100 rounded-lg p-3">
+            <div className="font-bold text-purple-800 text-sm sm:text-lg">Centaines</div>
+          </div>
+          <div className="text-center bg-blue-100 rounded-lg p-3">
+            <div className="font-bold text-blue-800 text-sm sm:text-lg">Dizaines</div>
+          </div>
+          <div className="text-center bg-green-100 rounded-lg p-3">
+            <div className="font-bold text-green-800 text-sm sm:text-lg">Unités</div>
+          </div>
+
+          {/* Chiffres */}
+          <div className={`text-center bg-purple-50 rounded-lg p-4 transition-all duration-1000 ${
+            isAnimated ? 'ring-4 ring-purple-400 scale-110' : ''
+          }`}>
+            <div className="text-2xl sm:text-4xl font-bold text-purple-700">{hundreds}</div>
+          </div>
+          <div className={`text-center bg-blue-50 rounded-lg p-4 transition-all duration-1000 ${
+            isAnimated ? 'ring-4 ring-blue-400 scale-110' : ''
+          }`}>
+            <div className="text-2xl sm:text-4xl font-bold text-blue-700">{tens}</div>
+          </div>
+          <div className={`text-center bg-green-50 rounded-lg p-4 transition-all duration-1000 ${
+            isAnimated ? 'ring-4 ring-green-400 scale-110' : ''
+          }`}>
+            <div className="text-2xl sm:text-4xl font-bold text-green-700">{units}</div>
+          </div>
+
+          {/* Multiplications */}
+          <div className="text-center bg-purple-50 rounded-lg p-2">
+            <div className="text-xs sm:text-sm text-purple-600">× 100</div>
+            <div className="text-sm sm:text-lg font-bold text-purple-800">{hundreds * 100}</div>
+          </div>
+          <div className="text-center bg-blue-50 rounded-lg p-2">
+            <div className="text-xs sm:text-sm text-blue-600">× 10</div>
+            <div className="text-sm sm:text-lg font-bold text-blue-800">{tens * 10}</div>
+          </div>
+          <div className="text-center bg-green-50 rounded-lg p-2">
+            <div className="text-xs sm:text-sm text-green-600">× 1</div>
+            <div className="text-sm sm:text-lg font-bold text-green-800">{units * 1}</div>
+          </div>
+        </div>
+
+        {/* Addition finale */}
+        <div className="bg-yellow-50 rounded-lg p-4 border-2 border-yellow-300">
+          <div className="text-center">
+            <div className="text-sm sm:text-lg text-gray-700 mb-2">Addition :</div>
+            <div className="text-lg sm:text-2xl font-bold text-gray-800">
+              {hundreds * 100} + {tens * 10} + {units * 1} = {number}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
   };
 
   // Fonction pour rendre les objets avec animations (adaptée pour grands nombres)
@@ -1792,33 +1858,17 @@ export default function Decomposition1000CE1() {
                       {/* Résultat */}
                       {decompositionStep === 'result' && (
                         <div className={`text-center p-6 rounded-lg transition-all duration-1000 bg-green-100 ring-4 ring-green-400 scale-105`}>
-                          <h4 className="text-lg sm:text-2xl font-bold text-green-800 mb-2 sm:mb-4">🎉 Décomposition réussie !</h4>
-                          <div className="mb-4">
-                            {renderCircles(decompositionExamples[currentExample].number, decompositionExamples[currentExample].item)}
+                          <h4 className="text-lg sm:text-2xl font-bold text-green-800 mb-4">🎉 Décomposition réussie !</h4>
+                          <div className="mb-6">
+                            {renderDecompositionTable(decompositionExamples[currentExample].number, true)}
+                          </div>
                         </div>
-                          <div className="text-xl sm:text-3xl font-bold text-green-800 mb-2">
-                            {decompositionExamples[currentExample].number} = {renderDecomposition(decompositionExamples[currentExample].parts)}
-                      </div>
-                          <div className="text-sm sm:text-lg text-green-600">
-                            {renderDecomposition(decompositionExamples[currentExample].parts)} = {decompositionExamples[currentExample].number} !
-                    </div>
-                    </div>
                       )}
                   </div>
                   ) : (
                     /* Version statique quand pas d'animation */
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-6">
-                      <div className="text-center p-1 sm:p-4 bg-purple-50 rounded-lg">
-                        <div className="text-xs sm:text-sm text-gray-600 mb-0.5 sm:mb-2">4 dizaines</div>
-                        <div className="text-base sm:text-xl font-bold text-purple-800 mt-0.5 sm:mt-2">40</div>
-                      </div>
-                      <div className="text-center flex items-center justify-center">
-                        <div className="text-2xl sm:text-6xl font-bold text-purple-600">+</div>
-                      </div>
-                      <div className="text-center p-1 sm:p-4 bg-pink-50 rounded-lg">
-                        <div className="text-xs sm:text-sm text-gray-600 mb-0.5 sm:mb-2">7 unités</div>
-                        <div className="text-base sm:text-xl font-bold text-pink-800 mt-0.5 sm:mt-2">7</div>
-                      </div>
+                    <div className="mb-6">
+                      {renderDecompositionTable(47, false)}
                     </div>
                   )}
                 </div>
