@@ -26,6 +26,7 @@ export default function Decomposition1000CE1() {
   const [currentExercise, setCurrentExercise] = useState(0);
   const [userAnswer1, setUserAnswer1] = useState('');
   const [userAnswer2, setUserAnswer2] = useState('');
+  const [userAnswer3, setUserAnswer3] = useState('');
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
   const [score, setScore] = useState(0);
   const [answeredCorrectly, setAnsweredCorrectly] = useState<Set<number>>(new Set());
@@ -118,6 +119,14 @@ export default function Decomposition1000CE1() {
       description: 'le nombre 839',
       explanation: 'Décomposition complète : 839 = 8 × 100 + 3 × 10 + 9 × 1 = 800 + 30 + 9',
       strategy: 'Centaines + Dizaines + Unités'
+    },
+    { 
+      number: 305, 
+      parts: [300, 0, 5], 
+      item: '🟠', 
+      description: 'le nombre 305',
+      explanation: 'Décomposition avec zéro au milieu : 305 = 3 × 100 + 0 × 10 + 5 × 1 = 300 + 0 + 5',
+      strategy: 'Centaines + Unités'
     }
   ];
 
@@ -298,8 +307,8 @@ export default function Decomposition1000CE1() {
   };
 
   // Fonction pour parser les nombres d'un exercice de décomposition
-  const parseExerciseNumbers = (exercise: any, answer1?: string, answer2?: string) => {
-    let num1 = 0, num2 = 0, result = exercise.number;
+  const parseExerciseNumbers = (exercise: any, answer1?: string, answer2?: string, answer3?: string) => {
+    let num1 = 0, num2 = 0, num3 = 0, result = exercise.number;
     let objectEmoji = '🟡';
     let objectName = 'unités';
     
@@ -316,22 +325,29 @@ export default function Decomposition1000CE1() {
     if (answer1 && answer2) {
       num1 = parseInt(answer1) || 0;
       num2 = parseInt(answer2) || 0;
+      if (exercise.strategy === 'Centaines + Dizaines + Unités' && answer3) {
+        num3 = parseInt(answer3) || 0;
+      }
     } else {
       // Utiliser la réponse correcte selon la stratégie de l'exercice
       if (exercise.correctAnswer) {
-        [num1, num2] = exercise.correctAnswer;
+        if (exercise.strategy === 'Centaines + Dizaines + Unités') {
+          [num1, num2, num3] = exercise.correctAnswer;
+        } else {
+          [num1, num2] = exercise.correctAnswer;
+        }
       } else {
         // Fallback: varie les décompositions pour montrer différentes possibilités
-      const decompositions = allDecompositions[result as keyof typeof allDecompositions];
-      if (decompositions && decompositions.length > 0) {
-        const decompositionIndex = currentExercise % decompositions.length;
-        [num1, num2] = decompositions[decompositionIndex];
+        const decompositions = allDecompositions[result as keyof typeof allDecompositions];
+        if (decompositions && decompositions.length > 0) {
+          const decompositionIndex = currentExercise % decompositions.length;
+          [num1, num2] = decompositions[decompositionIndex];
         }
       }
     }
     
-    console.log('Nombres parsés pour décomposition:', { num1, num2, result, objectEmoji, objectName, strategy: exercise.strategy });
-    return { num1, num2, result, objectEmoji, objectName, strategy: exercise.strategy };
+    console.log('Nombres parsés pour décomposition:', { num1, num2, num3, result, objectEmoji, objectName, strategy: exercise.strategy });
+    return { num1, num2, num3, result, objectEmoji, objectName, strategy: exercise.strategy };
   };
 
   // Fonction pour vérifier si une décomposition est correcte
@@ -368,6 +384,24 @@ export default function Decomposition1000CE1() {
       return `${parts[0]} plus ${parts[1]} plus ${parts[2]}`;
     } else {
       return `${parts[0]} plus ${parts[1]}`;
+    }
+  };
+
+  // Fonction utilitaire pour l'affichage des réponses utilisateur
+  const getUserAnswerDisplay = (exercise: any) => {
+    if (exercise.strategy === 'Centaines + Dizaines + Unités') {
+      return `${userAnswer1} + ${userAnswer2} + ${userAnswer3}`;
+    } else {
+      return `${userAnswer1} + ${userAnswer2}`;
+    }
+  };
+
+  // Fonction utilitaire pour calculer la somme des réponses utilisateur
+  const getUserAnswerSum = (exercise: any) => {
+    if (exercise.strategy === 'Centaines + Dizaines + Unités') {
+      return (parseInt(userAnswer1) || 0) + (parseInt(userAnswer2) || 0) + (parseInt(userAnswer3) || 0);
+    } else {
+      return (parseInt(userAnswer1) || 0) + (parseInt(userAnswer2) || 0);
     }
   };
 
@@ -877,12 +911,12 @@ export default function Decomposition1000CE1() {
   };
 
   // Fonction pour créer une correction animée avec des objets visuels pour les décompositions
-  const createAnimatedCorrection = async (exercise: any, answer1?: string, answer2?: string) => {
+  const createAnimatedCorrection = async (exercise: any, answer1?: string, answer2?: string, answer3?: string) => {
     if (stopSignalRef.current) return;
     
     console.log('Début correction animée pour décomposition:', exercise, 'avec réponses:', answer1, answer2);
     
-    const { num1, num2, result, objectEmoji, objectName, strategy } = parseExerciseNumbers(exercise, answer1, answer2);
+    const { num1, num2, num3, result, objectEmoji, objectName, strategy } = parseExerciseNumbers(exercise, answer1, answer2, answer3);
     
     // Stocker les nombres pour l'affichage
     setCorrectionNumbers({ num1, num2, result, objectEmoji, objectName, strategy });
@@ -1095,7 +1129,7 @@ export default function Decomposition1000CE1() {
       
       // Lancer l'animation de correction pour décompositions avec les réponses utilisateur si incorrectes
       if (isCorrect === false && userAnswer1 && userAnswer2) {
-        await createAnimatedCorrection(exercise, userAnswer1, userAnswer2);
+        await createAnimatedCorrection(exercise, userAnswer1, userAnswer2, userAnswer3);
       } else {
         await createAnimatedCorrection(exercise);
       }
@@ -1111,17 +1145,26 @@ export default function Decomposition1000CE1() {
 
     // Fonction pour valider la décomposition saisie
   const handleValidateAnswer = async () => {
-    if (!userAnswer1.trim() || !userAnswer2.trim()) {
-      return; // Ne pas valider si les champs sont vides
+    const exercise = exercises[currentExercise];
+    
+    // Vérifier les champs selon la stratégie
+    if (exercise.strategy === 'Centaines + Dizaines + Unités') {
+      if (!userAnswer1.trim() || !userAnswer2.trim() || !userAnswer3.trim()) {
+        return; // Ne pas valider si les champs sont vides pour les nombres à 3 chiffres
+      }
+    } else {
+      if (!userAnswer1.trim() || !userAnswer2.trim()) {
+        return; // Ne pas valider si les champs sont vides pour les nombres à 2 chiffres
+      }
     }
 
     const num1 = parseInt(userAnswer1);
     const num2 = parseInt(userAnswer2);
-    const exercise = exercises[currentExercise];
+    const num3 = exercise.strategy === 'Centaines + Dizaines + Unités' ? parseInt(userAnswer3) : 0;
     const target = exercise.number;
     
     // Vérifier si les nombres sont valides
-    if (isNaN(num1) || isNaN(num2)) {
+    if (isNaN(num1) || isNaN(num2) || (exercise.strategy === 'Centaines + Dizaines + Unités' && isNaN(num3))) {
       return; // Ne pas valider si ce ne sont pas des nombres
     }
 
@@ -1135,7 +1178,6 @@ export default function Decomposition1000CE1() {
       correct = isValidSum && usesMultipleOf10;
     } else if (exercise.strategy === 'Centaines + Dizaines + Unités') {
       // Pour les nombres à 3 chiffres, vérifier la décomposition canonique
-      const num3 = parseInt(userAnswer3) || 0;
       const isValidSum = (num1 + num2 + num3) === target;
       const isCanonical = (num1 % 100 === 0) && (num2 % 10 === 0);
       correct = isValidSum && isCanonical;
@@ -1162,6 +1204,7 @@ export default function Decomposition1000CE1() {
           setCurrentExercise(currentExercise + 1);
           setUserAnswer1('');
           setUserAnswer2('');
+          setUserAnswer3('');
           setIsCorrect(null);
         } else {
           const finalScoreValue = score + 1;
@@ -1195,6 +1238,7 @@ export default function Decomposition1000CE1() {
       setCurrentExercise(currentExercise + 1);
       setUserAnswer1('');
       setUserAnswer2('');
+      setUserAnswer3('');
       setIsCorrect(null);
     } else {
       setFinalScore(score);
@@ -1207,6 +1251,7 @@ export default function Decomposition1000CE1() {
     setCurrentExercise(0);
     setUserAnswer1('');
     setUserAnswer2('');
+    setUserAnswer3('');
     setIsCorrect(null);
     setScore(0);
     setAnsweredCorrectly(new Set());
@@ -1975,7 +2020,7 @@ export default function Decomposition1000CE1() {
                       {currentExample !== null && tableAnimationStep && (
                         <div className="text-center p-6 rounded-lg transition-all duration-1000 bg-gradient-to-br from-green-50 to-blue-50 border-2 border-green-300">
                           <div className="mb-6">
-                            {renderDecompositionTable(decompositionExamples[currentExample].number, tableAnimationStep)}
+                            {renderDecompositionTable(decompositionExamples[currentExample].number, tableAnimationStep || 'initial')}
                           </div>
                         </div>
                       )}
@@ -1983,7 +2028,7 @@ export default function Decomposition1000CE1() {
                   ) : (
                     /* Version statique quand pas d'animation */
                     <div className="mb-6">
-                      {renderDecompositionTable(47, false)}
+                      {renderDecompositionTable(47, null)}
                     </div>
                   )}
                 </div>
@@ -2205,15 +2250,14 @@ export default function Decomposition1000CE1() {
                     Complète la décomposition :
                   </p>
                   
-                  {/* Équation de décomposition avec champs de saisie */}
-                  <div className="flex items-center justify-center space-x-2 sm:space-x-4 mb-6">
+                  {/* Équation de décomposition avec champs de saisie (2 ou 3 champs selon le nombre) */}
+                  <div className="flex items-center justify-center space-x-2 sm:space-x-4 mb-6 flex-wrap">
                     <input
                       type="number"
                       value={userAnswer1}
                       onChange={(e) => setUserAnswer1(e.target.value)}
                       disabled={isCorrect !== null || isPlayingVocal}
                       min="1"
-                      max={exercises[currentExercise].number - 1}
                       className="w-12 sm:w-16 h-10 sm:h-12 text-center text-lg sm:text-xl font-bold border-2 border-purple-300 rounded-lg focus:border-purple-500 focus:outline-none disabled:bg-gray-100 disabled:cursor-not-allowed"
                       placeholder="?"
                     />
@@ -2225,11 +2269,27 @@ export default function Decomposition1000CE1() {
                       value={userAnswer2}
                       onChange={(e) => setUserAnswer2(e.target.value)}
                       disabled={isCorrect !== null || isPlayingVocal}
-                      min="1"
-                      max={exercises[currentExercise].number - 1}
+                      min="0"
                       className="w-12 sm:w-16 h-10 sm:h-12 text-center text-lg sm:text-xl font-bold border-2 border-purple-300 rounded-lg focus:border-purple-500 focus:outline-none disabled:bg-gray-100 disabled:cursor-not-allowed"
                       placeholder="?"
                     />
+                    
+                    {/* 3ème champ pour les nombres à 3 chiffres */}
+                    {exercises[currentExercise].strategy === 'Centaines + Dizaines + Unités' && (
+                      <>
+                        <span className="text-xl sm:text-3xl font-bold text-purple-600">+</span>
+                        <input
+                          type="number"
+                          value={userAnswer3}
+                          onChange={(e) => setUserAnswer3(e.target.value)}
+                          disabled={isCorrect !== null || isPlayingVocal}
+                          min="0"
+                          max="9"
+                          className="w-12 sm:w-16 h-10 sm:h-12 text-center text-lg sm:text-xl font-bold border-2 border-green-300 rounded-lg focus:border-green-500 focus:outline-none disabled:bg-gray-100 disabled:cursor-not-allowed"
+                          placeholder="?"
+                        />
+                      </>
+                    )}
                     
                     <span className="text-xl sm:text-3xl font-bold text-purple-600">=</span>
                     
@@ -2241,7 +2301,7 @@ export default function Decomposition1000CE1() {
                   {/* Bouton pour valider */}
                   <button
                     onClick={handleValidateAnswer}
-                    disabled={isCorrect !== null || isPlayingVocal || !userAnswer1.trim() || !userAnswer2.trim()}
+                    disabled={isCorrect !== null || isPlayingVocal || !userAnswer1.trim() || !userAnswer2.trim() || (exercises[currentExercise].strategy === 'Centaines + Dizaines + Unités' && !userAnswer3.trim())}
                     className="bg-purple-500 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-bold text-sm sm:text-base hover:bg-purple-600 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed min-h-[40px] sm:min-h-[48px] shadow-lg"
                   >
                     ✅ Vérifier ma décomposition
@@ -2259,15 +2319,15 @@ export default function Decomposition1000CE1() {
                       <>
                         <span className="text-base sm:text-xl md:text-2xl">✅</span>
                         <span className="font-bold text-xs sm:text-base md:text-xl">
-                          Excellent ! {userAnswer1} + {userAnswer2} est bien une décomposition de {exercises[currentExercise].number} !
+                          Excellent ! {getUserAnswerDisplay(exercises[currentExercise])} est bien une décomposition de {exercises[currentExercise].number} !
                         </span>
                       </>
                     ) : (
                       <>
                         <span className="text-base sm:text-xl md:text-2xl">❌</span>
                         <span className="font-bold text-xs sm:text-sm md:text-xl">
-                          {userAnswer1 && userAnswer2 && (parseInt(userAnswer1) + parseInt(userAnswer2)) !== exercises[currentExercise].number 
-                            ? `${userAnswer1} + ${userAnswer2} = ${parseInt(userAnswer1) + parseInt(userAnswer2)}, mais nous voulons ${exercises[currentExercise].number}. Je vais t'expliquer !`
+                          {getUserAnswerSum(exercises[currentExercise]) !== exercises[currentExercise].number 
+                            ? `${getUserAnswerDisplay(exercises[currentExercise])} = ${getUserAnswerSum(exercises[currentExercise])}, mais nous voulons ${exercises[currentExercise].number}. Je vais t'expliquer !`
                             : 'Pas tout à fait... Je vais t\'expliquer !'}
                         </span>
                       </>
