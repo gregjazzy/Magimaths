@@ -831,7 +831,7 @@ export default function Decomposition1000CE1() {
     }
   };
 
-  // Fonction pour expliquer un exemple spécifique
+  // Fonction pour expliquer un exemple spécifique avec animation du tableau
   const explainSpecificExample = async (index: number) => {
     stopAllVocalsAndAnimations();
     await wait(300);
@@ -842,70 +842,49 @@ export default function Decomposition1000CE1() {
     
     try {
       setCurrentExample(index);
-      setAnimatingStep('introduction');
+      setTableAnimationStep('initial');
       scrollToSection('concept-section');
       
       await playAudio(`Je vais te montrer comment décomposer ${example.description} avec la stratégie "${example.strategy}".`);
       if (stopSignalRef.current) return;
       
       await wait(1500);
-      setDecompositionStep('number');
-      setHighlightedNumber(example.number);
-      await playAudio(`Voici le nombre ${example.number}.`);
+      
+      // Étape 1: Afficher le tableau
+      setTableAnimationStep('table');
+      await playAudio(`D'abord, je trace mon tableau centaines, dizaines, unités.`);
       if (stopSignalRef.current) return;
-      
-      await wait(1200);
-      setShowingProcess('separating');
-      
-      // Adapter l'explication selon la stratégie
-      if (example.strategy === 'Dizaines + Unités') {
-        await playAudio(`Avec la stratégie dizaines plus unités : ${example.number}, c'est ${Math.floor(example.number/10)} dizaines plus ${example.number%10} unités !`);
-      } else if (example.strategy === 'Centaines + Dizaines + Unités') {
-        await playAudio(`Avec la stratégie centaines plus dizaines plus unités : je décompose en 3 parties !`);
-      } else {
-        await playAudio("Je vais le séparer en deux parties.");
-      }
-      if (stopSignalRef.current) return;
-      
-      await wait(1500);
-      setDecompositionStep('parts');
-      
-      if (example.strategy === 'Centaines + Dizaines + Unités') {
-        await playAudio(`Une partie de ${example.parts[0]}, une partie de ${example.parts[1]}, et une partie de ${example.parts[2]}.`);
-      } else if (example.parts.length === 3) {
-        await playAudio(`Une partie de ${example.parts[0]}, une partie de ${example.parts[1]}, et une partie de ${example.parts[2]}.`);
-      } else {
-        await playAudio(`Une partie de ${example.parts[0]} et une partie de ${example.parts[1]}.`);
-      }
-      if (stopSignalRef.current) return;
-      
-      await wait(1200);
-      setShowingProcess('result');
-      
-      // Scroll vers la zone de résultat pour bien voir la décomposition finale
-      const resultSection = document.querySelector('[class*="bg-green"]') || 
-                            document.getElementById('concept-section');
-      if (resultSection) {
-        resultSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        await wait(800);
-      }
-      
-      setDecompositionStep('result');
-      await playAudio(`${getAudioDecomposition(example.parts)} égale ${example.number} !`);
-      if (stopSignalRef.current) return;
-      
       await wait(2000);
+      
+      // Étape 2: Afficher les chiffres
+      setTableAnimationStep('digits');
+      await playAudio(`Je place les chiffres du nombre ${example.number} dans le tableau.`);
+      if (stopSignalRef.current) return;
+      await wait(2000);
+      
+      // Étape 3: Afficher les multiplications
+      setTableAnimationStep('multiplications');
+      if (example.strategy === 'Centaines + Dizaines + Unités') {
+        await playAudio(`Maintenant, je calcule : centaines fois 100, dizaines fois 10, et unités fois 1.`);
+      } else {
+        await playAudio(`Maintenant, je calcule : dizaines fois 10, et unités fois 1.`);
+      }
+      if (stopSignalRef.current) return;
+      await wait(2500);
+      
+      // Étape 4: Afficher l'addition finale
+      setTableAnimationStep('addition');
+      await playAudio(`Et j'obtiens la décomposition complète : ${getAudioDecomposition(example.parts)} égale ${example.number} !`);
+      if (stopSignalRef.current) return;
+      
+      await wait(3000);
+      
+      // Réinitialiser
+      setTableAnimationStep(null);
       setCurrentExample(null);
-      setHighlightedNumber(null);
-      setShowingProcess(null);
-      setAnimatingStep(null);
-      setDecompositionStep(null);
     } finally {
+      setTableAnimationStep(null);
       setCurrentExample(null);
-      setHighlightedNumber(null);
-      setShowingProcess(null);
-      setAnimatingStep(null);
-      setDecompositionStep(null);
       setIsAnimationRunning(false);
     }
   };
@@ -2097,6 +2076,20 @@ export default function Decomposition1000CE1() {
                 ))}
               </div>
             </div>
+
+            {/* Animation du tableau pour les exemples sélectionnés */}
+            {currentExample !== null && tableAnimationStep && (
+              <div className="mt-6 mb-6">
+                <div className="text-center p-6 rounded-lg transition-all duration-1000 bg-gradient-to-br from-green-50 to-blue-50 border-2 border-green-300">
+                  <h3 className="text-lg sm:text-2xl font-bold mb-4 text-green-800">
+                    🎯 Animation de décomposition - {decompositionExamples[currentExample].item}
+                  </h3>
+                  <div className="mb-6">
+                    {renderDecompositionTable(decompositionExamples[currentExample].number, tableAnimationStep || 'initial')}
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Conseils pratiques */}
             <div className="bg-gradient-to-r from-purple-400 to-blue-500 rounded-xl p-3 sm:p-6 text-white">
