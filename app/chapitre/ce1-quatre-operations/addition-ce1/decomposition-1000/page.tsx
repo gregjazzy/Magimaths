@@ -17,6 +17,9 @@ export default function Decomposition1000CE1() {
   const [showingProcess, setShowingProcess] = useState<'separating' | 'grouping' | 'result' | null>(null);
   const [decompositionStep, setDecompositionStep] = useState<'number' | 'parts' | 'result' | null>(null);
   const [selectedDecomposition, setSelectedDecomposition] = useState<number>(0);
+  
+  // États pour l'animation du tableau de décomposition
+  const [tableAnimationStep, setTableAnimationStep] = useState<'initial' | 'table' | 'digits' | 'multiplications' | 'addition' | null>(null);
 
   // États pour les exercices
   const [showExercises, setShowExercises] = useState(false);
@@ -368,68 +371,151 @@ export default function Decomposition1000CE1() {
     }
   };
 
-  // Fonction pour afficher le tableau de décomposition par positions
-  const renderDecompositionTable = (number: number, isAnimated = false) => {
+  // Fonction pour afficher le tableau de décomposition par positions avec animation progressive
+  const renderDecompositionTable = (number: number, animationStep: string | null = null) => {
     const hundreds = Math.floor(number / 100);
     const tens = Math.floor((number % 100) / 10);
     const units = number % 10;
 
     return (
       <div className="flex flex-col items-center space-y-4">
-        {/* Tableau des positions */}
-        <div className="grid grid-cols-3 gap-4 bg-white rounded-lg p-4 shadow-lg border-2 border-purple-300">
-          {/* En-têtes */}
-          <div className="text-center bg-purple-100 rounded-lg p-3">
-            <div className="font-bold text-purple-800 text-sm sm:text-lg">Centaines</div>
-          </div>
-          <div className="text-center bg-blue-100 rounded-lg p-3">
-            <div className="font-bold text-blue-800 text-sm sm:text-lg">Dizaines</div>
-          </div>
-          <div className="text-center bg-green-100 rounded-lg p-3">
-            <div className="font-bold text-green-800 text-sm sm:text-lg">Unités</div>
-          </div>
-
-          {/* Chiffres */}
-          <div className={`text-center bg-purple-50 rounded-lg p-4 transition-all duration-1000 ${
-            isAnimated ? 'ring-4 ring-purple-400 scale-110' : ''
-          }`}>
-            <div className="text-2xl sm:text-4xl font-bold text-purple-700">{hundreds}</div>
-          </div>
-          <div className={`text-center bg-blue-50 rounded-lg p-4 transition-all duration-1000 ${
-            isAnimated ? 'ring-4 ring-blue-400 scale-110' : ''
-          }`}>
-            <div className="text-2xl sm:text-4xl font-bold text-blue-700">{tens}</div>
-          </div>
-          <div className={`text-center bg-green-50 rounded-lg p-4 transition-all duration-1000 ${
-            isAnimated ? 'ring-4 ring-green-400 scale-110' : ''
-          }`}>
-            <div className="text-2xl sm:text-4xl font-bold text-green-700">{units}</div>
-          </div>
-
-          {/* Multiplications */}
-          <div className="text-center bg-purple-50 rounded-lg p-2">
-            <div className="text-xs sm:text-sm text-purple-600">× 100</div>
-            <div className="text-sm sm:text-lg font-bold text-purple-800">{hundreds * 100}</div>
-          </div>
-          <div className="text-center bg-blue-50 rounded-lg p-2">
-            <div className="text-xs sm:text-sm text-blue-600">× 10</div>
-            <div className="text-sm sm:text-lg font-bold text-blue-800">{tens * 10}</div>
-          </div>
-          <div className="text-center bg-green-50 rounded-lg p-2">
-            <div className="text-xs sm:text-sm text-green-600">× 1</div>
-            <div className="text-sm sm:text-lg font-bold text-green-800">{units * 1}</div>
-          </div>
-        </div>
-
-        {/* Addition finale */}
-        <div className="bg-yellow-50 rounded-lg p-4 border-2 border-yellow-300">
-          <div className="text-center">
-            <div className="text-sm sm:text-lg text-gray-700 mb-2">Addition :</div>
-            <div className="text-lg sm:text-2xl font-bold text-gray-800">
-              {hundreds * 100} + {tens * 10} + {units * 1} = {number}
+        {/* Nombre initial */}
+        {animationStep === 'initial' && (
+          <div className="bg-gradient-to-r from-purple-100 to-blue-100 rounded-xl p-6 border-2 border-purple-300 animate-pulse">
+            <div className="text-center">
+              <div className="text-lg text-gray-700 mb-2">Nombre à décomposer :</div>
+              <div className="text-4xl sm:text-6xl font-bold text-purple-800">{number}</div>
             </div>
           </div>
-        </div>
+        )}
+
+        {/* Tableau des positions */}
+        {(animationStep === 'table' || animationStep === 'digits' || animationStep === 'multiplications' || animationStep === 'addition') && (
+          <div className={`grid grid-cols-3 gap-4 bg-white rounded-lg p-4 shadow-lg border-2 border-purple-300 transition-all duration-1000 ${
+            animationStep === 'table' ? 'animate-bounce' : ''
+          }`}>
+            {/* En-têtes */}
+            <div className="text-center bg-purple-100 rounded-lg p-3 transform transition-all duration-1000 hover:scale-105">
+              <div className="font-bold text-purple-800 text-sm sm:text-lg">Centaines</div>
+            </div>
+            <div className="text-center bg-blue-100 rounded-lg p-3 transform transition-all duration-1000 hover:scale-105">
+              <div className="font-bold text-blue-800 text-sm sm:text-lg">Dizaines</div>
+            </div>
+            <div className="text-center bg-green-100 rounded-lg p-3 transform transition-all duration-1000 hover:scale-105">
+              <div className="font-bold text-green-800 text-sm sm:text-lg">Unités</div>
+            </div>
+
+            {/* Chiffres */}
+            {(animationStep === 'digits' || animationStep === 'multiplications' || animationStep === 'addition') && (
+              <>
+                <div className={`text-center bg-purple-50 rounded-lg p-4 transition-all duration-1000 ${
+                  animationStep === 'digits' ? 'ring-4 ring-purple-400 scale-110 animate-pulse' : ''
+                }`}>
+                  <div className="text-2xl sm:text-4xl font-bold text-purple-700">{hundreds}</div>
+                </div>
+                <div className={`text-center bg-blue-50 rounded-lg p-4 transition-all duration-1000 ${
+                  animationStep === 'digits' ? 'ring-4 ring-blue-400 scale-110 animate-pulse' : ''
+                }`}>
+                  <div className="text-2xl sm:text-4xl font-bold text-blue-700">{tens}</div>
+                </div>
+                <div className={`text-center bg-green-50 rounded-lg p-4 transition-all duration-1000 ${
+                  animationStep === 'digits' ? 'ring-4 ring-green-400 scale-110 animate-pulse' : ''
+                }`}>
+                  <div className="text-2xl sm:text-4xl font-bold text-green-700">{units}</div>
+                </div>
+              </>
+            )}
+
+            {/* Multiplications */}
+            {(animationStep === 'multiplications' || animationStep === 'addition') && (
+              <>
+                <div className={`text-center bg-purple-50 rounded-lg p-2 transition-all duration-1000 ${
+                  animationStep === 'multiplications' ? 'ring-2 ring-purple-300 scale-105' : ''
+                }`}>
+                  <div className="text-xs sm:text-sm text-purple-600">× 100</div>
+                  <div className="text-sm sm:text-lg font-bold text-purple-800">{hundreds * 100}</div>
+                </div>
+                <div className={`text-center bg-blue-50 rounded-lg p-2 transition-all duration-1000 ${
+                  animationStep === 'multiplications' ? 'ring-2 ring-blue-300 scale-105' : ''
+                }`}>
+                  <div className="text-xs sm:text-sm text-blue-600">× 10</div>
+                  <div className="text-sm sm:text-lg font-bold text-blue-800">{tens * 10}</div>
+                </div>
+                <div className={`text-center bg-green-50 rounded-lg p-2 transition-all duration-1000 ${
+                  animationStep === 'multiplications' ? 'ring-2 ring-green-300 scale-105' : ''
+                }`}>
+                  <div className="text-xs sm:text-sm text-green-600">× 1</div>
+                  <div className="text-sm sm:text-lg font-bold text-green-800">{units * 1}</div>
+                </div>
+              </>
+            )}
+          </div>
+        )}
+
+        {/* Addition finale */}
+        {animationStep === 'addition' && (
+          <div className="bg-yellow-50 rounded-lg p-4 border-2 border-yellow-300 transform transition-all duration-1000 scale-110 ring-4 ring-yellow-400 animate-pulse">
+            <div className="text-center">
+              <div className="text-sm sm:text-lg text-gray-700 mb-2">Addition finale :</div>
+              <div className="text-lg sm:text-2xl font-bold text-gray-800">
+                {hundreds * 100} + {tens * 10} + {units * 1} = {number}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Version statique sans animation */}
+        {!animationStep && (
+          <>
+            <div className="grid grid-cols-3 gap-4 bg-white rounded-lg p-4 shadow-lg border-2 border-purple-300">
+              {/* En-têtes */}
+              <div className="text-center bg-purple-100 rounded-lg p-3">
+                <div className="font-bold text-purple-800 text-sm sm:text-lg">Centaines</div>
+              </div>
+              <div className="text-center bg-blue-100 rounded-lg p-3">
+                <div className="font-bold text-blue-800 text-sm sm:text-lg">Dizaines</div>
+              </div>
+              <div className="text-center bg-green-100 rounded-lg p-3">
+                <div className="font-bold text-green-800 text-sm sm:text-lg">Unités</div>
+              </div>
+
+              {/* Chiffres */}
+              <div className="text-center bg-purple-50 rounded-lg p-4">
+                <div className="text-2xl sm:text-4xl font-bold text-purple-700">{hundreds}</div>
+              </div>
+              <div className="text-center bg-blue-50 rounded-lg p-4">
+                <div className="text-2xl sm:text-4xl font-bold text-blue-700">{tens}</div>
+              </div>
+              <div className="text-center bg-green-50 rounded-lg p-4">
+                <div className="text-2xl sm:text-4xl font-bold text-green-700">{units}</div>
+              </div>
+
+              {/* Multiplications */}
+              <div className="text-center bg-purple-50 rounded-lg p-2">
+                <div className="text-xs sm:text-sm text-purple-600">× 100</div>
+                <div className="text-sm sm:text-lg font-bold text-purple-800">{hundreds * 100}</div>
+              </div>
+              <div className="text-center bg-blue-50 rounded-lg p-2">
+                <div className="text-xs sm:text-sm text-blue-600">× 10</div>
+                <div className="text-sm sm:text-lg font-bold text-blue-800">{tens * 10}</div>
+              </div>
+              <div className="text-center bg-green-50 rounded-lg p-2">
+                <div className="text-xs sm:text-sm text-green-600">× 1</div>
+                <div className="text-sm sm:text-lg font-bold text-green-800">{units * 1}</div>
+              </div>
+            </div>
+
+            {/* Addition finale */}
+            <div className="bg-yellow-50 rounded-lg p-4 border-2 border-yellow-300">
+              <div className="text-center">
+                <div className="text-sm sm:text-lg text-gray-700 mb-2">Addition :</div>
+                <div className="text-lg sm:text-2xl font-bold text-gray-800">
+                  {hundreds * 100} + {tens * 10} + {units * 1} = {number}
+                </div>
+              </div>
+            </div>
+          </>
+        )}
       </div>
     );
   };
@@ -559,28 +645,41 @@ export default function Decomposition1000CE1() {
       setAnimatingStep('introduction');
       const example = decompositionExamples[0]; // 47 = 40 + 7 (Dizaines + Unités)
       
+      // 1. Présentation du nombre initial
+      setTableAnimationStep('initial');
       await playAudio(`D'abord, voici ${example.description} que nous allons décomposer.`);
       if (stopSignalRef.current) return;
       
-      await wait(1200);
-      setDecompositionStep('number');
-      setHighlightedNumber(example.number);
-      await playAudio(`Je vois le nombre ${example.number} en tout.`);
+      // 2. Apparition du tableau
+      await wait(1800);
+      setTableAnimationStep('table');
+      await playAudio("Maintenant, je vais utiliser le tableau de décomposition ! Centaines, dizaines et unités !");
       if (stopSignalRef.current) return;
       
-      await wait(1500);
-      setShowingProcess('separating');
+      // 3. Placement des chiffres
+      await wait(2000);
+      setTableAnimationStep('digits');
+      const hundreds = Math.floor(example.number / 100);
+      const tens = Math.floor((example.number % 100) / 10);
+      const units = example.number % 10;
+      await playAudio(`Je place chaque chiffre dans sa colonne ! ${example.number}, c'est ${hundreds || 0} centaine, ${tens} dizaines et ${units} unités !`);
+      if (stopSignalRef.current) return;
+      
+      // 4. Affichage des multiplications
+      await wait(2200);
+      setTableAnimationStep('multiplications');
+      await playAudio("Maintenant, je multiplie par la valeur de chaque position ! Centaines fois 100, dizaines fois 10, unités fois 1 !");
+      if (stopSignalRef.current) return;
+      
+      // 5. Addition finale
+      await wait(2400);
+      setTableAnimationStep('addition');
       
       // Scroll vers la zone de concept pour bien voir la séparation
       scrollToSection('concept-section');
       await wait(800);
       
-      await playAudio("Maintenant, je vais utiliser la stratégie des dizaines et unités !");
-      if (stopSignalRef.current) return;
-      
-      await wait(1200);
-      setDecompositionStep('parts');
-      await playAudio(`${example.number}, c'est une décomposition ! Donc ${getAudioDecomposition(example.parts)} !`);
+      await playAudio(`Et voilà ! ${hundreds * 100} plus ${tens * 10} plus ${units * 1} égale ${example.number} ! C'est une décomposition réussie !`);
       if (stopSignalRef.current) return;
       
       await wait(1500);
@@ -1855,12 +1954,11 @@ export default function Decomposition1000CE1() {
                       </div>
                       )}
                       
-                      {/* Résultat */}
-                      {decompositionStep === 'result' && (
-                        <div className={`text-center p-6 rounded-lg transition-all duration-1000 bg-green-100 ring-4 ring-green-400 scale-105`}>
-                          <h4 className="text-lg sm:text-2xl font-bold text-green-800 mb-4">🎉 Décomposition réussie !</h4>
+                      {/* Animation du tableau de décomposition */}
+                      {currentExample !== null && tableAnimationStep && (
+                        <div className="text-center p-6 rounded-lg transition-all duration-1000 bg-gradient-to-br from-green-50 to-blue-50 border-2 border-green-300">
                           <div className="mb-6">
-                            {renderDecompositionTable(decompositionExamples[currentExample].number, true)}
+                            {renderDecompositionTable(decompositionExamples[currentExample].number, tableAnimationStep)}
                           </div>
                         </div>
                       )}
