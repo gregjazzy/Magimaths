@@ -9,19 +9,10 @@ export default function CE1AdditionPage() {
 
   const subChapters = [
     {
-      id: 'calcul-mental',
-      title: 'Calcul mental',
-      description: 'Développe ta rapidité avec les additions mentales !',
-      icon: '🧠',
-      estimatedTime: 15,
-      difficulty: 'Débutant',
-      href: '/chapitre/ce1-quatre-operations/addition-ce1/calcul-mental'
-    },
-    {
       id: 'complements-100',
-      title: 'Compléments jusqu\'à 100',
-      description: 'Apprends à compléter les nombres pour arriver à 100 !',
-      icon: '💯',
+      title: 'Compléments jusqu\'à 1000',
+      description: 'Apprends à calculer les compléments pour atteindre une cible !',
+      icon: '🔢',
       estimatedTime: 20,
       difficulty: 'Débutant',
       href: '/chapitre/ce1-quatre-operations/addition-ce1/complements-100'
@@ -61,6 +52,15 @@ export default function CE1AdditionPage() {
       estimatedTime: 35,
       difficulty: 'Avancé',
       href: '/chapitre/ce1-quatre-operations/addition-ce1/additions-jusqu-100'
+    },
+    {
+      id: 'calcul-mental',
+      title: 'Calcul mental',
+      description: 'Développe ta rapidité avec les additions mentales !',
+      icon: '🧠',
+      estimatedTime: 15,
+      difficulty: 'Débutant',
+      href: '/chapitre/ce1-quatre-operations/addition-ce1/calcul-mental'
     }
   ];
 

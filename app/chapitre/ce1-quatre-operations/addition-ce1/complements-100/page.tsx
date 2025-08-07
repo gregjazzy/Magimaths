@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, Play, Pause } from 'lucide-react';
 
-export default function Complements100CE1() {
+export default function Complements1000CE1() {
   // États pour l'audio et animations
   const [isPlayingVocal, setIsPlayingVocal] = useState(false);
   const [isAnimationRunning, setIsAnimationRunning] = useState(false);
@@ -74,14 +74,14 @@ export default function Complements100CE1() {
     "Super", "Génial", "Fantastique", "Merveilleux", "Extraordinaire"
   ];
 
-  // Exemples de décompositions stratégiques (jusqu'à 100)
+  // Exemples de compléments stratégiques (jusqu'à 1000)
   const decompositionExamples = [
     { 
       number: 47, 
       parts: [40, 7], 
       item: '🔴', 
       description: 'le nombre 47',
-      explanation: 'Décomposition par dizaines et unités : 47 = 4 dizaines + 7 unités = 40 + 7',
+      explanation: 'Complément par dizaines et unités : 47 = 4 dizaines + 7 unités = 40 + 7',
       strategy: 'Dizaines + Unités'
     },
     { 
@@ -89,7 +89,7 @@ export default function Complements100CE1() {
       parts: [60, 8], 
       item: '🔵', 
       description: 'le nombre 68',
-      explanation: 'Décomposition par dizaines et unités : 68 = 6 dizaines + 8 unités = 60 + 8',
+      explanation: 'Complément par dizaines et unités : 68 = 6 dizaines + 8 unités = 60 + 8',
       strategy: 'Dizaines + Unités'
     },
     { 
@@ -97,7 +97,7 @@ export default function Complements100CE1() {
       parts: [29, 29], 
       item: '🟢', 
       description: 'le nombre 58',
-      explanation: 'Décomposition en parties égales : 58 = 29 + 29 (deux moitiés identiques)',
+      explanation: 'Complément en parties égales : 58 = 29 + 29 (deux moitiés identiques)',
       strategy: 'Parties égales'
     },
     { 
@@ -514,7 +514,7 @@ export default function Complements100CE1() {
         await wait(800);
       }
       
-      await playAudio(`${example.parts[0]} plus ${example.parts[1]} égale ${example.number} ! C'est une décomposition !`);
+                              await playAudio(`${example.parts[0]} plus ${example.parts[1]} égale ${example.number} ! C'est un complément !`);
       if (stopSignalRef.current) return;
       
       await wait(1500);
@@ -528,7 +528,7 @@ export default function Complements100CE1() {
       setDecompositionStep(null);
       setCurrentExample(null);
       setHighlightedElement(null);
-      await playAudio("Excellent ! Maintenant tu comprends ce qu'est une décomposition !");
+                              await playAudio("Excellent ! Maintenant tu comprends ce qu'est un complément !");
       if (stopSignalRef.current) return;
       
       await wait(1200);
@@ -1563,7 +1563,7 @@ export default function Complements100CE1() {
           
           <div className="bg-white rounded-xl p-4 sm:p-6 shadow-lg text-center">
             <h1 className="text-xl sm:text-4xl font-bold text-gray-900 mb-2 sm:mb-4">
-              💯 Compléments jusqu'à 100 - CE1
+              🔢 Compléments jusqu'à 1000 - CE1
             </h1>
           </div>
         </div>
@@ -1681,7 +1681,7 @@ export default function Complements100CE1() {
               
               <div className="bg-purple-50 rounded-lg p-6 mb-6">
                 <p className="text-sm sm:text-lg text-center text-purple-800 font-semibold mb-3 sm:mb-6">
-                  Décomposer un nombre, c'est le séparer en plusieurs parties qui s'additionnent !
+                  Un complément, c'est ce qu'il faut ajouter à un nombre pour atteindre une cible !
                 </p>
                 
                 <div className="bg-white rounded-lg p-6">
@@ -1770,7 +1770,7 @@ export default function Complements100CE1() {
                       {/* Résultat */}
                       {decompositionStep === 'result' && (
                         <div className={`text-center p-6 rounded-lg transition-all duration-1000 bg-green-100 ring-4 ring-green-400 scale-105`}>
-                          <h4 className="text-lg sm:text-2xl font-bold text-green-800 mb-2 sm:mb-4">🎉 Décomposition réussie !</h4>
+                          <h4 className="text-lg sm:text-2xl font-bold text-green-800 mb-2 sm:mb-4">🎉 Complément trouvé !</h4>
                           <div className="mb-4">
                             {renderCircles(decompositionExamples[currentExample].number, decompositionExamples[currentExample].item)}
                         </div>
@@ -1812,7 +1812,7 @@ export default function Complements100CE1() {
             >
               <div className="flex items-center justify-center gap-1 sm:gap-3 mb-3 sm:mb-6">
                 <h2 className="text-base sm:text-2xl font-bold text-gray-900">
-                  🌟 Autres exemples de décomposition
+                  🌟 Autres exemples de compléments
                 </h2>
                 {/* Icône d'animation pour les exemples */}
                 <div className="bg-gradient-to-r from-purple-500 to-violet-600 text-white rounded-full w-6 h-6 sm:w-12 sm:h-12 flex items-center justify-center text-xs sm:text-xl font-bold shadow-lg hover:scale-110 cursor-pointer transition-all duration-300 ring-2 ring-purple-300 ring-opacity-40 hover:shadow-xl hover:ring-4 hover:ring-purple-200"
@@ -1906,7 +1906,7 @@ export default function Complements100CE1() {
                         await new Promise(resolve => setTimeout(resolve, 1500));
                         if (stopSignalRef.current) return;
                         
-                        await playAudio("Ces deux stratégies te permettront de décomposer tous les nombres jusqu'à 100 !");
+                        await playAudio("Ces deux stratégies te permettront de calculer tous les compléments jusqu'à 1000 !");
                         if (stopSignalRef.current) return;
                         
                       } catch (error) {
@@ -2015,7 +2015,7 @@ export default function Complements100CE1() {
               >
                 <div className="text-center mb-4">
                   <p className="text-sm sm:text-base text-gray-600 mb-4">
-                    Complète la décomposition :
+                    Trouve le complément :
                   </p>
                   
                   {/* Équation de décomposition avec champs de saisie */}
@@ -2057,7 +2057,7 @@ export default function Complements100CE1() {
                     disabled={isCorrect !== null || isPlayingVocal || !userAnswer1.trim() || !userAnswer2.trim()}
                     className="bg-purple-500 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-bold text-sm sm:text-base hover:bg-purple-600 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed min-h-[40px] sm:min-h-[48px] shadow-lg"
                   >
-                    ✅ Vérifier ma décomposition
+                    ✅ Vérifier mon complément
                   </button>
                 </div>
               </div>
@@ -2072,7 +2072,7 @@ export default function Complements100CE1() {
                       <>
                         <span className="text-base sm:text-xl md:text-2xl">✅</span>
                         <span className="font-bold text-xs sm:text-base md:text-xl">
-                          Excellent ! {userAnswer1} + {userAnswer2} est bien une décomposition de {exercises[currentExercise].number} !
+                          Excellent ! {userAnswer1} + {userAnswer2} est bien un complément de {exercises[currentExercise].number} !
                         </span>
                       </>
                     ) : (
@@ -2271,7 +2271,7 @@ export default function Complements100CE1() {
                         🎉 Maintenant tu comprends !
                       </div>
                       <div className="text-xs sm:text-base text-green-700 mb-2">
-                        Les décompositions, c'est séparer un nombre en parties !
+                        Les compléments, c'est trouver ce qui manque pour atteindre une cible !
                       </div>
                       {/* Message spécifique mobile */}
                       {isMobile && (
@@ -2323,7 +2323,7 @@ export default function Complements100CE1() {
                         {finalScore >= 8 ? '⭐⭐⭐' : finalScore >= 6 ? '⭐⭐' : '⭐'}
                       </div>
                       <p className="text-sm text-gray-600 mt-2">
-                        Les décompositions t'aident à mieux comprendre les nombres !
+                        Les compléments t'aident à mieux comprendre les nombres !
                       </p>
                     </div>
                     <div className="flex space-x-3">
