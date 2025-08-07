@@ -10,8 +10,8 @@ export default function CE1AdditionPage() {
   const subChapters = [
     {
       id: 'complements-100',
-      title: 'Compléments jusqu\'à 1000',
-      description: 'Apprends à calculer les compléments pour atteindre une cible !',
+      title: 'Décomposition des nombres jusqu\'à 1000',
+      description: 'Apprends à décomposer les nombres en dizaines et unités !',
       icon: '🔢',
       estimatedTime: 20,
       difficulty: 'Débutant',
