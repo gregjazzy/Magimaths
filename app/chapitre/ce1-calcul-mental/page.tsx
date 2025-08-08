@@ -30,15 +30,7 @@ export default function CE1CalculMentalPage() {
       xp: 15,
       color: 'from-purple-500 to-violet-500'
     },
-    {
-      id: 'tables-multiplication',
-      title: 'Tables de multiplication',
-      description: 'Tables de 2, 3, 4 et 5 (mémorisation)',
-      icon: '✖️',
-      duration: '12 min',
-      xp: 20,
-      color: 'from-red-500 to-pink-500'
-    },
+
     {
       id: 'complements-10',
       title: 'Compléments à 10',
@@ -57,15 +49,7 @@ export default function CE1CalculMentalPage() {
       xp: 15,
       color: 'from-teal-500 to-blue-500'
     },
-    {
-      id: 'complements-1000',
-      title: 'Compléments à 1000',
-      description: 'Compléments à 1000 (stratégies avancées)',
-      icon: '🎯',
-      duration: '12 min',
-      xp: 18,
-      color: 'from-purple-500 to-indigo-500'
-    },
+
     {
       id: 'doubles-moities',
       title: 'Doubles et moitiés',
@@ -75,15 +59,7 @@ export default function CE1CalculMentalPage() {
       xp: 12,
       color: 'from-green-500 to-emerald-500'
     },
-    {
-      id: 'multiplier-par-10',
-      title: 'Multiplier par 10',
-      description: 'Technique de multiplication par 10',
-      icon: '🔟',
-      duration: '8 min',
-      xp: 12,
-      color: 'from-indigo-500 to-purple-500'
-    },
+
     {
       id: 'strategies-calcul',
       title: 'Stratégies de calcul',
