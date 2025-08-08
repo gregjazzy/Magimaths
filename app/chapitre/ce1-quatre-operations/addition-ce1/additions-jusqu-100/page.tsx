@@ -37,7 +37,12 @@ export default function AdditionsJusqua100CE1() {
   // État pour l'animation de correction
   const [showAnimatedCorrection, setShowAnimatedCorrection] = useState(false);
   const [correctionStep, setCorrectionStep] = useState<'numbers' | 'adding' | 'counting' | 'result' | 'complete' | 'carry-step' | 'decomposition' | 'final-sum' | null>(null);
+  const [correctionTechnique, setCorrectionTechnique] = useState<string>('');
   const [highlightNextButton, setHighlightNextButton] = useState(false);
+  
+  // États pour le cadre séparé des exemples
+  const [selectedTechnique, setSelectedTechnique] = useState<string | null>(null);
+  const [selectedExampleIndex, setSelectedExampleIndex] = useState<number>(0);
 
   // État pour la détection mobile
   const [isMobile, setIsMobile] = useState(false);
@@ -107,6 +112,66 @@ export default function AdditionsJusqua100CE1() {
             'Unités ensuite : 2 + 6 = 8',
             'Total : 70 + 8 = 78 !'
           ]
+        },
+        { 
+          calculation: '23 + 15', 
+          num1: 23, 
+          num2: 15, 
+          result: 38,
+          steps: [
+            'Je décompose : 23 = 20 + 3 et 15 = 10 + 5',
+            'Dizaines : 20 + 10 = 30',
+            'Unités : 3 + 5 = 8',
+            'Total : 30 + 8 = 38 !'
+          ]
+        },
+        { 
+          calculation: '54 + 31', 
+          num1: 54, 
+          num2: 31, 
+          result: 85,
+          steps: [
+            'Je sépare : 54 = 50 + 4 et 31 = 30 + 1',
+            'Dizaines : 50 + 30 = 80',
+            'Unités : 4 + 1 = 5',
+            'Résultat : 80 + 5 = 85 !'
+          ]
+        },
+        { 
+          calculation: '61 + 27', 
+          num1: 61, 
+          num2: 27, 
+          result: 88,
+          steps: [
+            'Décomposition : 61 = 60 + 1 et 27 = 20 + 7',
+            'Dizaines : 60 + 20 = 80',
+            'Unités : 1 + 7 = 8',
+            'Total : 80 + 8 = 88 !'
+          ]
+        },
+        { 
+          calculation: '32 + 45', 
+          num1: 32, 
+          num2: 45, 
+          result: 77,
+          steps: [
+            'Je décompose : 32 = 30 + 2 et 45 = 40 + 5',
+            'Dizaines : 30 + 40 = 70',
+            'Unités : 2 + 5 = 7',
+            'Résultat : 70 + 7 = 77 !'
+          ]
+        },
+        { 
+          calculation: '47 + 31', 
+          num1: 47, 
+          num2: 31, 
+          result: 78,
+          steps: [
+            'Je sépare : 47 = 40 + 7 et 31 = 30 + 1',
+            'Dizaines : 40 + 30 = 70',
+            'Unités : 7 + 1 = 8',
+            'Total : 70 + 8 = 78 !'
+          ]
         }
       ]
     },
@@ -138,6 +203,42 @@ export default function AdditionsJusqua100CE1() {
             'Je prends 4 de 9 pour faire 60 (56 + 4)',
             'Il reste 5 (9 - 4 = 5)',
             '60 + 5 = 65 ! Technique magique !'
+          ]
+        },
+        { 
+          calculation: '34 + 7', 
+          num1: 34, 
+          num2: 7, 
+          result: 41,
+          steps: [
+            'J\'ajoute 7 à 34',
+            'Je prends 6 de 7 pour faire 40 (34 + 6)',
+            'Il reste 1 (7 - 6 = 1)',
+            '40 + 1 = 41 ! Plus simple !'
+          ]
+        },
+        { 
+          calculation: '48 + 6', 
+          num1: 48, 
+          num2: 6, 
+          result: 54,
+          steps: [
+            'J\'ajoute 6 à 48',
+            'Je prends 2 de 6 pour faire 50 (48 + 2)',
+            'Il reste 4 (6 - 2 = 4)',
+            '50 + 4 = 54 ! Génial !'
+          ]
+        },
+        { 
+          calculation: '63 + 9', 
+          num1: 63, 
+          num2: 9, 
+          result: 72,
+          steps: [
+            'J\'ajoute 9 à 63',
+            'Je prends 7 de 9 pour faire 70 (63 + 7)',
+            'Il reste 2 (9 - 7 = 2)',
+            '70 + 2 = 72 ! Parfait !'
           ]
         }
       ]
@@ -171,6 +272,56 @@ export default function AdditionsJusqua100CE1() {
             'Deuxième bond de 10 : 55 + 10 = 65',
             'Résultat : 65 ! C\'est rapide !'
           ]
+        },
+        { 
+          calculation: '34 + 40', 
+          num1: 34, 
+          num2: 40, 
+          result: 74,
+          steps: [
+            'Je pars de 34 et j\'ajoute 40',
+            'Bond 1 : 34 + 10 = 44',
+            'Bond 2 : 44 + 10 = 54',
+            'Bond 3 : 54 + 10 = 64',
+            'Bond 4 : 64 + 10 = 74 !'
+          ]
+        },
+        { 
+          calculation: '52 + 30', 
+          num1: 52, 
+          num2: 30, 
+          result: 82,
+          steps: [
+            'Je commence à 52 et j\'ajoute 30',
+            'Premier bond : 52 + 10 = 62',
+            'Deuxième bond : 62 + 10 = 72',
+            'Troisième bond : 72 + 10 = 82 !'
+          ]
+        },
+        { 
+          calculation: '16 + 20', 
+          num1: 16, 
+          num2: 20, 
+          result: 36,
+          steps: [
+            'Je pars de 16 et j\'ajoute 20',
+            'Bond 1 : 16 + 10 = 26',
+            'Bond 2 : 26 + 10 = 36',
+            'Fini ! 36 c\'est rapide !'
+          ]
+        },
+        { 
+          calculation: '35 + 40', 
+          num1: 35, 
+          num2: 40, 
+          result: 75,
+          steps: [
+            'Je commence à 35 et j\'ajoute 40',
+            'Bond 1 : 35 + 10 = 45',
+            'Bond 2 : 45 + 10 = 55',
+            'Bond 3 : 55 + 10 = 65',
+            'Bond 4 : 65 + 10 = 75 !'
+          ]
         }
       ]
     },
@@ -202,6 +353,66 @@ export default function AdditionsJusqua100CE1() {
             'Alors j\'enlève 1 à 38 : 38 - 1 = 37',
             'Maintenant je calcule : 37 + 20 = 57',
             'Malin, non ? 57 c\'est la réponse !'
+          ]
+        },
+        { 
+          calculation: '49 + 12', 
+          num1: 49, 
+          num2: 12, 
+          result: 61,
+          steps: [
+            'Je transforme 49 + 12 pour simplifier',
+            'J\'ajoute 1 à 49 : 49 + 1 = 50',
+            'J\'enlève 1 à 12 : 12 - 1 = 11',
+            'Maintenant : 50 + 11 = 61 ! Facile !'
+          ]
+        },
+        { 
+          calculation: '27 + 18', 
+          num1: 27, 
+          num2: 18, 
+          result: 45,
+          steps: [
+            'Je rends 18 plus facile : 18 + 2 = 20',
+            'J\'enlève 2 à 27 : 27 - 2 = 25',
+            'Maintenant : 25 + 20 = 45',
+            'Astucieux ! 45 c\'est le résultat !'
+          ]
+        },
+        { 
+          calculation: '48 + 14', 
+          num1: 48, 
+          num2: 14, 
+          result: 62,
+          steps: [
+            'Je transforme 48 + 14 en nombres ronds',
+            'J\'ajoute 2 à 48 : 48 + 2 = 50',
+            'J\'enlève 2 à 14 : 14 - 2 = 12',
+            'Total : 50 + 12 = 62 ! Plus simple !'
+          ]
+        },
+        { 
+          calculation: '36 + 17', 
+          num1: 36, 
+          num2: 17, 
+          result: 53,
+          steps: [
+            'Je rends 17 plus facile : 17 + 3 = 20',
+            'J\'enlève 3 à 36 : 36 - 3 = 33',
+            'Maintenant : 33 + 20 = 53',
+            'Génial ! C\'est 53 !'
+          ]
+        },
+        { 
+          calculation: '64 + 18', 
+          num1: 64, 
+          num2: 18, 
+          result: 82,
+          steps: [
+            'Je transforme 64 + 18 en nombres faciles',
+            'Je rends 18 plus facile : 18 + 2 = 20',
+            'J\'enlève 2 à 64 : 64 - 2 = 62',
+            'Résultat : 62 + 20 = 82 ! Astucieux !'
           ]
         }
       ]
@@ -235,6 +446,66 @@ export default function AdditionsJusqua100CE1() {
             'Deuxième étape : 77 + 5 = 82',
             'C\'est fait ! 47 + 35 = 82 !'
           ]
+        },
+        { 
+          calculation: '25 + 39', 
+          num1: 25, 
+          num2: 39, 
+          result: 64,
+          steps: [
+            'Je commence par 25, et j\'ajoute 39 en deux fois',
+            'D\'abord j\'ajoute 30 : 25 + 30 = 55',
+            'Puis j\'ajoute 9 : 55 + 9 = 64',
+            'Résultat : 64 ! Étape par étape !'
+          ]
+        },
+        { 
+          calculation: '53 + 27', 
+          num1: 53, 
+          num2: 27, 
+          result: 80,
+          steps: [
+            'Je pars de 53 et j\'ajoute 27 progressivement',
+            'Première étape : 53 + 20 = 73',
+            'Deuxième étape : 73 + 7 = 80',
+            'Parfait ! 53 + 27 = 80 !'
+          ]
+        },
+        { 
+          calculation: '42 + 29', 
+          num1: 42, 
+          num2: 29, 
+          result: 71,
+          steps: [
+            'Je commence par 42, et j\'ajoute 29 morceau par morceau',
+            'D\'abord j\'ajoute 20 : 42 + 20 = 62',
+            'Puis j\'ajoute 9 : 62 + 9 = 71',
+            'C\'est fait ! 42 + 29 = 71 !'
+          ]
+        },
+        { 
+          calculation: '36 + 46', 
+          num1: 36, 
+          num2: 46, 
+          result: 82,
+          steps: [
+            'Je pars de 36 et j\'ajoute 46 progressivement',
+            'Première étape : 36 + 40 = 76',
+            'Deuxième étape : 76 + 6 = 82',
+            'Excellent ! 36 + 46 = 82 !'
+          ]
+        },
+        { 
+          calculation: '48 + 26', 
+          num1: 48, 
+          num2: 26, 
+          result: 74,
+          steps: [
+            'Je commence par 48, et j\'ajoute 26 étape par étape',
+            'D\'abord j\'ajoute 20 : 48 + 20 = 68',
+            'Puis j\'ajoute 6 : 68 + 6 = 74',
+            'Parfait ! 48 + 26 = 74 !'
+          ]
         }
       ]
     },
@@ -266,6 +537,66 @@ export default function AdditionsJusqua100CE1() {
             'Alors 34 + 35 = 34 + 34 + 1',
             'Double de 34 : 34 + 34 = 68',
             'Plus 1 : 68 + 1 = 69 ! Technique des doubles !'
+          ]
+        },
+        { 
+          calculation: '42 + 43', 
+          num1: 42, 
+          num2: 43, 
+          result: 85,
+          steps: [
+            'Je remarque que 43 = 42 + 1',
+            'Donc 42 + 43 = 42 + 42 + 1',
+            'Le double de 42 : 42 + 42 = 84',
+            'Plus 1 : 84 + 1 = 85 ! Astuce géniale !'
+          ]
+        },
+        { 
+          calculation: '37 + 38', 
+          num1: 37, 
+          num2: 38, 
+          result: 75,
+          steps: [
+            'Je vois que 38 = 37 + 1',
+            'Alors 37 + 38 = 37 + 37 + 1',
+            'Double de 37 : 37 + 37 = 74',
+            'Plus 1 : 74 + 1 = 75 ! Brillant !'
+          ]
+        },
+        { 
+          calculation: '23 + 24', 
+          num1: 23, 
+          num2: 24, 
+          result: 47,
+          steps: [
+            'Je remarque que 24 = 23 + 1',
+            'Donc 23 + 24 = 23 + 23 + 1',
+            'Le double de 23 : 23 + 23 = 46',
+            'Plus 1 : 46 + 1 = 47 ! Facile !'
+          ]
+        },
+        { 
+          calculation: '31 + 32', 
+          num1: 31, 
+          num2: 32, 
+          result: 63,
+          steps: [
+            'Je vois que 32 = 31 + 1',
+            'Alors 31 + 32 = 31 + 31 + 1',
+            'Double de 31 : 31 + 31 = 62',
+            'Plus 1 : 62 + 1 = 63 ! Parfait !'
+          ]
+        },
+        { 
+          calculation: '41 + 42', 
+          num1: 41, 
+          num2: 42, 
+          result: 83,
+          steps: [
+            'Je remarque que 42 = 41 + 1',
+            'Donc 41 + 42 = 41 + 41 + 1',
+            'Le double de 41 : 41 + 41 = 82',
+            'Plus 1 : 82 + 1 = 83 ! Formidable !'
           ]
         }
       ]
@@ -398,6 +729,8 @@ export default function AdditionsJusqua100CE1() {
     setAnimatedObjects([]);
     setCorrectionNumbers(null);
     setCountingIndex(-1);
+    setSelectedTechnique(null);
+    setSelectedExampleIndex(0);
   };
 
   // Fonction pour jouer l'audio avec voix féminine française
@@ -852,6 +1185,16 @@ export default function AdditionsJusqua100CE1() {
         await animateCalculMental(example);
       } else if (technique.id === 'complement-10') {
         await animateComplement10(example);
+      } else if (technique.id === 'decomposition') {
+        await animateDecomposition(example);
+      } else if (technique.id === 'bonds-10') {
+        await animateBonds10(example);
+      } else if (technique.id === 'compensation') {
+        await animateCompensation(example);
+      } else if (technique.id === 'etapes-successives') {
+        await animateEtapesSuccessives(example);
+      } else if (technique.id === 'doubles') {
+        await animateDoubles(example);
       }
 
     } finally {
@@ -1139,6 +1482,207 @@ export default function AdditionsJusqua100CE1() {
     setCalculationStep('result');
     setHighlightedDigits([]);
     await playAudio(`Résultat : ${example.result} ! Tu vois comme c'est malin ? Le complément à 10 rend tout plus facile !`);
+    await wait(3000);
+  };
+
+  // Fonction pour ouvrir le cadre de sélection d'exemples
+  const openExampleSelector = (techniqueIndex: number) => {
+    if (isAnimationRunning) return;
+    
+    const technique = additionTechniques[techniqueIndex];
+    setSelectedTechnique(technique.id);
+    setSelectedExampleIndex(0); // Par défaut le premier exemple
+    
+    // Scroll vers la zone d'animation
+    scrollToSection('animation-section');
+  };
+
+  // Animation pour décomposition
+  const animateDecomposition = async (example: any) => {
+    // Étape 1 : Introduction
+    setCalculationStep('setup');
+    await playAudio(`Décomposition en dizaines et unités : ${example.calculation}. Je vais séparer chaque nombre !`);
+    await wait(2500);
+
+    if (stopSignalRef.current) return;
+
+    // Étape 2 : Décomposer le premier nombre
+    setCalculationStep('decompose-first');
+    const dizaines1 = Math.floor(example.num1 / 10) * 10;
+    const unites1 = example.num1 % 10;
+    await playAudio(`${example.num1} se décompose en ${dizaines1} plus ${unites1}.`);
+    await wait(3000);
+
+    if (stopSignalRef.current) return;
+
+    // Étape 3 : Décomposer le second nombre  
+    setCalculationStep('decompose-second');
+    const dizaines2 = Math.floor(example.num2 / 10) * 10;
+    const unites2 = example.num2 % 10;
+    await playAudio(`${example.num2} se décompose en ${dizaines2} plus ${unites2}.`);
+    await wait(3000);
+
+    if (stopSignalRef.current) return;
+
+    // Étape 4 : Additionner les dizaines
+    setCalculationStep('tens');
+    const sommeDizaines = dizaines1 + dizaines2;
+    await playAudio(`J'additionne les dizaines : ${dizaines1} plus ${dizaines2} égale ${sommeDizaines}.`);
+    await wait(3000);
+
+    if (stopSignalRef.current) return;
+
+    // Étape 5 : Additionner les unités
+    setCalculationStep('units');
+    const sommeUnites = unites1 + unites2;
+    await playAudio(`J'additionne les unités : ${unites1} plus ${unites2} égale ${sommeUnites}.`);
+    await wait(3000);
+
+    if (stopSignalRef.current) return;
+
+    // Étape 6 : Résultat final
+    setCalculationStep('result');
+    await playAudio(`Je regroupe : ${sommeDizaines} plus ${sommeUnites} égale ${example.result} !`);
+    await wait(3000);
+  };
+
+  // Animation pour bonds de 10
+  const animateBonds10 = async (example: any) => {
+    setCalculationStep('setup');
+    await playAudio(`Bonds de 10 : ${example.calculation}. Je vais sauter de 10 en 10 !`);
+    await wait(2500);
+
+    if (stopSignalRef.current) return;
+
+    let current = example.num1;
+    const dizaines = Math.floor(example.num2 / 10);
+    
+    setCalculationStep('show-first');
+    await playAudio(`Je pars de ${current}.`);
+    await wait(1500);
+
+    for (let i = 0; i < dizaines; i++) {
+      if (stopSignalRef.current) return;
+      current += 10;
+      setCalculationStep('units');
+      await playAudio(`Bond ${i + 1} : plus 10 égale ${current} !`);
+      await wait(1800);
+    }
+
+    if (stopSignalRef.current) return;
+
+    setCalculationStep('result');
+    await playAudio(`Résultat : ${example.result} ! Les bonds de 10, c'est rapide et amusant !`);
+    await wait(3000);
+  };
+
+  // Animation pour compensation
+  const animateCompensation = async (example: any) => {
+    setCalculationStep('setup');
+    await playAudio(`Compensation : ${example.calculation}. Je vais rendre les nombres plus faciles !`);
+    await wait(2500);
+
+    if (stopSignalRef.current) return;
+
+    setCalculationStep('show-problem');
+    await playAudio(`Je veux calculer ${example.num1} plus ${example.num2}.`);
+    await wait(2000);
+
+    if (stopSignalRef.current) return;
+
+    setCalculationStep('find-complement');
+    // Logique pour 29 + 15 = 30 + 14
+    if (example.num1 === 29 && example.num2 === 15) {
+      await playAudio(`Je transforme 29 en 30 en ajoutant 1.`);
+      await wait(2500);
+      
+      if (stopSignalRef.current) return;
+      
+      await playAudio(`Alors j'enlève 1 à 15 : 15 moins 1 égale 14.`);
+      await wait(2500);
+      
+      if (stopSignalRef.current) return;
+      
+      setCalculationStep('result');
+      await playAudio(`Maintenant c'est 30 plus 14 égale ${example.result} ! Beaucoup plus simple !`);
+    } else {
+      // Logique pour 38 + 19 = 37 + 20
+      await playAudio(`Je transforme ${example.num2} en une dizaine ronde.`);
+      await wait(2500);
+      
+      if (stopSignalRef.current) return;
+      
+      setCalculationStep('result');
+      await playAudio(`J'obtiens ${example.result} ! La compensation rend tout plus facile !`);
+    }
+    await wait(3000);
+  };
+
+  // Animation pour étapes successives
+  const animateEtapesSuccessives = async (example: any) => {
+    setCalculationStep('setup');
+    await playAudio(`Étapes successives : ${example.calculation}. Je vais avancer morceau par morceau !`);
+    await wait(2500);
+
+    if (stopSignalRef.current) return;
+
+    setCalculationStep('show-first');
+    await playAudio(`Je commence avec ${example.num1}.`);
+    await wait(1500);
+
+    if (stopSignalRef.current) return;
+
+    // Décomposer le second nombre
+    const dizaines = Math.floor(example.num2 / 10) * 10;
+    const unites = example.num2 % 10;
+    
+    setCalculationStep('tens');
+    const etape1 = example.num1 + dizaines;
+    await playAudio(`Première étape : j'ajoute ${dizaines}. ${example.num1} plus ${dizaines} égale ${etape1}.`);
+    await wait(3000);
+
+    if (stopSignalRef.current) return;
+
+    setCalculationStep('units');
+    await playAudio(`Deuxième étape : j'ajoute ${unites}. ${etape1} plus ${unites} égale ${example.result}.`);
+    await wait(3000);
+
+    if (stopSignalRef.current) return;
+
+    setCalculationStep('result');
+    await playAudio(`Résultat final : ${example.result} ! Étape par étape, c'est sûr !`);
+    await wait(3000);
+  };
+
+  // Animation pour doubles
+  const animateDoubles = async (example: any) => {
+    setCalculationStep('setup');
+    await playAudio(`Doubles et quasi-doubles : ${example.calculation}. Je vais utiliser les doubles !`);
+    await wait(2500);
+
+    if (stopSignalRef.current) return;
+
+    setCalculationStep('show-problem');
+    await playAudio(`Je remarque que ${example.num2} égale ${example.num1} plus 1.`);
+    await wait(2500);
+
+    if (stopSignalRef.current) return;
+
+    setCalculationStep('show-first');
+    const double = example.num1 * 2;
+    await playAudio(`Donc ${example.num1} plus ${example.num2} égale ${example.num1} plus ${example.num1} plus 1.`);
+    await wait(3000);
+
+    if (stopSignalRef.current) return;
+
+    setCalculationStep('units');
+    await playAudio(`Le double de ${example.num1} : ${example.num1} plus ${example.num1} égale ${double}.`);
+    await wait(3000);
+
+    if (stopSignalRef.current) return;
+
+    setCalculationStep('result');
+    await playAudio(`Plus 1 : ${double} plus 1 égale ${example.result} ! L'astuce des doubles !`);
     await wait(3000);
   };
 
@@ -1755,7 +2299,7 @@ export default function AdditionsJusqua100CE1() {
                         ? 'opacity-50 cursor-not-allowed' 
                         : 'cursor-pointer hover:scale-105 hover:shadow-lg'
                     } ${currentTechnique === technique.id ? 'ring-4 ring-blue-400 bg-blue-100' : ''}`}
-                    onClick={isAnimationRunning ? undefined : () => explainTechnique(index)}
+                    onClick={isAnimationRunning ? undefined : () => openExampleSelector(index)}
                   >
                     <div className="text-center">
                       <div className="text-4xl mb-3">{technique.icon}</div>
@@ -1776,6 +2320,77 @@ export default function AdditionsJusqua100CE1() {
                 ))}
               </div>
             </div>
+
+            {/* Cadre séparé pour sélection d'exemples */}
+            {selectedTechnique && (
+              <div 
+                id="animation-section"
+                className="bg-white rounded-xl shadow-lg p-6 border-2 border-blue-400"
+              >
+                {(() => {
+                  const technique = additionTechniques.find(t => t.id === selectedTechnique);
+                  if (!technique) return null;
+                  
+                  return (
+                    <div>
+                      <div className="flex items-center justify-between mb-6">
+                        <h2 className="text-xl sm:text-2xl font-bold text-gray-800 flex items-center gap-3">
+                          <span className="text-3xl">{technique.icon}</span>
+                          {technique.title}
+                        </h2>
+                        <button
+                          onClick={() => setSelectedTechnique(null)}
+                          className="text-gray-500 hover:text-gray-700 text-2xl font-bold"
+                        >
+                          ✕
+                        </button>
+                      </div>
+                      
+                      <div className="mb-6">
+                        <p className="text-gray-700 mb-4">{technique.description}</p>
+                        
+                        <div className="mb-4">
+                          <h3 className="font-medium text-gray-800 mb-3">Choisir un exemple :</h3>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                            {technique.examples.map((example, index) => (
+                              <button
+                                key={index}
+                                onClick={() => setSelectedExampleIndex(index)}
+                                className={`p-4 rounded-lg font-medium text-lg transition-all duration-200 border-2 ${
+                                  selectedExampleIndex === index
+                                    ? 'bg-blue-500 text-white border-blue-500 shadow-lg transform scale-105'
+                                    : 'bg-gray-50 text-gray-800 border-gray-300 hover:bg-blue-100 hover:border-blue-400'
+                                }`}
+                              >
+                                {example.calculation} = {example.result}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div className="flex justify-center">
+                        <button
+                          onClick={() => {
+                            const techniqueIndex = additionTechniques.findIndex(t => t.id === selectedTechnique);
+                            explainTechnique(techniqueIndex, selectedExampleIndex);
+                            setSelectedTechnique(null); // Fermer le cadre après lancement
+                          }}
+                          disabled={isAnimationRunning}
+                          className={`px-8 py-4 rounded-xl font-bold text-xl shadow-lg transition-all transform ${
+                            isAnimationRunning 
+                              ? 'bg-gray-400 text-gray-200 cursor-not-allowed' 
+                              : 'bg-gradient-to-r from-green-500 to-emerald-500 text-white hover:shadow-xl hover:scale-105'
+                          }`}
+                        >
+                          {isAnimationRunning ? '⏳ Animation en cours...' : '🎬 Lancer l\'animation !'}
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })()}
+              </div>
+            )}
 
             {/* Zone d'animation */}
             {currentTechnique && currentExample !== null && (

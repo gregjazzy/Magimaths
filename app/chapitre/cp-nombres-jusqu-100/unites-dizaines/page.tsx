@@ -17,7 +17,7 @@ const styles = `
     }
   }
   
-  @keyframes slideInRight {
+  @keyframes slideInRight 
     from { 
       opacity: 0; 
       transform: translateX(100px) scale(0.8); 

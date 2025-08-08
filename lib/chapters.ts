@@ -286,7 +286,7 @@ export const chaptersData: Chapter[] = [
     order: 10
   },
   {
-    id: 'ce2-fractions-bande-unite',
+    id: 'ce2-fractions-mesures',
     title: 'Fractions et mesures',
     description: 'Fractions sur bande-unité, mesures de grandeurs',
     classLevel: 'CE2',
