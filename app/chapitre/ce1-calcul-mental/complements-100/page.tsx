@@ -56,6 +56,12 @@ export default function ComplementsCentCE1() {
   // État pour l'animation de comptage objet par objet
   const [countingIndex, setCountingIndex] = useState<number>(-1);
 
+  // États pour les techniques pédagogiques
+  const [showTechniques, setShowTechniques] = useState(false);
+  const [selectedTechnique, setSelectedTechnique] = useState<string | null>(null);
+  const [techniqueStep, setTechniqueStep] = useState<'intro' | 'example' | 'explanation' | 'complete' | null>(null);
+  const [currentTechniqueExample, setCurrentTechniqueExample] = useState<number>(0);
+
   // Refs pour gérer l'audio et scroll
   const stopSignalRef = useRef(false);
   const currentAudioRef = useRef<SpeechSynthesisUtterance | null>(null);
@@ -125,6 +131,46 @@ export default function ComplementsCentCE1() {
     { first: 90, second: 10 }
   ];
 
+  // Techniques pédagogiques pour les compléments à 100
+  const techniques = [
+    {
+      id: 'dizaines-pures',
+      title: '🎯 Technique des dizaines',
+      description: 'Utiliser les compléments à 10 pour les dizaines',
+      examples: [
+        { original: '30 + ? = 100', explanation: '3 dizaines + ? dizaines = 10 dizaines', answer: '70', detail: 'Si 3+7=10, alors 30+70=100' },
+        { original: '40 + ? = 100', explanation: '4 dizaines + ? dizaines = 10 dizaines', answer: '60', detail: 'Si 4+6=10, alors 40+60=100' },
+        { original: '80 + ? = 100', explanation: '8 dizaines + ? dizaines = 10 dizaines', answer: '20', detail: 'Si 8+2=10, alors 80+20=100' }
+      ],
+      color: 'from-blue-500 to-indigo-600',
+      icon: '🧮'
+    },
+    {
+      id: 'passage-dizaines',
+      title: '🚀 Passage par les dizaines rondes',
+      description: 'Décomposer pour passer par une dizaine ronde',
+      examples: [
+        { original: '37 + ? = 100', explanation: 'D\'abord 37+3=40, puis 40+60=100', answer: '63', detail: 'Donc 37+63=100 (3+60=63)' },
+        { original: '45 + ? = 100', explanation: 'D\'abord 45+5=50, puis 50+50=100', answer: '55', detail: 'Donc 45+55=100 (5+50=55)' },
+        { original: '73 + ? = 100', explanation: 'D\'abord 73+7=80, puis 80+20=100', answer: '27', detail: 'Donc 73+27=100 (7+20=27)' }
+      ],
+      color: 'from-green-500 to-teal-600',
+      icon: '🎢'
+    },
+    {
+      id: 'decomposition',
+      title: '🔧 Décomposition additive',
+      description: 'Décomposer le complément de différentes façons',
+      examples: [
+        { original: '45 + ? = 100', explanation: 'Il me faut 55', answer: '55', detail: '55 = 50+5 ou 40+15 ou 30+25...' },
+        { original: '35 + ? = 100', explanation: 'Il me faut 65', answer: '65', detail: '65 = 60+5 ou 50+15 ou 40+25...' },
+        { original: '75 + ? = 100', explanation: 'Il me faut 25', answer: '25', detail: '25 = 20+5 ou 10+15...' }
+      ],
+      color: 'from-purple-500 to-pink-600',
+      icon: '🔨'
+    }
+  ];
+
   // Exercices sur les compléments à 100 - saisie libre
   const exercises = [
     { question: '30 + un nombre à trouver égale 100', firstNumber: 30 },
@@ -138,6 +184,64 @@ export default function ComplementsCentCE1() {
     { question: '90 + un nombre à trouver égale 100', firstNumber: 90 },
     { question: 'Un nombre à trouver + 60 égale 100', secondNumber: 60 }
   ];
+
+  // Fonction pour expliquer une technique avec animations
+  const explainTechnique = async (techniqueId: string) => {
+    stopAllVocalsAndAnimations();
+    await wait(300);
+    stopSignalRef.current = false;
+    
+    const technique = techniques.find(t => t.id === techniqueId);
+    if (!technique) return;
+    
+    setSelectedTechnique(techniqueId);
+    setTechniqueStep('intro');
+    setCurrentTechniqueExample(0);
+    
+    try {
+      // Introduction de la technique
+      await playAudio(`Découvrons la technique : ${technique.title.replace(/🎯|🚀|🔧/g, '').trim()} !`);
+      if (stopSignalRef.current) return;
+      
+      await wait(1000);
+      await playAudio(technique.description);
+      if (stopSignalRef.current) return;
+      
+      // Exemples avec animations
+      for (let i = 0; i < technique.examples.length; i++) {
+        if (stopSignalRef.current) return;
+        
+        setCurrentTechniqueExample(i);
+        setTechniqueStep('example');
+        const example = technique.examples[i];
+        
+        await wait(1500);
+        await playAudio(`Exemple : ${example.original}`);
+        if (stopSignalRef.current) return;
+        
+        await wait(1200);
+        setTechniqueStep('explanation');
+        await playAudio(example.explanation);
+        if (stopSignalRef.current) return;
+        
+        await wait(1000);
+        await playAudio(`La réponse est ${example.answer} !`);
+        if (stopSignalRef.current) return;
+        
+        await wait(800);
+        await playAudio(example.detail);
+        if (stopSignalRef.current) return;
+        
+        await wait(1500);
+      }
+      
+      setTechniqueStep('complete');
+      await playAudio("Parfait ! Tu maîtrises maintenant cette technique !");
+      
+    } catch (error) {
+      console.error('Erreur lors de l\'explication de la technique:', error);
+    }
+  };
 
   // Fonction pour arrêter tous les vocaux et animations
   const stopAllVocalsAndAnimations = (keepExampleState = false) => {
@@ -180,6 +284,13 @@ export default function ComplementsCentCE1() {
     setAnimatedObjects([]);
     setCorrectionNumbers(null);
     setCountingIndex(-1);
+    
+    // États pour les techniques
+    if (!keepExampleState) {
+      setSelectedTechnique(null);
+      setTechniqueStep(null);
+      setCurrentTechniqueExample(0);
+    }
   };
 
   // Wrapper pour les gestionnaires d'événements
@@ -1372,12 +1483,13 @@ export default function ComplementsCentCE1() {
         <div className={`flex justify-center ${showExercises ? 'mb-2 sm:mb-6' : 'mb-8'}`}>
           <div className="bg-white rounded-lg p-0.5 sm:p-1 shadow-md flex">
               <button
-                onClick={() => {
+                              onClick={() => {
                 handleStopAllVocalsAndAnimations();
-                  setShowExercises(false);
+                setShowExercises(false);
+                setShowTechniques(false);
               }}
               className={`px-3 sm:px-6 py-1.5 sm:py-3 rounded-lg font-bold transition-all text-sm sm:text-base min-h-[44px] sm:min-h-[68px] flex items-center justify-center ${
-                !showExercises 
+                !showExercises && !showTechniques
                   ? 'bg-blue-500 text-white shadow-md' 
                   : 'text-gray-600 hover:bg-gray-100'
                 }`}
@@ -1385,10 +1497,26 @@ export default function ComplementsCentCE1() {
                 📖 Cours
               </button>
               <button
+                onClick={() => {
+                  handleStopAllVocalsAndAnimations();
+                  setShowTechniques(!showTechniques);
+                  setShowExercises(false);
+                }}
+                className={`px-3 sm:px-6 py-1.5 sm:py-3 rounded-lg font-bold transition-all text-sm sm:text-base min-h-[44px] sm:min-h-[68px] flex flex-col items-center justify-center ${
+                  showTechniques 
+                     ? 'bg-purple-500 text-white shadow-md' 
+                    : 'text-gray-600 hover:bg-gray-100'
+                }`}
+              >
+                <span>🎯 Techniques</span>
+                <span className="text-xs sm:text-sm opacity-90">(3 méthodes)</span>
+              </button>
+              <button
               id="exercises-tab"
                 onClick={() => {
                  handleStopAllVocalsAndAnimations();
                   setShowExercises(true);
+                  setShowTechniques(false);
               }}
                className={`px-3 sm:px-6 py-1.5 sm:py-3 rounded-lg font-bold transition-all text-sm sm:text-base min-h-[44px] sm:min-h-[68px] flex flex-col items-center justify-center ${
                 showExercises 
@@ -1404,7 +1532,105 @@ export default function ComplementsCentCE1() {
           </div>
         </div>
 
-        {!showExercises ? (
+        {showTechniques ? (
+          /* TECHNIQUES PÉDAGOGIQUES */
+          <div className="space-y-4 sm:space-y-6">
+            <div className="text-center mb-4 sm:mb-6">
+              <h2 className="text-xl sm:text-3xl font-bold text-gray-800 mb-2">
+                🎯 Techniques pour les compléments à 100
+              </h2>
+              <p className="text-sm sm:text-lg text-gray-600">
+                Découvre 3 méthodes efficaces pour calculer plus facilement !
+                </p>
+                  </div>
+
+            {/* Cartes des techniques */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
+              {techniques.map((technique, index) => (
+                <div 
+                  key={technique.id}
+                  className={`bg-white rounded-xl p-4 sm:p-6 shadow-lg border-2 transition-all duration-300 cursor-pointer hover:scale-105 ${
+                    selectedTechnique === technique.id ? 'border-purple-400 bg-purple-50 ring-4 ring-purple-200' : 'border-gray-200 hover:border-purple-300'
+                  }`}
+                  onClick={() => explainTechnique(technique.id)}
+                >
+                  <div className={`w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-gradient-to-r ${technique.color} text-white flex items-center justify-center text-lg sm:text-2xl font-bold mb-3 sm:mb-4 mx-auto shadow-lg`}>
+                    {technique.icon}
+                  </div>
+                  
+                  <h3 className="text-sm sm:text-lg font-bold text-center mb-2 sm:mb-3 text-gray-800">
+                    {technique.title}
+                  </h3>
+                  
+                  <p className="text-xs sm:text-sm text-center text-gray-600 mb-3 sm:mb-4">
+                    {technique.description}
+                  </p>
+                  
+                  <div className="text-center">
+                    <button className={`bg-gradient-to-r ${technique.color} text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-bold shadow-md hover:shadow-lg transition-all hover:scale-105`}>
+                      Découvrir
+                    </button>
+                </div>
+              </div>
+              ))}
+            </div>
+
+            {/* Animation des exemples pour la technique sélectionnée */}
+            {selectedTechnique && (
+              <div className="bg-white rounded-xl p-4 sm:p-6 shadow-lg border-2 border-purple-300">
+                {(() => {
+                  const technique = techniques.find(t => t.id === selectedTechnique);
+                  if (!technique) return null;
+                  
+                  return (
+                    <div>
+                      <h3 className="text-lg sm:text-xl font-bold text-center mb-4 text-purple-800">
+                        {technique.title} - Exemples
+              </h3>
+              
+                      <div className="space-y-4">
+                        {technique.examples.map((example, index) => (
+                          <div 
+                            key={index}
+                            className={`p-3 sm:p-4 rounded-lg transition-all duration-500 ${
+                              currentTechniqueExample === index && techniqueStep !== null
+                                ? 'bg-purple-100 border-2 border-purple-400 scale-105 ring-4 ring-purple-200'
+                                : 'bg-gray-50 border border-gray-200'
+                            }`}
+                          >
+                            <div className="text-center">
+                              <div className="text-sm sm:text-lg font-bold text-purple-700 mb-2">
+                                {example.original}
+                              </div>
+                              
+                              {currentTechniqueExample === index && techniqueStep === 'explanation' && (
+                                <div className="text-xs sm:text-sm text-purple-600 mb-2 animate-fadeIn">
+                                  💡 {example.explanation}
+                                </div>
+                              )}
+                              
+                              {currentTechniqueExample === index && techniqueStep !== 'intro' && (
+                                <div className="text-lg sm:text-xl font-bold text-green-600 animate-bounce">
+                                  Réponse : {example.answer}
+                                </div>
+                              )}
+                              
+                              {currentTechniqueExample === index && techniqueStep === 'complete' && (
+                                <div className="text-xs sm:text-sm text-gray-600 mt-2 animate-fadeIn">
+                                  🔍 {example.detail}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })()}
+              </div>
+            )}
+          </div>
+        ) : !showExercises ? (
           /* COURS - MOBILE OPTIMISÉ */
           <div className="space-y-1 sm:space-y-6">
             {/* Image de Sam le Pirate avec bouton DÉMARRER */}
@@ -1441,7 +1667,7 @@ export default function ComplementsCentCE1() {
               
               {/* Bouton Démarrer */}
               <div className="text-center">
-                <button
+                  <button
                 onClick={explainChapter}
                 disabled={isAnimationRunning}
                 className={`bg-gradient-to-r from-green-500 to-blue-500 text-white px-3 sm:px-8 py-2 sm:py-4 rounded-xl font-bold text-xs sm:text-xl shadow-2xl hover:shadow-3xl transition-all transform hover:scale-105 ${
@@ -1454,10 +1680,10 @@ export default function ComplementsCentCE1() {
               >
                   <Play className="inline w-3 h-3 sm:w-6 sm:h-6 mr-1 sm:mr-2" />
                   {isAnimationRunning ? '⏳ JE PARLE...' : '💯 DÉMARRER'}
-                </button>
+                  </button>
               </div>
-            </div>
-
+              </div>
+              
 
 
             {/* Explication du concept avec animation intégrée */}
@@ -1485,8 +1711,8 @@ export default function ComplementsCentCE1() {
                   }}
                 >
                   ➕
-                </div>
-              </div>
+                        </div>
+                      </div>
               
               <div className="bg-green-50 rounded-lg p-3 sm:p-6 mb-3 sm:mb-6">
                 <p className="text-sm sm:text-lg text-center text-green-800 font-semibold mb-3 sm:mb-6">
@@ -1500,9 +1726,9 @@ export default function ComplementsCentCE1() {
                         `Exemple : ${complementExamples[currentExample].first} + ${complementExamples[currentExample].second} = 100` 
                         : 'Exemple : 30 + 70 = 100'
                       }
-                </div>
-              </div>
-
+                      </div>
+                    </div>
+                    
                   {/* Animation intégrée dans le concept - Adaptée de sens-addition */}
                   {currentExample !== null ? (
                     <div className="space-y-3 sm:space-y-6">
@@ -1511,8 +1737,8 @@ export default function ComplementsCentCE1() {
                         <div className="p-2 sm:p-3 rounded-lg bg-blue-100 border-l-4 border-blue-500 text-center">
                           <div className="text-sm sm:text-lg font-bold text-blue-800">
                             {animatingStep === 'introduction' && '🎯 Regardons ensemble...'}
-                          </div>
-                        </div>
+                      </div>
+                    </div>
                       )}
                       
                       {/* Grille à 3 colonnes comme sens-addition */}
@@ -1526,13 +1752,13 @@ export default function ComplementsCentCE1() {
                     </h4>
                           <div className="mb-4">
                             {renderObjects(complementExamples[currentExample].first, '🔵', highlightedNumber === complementExamples[currentExample].first)}
-                          </div>
+                  </div>
                           <div className={`text-xl font-bold transition-all duration-500 ${
                             highlightedNumber === complementExamples[currentExample].first ? 'text-purple-600 scale-125 animate-pulse' : 'text-purple-800'
                           }`}>
                             {complementExamples[currentExample].first}
-                          </div>
-                        </div>
+                </div>
+            </div>
 
                         {/* Symbole + */}
                         <div className="text-center flex items-center justify-center">
@@ -1559,8 +1785,8 @@ export default function ComplementsCentCE1() {
                             {complementExamples[currentExample].second}
                           </div>
                         </div>
-                      </div>
-
+                </div>
+                
                       {/* Animation de comptage jusqu'à 10 */}
                       {showingProcess === 'counting' && (
                         <div className="bg-yellow-50 rounded-lg p-3 sm:p-6 border-2 border-yellow-300">
@@ -1591,14 +1817,14 @@ export default function ComplementsCentCE1() {
                               return rows.map((row, rowIndex) => (
                                 <div key={rowIndex} className="flex justify-center items-center space-x-1 sm:space-x-2">
                                   {row}
-                                </div>
+                </div>
                               ));
                             })()}
-                          </div>
+              </div>
                           <div className="text-center mt-4">
                             <div className="text-3xl font-bold text-yellow-800">
                               {countingTo10 && countingTo10 > 0 && `${countingTo10}...`}
-                            </div>
+            </div>
                           </div>
                         </div>
                       )}
@@ -1618,8 +1844,8 @@ export default function ComplementsCentCE1() {
                           </div>
                         </div>
                       )}
-                    </div>
-                  ) : (
+          </div>
+        ) : (
                     /* Version statique quand pas d'animation - Adaptée de sens-addition */
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-6">
                       <div className="text-center p-3 sm:p-4 bg-purple-50 rounded-lg">
@@ -1694,7 +1920,7 @@ export default function ComplementsCentCE1() {
                           : 'bg-blue-500 text-white hover:bg-blue-600'
                       }`}>
                         {isAnimationRunning ? '⏳ Attendez...' : '▶️ Voir l\'animation'}
-                      </button>
+                </button>
                     </div>
                   </div>
                 ))}
