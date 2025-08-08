@@ -8,15 +8,7 @@ export default function CE1AdditionPage() {
   const config = { color: '#10b981', icon: '➕', name: 'Addition CE1' };
 
   const subChapters = [
-    {
-      id: 'decomposition-1000',
-      title: 'Décomposition des nombres jusqu\'à 1000',
-      description: 'Apprends à décomposer les nombres en dizaines et unités !',
-      icon: '🔢',
-      estimatedTime: 20,
-      difficulty: 'Débutant',
-      href: '/chapitre/ce1-quatre-operations/addition-ce1/decomposition-1000'
-    },
+
     {
       id: 'addition-posee',
       title: 'Addition posée',
