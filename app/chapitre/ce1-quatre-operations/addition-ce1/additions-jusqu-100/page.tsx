@@ -76,77 +76,13 @@ export default function AdditionsJusqua100CE1() {
     "Tu progresses bien", "C'est exact", "Impeccable", "Remarquable"
   ];
 
-  // Données des techniques d'addition avec animations
+  // Données des techniques d'addition avec animations - CE1 : 6 techniques adaptées
   const additionTechniques = [
     {
-      id: 'sans-retenue',
-      title: 'Addition sans retenue',
-      icon: '✨',
-      description: 'La technique la plus simple : on additionne directement',
-      examples: [
-        { 
-          calculation: '23 + 45', 
-          num1: 23, 
-          num2: 45, 
-          result: 68,
-          steps: [
-            'On place les nombres en colonnes, alignés par dizaines et unités',
-            'On additionne les unités : 3 + 5 = 8',
-            'On additionne les dizaines : 2 + 4 = 6',
-            'Le résultat est 68 !'
-          ]
-        },
-        { 
-          calculation: '31 + 12', 
-          num1: 31, 
-          num2: 12, 
-          result: 43,
-          steps: [
-            'On aligne les nombres en colonnes, dizaines et unités',
-            'Unités : 1 + 2 = 3',
-            'Dizaines : 3 + 1 = 4',
-            'Résultat : 43 !'
-          ]
-        }
-      ]
-    },
-    {
-      id: 'avec-retenue',
-      title: 'Addition avec retenue',
-      icon: '🔄',
-      description: 'Quand ça dépasse 10, on fait une retenue magique !',
-      examples: [
-        { 
-          calculation: '37 + 28', 
-          num1: 37, 
-          num2: 28, 
-          result: 65,
-          steps: [
-            'On place les nombres l\'un sous l\'autre',
-            'Unités : 7 + 8 = 15, j\'écris 5 et je retiens 1',
-            'Dizaines : 3 + 2 + 1 (retenue) = 6',
-            'Le résultat est 65 !'
-          ]
-        },
-        { 
-          calculation: '49 + 27', 
-          num1: 49, 
-          num2: 27, 
-          result: 76,
-          steps: [
-            'On aligne les nombres en colonnes soigneusement',
-            'Unités : 9 + 7 = 16, j\'écris 6 et retiens 1',
-            'Dizaines : 4 + 2 + 1 = 7',
-            'Résultat : 76 !'
-          ]
-        }
-      ]
-    },
-    {
-      id: 'calcul-mental',
-      title: 'Calcul mental rapide',
-      icon: '🧠',
-      description: 'Des astuces pour calculer très vite dans sa tête !',
+      id: 'decomposition',
+      title: 'Décomposition en dizaines et unités',
+      icon: '🧮',
+      description: 'Séparer les dizaines et les unités pour calculer plus facilement',
       examples: [
         { 
           calculation: '35 + 24', 
@@ -154,7 +90,7 @@ export default function AdditionsJusqua100CE1() {
           num2: 24, 
           result: 59,
           steps: [
-            'Je décompose : 35 + 24',
+            'Je décompose les nombres : 35 = 30 + 5 et 24 = 20 + 4',
             'J\'additionne les dizaines : 30 + 20 = 50',
             'J\'additionne les unités : 5 + 4 = 9',
             'Je regroupe : 50 + 9 = 59 !'
@@ -166,7 +102,7 @@ export default function AdditionsJusqua100CE1() {
           num2: 36, 
           result: 78,
           steps: [
-            'Technique maligne : 42 + 36',
+            'Je sépare : 42 = 40 + 2 et 36 = 30 + 6',
             'Dizaines d\'abord : 40 + 30 = 70',
             'Unités ensuite : 2 + 6 = 8',
             'Total : 70 + 8 = 78 !'
@@ -176,9 +112,9 @@ export default function AdditionsJusqua100CE1() {
     },
     {
       id: 'complement-10',
-      title: 'Technique du complément à 10',
+      title: 'Complément à 10 (dizaine ronde)',
       icon: '🎯',
-      description: 'Utiliser les compléments pour faciliter le calcul',
+      description: 'Utiliser les compléments pour arriver à une dizaine ronde',
       examples: [
         { 
           calculation: '27 + 8', 
@@ -189,7 +125,7 @@ export default function AdditionsJusqua100CE1() {
             'Je veux ajouter 8 à 27',
             'Je prends 3 de 8 pour faire 30 (27 + 3)',
             'Il me reste 5 à ajouter (8 - 3 = 5)',
-            '30 + 5 = 35 ! C\'est magique !'
+            '30 + 5 = 35 ! C\'est plus facile !'
           ]
         },
         { 
@@ -205,21 +141,151 @@ export default function AdditionsJusqua100CE1() {
           ]
         }
       ]
+    },
+    {
+      id: 'bonds-10',
+      title: 'Addition par bonds de 10',
+      icon: '⚡',
+      description: 'Ajouter par bonds de 10 pour aller plus vite',
+      examples: [
+        { 
+          calculation: '23 + 30', 
+          num1: 23, 
+          num2: 30, 
+          result: 53,
+          steps: [
+            'Je pars de 23 et j\'ajoute 30',
+            'J\'ajoute 10 : 23 + 10 = 33',
+            'J\'ajoute encore 10 : 33 + 10 = 43',
+            'J\'ajoute le dernier 10 : 43 + 10 = 53 !'
+          ]
+        },
+        { 
+          calculation: '45 + 20', 
+          num1: 45, 
+          num2: 20, 
+          result: 65,
+          steps: [
+            'Je commence à 45 et j\'ajoute 20',
+            'Premier bond de 10 : 45 + 10 = 55',
+            'Deuxième bond de 10 : 55 + 10 = 65',
+            'Résultat : 65 ! C\'est rapide !'
+          ]
+        }
+      ]
+    },
+    {
+      id: 'compensation',
+      title: 'Technique d\'échange (compensation)',
+      icon: '🔄',
+      description: 'Échanger pour créer des nombres plus faciles',
+      examples: [
+        { 
+          calculation: '29 + 15', 
+          num1: 29, 
+          num2: 15, 
+          result: 44,
+          steps: [
+            'Je transforme 29 + 15 en nombres plus faciles',
+            'J\'enlève 1 à 15 : 15 - 1 = 14',
+            'J\'ajoute 1 à 29 : 29 + 1 = 30',
+            'Maintenant : 30 + 14 = 44 ! Plus simple !'
+          ]
+        },
+        { 
+          calculation: '38 + 19', 
+          num1: 38, 
+          num2: 19, 
+          result: 57,
+          steps: [
+            'Je veux rendre 19 plus facile : 19 + 1 = 20',
+            'Alors j\'enlève 1 à 38 : 38 - 1 = 37',
+            'Maintenant je calcule : 37 + 20 = 57',
+            'Malin, non ? 57 c\'est la réponse !'
+          ]
+        }
+      ]
+    },
+    {
+      id: 'etapes-successives',
+      title: 'Addition par étapes successives',
+      icon: '🎲',
+      description: 'Ajouter morceau par morceau, étape par étape',
+      examples: [
+        { 
+          calculation: '34 + 28', 
+          num1: 34, 
+          num2: 28, 
+          result: 62,
+          steps: [
+            'Je commence par 34, et j\'ajoute 28 en deux fois',
+            'D\'abord j\'ajoute 20 : 34 + 20 = 54',
+            'Puis j\'ajoute 8 : 54 + 8 = 62',
+            'Résultat final : 62 ! Étape par étape !'
+          ]
+        },
+        { 
+          calculation: '47 + 35', 
+          num1: 47, 
+          num2: 35, 
+          result: 82,
+          steps: [
+            'Je pars de 47 et j\'ajoute 35 progressivement',
+            'Première étape : 47 + 30 = 77',
+            'Deuxième étape : 77 + 5 = 82',
+            'C\'est fait ! 47 + 35 = 82 !'
+          ]
+        }
+      ]
+    },
+    {
+      id: 'doubles',
+      title: 'Doubles et quasi-doubles',
+      icon: '🧠',
+      description: 'Utiliser les doubles pour calculer plus vite',
+      examples: [
+        { 
+          calculation: '25 + 26', 
+          num1: 25, 
+          num2: 26, 
+          result: 51,
+          steps: [
+            'Je remarque que 26 = 25 + 1',
+            'Donc 25 + 26 = 25 + 25 + 1',
+            'Le double de 25 : 25 + 25 = 50',
+            'Plus 1 : 50 + 1 = 51 ! Astuce des doubles !'
+          ]
+        },
+        { 
+          calculation: '34 + 35', 
+          num1: 34, 
+          num2: 35, 
+          result: 69,
+          steps: [
+            'Je vois que 35 = 34 + 1',
+            'Alors 34 + 35 = 34 + 34 + 1',
+            'Double de 34 : 34 + 34 = 68',
+            'Plus 1 : 68 + 1 = 69 ! Technique des doubles !'
+          ]
+        }
+      ]
     }
   ];
 
-  // Exercices sur les additions jusqu'à 100 - saisie libre
+  // Exercices sur les additions jusqu'à 100 - CE1 : 6 techniques variées
   const exercises = [
-    { question: 'Calcule 23 + 45', firstNumber: 23, secondNumber: 45, correctAnswer: 68, type: 'sans-retenue', hint: 'Additionne d\'abord les unités : 3 + 5, puis les dizaines : 2 + 4' },
-    { question: 'Calcule 41 + 37', firstNumber: 41, secondNumber: 37, correctAnswer: 78, type: 'avec-retenue', hint: '1 + 7 = 8, puis 4 + 3 = 7, donc 78' },
-    { question: 'Calcule 36 + 28', firstNumber: 36, secondNumber: 28, correctAnswer: 64, type: 'avec-retenue', hint: '6 + 8 = 14, écris 4 et retiens 1' },
-    { question: 'Calcule 52 + 33', firstNumber: 52, secondNumber: 33, correctAnswer: 85, type: 'sans-retenue', hint: '2 + 3 = 5, puis 5 + 3 = 8' },
-    { question: 'Calcule 47 + 26', firstNumber: 47, secondNumber: 26, correctAnswer: 73, type: 'avec-retenue', hint: '7 + 6 = 13, écris 3 et retiens 1' },
-    { question: 'Calcule 34 + 25', firstNumber: 34, secondNumber: 25, correctAnswer: 59, type: 'sans-retenue', hint: 'Technique simple : 4 + 5 = 9, puis 3 + 2 = 5' },
-    { question: 'Calcule 58 + 19', firstNumber: 58, secondNumber: 19, correctAnswer: 77, type: 'avec-retenue', hint: '8 + 9 = 17, écris 7 et retiens 1' },
-    { question: 'Calcule 62 + 24', firstNumber: 62, secondNumber: 24, correctAnswer: 86, type: 'sans-retenue', hint: 'Addition simple : 2 + 4 = 6, puis 6 + 2 = 8' },
-    { question: 'Calcule 39 + 45', firstNumber: 39, secondNumber: 45, correctAnswer: 84, type: 'avec-retenue', hint: '9 + 5 = 14, écris 4 et retiens 1' },
-    { question: 'Calcule 56 + 32', firstNumber: 56, secondNumber: 32, correctAnswer: 88, type: 'sans-retenue', hint: 'Dernière addition : 6 + 2 = 8, puis 5 + 3 = 8' }
+    { question: 'Calcule 35 + 24', firstNumber: 35, secondNumber: 24, correctAnswer: 59, type: 'decomposition', hint: 'Décompose : 30+20=50 et 5+4=9, puis 50+9=59' },
+    { question: 'Calcule 27 + 8', firstNumber: 27, secondNumber: 8, correctAnswer: 35, type: 'complement-10', hint: 'Ajoute 3 pour faire 30, puis ajoute les 5 qui restent' },
+    { question: 'Calcule 23 + 30', firstNumber: 23, secondNumber: 30, correctAnswer: 53, type: 'bonds-10', hint: 'Fais 3 bonds de 10 : 23→33→43→53' },
+    { question: 'Calcule 29 + 15', firstNumber: 29, secondNumber: 15, correctAnswer: 44, type: 'compensation', hint: 'Transforme en 30 + 14, c\'est plus facile !' },
+    { question: 'Calcule 34 + 28', firstNumber: 34, secondNumber: 28, correctAnswer: 62, type: 'etapes-successives', hint: 'D\'abord 34+20=54, puis 54+8=62' },
+    { question: 'Calcule 25 + 26', firstNumber: 25, secondNumber: 26, correctAnswer: 51, type: 'doubles', hint: 'C\'est 25+25+1 = 50+1 = 51' },
+    { question: 'Calcule 42 + 36', firstNumber: 42, secondNumber: 36, correctAnswer: 78, type: 'decomposition', hint: 'Sépare : 40+30=70 et 2+6=8, puis 70+8=78' },
+    { question: 'Calcule 56 + 9', firstNumber: 56, secondNumber: 9, correctAnswer: 65, type: 'complement-10', hint: 'Ajoute 4 pour faire 60, puis ajoute les 5 qui restent' },
+    { question: 'Calcule 45 + 20', firstNumber: 45, secondNumber: 20, correctAnswer: 65, type: 'bonds-10', hint: 'Deux bonds de 10 : 45→55→65' },
+    { question: 'Calcule 38 + 19', firstNumber: 38, secondNumber: 19, correctAnswer: 57, type: 'compensation', hint: 'Transforme en 37 + 20 = 57' },
+    { question: 'Calcule 47 + 35', firstNumber: 47, secondNumber: 35, correctAnswer: 82, type: 'etapes-successives', hint: 'Étapes : 47+30=77, puis 77+5=82' },
+    { question: 'Calcule 34 + 35', firstNumber: 34, secondNumber: 35, correctAnswer: 69, type: 'doubles', hint: 'C\'est 34+34+1 = 68+1 = 69' }
   ];
 
   // Mount check
@@ -656,7 +722,7 @@ export default function AdditionsJusqua100CE1() {
       await wait(1200);
       if (stopSignalRef.current) return;
       
-      await playAudio("L'addition sans retenue, l'addition avec retenue, le calcul mental rapide et le complément à 10 !");
+      await playAudio("La décomposition, le complément à 10, les bonds de 10, la compensation, les étapes successives et les doubles !");
       if (stopSignalRef.current) return;
       
       await wait(1500);
@@ -693,35 +759,49 @@ export default function AdditionsJusqua100CE1() {
       // Les techniques
       setHighlightedElement('techniques');
       scrollToSection('techniques-section');
-      await playAudio("Je vais te montrer 4 techniques extraordinaires pour additionner facilement tous les nombres jusqu'à 100 !");
+      await playAudio("Je vais te montrer 6 techniques extraordinaires pour additionner facilement tous les nombres jusqu'à 100 !");
       await wait(500);
 
       if (stopSignalRef.current) return;
 
-      // Première technique : sans retenue
-      setAnimatingStep('sans-retenue');
-      await playAudio("Première technique : l'addition sans retenue ! C'est la plus simple et tu vas l'adorer !");
+      // Première technique : décomposition
+      setAnimatingStep('decomposition');
+      await playAudio("Première technique : la décomposition ! On sépare les dizaines et les unités, c'est génial !");
       await wait(800);
 
       if (stopSignalRef.current) return;
 
-      // Deuxième technique : avec retenue
-      setAnimatingStep('avec-retenue');
-      await playAudio("Deuxième technique : l'addition avec retenue ! C'est magique, quand ça dépasse 10, on fait une retenue !");
-      await wait(800);
-
-      if (stopSignalRef.current) return;
-
-      // Troisième technique : calcul mental
-      setAnimatingStep('calcul-mental');
-      await playAudio("Troisième technique : le calcul mental rapide ! Pour impressionner tout le monde avec ta vitesse !");
-      await wait(800);
-
-      if (stopSignalRef.current) return;
-
-      // Quatrième technique : complément à 10
+      // Deuxième technique : complément à 10
       setAnimatingStep('complement-10');
-      await playAudio("Quatrième technique : le complément à 10 ! Une astuce de champion pour calculer super vite !");
+      await playAudio("Deuxième technique : le complément à 10 ! Une astuce magique pour arriver aux dizaines rondes !");
+      await wait(800);
+
+      if (stopSignalRef.current) return;
+
+      // Troisième technique : bonds de 10
+      setAnimatingStep('bonds-10');
+      await playAudio("Troisième technique : les bonds de 10 ! On saute de 10 en 10, c'est rapide et amusant !");
+      await wait(800);
+
+      if (stopSignalRef.current) return;
+
+      // Quatrième technique : compensation
+      setAnimatingStep('compensation');
+      await playAudio("Quatrième technique : la compensation ! On échange pour rendre les nombres plus faciles !");
+      await wait(800);
+
+      if (stopSignalRef.current) return;
+
+      // Cinquième technique : étapes successives
+      setAnimatingStep('etapes-successives');
+      await playAudio("Cinquième technique : les étapes successives ! On avance morceau par morceau !");
+      await wait(800);
+
+      if (stopSignalRef.current) return;
+
+      // Sixième technique : doubles
+      setAnimatingStep('doubles');
+      await playAudio("Sixième technique : les doubles ! Quand les nombres se ressemblent, c'est formidable !");
       await wait(800);
 
       if (stopSignalRef.current) return;
@@ -2789,15 +2869,21 @@ export default function AdditionsJusqua100CE1() {
                 {/* Badge du type */}
                 <div className="flex justify-center mb-4">
                   <span className={`px-3 py-1 rounded-full text-sm font-semibold ${
-                    exercises[currentExercise].type === 'sans-retenue' ? 'bg-green-100 text-green-800' :
-                    exercises[currentExercise].type === 'avec-retenue' ? 'bg-orange-100 text-orange-800' :
-                    exercises[currentExercise].type === 'calcul-mental' ? 'bg-purple-100 text-purple-800' :
-                    'bg-blue-100 text-blue-800'
+                    exercises[currentExercise].type === 'decomposition' ? 'bg-blue-100 text-blue-800' :
+                    exercises[currentExercise].type === 'complement-10' ? 'bg-green-100 text-green-800' :
+                    exercises[currentExercise].type === 'bonds-10' ? 'bg-yellow-100 text-yellow-800' :
+                    exercises[currentExercise].type === 'compensation' ? 'bg-orange-100 text-orange-800' :
+                    exercises[currentExercise].type === 'etapes-successives' ? 'bg-purple-100 text-purple-800' :
+                    exercises[currentExercise].type === 'doubles' ? 'bg-pink-100 text-pink-800' :
+                    'bg-gray-100 text-gray-800'
                   }`}>
-                    {exercises[currentExercise].type === 'sans-retenue' ? '✨ Sans retenue' :
-                     exercises[currentExercise].type === 'avec-retenue' ? '🔄 Avec retenue' :
-                     exercises[currentExercise].type === 'calcul-mental' ? '🧠 Calcul mental' :
-                     '🎯 Technique spéciale'}
+                    {exercises[currentExercise].type === 'decomposition' ? '🧮 Décomposition' :
+                     exercises[currentExercise].type === 'complement-10' ? '🎯 Complément à 10' :
+                     exercises[currentExercise].type === 'bonds-10' ? '⚡ Bonds de 10' :
+                     exercises[currentExercise].type === 'compensation' ? '🔄 Compensation' :
+                     exercises[currentExercise].type === 'etapes-successives' ? '🎲 Étapes successives' :
+                     exercises[currentExercise].type === 'doubles' ? '🧠 Doubles' :
+                     '✨ Technique CE1'}
                   </span>
                 </div>
 
