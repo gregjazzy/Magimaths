@@ -188,7 +188,11 @@ export default function FractionsBandeUniteExercicesPage() {
     
     if (isAnswerCorrect && !answeredCorrectly.has(currentExercise)) {
       setScore(score + 1);
-      setAnsweredCorrectly(prev => new Set([...prev, currentExercise]));
+      setAnsweredCorrectly(prev => {
+        const newSet = new Set(prev);
+        newSet.add(currentExercise);
+        return newSet;
+      });
     }
     
     if (isAnswerCorrect) {

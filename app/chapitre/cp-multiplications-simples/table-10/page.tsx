@@ -373,7 +373,11 @@ export default function Table10CP() {
     
     if (correct) {
       setScore(score + 1);
-      setAnsweredCorrectly(prev => new Set([...Array.from(prev), currentExercise]));
+      setAnsweredCorrectly(prev => {
+        const newSet = new Set(prev);
+        newSet.add(currentExercise);
+        return newSet;
+      });
       await playAudio('Parfait ! Tu maîtrises la table de 10 !');
     } else {
       await playAudio(`Non, la bonne réponse était ${currentEx.correctAnswer}. Souviens-toi : il suffit d'ajouter un zéro !`);

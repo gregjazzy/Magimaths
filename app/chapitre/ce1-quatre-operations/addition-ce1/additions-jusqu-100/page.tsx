@@ -1265,7 +1265,11 @@ export default function AdditionsJusqua100CE1() {
     
     if (correct) {
       setScore(score + 1);
-      setAnsweredCorrectly(prev => new Set([...Array.from(prev), currentExercise]));
+              setAnsweredCorrectly(prev => {
+          const newSet = new Set(prev);
+          newSet.add(currentExercise);
+          return newSet;
+        });
     }
   };
 
