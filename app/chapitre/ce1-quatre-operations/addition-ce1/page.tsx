@@ -53,6 +53,15 @@ export default function CE1AdditionPage() {
       estimatedTime: 15,
       difficulty: 'Débutant',
       href: '/chapitre/ce1-quatre-operations/addition-ce1/calcul-mental'
+    },
+    {
+      id: 'additions-jusqu-1000',
+      title: 'Additions jusqu\'à 1000',
+      description: 'Maîtrise les additions avec les nombres à 3 chiffres !',
+      icon: '🔢',
+      estimatedTime: 40,
+      difficulty: 'Avancé',
+      href: '/chapitre/ce1-quatre-operations/addition-ce1/additions-jusqu-1000'
     }
   ];
 
