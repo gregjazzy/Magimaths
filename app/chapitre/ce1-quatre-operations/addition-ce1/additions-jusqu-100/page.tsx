@@ -2062,17 +2062,30 @@ export default function AdditionsJusqua100CE1() {
         `
       }} />
       
-      {/* Bouton flottant de Sam - visible uniquement quand Sam parle */}
-      {isPlayingVocal && (
+      {/* Bouton flottant de Sam - visible quand Sam parle ou pendant les animations du cours */}
+      {(isPlayingVocal || isAnimationRunning) && (
         <div className="fixed top-4 right-4 z-[60]">
           <button
             onClick={stopAllVocalsAndAnimations}
-            className="bg-red-600 hover:bg-red-700 text-white rounded-full p-3 shadow-lg animate-pulse"
-            title="Arrêter Sam"
+            className="relative flex items-center gap-2 px-3 py-2 rounded-full shadow-2xl transition-all duration-300 bg-gradient-to-r from-red-500 to-red-600 text-white hover:from-red-600 hover:to-red-700 hover:scale-105 animate-pulse"
+            title={isPlayingVocal ? "Arrêter le personnage" : "Arrêter l'animation"}
           >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
+            {/* Image du personnage */}
+            <div className="w-8 h-8 rounded-full overflow-hidden border-2 border-white/50">
+              <img
+                src="/image/Minecraftstyle.png"
+                alt="Personnage Minecraft"
+                className="w-full h-full object-cover"
+              />
+            </div>
+            
+            {/* Texte et icône */}
+            <>
+              <span className="text-sm font-bold hidden sm:block">
+                {isPlayingVocal ? 'Stop' : 'Stop Animation'}
+              </span>
+              <div className="w-3 h-3 bg-white rounded-sm animate-pulse"></div>
+            </>
           </button>
         </div>
       )}
@@ -2179,20 +2192,7 @@ export default function AdditionsJusqua100CE1() {
               </button>
             </div>
 
-            {/* Bouton COMMENCER (animation complète) */}
-            <div className="text-center mb-3 sm:mb-8">
-              <button
-                onClick={explainChapter}
-                disabled={isAnimationRunning}
-                className={`px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-bold text-base sm:text-xl shadow-lg transition-all transform ${
-                  isAnimationRunning 
-                    ? 'bg-gray-400 text-gray-200 cursor-not-allowed' 
-                    : 'bg-gradient-to-r from-blue-500 to-indigo-500 text-white hover:shadow-xl hover:scale-105'
-                } ${!hasStarted && !isAnimationRunning ? 'animate-pulse' : ''}`}
-              >
-                {isAnimationRunning ? '⏳ Animation en cours...' : '▶️ COMMENCER (Animation complète) !'}
-              </button>
-            </div>
+
 
             {/* Introduction */}
             <div 
@@ -2218,59 +2218,7 @@ export default function AdditionsJusqua100CE1() {
               </p>
             </div>
 
-            {/* Les 4 techniques */}
-            <div 
-              id="techniques-section"
-              className={`bg-white rounded-xl shadow-lg p-3 sm:p-6 transition-all duration-300 ${
-                highlightedElement === 'techniques' ? 'ring-4 ring-blue-400 bg-blue-100' : ''
-              }`}
-            >
-              <div className="flex items-center gap-1 sm:gap-3 mb-3 sm:mb-6">
-                <div className="p-1 sm:p-2 bg-indigo-100 rounded-lg">
-                  <Brain className="w-4 h-4 sm:w-6 sm:h-6 text-indigo-600" />
-                </div>
-                <h2 className="text-base sm:text-2xl font-bold text-gray-800">4 techniques extraordinaires</h2>
-                {/* Icône d'animation pour les techniques */}
-                <div className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-full w-6 h-6 sm:w-12 sm:h-12 flex items-center justify-center text-xs sm:text-xl font-bold shadow-lg hover:scale-110 cursor-pointer transition-all duration-300 ring-2 ring-indigo-300" 
-                     style={{animation: 'subtle-glow 2s infinite'}}>
-                  🧠
-                </div>
-              </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className={`p-4 rounded-lg text-center transition-all duration-500 ${
-                  animatingStep === 'sans-retenue' ? 'bg-green-100 ring-2 ring-green-400 scale-105' : 'bg-gray-100'
-                }`}>
-                  <div className="text-3xl mb-2">✨</div>
-                  <h4 className="font-bold text-green-800">Sans retenue</h4>
-                  <p className="text-sm text-green-700">La plus simple !</p>
-                </div>
-                
-                <div className={`p-4 rounded-lg text-center transition-all duration-500 ${
-                  animatingStep === 'avec-retenue' ? 'bg-orange-100 ring-2 ring-orange-400 scale-105' : 'bg-gray-100'
-                }`}>
-                  <div className="text-3xl mb-2">🔄</div>
-                  <h4 className="font-bold text-orange-800">Avec retenue</h4>
-                  <p className="text-sm text-orange-700">La magique !</p>
-                </div>
 
-                <div className={`p-4 rounded-lg text-center transition-all duration-500 ${
-                  animatingStep === 'calcul-mental' ? 'bg-purple-100 ring-2 ring-purple-400 scale-105' : 'bg-gray-100'
-                }`}>
-                  <div className="text-3xl mb-2">🧠</div>
-                  <h4 className="font-bold text-purple-800">Calcul mental</h4>
-                  <p className="text-sm text-purple-700">La rapide !</p>
-                </div>
-
-                <div className={`p-4 rounded-lg text-center transition-all duration-500 ${
-                  animatingStep === 'complement-10' ? 'bg-blue-100 ring-2 ring-blue-400 scale-105' : 'bg-gray-100'
-                }`}>
-                  <div className="text-3xl mb-2">🎯</div>
-                  <h4 className="font-bold text-blue-800">Complément à 10</h4>
-                  <p className="text-sm text-blue-700">L'astucieuse !</p>
-                </div>
-              </div>
-            </div>
 
             {/* Exemples de techniques */}
             <div 
@@ -3307,6 +3255,598 @@ export default function AdditionsJusqua100CE1() {
                                   </div>
                                   <div className="text-lg text-yellow-700 mt-2">
                                     Tu as transformé un calcul difficile en calcul facile !
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          )}
+
+                          {/* Animation pour décomposition */}
+                          {currentTechnique === 'decomposition' && calculationStep && (
+                            <div className="space-y-6 bg-gradient-to-br from-blue-50 to-indigo-50 p-6 rounded-xl border-2 border-blue-200">
+                              
+                              {/* Étape : Introduction */}
+                              {calculationStep === 'setup' && (
+                                <div className="text-center">
+                                  <div className="text-4xl font-bold text-blue-800 animate-pulse">
+                                    {example.calculation}
+                                  </div>
+                                  <div className="text-lg text-blue-600 mt-2">
+                                    🧮 Décomposition en dizaines et unités
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* Étape : Décomposer le premier nombre */}
+                              {(calculationStep === 'decompose-first' || calculationStep === 'decompose-second' || calculationStep === 'tens' || calculationStep === 'units' || calculationStep === 'result') && (
+                                <div className="bg-white rounded-lg p-6 shadow-lg max-w-lg mx-auto">
+                                  <div className="text-center mb-4">
+                                    <div className="text-lg font-bold text-gray-800">🔢 Décomposition des nombres</div>
+                                  </div>
+                                  
+                                  {/* Premier nombre */}
+                                  <div className={`text-center p-4 rounded-lg mb-4 transition-all ${
+                                    calculationStep === 'decompose-first' ? 'bg-blue-100 border-2 border-blue-400' : 'bg-gray-50'
+                                  }`}>
+                                    <div className="text-2xl font-bold text-gray-800 mb-2">{example.num1}</div>
+                                    {(calculationStep === 'decompose-first' || calculationStep === 'decompose-second' || calculationStep === 'tens' || calculationStep === 'units' || calculationStep === 'result') && (
+                                      <div className="flex justify-center items-center space-x-2">
+                                        <div className="text-lg font-bold text-blue-600">
+                                          {Math.floor(example.num1 / 10) * 10}
+                                        </div>
+                                        <div className="text-lg text-gray-500">+</div>
+                                        <div className="text-lg font-bold text-green-600">
+                                          {example.num1 % 10}
+                                        </div>
+                                      </div>
+                                    )}
+                                  </div>
+
+                                  {/* Second nombre */}
+                                  {(calculationStep === 'decompose-second' || calculationStep === 'tens' || calculationStep === 'units' || calculationStep === 'result') && (
+                                    <div className={`text-center p-4 rounded-lg mb-4 transition-all ${
+                                      calculationStep === 'decompose-second' ? 'bg-green-100 border-2 border-green-400' : 'bg-gray-50'
+                                    }`}>
+                                      <div className="text-2xl font-bold text-gray-800 mb-2">{example.num2}</div>
+                                      <div className="flex justify-center items-center space-x-2">
+                                        <div className="text-lg font-bold text-blue-600">
+                                          {Math.floor(example.num2 / 10) * 10}
+                                        </div>
+                                        <div className="text-lg text-gray-500">+</div>
+                                        <div className="text-lg font-bold text-green-600">
+                                          {example.num2 % 10}
+                                        </div>
+                                      </div>
+                                    </div>
+                                  )}
+                                </div>
+                              )}
+
+                              {/* Étape : Addition des dizaines */}
+                              {(calculationStep === 'tens' || calculationStep === 'units' || calculationStep === 'result') && (
+                                <div className="bg-white rounded-lg p-6 shadow-lg max-w-lg mx-auto">
+                                  <div className="text-center mb-4">
+                                    <div className="text-lg font-bold text-blue-700">🔢 Addition des dizaines</div>
+                                  </div>
+                                  
+                                  <div className={`text-center p-4 rounded-lg transition-all ${
+                                    calculationStep === 'tens' ? 'bg-blue-100 border-2 border-blue-400 animate-pulse' : 'bg-blue-50'
+                                  }`}>
+                                    <div className="flex justify-center items-center space-x-3 text-xl font-bold">
+                                      <div className="text-blue-600">{Math.floor(example.num1 / 10) * 10}</div>
+                                      <div className="text-gray-500">+</div>
+                                      <div className="text-blue-600">{Math.floor(example.num2 / 10) * 10}</div>
+                                      <div className="text-gray-500">=</div>
+                                      <div className="text-blue-800">{(Math.floor(example.num1 / 10) + Math.floor(example.num2 / 10)) * 10}</div>
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* Étape : Addition des unités */}
+                              {(calculationStep === 'units' || calculationStep === 'result') && (
+                                <div className="bg-white rounded-lg p-6 shadow-lg max-w-lg mx-auto">
+                                  <div className="text-center mb-4">
+                                    <div className="text-lg font-bold text-green-700">🔢 Addition des unités</div>
+                                  </div>
+                                  
+                                  <div className={`text-center p-4 rounded-lg transition-all ${
+                                    calculationStep === 'units' ? 'bg-green-100 border-2 border-green-400 animate-pulse' : 'bg-green-50'
+                                  }`}>
+                                    <div className="flex justify-center items-center space-x-3 text-xl font-bold">
+                                      <div className="text-green-600">{example.num1 % 10}</div>
+                                      <div className="text-gray-500">+</div>
+                                      <div className="text-green-600">{example.num2 % 10}</div>
+                                      <div className="text-gray-500">=</div>
+                                      <div className="text-green-800">{(example.num1 % 10) + (example.num2 % 10)}</div>
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* Résultat final */}
+                              {calculationStep === 'result' && (
+                                <div className="bg-white rounded-lg p-6 shadow-lg max-w-lg mx-auto">
+                                  <div className="text-center mb-4">
+                                    <div className="text-lg font-bold text-purple-700">🎉 Regroupement final</div>
+                                  </div>
+                                  
+                                  <div className="text-center p-4 bg-purple-100 rounded-lg border-2 border-purple-400">
+                                    <div className="flex justify-center items-center space-x-3 text-2xl font-bold">
+                                      <div className="text-blue-700">{(Math.floor(example.num1 / 10) + Math.floor(example.num2 / 10)) * 10}</div>
+                                      <div className="text-gray-500">+</div>
+                                      <div className="text-green-700">{(example.num1 % 10) + (example.num2 % 10)}</div>
+                                      <div className="text-gray-500">=</div>
+                                      <div className="text-purple-800 animate-bounce">{example.result}</div>
+                                    </div>
+                                  </div>
+
+                                  <div className="text-center mt-4">
+                                    <div className="text-lg font-bold text-purple-600">
+                                      🏆 Parfait ! La décomposition, c'est logique !
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          )}
+
+                          {/* Animation pour bonds de 10 */}
+                          {currentTechnique === 'bonds-10' && calculationStep && (
+                            <div className="space-y-6 bg-gradient-to-br from-orange-50 to-yellow-50 p-6 rounded-xl border-2 border-orange-200">
+                              
+                              {/* Étape : Introduction */}
+                              {calculationStep === 'setup' && (
+                                <div className="text-center">
+                                  <div className="text-4xl font-bold text-orange-800 animate-pulse">
+                                    {example.calculation}
+                                  </div>
+                                  <div className="text-lg text-orange-600 mt-2">
+                                    ⚡ Addition par bonds de 10 - On saute !
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* Point de départ */}
+                              {(calculationStep === 'show-first' || calculationStep === 'units' || calculationStep === 'result') && (
+                                <div className="bg-white rounded-lg p-6 shadow-lg max-w-lg mx-auto">
+                                  <div className="text-center mb-4">
+                                    <div className="text-lg font-bold text-orange-700">🎯 Point de départ</div>
+                                  </div>
+                                  
+                                  <div className="text-center p-4 bg-orange-100 rounded-lg border-2 border-orange-400">
+                                    <div className="text-3xl font-bold text-orange-800">
+                                      Je pars de {example.num1}
+                                    </div>
+                                  </div>
+                                  
+                                  <div className="text-center mt-4">
+                                    <div className="text-lg text-orange-600">
+                                      Je vais ajouter {example.num2} en sautant par bonds de 10 !
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* Bonds de 10 */}
+                              {(calculationStep === 'units' || calculationStep === 'result') && (
+                                <div className="bg-white rounded-lg p-6 shadow-lg max-w-lg mx-auto">
+                                  <div className="text-center mb-4">
+                                    <div className="text-lg font-bold text-yellow-700">🦘 Les bonds de 10</div>
+                                  </div>
+                                  
+                                  <div className="space-y-3">
+                                    {(() => {
+                                      const bonds = [];
+                                      const dizaines = Math.floor(example.num2 / 10);
+                                      let current = example.num1;
+                                      
+                                      for (let i = 0; i < dizaines; i++) {
+                                        bonds.push(
+                                          <div key={i} className="flex justify-center items-center space-x-3 p-2 bg-yellow-100 rounded-lg">
+                                            <div className="text-lg font-bold text-yellow-800">
+                                              Bond {i + 1} : {current} + 10 = {current + 10}
+                                            </div>
+                                            <div className="text-2xl">🦘</div>
+                                          </div>
+                                        );
+                                        current += 10;
+                                      }
+                                      
+                                      return bonds;
+                                    })()}
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* Résultat final */}
+                              {calculationStep === 'result' && (
+                                <div className="bg-white rounded-lg p-6 shadow-lg max-w-lg mx-auto">
+                                  <div className="text-center mb-4">
+                                    <div className="text-lg font-bold text-green-700">🎉 Arrivée !</div>
+                                  </div>
+                                  
+                                  <div className="text-center p-4 bg-green-100 rounded-lg border-2 border-green-400">
+                                    <div className="text-3xl font-bold text-green-800 animate-bounce">
+                                      Résultat : {example.result}
+                                    </div>
+                                  </div>
+
+                                  <div className="text-center mt-4">
+                                    <div className="text-lg font-bold text-green-600">
+                                      🏆 Bravo ! Les bonds de 10, c'est rapide et amusant !
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          )}
+
+                          {/* Animation pour compensation */}
+                          {currentTechnique === 'compensation' && calculationStep && (
+                            <div className="space-y-6 bg-gradient-to-br from-purple-50 to-pink-50 p-6 rounded-xl border-2 border-purple-200">
+                              
+                              {/* Étape : Introduction */}
+                              {calculationStep === 'setup' && (
+                                <div className="text-center">
+                                  <div className="text-4xl font-bold text-purple-800 animate-pulse">
+                                    {example.calculation}
+                                  </div>
+                                  <div className="text-lg text-purple-600 mt-2">
+                                    🔄 Technique d'échange - On rend plus facile !
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* Problème original */}
+                              {(calculationStep === 'show-problem' || calculationStep === 'find-complement' || calculationStep === 'result') && (
+                                <div className="bg-white rounded-lg p-6 shadow-lg max-w-lg mx-auto">
+                                  <div className="text-center mb-4">
+                                    <div className="text-lg font-bold text-gray-700">📝 Problème original</div>
+                                  </div>
+                                  
+                                  <div className="text-center p-4 bg-gray-100 rounded-lg border-2 border-gray-400">
+                                    <div className="text-2xl font-bold text-gray-800">
+                                      {example.num1} + {example.num2}
+                                    </div>
+                                    <div className="text-sm text-gray-600 mt-2">
+                                      Hmm... pas très facile à calculer !
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* Transformation */}
+                              {(calculationStep === 'find-complement' || calculationStep === 'result') && (
+                                <div className="bg-white rounded-lg p-6 shadow-lg max-w-lg mx-auto">
+                                  <div className="text-center mb-4">
+                                    <div className="text-lg font-bold text-purple-700">🎩 Transformation magique</div>
+                                  </div>
+                                  
+                                  <div className="space-y-4">
+                                    {/* Transformation du premier nombre */}
+                                    {(example.num1 === 29 || example.num1 === 49 || example.num1 === 59 || example.num1 === 39) && (
+                                      <div className="text-center">
+                                        <div className="text-lg text-purple-600 mb-2">
+                                          Je transforme {example.num1} en {example.num1 + 1} (plus facile !)
+                                        </div>
+                                        <div className="flex justify-center items-center space-x-3">
+                                          <div className="p-2 bg-red-100 rounded-lg">
+                                            <span className="text-lg font-bold text-red-700">{example.num1}</span>
+                                          </div>
+                                          <div className="text-2xl text-purple-600">→</div>
+                                          <div className="p-2 bg-green-100 rounded-lg">
+                                            <span className="text-lg font-bold text-green-700">{example.num1 + 1}</span>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    )}
+                                    
+                                    {/* Compensation sur le second nombre */}
+                                    <div className="text-center">
+                                      <div className="text-lg text-purple-600 mb-2">
+                                        Alors j'enlève 1 à {example.num2} pour compenser
+                                      </div>
+                                      <div className="flex justify-center items-center space-x-3">
+                                        <div className="p-2 bg-red-100 rounded-lg">
+                                          <span className="text-lg font-bold text-red-700">{example.num2}</span>
+                                        </div>
+                                        <div className="text-2xl text-purple-600">→</div>
+                                        <div className="p-2 bg-green-100 rounded-lg">
+                                          <span className="text-lg font-bold text-green-700">{example.num2 - 1}</span>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* Nouveau calcul */}
+                              {calculationStep === 'result' && (
+                                <div className="bg-white rounded-lg p-6 shadow-lg max-w-lg mx-auto">
+                                  <div className="text-center mb-4">
+                                    <div className="text-lg font-bold text-green-700">✨ Nouveau calcul facilité</div>
+                                  </div>
+                                  
+                                  <div className="text-center space-y-4">
+                                    <div className="text-center p-4 bg-green-100 rounded-lg border-2 border-green-400">
+                                      <div className="text-2xl font-bold text-green-800">
+                                        {(example.num1 === 29 || example.num1 === 49 || example.num1 === 59 || example.num1 === 39) 
+                                          ? `${example.num1 + 1} + ${example.num2 - 1}` 
+                                          : `${example.num1 - 1} + ${example.num2 + 1}`}
+                                      </div>
+                                      <div className="text-sm text-green-600 mt-2">
+                                        Beaucoup plus facile à calculer !
+                                      </div>
+                                    </div>
+                                    
+                                    <div className="text-3xl font-bold text-green-700">
+                                      = {example.result}
+                                    </div>
+                                  </div>
+
+                                  <div className="text-center mt-4">
+                                    <div className="text-lg font-bold text-purple-600">
+                                      🏆 Génie ! La compensation rend tout plus simple !
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          )}
+
+                          {/* Animation pour étapes successives */}
+                          {currentTechnique === 'etapes-successives' && calculationStep && (
+                            <div className="space-y-6 bg-gradient-to-br from-teal-50 to-cyan-50 p-6 rounded-xl border-2 border-teal-200">
+                              
+                              {/* Étape : Introduction */}
+                              {calculationStep === 'setup' && (
+                                <div className="text-center">
+                                  <div className="text-4xl font-bold text-teal-800 animate-pulse">
+                                    {example.calculation}
+                                  </div>
+                                  <div className="text-lg text-teal-600 mt-2">
+                                    🎲 Addition par étapes successives - Morceau par morceau !
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* Point de départ */}
+                              {(calculationStep === 'show-first' || calculationStep === 'tens' || calculationStep === 'units' || calculationStep === 'result') && (
+                                <div className="bg-white rounded-lg p-6 shadow-lg max-w-lg mx-auto">
+                                  <div className="text-center mb-4">
+                                    <div className="text-lg font-bold text-teal-700">🎯 Point de départ</div>
+                                  </div>
+                                  
+                                  <div className="text-center p-4 bg-teal-100 rounded-lg border-2 border-teal-400">
+                                    <div className="text-3xl font-bold text-teal-800">
+                                      Je commence avec {example.num1}
+                                    </div>
+                                  </div>
+                                  
+                                  <div className="text-center mt-4">
+                                    <div className="text-lg text-teal-600">
+                                      Je vais ajouter {example.num2} en deux étapes !
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* Première étape : ajouter les dizaines */}
+                              {(calculationStep === 'tens' || calculationStep === 'units' || calculationStep === 'result') && (
+                                <div className="bg-white rounded-lg p-6 shadow-lg max-w-lg mx-auto">
+                                  <div className="text-center mb-4">
+                                    <div className="text-lg font-bold text-blue-700">🥇 Première étape : les dizaines</div>
+                                  </div>
+                                  
+                                  <div className={`text-center p-4 rounded-lg border-2 transition-all ${
+                                    calculationStep === 'tens' ? 'bg-blue-100 border-blue-400 animate-pulse' : 'bg-blue-50 border-blue-200'
+                                  }`}>
+                                    <div className="space-y-2">
+                                      <div className="text-lg text-blue-600">
+                                        J'ajoute {Math.floor(example.num2 / 10) * 10} à {example.num1}
+                                      </div>
+                                      <div className="flex justify-center items-center space-x-3 text-xl font-bold">
+                                        <div className="text-blue-700">{example.num1}</div>
+                                        <div className="text-gray-500">+</div>
+                                        <div className="text-blue-700">{Math.floor(example.num2 / 10) * 10}</div>
+                                        <div className="text-gray-500">=</div>
+                                        <div className="text-blue-800">{example.num1 + Math.floor(example.num2 / 10) * 10}</div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* Deuxième étape : ajouter les unités */}
+                              {(calculationStep === 'units' || calculationStep === 'result') && (
+                                <div className="bg-white rounded-lg p-6 shadow-lg max-w-lg mx-auto">
+                                  <div className="text-center mb-4">
+                                    <div className="text-lg font-bold text-green-700">🥈 Deuxième étape : les unités</div>
+                                  </div>
+                                  
+                                  <div className={`text-center p-4 rounded-lg border-2 transition-all ${
+                                    calculationStep === 'units' ? 'bg-green-100 border-green-400 animate-pulse' : 'bg-green-50 border-green-200'
+                                  }`}>
+                                    <div className="space-y-2">
+                                      <div className="text-lg text-green-600">
+                                        J'ajoute {example.num2 % 10} à {example.num1 + Math.floor(example.num2 / 10) * 10}
+                                      </div>
+                                      <div className="flex justify-center items-center space-x-3 text-xl font-bold">
+                                        <div className="text-green-700">{example.num1 + Math.floor(example.num2 / 10) * 10}</div>
+                                        <div className="text-gray-500">+</div>
+                                        <div className="text-green-700">{example.num2 % 10}</div>
+                                        <div className="text-gray-500">=</div>
+                                        <div className="text-green-800">{example.result}</div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* Résumé final */}
+                              {calculationStep === 'result' && (
+                                <div className="bg-white rounded-lg p-6 shadow-lg max-w-lg mx-auto">
+                                  <div className="text-center mb-4">
+                                    <div className="text-lg font-bold text-purple-700">🎉 Résumé des étapes</div>
+                                  </div>
+                                  
+                                  <div className="space-y-3">
+                                    <div className="text-center p-3 bg-blue-100 rounded-lg">
+                                      <div className="text-lg font-bold text-blue-800">
+                                        Étape 1 : {example.num1} + {Math.floor(example.num2 / 10) * 10} = {example.num1 + Math.floor(example.num2 / 10) * 10}
+                                      </div>
+                                    </div>
+                                    
+                                    <div className="text-center text-2xl">⬇️</div>
+                                    
+                                    <div className="text-center p-3 bg-green-100 rounded-lg">
+                                      <div className="text-lg font-bold text-green-800">
+                                        Étape 2 : {example.num1 + Math.floor(example.num2 / 10) * 10} + {example.num2 % 10} = {example.result}
+                                      </div>
+                                    </div>
+                                  </div>
+
+                                  <div className="text-center mt-6">
+                                    <div className="text-2xl font-bold text-purple-800 animate-bounce">
+                                      = {example.result}
+                                    </div>
+                                    <div className="text-lg font-bold text-purple-600 mt-2">
+                                      🏆 Parfait ! Étape par étape, c'est sûr !
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          )}
+
+                          {/* Animation pour doubles */}
+                          {currentTechnique === 'doubles' && calculationStep && (
+                            <div className="space-y-6 bg-gradient-to-br from-pink-50 to-rose-50 p-6 rounded-xl border-2 border-pink-200">
+                              
+                              {/* Étape : Introduction */}
+                              {calculationStep === 'setup' && (
+                                <div className="text-center">
+                                  <div className="text-4xl font-bold text-pink-800 animate-pulse">
+                                    {example.calculation}
+                                  </div>
+                                  <div className="text-lg text-pink-600 mt-2">
+                                    🧠 Doubles et quasi-doubles - Astuce intelligente !
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* Observation */}
+                              {(calculationStep === 'show-problem' || calculationStep === 'show-first' || calculationStep === 'units' || calculationStep === 'result') && (
+                                <div className="bg-white rounded-lg p-6 shadow-lg max-w-lg mx-auto">
+                                  <div className="text-center mb-4">
+                                    <div className="text-lg font-bold text-pink-700">🔍 Observation intelligente</div>
+                                  </div>
+                                  
+                                  <div className="text-center p-4 bg-pink-100 rounded-lg border-2 border-pink-400">
+                                    <div className="space-y-2">
+                                      <div className="text-lg text-pink-600">
+                                        Je remarque que {example.num2} = {example.num1} + 1
+                                      </div>
+                                      <div className="flex justify-center items-center space-x-3 text-xl font-bold">
+                                        <div className="text-pink-700">{example.num2}</div>
+                                        <div className="text-gray-500">=</div>
+                                        <div className="text-pink-700">{example.num1}</div>
+                                        <div className="text-gray-500">+</div>
+                                        <div className="text-green-700">1</div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* Transformation en double */}
+                              {(calculationStep === 'show-first' || calculationStep === 'units' || calculationStep === 'result') && (
+                                <div className="bg-white rounded-lg p-6 shadow-lg max-w-lg mx-auto">
+                                  <div className="text-center mb-4">
+                                    <div className="text-lg font-bold text-blue-700">🔄 Transformation en double</div>
+                                  </div>
+                                  
+                                  <div className="space-y-4">
+                                    <div className="text-center p-3 bg-gray-100 rounded-lg">
+                                      <div className="text-lg text-gray-700 mb-2">Calcul original :</div>
+                                      <div className="text-xl font-bold text-gray-800">
+                                        {example.num1} + {example.num2}
+                                      </div>
+                                    </div>
+
+                                    <div className="text-center text-2xl">⬇️</div>
+
+                                    <div className="text-center p-3 bg-blue-100 rounded-lg border-2 border-blue-400">
+                                      <div className="text-lg text-blue-700 mb-2">Devient :</div>
+                                      <div className="text-xl font-bold text-blue-800">
+                                        {example.num1} + {example.num1} + 1
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* Calcul du double */}
+                              {(calculationStep === 'units' || calculationStep === 'result') && (
+                                <div className="bg-white rounded-lg p-6 shadow-lg max-w-lg mx-auto">
+                                  <div className="text-center mb-4">
+                                    <div className="text-lg font-bold text-green-700">✨ Calcul du double</div>
+                                  </div>
+                                  
+                                  <div className={`text-center p-4 rounded-lg border-2 transition-all ${
+                                    calculationStep === 'units' ? 'bg-green-100 border-green-400 animate-pulse' : 'bg-green-50 border-green-200'
+                                  }`}>
+                                    <div className="space-y-2">
+                                      <div className="text-lg text-green-600">
+                                        Le double de {example.num1} :
+                                      </div>
+                                      <div className="flex justify-center items-center space-x-3 text-2xl font-bold">
+                                        <div className="text-green-700">{example.num1}</div>
+                                        <div className="text-gray-500">+</div>
+                                        <div className="text-green-700">{example.num1}</div>
+                                        <div className="text-gray-500">=</div>
+                                        <div className="text-green-800">{example.num1 * 2}</div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* Résultat final */}
+                              {calculationStep === 'result' && (
+                                <div className="bg-white rounded-lg p-6 shadow-lg max-w-lg mx-auto">
+                                  <div className="text-center mb-4">
+                                    <div className="text-lg font-bold text-purple-700">🎉 Résultat final</div>
+                                  </div>
+                                  
+                                  <div className="space-y-4">
+                                    <div className="text-center p-4 bg-purple-100 rounded-lg border-2 border-purple-400">
+                                      <div className="space-y-2">
+                                        <div className="text-lg text-purple-600">
+                                          Double + 1 :
+                                        </div>
+                                        <div className="flex justify-center items-center space-x-3 text-2xl font-bold">
+                                          <div className="text-purple-700">{example.num1 * 2}</div>
+                                          <div className="text-gray-500">+</div>
+                                          <div className="text-green-700">1</div>
+                                          <div className="text-gray-500">=</div>
+                                          <div className="text-purple-800 animate-bounce">{example.result}</div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    
+                                    <div className="text-center p-3 bg-yellow-100 rounded-lg">
+                                      <div className="text-lg font-bold text-yellow-800">
+                                        {example.num1} + {example.num2} = {example.result}
+                                      </div>
+                                    </div>
+                                  </div>
+
+                                  <div className="text-center mt-6">
+                                    <div className="text-lg font-bold text-pink-600">
+                                      🏆 Génial ! L'astuce des doubles, c'est malin !
+                                    </div>
                                   </div>
                                 </div>
                               )}
