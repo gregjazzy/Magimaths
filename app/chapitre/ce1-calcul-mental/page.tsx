@@ -58,6 +58,15 @@ export default function CE1CalculMentalPage() {
       color: 'from-teal-500 to-blue-500'
     },
     {
+      id: 'complements-1000',
+      title: 'Compléments à 1000',
+      description: 'Compléments à 1000 (stratégies avancées)',
+      icon: '🎯',
+      duration: '12 min',
+      xp: 18,
+      color: 'from-purple-500 to-indigo-500'
+    },
+    {
       id: 'doubles-moities',
       title: 'Doubles et moitiés',
       description: 'Nombres usuels jusqu\'à 70 (6, 8, 11, 13, 17...)',

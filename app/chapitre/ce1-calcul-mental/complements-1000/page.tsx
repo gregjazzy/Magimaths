@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, Play, Pause } from 'lucide-react';
 
-export default function ComplementsDixCP() {
+export default function ComplementsMilleCE1() {
   // États pour l'audio et animations
   const [isPlayingVocal, setIsPlayingVocal] = useState(false);
   const [isAnimationRunning, setIsAnimationRunning] = useState(false);
@@ -73,70 +73,70 @@ export default function ComplementsDixCP() {
     "Super", "Génial", "Fantastique", "Merveilleux", "Extraordinaire"
   ];
 
-  // Données des compléments à 10 avec animations
+  // Données des compléments à 1000 avec animations
   const complementExamples = [
     { 
-      first: 3, 
-      second: 7, 
+      first: 300, 
+      second: 700, 
       item: '🔴', 
-      description: 'compléter 3 pour faire 10',
-      explanation: '3 plus 7 égale 10'
+      description: 'compléter 300 pour faire 1000',
+      explanation: '300 plus 700 égale 1000'
     },
     { 
-      first: 4, 
-      second: 6, 
+      first: 400, 
+      second: 600, 
       item: '🟢', 
-      description: 'compléter 4 pour faire 10',
-      explanation: '4 plus 6 égale 10'
+      description: 'compléter 400 pour faire 1000',
+      explanation: '400 plus 600 égale 1000'
     },
     { 
-      first: 5, 
-      second: 5, 
+      first: 500, 
+      second: 500, 
       item: '🔵', 
-      description: 'compléter 5 pour faire 10',
-      explanation: '5 plus 5 égale 10'
+      description: 'compléter 500 pour faire 1000',
+      explanation: '500 plus 500 égale 1000'
     },
     { 
-      first: 7, 
-      second: 3, 
+      first: 700, 
+      second: 300, 
       item: '🟡', 
-      description: 'compléter 7 pour faire 10',
-      explanation: '7 plus 3 égale 10'
+      description: 'compléter 700 pour faire 1000',
+      explanation: '700 plus 300 égale 1000'
     },
     { 
-      first: 2, 
-      second: 8, 
+      first: 200, 
+      second: 800, 
       item: '🟣', 
-      description: 'compléter 2 pour faire 10',
-      explanation: '2 plus 8 égale 10'
+      description: 'compléter 200 pour faire 1000',
+      explanation: '200 plus 800 égale 1000'
     }
   ];
 
-  // Tous les compléments à 10
+  // Tous les compléments à 1000
   const allComplements = [
-    { first: 1, second: 9 },
-    { first: 2, second: 8 },
-    { first: 3, second: 7 },
-    { first: 4, second: 6 },
-    { first: 5, second: 5 },
-    { first: 6, second: 4 },
-    { first: 7, second: 3 },
-    { first: 8, second: 2 },
-    { first: 9, second: 1 }
+    { first: 100, second: 900 },
+    { first: 200, second: 800 },
+    { first: 300, second: 700 },
+    { first: 400, second: 600 },
+    { first: 500, second: 500 },
+    { first: 600, second: 400 },
+    { first: 700, second: 300 },
+    { first: 800, second: 200 },
+    { first: 900, second: 100 }
   ];
 
-  // Exercices sur les compléments à 10 - saisie libre
+  // Exercices sur les compléments à 1000 - saisie libre
   const exercises = [
-    { question: '3 + un nombre à trouver égale 10', firstNumber: 3 },
-    { question: '4 + un nombre à trouver égale 10', firstNumber: 4 },
-    { question: '7 + un nombre à trouver égale 10', firstNumber: 7 },
-    { question: '2 + un nombre à trouver égale 10', firstNumber: 2 },
-    { question: '5 + un nombre à trouver égale 10', firstNumber: 5 },
-    { question: '8 + un nombre à trouver égale 10', firstNumber: 8 },
-    { question: '6 + un nombre à trouver égale 10', firstNumber: 6 },
-    { question: '1 + un nombre à trouver égale 10', firstNumber: 1 },
-    { question: '9 + un nombre à trouver égale 10', firstNumber: 9 },
-    { question: 'Un nombre à trouver + 6 égale 10', secondNumber: 6 }
+    { question: '300 + un nombre à trouver égale 1000', firstNumber: 300 },
+    { question: '400 + un nombre à trouver égale 1000', firstNumber: 400 },
+    { question: '700 + un nombre à trouver égale 1000', firstNumber: 700 },
+    { question: '200 + un nombre à trouver égale 1000', firstNumber: 200 },
+    { question: '500 + un nombre à trouver égale 1000', firstNumber: 500 },
+    { question: '800 + un nombre à trouver égale 1000', firstNumber: 800 },
+    { question: '600 + un nombre à trouver égale 1000', firstNumber: 600 },
+    { question: '100 + un nombre à trouver égale 1000', firstNumber: 100 },
+    { question: '900 + un nombre à trouver égale 1000', firstNumber: 900 },
+    { question: 'Un nombre à trouver + 600 égale 1000', secondNumber: 600 }
   ];
 
   // Fonction pour arrêter tous les vocaux et animations
@@ -384,7 +384,7 @@ export default function ComplementsDixCP() {
       await wait(1000);
       if (stopSignalRef.current) return;
       
-      await playAudio("Un complément à 10, c'est ce qu'il faut ajouter à un nombre pour arriver à 10, nom d'une jambe en bois !");
+      await playAudio("Un complément à 1000, c'est ce qu'il faut ajouter à un nombre pour arriver à 1000, nom d'une jambe en bois !");
       if (stopSignalRef.current) return;
       
       await wait(1000);
@@ -411,11 +411,11 @@ export default function ComplementsDixCP() {
 
     try {
       // 1. Objet du chapitre
-      await playAudio("Bonjour ! Aujourd'hui, nous allons apprendre les compléments à 10 !");
+      await playAudio("Bonjour ! Aujourd'hui, nous allons apprendre les compléments à 1000 !");
       if (stopSignalRef.current) return;
       
       await wait(1200);
-      await playAudio("Un complément à 10, c'est ce qu'il faut ajouter à un nombre pour arriver à 10 !");
+      await playAudio("Un complément à 1000, c'est ce qu'il faut ajouter à un nombre pour arriver à 1000 !");
       if (stopSignalRef.current) return;
       
       // 2. Explication du concept avec animations
@@ -518,10 +518,10 @@ export default function ComplementsDixCP() {
     
     if (exercise.firstNumber) {
       first = exercise.firstNumber;
-      second = userAnswer ? parseInt(userAnswer) : (10 - first);
+      second = userAnswer ? parseInt(userAnswer) : (1000 - first);
     } else if (exercise.secondNumber) {
       second = exercise.secondNumber;
-      first = userAnswer ? parseInt(userAnswer) : (10 - second);
+      first = userAnswer ? parseInt(userAnswer) : (1000 - second);
     }
     
     return {
@@ -538,9 +538,9 @@ export default function ComplementsDixCP() {
     if (isNaN(answer) || answer <= 0) return false;
     
     if (exercise.firstNumber) {
-      return exercise.firstNumber + answer === 10;
+      return exercise.firstNumber + answer === 1000;
     } else if (exercise.secondNumber) {
-      return answer + exercise.secondNumber === 10;
+      return answer + exercise.secondNumber === 1000;
     }
     return false;
   };

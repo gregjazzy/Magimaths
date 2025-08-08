@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, Play, Pause } from 'lucide-react';
 
-export default function ComplementsDixCP() {
+export default function ComplementsCentCE1() {
   // États pour l'audio et animations
   const [isPlayingVocal, setIsPlayingVocal] = useState(false);
   const [isAnimationRunning, setIsAnimationRunning] = useState(false);
@@ -73,70 +73,70 @@ export default function ComplementsDixCP() {
     "Super", "Génial", "Fantastique", "Merveilleux", "Extraordinaire"
   ];
 
-  // Données des compléments à 10 avec animations
+  // Données des compléments à 100 avec animations
   const complementExamples = [
     { 
-      first: 3, 
-      second: 7, 
+      first: 30, 
+      second: 70, 
       item: '🔴', 
-      description: 'compléter 3 pour faire 10',
-      explanation: '3 plus 7 égale 10'
+      description: 'compléter 30 pour faire 100',
+      explanation: '30 plus 70 égale 100'
     },
     { 
-      first: 4, 
-      second: 6, 
+      first: 40, 
+      second: 60, 
       item: '🟢', 
-      description: 'compléter 4 pour faire 10',
-      explanation: '4 plus 6 égale 10'
+      description: 'compléter 40 pour faire 100',
+      explanation: '40 plus 60 égale 100'
     },
     { 
-      first: 5, 
-      second: 5, 
+      first: 50, 
+      second: 50, 
       item: '🔵', 
-      description: 'compléter 5 pour faire 10',
-      explanation: '5 plus 5 égale 10'
+      description: 'compléter 50 pour faire 100',
+      explanation: '50 plus 50 égale 100'
     },
     { 
-      first: 7, 
-      second: 3, 
+      first: 70, 
+      second: 30, 
       item: '🟡', 
-      description: 'compléter 7 pour faire 10',
-      explanation: '7 plus 3 égale 10'
+      description: 'compléter 70 pour faire 100',
+      explanation: '70 plus 30 égale 100'
     },
     { 
-      first: 2, 
-      second: 8, 
+      first: 20, 
+      second: 80, 
       item: '🟣', 
-      description: 'compléter 2 pour faire 10',
-      explanation: '2 plus 8 égale 10'
+      description: 'compléter 20 pour faire 100',
+      explanation: '20 plus 80 égale 100'
     }
   ];
 
-  // Tous les compléments à 10
+  // Tous les compléments à 100
   const allComplements = [
-    { first: 1, second: 9 },
-    { first: 2, second: 8 },
-    { first: 3, second: 7 },
-    { first: 4, second: 6 },
-    { first: 5, second: 5 },
-    { first: 6, second: 4 },
-    { first: 7, second: 3 },
-    { first: 8, second: 2 },
-    { first: 9, second: 1 }
+    { first: 10, second: 90 },
+    { first: 20, second: 80 },
+    { first: 30, second: 70 },
+    { first: 40, second: 60 },
+    { first: 50, second: 50 },
+    { first: 60, second: 40 },
+    { first: 70, second: 30 },
+    { first: 80, second: 20 },
+    { first: 90, second: 10 }
   ];
 
-  // Exercices sur les compléments à 10 - saisie libre
+  // Exercices sur les compléments à 100 - saisie libre
   const exercises = [
-    { question: '3 + un nombre à trouver égale 10', firstNumber: 3 },
-    { question: '4 + un nombre à trouver égale 10', firstNumber: 4 },
-    { question: '7 + un nombre à trouver égale 10', firstNumber: 7 },
-    { question: '2 + un nombre à trouver égale 10', firstNumber: 2 },
-    { question: '5 + un nombre à trouver égale 10', firstNumber: 5 },
-    { question: '8 + un nombre à trouver égale 10', firstNumber: 8 },
-    { question: '6 + un nombre à trouver égale 10', firstNumber: 6 },
-    { question: '1 + un nombre à trouver égale 10', firstNumber: 1 },
-    { question: '9 + un nombre à trouver égale 10', firstNumber: 9 },
-    { question: 'Un nombre à trouver + 6 égale 10', secondNumber: 6 }
+    { question: '30 + un nombre à trouver égale 100', firstNumber: 30 },
+    { question: '40 + un nombre à trouver égale 100', firstNumber: 40 },
+    { question: '70 + un nombre à trouver égale 100', firstNumber: 70 },
+    { question: '20 + un nombre à trouver égale 100', firstNumber: 20 },
+    { question: '50 + un nombre à trouver égale 100', firstNumber: 50 },
+    { question: '80 + un nombre à trouver égale 100', firstNumber: 80 },
+    { question: '60 + un nombre à trouver égale 100', firstNumber: 60 },
+    { question: '10 + un nombre à trouver égale 100', firstNumber: 10 },
+    { question: '90 + un nombre à trouver égale 100', firstNumber: 90 },
+    { question: 'Un nombre à trouver + 60 égale 100', secondNumber: 60 }
   ];
 
   // Fonction pour arrêter tous les vocaux et animations
@@ -384,7 +384,7 @@ export default function ComplementsDixCP() {
       await wait(1000);
       if (stopSignalRef.current) return;
       
-      await playAudio("Un complément à 10, c'est ce qu'il faut ajouter à un nombre pour arriver à 10, nom d'une jambe en bois !");
+      await playAudio("Un complément à 100, c'est ce qu'il faut ajouter à un nombre pour arriver à 100, nom d'une jambe en bois !");
       if (stopSignalRef.current) return;
       
       await wait(1000);
@@ -411,17 +411,17 @@ export default function ComplementsDixCP() {
 
     try {
       // 1. Objet du chapitre
-      await playAudio("Bonjour ! Aujourd'hui, nous allons apprendre les compléments à 10 !");
+      await playAudio("Bonjour ! Aujourd'hui, nous allons apprendre les compléments à 100 !");
       if (stopSignalRef.current) return;
       
       await wait(1200);
-      await playAudio("Un complément à 10, c'est ce qu'il faut ajouter à un nombre pour arriver à 10 !");
+      await playAudio("Un complément à 100, c'est ce qu'il faut ajouter à un nombre pour arriver à 100 !");
       if (stopSignalRef.current) return;
       
       // 2. Explication du concept avec animations
       await wait(1800);
       setHighlightedElement('concept-section');
-      await playAudio("Regardons ensemble comment compléter 3 pour faire 10 !");
+      await playAudio("Regardons ensemble comment compléter 30 pour faire 100 !");
       if (stopSignalRef.current) return;
       
       await wait(1500);
@@ -429,28 +429,28 @@ export default function ComplementsDixCP() {
       setAnimatingStep('introduction');
       const example = complementExamples[0];
       
-      await playAudio(`D'abord, j'ai ${example.first} objets.`);
+      await playAudio(`D'abord, j'ai ${example.first}.`);
       if (stopSignalRef.current) return;
       
       await wait(1200);
       setComplementStep('first-number');
       setHighlightedNumber(example.first);
-      await playAudio(`Je vois ${example.first} objets ici.`);
+      await playAudio(`Je vois ${example.first} ici.`);
       if (stopSignalRef.current) return;
       
       await wait(1500);
       setShowingProcess('counting');
-      await playAudio("Maintenant, je dois compter jusqu'à 10. Combien dois-je ajouter ?");
+      await playAudio("Maintenant, je dois compter jusqu'à 100. Combien dois-je ajouter ?");
       if (stopSignalRef.current) return;
       
       await wait(1200);
       setComplementStep('missing');
-      await playAudio("Je vais compter de 3 jusqu'à 10 pour trouver le complément !");
+      await playAudio("Je vais compter de 30 jusqu'à 100 pour trouver le complément !");
       if (stopSignalRef.current) return;
       
-      // Animation de comptage de 3 à 10
+      // Animation de comptage de 30 à 100 (par dizaines)
       await wait(1000);
-      for (let i = example.first + 1; i <= 10; i++) {
+      for (let i = example.first + 10; i <= 100; i += 10) {
         if (stopSignalRef.current) return;
         setCountingTo10(i);
         await playAudio(`${i}`);
@@ -459,18 +459,18 @@ export default function ComplementsDixCP() {
       
       await wait(1000);
       setShowingProcess('adding');
-      await playAudio(`Il faut ajouter ${example.second} pour aller de ${example.first} à 10 !`);
+      await playAudio(`Il faut ajouter ${example.second} pour aller de ${example.first} à 100 !`);
       if (stopSignalRef.current) return;
       
       await wait(1500);
       setComplementStep('total');
       setShowingProcess('completing');
-      await playAudio(`${example.first} plus ${example.second} égale 10 ! C'est ça, un complément !`);
+      await playAudio(`${example.first} plus ${example.second} égale 100 ! C'est ça, un complément !`);
       if (stopSignalRef.current) return;
       
       await wait(1500);
       setComplementStep('result');
-      await playAudio(`En mathématiques, on écrit : ${example.first} + ${example.second} = 10 !`);
+      await playAudio(`En mathématiques, on écrit : ${example.first} + ${example.second} = 100 !`);
       if (stopSignalRef.current) return;
       
       // 3. Présentation des autres exemples
@@ -481,7 +481,7 @@ export default function ComplementsDixCP() {
       setCountingTo10(null);
       setCurrentExample(null);
       setHighlightedElement(null);
-      await playAudio("Parfait ! Maintenant tu comprends les compléments à 10 !");
+      await playAudio("Parfait ! Maintenant tu comprends les compléments à 100 !");
       if (stopSignalRef.current) return;
       
       await wait(1200);
@@ -518,10 +518,10 @@ export default function ComplementsDixCP() {
     
     if (exercise.firstNumber) {
       first = exercise.firstNumber;
-      second = userAnswer ? parseInt(userAnswer) : (10 - first);
+      second = userAnswer ? parseInt(userAnswer) : (100 - first);
     } else if (exercise.secondNumber) {
       second = exercise.secondNumber;
-      first = userAnswer ? parseInt(userAnswer) : (10 - second);
+      first = userAnswer ? parseInt(userAnswer) : (100 - second);
     }
     
     return {
@@ -538,9 +538,9 @@ export default function ComplementsDixCP() {
     if (isNaN(answer) || answer <= 0) return false;
     
     if (exercise.firstNumber) {
-      return exercise.firstNumber + answer === 10;
+      return exercise.firstNumber + answer === 100;
     } else if (exercise.secondNumber) {
-      return answer + exercise.secondNumber === 10;
+      return answer + exercise.secondNumber === 100;
     }
     return false;
   };
@@ -575,15 +575,15 @@ export default function ComplementsDixCP() {
     const hasUserAnswer = userAnswer && userAnswer.trim();
     if (hasUserAnswer) {
       const userNum = parseInt(userAnswer);
-      if (exercise.firstNumber && exercise.firstNumber + userNum === 10) {
-        await playAudio(`Je vais te montrer que ${exercise.firstNumber} plus ${userAnswer} égale bien 10 !`);
-      } else if (exercise.secondNumber && userNum + exercise.secondNumber === 10) {
-        await playAudio(`Je vais te montrer que ${userAnswer} plus ${exercise.secondNumber} égale bien 10 !`);
+      if (exercise.firstNumber && exercise.firstNumber + userNum === 100) {
+        await playAudio(`Je vais te montrer que ${exercise.firstNumber} plus ${userAnswer} égale bien 100 !`);
+      } else if (exercise.secondNumber && userNum + exercise.secondNumber === 100) {
+        await playAudio(`Je vais te montrer que ${userAnswer} plus ${exercise.secondNumber} égale bien 100 !`);
       } else {
         await playAudio(`Tu as répondu ${userAnswer}, mais regardons le bon complément !`);
       }
     } else {
-      await playAudio(`Je vais t'expliquer ce complément à 10 avec des ${objectName} !`);
+      await playAudio(`Je vais t'expliquer ce complément à 100 avec des ${objectName} !`);
     }
     if (stopSignalRef.current) return;
     await wait(1000);
@@ -1051,7 +1051,7 @@ export default function ComplementsDixCP() {
       // Les voix peuvent être chargées de manière asynchrone
       if (speechSynthesis.getVoices().length > 0) {
         loadVoices();
-      } else {
+        } else {
         speechSynthesis.onvoiceschanged = loadVoices;
       }
       
@@ -1109,8 +1109,8 @@ export default function ComplementsDixCP() {
       // Sur mobile, on ignore les événements blur car ils sont trop fréquents
       if (isMobile) {
         console.log('Événement blur ignoré sur mobile');
-        return;
-      }
+      return;
+    }
       console.log('Perte de focus fenêtre - arrêt du vocal');
       stopAllVocalsAndAnimations();
     };
@@ -1171,7 +1171,7 @@ export default function ComplementsDixCP() {
     // Toujours actif sauf pendant la lecture
     const isButtonDisabled = isPlayingEnonce;
 
-    return (
+              return (
       <div className="mb-2 sm:mb-6">
         <button
           id="listen-question-button"
@@ -1190,7 +1190,7 @@ export default function ComplementsDixCP() {
           </svg>
           <span>🎧 Écouter l'énoncé</span>
         </button>
-      </div>
+                    </div>
     );
   };
 
@@ -1218,7 +1218,7 @@ export default function ComplementsDixCP() {
           ) : (
             <div className="w-full h-full rounded-full flex items-center justify-center text-sm sm:text-2xl">
               🏴‍☠️
-            </div>
+                    </div>
           )}
           {/* Haut-parleur animé quand il parle */}
           {isPlayingVocal && (
@@ -1226,12 +1226,12 @@ export default function ComplementsDixCP() {
               <svg className="w-2 sm:w-4 h-2 sm:h-4" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.617.77L4.916 14H2a1 1 0 01-1-1V7a1 1 0 011-1h2.916l3.467-2.77a1 1 0 011.617.77zM14.657 2.929a1 1 0 011.414 0A9.972 9.972 0 0119 10a9.972 9.972 0 01-2.929 7.071 1 1 0 01-1.414-1.414A7.971 7.971 0 0017 10c0-2.21-.894-4.208-2.343-5.657a1 1 0 010-1.414zm-2.829 2.828a1 1 0 011.415 0A5.983 5.983 0 0115 10a5.983 5.983 0 01-1.757 4.243 1 1 0 01-1.415-1.414A3.983 3.983 0 0013 10a3.983 3.983 0 00-1.172-2.829 1 1 0 010-1.414z" clipRule="evenodd" />
               </svg>
-            </div>
+                  </div>
           )}
         </div>
         
         {/* Bouton Start Exercices */}
-        <button
+                    <button
         onClick={startPirateIntro}
         disabled={isPlayingVocal}
         className={`relative transition-all duration-300 transform ${
@@ -1287,10 +1287,10 @@ export default function ComplementsDixCP() {
             )}
           </>
         )}
-      </button>
-      </div>
-    </div>
-  );
+                    </button>
+                  </div>
+                </div>
+              );
 
   if (!isClient) {
     return <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-100 flex items-center justify-center">
@@ -1333,7 +1333,7 @@ export default function ComplementsDixCP() {
                 alt="Sam le Pirate"
                 className="w-full h-full object-cover"
               />
-            </div>
+          </div>
             
             {/* Texte et icône */}
             <>
@@ -1371,24 +1371,24 @@ export default function ComplementsDixCP() {
         {/* Navigation entre cours et exercices - MOBILE OPTIMISÉE */}
         <div className={`flex justify-center ${showExercises ? 'mb-2 sm:mb-6' : 'mb-8'}`}>
           <div className="bg-white rounded-lg p-0.5 sm:p-1 shadow-md flex">
-            <button
-              onClick={() => {
+              <button
+                onClick={() => {
                 handleStopAllVocalsAndAnimations();
-                setShowExercises(false);
+                  setShowExercises(false);
               }}
               className={`px-3 sm:px-6 py-1.5 sm:py-3 rounded-lg font-bold transition-all text-sm sm:text-base min-h-[44px] sm:min-h-[68px] flex items-center justify-center ${
                 !showExercises 
                   ? 'bg-blue-500 text-white shadow-md' 
                   : 'text-gray-600 hover:bg-gray-100'
-              }`}
-            >
-              📖 Cours
-            </button>
-            <button
+                }`}
+              >
+                📖 Cours
+              </button>
+              <button
               id="exercises-tab"
-              onClick={() => {
+                onClick={() => {
                  handleStopAllVocalsAndAnimations();
-                setShowExercises(true);
+                  setShowExercises(true);
               }}
                className={`px-3 sm:px-6 py-1.5 sm:py-3 rounded-lg font-bold transition-all text-sm sm:text-base min-h-[44px] sm:min-h-[68px] flex flex-col items-center justify-center ${
                 showExercises 
@@ -1400,7 +1400,7 @@ export default function ComplementsDixCP() {
             >
               <span>✏️ Exercices</span>
               <span className="text-xs sm:text-sm opacity-90">({score}/{exercises.length})</span>
-            </button>
+              </button>
           </div>
         </div>
 
@@ -1435,7 +1435,7 @@ export default function ComplementsDixCP() {
                     <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.617.77L4.916 14H2a1 1 0 01-1-1V7a1 1 0 011-1h2.916l3.467-2.77a1 1 0 011.617.77zM14.657 2.929a1 1 0 011.414 0A9.972 9.972 0 0119 10a9.972 9.972 0 01-2.929 7.071 1 1 0 01-1.414-1.414A7.971 7.971 0 0017 10c0-2.21-.894-4.208-2.343-5.657a1 1 0 010-1.414zm-2.829 2.828a1 1 0 011.415 0A5.983 5.983 0 0115 10a5.983 5.983 0 01-1.757 4.243 1 1 0 01-1.415-1.414A3.983 3.983 0 0013 10a3.983 3.983 0 00-1.172-2.829 1 1 0 010-1.414z" clipRule="evenodd" />
                     </svg>
-                    </div>
+                </div>
                   )}
               </div>
               
@@ -1453,9 +1453,9 @@ export default function ComplementsDixCP() {
                 }}
               >
                   <Play className="inline w-3 h-3 sm:w-6 sm:h-6 mr-1 sm:mr-2" />
-                  {isAnimationRunning ? '⏳ JE PARLE...' : '🔟 DÉMARRER'}
+                  {isAnimationRunning ? '⏳ JE PARLE...' : '💯 DÉMARRER'}
                 </button>
-                </div>
+              </div>
             </div>
 
 
@@ -1469,7 +1469,7 @@ export default function ComplementsDixCP() {
             >
               <div className="flex items-center justify-center gap-1 sm:gap-3 mb-3 sm:mb-6">
                 <h2 className="text-base sm:text-2xl font-bold text-gray-900">
-                  🤔 Qu'est-ce qu'un complément à 10 ?
+                  🤔 Qu'est-ce qu'un complément à 100 ?
                 </h2>
                 {/* Icône d'animation pour le concept */}
                 <div className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-full w-5 h-5 sm:w-8 sm:h-8 flex items-center justify-center text-xs sm:text-lg font-bold shadow-lg hover:scale-110 cursor-pointer transition-all duration-300 ring-2 ring-blue-300 ring-opacity-40 hover:shadow-xl hover:ring-4 hover:ring-blue-200"
@@ -1477,7 +1477,7 @@ export default function ComplementsDixCP() {
                        animation: 'subtle-glow 3s ease-in-out infinite',
                        animationPlayState: 'running'
                      }} 
-                     title="🤔 Animation du concept ! Cliquez pour entendre Sam expliquer les compléments à 10."
+                     title="🤔 Animation du concept ! Cliquez pour entendre Sam expliquer les compléments à 100."
                   onClick={async () => {
                     if (!isAnimationRunning) {
                       explainChapter();
@@ -1490,15 +1490,15 @@ export default function ComplementsDixCP() {
               
               <div className="bg-green-50 rounded-lg p-3 sm:p-6 mb-3 sm:mb-6">
                 <p className="text-sm sm:text-lg text-center text-green-800 font-semibold mb-3 sm:mb-6">
-                  Un complément à 10, c'est ce qu'il faut ajouter à un nombre pour arriver à 10 !
+                  Un complément à 100, c'est ce qu'il faut ajouter à un nombre pour arriver à 100 !
                 </p>
                 
                 <div className="bg-white rounded-lg p-3 sm:p-6">
                   <div className="text-center mb-3 sm:mb-6">
                     <div className="text-lg sm:text-2xl font-bold text-green-600 mb-1 sm:mb-4">
                       {currentExample !== null ? 
-                        `Exemple : ${complementExamples[currentExample].first} + ${complementExamples[currentExample].second} = 10` 
-                        : 'Exemple : 3 + 7 = 10'
+                        `Exemple : ${complementExamples[currentExample].first} + ${complementExamples[currentExample].second} = 100` 
+                        : 'Exemple : 30 + 70 = 100'
                       }
                 </div>
               </div>
@@ -1523,7 +1523,7 @@ export default function ComplementsDixCP() {
                         }`}>
                           <h4 className="text-sm sm:text-lg font-bold text-purple-800 mb-2 sm:mb-4">
                             {complementExamples[currentExample].first} objets
-                          </h4>
+                    </h4>
                           <div className="mb-4">
                             {renderObjects(complementExamples[currentExample].first, '🔵', highlightedNumber === complementExamples[currentExample].first)}
                           </div>
@@ -1565,7 +1565,7 @@ export default function ComplementsDixCP() {
                       {showingProcess === 'counting' && (
                         <div className="bg-yellow-50 rounded-lg p-3 sm:p-6 border-2 border-yellow-300">
                           <h4 className="text-lg sm:text-xl font-bold text-center text-yellow-800 mb-2 sm:mb-4">
-                            🔢 Maintenant, comptons jusqu'à 10 !
+                            🔢 Maintenant, comptons jusqu'à 100 !
                           </h4>
                           <div className="flex flex-col gap-1 sm:gap-2 justify-center items-center text-2xl sm:text-5xl">
                             {(() => {
@@ -1666,7 +1666,7 @@ export default function ComplementsDixCP() {
                   }}
                 >
                   🌟
-                </div>
+                        </div>
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
@@ -1684,7 +1684,7 @@ export default function ComplementsDixCP() {
                       <div className="text-lg sm:text-3xl mb-1 sm:mb-2">{example.item}</div>
                       <div className="font-bold text-sm sm:text-lg text-gray-800 mb-1 sm:mb-2">
                         {example.first} + {example.second} = 10
-                      </div>
+                        </div>
                       <div className="text-xs sm:text-sm text-gray-600 mb-2 sm:mb-3">
                         Complément de {example.first}
                       </div>
@@ -1698,9 +1698,9 @@ export default function ComplementsDixCP() {
                     </div>
                   </div>
                 ))}
-              </div>
-            </div>
-
+                      </div>
+                    </div>
+                    
             {/* Tous les compléments à 10 */}
             <div className="bg-white rounded-xl p-2 sm:p-8 shadow-lg">
               <div className="flex items-center justify-center gap-1 sm:gap-3 mb-2 sm:mb-6">
@@ -1712,8 +1712,8 @@ export default function ComplementsDixCP() {
                      style={{ animation: 'subtle-glow 2s infinite' }}
                      title="Tous les compléments à mémoriser">
                   <span className="text-xs sm:text-xl">🎯</span>
-                </div>
-              </div>
+                      </div>
+                    </div>
               
               <div className="grid grid-cols-1 md:grid-cols-3 gap-2 sm:gap-4">
                 {allComplements.map((complement, index) => (
@@ -1723,8 +1723,8 @@ export default function ComplementsDixCP() {
                   >
                     <div className="text-lg sm:text-2xl font-bold text-green-600">
                       {complement.first} + {complement.second} = 10
-                      </div>
-                    </div>
+                  </div>
+                </div>
                 ))}
               </div>
             </div>
@@ -1734,7 +1734,7 @@ export default function ComplementsDixCP() {
               <div className="flex items-center justify-center gap-1 sm:gap-3 mb-3 sm:mb-4">
                 <h3 className="text-base sm:text-xl font-bold text-white">
                   💡 Conseils pour retenir les compléments
-                </h3>
+              </h3>
                 {/* Icône d'animation pour les conseils */}
                 <div className="bg-white/20 text-white rounded-full w-6 h-6 sm:w-12 sm:h-12 flex items-center justify-center text-xs sm:text-xl font-bold shadow-lg hover:scale-110 cursor-pointer transition-all duration-300 ring-2 ring-white/30 hover:shadow-xl hover:ring-4 hover:ring-white/40 backdrop-blur-sm"
                      style={{
@@ -1839,7 +1839,7 @@ export default function ComplementsDixCP() {
               <div className="flex justify-between items-center text-sm">
                 <span className="font-bold text-gray-700">Exercice {currentExercise + 1}/{exercises.length}</span>
                 <span className="font-bold text-green-600">Score : {score}/{exercises.length}</span>
-              </div>
+                </div>
               <div className="w-full bg-gray-200 rounded-full h-1 sm:h-2 mt-1">
                 <div 
                   className="bg-green-500 h-1 sm:h-2 rounded-full transition-all duration-500"
@@ -1853,7 +1853,7 @@ export default function ComplementsDixCP() {
               <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-1 sm:mb-6 md:mb-8 gap-2 sm:gap-4">
                 <h3 className="text-sm sm:text-xl md:text-2xl font-bold text-gray-900 flex-1">
                   {exercises[currentExercise]?.question || "Question..."}
-              </h3>
+                </h3>
                 {ListenQuestionButtonJSX()}
               </div>
               
@@ -1889,15 +1889,15 @@ export default function ComplementsDixCP() {
                           {exercises[currentExercise].firstNumber}
                         </div>
                         <span className="text-2xl sm:text-3xl font-bold text-green-600">+</span>
-                        <input
+                  <input
                           type="number"
-                          value={userAnswer}
-                          onChange={(e) => setUserAnswer(e.target.value)}
+                    value={userAnswer}
+                    onChange={(e) => setUserAnswer(e.target.value)}
                           disabled={isCorrect !== null || isPlayingVocal}
                           min="1"
                           max="9"
                           className="w-12 sm:w-16 h-10 sm:h-12 text-center text-lg sm:text-xl font-bold border-2 border-green-300 rounded-lg focus:border-green-500 focus:outline-none disabled:bg-gray-100 disabled:cursor-not-allowed"
-                          placeholder="?"
+                    placeholder="?"
                         />
                         <span className="text-2xl sm:text-3xl font-bold text-green-600">=</span>
                         <div className="w-12 sm:w-16 h-10 sm:h-12 flex items-center justify-center text-lg sm:text-xl font-bold bg-green-100 border-2 border-green-300 rounded-lg text-green-600">
@@ -1931,39 +1931,39 @@ export default function ComplementsDixCP() {
                   </div>
                   
                   {/* Bouton pour valider */}
-                  <button
+                      <button
                     onClick={handleValidateAnswer}
                     disabled={isCorrect !== null || isPlayingVocal || !userAnswer.trim()}
                     className="bg-green-500 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-bold text-sm sm:text-base hover:bg-green-600 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed min-h-[40px] sm:min-h-[48px] shadow-lg"
-                  >
+                      >
                     ✅ Vérifier mon complément
-                  </button>
+                      </button>
+                    </div>
                 </div>
-              </div>
-              
+
               {/* Résultat */}
-              {isCorrect !== null && (
+                {isCorrect !== null && (
                 <div className={`p-2 sm:p-4 md:p-6 rounded-lg mb-3 sm:mb-6 ${
                   isCorrect ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
                 }`}>
                   <div className="flex items-center justify-center space-x-1 sm:space-x-3">
-                    {isCorrect ? (
-                      <>
+                      {isCorrect ? (
+                        <>
                         <span className="text-base sm:text-xl md:text-2xl">✅</span>
                         <span className="font-bold text-xs sm:text-base md:text-xl">
                           Excellent ! {exercises[currentExercise].firstNumber ? `${exercises[currentExercise].firstNumber} + ${userAnswer}` : `${userAnswer} + ${exercises[currentExercise].secondNumber}`} = 10 !
                         </span>
-                      </>
-                    ) : (
-                      <>
+                        </>
+                      ) : (
+                        <>
                         <span className="text-base sm:text-xl md:text-2xl">❌</span>
                         <span className="font-bold text-xs sm:text-sm md:text-xl">
                           Pas tout à fait... Je vais t'expliquer !
                         </span>
-                      </>
-                    )}
-                  </div>
-                </div>
+                        </>
+                      )}
+                    </div>
+                    </div>
               )}
               
               {/* Correction animée avec objets visuels */}
@@ -2069,13 +2069,13 @@ export default function ComplementsDixCP() {
                       )}
                     </div>
                   )}
-                </div>
-              )}
+                  </div>
+                )}
 
-              {/* Navigation */}
+                {/* Navigation */}
               {isCorrect === false && (
                 <div className="flex justify-center pb-3 sm:pb-0">
-                                        <button
+                  <button
                     ref={nextButtonRef}
                     onClick={nextExercise}
                     className={`bg-green-500 text-white px-3 sm:px-6 md:px-8 py-2 sm:py-4 rounded-lg font-bold text-sm sm:text-base md:text-lg hover:bg-green-600 transition-colors shadow-lg hover:shadow-xl transform hover:scale-105 min-h-[40px] sm:min-h-[56px] md:min-h-auto ${
@@ -2115,26 +2115,26 @@ export default function ComplementsDixCP() {
                       </p>
                     </div>
                     <div className="flex space-x-3">
-                      <button
+                  <button
                         onClick={resetAll}
                         className="flex-1 bg-green-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-green-600 transition-colors"
                       >
                         Recommencer
-                      </button>
-                      <button
-                        onClick={() => {
+                  </button>
+                  <button
+                    onClick={() => {
                           handleStopAllVocalsAndAnimations();
                           setShowCompletionModal(false);
                         }}
                         className="flex-1 bg-gray-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-gray-600 transition-colors"
                       >
                         Fermer
-                      </button>
-                    </div>
+                  </button>
+                </div>
                   </>
                 );
               })()}
-            </div>
+              </div>
           </div>
         )}
       </div>
