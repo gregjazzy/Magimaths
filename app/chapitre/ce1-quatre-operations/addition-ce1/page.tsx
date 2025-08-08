@@ -8,7 +8,24 @@ export default function CE1AdditionPage() {
   const config = { color: '#10b981', icon: '➕', name: 'Addition CE1' };
 
   const subChapters = [
-
+    {
+      id: 'additions-jusqu-100',
+      title: 'Additions jusqu\'à 100',
+      description: 'Maîtrise les additions avec des nombres plus grands !',
+      icon: '🧮',
+      estimatedTime: 35,
+      difficulty: 'Avancé',
+      href: '/chapitre/ce1-quatre-operations/addition-ce1/additions-jusqu-100'
+    },
+    {
+      id: 'additions-jusqu-1000',
+      title: 'Additions jusqu\'à 1000',
+      description: 'Maîtrise les additions avec les nombres à 3 chiffres !',
+      icon: '🔢',
+      estimatedTime: 40,
+      difficulty: 'Avancé',
+      href: '/chapitre/ce1-quatre-operations/addition-ce1/additions-jusqu-1000'
+    },
     {
       id: 'addition-posee',
       title: 'Addition posée',
@@ -35,25 +52,6 @@ export default function CE1AdditionPage() {
       estimatedTime: 25,
       difficulty: 'Avancé',
       href: '/chapitre/ce1-quatre-operations/addition-ce1/problemes-addition'
-    },
-    {
-      id: 'additions-jusqu-100',
-      title: 'Additions jusqu\'à 100',
-      description: 'Maîtrise les additions avec des nombres plus grands !',
-      icon: '🧮',
-      estimatedTime: 35,
-      difficulty: 'Avancé',
-      href: '/chapitre/ce1-quatre-operations/addition-ce1/additions-jusqu-100'
-    },
-
-    {
-      id: 'additions-jusqu-1000',
-      title: 'Additions jusqu\'à 1000',
-      description: 'Maîtrise les additions avec les nombres à 3 chiffres !',
-      icon: '🔢',
-      estimatedTime: 40,
-      difficulty: 'Avancé',
-      href: '/chapitre/ce1-quatre-operations/addition-ce1/additions-jusqu-1000'
     }
   ];
 
