@@ -160,18 +160,6 @@ export default function AdditionsJusqua100CE1() {
             'Unités : 2 + 5 = 7',
             'Résultat : 70 + 7 = 77 !'
           ]
-        },
-        { 
-          calculation: '47 + 31', 
-          num1: 47, 
-          num2: 31, 
-          result: 78,
-          steps: [
-            'Je sépare : 47 = 40 + 7 et 31 = 30 + 1',
-            'Dizaines : 40 + 30 = 70',
-            'Unités : 7 + 1 = 8',
-            'Total : 70 + 8 = 78 !'
-          ]
         }
       ]
     },
@@ -299,18 +287,6 @@ export default function AdditionsJusqua100CE1() {
           ]
         },
         { 
-          calculation: '16 + 20', 
-          num1: 16, 
-          num2: 20, 
-          result: 36,
-          steps: [
-            'Je pars de 16 et j\'ajoute 20',
-            'Bond 1 : 16 + 10 = 26',
-            'Bond 2 : 26 + 10 = 36',
-            'Fini ! 36 c\'est rapide !'
-          ]
-        },
-        { 
           calculation: '35 + 40', 
           num1: 35, 
           num2: 40, 
@@ -402,18 +378,6 @@ export default function AdditionsJusqua100CE1() {
             'Maintenant : 33 + 20 = 53',
             'Génial ! C\'est 53 !'
           ]
-        },
-        { 
-          calculation: '64 + 18', 
-          num1: 64, 
-          num2: 18, 
-          result: 82,
-          steps: [
-            'Je transforme 64 + 18 en nombres faciles',
-            'Je rends 18 plus facile : 18 + 2 = 20',
-            'J\'enlève 2 à 64 : 64 - 2 = 62',
-            'Résultat : 62 + 20 = 82 ! Astucieux !'
-          ]
         }
       ]
     },
@@ -494,18 +458,6 @@ export default function AdditionsJusqua100CE1() {
             'Deuxième étape : 76 + 6 = 82',
             'Excellent ! 36 + 46 = 82 !'
           ]
-        },
-        { 
-          calculation: '48 + 26', 
-          num1: 48, 
-          num2: 26, 
-          result: 74,
-          steps: [
-            'Je commence par 48, et j\'ajoute 26 étape par étape',
-            'D\'abord j\'ajoute 20 : 48 + 20 = 68',
-            'Puis j\'ajoute 6 : 68 + 6 = 74',
-            'Parfait ! 48 + 26 = 74 !'
-          ]
         }
       ]
     },
@@ -585,18 +537,6 @@ export default function AdditionsJusqua100CE1() {
             'Alors 31 + 32 = 31 + 31 + 1',
             'Double de 31 : 31 + 31 = 62',
             'Plus 1 : 62 + 1 = 63 ! Parfait !'
-          ]
-        },
-        { 
-          calculation: '41 + 42', 
-          num1: 41, 
-          num2: 42, 
-          result: 83,
-          steps: [
-            'Je remarque que 42 = 41 + 1',
-            'Donc 41 + 42 = 41 + 41 + 1',
-            'Le double de 41 : 41 + 41 = 82',
-            'Plus 1 : 82 + 1 = 83 ! Formidable !'
           ]
         }
       ]
@@ -1508,6 +1448,11 @@ export default function AdditionsJusqua100CE1() {
 
     // Étape 2 : Décomposer le premier nombre
     setCalculationStep('decompose-first');
+    // Scroll vers la décomposition
+    setTimeout(() => {
+      const element = document.getElementById('decomposition-animation');
+      element?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 500);
     const dizaines1 = Math.floor(example.num1 / 10) * 10;
     const unites1 = example.num1 % 10;
     await playAudio(`${example.num1} se décompose en ${dizaines1} plus ${unites1}.`);
@@ -1526,6 +1471,11 @@ export default function AdditionsJusqua100CE1() {
 
     // Étape 4 : Additionner les dizaines
     setCalculationStep('tens');
+    // Scroll vers l'addition des dizaines
+    setTimeout(() => {
+      const element = document.getElementById('tens-addition');
+      element?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 500);
     const sommeDizaines = dizaines1 + dizaines2;
     await playAudio(`J'additionne les dizaines : ${dizaines1} plus ${dizaines2} égale ${sommeDizaines}.`);
     await wait(3000);
@@ -1534,6 +1484,11 @@ export default function AdditionsJusqua100CE1() {
 
     // Étape 5 : Additionner les unités
     setCalculationStep('units');
+    // Scroll vers l'addition des unités
+    setTimeout(() => {
+      const element = document.getElementById('units-addition');
+      element?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 500);
     const sommeUnites = unites1 + unites2;
     await playAudio(`J'additionne les unités : ${unites1} plus ${unites2} égale ${sommeUnites}.`);
     await wait(3000);
@@ -1542,8 +1497,19 @@ export default function AdditionsJusqua100CE1() {
 
     // Étape 6 : Résultat final
     setCalculationStep('result');
+    // Scroll vers le résultat final
+    setTimeout(() => {
+      const element = document.getElementById('final-result');
+      element?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 500);
     await playAudio(`Je regroupe : ${sommeDizaines} plus ${sommeUnites} égale ${example.result} !`);
     await wait(3000);
+
+    // Scroll final pour voir toute la démarche
+    setTimeout(() => {
+      const element = document.getElementById('decomposition-animation');
+      element?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 1000);
   };
 
   // Animation pour bonds de 10
@@ -1556,22 +1522,74 @@ export default function AdditionsJusqua100CE1() {
 
     let current = example.num1;
     const dizaines = Math.floor(example.num2 / 10);
+    const unites = example.num2 % 10;
     
     setCalculationStep('show-first');
-    await playAudio(`Je pars de ${current}.`);
-    await wait(1500);
+    // Scroll vers l'animation bonds
+    setTimeout(() => {
+      const element = document.getElementById('bonds-animation');
+      element?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 500);
+    await playAudio(`Je pars de ${current}. J'ajoute ${example.num2}.`);
+    await wait(2000);
+
+    if (stopSignalRef.current) return;
+
+    setCalculationStep('tens');
+    if (dizaines > 0) {
+      // Scroll vers l'explication des bonds
+      setTimeout(() => {
+        const element = document.getElementById('bonds-explanation');
+        element?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 500);
+      await playAudio(`${example.num2} égale ${dizaines * 10} plus ${unites}. Donc je fais ${dizaines} bonds de 10${unites > 0 ? ` puis j'ajoute ${unites}` : ''}.`);
+      await wait(3000);
+    }
+
+    if (stopSignalRef.current) return;
 
     for (let i = 0; i < dizaines; i++) {
       if (stopSignalRef.current) return;
       current += 10;
       setCalculationStep('units');
+      // Scroll vers l'exécution des bonds
+      if (i === 0) {
+        setTimeout(() => {
+          const element = document.getElementById('bonds-execution');
+          element?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 300);
+      }
       await playAudio(`Bond ${i + 1} : plus 10 égale ${current} !`);
       await wait(1800);
     }
 
     if (stopSignalRef.current) return;
 
+    // Ajouter les unités restantes s'il y en a
+    if (unites > 0) {
+      // Scroll vers l'ajout des unités
+      setTimeout(() => {
+        const element = document.getElementById('bonds-units');
+        element?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 300);
+      current += unites;
+      await playAudio(`Il me reste ${unites} unités à ajouter : ${current - unites} plus ${unites} égale ${current} !`);
+      await wait(2500);
+    }
+
+    if (stopSignalRef.current) return;
+
     setCalculationStep('result');
+    // Scroll vers le résultat final puis vue d'ensemble
+    setTimeout(() => {
+      const element = document.getElementById('bonds-result');
+      element?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 500);
+    await wait(1000);
+    setTimeout(() => {
+      const element = document.getElementById('bonds-animation');
+      element?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 2000);
     await playAudio(`Résultat : ${example.result} ! Les bonds de 10, c'est rapide et amusant !`);
     await wait(3000);
   };
@@ -1593,18 +1611,18 @@ export default function AdditionsJusqua100CE1() {
     setCalculationStep('find-complement');
     // Logique pour 29 + 15 = 30 + 14
     if (example.num1 === 29 && example.num2 === 15) {
-      await playAudio(`Je transforme 29 en 30 en ajoutant 1.`);
-      await wait(2500);
+      await playAudio(`D'abord, je décompose ${example.num2} : ${example.num2} égale ${example.num2 - 1} plus 1.`);
+      await wait(3000);
       
       if (stopSignalRef.current) return;
       
-      await playAudio(`Alors j'enlève 1 à 15 : 15 moins 1 égale 14.`);
-      await wait(2500);
+      await playAudio(`Ce 1 va compléter ${example.num1} pour faire ${example.num1 + 1} : ${example.num1} plus 1 égale ${example.num1 + 1}.`);
+      await wait(3000);
       
       if (stopSignalRef.current) return;
       
       setCalculationStep('result');
-      await playAudio(`Maintenant c'est 30 plus 14 égale ${example.result} ! Beaucoup plus simple !`);
+      await playAudio(`Maintenant c'est ${example.num1 + 1} plus ${example.num2 - 1} égale ${example.result} ! Beaucoup plus simple !`);
     } else {
       // Logique pour 38 + 19 = 37 + 20
       await playAudio(`Je transforme ${example.num2} en une dizaine ronde.`);
@@ -3263,126 +3281,181 @@ export default function AdditionsJusqua100CE1() {
 
                           {/* Animation pour décomposition */}
                           {currentTechnique === 'decomposition' && calculationStep && (
-                            <div className="space-y-6 bg-gradient-to-br from-blue-50 to-indigo-50 p-6 rounded-xl border-2 border-blue-200">
+                            <div id="decomposition-animation" className="space-y-6 bg-gradient-to-br from-blue-50 to-indigo-50 p-6 rounded-xl border-2 border-blue-200">
                               
-                              {/* Étape : Introduction */}
-                              {calculationStep === 'setup' && (
-                                <div className="text-center">
-                                  <div className="text-4xl font-bold text-blue-800 animate-pulse">
-                                    {example.calculation}
-                                  </div>
-                                  <div className="text-lg text-blue-600 mt-2">
-                                    🧮 Décomposition en dizaines et unités
-                                  </div>
-                                </div>
-                              )}
 
-                              {/* Étape : Décomposer le premier nombre */}
+
+                              {/* Décomposition sur une seule ligne - Version épurée */}
                               {(calculationStep === 'decompose-first' || calculationStep === 'decompose-second' || calculationStep === 'tens' || calculationStep === 'units' || calculationStep === 'result') && (
-                                <div className="bg-white rounded-lg p-6 shadow-lg max-w-lg mx-auto">
+                                <div className="bg-white rounded-lg shadow-md p-4 max-w-xl mx-auto">
                                   <div className="text-center mb-4">
-                                    <div className="text-lg font-bold text-gray-800">🔢 Décomposition des nombres</div>
+                                    <div className="text-lg font-bold text-gray-800">🔢 Je décompose chaque nombre</div>
                                   </div>
                                   
-                                  {/* Premier nombre */}
-                                  <div className={`text-center p-4 rounded-lg mb-4 transition-all ${
-                                    calculationStep === 'decompose-first' ? 'bg-blue-100 border-2 border-blue-400' : 'bg-gray-50'
+                                  {/* Premier nombre - ligne unique */}
+                                  <div className={`transition-all duration-700 mb-3 ${
+                                    calculationStep === 'decompose-first' ? 'transform scale-105' : ''
                                   }`}>
-                                    <div className="text-2xl font-bold text-gray-800 mb-2">{example.num1}</div>
-                                    {(calculationStep === 'decompose-first' || calculationStep === 'decompose-second' || calculationStep === 'tens' || calculationStep === 'units' || calculationStep === 'result') && (
-                                      <div className="flex justify-center items-center space-x-2">
-                                        <div className="text-lg font-bold text-blue-600">
-                                          {Math.floor(example.num1 / 10) * 10}
-                                        </div>
-                                        <div className="text-lg text-gray-500">+</div>
-                                        <div className="text-lg font-bold text-green-600">
-                                          {example.num1 % 10}
-                                        </div>
-                                      </div>
-                                    )}
+                                    <div className={`flex justify-center items-center space-x-3 text-2xl font-bold p-3 rounded-lg transition-all duration-500 ${
+                                      calculationStep === 'decompose-first' ? 'animate-pulse' : ''
+                                    }`} 
+                                         style={{
+                                           background: calculationStep === 'decompose-first' 
+                                             ? 'linear-gradient(135deg, #e0f2fe 0%, #b3e5fc 100%)' 
+                                             : '#f8fafc',
+                                           border: calculationStep === 'decompose-first' 
+                                             ? '3px solid #29b6f6' 
+                                             : '2px solid #e2e8f0',
+                                           boxShadow: calculationStep === 'decompose-first' 
+                                             ? '0 10px 25px rgba(41, 182, 246, 0.3)' 
+                                             : '0 4px 6px rgba(0, 0, 0, 0.1)'
+                                         }}>
+                                      <div className={`transition-all duration-300 ${
+                                        calculationStep === 'decompose-first' ? 'text-gray-900 scale-110' : 'text-gray-800'
+                                      }`}>{example.num1}</div>
+                                      <div className="text-gray-600">=</div>
+                                      <div className={`transition-all duration-300 px-2 py-1 rounded-lg ${
+                                        calculationStep === 'decompose-first' 
+                                          ? 'text-blue-800 scale-125 bg-blue-200 shadow-md' 
+                                          : 'text-blue-600'
+                                      }`}>{Math.floor(example.num1 / 10) * 10}</div>
+                                      <div className="text-gray-600">+</div>
+                                      <div className={`transition-all duration-300 px-2 py-1 rounded-lg ${
+                                        calculationStep === 'decompose-first' 
+                                          ? 'text-green-800 scale-125 bg-green-200 shadow-md' 
+                                          : 'text-green-600'
+                                      }`}>{example.num1 % 10}</div>
+                                    </div>
                                   </div>
 
-                                  {/* Second nombre */}
+                                  {/* Second nombre - ligne unique */}
                                   {(calculationStep === 'decompose-second' || calculationStep === 'tens' || calculationStep === 'units' || calculationStep === 'result') && (
-                                    <div className={`text-center p-4 rounded-lg mb-4 transition-all ${
-                                      calculationStep === 'decompose-second' ? 'bg-green-100 border-2 border-green-400' : 'bg-gray-50'
+                                    <div className={`transition-all duration-700 ${
+                                      calculationStep === 'decompose-second' ? 'transform scale-105' : ''
                                     }`}>
-                                      <div className="text-2xl font-bold text-gray-800 mb-2">{example.num2}</div>
-                                      <div className="flex justify-center items-center space-x-2">
-                                        <div className="text-lg font-bold text-blue-600">
-                                          {Math.floor(example.num2 / 10) * 10}
-                                        </div>
-                                        <div className="text-lg text-gray-500">+</div>
-                                        <div className="text-lg font-bold text-green-600">
-                                          {example.num2 % 10}
-                                        </div>
+                                      <div className={`flex justify-center items-center space-x-3 text-2xl font-bold p-3 rounded-lg transition-all duration-500 ${
+                                        calculationStep === 'decompose-second' ? 'animate-pulse' : ''
+                                      }`}
+                                           style={{
+                                             background: calculationStep === 'decompose-second' 
+                                               ? 'linear-gradient(135deg, #e8f5e8 0%, #c8e6c8 100%)' 
+                                               : '#f8fafc',
+                                             border: calculationStep === 'decompose-second' 
+                                               ? '3px solid #4caf50' 
+                                               : '2px solid #e2e8f0',
+                                             boxShadow: calculationStep === 'decompose-second' 
+                                               ? '0 10px 25px rgba(76, 175, 80, 0.3)' 
+                                               : '0 4px 6px rgba(0, 0, 0, 0.1)'
+                                           }}>
+                                        <div className={`transition-all duration-300 ${
+                                          calculationStep === 'decompose-second' ? 'text-gray-900 scale-110' : 'text-gray-800'
+                                        }`}>{example.num2}</div>
+                                        <div className="text-gray-600">=</div>
+                                        <div className={`transition-all duration-300 px-2 py-1 rounded-lg ${
+                                          calculationStep === 'decompose-second' 
+                                            ? 'text-blue-800 scale-125 bg-blue-200 shadow-md' 
+                                            : 'text-blue-600'
+                                        }`}>{Math.floor(example.num2 / 10) * 10}</div>
+                                        <div className="text-gray-600">+</div>
+                                        <div className={`transition-all duration-300 px-2 py-1 rounded-lg ${
+                                          calculationStep === 'decompose-second' 
+                                            ? 'text-green-800 scale-125 bg-green-200 shadow-md' 
+                                            : 'text-green-600'
+                                        }`}>{example.num2 % 10}</div>
                                       </div>
                                     </div>
                                   )}
                                 </div>
                               )}
 
-                              {/* Étape : Addition des dizaines */}
+                              {/* Addition des dizaines - Ligne épurée */}
                               {(calculationStep === 'tens' || calculationStep === 'units' || calculationStep === 'result') && (
-                                <div className="bg-white rounded-lg p-6 shadow-lg max-w-lg mx-auto">
-                                  <div className="text-center mb-4">
-                                    <div className="text-lg font-bold text-blue-700">🔢 Addition des dizaines</div>
+                                <div id="tens-addition" className="bg-white rounded-lg shadow-md p-4 max-w-xl mx-auto">
+                                  <div className="text-center mb-3">
+                                    <div className="text-lg font-bold text-blue-700">🔵 J'additionne les dizaines</div>
                                   </div>
                                   
-                                  <div className={`text-center p-4 rounded-lg transition-all ${
-                                    calculationStep === 'tens' ? 'bg-blue-100 border-2 border-blue-400 animate-pulse' : 'bg-blue-50'
+                                  <div className={`transition-all duration-700 ${
+                                    calculationStep === 'tens' ? 'transform scale-105' : ''
                                   }`}>
-                                    <div className="flex justify-center items-center space-x-3 text-xl font-bold">
-                                      <div className="text-blue-600">{Math.floor(example.num1 / 10) * 10}</div>
-                                      <div className="text-gray-500">+</div>
-                                      <div className="text-blue-600">{Math.floor(example.num2 / 10) * 10}</div>
-                                      <div className="text-gray-500">=</div>
+                                    <div className="flex justify-center items-center space-x-3 text-2xl font-bold p-3 rounded-lg"
+                                         style={{
+                                           background: calculationStep === 'tens' 
+                                             ? 'linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%)' 
+                                             : '#f1f5f9',
+                                           border: calculationStep === 'tens' 
+                                             ? '3px solid #1976d2' 
+                                             : '2px solid #cbd5e1',
+                                           boxShadow: calculationStep === 'tens' 
+                                             ? '0 10px 25px rgba(25, 118, 210, 0.3)' 
+                                             : '0 4px 6px rgba(0, 0, 0, 0.1)'
+                                         }}>
+                                      <div className="text-blue-700">{Math.floor(example.num1 / 10) * 10}</div>
+                                      <div className="text-gray-600">+</div>
+                                      <div className="text-blue-700">{Math.floor(example.num2 / 10) * 10}</div>
+                                      <div className="text-gray-600">=</div>
                                       <div className="text-blue-800">{(Math.floor(example.num1 / 10) + Math.floor(example.num2 / 10)) * 10}</div>
                                     </div>
                                   </div>
                                 </div>
                               )}
 
-                              {/* Étape : Addition des unités */}
+                              {/* Addition des unités - Ligne épurée */}
                               {(calculationStep === 'units' || calculationStep === 'result') && (
-                                <div className="bg-white rounded-lg p-6 shadow-lg max-w-lg mx-auto">
-                                  <div className="text-center mb-4">
-                                    <div className="text-lg font-bold text-green-700">🔢 Addition des unités</div>
+                                <div id="units-addition" className="bg-white rounded-lg shadow-md p-4 max-w-xl mx-auto">
+                                  <div className="text-center mb-3">
+                                    <div className="text-lg font-bold text-green-700">🟢 J'additionne les unités</div>
                                   </div>
                                   
-                                  <div className={`text-center p-4 rounded-lg transition-all ${
-                                    calculationStep === 'units' ? 'bg-green-100 border-2 border-green-400 animate-pulse' : 'bg-green-50'
+                                  <div className={`transition-all duration-700 ${
+                                    calculationStep === 'units' ? 'transform scale-105' : ''
                                   }`}>
-                                    <div className="flex justify-center items-center space-x-3 text-xl font-bold">
-                                      <div className="text-green-600">{example.num1 % 10}</div>
-                                      <div className="text-gray-500">+</div>
-                                      <div className="text-green-600">{example.num2 % 10}</div>
-                                      <div className="text-gray-500">=</div>
+                                    <div className="flex justify-center items-center space-x-3 text-2xl font-bold p-3 rounded-lg"
+                                         style={{
+                                           background: calculationStep === 'units' 
+                                             ? 'linear-gradient(135deg, #e8f5e8 0%, #c8e6c8 100%)' 
+                                             : '#f1f5f9',
+                                           border: calculationStep === 'units' 
+                                             ? '3px solid #388e3c' 
+                                             : '2px solid #cbd5e1',
+                                           boxShadow: calculationStep === 'units' 
+                                             ? '0 10px 25px rgba(56, 142, 60, 0.3)' 
+                                             : '0 4px 6px rgba(0, 0, 0, 0.1)'
+                                         }}>
+                                      <div className="text-green-700">{example.num1 % 10}</div>
+                                      <div className="text-gray-600">+</div>
+                                      <div className="text-green-700">{example.num2 % 10}</div>
+                                      <div className="text-gray-600">=</div>
                                       <div className="text-green-800">{(example.num1 % 10) + (example.num2 % 10)}</div>
                                     </div>
                                   </div>
                                 </div>
                               )}
 
-                              {/* Résultat final */}
+                              {/* Résultat final - Ligne épurée */}
                               {calculationStep === 'result' && (
-                                <div className="bg-white rounded-lg p-6 shadow-lg max-w-lg mx-auto">
-                                  <div className="text-center mb-4">
-                                    <div className="text-lg font-bold text-purple-700">🎉 Regroupement final</div>
+                                <div id="final-result" className="bg-white rounded-lg shadow-md p-4 max-w-xl mx-auto">
+                                  <div className="text-center mb-3">
+                                    <div className="text-lg font-bold text-purple-700">🎉 Résultat final</div>
                                   </div>
                                   
-                                  <div className="text-center p-4 bg-purple-100 rounded-lg border-2 border-purple-400">
-                                    <div className="flex justify-center items-center space-x-3 text-2xl font-bold">
+                                  <div className="transform scale-105">
+                                    <div className="flex justify-center items-center space-x-3 text-3xl font-bold p-4 rounded-lg"
+                                         style={{
+                                           background: 'linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%)',
+                                           border: '3px solid #8e24aa',
+                                           boxShadow: '0 15px 35px rgba(142, 36, 170, 0.3)'
+                                         }}>
                                       <div className="text-blue-700">{(Math.floor(example.num1 / 10) + Math.floor(example.num2 / 10)) * 10}</div>
-                                      <div className="text-gray-500">+</div>
+                                      <div className="text-gray-600">+</div>
                                       <div className="text-green-700">{(example.num1 % 10) + (example.num2 % 10)}</div>
-                                      <div className="text-gray-500">=</div>
+                                      <div className="text-gray-600">=</div>
                                       <div className="text-purple-800 animate-bounce">{example.result}</div>
                                     </div>
                                   </div>
 
                                   <div className="text-center mt-4">
-                                    <div className="text-lg font-bold text-purple-600">
+                                    <div className="text-lg font-bold text-purple-600 animate-pulse">
                                       🏆 Parfait ! La décomposition, c'est logique !
                                     </div>
                                   </div>
@@ -3393,46 +3466,92 @@ export default function AdditionsJusqua100CE1() {
 
                           {/* Animation pour bonds de 10 */}
                           {currentTechnique === 'bonds-10' && calculationStep && (
-                            <div className="space-y-6 bg-gradient-to-br from-orange-50 to-yellow-50 p-6 rounded-xl border-2 border-orange-200">
+                            <div id="bonds-animation" className="space-y-6 bg-gradient-to-br from-orange-50 to-yellow-50 p-6 rounded-xl border-2 border-orange-200">
                               
-                              {/* Étape : Introduction */}
-                              {calculationStep === 'setup' && (
-                                <div className="text-center">
-                                  <div className="text-4xl font-bold text-orange-800 animate-pulse">
-                                    {example.calculation}
-                                  </div>
-                                  <div className="text-lg text-orange-600 mt-2">
-                                    ⚡ Addition par bonds de 10 - On saute !
-                                  </div>
-                                </div>
-                              )}
+
 
                               {/* Point de départ */}
-                              {(calculationStep === 'show-first' || calculationStep === 'units' || calculationStep === 'result') && (
-                                <div className="bg-white rounded-lg p-6 shadow-lg max-w-lg mx-auto">
+                              {(calculationStep === 'show-first' || calculationStep === 'tens' || calculationStep === 'units' || calculationStep === 'result') && (
+                                <div className="bg-white rounded-lg shadow-md p-4 max-w-xl mx-auto">
                                   <div className="text-center mb-4">
                                     <div className="text-lg font-bold text-orange-700">🎯 Point de départ</div>
                                   </div>
                                   
-                                  <div className="text-center p-4 bg-orange-100 rounded-lg border-2 border-orange-400">
+                                  <div className="text-center p-4 bg-orange-100 rounded-lg border-2 border-orange-400 mb-4">
                                     <div className="text-3xl font-bold text-orange-800">
                                       Je pars de {example.num1}
                                     </div>
                                   </div>
                                   
-                                  <div className="text-center mt-4">
+                                  <div className="text-center">
                                     <div className="text-lg text-orange-600">
                                       Je vais ajouter {example.num2} en sautant par bonds de 10 !
+                                    </div>
+                                    {Math.floor(example.num2 / 10) > 0 && (
+                                      <div className="text-base text-orange-500 mt-2 font-semibold">
+                                        ➜ Il me faudra {Math.floor(example.num2 / 10)} bonds de 10
+                                        {example.num2 % 10 > 0 && ` + ${example.num2 % 10} unités`}
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* Explication du nombre de bonds */}
+                              {(calculationStep === 'tens' || calculationStep === 'units' || calculationStep === 'result') && (
+                                <div id="bonds-explanation" className="bg-white rounded-lg shadow-md p-4 max-w-xl mx-auto">
+                                  <div className="text-center mb-4">
+                                    <div className="text-lg font-bold text-blue-700">🧮 Plan d'action</div>
+                                  </div>
+                                  
+                                  <div className={`transition-all duration-700 ${
+                                    calculationStep === 'tens' ? 'transform scale-105' : ''
+                                  }`}>
+                                    <div className="p-4 rounded-lg"
+                                         style={{
+                                           background: calculationStep === 'tens' 
+                                             ? 'linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%)' 
+                                             : '#f8fafc',
+                                           border: calculationStep === 'tens' 
+                                             ? '3px solid #1976d2' 
+                                             : '2px solid #e2e8f0',
+                                           boxShadow: calculationStep === 'tens' 
+                                             ? '0 10px 25px rgba(25, 118, 210, 0.3)' 
+                                             : '0 4px 6px rgba(0, 0, 0, 0.1)'
+                                         }}>
+                                      
+                                      {/* Analyse du nombre */}
+                                      <div className="text-center mb-4">
+                                        <div className="text-xl font-bold text-gray-800 mb-3">
+                                          J'ajoute {example.num2}
+                                        </div>
+                                        <div className="flex justify-center items-center space-x-3 text-lg">
+                                          <div className="text-gray-700">{example.num2} =</div>
+                                          <div className="text-blue-600 font-bold">{Math.floor(example.num2 / 10) * 10}</div>
+                                          <div className="text-gray-500">+</div>
+                                          <div className="text-green-600 font-bold">{example.num2 % 10}</div>
+                                        </div>
+                                      </div>
+
+                                      {/* Explication des bonds */}
+                                      <div className="text-center p-3 bg-yellow-100 rounded-lg border-2 border-yellow-400">
+                                        <div className="text-lg font-bold text-yellow-800 mb-2">
+                                          {Math.floor(example.num2 / 10) * 10} = {Math.floor(example.num2 / 10)} dizaines
+                                        </div>
+                                        <div className="text-base text-yellow-700">
+                                          Donc je fais <span className="font-bold text-yellow-900">{Math.floor(example.num2 / 10)} bonds de 10</span> ! 🦘
+                                        </div>
+                                      </div>
                                     </div>
                                   </div>
                                 </div>
                               )}
 
-                              {/* Bonds de 10 */}
+                              {/* Exécution des bonds de 10 */}
                               {(calculationStep === 'units' || calculationStep === 'result') && (
-                                <div className="bg-white rounded-lg p-6 shadow-lg max-w-lg mx-auto">
+                                <div id="bonds-execution" className="bg-white rounded-lg shadow-md p-4 max-w-xl mx-auto">
                                   <div className="text-center mb-4">
-                                    <div className="text-lg font-bold text-yellow-700">🦘 Les bonds de 10</div>
+                                    <div className="text-lg font-bold text-yellow-700">🦘 Exécution des bonds !</div>
                                   </div>
                                   
                                   <div className="space-y-3">
@@ -3443,11 +3562,47 @@ export default function AdditionsJusqua100CE1() {
                                       
                                       for (let i = 0; i < dizaines; i++) {
                                         bonds.push(
-                                          <div key={i} className="flex justify-center items-center space-x-3 p-2 bg-yellow-100 rounded-lg">
-                                            <div className="text-lg font-bold text-yellow-800">
-                                              Bond {i + 1} : {current} + 10 = {current + 10}
+                                          <div key={i} className={`transition-all duration-500 ${
+                                            calculationStep === 'units' ? 'transform scale-105 animate-pulse' : ''
+                                          }`}>
+                                            <div className={`flex justify-center items-center space-x-3 p-3 rounded-lg transition-all duration-300 ${
+                                              calculationStep === 'units' ? 'shadow-xl' : ''
+                                            }`}
+                                                 style={{
+                                                   background: calculationStep === 'units' 
+                                                     ? 'linear-gradient(135deg, #fff8e1 0%, #ffcc02 100%)' 
+                                                     : 'linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%)',
+                                                   border: calculationStep === 'units' 
+                                                     ? '3px solid #f57c00' 
+                                                     : '2px solid #ff9800',
+                                                   boxShadow: calculationStep === 'units' 
+                                                     ? '0 8px 25px rgba(255, 152, 0, 0.4)' 
+                                                     : '0 6px 15px rgba(255, 152, 0, 0.2)'
+                                                 }}>
+                                              <div className={`text-lg font-bold transition-all duration-300 ${
+                                                calculationStep === 'units' ? 'text-orange-900 scale-110' : 'text-orange-800'
+                                              }`}>
+                                                Bond {i + 1} :
+                                              </div>
+                                              <div className="flex items-center space-x-2 text-lg font-bold">
+                                                <div className={`transition-all duration-300 ${
+                                                  calculationStep === 'units' ? 'text-orange-800 scale-110' : 'text-orange-700'
+                                                }`}>{current}</div>
+                                                <div className="text-gray-600">+</div>
+                                                <div className={`transition-all duration-300 px-2 py-1 rounded-lg ${
+                                                  calculationStep === 'units' 
+                                                    ? 'text-orange-900 scale-125 bg-orange-200 shadow-md' 
+                                                    : 'text-orange-700'
+                                                }`}>10</div>
+                                                <div className="text-gray-600">=</div>
+                                                <div className={`transition-all duration-300 ${
+                                                  calculationStep === 'units' ? 'text-orange-900 scale-110 font-extrabold' : 'text-orange-800'
+                                                }`}>{current + 10}</div>
+                                              </div>
+                                              <div className={`text-2xl transition-all duration-300 ${
+                                                calculationStep === 'units' ? 'animate-bounce scale-125' : 'animate-bounce'
+                                              }`}>🦘</div>
                                             </div>
-                                            <div className="text-2xl">🦘</div>
                                           </div>
                                         );
                                         current += 10;
@@ -3459,21 +3614,55 @@ export default function AdditionsJusqua100CE1() {
                                 </div>
                               )}
 
+                              {/* Ajout des unités restantes (s'il y en a) */}
+                              {(calculationStep === 'result') && example.num2 % 10 > 0 && (
+                                <div id="bonds-units" className="bg-white rounded-lg shadow-md p-4 max-w-xl mx-auto">
+                                  <div className="text-center mb-4">
+                                    <div className="text-lg font-bold text-green-700">🔢 Dernière étape : les unités</div>
+                                  </div>
+                                  
+                                  <div className="p-4 rounded-lg"
+                                       style={{
+                                         background: 'linear-gradient(135deg, #e8f5e8 0%, #c8e6c8 100%)',
+                                         border: '2px solid #4caf50',
+                                         boxShadow: '0 6px 15px rgba(76, 175, 80, 0.3)'
+                                       }}>
+                                    
+                                    <div className="text-center mb-3">
+                                      <div className="text-lg text-green-700 mb-2">
+                                        Après mes {Math.floor(example.num2 / 10)} bonds, je suis à {example.num1 + Math.floor(example.num2 / 10) * 10}
+                                      </div>
+                                      <div className="text-base text-green-600">
+                                        Il me reste {example.num2 % 10} unités à ajouter
+                                      </div>
+                                    </div>
+
+                                    <div className="flex justify-center items-center space-x-3 text-xl font-bold">
+                                      <div className="text-green-700">{example.num1 + Math.floor(example.num2 / 10) * 10}</div>
+                                      <div className="text-gray-600">+</div>
+                                      <div className="text-green-700">{example.num2 % 10}</div>
+                                      <div className="text-gray-600">=</div>
+                                      <div className="text-green-800">{example.result}</div>
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
+
                               {/* Résultat final */}
                               {calculationStep === 'result' && (
-                                <div className="bg-white rounded-lg p-6 shadow-lg max-w-lg mx-auto">
-                                  <div className="text-center mb-4">
+                                <div id="bonds-result" className="bg-white rounded-lg p-4 shadow-md max-w-xl mx-auto">
+                                  <div className="text-center mb-3">
                                     <div className="text-lg font-bold text-green-700">🎉 Arrivée !</div>
                                   </div>
                                   
-                                  <div className="text-center p-4 bg-green-100 rounded-lg border-2 border-green-400">
-                                    <div className="text-3xl font-bold text-green-800 animate-bounce">
+                                  <div className="text-center p-3 bg-green-100 rounded-lg border-2 border-green-400">
+                                    <div className="text-2xl font-bold text-green-800 animate-bounce">
                                       Résultat : {example.result}
                                     </div>
                                   </div>
 
-                                  <div className="text-center mt-4">
-                                    <div className="text-lg font-bold text-green-600">
+                                  <div className="text-center mt-3">
+                                    <div className="text-base font-bold text-green-600">
                                       🏆 Bravo ! Les bonds de 10, c'est rapide et amusant !
                                     </div>
                                   </div>
@@ -3484,77 +3673,145 @@ export default function AdditionsJusqua100CE1() {
 
                           {/* Animation pour compensation */}
                           {currentTechnique === 'compensation' && calculationStep && (
-                            <div className="space-y-6 bg-gradient-to-br from-purple-50 to-pink-50 p-6 rounded-xl border-2 border-purple-200">
+                            <div className="space-y-3 bg-gradient-to-br from-purple-50 to-pink-50 p-4 rounded-lg border-2 border-purple-200">
                               
-                              {/* Étape : Introduction */}
-                              {calculationStep === 'setup' && (
-                                <div className="text-center">
-                                  <div className="text-4xl font-bold text-purple-800 animate-pulse">
-                                    {example.calculation}
-                                  </div>
-                                  <div className="text-lg text-purple-600 mt-2">
-                                    🔄 Technique d'échange - On rend plus facile !
-                                  </div>
-                                </div>
-                              )}
 
-                              {/* Problème original */}
-                              {(calculationStep === 'show-problem' || calculationStep === 'find-complement' || calculationStep === 'result') && (
-                                <div className="bg-white rounded-lg p-6 shadow-lg max-w-lg mx-auto">
+
+                              {/* Analyse et décomposition du second nombre */}
+                              {(calculationStep === 'find-complement' || calculationStep === 'show-first' || calculationStep === 'result') && (
+                                <div className="bg-white rounded-lg shadow-md p-4 max-w-xl mx-auto">
                                   <div className="text-center mb-4">
-                                    <div className="text-lg font-bold text-gray-700">📝 Problème original</div>
+                                    <div className="text-lg font-bold text-blue-700">🔍 Analyse intelligente</div>
                                   </div>
                                   
-                                  <div className="text-center p-4 bg-gray-100 rounded-lg border-2 border-gray-400">
-                                    <div className="text-2xl font-bold text-gray-800">
-                                      {example.num1} + {example.num2}
-                                    </div>
-                                    <div className="text-sm text-gray-600 mt-2">
-                                      Hmm... pas très facile à calculer !
-                                    </div>
-                                  </div>
-                                </div>
-                              )}
-
-                              {/* Transformation */}
-                              {(calculationStep === 'find-complement' || calculationStep === 'result') && (
-                                <div className="bg-white rounded-lg p-6 shadow-lg max-w-lg mx-auto">
-                                  <div className="text-center mb-4">
-                                    <div className="text-lg font-bold text-purple-700">🎩 Transformation magique</div>
-                                  </div>
-                                  
-                                  <div className="space-y-4">
-                                    {/* Transformation du premier nombre */}
-                                    {(example.num1 === 29 || example.num1 === 49 || example.num1 === 59 || example.num1 === 39) && (
-                                      <div className="text-center">
-                                        <div className="text-lg text-purple-600 mb-2">
-                                          Je transforme {example.num1} en {example.num1 + 1} (plus facile !)
+                                  <div className={`transition-all duration-700 ${
+                                    calculationStep === 'find-complement' ? 'transform scale-105' : ''
+                                  }`}>
+                                    <div className="p-4 rounded-lg mb-4"
+                                         style={{
+                                           background: calculationStep === 'find-complement' 
+                                             ? 'linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%)' 
+                                             : '#f8fafc',
+                                           border: calculationStep === 'find-complement' 
+                                             ? '2px solid #1976d2' 
+                                             : '2px solid #e2e8f0',
+                                           boxShadow: calculationStep === 'find-complement' 
+                                             ? '0 6px 15px rgba(25, 118, 210, 0.3)' 
+                                             : '0 4px 6px rgba(0, 0, 0, 0.1)'
+                                         }}>
+                                      
+                                      <div className="text-center mb-4">
+                                        <div className="text-lg font-bold text-gray-800 mb-3">
+                                          🤔 Je remarque que {example.num1} est proche d'un nombre rond !
                                         </div>
-                                        <div className="flex justify-center items-center space-x-3">
-                                          <div className="p-2 bg-red-100 rounded-lg">
-                                            <span className="text-lg font-bold text-red-700">{example.num1}</span>
-                                          </div>
-                                          <div className="text-2xl text-purple-600">→</div>
-                                          <div className="p-2 bg-green-100 rounded-lg">
-                                            <span className="text-lg font-bold text-green-700">{example.num1 + 1}</span>
-                                          </div>
+                                        <div className="text-base text-blue-600">
+                                          {example.num1} + 1 = {example.num1 + 1} (beaucoup plus facile !)
                                         </div>
                                       </div>
-                                    )}
+
+                                      <div className={`text-center p-3 rounded-lg border-2 mb-4 transition-all duration-500 ${
+                                        calculationStep === 'find-complement' 
+                                          ? 'bg-yellow-200 border-yellow-500 shadow-lg animate-pulse' 
+                                          : 'bg-yellow-100 border-yellow-400'
+                                      }`}>
+                                        <div className="text-base font-bold text-yellow-800 mb-2">
+                                          💡 Étape 1 : Je décompose {example.num2}
+                                        </div>
+                                        <div className="flex justify-center items-center space-x-3 text-lg font-bold">
+                                          <div className={`transition-all duration-300 ${
+                                            calculationStep === 'find-complement' ? 'text-gray-900 scale-110' : 'text-gray-800'
+                                          }`}>{example.num2}</div>
+                                          <div className="text-gray-600">=</div>
+                                          <div className={`transition-all duration-300 ${
+                                            calculationStep === 'find-complement' ? 'text-green-700 scale-110' : 'text-green-600'
+                                          }`}>{example.num2 - 1}</div>
+                                          <div className="text-gray-600">+</div>
+                                          <div className={`transition-all duration-300 px-2 py-1 rounded-lg ${
+                                            calculationStep === 'find-complement' 
+                                              ? 'text-red-700 scale-125 bg-red-200 shadow-md animate-bounce' 
+                                              : 'text-red-600'
+                                          }`}>1</div>
+                                        </div>
+                                      </div>
+
+                                      <div className="text-center p-3 bg-green-100 rounded-lg border-2 border-green-400">
+                                        <div className="text-base font-bold text-green-800">
+                                          🎯 Étape 2 : Ce "1" va compléter {example.num1} pour faire {example.num1 + 1} !
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* Exécution de l'échange */}
+                              {(calculationStep === 'show-first' || calculationStep === 'result') && (
+                                <div className="bg-white rounded-lg shadow-md p-4 max-w-xl mx-auto">
+                                  <div className="text-center mb-4">
+                                    <div className="text-lg font-bold text-purple-700">🔄 Exécution de l'échange</div>
+                                  </div>
+                                  
+                                  <div className={`transition-all duration-700 ${
+                                    calculationStep === 'show-first' ? 'transform scale-105' : ''
+                                  }`}>
                                     
-                                    {/* Compensation sur le second nombre */}
-                                    <div className="text-center">
-                                      <div className="text-lg text-purple-600 mb-2">
-                                        Alors j'enlève 1 à {example.num2} pour compenser
+                                    {/* Étape 1 : Prendre le 1 */}
+                                    <div className={`text-center mb-4 p-3 rounded-lg border-2 transition-all duration-500 ${
+                                      calculationStep === 'show-first' 
+                                        ? 'bg-red-100 border-red-400 shadow-lg animate-pulse' 
+                                        : 'bg-red-50 border-red-300'
+                                    }`}>
+                                      <div className="text-base font-bold text-red-700 mb-2">
+                                        🎯 Étape 1 : Je prends le "1" de {example.num2}
                                       </div>
-                                      <div className="flex justify-center items-center space-x-3">
-                                        <div className="p-2 bg-red-100 rounded-lg">
-                                          <span className="text-lg font-bold text-red-700">{example.num2}</span>
-                                        </div>
-                                        <div className="text-2xl text-purple-600">→</div>
-                                        <div className="p-2 bg-green-100 rounded-lg">
-                                          <span className="text-lg font-bold text-green-700">{example.num2 - 1}</span>
-                                        </div>
+                                      <div className="flex justify-center items-center space-x-3 text-lg">
+                                        <div className={`transition-all duration-300 ${
+                                          calculationStep === 'show-first' ? 'text-gray-900 scale-105' : 'text-gray-700'
+                                        }`}>{example.num2} = {example.num2 - 1} + </div>
+                                        <div className={`px-3 py-1 rounded-lg border-2 font-bold transition-all duration-300 ${
+                                          calculationStep === 'show-first' 
+                                            ? 'bg-red-300 border-red-500 text-red-900 scale-125 animate-bounce shadow-lg' 
+                                            : 'bg-red-200 border-red-400 text-red-800'
+                                        }`}>1</div>
+                                      </div>
+                                    </div>
+
+                                    {/* Étape 2 : Donner le 1 */}
+                                    <div className={`text-center mb-4 p-3 rounded-lg border-2 transition-all duration-500 ${
+                                      calculationStep === 'show-first' 
+                                        ? 'bg-green-100 border-green-400 shadow-lg animate-pulse' 
+                                        : 'bg-green-50 border-green-300'
+                                    }`}>
+                                      <div className="text-base font-bold text-green-700 mb-2">
+                                        ✨ Étape 2 : Je donne ce "1" à {example.num1}
+                                      </div>
+                                      <div className="flex justify-center items-center space-x-3 text-lg">
+                                        <div className={`transition-all duration-300 ${
+                                          calculationStep === 'show-first' ? 'text-gray-900 scale-105' : 'text-gray-700'
+                                        }`}>{example.num1} + </div>
+                                        <div className={`px-2 py-1 rounded-lg border-2 font-bold transition-all duration-300 ${
+                                          calculationStep === 'show-first' 
+                                            ? 'bg-green-300 border-green-500 text-green-900 scale-125 animate-bounce shadow-lg' 
+                                            : 'bg-red-200 border-red-400 text-red-800'
+                                        }`}>1</div>
+                                        <div className={`transition-all duration-300 ${
+                                          calculationStep === 'show-first' ? 'text-gray-900 scale-105 font-bold' : 'text-gray-700'
+                                        }`}> = {example.num1 + 1}</div>
+                                      </div>
+                                    </div>
+
+                                    {/* Résultat de l'échange */}
+                                    <div className="text-center p-4 bg-purple-100 rounded-lg border-2 border-purple-400">
+                                      <div className="text-lg font-bold text-purple-800 mb-3">
+                                        🎉 Résultat de l'échange :
+                                      </div>
+                                      <div className="flex justify-center items-center space-x-3 text-xl font-bold">
+                                        <div className="text-green-700">{example.num1 + 1}</div>
+                                        <div className="text-gray-600">+</div>
+                                        <div className="text-blue-700">{example.num2 - 1}</div>
+                                      </div>
+                                      <div className="text-base text-purple-600 mt-2">
+                                        Beaucoup plus facile à calculer !
                                       </div>
                                     </div>
                                   </div>
@@ -3563,8 +3820,8 @@ export default function AdditionsJusqua100CE1() {
 
                               {/* Nouveau calcul */}
                               {calculationStep === 'result' && (
-                                <div className="bg-white rounded-lg p-6 shadow-lg max-w-lg mx-auto">
-                                  <div className="text-center mb-4">
+                                <div className="bg-white rounded-lg p-4 shadow-md max-w-xl mx-auto">
+                                  <div className="text-center mb-3">
                                     <div className="text-lg font-bold text-green-700">✨ Nouveau calcul facilité</div>
                                   </div>
                                   
@@ -3597,35 +3854,26 @@ export default function AdditionsJusqua100CE1() {
 
                           {/* Animation pour étapes successives */}
                           {currentTechnique === 'etapes-successives' && calculationStep && (
-                            <div className="space-y-6 bg-gradient-to-br from-teal-50 to-cyan-50 p-6 rounded-xl border-2 border-teal-200">
+                            <div className="space-y-3 bg-gradient-to-br from-teal-50 to-cyan-50 p-4 rounded-lg border-2 border-teal-200">
                               
                               {/* Étape : Introduction */}
-                              {calculationStep === 'setup' && (
-                                <div className="text-center">
-                                  <div className="text-4xl font-bold text-teal-800 animate-pulse">
-                                    {example.calculation}
-                                  </div>
-                                  <div className="text-lg text-teal-600 mt-2">
-                                    🎲 Addition par étapes successives - Morceau par morceau !
-                                  </div>
-                                </div>
-                              )}
+
 
                               {/* Point de départ */}
                               {(calculationStep === 'show-first' || calculationStep === 'tens' || calculationStep === 'units' || calculationStep === 'result') && (
-                                <div className="bg-white rounded-lg p-6 shadow-lg max-w-lg mx-auto">
-                                  <div className="text-center mb-4">
+                                <div className="bg-white rounded-lg p-4 shadow-md max-w-xl mx-auto">
+                                  <div className="text-center mb-3">
                                     <div className="text-lg font-bold text-teal-700">🎯 Point de départ</div>
                                   </div>
                                   
-                                  <div className="text-center p-4 bg-teal-100 rounded-lg border-2 border-teal-400">
-                                    <div className="text-3xl font-bold text-teal-800">
+                                  <div className="text-center p-3 bg-teal-100 rounded-lg border-2 border-teal-400">
+                                    <div className="text-2xl font-bold text-teal-800">
                                       Je commence avec {example.num1}
                                     </div>
                                   </div>
                                   
-                                  <div className="text-center mt-4">
-                                    <div className="text-lg text-teal-600">
+                                  <div className="text-center mt-3">
+                                    <div className="text-base text-teal-600">
                                       Je vais ajouter {example.num2} en deux étapes !
                                     </div>
                                   </div>
@@ -3634,24 +3882,32 @@ export default function AdditionsJusqua100CE1() {
 
                               {/* Première étape : ajouter les dizaines */}
                               {(calculationStep === 'tens' || calculationStep === 'units' || calculationStep === 'result') && (
-                                <div className="bg-white rounded-lg p-6 shadow-lg max-w-lg mx-auto">
-                                  <div className="text-center mb-4">
+                                <div className="bg-white rounded-lg p-4 shadow-md max-w-xl mx-auto">
+                                  <div className="text-center mb-3">
                                     <div className="text-lg font-bold text-blue-700">🥇 Première étape : les dizaines</div>
                                   </div>
                                   
-                                  <div className={`text-center p-4 rounded-lg border-2 transition-all ${
+                                  <div className={`text-center p-3 rounded-lg border-2 transition-all ${
                                     calculationStep === 'tens' ? 'bg-blue-100 border-blue-400 animate-pulse' : 'bg-blue-50 border-blue-200'
                                   }`}>
                                     <div className="space-y-2">
-                                      <div className="text-lg text-blue-600">
+                                      <div className="text-base text-blue-600">
                                         J'ajoute {Math.floor(example.num2 / 10) * 10} à {example.num1}
                                       </div>
-                                      <div className="flex justify-center items-center space-x-3 text-xl font-bold">
-                                        <div className="text-blue-700">{example.num1}</div>
+                                      <div className="flex justify-center items-center space-x-2 text-lg font-bold">
+                                        <div className={`transition-all duration-300 ${
+                                          calculationStep === 'tens' ? 'text-blue-800 scale-110' : 'text-blue-700'
+                                        }`}>{example.num1}</div>
                                         <div className="text-gray-500">+</div>
-                                        <div className="text-blue-700">{Math.floor(example.num2 / 10) * 10}</div>
+                                        <div className={`transition-all duration-300 px-2 py-1 rounded-lg ${
+                                          calculationStep === 'tens' 
+                                            ? 'text-blue-900 scale-125 bg-blue-200 shadow-md animate-bounce' 
+                                            : 'text-blue-700'
+                                        }`}>{Math.floor(example.num2 / 10) * 10}</div>
                                         <div className="text-gray-500">=</div>
-                                        <div className="text-blue-800">{example.num1 + Math.floor(example.num2 / 10) * 10}</div>
+                                        <div className={`transition-all duration-300 ${
+                                          calculationStep === 'tens' ? 'text-blue-900 scale-110 font-extrabold' : 'text-blue-800'
+                                        }`}>{example.num1 + Math.floor(example.num2 / 10) * 10}</div>
                                       </div>
                                     </div>
                                   </div>
@@ -3660,24 +3916,32 @@ export default function AdditionsJusqua100CE1() {
 
                               {/* Deuxième étape : ajouter les unités */}
                               {(calculationStep === 'units' || calculationStep === 'result') && (
-                                <div className="bg-white rounded-lg p-6 shadow-lg max-w-lg mx-auto">
-                                  <div className="text-center mb-4">
+                                <div className="bg-white rounded-lg p-4 shadow-md max-w-xl mx-auto">
+                                  <div className="text-center mb-3">
                                     <div className="text-lg font-bold text-green-700">🥈 Deuxième étape : les unités</div>
                                   </div>
                                   
-                                  <div className={`text-center p-4 rounded-lg border-2 transition-all ${
+                                  <div className={`text-center p-3 rounded-lg border-2 transition-all ${
                                     calculationStep === 'units' ? 'bg-green-100 border-green-400 animate-pulse' : 'bg-green-50 border-green-200'
                                   }`}>
                                     <div className="space-y-2">
-                                      <div className="text-lg text-green-600">
+                                      <div className="text-base text-green-600">
                                         J'ajoute {example.num2 % 10} à {example.num1 + Math.floor(example.num2 / 10) * 10}
                                       </div>
-                                      <div className="flex justify-center items-center space-x-3 text-xl font-bold">
-                                        <div className="text-green-700">{example.num1 + Math.floor(example.num2 / 10) * 10}</div>
+                                      <div className="flex justify-center items-center space-x-2 text-lg font-bold">
+                                        <div className={`transition-all duration-300 ${
+                                          calculationStep === 'units' ? 'text-green-800 scale-110' : 'text-green-700'
+                                        }`}>{example.num1 + Math.floor(example.num2 / 10) * 10}</div>
                                         <div className="text-gray-500">+</div>
-                                        <div className="text-green-700">{example.num2 % 10}</div>
+                                        <div className={`transition-all duration-300 px-2 py-1 rounded-lg ${
+                                          calculationStep === 'units' 
+                                            ? 'text-green-900 scale-125 bg-green-200 shadow-md animate-bounce' 
+                                            : 'text-green-700'
+                                        }`}>{example.num2 % 10}</div>
                                         <div className="text-gray-500">=</div>
-                                        <div className="text-green-800">{example.result}</div>
+                                        <div className={`transition-all duration-300 ${
+                                          calculationStep === 'units' ? 'text-green-900 scale-110 font-extrabold' : 'text-green-800'
+                                        }`}>{example.result}</div>
                                       </div>
                                     </div>
                                   </div>
@@ -3686,32 +3950,32 @@ export default function AdditionsJusqua100CE1() {
 
                               {/* Résumé final */}
                               {calculationStep === 'result' && (
-                                <div className="bg-white rounded-lg p-6 shadow-lg max-w-lg mx-auto">
-                                  <div className="text-center mb-4">
+                                <div className="bg-white rounded-lg p-4 shadow-md max-w-xl mx-auto">
+                                  <div className="text-center mb-3">
                                     <div className="text-lg font-bold text-purple-700">🎉 Résumé des étapes</div>
                                   </div>
                                   
-                                  <div className="space-y-3">
-                                    <div className="text-center p-3 bg-blue-100 rounded-lg">
-                                      <div className="text-lg font-bold text-blue-800">
+                                  <div className="space-y-2">
+                                    <div className="text-center p-2 bg-blue-100 rounded-lg">
+                                      <div className="text-base font-bold text-blue-800">
                                         Étape 1 : {example.num1} + {Math.floor(example.num2 / 10) * 10} = {example.num1 + Math.floor(example.num2 / 10) * 10}
                                       </div>
                                     </div>
                                     
-                                    <div className="text-center text-2xl">⬇️</div>
+                                    <div className="text-center text-xl">⬇️</div>
                                     
-                                    <div className="text-center p-3 bg-green-100 rounded-lg">
-                                      <div className="text-lg font-bold text-green-800">
+                                    <div className="text-center p-2 bg-green-100 rounded-lg">
+                                      <div className="text-base font-bold text-green-800">
                                         Étape 2 : {example.num1 + Math.floor(example.num2 / 10) * 10} + {example.num2 % 10} = {example.result}
                                       </div>
                                     </div>
                                   </div>
 
-                                  <div className="text-center mt-6">
-                                    <div className="text-2xl font-bold text-purple-800 animate-bounce">
+                                  <div className="text-center mt-4">
+                                    <div className="text-xl font-bold text-purple-800 animate-bounce">
                                       = {example.result}
                                     </div>
-                                    <div className="text-lg font-bold text-purple-600 mt-2">
+                                    <div className="text-base font-bold text-purple-600 mt-2">
                                       🏆 Parfait ! Étape par étape, c'est sûr !
                                     </div>
                                   </div>
@@ -3722,38 +3986,36 @@ export default function AdditionsJusqua100CE1() {
 
                           {/* Animation pour doubles */}
                           {currentTechnique === 'doubles' && calculationStep && (
-                            <div className="space-y-6 bg-gradient-to-br from-pink-50 to-rose-50 p-6 rounded-xl border-2 border-pink-200">
+                            <div className="space-y-3 bg-gradient-to-br from-pink-50 to-rose-50 p-4 rounded-lg border-2 border-pink-200">
                               
-                              {/* Étape : Introduction */}
-                              {calculationStep === 'setup' && (
-                                <div className="text-center">
-                                  <div className="text-4xl font-bold text-pink-800 animate-pulse">
-                                    {example.calculation}
-                                  </div>
-                                  <div className="text-lg text-pink-600 mt-2">
-                                    🧠 Doubles et quasi-doubles - Astuce intelligente !
-                                  </div>
-                                </div>
-                              )}
+
 
                               {/* Observation */}
                               {(calculationStep === 'show-problem' || calculationStep === 'show-first' || calculationStep === 'units' || calculationStep === 'result') && (
-                                <div className="bg-white rounded-lg p-6 shadow-lg max-w-lg mx-auto">
-                                  <div className="text-center mb-4">
+                                <div className="bg-white rounded-lg p-4 shadow-md max-w-xl mx-auto">
+                                  <div className="text-center mb-3">
                                     <div className="text-lg font-bold text-pink-700">🔍 Observation intelligente</div>
                                   </div>
                                   
-                                  <div className="text-center p-4 bg-pink-100 rounded-lg border-2 border-pink-400">
+                                  <div className="text-center p-3 bg-pink-100 rounded-lg border-2 border-pink-400">
                                     <div className="space-y-2">
-                                      <div className="text-lg text-pink-600">
+                                      <div className="text-base text-pink-600">
                                         Je remarque que {example.num2} = {example.num1} + 1
                                       </div>
-                                      <div className="flex justify-center items-center space-x-3 text-xl font-bold">
-                                        <div className="text-pink-700">{example.num2}</div>
+                                      <div className="flex justify-center items-center space-x-2 text-lg font-bold">
+                                        <div className={`transition-all duration-300 ${
+                                          calculationStep === 'show-problem' ? 'text-pink-800 scale-110' : 'text-pink-700'
+                                        }`}>{example.num2}</div>
                                         <div className="text-gray-500">=</div>
-                                        <div className="text-pink-700">{example.num1}</div>
+                                        <div className={`transition-all duration-300 ${
+                                          calculationStep === 'show-problem' ? 'text-pink-800 scale-110' : 'text-pink-700'
+                                        }`}>{example.num1}</div>
                                         <div className="text-gray-500">+</div>
-                                        <div className="text-green-700">1</div>
+                                        <div className={`transition-all duration-300 px-2 py-1 rounded-lg ${
+                                          calculationStep === 'show-problem' 
+                                            ? 'text-green-800 scale-125 bg-green-200 shadow-md animate-bounce' 
+                                            : 'text-green-700'
+                                        }`}>1</div>
                                       </div>
                                     </div>
                                   </div>
@@ -3762,24 +4024,24 @@ export default function AdditionsJusqua100CE1() {
 
                               {/* Transformation en double */}
                               {(calculationStep === 'show-first' || calculationStep === 'units' || calculationStep === 'result') && (
-                                <div className="bg-white rounded-lg p-6 shadow-lg max-w-lg mx-auto">
-                                  <div className="text-center mb-4">
+                                <div className="bg-white rounded-lg p-4 shadow-md max-w-xl mx-auto">
+                                  <div className="text-center mb-3">
                                     <div className="text-lg font-bold text-blue-700">🔄 Transformation en double</div>
                                   </div>
                                   
-                                  <div className="space-y-4">
-                                    <div className="text-center p-3 bg-gray-100 rounded-lg">
-                                      <div className="text-lg text-gray-700 mb-2">Calcul original :</div>
-                                      <div className="text-xl font-bold text-gray-800">
+                                  <div className="space-y-3">
+                                    <div className="text-center p-2 bg-gray-100 rounded-lg">
+                                      <div className="text-base text-gray-700 mb-1">Calcul original :</div>
+                                      <div className="text-lg font-bold text-gray-800">
                                         {example.num1} + {example.num2}
                                       </div>
                                     </div>
 
-                                    <div className="text-center text-2xl">⬇️</div>
+                                    <div className="text-center text-xl">⬇️</div>
 
-                                    <div className="text-center p-3 bg-blue-100 rounded-lg border-2 border-blue-400">
-                                      <div className="text-lg text-blue-700 mb-2">Devient :</div>
-                                      <div className="text-xl font-bold text-blue-800">
+                                    <div className="text-center p-2 bg-blue-100 rounded-lg border-2 border-blue-400">
+                                      <div className="text-base text-blue-700 mb-1">Devient :</div>
+                                      <div className="text-lg font-bold text-blue-800">
                                         {example.num1} + {example.num1} + 1
                                       </div>
                                     </div>
@@ -3789,19 +4051,19 @@ export default function AdditionsJusqua100CE1() {
 
                               {/* Calcul du double */}
                               {(calculationStep === 'units' || calculationStep === 'result') && (
-                                <div className="bg-white rounded-lg p-6 shadow-lg max-w-lg mx-auto">
-                                  <div className="text-center mb-4">
+                                <div className="bg-white rounded-lg p-4 shadow-md max-w-xl mx-auto">
+                                  <div className="text-center mb-3">
                                     <div className="text-lg font-bold text-green-700">✨ Calcul du double</div>
                                   </div>
                                   
-                                  <div className={`text-center p-4 rounded-lg border-2 transition-all ${
+                                  <div className={`text-center p-3 rounded-lg border-2 transition-all ${
                                     calculationStep === 'units' ? 'bg-green-100 border-green-400 animate-pulse' : 'bg-green-50 border-green-200'
                                   }`}>
                                     <div className="space-y-2">
-                                      <div className="text-lg text-green-600">
+                                      <div className="text-base text-green-600">
                                         Le double de {example.num1} :
                                       </div>
-                                      <div className="flex justify-center items-center space-x-3 text-2xl font-bold">
+                                      <div className="flex justify-center items-center space-x-2 text-xl font-bold">
                                         <div className="text-green-700">{example.num1}</div>
                                         <div className="text-gray-500">+</div>
                                         <div className="text-green-700">{example.num1}</div>
@@ -3815,18 +4077,18 @@ export default function AdditionsJusqua100CE1() {
 
                               {/* Résultat final */}
                               {calculationStep === 'result' && (
-                                <div className="bg-white rounded-lg p-6 shadow-lg max-w-lg mx-auto">
-                                  <div className="text-center mb-4">
+                                <div className="bg-white rounded-lg p-4 shadow-md max-w-xl mx-auto">
+                                  <div className="text-center mb-3">
                                     <div className="text-lg font-bold text-purple-700">🎉 Résultat final</div>
                                   </div>
                                   
-                                  <div className="space-y-4">
-                                    <div className="text-center p-4 bg-purple-100 rounded-lg border-2 border-purple-400">
+                                  <div className="space-y-3">
+                                    <div className="text-center p-3 bg-purple-100 rounded-lg border-2 border-purple-400">
                                       <div className="space-y-2">
-                                        <div className="text-lg text-purple-600">
+                                        <div className="text-base text-purple-600">
                                           Double + 1 :
                                         </div>
-                                        <div className="flex justify-center items-center space-x-3 text-2xl font-bold">
+                                        <div className="flex justify-center items-center space-x-2 text-xl font-bold">
                                           <div className="text-purple-700">{example.num1 * 2}</div>
                                           <div className="text-gray-500">+</div>
                                           <div className="text-green-700">1</div>
@@ -3836,15 +4098,15 @@ export default function AdditionsJusqua100CE1() {
                                       </div>
                                     </div>
                                     
-                                    <div className="text-center p-3 bg-yellow-100 rounded-lg">
-                                      <div className="text-lg font-bold text-yellow-800">
+                                    <div className="text-center p-2 bg-yellow-100 rounded-lg">
+                                      <div className="text-base font-bold text-yellow-800">
                                         {example.num1} + {example.num2} = {example.result}
                                       </div>
                                     </div>
                                   </div>
 
-                                  <div className="text-center mt-6">
-                                    <div className="text-lg font-bold text-pink-600">
+                                  <div className="text-center mt-4">
+                                    <div className="text-base font-bold text-pink-600">
                                       🏆 Génial ! L'astuce des doubles, c'est malin !
                                     </div>
                                   </div>
