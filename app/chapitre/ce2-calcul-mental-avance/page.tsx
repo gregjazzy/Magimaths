@@ -167,7 +167,7 @@ export default function CE2CalculMentalAvancePage() {
             
             return (
               <div key={section.id} className="group">
-                <Link href={`/chapitre/ce1-calcul-mental/${section.id}`}>
+                <Link href={`/chapitre/ce2-calcul-mental-avance/${section.id}`}>
                   <div className={`
                     bg-white rounded-xl shadow-lg border-2 p-4 sm:p-6 
                     transition-all duration-300 cursor-pointer
