@@ -45,15 +45,7 @@ export default function CE1AdditionPage() {
       difficulty: 'Avancé',
       href: '/chapitre/ce1-quatre-operations/addition-ce1/additions-jusqu-100'
     },
-    {
-      id: 'calcul-mental',
-      title: 'Calcul mental',
-      description: 'Développe ta rapidité avec les additions mentales !',
-      icon: '🧠',
-      estimatedTime: 15,
-      difficulty: 'Débutant',
-      href: '/chapitre/ce1-quatre-operations/addition-ce1/calcul-mental'
-    },
+
     {
       id: 'additions-jusqu-1000',
       title: 'Additions jusqu\'à 1000',
