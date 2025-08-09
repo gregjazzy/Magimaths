@@ -860,7 +860,7 @@ export default function AdditionsJusqua100CE1() {
     }, 300);
   };
 
-  // Fonction pour s'assurer que l'animation en cours est visible - MOBILE UNIQUEMENT
+  // Fonction pour s'assurer que l'animation en cours est visible - MOBILE OPTIMISÉ
   const ensureAnimationVisible = () => {
     const isMobileScreen = window.innerWidth < 640; // sm breakpoint
     if (!isMobileScreen) return; // Ne rien faire sur desktop
@@ -872,21 +872,37 @@ export default function AdditionsJusqua100CE1() {
         const rect = animationElement.getBoundingClientRect();
         const viewportHeight = window.innerHeight;
         
-        // Vérifier si l'animation est bien visible (au moins 60% visible dans la fenêtre)
-        const visibleHeight = Math.min(rect.bottom, viewportHeight) - Math.max(rect.top, 0);
-        const elementHeight = rect.bottom - rect.top;
-        const visibilityRatio = visibleHeight / elementHeight;
+        // Calculer la zone optimale pour l'animation (partie haute de l'écran mais pas tout en haut)
+        const idealTop = viewportHeight * 0.1; // 10% du haut de l'écran
+        const idealBottom = viewportHeight * 0.8; // 80% de l'écran pour laisser de la place
         
-        // Si moins de 60% de l'animation est visible, ou si elle est trop haute/basse
-        if (visibilityRatio < 0.6 || rect.top < 50 || rect.top > viewportHeight * 0.4) {
+        // Vérifier si l'animation est complètement visible dans la zone optimale
+        const isCompletelyVisible = rect.top >= idealTop && rect.bottom <= idealBottom;
+        const isPartiallyVisible = rect.bottom > idealTop && rect.top < idealBottom;
+        
+        // Si l'animation n'est pas optimalement positionnée, l'ajuster
+        if (!isCompletelyVisible || rect.top < 30) {
+          // Pour les longues animations, utiliser 'start' pour voir le début
+          // Pour les courtes animations, utiliser 'center'
+          const elementHeight = rect.bottom - rect.top;
+          const useStartPosition = elementHeight > viewportHeight * 0.6;
+          
           animationElement.scrollIntoView({ 
             behavior: 'smooth', 
-            block: 'center', // Centrer l'animation sur mobile
+            block: useStartPosition ? 'start' : 'center',
             inline: 'nearest' 
           });
+          
+          // Ajouter un petit ajustement après le scroll pour optimiser la position
+          setTimeout(() => {
+            const newRect = animationElement.getBoundingClientRect();
+            if (newRect.top < 20) {
+              window.scrollBy({ top: -30, behavior: 'smooth' });
+            }
+          }, 300);
         }
       }
-    }, 150); // Délai légèrement plus long pour laisser le DOM se stabiliser
+    }, 200); // Délai pour laisser le DOM se stabiliser après les changements d'état
   };
 
   // Fonction pour scroller vers le bouton Suivant - OPTIMISÉE MOBILE
@@ -1433,6 +1449,7 @@ export default function AdditionsJusqua100CE1() {
   const animateDecomposition = async (example: any) => {
     // Étape 1 : Introduction
     setCalculationStep('setup');
+    ensureAnimationVisible();
     await playAudio(`Décomposition en dizaines et unités : ${example.calculation}. Je vais séparer chaque nombre !`);
     await wait(2500);
 
@@ -1440,11 +1457,7 @@ export default function AdditionsJusqua100CE1() {
 
     // Étape 2 : Décomposer le premier nombre
     setCalculationStep('decompose-first');
-    // Scroll vers la décomposition
-    setTimeout(() => {
-      const element = document.getElementById('decomposition-animation');
-      element?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }, 500);
+    ensureAnimationVisible(); // Assurer la visibilité à chaque étape
     const dizaines1 = Math.floor(example.num1 / 10) * 10;
     const unites1 = example.num1 % 10;
     await playAudio(`${example.num1} se décompose en ${dizaines1} plus ${unites1}.`);
@@ -1454,6 +1467,7 @@ export default function AdditionsJusqua100CE1() {
 
     // Étape 3 : Décomposer le second nombre  
     setCalculationStep('decompose-second');
+    ensureAnimationVisible();
     const dizaines2 = Math.floor(example.num2 / 10) * 10;
     const unites2 = example.num2 % 10;
     await playAudio(`${example.num2} se décompose en ${dizaines2} plus ${unites2}.`);
@@ -1463,11 +1477,7 @@ export default function AdditionsJusqua100CE1() {
 
     // Étape 4 : Additionner les dizaines
     setCalculationStep('tens');
-    // Scroll vers l'addition des dizaines
-    setTimeout(() => {
-      const element = document.getElementById('tens-addition');
-      element?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }, 500);
+    ensureAnimationVisible(); // S'assurer que l'addition des dizaines est visible
     const sommeDizaines = dizaines1 + dizaines2;
     await playAudio(`J'additionne les dizaines : ${dizaines1} plus ${dizaines2} égale ${sommeDizaines}.`);
     await wait(3000);
@@ -1476,11 +1486,7 @@ export default function AdditionsJusqua100CE1() {
 
     // Étape 5 : Additionner les unités
     setCalculationStep('units');
-    // Scroll vers l'addition des unités
-    setTimeout(() => {
-      const element = document.getElementById('units-addition');
-      element?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }, 500);
+    ensureAnimationVisible(); // S'assurer que l'addition des unités est visible
     const sommeUnites = unites1 + unites2;
     await playAudio(`J'additionne les unités : ${unites1} plus ${unites2} égale ${sommeUnites}.`);
     await wait(3000);
@@ -1489,24 +1495,18 @@ export default function AdditionsJusqua100CE1() {
 
     // Étape 6 : Résultat final
     setCalculationStep('result');
-    // Scroll vers le résultat final
-    setTimeout(() => {
-      const element = document.getElementById('final-result');
-      element?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }, 500);
+    ensureAnimationVisible(); // S'assurer que le résultat final est visible
     await playAudio(`Je regroupe : ${sommeDizaines} plus ${sommeUnites} égale ${example.result} !`);
     await wait(3000);
 
-    // Scroll final pour voir toute la démarche
-    setTimeout(() => {
-      const element = document.getElementById('decomposition-animation');
-      element?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 1000);
+    // Assurer une vue complète de l'animation à la fin
+    ensureAnimationVisible();
   };
 
   // Animation pour bonds de 10
   const animateBonds10 = async (example: any) => {
     setCalculationStep('setup');
+    ensureAnimationVisible();
     await playAudio(`Bonds de 10 : ${example.calculation}. Je vais sauter de 10 en 10 !`);
     await wait(2500);
 
@@ -1517,11 +1517,7 @@ export default function AdditionsJusqua100CE1() {
     const unites = example.num2 % 10;
     
     setCalculationStep('show-first');
-    // Scroll vers l'animation bonds
-    setTimeout(() => {
-      const element = document.getElementById('bonds-animation');
-      element?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }, 500);
+    ensureAnimationVisible(); // S'assurer que l'animation des bonds est visible
     await playAudio(`Je pars de ${current}. J'ajoute ${example.num2}.`);
     await wait(2000);
 
@@ -1529,11 +1525,7 @@ export default function AdditionsJusqua100CE1() {
 
     setCalculationStep('tens');
     if (dizaines > 0) {
-      // Scroll vers l'explication des bonds
-      setTimeout(() => {
-        const element = document.getElementById('bonds-explanation');
-        element?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }, 500);
+      ensureAnimationVisible(); // S'assurer que l'explication est visible
       await playAudio(`${example.num2} égale ${dizaines * 10} plus ${unites}. Donc je fais ${dizaines} bonds de 10${unites > 0 ? ` puis j'ajoute ${unites}` : ''}.`);
       await wait(3000);
     }
@@ -1544,12 +1536,9 @@ export default function AdditionsJusqua100CE1() {
       if (stopSignalRef.current) return;
       current += 10;
       setCalculationStep('units');
-      // Scroll vers l'exécution des bonds
+      // S'assurer que les bonds sont visibles au début de la série
       if (i === 0) {
-        setTimeout(() => {
-          const element = document.getElementById('bonds-execution');
-          element?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }, 300);
+        ensureAnimationVisible();
       }
       await playAudio(`Bond ${i + 1} : plus 10 égale ${current} !`);
       await wait(1800);
@@ -1559,11 +1548,7 @@ export default function AdditionsJusqua100CE1() {
 
     // Ajouter les unités restantes s'il y en a
     if (unites > 0) {
-      // Scroll vers l'ajout des unités
-      setTimeout(() => {
-        const element = document.getElementById('bonds-units');
-        element?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }, 300);
+      ensureAnimationVisible(); // S'assurer que l'ajout des unités est visible
       current += unites;
       await playAudio(`Il me reste ${unites} unités à ajouter : ${current - unites} plus ${unites} égale ${current} !`);
       await wait(2500);
@@ -1572,35 +1557,32 @@ export default function AdditionsJusqua100CE1() {
     if (stopSignalRef.current) return;
 
     setCalculationStep('result');
-    // Scroll vers le résultat final puis vue d'ensemble
-    setTimeout(() => {
-      const element = document.getElementById('bonds-result');
-      element?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }, 500);
-    await wait(1000);
-    setTimeout(() => {
-      const element = document.getElementById('bonds-animation');
-      element?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 2000);
+    ensureAnimationVisible(); // S'assurer que le résultat final est visible
     await playAudio(`Résultat : ${example.result} ! Les bonds de 10, c'est rapide et amusant !`);
     await wait(3000);
+    
+    // Vue d'ensemble finale
+    ensureAnimationVisible();
   };
 
   // Animation pour compensation
   const animateCompensation = async (example: any) => {
     setCalculationStep('setup');
+    ensureAnimationVisible();
     await playAudio(`Compensation : ${example.calculation}. Je vais rendre les nombres plus faciles !`);
     await wait(2500);
 
     if (stopSignalRef.current) return;
 
     setCalculationStep('show-problem');
+    ensureAnimationVisible();
     await playAudio(`Je veux calculer ${example.num1} plus ${example.num2}.`);
     await wait(2000);
 
     if (stopSignalRef.current) return;
 
     setCalculationStep('find-complement');
+    ensureAnimationVisible();
     // Logique pour 29 + 15 = 30 + 14
     if (example.num1 === 29 && example.num2 === 15) {
       await playAudio(`D'abord, je décompose ${example.num2} : ${example.num2} égale ${example.num2 - 1} plus 1.`);
@@ -1614,6 +1596,7 @@ export default function AdditionsJusqua100CE1() {
       if (stopSignalRef.current) return;
       
       setCalculationStep('result');
+      ensureAnimationVisible();
       await playAudio(`Maintenant c'est ${example.num1 + 1} plus ${example.num2 - 1} égale ${example.result} ! Beaucoup plus simple !`);
     } else {
       // Logique pour 38 + 19 = 37 + 20
@@ -1623,6 +1606,7 @@ export default function AdditionsJusqua100CE1() {
       if (stopSignalRef.current) return;
       
       setCalculationStep('result');
+      ensureAnimationVisible();
       await playAudio(`J'obtiens ${example.result} ! La compensation rend tout plus facile !`);
     }
     await wait(3000);
@@ -1631,12 +1615,14 @@ export default function AdditionsJusqua100CE1() {
   // Animation pour étapes successives
   const animateEtapesSuccessives = async (example: any) => {
     setCalculationStep('setup');
+    ensureAnimationVisible();
     await playAudio(`Étapes successives : ${example.calculation}. Je vais avancer morceau par morceau !`);
     await wait(2500);
 
     if (stopSignalRef.current) return;
 
     setCalculationStep('show-first');
+    ensureAnimationVisible();
     await playAudio(`Je commence avec ${example.num1}.`);
     await wait(1500);
 
@@ -1647,6 +1633,7 @@ export default function AdditionsJusqua100CE1() {
     const unites = example.num2 % 10;
     
     setCalculationStep('tens');
+    ensureAnimationVisible();
     const etape1 = example.num1 + dizaines;
     await playAudio(`Première étape : j'ajoute ${dizaines}. ${example.num1} plus ${dizaines} égale ${etape1}.`);
     await wait(3000);
@@ -1654,12 +1641,14 @@ export default function AdditionsJusqua100CE1() {
     if (stopSignalRef.current) return;
 
     setCalculationStep('units');
+    ensureAnimationVisible();
     await playAudio(`Deuxième étape : j'ajoute ${unites}. ${etape1} plus ${unites} égale ${example.result}.`);
     await wait(3000);
 
     if (stopSignalRef.current) return;
 
     setCalculationStep('result');
+    ensureAnimationVisible();
     await playAudio(`Résultat final : ${example.result} ! Étape par étape, c'est sûr !`);
     await wait(3000);
   };
@@ -1667,18 +1656,21 @@ export default function AdditionsJusqua100CE1() {
   // Animation pour doubles
   const animateDoubles = async (example: any) => {
     setCalculationStep('setup');
+    ensureAnimationVisible();
     await playAudio(`Doubles et quasi-doubles : ${example.calculation}. Je vais utiliser les doubles !`);
     await wait(2500);
 
     if (stopSignalRef.current) return;
 
     setCalculationStep('show-problem');
+    ensureAnimationVisible();
     await playAudio(`Je remarque que ${example.num2} égale ${example.num1} plus 1.`);
     await wait(2500);
 
     if (stopSignalRef.current) return;
 
     setCalculationStep('show-first');
+    ensureAnimationVisible();
     const double = example.num1 * 2;
     await playAudio(`Donc ${example.num1} plus ${example.num2} égale ${example.num1} plus ${example.num1} plus 1.`);
     await wait(3000);
@@ -1686,12 +1678,14 @@ export default function AdditionsJusqua100CE1() {
     if (stopSignalRef.current) return;
 
     setCalculationStep('units');
+    ensureAnimationVisible();
     await playAudio(`Le double de ${example.num1} : ${example.num1} plus ${example.num1} égale ${double}.`);
     await wait(3000);
 
     if (stopSignalRef.current) return;
 
     setCalculationStep('result');
+    ensureAnimationVisible();
     await playAudio(`Plus 1 : ${double} plus 1 égale ${example.result} ! L'astuce des doubles !`);
     await wait(3000);
   };
@@ -2640,7 +2634,7 @@ export default function AdditionsJusqua100CE1() {
                                       ))}
                                     </div>
                                     
-                                    <div className="text-2xl font-bold text-blue-600">+</div>
+                                    <div className="text-2xl font-bold text-gray-800">+</div>
                                     
                                     {/* Unités du deuxième nombre */}
                                     <div className="flex space-x-1">
@@ -2653,7 +2647,7 @@ export default function AdditionsJusqua100CE1() {
                                     
                                     {(calculationStep === 'units-sum' || calculationStep === 'carry-explanation' || calculationStep === 'carry-visual' || calculationStep === 'tens' || calculationStep === 'result') && (
                                       <>
-                                        <div className="text-2xl font-bold text-blue-600">=</div>
+                                        <div className="text-2xl font-bold text-gray-800">=</div>
                                         
                                         {/* Résultat des unités */}
                                         <div className="flex space-x-1">
@@ -2690,7 +2684,7 @@ export default function AdditionsJusqua100CE1() {
                                       <div className="text-sm font-bold text-red-700 mt-1">1 dizaine</div>
                                     </div>
                                     
-                                    <div className="text-2xl font-bold text-orange-600">+</div>
+                                    <div className="text-2xl font-bold text-gray-800">+</div>
                                     
                                     <div className="text-center">
                                       <div className="flex space-x-1">
@@ -2755,7 +2749,7 @@ export default function AdditionsJusqua100CE1() {
                                       ))}
                                     </div>
                                     
-                                    <div className="text-2xl font-bold text-purple-600">+</div>
+                                    <div className="text-2xl font-bold text-gray-800">+</div>
                                     
                                     {/* Dizaines du deuxième nombre */}
                                     <div className="flex space-x-1">
@@ -2766,14 +2760,14 @@ export default function AdditionsJusqua100CE1() {
                                       ))}
                                     </div>
                                     
-                                    <div className="text-2xl font-bold text-purple-600">+</div>
+                                    <div className="text-2xl font-bold text-gray-800">+</div>
                                     
                                     {/* Retenue */}
                                     <div className="w-10 h-14 bg-red-500 border-2 border-red-700 rounded flex items-center justify-center text-gray-800 font-bold animate-bounce">
                                       10
                                     </div>
                                     
-                                    <div className="text-2xl font-bold text-purple-600">=</div>
+                                    <div className="text-2xl font-bold text-gray-800">=</div>
                                     
                                     {/* Résultat des dizaines */}
                                     <div className="flex space-x-1">
@@ -2944,7 +2938,7 @@ export default function AdditionsJusqua100CE1() {
                                       ))}
                                     </div>
                                     
-                                    <div className="text-3xl font-bold text-purple-600">+</div>
+                                    <div className="text-3xl font-bold text-gray-800">+</div>
                                     
                                     {/* Dizaines du deuxième nombre */}
                                     <div className="flex space-x-1">
@@ -2955,7 +2949,7 @@ export default function AdditionsJusqua100CE1() {
                                       ))}
                                     </div>
                                     
-                                    <div className="text-3xl font-bold text-purple-600">=</div>
+                                                                            <div className="text-3xl font-bold text-gray-800">=</div>
                                     
                                     {/* Résultat des dizaines */}
                                     <div className="flex space-x-1">
@@ -2988,7 +2982,7 @@ export default function AdditionsJusqua100CE1() {
                                       ))}
                                     </div>
                                     
-                                    <div className="text-2xl font-bold text-blue-600">+</div>
+                                    <div className="text-2xl font-bold text-gray-800">+</div>
                                     
                                     {/* Unités du deuxième nombre */}
                                     <div className="flex space-x-1">
@@ -3118,7 +3112,7 @@ export default function AdditionsJusqua100CE1() {
                                       </div>
                                     </div>
 
-                                    <div className="text-2xl font-bold text-blue-600">+</div>
+                                    <div className="text-2xl font-bold text-gray-800">+</div>
 
                                     {/* Complément nécessaire */}
                                     <div className="text-center">
@@ -3194,7 +3188,7 @@ export default function AdditionsJusqua100CE1() {
                                       </div>
                                     </div>
 
-                                    <div className="text-2xl font-bold text-orange-600">=</div>
+                                    <div className="text-2xl font-bold text-gray-800">=</div>
 
                                     {/* Complément (qui sera utilisé) */}
                                     <div className="text-center">
@@ -3209,7 +3203,7 @@ export default function AdditionsJusqua100CE1() {
                                       <div className="text-sm font-bold text-green-700 mt-1">Pour le complément</div>
                                     </div>
 
-                                    <div className="text-2xl font-bold text-orange-600">+</div>
+                                    <div className="text-2xl font-bold text-gray-800">+</div>
 
                                     {/* Reste */}
                                     <div className="text-center">
@@ -3302,7 +3296,7 @@ export default function AdditionsJusqua100CE1() {
                                       </div>
                                     </div>
 
-                                    <div className="text-3xl font-bold text-green-600">+</div>
+                                                                            <div className="text-3xl font-bold text-gray-800">+</div>
 
                                     {/* Reste à ajouter */}
                                     <div className="text-center">
@@ -3318,7 +3312,7 @@ export default function AdditionsJusqua100CE1() {
                                       </div>
                                     </div>
 
-                                    <div className="text-3xl font-bold text-green-600">=</div>
+                                                                            <div className="text-3xl font-bold text-gray-800">=</div>
 
                                     {/* Résultat */}
                                     <div className="text-center">
