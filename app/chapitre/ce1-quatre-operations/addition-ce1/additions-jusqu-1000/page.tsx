@@ -33,6 +33,11 @@ export default function AdditionsJusqu1000CE1() {
   const [samSizeExpanded, setSamSizeExpanded] = useState(false);
   const [imageError, setImageError] = useState(false);
 
+  // États pour le personnage des exercices
+  const [exercisesIntroStarted, setExercisesIntroStarted] = useState(false);
+  const [exercisesSamSizeExpanded, setExercisesSamSizeExpanded] = useState(false);
+  const [exercisesImageError, setExercisesImageError] = useState(false);
+
   // État pour la détection mobile
   const [isMobile, setIsMobile] = useState(false);
 
@@ -710,25 +715,32 @@ export default function AdditionsJusqu1000CE1() {
       if (stopSignalRef.current) return;
       
       await wait(1200);
-      await playAudio("Nous allons découvrir 4 techniques formidables pour le CE1 !");
+      await playAudio("Nous allons découvrir 3 techniques formidables pour le CE1 !");
       if (stopSignalRef.current) return;
       
-      // 2. Explication du concept avec animations
+      // 2. Scroll vers les exemples et explication des techniques
+      await wait(1000);
+      scrollToElement('examples-section', 'start');
+      setHighlightedElement('examples-section');
+      await playAudio("Clique sur les cartes d'exemples ci-dessous pour voir les animations explicatives !");
+      if (stopSignalRef.current) return;
+      
       await wait(1800);
-      setHighlightedElement('concept-section');
-      await playAudio("Les additions par centaines : 100 plus 900 égale 1000 !");
+      scrollToElement('technique-additions-centaines', 'start');
+      setHighlightedElement('technique-additions-centaines');
+      await playAudio("Clique sur les cartes bleues pour voir l'animation !");
       if (stopSignalRef.current) return;
       
       await wait(1500);
-      await playAudio("Les additions par cinquantaines : 150 plus 100 égale 250 !");
+      scrollToElement('technique-complements-centaines', 'center');
+      setHighlightedElement('technique-complements-centaines');
+      await playAudio("Clique sur les cartes vertes pour voir l'animation !");
       if (stopSignalRef.current) return;
       
       await wait(1200);
-      await playAudio("Et les compléments à 1000 : 400 plus combien égale 1000 ?");
-      if (stopSignalRef.current) return;
-      
-      await wait(1500);
-      await playAudio("4 techniques pour compter par centaines et cinquantaines !");
+      scrollToElement('technique-additions-cinquantaines', 'center');
+      setHighlightedElement('technique-additions-cinquantaines');
+      await playAudio("Clique sur les cartes orange pour voir l'animation !");
       if (stopSignalRef.current) return;
       
       await wait(1200);
@@ -752,6 +764,7 @@ export default function AdditionsJusqu1000CE1() {
       if (stopSignalRef.current) return;
       
       await wait(2000);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
       setHighlightedElement('exercises-tab');
       await playAudio("Quand tu es prêt, tu peux faire les exercices pour t'entraîner !");
       if (stopSignalRef.current) return;
@@ -762,6 +775,54 @@ export default function AdditionsJusqu1000CE1() {
       
     } catch (error) {
       console.error('Erreur lors de l\'explication:', error);
+      setIsAnimationRunning(false);
+    }
+  };
+
+  // Fonction pour faire défiler vers un élément
+  const scrollToElement = (elementId: string, block: ScrollLogicalPosition = 'center') => {
+    setTimeout(() => {
+      const element = document.getElementById(elementId);
+      if (element) {
+        element.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: block,
+          inline: 'nearest' 
+        });
+      }
+    }, 100);
+  };
+
+  // Fonction pour l'introduction des exercices
+  const explainExercises = async () => {
+    stopAllVocalsAndAnimations();
+    await wait(300);
+    stopSignalRef.current = false;
+    setIsAnimationRunning(true);
+    setExercisesIntroStarted(true);
+
+    try {
+      await playAudio("Parfait ! Maintenant, c'est l'heure de s'entraîner avec les exercices !");
+      if (stopSignalRef.current) return;
+      
+      await wait(1500);
+      await playAudio("Tu vas résoudre des additions jusqu'à 1000 !");
+      if (stopSignalRef.current) return;
+      
+      await wait(1200);
+      await playAudio("Utilise les techniques que tu viens d'apprendre !");
+      if (stopSignalRef.current) return;
+      
+      await wait(1500);
+      await playAudio("C'est parti pour devenir un expert du calcul mental !");
+      if (stopSignalRef.current) return;
+      
+      await wait(2000);
+      setIsAnimationRunning(false);
+      setExercisesSamSizeExpanded(false);
+      
+    } catch (error) {
+      console.error('Erreur lors de l\'introduction des exercices:', error);
       setIsAnimationRunning(false);
     }
   };
@@ -840,6 +901,34 @@ export default function AdditionsJusqu1000CE1() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-yellow-50 to-red-50 p-2 sm:p-4">
+      {/* Bouton flottant stop - visible quand une animation ou vocal est en cours */}
+      {(isPlayingVocal || isAnimationRunning) && (
+        <div className="fixed top-4 right-4 z-[60]">
+          <button
+            onClick={stopAllVocalsAndAnimations}
+            className="relative flex items-center gap-2 px-3 py-2 rounded-full shadow-2xl transition-all duration-300 bg-gradient-to-r from-red-500 to-red-600 text-white hover:from-red-600 hover:to-red-700 hover:scale-105 animate-pulse"
+            title={isPlayingVocal ? "Arrêter le personnage" : "Arrêter l'animation"}
+          >
+            {/* Image du personnage */}
+            <div className="w-8 h-8 rounded-full overflow-hidden border-2 border-white/50">
+              <img
+                src="/image/Minecraftstyle.png"
+                alt="Personnage Minecraft"
+                className="w-full h-full object-cover"
+              />
+            </div>
+            
+            {/* Texte et icône */}
+            <>
+              <span className="text-sm font-bold hidden sm:block">
+                {isPlayingVocal ? 'Stop' : 'Stop Animation'}
+              </span>
+              <div className="w-3 h-3 bg-white rounded-sm animate-pulse"></div>
+            </>
+          </button>
+        </div>
+      )}
+      
       <div className="max-w-6xl mx-auto">
         {/* En-tête avec navigation */}
         <div className="bg-white rounded-xl shadow-lg p-3 sm:p-6 mb-4 sm:mb-8 border-2 border-orange-200">
@@ -919,14 +1008,14 @@ export default function AdditionsJusqu1000CE1() {
                 }`}>
                 {!imageError ? (
                   <img 
-                    src="/image/pirate-small.png" 
-                    alt="Sam le Pirate" 
+                    src="/image/Minecraftstyle.png" 
+                    alt="Personnage Minecraft" 
                     className="w-full h-full rounded-full object-cover"
                     onError={() => setImageError(true)}
                   />
                 ) : (
                   <div className="w-full h-full rounded-full flex items-center justify-center text-xs sm:text-2xl">
-                    🏴‍☠️
+                    🧱
                   </div>
                 )}
                 {isAnimationRunning && (
@@ -997,7 +1086,13 @@ export default function AdditionsJusqu1000CE1() {
               
               <div className="space-y-6">
                 {mentalCalculationTechniques.map((technique, techIndex) => (
-                  <div key={technique.id} className="bg-gradient-to-br from-blue-50 to-green-50 rounded-xl p-4 sm:p-6 border-2 border-blue-200">
+                  <div 
+                    key={technique.id} 
+                    id={`technique-${technique.id}`}
+                    className={`bg-gradient-to-br from-blue-50 to-green-50 rounded-xl p-4 sm:p-6 border-2 border-blue-200 transition-all duration-1000 ${
+                      highlightedElement === `technique-${technique.id}` ? 'ring-4 ring-yellow-400 animate-pulse bg-opacity-80' : ''
+                    }`}
+                  >
                     <div className="text-center mb-4">
                       <div className="text-2xl sm:text-4xl mb-2">{technique.icon}</div>
                       <h3 className="text-lg sm:text-xl font-bold text-blue-700 mb-2">
@@ -1085,7 +1180,7 @@ export default function AdditionsJusqu1000CE1() {
                                   {step.value}
                                 </div>
                                 {index < example.visualSteps.length - 1 && (
-                                  <div className="mx-1 sm:mx-2 text-gray-400 font-bold">
+                                  <div className="mx-1 sm:mx-2 text-gray-800 font-bold">
                                     {selectedTechnique === 'complements-1000' ? '→' : '+'}
                                   </div>
                                 )}
@@ -1118,6 +1213,66 @@ export default function AdditionsJusqu1000CE1() {
               </h2>
               <div className="text-sm sm:text-lg font-semibold text-gray-600">
                 {currentExercise + 1} / {exercises.length}
+              </div>
+            </div>
+
+            {/* Image de Minecraft avec bouton COMMENCER pour les exercices */}
+            <div className="flex items-center justify-center gap-2 sm:gap-4 p-2 sm:p-4 mb-4 sm:mb-6">
+              <div className={`relative transition-all duration-500 border-2 border-green-400 rounded-full bg-gradient-to-br from-green-100 to-emerald-100 ${
+                isAnimationRunning
+                  ? 'w-14 sm:w-24 h-14 sm:h-24'
+                  : exercisesSamSizeExpanded
+                    ? 'w-12 sm:w-32 h-12 sm:h-32'
+                    : 'w-12 sm:w-20 h-12 sm:h-20'
+                }`}>
+                {!exercisesImageError ? (
+                  <img 
+                    src="/image/Minecraftstyle.png" 
+                    alt="Personnage Minecraft" 
+                    className="w-full h-full rounded-full object-cover"
+                    onError={() => setExercisesImageError(true)}
+                  />
+                ) : (
+                  <div className="w-full h-full rounded-full flex items-center justify-center text-xs sm:text-2xl">
+                    🧱
+                  </div>
+                )}
+                {isAnimationRunning && (
+                  <div className="absolute -top-1 -right-1 bg-green-500 text-white p-1 rounded-full shadow-lg">
+                    <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.617.77L4.916 14H2a1 1 0 01-1-1V7a1 1 0 011-1h2.916l3.467-2.77a1 1 0 011.617.77zM14.657 2.929a1 1 0 011.414 0A9.972 9.972 0 0119 10a9.972 9.972 0 01-2.929 7.071 1 1 0 01-1.414-1.414A7.971 7.971 0 0017 10c0-2.21-.894-4.208-2.343-5.657a1 1 0 010-1.414zm-2.829 2.828a1 1 0 011.415 0A5.983 5.983 0 0115 10a5.983 5.983 0 01-1.757 4.243 1 1 0 01-1.415-1.414A3.983 3.983 0 0013 10a3.983 3.983 0 00-1.172-2.829 1 1 0 010-1.414z" clipRule="evenodd" />
+                      </svg>
+                    </div>
+                )}
+              </div>
+              
+              <div className="text-center">
+                <button
+                  onClick={() => {
+                    if (!exercisesIntroStarted) {
+                      setExercisesSamSizeExpanded(true);
+                      explainExercises();
+                    }
+                  }}
+                  disabled={isAnimationRunning}
+                  className={`bg-gradient-to-r from-green-500 to-emerald-500 text-white px-3 sm:px-8 py-2 sm:py-4 rounded-xl font-bold text-xs sm:text-xl shadow-2xl hover:shadow-3xl transition-all transform hover:scale-105 ${
+                    isAnimationRunning ? 'opacity-75 cursor-not-allowed' : 'hover:from-green-600 hover:to-emerald-600'
+                  } ${!exercisesIntroStarted ? 'animate-pulse' : ''}`}
+                >
+                  {isAnimationRunning ? (
+                    <>
+                      <svg className="w-3 sm:w-5 h-3 sm:h-5 inline-block mr-1 sm:mr-2 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                      </svg>
+                      {exercisesIntroStarted ? 'En cours...' : 'Démarrage...'}
+                    </>
+                  ) : (
+                    <>
+                      <Play className="w-3 sm:w-5 h-3 sm:h-5 inline-block mr-1 sm:mr-2" />
+                      {exercisesIntroStarted ? 'Redémarrer' : 'COMMENCER'}
+                    </>
+                  )}
+                </button>
               </div>
             </div>
 
