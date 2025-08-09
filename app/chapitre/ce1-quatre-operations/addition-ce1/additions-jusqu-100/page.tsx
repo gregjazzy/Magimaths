@@ -532,7 +532,7 @@ export default function AdditionsJusqua100CE1() {
     }
   ];
 
-  // 7 séries de 10 exercices : 6 spécialisées + 1 mélangée
+  // 7 séries d'exercices : 6 spécialisées (10 chacune) + 1 mélangée (15 exercices)
   const exerciseSeries = {
     decomposition: [
     { question: 'Calcule 35 + 24', firstNumber: 35, secondNumber: 24, correctAnswer: 59, type: 'decomposition', hint: 'Décompose : 30+20=50 et 5+4=9, puis 50+9=59' },
@@ -595,16 +595,30 @@ export default function AdditionsJusqua100CE1() {
       { question: 'Calcule 33 + 34', firstNumber: 33, secondNumber: 34, correctAnswer: 67, type: 'doubles', hint: 'C\'est 33+33+1 = 66+1 = 67' }
     ],
     melange: [
+      // 3 exercices de décomposition
       { question: 'Calcule 47 + 32', firstNumber: 47, secondNumber: 32, correctAnswer: 79, type: 'decomposition', hint: 'Décompose : 40+30=70 et 7+2=9, puis 70+9=79' },
+      { question: 'Calcule 63 + 25', firstNumber: 63, secondNumber: 25, correctAnswer: 88, type: 'decomposition', hint: 'Décompose : 60+20=80 et 3+5=8, puis 80+8=88' },
+      { question: 'Calcule 41 + 37', firstNumber: 41, secondNumber: 37, correctAnswer: 78, type: 'decomposition', hint: 'Décompose : 40+30=70 et 1+7=8, puis 70+8=78' },
+      
+      // 3 exercices de bonds de 10
       { question: 'Calcule 26 + 40', firstNumber: 26, secondNumber: 40, correctAnswer: 66, type: 'bonds-10', hint: 'Quatre bonds de 10 : 26→36→46→56→66' },
+      { question: 'Calcule 35 + 20', firstNumber: 35, secondNumber: 20, correctAnswer: 55, type: 'bonds-10', hint: 'Deux bonds de 10 : 35→45→55' },
+      { question: 'Calcule 42 + 30', firstNumber: 42, secondNumber: 30, correctAnswer: 72, type: 'bonds-10', hint: 'Trois bonds de 10 : 42→52→62→72' },
+      
+      // 3 exercices de compensation
       { question: 'Calcule 39 + 18', firstNumber: 39, secondNumber: 18, correctAnswer: 57, type: 'compensation', hint: 'Transforme en 40 + 17 = 57' },
+      { question: 'Calcule 28 + 19', firstNumber: 28, secondNumber: 19, correctAnswer: 47, type: 'compensation', hint: 'Transforme en 27 + 20 = 47' },
+      { question: 'Calcule 49 + 15', firstNumber: 49, secondNumber: 15, correctAnswer: 64, type: 'compensation', hint: 'Transforme en 50 + 14 = 64' },
+      
+      // 3 exercices d'étapes successives
       { question: 'Calcule 54 + 29', firstNumber: 54, secondNumber: 29, correctAnswer: 83, type: 'etapes-successives', hint: 'Étapes : 54+20=74, puis 74+9=83' },
+      { question: 'Calcule 46 + 35', firstNumber: 46, secondNumber: 35, correctAnswer: 81, type: 'etapes-successives', hint: 'Étapes : 46+30=76, puis 76+5=81' },
+      { question: 'Calcule 37 + 44', firstNumber: 37, secondNumber: 44, correctAnswer: 81, type: 'etapes-successives', hint: 'Étapes : 37+40=77, puis 77+4=81' },
+      
+      // 3 exercices de doubles
       { question: 'Calcule 37 + 38', firstNumber: 37, secondNumber: 38, correctAnswer: 75, type: 'doubles', hint: 'C\'est 37+37+1 = 74+1 = 75' },
-      { question: 'Calcule 51 + 24', firstNumber: 51, secondNumber: 24, correctAnswer: 75, type: 'decomposition', hint: 'Décompose : 50+20=70 et 1+4=5, puis 70+5=75' },
-      { question: 'Calcule 33 + 30', firstNumber: 33, secondNumber: 30, correctAnswer: 63, type: 'bonds-10', hint: 'Trois bonds de 10 : 33→43→53→63' },
-      { question: 'Calcule 48 + 17', firstNumber: 48, secondNumber: 17, correctAnswer: 65, type: 'compensation', hint: 'Transforme en 50 + 15 = 65' },
-      { question: 'Calcule 35 + 48', firstNumber: 35, secondNumber: 48, correctAnswer: 83, type: 'etapes-successives', hint: 'Étapes : 35+40=75, puis 75+8=83' },
-      { question: 'Calcule 44 + 45', firstNumber: 44, secondNumber: 45, correctAnswer: 89, type: 'doubles', hint: 'C\'est 44+44+1 = 88+1 = 89' }
+      { question: 'Calcule 42 + 43', firstNumber: 42, secondNumber: 43, correctAnswer: 85, type: 'doubles', hint: 'C\'est 42+42+1 = 84+1 = 85' },
+      { question: 'Calcule 26 + 27', firstNumber: 26, secondNumber: 27, correctAnswer: 53, type: 'doubles', hint: 'C\'est 26+26+1 = 52+1 = 53' }
     ]
   };
 
@@ -4148,7 +4162,9 @@ export default function AdditionsJusqua100CE1() {
                       }`}
                     >
                       <div>{seriesNames[seriesKey as keyof typeof seriesNames]}</div>
-                      <div className="text-xs opacity-75 mt-1">10 exercices</div>
+                      <div className="text-xs opacity-75 mt-1">
+                        {seriesKey === 'melange' ? '15 exercices' : '10 exercices'}
+                      </div>
                     </button>
                   );
                 })}
@@ -4352,8 +4368,8 @@ export default function AdditionsJusqua100CE1() {
                           {exercises[currentExercise].firstNumber % 10}
                             </div>
                         </div>
-                      </div>
-
+                    </div>
+                    
                     {/* Second nombre */}
                     <div className="bg-white rounded-lg p-3 shadow-sm">
                       <div className="flex justify-center items-center space-x-2 text-lg font-bold">
@@ -4361,11 +4377,11 @@ export default function AdditionsJusqua100CE1() {
                         <div className="text-gray-600">=</div>
                         <div className="text-blue-600 px-2 py-1 bg-blue-100 rounded">
                           {Math.floor(exercises[currentExercise].secondNumber / 10) * 10}
-                    </div>
+                            </div>
                         <div className="text-gray-600">+</div>
                         <div className="text-green-600 px-2 py-1 bg-green-100 rounded">
                           {exercises[currentExercise].secondNumber % 10}
-                      </div>
+                        </div>
                       </div>
                     </div>
                     
@@ -4385,14 +4401,14 @@ export default function AdditionsJusqua100CE1() {
                     </div>
                       </div>
                       <div className="text-center text-sm text-blue-600 mt-1">Dizaines</div>
-                        </div>
-                        
+                    </div>
+                    
                     {/* Addition des unités */}
                     <div className="bg-white rounded-lg p-3 shadow-sm border-l-4 border-green-400">
                       <div className="flex justify-center items-center space-x-2 text-lg font-bold">
                         <div className="text-green-700">
                           {exercises[currentExercise].firstNumber % 10}
-                        </div>
+                      </div>
                         <div className="text-gray-600">+</div>
                         <div className="text-green-700">
                           {exercises[currentExercise].secondNumber % 10}
@@ -4404,21 +4420,21 @@ export default function AdditionsJusqua100CE1() {
                       </div>
                       <div className="text-center text-sm text-green-600 mt-1">Unités</div>
                     </div>
-
+                    
                     {/* Résultat final */}
                     <div className="bg-white rounded-lg p-3 shadow-sm border-l-4 border-purple-400">
                       <div className="flex justify-center items-center space-x-2 text-xl font-bold">
                         <div className="text-blue-700">
                           {(Math.floor(exercises[currentExercise].firstNumber / 10) + Math.floor(exercises[currentExercise].secondNumber / 10)) * 10}
-                          </div>
+                      </div>
                         <div className="text-gray-600">+</div>
                         <div className="text-green-700">
                           {(exercises[currentExercise].firstNumber % 10) + (exercises[currentExercise].secondNumber % 10)}
-                          </div>
+                      </div>
                         <div className="text-gray-600">=</div>
                         <div className="text-purple-800 bg-purple-200 px-3 py-1 rounded animate-pulse">
                           {exercises[currentExercise].correctAnswer}
-                        </div>
+                    </div>
                         </div>
                       <div className="text-center text-sm text-purple-600 mt-1">🎉 Résultat final</div>
                       </div>
@@ -4426,7 +4442,556 @@ export default function AdditionsJusqua100CE1() {
                 </div>
               )}
 
+              {/* Animation bonds de 10 réduite pour les exercices bonds-10 */}
+              {exercises[currentExercise].type === 'bonds-10' && isCorrect !== null && (
+                <div className="bg-gradient-to-br from-yellow-50 to-orange-50 rounded-xl p-4 mb-4 border-2 border-yellow-200">
+                  <h4 className="text-lg font-bold text-center text-yellow-800 mb-4">
+                    🦘 Méthode des bonds de 10
+                  </h4>
+                  
+                  {/* Animation simplifiée */}
+                  <div className="space-y-3 max-w-lg mx-auto">
+                    {/* Point de départ */}
+                    <div className="bg-white rounded-lg p-3 shadow-sm">
+                      <div className="text-center text-lg font-bold text-orange-700 mb-2">
+                        🎯 Je pars de {exercises[currentExercise].firstNumber}
+                      </div>
+                      <div className="text-center text-base text-orange-600">
+                        J'ajoute {exercises[currentExercise].secondNumber} par bonds de 10
+                      </div>
+                        </div>
+                        
+                    {/* Analyse du nombre à ajouter */}
+                    <div className="bg-white rounded-lg p-3 shadow-sm">
+                      <div className="flex justify-center items-center space-x-2 text-lg font-bold mb-2">
+                        <div className="text-gray-800">{exercises[currentExercise].secondNumber}</div>
+                        <div className="text-gray-600">=</div>
+                        <div className="text-blue-600 px-2 py-1 bg-blue-100 rounded">
+                          {Math.floor(exercises[currentExercise].secondNumber / 10)} dizaines
+                        </div>
+                        {exercises[currentExercise].secondNumber % 10 > 0 && (
+                          <>
+                            <div className="text-gray-600">+</div>
+                            <div className="text-green-600 px-2 py-1 bg-green-100 rounded">
+                              {exercises[currentExercise].secondNumber % 10} unités
+                      </div>
+                          </>
+                    )}
+                      </div>
+                      <div className="text-center text-sm text-yellow-700">
+                        ➜ Je fais {Math.floor(exercises[currentExercise].secondNumber / 10)} bonds de 10 ! 🦘
+                      </div>
+                  </div>
+                  
+                    {/* Exécution des bonds */}
+                    <div className="bg-white rounded-lg p-3 shadow-sm">
+                      <div className="text-center text-base font-bold text-yellow-700 mb-3">
+                        🦘 Exécution des bonds
+                      </div>
+                      <div className="space-y-2">
+                        {(() => {
+                          const bonds = [];
+                          const dizaines = Math.floor(exercises[currentExercise].secondNumber / 10);
+                          let current = exercises[currentExercise].firstNumber;
+                          
+                          for (let i = 0; i < dizaines; i++) {
+                            bonds.push(
+                              <div key={i} className="flex justify-center items-center space-x-2 text-sm font-bold">
+                                <div className="text-orange-700">Bond {i + 1}:</div>
+                                <div className="text-gray-700">{current}</div>
+                                <div className="text-gray-500">+</div>
+                                <div className="text-yellow-700 px-2 py-1 bg-yellow-100 rounded">10</div>
+                                <div className="text-gray-500">=</div>
+                                <div className="text-orange-800 font-bold">{current + 10}</div>
+                                <div className="text-lg">🦘</div>
+                      </div>
+                            );
+                            current += 10;
+                          }
+                          
+                          return bonds;
+                        })()}
+                          </div>
+                          </div>
 
+                    {/* Ajout des unités si nécessaire */}
+                    {exercises[currentExercise].secondNumber % 10 > 0 && (
+                      <div className="bg-white rounded-lg p-3 shadow-sm">
+                        <div className="text-center text-base font-bold text-green-700 mb-2">
+                          🔢 Ajout des unités restantes
+                        </div>
+                        <div className="flex justify-center items-center space-x-2 text-lg font-bold">
+                          <div className="text-gray-700">
+                            {exercises[currentExercise].firstNumber + Math.floor(exercises[currentExercise].secondNumber / 10) * 10}
+                          </div>
+                          <div className="text-gray-500">+</div>
+                          <div className="text-green-700 px-2 py-1 bg-green-100 rounded">
+                            {exercises[currentExercise].secondNumber % 10}
+                          </div>
+                          <div className="text-gray-500">=</div>
+                          <div className="text-green-800 font-bold">
+                            {exercises[currentExercise].correctAnswer}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                    
+                    {/* Résultat final */}
+                    <div className="bg-white rounded-lg p-3 shadow-sm border-l-4 border-yellow-400">
+                      <div className="flex justify-center items-center space-x-2 text-xl font-bold">
+                        <div className="text-yellow-800 bg-yellow-200 px-3 py-1 rounded animate-pulse">
+                          🎉 Résultat : {exercises[currentExercise].correctAnswer}
+                      </div>
+                      </div>
+                      <div className="text-center text-sm text-yellow-600 mt-1">🦘 Les bonds de 10, c'est rapide !</div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Animation compensation réduite pour les exercices compensation */}
+              {exercises[currentExercise].type === 'compensation' && isCorrect !== null && (
+                <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl p-4 mb-4 border-2 border-purple-200">
+                  <h4 className="text-lg font-bold text-center text-purple-800 mb-4">
+                    🔄 Méthode de compensation
+                  </h4>
+                  
+                  {/* Animation simplifiée */}
+                  <div className="space-y-3 max-w-lg mx-auto">
+                    {/* Problème de départ */}
+                    <div className="bg-white rounded-lg p-3 shadow-sm">
+                      <div className="text-center text-lg font-bold text-purple-700 mb-2">
+                        🎯 Calcul original
+                      </div>
+                      <div className="flex justify-center items-center space-x-2 text-xl font-bold">
+                        <div className="text-gray-800">{exercises[currentExercise].firstNumber}</div>
+                        <div className="text-gray-600">+</div>
+                        <div className="text-gray-800">{exercises[currentExercise].secondNumber}</div>
+                      </div>
+                      <div className="text-center text-sm text-purple-600 mt-2">
+                        Je peux rendre ça plus facile ! 🤔
+                      </div>
+                    </div>
+
+                    {/* Analyse intelligente */}
+                    <div className="bg-white rounded-lg p-3 shadow-sm">
+                      <div className="text-center text-base font-bold text-blue-700 mb-3">
+                        💡 Analyse intelligente
+                      </div>
+                      
+                      {/* Logique de compensation basée sur les exemples */}
+                      {(() => {
+                        const first = exercises[currentExercise].firstNumber;
+                        const second = exercises[currentExercise].secondNumber;
+                        
+                        // Vérifie si le premier nombre se termine par 9 (proche d'une dizaine ronde)
+                        if (first % 10 === 9) {
+                          return (
+                            <div className="space-y-2">
+                              <div className="text-center text-sm text-blue-600 mb-2">
+                                {first} est proche de {first + 1} (nombre rond) !
+                              </div>
+                              <div className="p-2 bg-yellow-100 rounded-lg border-2 border-yellow-400">
+                                <div className="text-center text-sm font-bold text-yellow-800">
+                                  Étape 1 : Je décompose {second}
+                                </div>
+                                <div className="flex justify-center items-center space-x-2 text-lg font-bold mt-1">
+                                  <div className="text-gray-800">{second}</div>
+                                  <div className="text-gray-600">=</div>
+                                  <div className="text-green-600 px-2 py-1 bg-green-100 rounded">{second - 1}</div>
+                                  <div className="text-gray-600">+</div>
+                                  <div className="text-red-600 px-2 py-1 bg-red-100 rounded animate-pulse">1</div>
+                                </div>
+                              </div>
+                              <div className="p-2 bg-green-100 rounded-lg border-2 border-green-400">
+                                <div className="text-center text-sm font-bold text-green-800">
+                                  Étape 2 : Ce "1" complète {first}
+                                </div>
+                                <div className="flex justify-center items-center space-x-2 text-lg font-bold mt-1">
+                                  <div className="text-gray-800">{first}</div>
+                                  <div className="text-gray-600">+</div>
+                                  <div className="text-red-600 px-2 py-1 bg-red-100 rounded animate-pulse">1</div>
+                                  <div className="text-gray-600">=</div>
+                                  <div className="text-green-800 px-2 py-1 bg-green-200 rounded font-bold">{first + 1}</div>
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        } 
+                        // Vérifie si le second nombre se termine par 9 (proche d'une dizaine ronde)
+                        else if (second % 10 === 9) {
+                          return (
+                            <div className="space-y-2">
+                              <div className="text-center text-sm text-blue-600 mb-2">
+                                {second} est proche de {second + 1} (nombre rond) !
+                              </div>
+                              <div className="p-2 bg-yellow-100 rounded-lg border-2 border-yellow-400">
+                                <div className="text-center text-sm font-bold text-yellow-800">
+                                  Étape 1 : Je prends 1 de {first}
+                                </div>
+                                <div className="flex justify-center items-center space-x-2 text-lg font-bold mt-1">
+                                  <div className="text-gray-800">{first}</div>
+                                  <div className="text-gray-600">=</div>
+                                  <div className="text-green-600 px-2 py-1 bg-green-100 rounded">{first - 1}</div>
+                                  <div className="text-gray-600">+</div>
+                                  <div className="text-red-600 px-2 py-1 bg-red-100 rounded animate-pulse">1</div>
+                                </div>
+                              </div>
+                              <div className="p-2 bg-green-100 rounded-lg border-2 border-green-400">
+                                <div className="text-center text-sm font-bold text-green-800">
+                                  Étape 2 : Ce "1" complète {second}
+                                </div>
+                                <div className="flex justify-center items-center space-x-2 text-lg font-bold mt-1">
+                                  <div className="text-gray-800">{second}</div>
+                                  <div className="text-gray-600">+</div>
+                                  <div className="text-red-600 px-2 py-1 bg-red-100 rounded animate-pulse">1</div>
+                                  <div className="text-gray-600">=</div>
+                                  <div className="text-green-800 px-2 py-1 bg-green-200 rounded font-bold">{second + 1}</div>
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        }
+                        // Cas général (basé sur la logique des exemples)
+                        else {
+                          const needsRounding = first % 10 === 8 || first % 10 === 9;
+                          if (needsRounding) {
+                            return (
+                              <div className="space-y-2">
+                                <div className="text-center text-sm text-blue-600 mb-2">
+                                  Je transforme {first} en nombre rond !
+                                </div>
+                                <div className="p-2 bg-purple-100 rounded-lg border-2 border-purple-400">
+                                  <div className="text-center text-sm font-bold text-purple-800">
+                                    Compensation : j'échange pour simplifier
+                                  </div>
+                                  <div className="flex justify-center items-center space-x-2 text-lg font-bold mt-1">
+                                    <div className="text-green-800 px-2 py-1 bg-green-200 rounded">{Math.ceil(first / 10) * 10}</div>
+                                    <div className="text-gray-600">+</div>
+                                    <div className="text-blue-800 px-2 py-1 bg-blue-200 rounded">{second - (Math.ceil(first / 10) * 10 - first)}</div>
+                                  </div>
+                                </div>
+                              </div>
+                            );
+                          } else {
+                            return (
+                              <div className="text-center text-sm text-blue-600">
+                                Je cherche un échange intelligent...
+                              </div>
+                            );
+                          }
+                        }
+                      })()}
+                    </div>
+
+                    {/* Nouveau calcul facilité */}
+                    <div className="bg-white rounded-lg p-3 shadow-sm">
+                      <div className="text-center text-base font-bold text-purple-700 mb-3">
+                        🔄 Nouveau calcul facilité
+                      </div>
+                      
+                      {(() => {
+                        const first = exercises[currentExercise].firstNumber;
+                        const second = exercises[currentExercise].secondNumber;
+                        
+                        let newFirst, newSecond;
+                        
+                        if (first % 10 === 9) {
+                          newFirst = first + 1;
+                          newSecond = second - 1;
+                        } else if (second % 10 === 9) {
+                          newFirst = first - 1;
+                          newSecond = second + 1;
+                        } else {
+                          // Logique pour d'autres cas
+                          const roundedFirst = Math.ceil(first / 10) * 10;
+                          newFirst = roundedFirst;
+                          newSecond = second - (roundedFirst - first);
+                        }
+                        
+                        return (
+                          <div className="space-y-3">
+                            <div className="flex justify-center items-center space-x-2 text-xl font-bold">
+                              <div className="text-green-700 px-3 py-2 bg-green-100 rounded-lg">{newFirst}</div>
+                              <div className="text-gray-600">+</div>
+                              <div className="text-blue-700 px-3 py-2 bg-blue-100 rounded-lg">{newSecond}</div>
+                            </div>
+                            <div className="text-center text-sm text-purple-600">
+                              Beaucoup plus facile à calculer ! 😊
+                            </div>
+                          </div>
+                        );
+                      })()}
+                    </div>
+
+                    {/* Résultat final */}
+                    <div className="bg-white rounded-lg p-3 shadow-sm border-l-4 border-purple-400">
+                      <div className="flex justify-center items-center space-x-2 text-xl font-bold">
+                        <div className="text-purple-800 bg-purple-200 px-3 py-1 rounded animate-pulse">
+                          🎉 Résultat : {exercises[currentExercise].correctAnswer}
+                        </div>
+                      </div>
+                      <div className="text-center text-sm text-purple-600 mt-1">🔄 La compensation, c'est malin !</div>
+                    </div>
+                  </div>
+                      </div>
+                    )}
+
+              {/* Animation étapes successives réduite pour les exercices etapes-successives */}
+              {exercises[currentExercise].type === 'etapes-successives' && isCorrect !== null && (
+                <div className="bg-gradient-to-br from-teal-50 to-cyan-50 rounded-xl p-4 mb-4 border-2 border-teal-200">
+                  <h4 className="text-lg font-bold text-center text-teal-800 mb-4">
+                    🎲 Méthode des étapes successives
+                  </h4>
+                  
+                  {/* Animation simplifiée */}
+                  <div className="space-y-3 max-w-lg mx-auto">
+                    {/* Point de départ */}
+                    <div className="bg-white rounded-lg p-3 shadow-sm">
+                      <div className="text-center text-lg font-bold text-teal-700 mb-2">
+                        🎯 Point de départ
+                      </div>
+                      <div className="text-center text-xl font-bold text-teal-800 mb-2">
+                        Je commence avec {exercises[currentExercise].firstNumber}
+                      </div>
+                      <div className="text-center text-sm text-teal-600">
+                        Je vais ajouter {exercises[currentExercise].secondNumber} en deux étapes !
+                      </div>
+                    </div>
+
+                    {/* Décomposition du second nombre */}
+                    <div className="bg-white rounded-lg p-3 shadow-sm">
+                      <div className="text-center text-base font-bold text-blue-700 mb-3">
+                        📋 Plan : Je décompose {exercises[currentExercise].secondNumber}
+                      </div>
+                      <div className="flex justify-center items-center space-x-2 text-lg font-bold">
+                        <div className="text-gray-800">{exercises[currentExercise].secondNumber}</div>
+                        <div className="text-gray-600">=</div>
+                        <div className="text-blue-600 px-2 py-1 bg-blue-100 rounded">
+                          {Math.floor(exercises[currentExercise].secondNumber / 10) * 10}
+                        </div>
+                        <div className="text-gray-600">+</div>
+                        <div className="text-green-600 px-2 py-1 bg-green-100 rounded">
+                          {exercises[currentExercise].secondNumber % 10}
+                        </div>
+                      </div>
+                      <div className="text-center text-sm text-gray-600 mt-2">
+                        {Math.floor(exercises[currentExercise].secondNumber / 10) * 10} (dizaines) + {exercises[currentExercise].secondNumber % 10} (unités)
+                      </div>
+                    </div>
+
+                    {/* Première étape : Dizaines */}
+                    <div className="bg-white rounded-lg p-3 shadow-sm border-l-4 border-blue-400">
+                      <div className="text-center text-base font-bold text-blue-700 mb-3">
+                        🥇 Étape 1 : J'ajoute les dizaines
+                      </div>
+                      <div className="space-y-2">
+                        <div className="text-center text-sm text-blue-600">
+                          J'ajoute {Math.floor(exercises[currentExercise].secondNumber / 10) * 10} à {exercises[currentExercise].firstNumber}
+                        </div>
+                        <div className="flex justify-center items-center space-x-2 text-lg font-bold">
+                          <div className="text-blue-700">{exercises[currentExercise].firstNumber}</div>
+                          <div className="text-gray-500">+</div>
+                          <div className="text-blue-600 px-2 py-1 bg-blue-100 rounded">
+                            {Math.floor(exercises[currentExercise].secondNumber / 10) * 10}
+                          </div>
+                          <div className="text-gray-500">=</div>
+                          <div className="text-blue-800 px-2 py-1 bg-blue-200 rounded font-bold">
+                            {exercises[currentExercise].firstNumber + Math.floor(exercises[currentExercise].secondNumber / 10) * 10}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Deuxième étape : Unités */}
+                    <div className="bg-white rounded-lg p-3 shadow-sm border-l-4 border-green-400">
+                      <div className="text-center text-base font-bold text-green-700 mb-3">
+                        🥈 Étape 2 : J'ajoute les unités
+                      </div>
+                      <div className="space-y-2">
+                        <div className="text-center text-sm text-green-600">
+                          J'ajoute {exercises[currentExercise].secondNumber % 10} à {exercises[currentExercise].firstNumber + Math.floor(exercises[currentExercise].secondNumber / 10) * 10}
+                        </div>
+                        <div className="flex justify-center items-center space-x-2 text-lg font-bold">
+                          <div className="text-green-700">
+                            {exercises[currentExercise].firstNumber + Math.floor(exercises[currentExercise].secondNumber / 10) * 10}
+                          </div>
+                          <div className="text-gray-500">+</div>
+                          <div className="text-green-600 px-2 py-1 bg-green-100 rounded">
+                            {exercises[currentExercise].secondNumber % 10}
+                          </div>
+                          <div className="text-gray-500">=</div>
+                          <div className="text-green-800 px-2 py-1 bg-green-200 rounded font-bold">
+                            {exercises[currentExercise].correctAnswer}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Résumé des étapes */}
+                    <div className="bg-white rounded-lg p-3 shadow-sm">
+                      <div className="text-center text-base font-bold text-purple-700 mb-3">
+                        🎉 Résumé des étapes
+                      </div>
+                      <div className="space-y-2">
+                        <div className="text-center p-2 bg-blue-100 rounded-lg">
+                          <div className="text-sm font-bold text-blue-800">
+                            Étape 1 : {exercises[currentExercise].firstNumber} + {Math.floor(exercises[currentExercise].secondNumber / 10) * 10} = {exercises[currentExercise].firstNumber + Math.floor(exercises[currentExercise].secondNumber / 10) * 10}
+                          </div>
+                        </div>
+                        
+                        <div className="text-center text-lg">⬇️</div>
+                        
+                        <div className="text-center p-2 bg-green-100 rounded-lg">
+                          <div className="text-sm font-bold text-green-800">
+                            Étape 2 : {exercises[currentExercise].firstNumber + Math.floor(exercises[currentExercise].secondNumber / 10) * 10} + {exercises[currentExercise].secondNumber % 10} = {exercises[currentExercise].correctAnswer}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Résultat final */}
+                    <div className="bg-white rounded-lg p-3 shadow-sm border-l-4 border-purple-400">
+                      <div className="flex justify-center items-center space-x-2 text-xl font-bold">
+                        <div className="text-purple-800 bg-purple-200 px-3 py-1 rounded animate-pulse">
+                          🎉 Résultat : {exercises[currentExercise].correctAnswer}
+                        </div>
+                      </div>
+                      <div className="text-center text-sm text-purple-600 mt-1">🎲 Étape par étape, c'est sûr !</div>
+                    </div>
+                  </div>
+                      </div>
+                    )}
+
+              {/* Animation doubles réduite pour les exercices doubles */}
+              {exercises[currentExercise].type === 'doubles' && isCorrect !== null && (
+                <div className="bg-gradient-to-br from-pink-50 to-rose-50 rounded-xl p-4 mb-4 border-2 border-pink-200">
+                  <h4 className="text-lg font-bold text-center text-pink-800 mb-4">
+                    👥 Méthode des doubles
+                  </h4>
+                  
+                  {/* Animation simplifiée */}
+                  <div className="space-y-3 max-w-lg mx-auto">
+                    {/* Observation intelligente */}
+                    <div className="bg-white rounded-lg p-3 shadow-sm">
+                      <div className="text-center text-lg font-bold text-pink-700 mb-2">
+                        🔍 Observation intelligente
+                      </div>
+                      <div className="text-center text-base text-pink-600 mb-2">
+                        Je remarque que {exercises[currentExercise].secondNumber} = {exercises[currentExercise].firstNumber} + 1
+                      </div>
+                      <div className="flex justify-center items-center space-x-2 text-lg font-bold">
+                        <div className="text-pink-700">{exercises[currentExercise].secondNumber}</div>
+                        <div className="text-gray-500">=</div>
+                        <div className="text-pink-700">{exercises[currentExercise].firstNumber}</div>
+                        <div className="text-gray-500">+</div>
+                        <div className="text-green-700 px-2 py-1 bg-green-100 rounded animate-pulse">1</div>
+                      </div>
+                      <div className="text-center text-sm text-pink-600 mt-2">
+                        Les deux nombres sont consécutifs ! 💡
+                      </div>
+                    </div>
+
+                    {/* Transformation en double */}
+                    <div className="bg-white rounded-lg p-3 shadow-sm">
+                      <div className="text-center text-base font-bold text-blue-700 mb-3">
+                        🔄 Transformation en double
+                      </div>
+                      <div className="space-y-3">
+                        <div className="text-center p-2 bg-gray-100 rounded-lg">
+                          <div className="text-sm text-gray-700 mb-1">Calcul original :</div>
+                          <div className="text-lg font-bold text-gray-800">
+                            {exercises[currentExercise].firstNumber} + {exercises[currentExercise].secondNumber}
+                          </div>
+                        </div>
+
+                        <div className="text-center text-lg">⬇️</div>
+
+                        <div className="text-center p-2 bg-blue-100 rounded-lg border-2 border-blue-400">
+                          <div className="text-sm text-blue-700 mb-1">Devient :</div>
+                          <div className="text-lg font-bold text-blue-800">
+                            {exercises[currentExercise].firstNumber} + {exercises[currentExercise].firstNumber} + 1
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Calcul du double */}
+                    <div className="bg-white rounded-lg p-3 shadow-sm border-l-4 border-green-400">
+                      <div className="text-center text-base font-bold text-green-700 mb-3">
+                        ✨ Calcul du double
+                      </div>
+                      <div className="space-y-2">
+                        <div className="text-center text-sm text-green-600">
+                          Le double de {exercises[currentExercise].firstNumber} :
+                        </div>
+                        <div className="flex justify-center items-center space-x-2 text-xl font-bold">
+                          <div className="text-green-700">{exercises[currentExercise].firstNumber}</div>
+                          <div className="text-gray-500">+</div>
+                          <div className="text-green-700">{exercises[currentExercise].firstNumber}</div>
+                          <div className="text-gray-500">=</div>
+                          <div className="text-green-800 px-2 py-1 bg-green-200 rounded font-bold">
+                            {exercises[currentExercise].firstNumber * 2}
+                          </div>
+                        </div>
+                        <div className="text-center text-sm text-green-600">
+                          Double de {exercises[currentExercise].firstNumber} = {exercises[currentExercise].firstNumber * 2}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Étape finale : +1 */}
+                    <div className="bg-white rounded-lg p-3 shadow-sm border-l-4 border-purple-400">
+                      <div className="text-center text-base font-bold text-purple-700 mb-3">
+                        🎯 Étape finale : + 1
+                      </div>
+                      <div className="space-y-2">
+                        <div className="text-center text-sm text-purple-600">
+                          J'ajoute le 1 restant :
+                        </div>
+                        <div className="flex justify-center items-center space-x-2 text-xl font-bold">
+                          <div className="text-purple-700">{exercises[currentExercise].firstNumber * 2}</div>
+                          <div className="text-gray-500">+</div>
+                          <div className="text-green-700 px-2 py-1 bg-green-100 rounded">1</div>
+                          <div className="text-gray-500">=</div>
+                          <div className="text-purple-800 px-2 py-1 bg-purple-200 rounded font-bold">
+                            {exercises[currentExercise].correctAnswer}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Résumé complet */}
+                    <div className="bg-white rounded-lg p-3 shadow-sm">
+                      <div className="text-center text-base font-bold text-yellow-700 mb-3">
+                        📋 Résumé de la méthode
+                      </div>
+                      <div className="space-y-2">
+                        <div className="text-center p-2 bg-yellow-100 rounded-lg">
+                          <div className="text-sm font-bold text-yellow-800">
+                            {exercises[currentExercise].firstNumber} + {exercises[currentExercise].secondNumber} = 
+                            {exercises[currentExercise].firstNumber} + {exercises[currentExercise].firstNumber} + 1 = 
+                            {exercises[currentExercise].firstNumber * 2} + 1 = {exercises[currentExercise].correctAnswer}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="text-center text-sm text-yellow-600 mt-2">
+                        Double + 1 = Résultat ! 🎯
+                      </div>
+                    </div>
+
+                    {/* Résultat final */}
+                    <div className="bg-white rounded-lg p-3 shadow-sm border-l-4 border-pink-400">
+                      <div className="flex justify-center items-center space-x-2 text-xl font-bold">
+                        <div className="text-pink-800 bg-pink-200 px-3 py-1 rounded animate-pulse">
+                          🎉 Résultat : {exercises[currentExercise].correctAnswer}
+                        </div>
+                      </div>
+                      <div className="text-center text-sm text-pink-600 mt-1">👥 L'astuce des doubles, c'est malin !</div>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {/* Navigation */}
               {isCorrect === false && (
