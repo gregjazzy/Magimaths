@@ -4293,7 +4293,7 @@ export default function AdditionsJusqua100CE1() {
             {/* Sélecteur de séries */}
             <div className="bg-white rounded-xl p-4 shadow-lg mt-6">
               <h3 className="text-lg font-bold text-gray-900 mb-4 text-center">📚 Choisir une série d'exercices</h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 {Object.entries(exerciseSeries).map(([seriesKey, seriesExercises]) => {
                   const seriesNames = {
                     decomposition: '🔢 Décomposition',
@@ -4314,7 +4314,7 @@ export default function AdditionsJusqua100CE1() {
                         setAnsweredCorrectly(new Set());
                         setShowCompletionModal(false);
                       }}
-                      className={`p-3 rounded-lg font-bold text-sm transition-all duration-300 ${
+                      className={`p-4 rounded-lg font-bold text-sm transition-all duration-300 min-h-[80px] flex flex-col justify-center items-center ${
                         currentSeries === seriesKey
                           ? 'bg-blue-500 text-white shadow-lg scale-105'
                           : 'bg-gray-100 text-gray-700 hover:bg-gray-200 hover:scale-102'
