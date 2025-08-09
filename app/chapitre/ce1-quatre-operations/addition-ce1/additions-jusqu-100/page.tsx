@@ -843,28 +843,80 @@ export default function AdditionsJusqua100CE1() {
     });
   };
 
-  // Fonction pour faire défiler vers une section
+  // Fonction pour faire défiler vers une section - OPTIMISÉE MOBILE
   const scrollToSection = (elementId: string) => {
     setTimeout(() => {
       const element = document.getElementById(elementId);
       if (element) {
+        // Détecter si on est sur mobile
+        const isMobileScreen = window.innerWidth < 640; // sm breakpoint
+        
         element.scrollIntoView({ 
           behavior: 'smooth', 
-          block: 'center',
+          block: 'center', // Centrer sur tous les appareils
           inline: 'nearest' 
         });
       }
     }, 300);
   };
 
-  // Fonction pour scroller vers le bouton Suivant
+  // Fonction pour s'assurer que l'animation en cours est visible - MOBILE UNIQUEMENT
+  const ensureAnimationVisible = () => {
+    const isMobileScreen = window.innerWidth < 640; // sm breakpoint
+    if (!isMobileScreen) return; // Ne rien faire sur desktop
+    
+    // Sur mobile uniquement, scroll vers la section animation
+    setTimeout(() => {
+      const animationElement = document.getElementById('animation-section');
+      if (animationElement) {
+        const rect = animationElement.getBoundingClientRect();
+        const viewportHeight = window.innerHeight;
+        
+        // Vérifier si l'animation est bien visible (au moins 60% visible dans la fenêtre)
+        const visibleHeight = Math.min(rect.bottom, viewportHeight) - Math.max(rect.top, 0);
+        const elementHeight = rect.bottom - rect.top;
+        const visibilityRatio = visibleHeight / elementHeight;
+        
+        // Si moins de 60% de l'animation est visible, ou si elle est trop haute/basse
+        if (visibilityRatio < 0.6 || rect.top < 50 || rect.top > viewportHeight * 0.4) {
+          animationElement.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'center', // Centrer l'animation sur mobile
+            inline: 'nearest' 
+          });
+        }
+      }
+    }, 150); // Délai légèrement plus long pour laisser le DOM se stabiliser
+  };
+
+  // Fonction pour scroller vers le bouton Suivant - OPTIMISÉE MOBILE
   const scrollToNextButton = () => {
     if (nextButtonRef.current) {
-      nextButtonRef.current.scrollIntoView({
-        behavior: 'smooth',
-        block: 'end',
-        inline: 'nearest'
-      });
+      const isMobileScreen = window.innerWidth < 640;
+      
+      if (isMobileScreen) {
+        // Sur mobile, centrer le bouton pour une meilleure visibilité
+        nextButtonRef.current.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center',
+          inline: 'nearest'
+        });
+        
+        // Petit ajustement pour s'assurer que la correction est aussi visible
+        setTimeout(() => {
+          window.scrollBy({
+            top: -50, // Remonte un peu pour voir la correction aussi
+            behavior: 'smooth'
+          });
+        }, 400);
+      } else {
+        // Desktop comportement original
+        nextButtonRef.current.scrollIntoView({
+          behavior: 'smooth',
+          block: 'end',
+          inline: 'nearest'
+        });
+      }
     }
   };
 
@@ -907,7 +959,7 @@ export default function AdditionsJusqua100CE1() {
       await wait(1000);
       if (stopSignalRef.current) return;
       
-              await playAudio("Tu vas découvrir 4 techniques extraordinaires pour calculer avec de gros nombres, par les blocs de diamant !");
+              await playAudio("Tu vas découvrir 6 techniques extraordinaires pour calculer avec de gros nombres, par les blocs de diamant !");
       if (stopSignalRef.current) return;
       
       await wait(1200);
@@ -1013,7 +1065,6 @@ export default function AdditionsJusqua100CE1() {
   // Fonction pour expliquer une technique spécifique
   const explainTechnique = async (techniqueIndex: number, exampleIndex: number = 0) => {
     stopAllVocalsAndAnimations();
-    clearPreviousAnimation(); // Nettoyer l'animation précédente
     await wait(300);
     stopSignalRef.current = false;
     setIsAnimationRunning(true);
@@ -1024,9 +1075,18 @@ export default function AdditionsJusqua100CE1() {
     setCurrentExample(exampleIndex);
 
     try {
-      // Scroll vers la zone d'animation
-      scrollToSection('animation-section');
-      await wait(500);
+      // Sur mobile, scroll vers l'animation avec un délai pour la fermeture du sélecteur
+      const isMobileScreen = window.innerWidth < 640;
+      
+      if (isMobileScreen) {
+        // Attendre que le sélecteur se ferme, puis scroll vers l'animation
+        await wait(200);
+        scrollToSection('animation-section');
+        await wait(1200); // Plus de temps sur mobile pour le scroll complet
+      } else {
+        scrollToSection('animation-section');
+        await wait(500);
+      }
 
       // Présentation de la technique
       setHighlightedElement('technique-title');
@@ -1059,10 +1119,9 @@ export default function AdditionsJusqua100CE1() {
     } finally {
       setHighlightedElement(null);
       setAnimatingStep(null);
-      // Ne pas effacer l'animation - laisser affichée jusqu'à ce qu'on clique sur autre chose
-      // setCurrentTechnique(null);
-      // setCurrentExample(null);
-      // setCalculationStep(null);
+      setCurrentTechnique(null);
+      setCurrentExample(null);
+      setCalculationStep(null);
       setIsAnimationRunning(false);
       setShowingCarry(false);
       setHighlightedDigits([]);
@@ -1073,6 +1132,7 @@ export default function AdditionsJusqua100CE1() {
   const animateSansRetenue = async (example: any) => {
     // Étape 1 : Setup
     setCalculationStep('setup');
+    ensureAnimationVisible(); // Scroll mobile au début
     await playAudio(`Calculons ${example.calculation}. Je place les nombres en colonnes, l'un sous l'autre.`);
     await wait(1000);
 
@@ -1080,6 +1140,7 @@ export default function AdditionsJusqua100CE1() {
 
     // Étape 2 : Unités
     setCalculationStep('units');
+    ensureAnimationVisible(); // S'assurer que l'étape est visible
     setHighlightedDigits(['units']);
     await playAudio(`J'additionne d'abord les unités : ${example.num1 % 10} plus ${example.num2 % 10} égale ${(example.num1 % 10) + (example.num2 % 10)}.`);
     await wait(1500);
@@ -1088,6 +1149,7 @@ export default function AdditionsJusqua100CE1() {
 
     // Étape 3 : Dizaines
     setCalculationStep('tens');
+    ensureAnimationVisible();
     setHighlightedDigits(['tens']);
     await playAudio(`Ensuite les dizaines : ${Math.floor(example.num1 / 10)} plus ${Math.floor(example.num2 / 10)} égale ${Math.floor(example.num1 / 10) + Math.floor(example.num2 / 10)}.`);
     await wait(1500);
@@ -1096,6 +1158,7 @@ export default function AdditionsJusqua100CE1() {
 
     // Étape 4 : Explication de la condition importante
     setCalculationStep('result');
+    ensureAnimationVisible();
     setHighlightedDigits([]);
     await playAudio(`Attention ! Cette technique sans retenue ne fonctionne que si chaque addition en colonne ne dépasse pas 10.`);
     await wait(1500);
@@ -1291,6 +1354,7 @@ export default function AdditionsJusqua100CE1() {
   const animateComplement10 = async (example: any) => {
     // Étape 1 : Introduction
     setCalculationStep('setup');
+    ensureAnimationVisible(); // S'assurer que l'animation est visible
     await playAudio(`Technique du complément à 10 : ${example.calculation}. Je vais te montrer une astuce géniale !`);
     await wait(2500);
 
@@ -1298,6 +1362,7 @@ export default function AdditionsJusqua100CE1() {
 
     // Étape 2 : Présentation du problème
     setCalculationStep('show-problem');
+    ensureAnimationVisible();
     await playAudio(`Je veux calculer ${example.num1} plus ${example.num2}. Voici ma stratégie secrète !`);
     await wait(3000);
 
@@ -1305,6 +1370,7 @@ export default function AdditionsJusqua100CE1() {
 
     // Étape 3 : Trouver le complément
     setCalculationStep('find-complement');
+    ensureAnimationVisible(); // Important : quand l'animation change
     const complement = 10 - (example.num1 % 10);
     const nextTen = Math.ceil(example.num1 / 10) * 10;
     await playAudio(`D'abord, je regarde ${example.num1}. Pour arriver à ${nextTen}, j'ai besoin de ${complement}.`);
@@ -1319,6 +1385,7 @@ export default function AdditionsJusqua100CE1() {
 
     // Étape 4 : Ajouter le complément
     setCalculationStep('add-complement');
+    ensureAnimationVisible(); // Nouvelle étape = nouveau scroll
     await playAudio(`Je prends ${complement} dans ${example.num2}. ${example.num2} moins ${complement} égale ${example.num2 - complement}.`);
     await wait(3500);
 
@@ -1326,6 +1393,7 @@ export default function AdditionsJusqua100CE1() {
 
     // Étape 5 : Montrer l'étape intermédiaire
     setCalculationStep('show-intermediate');
+    ensureAnimationVisible();
     await playAudio(`Maintenant j'ai ${nextTen} plus ${example.num2 - complement}. C'est beaucoup plus simple !`);
     await wait(3000);
 
@@ -1333,6 +1401,7 @@ export default function AdditionsJusqua100CE1() {
 
     // Étape 6 : Addition du reste
     setCalculationStep('add-remaining');
+    ensureAnimationVisible();
     await playAudio(`${nextTen} plus ${example.num2 - complement} égale ${example.result}.`);
     await wait(2500);
 
@@ -1340,6 +1409,7 @@ export default function AdditionsJusqua100CE1() {
 
     // Étape 7 : Résultat final
     setCalculationStep('result');
+    ensureAnimationVisible();
     setHighlightedDigits([]);
     await playAudio(`Résultat : ${example.result} ! Tu vois comme c'est malin ? Le complément à 10 rend tout plus facile !`);
     await wait(3000);
@@ -1349,37 +1419,14 @@ export default function AdditionsJusqua100CE1() {
   const openExampleSelector = (techniqueIndex: number) => {
     if (isAnimationRunning) return;
     
-    // Nettoyer l'animation précédente
-    clearPreviousAnimation();
-    
     const technique = additionTechniques[techniqueIndex];
     setSelectedTechnique(technique.id);
     setSelectedExampleIndex(0); // Par défaut le premier exemple
     
-    // Scroll vers la zone d'animation
-    scrollToSection('animation-section');
-  };
-
-  // Fonction pour nettoyer l'animation précédente
-  const clearPreviousAnimation = () => {
-    setCurrentTechnique(null);
-    setCurrentExample(null);
-    setCalculationStep(null);
-    setHighlightedElement(null);
-    setAnimatingStep(null);
-    setShowingCarry(false);
-    setHighlightedDigits([]);
-  };
-
-  // Fonction pour nettoyer les états de correction des exercices
-  const clearExerciseCorrection = () => {
-    setUserAnswer('');
-    setIsCorrect(null);
-    setHighlightedElement(null);
-    setAnimatingStep(null);
-    setCalculationStep(null);
-    setShowingCarry(false);
-    setHighlightedDigits([]);
+    // Scroll vers la grille de sélection d'exemples - attendre un peu sur mobile
+    setTimeout(() => {
+      scrollToSection('example-selector-section');
+    }, window.innerWidth < 640 ? 300 : 150); // Plus de délai sur mobile pour laisser le DOM se mettre à jour
   };
 
   // Animation pour décomposition
@@ -1710,147 +1757,25 @@ export default function AdditionsJusqua100CE1() {
       if (stopSignalRef.current) return;
       
       const exercise = exercises[currentExercise];
-      await playAudio(`Pas de problème ! Regarde bien la correction...`);
+      await playAudio(`Pas de problème ! Regarde bien...`);
+      if (stopSignalRef.current) return;
+      
+      await wait(500);
+      if (stopSignalRef.current) return;
+      
+      // Scroll vers la correction et le bouton suivant sur mobile
+      const isMobileScreen = window.innerWidth < 640;
+      if (isMobileScreen) {
+        setTimeout(() => {
+          scrollToNextButton();
+        }, 200);
+      }
+      
+      await playAudio(`La bonne réponse est ${exercise.correctAnswer}. Clique sur suivant pour continuer !`);
       if (stopSignalRef.current) return;
       
       await wait(1000);
       if (stopSignalRef.current) return;
-      
-      // Scroll vers la zone de correction selon le type d'exercice
-      const correctionSection = document.querySelector(`[data-correction-type="${exercise.type}"]`);
-      if (correctionSection) {
-        correctionSection.scrollIntoView({ 
-          behavior: 'smooth', 
-          block: window.innerWidth < 768 ? 'start' : 'start' 
-        });
-        // Ajustement supplémentaire pour mobile pour optimiser l'espace
-        if (window.innerWidth < 768) {
-          setTimeout(() => {
-            window.scrollBy(0, -80); // Remonte un peu pour laisser de l'espace en haut
-          }, 800);
-        }
-        await wait(1500);
-        if (stopSignalRef.current) return;
-      }
-      
-      // Explication vocale selon le type de technique
-      if (exercise.type === 'decomposition') {
-        await playAudio(`Pour ${exercise.firstNumber} plus ${exercise.secondNumber}, je décompose en dizaines et unités.`);
-        if (stopSignalRef.current) return;
-        await wait(1500);
-        
-        await playAudio(`${exercise.firstNumber} égal ${Math.floor(exercise.firstNumber / 10) * 10} plus ${exercise.firstNumber % 10}, et ${exercise.secondNumber} égal ${Math.floor(exercise.secondNumber / 10) * 10} plus ${exercise.secondNumber % 10}.`);
-        if (stopSignalRef.current) return;
-        await wait(2000);
-        
-        await playAudio(`J'additionne les dizaines : ${Math.floor(exercise.firstNumber / 10) * 10} plus ${Math.floor(exercise.secondNumber / 10) * 10} égal ${(Math.floor(exercise.firstNumber / 10) + Math.floor(exercise.secondNumber / 10)) * 10}.`);
-        if (stopSignalRef.current) return;
-        await wait(1500);
-        
-        await playAudio(`Puis les unités : ${exercise.firstNumber % 10} plus ${exercise.secondNumber % 10} égal ${(exercise.firstNumber % 10) + (exercise.secondNumber % 10)}.`);
-        if (stopSignalRef.current) return;
-        await wait(1500);
-        
-        await playAudio(`Donc ${(Math.floor(exercise.firstNumber / 10) + Math.floor(exercise.secondNumber / 10)) * 10} plus ${(exercise.firstNumber % 10) + (exercise.secondNumber % 10)} égal ${exercise.correctAnswer} !`);
-        
-      } else if (exercise.type === 'bonds-10') {
-        await playAudio(`Pour ${exercise.firstNumber} plus ${exercise.secondNumber}, je fais des bonds de 10.`);
-        if (stopSignalRef.current) return;
-        await wait(1500);
-        
-        const dizaines = Math.floor(exercise.secondNumber / 10);
-        if (dizaines > 0) {
-          await playAudio(`Je fais ${dizaines} bonds de 10 à partir de ${exercise.firstNumber}.`);
-          if (stopSignalRef.current) return;
-          await wait(2000);
-        }
-        
-        const unites = exercise.secondNumber % 10;
-        if (unites > 0) {
-          const intermediate = exercise.firstNumber + dizaines * 10;
-          await playAudio(`Puis j'ajoute ${unites} unités à ${intermediate}.`);
-          if (stopSignalRef.current) return;
-          await wait(1500);
-        }
-        
-        await playAudio(`Le résultat est ${exercise.correctAnswer} !`);
-        
-      } else if (exercise.type === 'compensation') {
-        await playAudio(`Pour ${exercise.firstNumber} plus ${exercise.secondNumber}, j'utilise la compensation.`);
-        if (stopSignalRef.current) return;
-        await wait(1500);
-        
-        // Logique de compensation selon les nombres
-        const first = exercise.firstNumber;
-        const second = exercise.secondNumber;
-        
-        if (second % 10 === 9) {
-          await playAudio(`${second} est proche de ${(Math.floor(second / 10) + 1) * 10}. Je calcule ${first} plus ${(Math.floor(second / 10) + 1) * 10} égal ${first + (Math.floor(second / 10) + 1) * 10}.`);
-          if (stopSignalRef.current) return;
-          await wait(2500);
-          
-          await playAudio(`Puis je retire 1 : ${first + (Math.floor(second / 10) + 1) * 10} moins 1 égal ${exercise.correctAnswer}.`);
-        } else if (second % 10 === 8) {
-          await playAudio(`${second} est proche de ${(Math.floor(second / 10) + 1) * 10}. Je calcule ${first} plus ${(Math.floor(second / 10) + 1) * 10} égal ${first + (Math.floor(second / 10) + 1) * 10}.`);
-          if (stopSignalRef.current) return;
-          await wait(2500);
-          
-          await playAudio(`Puis je retire 2 : ${first + (Math.floor(second / 10) + 1) * 10} moins 2 égal ${exercise.correctAnswer}.`);
-        }
-        
-      } else if (exercise.type === 'etapes-successives') {
-        await playAudio(`Pour ${exercise.firstNumber} plus ${exercise.secondNumber}, je procède par étapes.`);
-        if (stopSignalRef.current) return;
-        await wait(1500);
-        
-        const dizaines = Math.floor(exercise.secondNumber / 10) * 10;
-        const unites = exercise.secondNumber % 10;
-        const intermediate = exercise.firstNumber + dizaines;
-        
-        await playAudio(`Étape 1 : j'ajoute ${dizaines} à ${exercise.firstNumber} pour obtenir ${intermediate}.`);
-        if (stopSignalRef.current) return;
-        await wait(2000);
-        
-        await playAudio(`Étape 2 : j'ajoute ${unites} à ${intermediate} pour obtenir ${exercise.correctAnswer}.`);
-        if (stopSignalRef.current) return;
-        await wait(2000);
-        
-      } else if (exercise.type === 'doubles') {
-        await playAudio(`Pour ${exercise.firstNumber} plus ${exercise.secondNumber}, j'utilise la technique des doubles.`);
-        if (stopSignalRef.current) return;
-        await wait(1500);
-        
-        if (exercise.secondNumber === exercise.firstNumber + 1) {
-          await playAudio(`${exercise.secondNumber} c'est ${exercise.firstNumber} plus 1. Donc je calcule ${exercise.firstNumber} plus ${exercise.firstNumber} plus 1.`);
-          if (stopSignalRef.current) return;
-          await wait(2500);
-          
-          await playAudio(`${exercise.firstNumber} plus ${exercise.firstNumber} égal ${exercise.firstNumber * 2}, plus 1 égal ${exercise.correctAnswer}.`);
-        }
-        
-      } else if (exercise.type === 'complement-10') {
-        await playAudio(`Pour ${exercise.firstNumber} plus ${exercise.secondNumber}, j'utilise le complément à 10.`);
-        if (stopSignalRef.current) return;
-        await wait(1500);
-        
-        const complement = 10 - (exercise.firstNumber % 10);
-        const remaining = exercise.secondNumber - complement;
-        const intermediate = exercise.firstNumber + complement;
-        
-        await playAudio(`Il faut ${complement} pour compléter ${exercise.firstNumber} à ${intermediate}. Il me reste ${remaining} à ajouter.`);
-        if (stopSignalRef.current) return;
-        await wait(2500);
-        
-        await playAudio(`${intermediate} plus ${remaining} égal ${exercise.correctAnswer}.`);
-      }
-      
-      if (stopSignalRef.current) return;
-      await wait(1000);
-      
-      // Scroll vers le bouton suivant pour mobile
-      if (window.innerWidth < 768) {
-        scrollToNextButton();
-      }
       
     } catch (error) {
       console.error('Erreur dans explainWrongAnswer:', error);
@@ -1886,9 +1811,30 @@ export default function AdditionsJusqua100CE1() {
       await wait(1000);
       if (stopSignalRef.current) return;
       
+      // Nouvelle section : Expliquer les 6 types d'exercices
+      setHighlightedElement('exercise-series-selector');
+      await playAudio("Tu as le choix entre 6 types d'exercices qui correspondent aux techniques d'addition en calcul mental !");
+      if (stopSignalRef.current) return;
+      
+      await wait(1500);
+      if (stopSignalRef.current) return;
+      
+      await playAudio("Décomposition, bonds de 10, compensation, étapes successives, doubles, et mélange !");
+      if (stopSignalRef.current) return;
+      
+      await wait(1500);
+      if (stopSignalRef.current) return;
+      
+      await playAudio("Choisis d'abord ta série préférée dans ce menu !");
+      if (stopSignalRef.current) return;
+      await wait(2000);
+      setHighlightedElement(null);
+      
+      if (stopSignalRef.current) return;
+      
       // Mettre en surbrillance le bouton "Écouter l'énoncé"
       setHighlightedElement('listen-question-button');
-      await playAudio("Pour lire l'énoncé appuie sur écouter l'énoncé");
+      await playAudio("Ensuite, pour lire l'énoncé appuie sur écouter l'énoncé");
       if (stopSignalRef.current) return;
       await wait(1500);
       setHighlightedElement(null);
@@ -1897,7 +1843,15 @@ export default function AdditionsJusqua100CE1() {
       
       // Mettre en surbrillance la zone de réponse
       setHighlightedElement('answer-zone');
-      await playAudio("Écris le résultat de l'addition dans la case, puis clique sur valider");
+      await playAudio("Écris le résultat de l'addition dans la case");
+      if (stopSignalRef.current) return;
+      
+      await wait(1200);
+      if (stopSignalRef.current) return;
+      
+      // Mettre en surbrillance le bouton valider
+      setHighlightedElement('validate-button');
+      await playAudio("puis clique sur valider");
       if (stopSignalRef.current) return;
       
       await wait(1500);
@@ -2017,7 +1971,9 @@ export default function AdditionsJusqua100CE1() {
       setTimeout(() => {
         if (currentExercise + 1 < exercises.length) {
           setCurrentExercise(currentExercise + 1);
-          clearExerciseCorrection(); // Nettoyer complètement les états de correction
+          setUserAnswer('');
+          setIsCorrect(null);
+
           setAnimatedObjects([]);
           setCountingIndex(-1);
         } else {
@@ -2038,7 +1994,9 @@ export default function AdditionsJusqua100CE1() {
     
     if (currentExercise < exercises.length - 1) {
       setCurrentExercise(currentExercise + 1);
-      clearExerciseCorrection(); // Nettoyer complètement les états de correction
+      setUserAnswer('');
+      setIsCorrect(null);
+
       setAnimatedObjects([]);
       setCountingIndex(-1);
     } else {
@@ -2183,12 +2141,12 @@ export default function AdditionsJusqua100CE1() {
             <span>Retour à l'addition CE1</span>
           </Link>
           
-          <div className="bg-white rounded-xl p-4 sm:p-2 sm:p-6 shadow-lg text-center">
-            <h1 className="text-xs sm:text-xs sm:text-xl sm:text-xs sm:text-4xl font-bold text-gray-900 mb-2 sm:mb-4">
+          <div className="bg-white rounded-xl p-4 sm:p-6 shadow-lg text-center">
+            <h1 className="text-xl sm:text-4xl font-bold text-gray-900 mb-2 sm:mb-4">
               🧮 Additions jusqu'à 100 - CE1
             </h1>
-            <p className="text-xs sm:text-lg text-gray-600 hidden sm:block">
-              Maîtrise les additions avec des nombres plus grands ! Découvre 4 techniques incroyables.
+            <p className="text-lg text-gray-600 hidden sm:block">
+              Maîtrise les additions avec des nombres plus grands ! Découvre 6 techniques incroyables.
             </p>
           </div>
         </div>
@@ -2225,9 +2183,9 @@ export default function AdditionsJusqua100CE1() {
 
         {!showExercises ? (
           /* COURS - MOBILE OPTIMISÉ */
-          <div className="space-y-1 sm:space-y-2 sm:space-y-6">
+          <div className="space-y-2 sm:space-y-6">
             {/* Image de Sam le Pirate avec bouton DÉMARRER */}
-            <div className="flex items-center justify-center gap-2 sm:gap-4 p-1 sm:p-4 mb-2 sm:mb-6">
+            <div className="flex items-center justify-center gap-2 sm:gap-4 p-2 sm:p-4 mb-3 sm:mb-6">
               {/* Image de Sam le Pirate */}
               <div className={`relative transition-all duration-500 border-2 border-indigo-300 rounded-full bg-gradient-to-br from-indigo-100 to-blue-100 ${
                 isPlayingVocal
@@ -2245,7 +2203,7 @@ export default function AdditionsJusqua100CE1() {
                   />
                 )}
                 {imageError && (
-                  <div className="text-xs sm:text-sm sm:text-2xl">🏴‍☠️</div>
+                  <div className="text-lg sm:text-2xl">🏴‍☠️</div>
                 )}
                 
                 {/* Megaphone animé quand Sam parle */}
@@ -2282,18 +2240,18 @@ export default function AdditionsJusqua100CE1() {
                 highlightedElement === 'intro' ? 'ring-4 ring-blue-400 bg-blue-100' : ''
               }`}
             >
-              <div className="flex items-center gap-1 sm:gap-3 mb-1 sm:mb-4">
+              <div className="flex items-center gap-1 sm:gap-3 mb-3 sm:mb-4">
                 <div className="p-1 sm:p-2 bg-blue-100 rounded-lg">
-                  <Calculator className="w-3 h-3 sm:w-6 sm:h-6 text-blue-600" />
+                  <Calculator className="w-4 h-4 sm:w-6 sm:h-6 text-blue-600" />
                 </div>
-                <h2 className="text-sm sm:text-sm sm:text-2xl font-bold text-gray-800">Les additions jusqu'à 100</h2>
+                <h2 className="text-base sm:text-2xl font-bold text-gray-800">Les additions jusqu'à 100</h2>
                 {/* Icône d'animation pour l'introduction */}
-                <div className="bg-gradient-to-r from-blue-500 to-cyan-600 text-white rounded-full w-5 h-5 sm:w-12 sm:h-12 flex items-center justify-center text-xs sm:text-sm sm:text-xs sm:text-xs sm:text-xl font-bold shadow-lg hover:scale-110 cursor-pointer transition-all duration-300 ring-2 ring-blue-300" 
+                <div className="bg-gradient-to-r from-blue-500 to-cyan-600 text-white rounded-full w-6 h-6 sm:w-12 sm:h-12 flex items-center justify-center text-xs sm:text-xl font-bold shadow-lg hover:scale-110 cursor-pointer transition-all duration-300 ring-2 ring-blue-300" 
                      style={{animation: 'subtle-glow 2s infinite'}}>
                   💯
                 </div>
               </div>
-              <p className="text-xs sm:text-xs sm:text-lg text-gray-700 leading-relaxed hidden sm:block">
+              <p className="text-sm sm:text-lg text-gray-700 leading-relaxed">
                 Félicitations ! Tu vas apprendre les techniques pour additionner tous les nombres jusqu'à 100. 
                 C'est un cours très important qui va te rendre super fort en mathématiques !
               </p>
@@ -2308,18 +2266,18 @@ export default function AdditionsJusqua100CE1() {
                 highlightedElement === 'examples' ? 'ring-4 ring-blue-400 bg-blue-100' : ''
               }`}
             >
-              <div className="flex items-center justify-center gap-1 sm:gap-3 mb-2 sm:mb-6">
-                <h2 className="text-sm sm:text-sm sm:text-2xl font-bold text-gray-800">
-                  🎯 Choisis ta technique !
+              <div className="flex items-center justify-center gap-1 sm:gap-3 mb-3 sm:mb-6">
+                <h2 className="text-base sm:text-2xl font-bold text-gray-800">
+                  🎯 Choisis ta technique préférée !
                 </h2>
                 {/* Icône d'animation pour choisir la technique */}
-                <div className="bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-full w-5 h-5 sm:w-12 sm:h-12 flex items-center justify-center text-xs sm:text-sm sm:text-xs sm:text-xs sm:text-xl font-bold shadow-lg hover:scale-110 cursor-pointer transition-all duration-300 ring-2 ring-green-300" 
+                <div className="bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-full w-6 h-6 sm:w-12 sm:h-12 flex items-center justify-center text-xs sm:text-xl font-bold shadow-lg hover:scale-110 cursor-pointer transition-all duration-300 ring-2 ring-green-300" 
                      style={{animation: 'subtle-glow 2s infinite'}}>
                   🎯
                 </div>
               </div>
               
-              <div className="grid grid-cols-2 md:grid-cols-2 gap-2 sm:gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-1 md:grid-cols-2 gap-2 sm:gap-4">
                 {additionTechniques.map((technique, index) => (
                   <div 
                     key={index}
@@ -2331,10 +2289,10 @@ export default function AdditionsJusqua100CE1() {
                     onClick={isAnimationRunning ? undefined : () => openExampleSelector(index)}
                   >
                     <div className="text-center">
-                      <div className="text-lg sm:text-xs sm:text-4xl mb-1 sm:mb-3">{technique.icon}</div>
-                      <h3 className="font-bold text-xs sm:text-xs sm:text-lg text-gray-900 mb-1 sm:mb-2 leading-tight">{technique.title}</h3>
+                      <div className="text-lg sm:text-4xl mb-1 sm:mb-3">{technique.icon}</div>
+                      <h3 className="font-bold text-xs sm:text-lg text-gray-900 mb-1 sm:mb-2 leading-tight">{technique.title}</h3>
                       <div className="text-xs sm:text-sm text-gray-900 mb-2 sm:mb-4 leading-relaxed hidden sm:block">{technique.description}</div>
-                      <div className="text-sm sm:text-lg font-mono bg-white px-2 sm:px-3 py-1 rounded mb-1 sm:mb-3 text-gray-900 shadow-sm">
+                      <div className="text-sm sm:text-lg font-mono bg-white px-2 sm:px-3 py-1 rounded mb-2 sm:mb-3 text-gray-900 shadow-sm">
                         {technique.examples[0].calculation}
                       </div>
                       <button className={`px-2 sm:px-3 py-1 rounded-lg text-xs sm:text-sm transition-colors shadow-md ${
@@ -2342,7 +2300,7 @@ export default function AdditionsJusqua100CE1() {
                           ? 'bg-gray-400 text-gray-200' 
                           : 'bg-blue-600 text-white hover:bg-blue-700'
                       }`}>
-                        {isAnimationRunning ? '⏳' : '▶️ Animation'}
+                        {isAnimationRunning ? '⏳ Attendez...' : '▶️ Voir l\'animation'}
                       </button>
                     </div>
                   </div>
@@ -2353,7 +2311,7 @@ export default function AdditionsJusqua100CE1() {
             {/* Cadre séparé pour sélection d'exemples */}
             {selectedTechnique && (
               <div 
-                id="animation-section"
+                id="example-selector-section"
                 className="bg-white rounded-xl shadow-lg p-6 border-2 border-blue-400"
               >
                 {(() => {
@@ -2363,13 +2321,13 @@ export default function AdditionsJusqua100CE1() {
                   return (
                     <div>
                       <div className="flex items-center justify-between mb-6">
-                        <h2 className="text-xs sm:text-xs sm:text-xl sm:text-xs sm:text-sm sm:text-2xl font-bold text-gray-800 flex items-center gap-3">
-                          <span className="text-xs sm:text-base sm:text-3xl">{technique.icon}</span>
+                        <h2 className="text-xl sm:text-2xl font-bold text-gray-800 flex items-center gap-3">
+                          <span className="text-3xl">{technique.icon}</span>
                           {technique.title}
                         </h2>
                         <button
                           onClick={() => setSelectedTechnique(null)}
-                          className="text-gray-500 hover:text-gray-700 text-xs sm:text-sm sm:text-2xl font-bold"
+                          className="text-gray-500 hover:text-gray-700 text-2xl font-bold"
                         >
                           ✕
                         </button>
@@ -2385,7 +2343,7 @@ export default function AdditionsJusqua100CE1() {
                               <button
                                 key={index}
                                 onClick={() => setSelectedExampleIndex(index)}
-                                className={`p-2 sm:p-4 rounded-lg font-medium text-lg transition-all duration-200 border-2 ${
+                                className={`p-4 rounded-lg font-medium text-lg transition-all duration-200 border-2 ${
                                   selectedExampleIndex === index
                                     ? 'bg-blue-500 text-white border-blue-500 shadow-lg transform scale-105'
                                     : 'bg-gray-50 text-gray-800 border-gray-300 hover:bg-blue-100 hover:border-blue-400'
@@ -2402,11 +2360,15 @@ export default function AdditionsJusqua100CE1() {
                         <button
                           onClick={() => {
                             const techniqueIndex = additionTechniques.findIndex(t => t.id === selectedTechnique);
-                            explainTechnique(techniqueIndex, selectedExampleIndex);
-                            setSelectedTechnique(null); // Fermer le cadre après lancement
+                            setSelectedTechnique(null); // Fermer le cadre AVANT lancement
+                            
+                            // Délai pour permettre la fermeture du cadre et scroll vers animation
+                            setTimeout(() => {
+                              explainTechnique(techniqueIndex, selectedExampleIndex);
+                            }, window.innerWidth < 640 ? 300 : 100); // Plus de délai sur mobile
                           }}
                           disabled={isAnimationRunning}
-                          className={`px-8 py-4 rounded-xl font-bold text-xs sm:text-xs sm:text-xl shadow-lg transition-all transform ${
+                          className={`px-8 py-4 rounded-xl font-bold text-xl shadow-lg transition-all transform ${
                             isAnimationRunning 
                               ? 'bg-gray-400 text-gray-200 cursor-not-allowed' 
                               : 'bg-gradient-to-r from-green-500 to-emerald-500 text-white hover:shadow-xl hover:scale-105'
@@ -2421,13 +2383,13 @@ export default function AdditionsJusqua100CE1() {
               </div>
             )}
 
-            {/* Zone d'animation */}
+            {/* Zone d'animation - VERSION MOBILE COMPACTE */}
             {currentTechnique && currentExample !== null && (
               <div 
                 id="animation-section"
                 className="bg-white rounded-xl shadow-lg p-2 sm:p-6"
               >
-                <h2 className="text-sm sm:text-sm sm:text-2xl font-bold text-gray-800 mb-2 sm:mb-6 text-center">
+                <h2 className="text-sm sm:text-2xl font-bold text-gray-800 mb-2 sm:mb-6 text-center">
                   🎬 Animation de calcul
                 </h2>
                 
@@ -2438,45 +2400,45 @@ export default function AdditionsJusqua100CE1() {
 
                   return (
                     <div className="space-y-2 sm:space-y-6">
-                      {/* Titre de la technique */}
+                      {/* Titre de la technique - COMPACT MOBILE */}
                       <div className={`p-2 sm:p-4 rounded-lg text-center ${
                         highlightedElement === 'technique-title' ? 'bg-blue-100 ring-2 ring-blue-400' : 'bg-gray-100'
                       }`}>
-                        <h3 className="text-sm sm:text-xs sm:text-xs sm:text-xl font-bold text-blue-800">{technique.title}</h3>
+                        <h3 className="text-sm sm:text-xl font-bold text-blue-800">{technique.title}</h3>
                         <p className="text-xs sm:text-base text-gray-800 mt-1 sm:mt-2 hidden sm:block">{technique.description}</p>
                       </div>
 
-                      {/* Animation du calcul */}
+                      {/* Animation du calcul - COMPACT MOBILE */}
                       <div className="bg-gradient-to-r from-indigo-100 to-blue-100 rounded-lg p-2 sm:p-6">
                         <div className="text-center">
-                          <div className="text-xs sm:text-4xl font-mono font-bold mb-2 sm:mb-4 text-indigo-900">
+                          <div className="text-lg sm:text-4xl font-mono font-bold mb-2 sm:mb-4 text-indigo-900">
                             {example.calculation}
                           </div>
                           
                           {/* Animation des étapes selon la technique */}
                           {currentTechnique === 'sans-retenue' && calculationStep && (
-                            <div className="space-y-2 sm:space-y-6">
-                              {/* Addition posée en colonnes */}
-                              <div className="bg-white rounded-lg p-2 sm:p-6 shadow-md max-w-md mx-auto">
+                            <div className="space-y-3 sm:space-y-6">
+                              {/* Addition posée en colonnes - COMPACT MOBILE */}
+                              <div className="bg-white rounded-lg p-2 sm:p-6 shadow-md max-w-xs sm:max-w-md mx-auto">
                                 <div className="font-mono text-center">
                                   {/* En-têtes de colonnes */}
-                                  <div className="flex justify-center mb-2">
-                                    <div className="w-4"></div>
-                                    <div className="w-12 text-sm text-gray-600 font-bold">D</div>
-                                    <div className="w-12 text-sm text-gray-600 font-bold">U</div>
+                                  <div className="flex justify-center mb-1 sm:mb-2">
+                                    <div className="w-3 sm:w-4"></div>
+                                    <div className="w-8 sm:w-12 text-xs sm:text-sm text-gray-600 font-bold">D</div>
+                                    <div className="w-8 sm:w-12 text-xs sm:text-sm text-gray-600 font-bold">U</div>
                                   </div>
                                   
                                   {/* Premier nombre */}
-                                  <div className={`flex justify-center py-2 rounded transition-all ${
+                                  <div className={`flex justify-center py-1 sm:py-2 rounded transition-all ${
                                     calculationStep === 'setup' ? 'bg-blue-100' : ''
                                   }`}>
-                                    <div className="w-4"></div>
-                                    <div className={`w-12 text-xs sm:text-sm sm:text-2xl font-bold text-center ${
+                                    <div className="w-3 sm:w-4"></div>
+                                    <div className={`w-8 sm:w-12 text-lg sm:text-2xl font-bold text-center ${
                                       highlightedDigits.includes('tens') ? 'bg-yellow-200 text-yellow-900 rounded px-1' : 'text-gray-900'
                                     }`}>
                                       {Math.floor(example.num1 / 10)}
                                     </div>
-                                    <div className={`w-12 text-xs sm:text-sm sm:text-2xl font-bold text-center ${
+                                    <div className={`w-8 sm:w-12 text-lg sm:text-2xl font-bold text-center ${
                                       highlightedDigits.includes('units') ? 'bg-yellow-200 text-yellow-900 rounded px-1' : 'text-gray-900'
                                     }`}>
                                       {example.num1 % 10}
@@ -2484,16 +2446,16 @@ export default function AdditionsJusqua100CE1() {
                                   </div>
                                   
                                   {/* Ligne avec le signe + et le deuxième nombre */}
-                                  <div className={`flex justify-center py-2 rounded transition-all ${
+                                  <div className={`flex justify-center py-1 sm:py-2 rounded transition-all ${
                                     calculationStep === 'setup' ? 'bg-blue-100' : ''
                                   }`}>
-                                    <div className="w-4 text-xs sm:text-sm sm:text-2xl font-bold text-gray-900 text-right pr-1">+</div>
-                                    <div className={`w-12 text-xs sm:text-sm sm:text-2xl font-bold text-center ${
+                                    <div className="w-3 sm:w-4 text-lg sm:text-2xl font-bold text-gray-900 text-right pr-1">+</div>
+                                    <div className={`w-8 sm:w-12 text-lg sm:text-2xl font-bold text-center ${
                                       highlightedDigits.includes('tens') ? 'bg-yellow-200 text-yellow-900 rounded px-1' : 'text-gray-900'
                                     }`}>
                                       {Math.floor(example.num2 / 10)}
                                     </div>
-                                    <div className={`w-12 text-xs sm:text-sm sm:text-2xl font-bold text-center ${
+                                    <div className={`w-8 sm:w-12 text-lg sm:text-2xl font-bold text-center ${
                                       highlightedDigits.includes('units') ? 'bg-yellow-200 text-yellow-900 rounded px-1' : 'text-gray-900'
                                     }`}>
                                       {example.num2 % 10}
@@ -2501,17 +2463,17 @@ export default function AdditionsJusqua100CE1() {
                                   </div>
                                   
                                   {/* Ligne de séparation */}
-                                  <div className="border-b-2 border-gray-400 my-2 w-28 mx-auto"></div>
+                                  <div className="border-b-2 border-gray-400 my-1 sm:my-2 w-20 sm:w-28 mx-auto"></div>
                                   
                                   {/* Résultat progressif */}
                                   {(calculationStep === 'units' || calculationStep === 'tens' || calculationStep === 'result') && (
-                                    <div className={`flex justify-center py-2 ${
+                                    <div className={`flex justify-center py-1 sm:py-2 ${
                                       calculationStep === 'result' ? 'animate-bounce' : ''
                                     }`}>
-                                      <div className="w-4"></div>
+                                      <div className="w-3 sm:w-4"></div>
                                       
                                       {/* Chiffre des dizaines */}
-                                      <div className={`w-12 text-xs sm:text-sm sm:text-2xl font-bold text-center ${
+                                      <div className={`w-8 sm:w-12 text-lg sm:text-2xl font-bold text-center ${
                                         calculationStep === 'tens' || calculationStep === 'result' 
                                           ? 'text-green-700 animate-pulse' 
                                           : 'text-transparent'
@@ -2522,7 +2484,7 @@ export default function AdditionsJusqua100CE1() {
                                       </div>
                                       
                                       {/* Chiffre des unités */}
-                                      <div className={`w-12 text-xs sm:text-sm sm:text-2xl font-bold text-center ${
+                                      <div className={`w-8 sm:w-12 text-lg sm:text-2xl font-bold text-center ${
                                         calculationStep === 'units' || calculationStep === 'tens' || calculationStep === 'result'
                                           ? 'text-green-700 animate-pulse' 
                                           : 'text-transparent'
@@ -2536,19 +2498,19 @@ export default function AdditionsJusqua100CE1() {
                                 </div>
                               </div>
                               
-                              {/* Explication textuelle */}
+                              {/* Explication textuelle - COMPACT MOBILE */}
                               {calculationStep === 'units' && (
                                 <div className="bg-yellow-50 border-l-4 border-yellow-400 p-2 sm:p-4 rounded-lg">
-                                  <p className="text-yellow-800 font-semibold">
-                                    🧮 J'additionne les unités : {example.num1 % 10} + {example.num2 % 10} = {(example.num1 % 10) + (example.num2 % 10)}
+                                  <p className="text-xs sm:text-base text-yellow-800 font-semibold">
+                                    🧮 Unités : {example.num1 % 10} + {example.num2 % 10} = {(example.num1 % 10) + (example.num2 % 10)}
                                   </p>
                                 </div>
                               )}
                               
                               {calculationStep === 'tens' && (
                                 <div className="bg-blue-50 border-l-4 border-blue-400 p-2 sm:p-4 rounded-lg">
-                                  <p className="text-blue-800 font-semibold">
-                                    🧮 J'additionne les dizaines : {Math.floor(example.num1 / 10)} + {Math.floor(example.num2 / 10)} = {Math.floor(example.num1 / 10) + Math.floor(example.num2 / 10)}
+                                  <p className="text-xs sm:text-base text-blue-800 font-semibold">
+                                    🧮 Dizaines : {Math.floor(example.num1 / 10)} + {Math.floor(example.num2 / 10)} = {Math.floor(example.num1 / 10) + Math.floor(example.num2 / 10)}
                                   </p>
                                 </div>
                               )}
@@ -2557,15 +2519,15 @@ export default function AdditionsJusqua100CE1() {
 
                           {/* Animation pour avec retenue */}
                           {currentTechnique === 'avec-retenue' && calculationStep && (
-                            <div className="space-y-2 sm:space-y-6 bg-gradient-to-br from-orange-50 to-red-50 p-2 sm:p-6 rounded-xl border-2 border-orange-200">
+                            <div className="space-y-6 bg-gradient-to-br from-orange-50 to-red-50 p-6 rounded-xl border-2 border-orange-200">
                               
                               {/* Étape : Introduction */}
                               {calculationStep === 'setup' && (
                                 <div className="text-center">
-                                  <div className="text-xs sm:text-4xl font-bold text-orange-800 animate-pulse">
+                                  <div className="text-4xl font-bold text-orange-800 animate-pulse">
                                     {example.calculation}
                                   </div>
-                                  <div className="text-xs sm:text-lg text-orange-600 mt-2">
+                                  <div className="text-lg text-orange-600 mt-2">
                                     ⚡ Addition avec retenue - Attention !
                                   </div>
                                 </div>
@@ -2573,9 +2535,9 @@ export default function AdditionsJusqua100CE1() {
 
                               {/* Affichage permanent de la colonne (ne s'efface jamais) */}
                               {(calculationStep === 'setup' || calculationStep === 'units' || calculationStep === 'units-sum' || calculationStep === 'carry-explanation' || calculationStep === 'carry-visual' || calculationStep === 'tens' || calculationStep === 'result') && (
-                                <div className="bg-white rounded-lg p-2 sm:p-6 shadow-lg max-w-lg mx-auto">
+                                <div className="bg-white rounded-lg p-6 shadow-lg max-w-lg mx-auto">
                                   <div className="text-center mb-4">
-                                    <div className="text-xs sm:text-lg font-bold text-gray-700">📊 Addition en colonnes</div>
+                                    <div className="text-lg font-bold text-gray-700">📊 Addition en colonnes</div>
                                   </div>
                                   
                                   {/* Retenue (visible seulement si nécessaire) */}
@@ -2583,7 +2545,7 @@ export default function AdditionsJusqua100CE1() {
                                     <div className="w-8"></div>
                                     <div className="w-16 text-center">
                                       {(calculationStep === 'carry-visual' || calculationStep === 'tens' || calculationStep === 'result') && (
-                                        <div className="text-xs sm:text-lg font-bold text-red-700 animate-bounce border-2 border-red-400 bg-red-100 rounded-full px-2 py-1">
+                                        <div className="text-lg font-bold text-red-700 animate-bounce border-2 border-red-400 bg-red-100 rounded-full px-2 py-1">
                                           1
                                         </div>
                                       )}
@@ -2594,19 +2556,19 @@ export default function AdditionsJusqua100CE1() {
                                   {/* En-têtes de colonnes */}
                                   <div className="flex justify-center mb-3">
                                     <div className="w-8"></div>
-                                    <div className="w-16 text-center text-xs sm:text-lg font-bold text-gray-600 border-b-2 border-gray-400 pb-1">D</div>
-                                    <div className="w-16 text-center text-xs sm:text-lg font-bold text-gray-600 border-b-2 border-gray-400 pb-1">U</div>
+                                    <div className="w-16 text-center text-lg font-bold text-gray-600 border-b-2 border-gray-400 pb-1">D</div>
+                                    <div className="w-16 text-center text-lg font-bold text-gray-600 border-b-2 border-gray-400 pb-1">U</div>
                                   </div>
                                   
                                   {/* Premier nombre */}
                                   <div className="flex justify-center py-3">
                                     <div className="w-8"></div>
-                                    <div className={`w-16 text-xs sm:text-base sm:text-3xl font-bold text-center transition-all ${
+                                    <div className={`w-16 text-3xl font-bold text-center transition-all ${
                                       highlightedDigits.includes('tens') ? 'bg-yellow-200 text-yellow-900 rounded-lg px-2 py-1 ring-2 ring-yellow-400' : 'text-gray-900'
                                     }`}>
                                       {Math.floor(example.num1 / 10)}
                                     </div>
-                                    <div className={`w-16 text-xs sm:text-base sm:text-3xl font-bold text-center transition-all ${
+                                    <div className={`w-16 text-3xl font-bold text-center transition-all ${
                                       highlightedDigits.includes('units') ? 'bg-blue-200 text-blue-900 rounded-lg px-2 py-1 ring-2 ring-blue-400' : 'text-gray-900'
                                     }`}>
                                       {example.num1 % 10}
@@ -2615,13 +2577,13 @@ export default function AdditionsJusqua100CE1() {
                                   
                                   {/* Ligne avec le signe + et le deuxième nombre */}
                                   <div className="flex justify-center py-3">
-                                    <div className="w-8 text-xs sm:text-base sm:text-3xl font-bold text-orange-700 text-center">+</div>
-                                    <div className={`w-16 text-xs sm:text-base sm:text-3xl font-bold text-center transition-all ${
+                                    <div className="w-8 text-3xl font-bold text-orange-700 text-center">+</div>
+                                    <div className={`w-16 text-3xl font-bold text-center transition-all ${
                                       highlightedDigits.includes('tens') ? 'bg-yellow-200 text-yellow-900 rounded-lg px-2 py-1 ring-2 ring-yellow-400' : 'text-gray-900'
                                     }`}>
                                       {Math.floor(example.num2 / 10)}
                                     </div>
-                                    <div className={`w-16 text-xs sm:text-base sm:text-3xl font-bold text-center transition-all ${
+                                    <div className={`w-16 text-3xl font-bold text-center transition-all ${
                                       highlightedDigits.includes('units') ? 'bg-blue-200 text-blue-900 rounded-lg px-2 py-1 ring-2 ring-blue-400' : 'text-gray-900'
                                     }`}>
                                       {example.num2 % 10}
@@ -2637,7 +2599,7 @@ export default function AdditionsJusqua100CE1() {
                                       <div className="w-8"></div>
                                       
                                       {/* Chiffre des dizaines */}
-                                      <div className={`w-16 text-xs sm:text-base sm:text-3xl font-bold text-center transition-all ${
+                                      <div className={`w-16 text-3xl font-bold text-center transition-all ${
                                         calculationStep === 'tens' || calculationStep === 'result' 
                                           ? 'text-green-700 animate-pulse bg-green-100 rounded-lg px-2 py-1' 
                                           : 'text-gray-300'
@@ -2648,7 +2610,7 @@ export default function AdditionsJusqua100CE1() {
                                       </div>
                                       
                                       {/* Chiffre des unités */}
-                                      <div className={`w-16 text-xs sm:text-base sm:text-3xl font-bold text-center transition-all ${
+                                      <div className={`w-16 text-3xl font-bold text-center transition-all ${
                                         (calculationStep === 'carry-visual' || calculationStep === 'tens' || calculationStep === 'result')
                                           ? 'text-green-700 animate-pulse bg-green-100 rounded-lg px-2 py-1' 
                                           : 'text-gray-300'
@@ -2664,26 +2626,26 @@ export default function AdditionsJusqua100CE1() {
 
                               {/* Animation de calcul des unités (reste visible) */}
                               {(calculationStep === 'units' || calculationStep === 'units-sum' || calculationStep === 'carry-explanation' || calculationStep === 'carry-visual' || calculationStep === 'tens' || calculationStep === 'result') && (
-                                <div className="text-center bg-blue-100 p-2 sm:p-4 rounded-lg border-2 border-blue-400">
-                                  <div className="text-xs sm:text-sm sm:text-2xl font-bold text-blue-800 mb-3">
+                                <div className="text-center bg-blue-100 p-4 rounded-lg border-2 border-blue-400">
+                                  <div className="text-2xl font-bold text-blue-800 mb-3">
                                     🔹 Calcul des unités
                                   </div>
                                   <div className="flex justify-center items-center space-x-3 mb-4">
                                     {/* Unités du premier nombre */}
                                     <div className="flex space-x-1">
                                       {Array.from({length: example.num1 % 10}, (_, i) => (
-                                        <div key={i} className="w-6 h-6 bg-blue-500 border-2 border-blue-700 rounded-full flex items-center justify-center text-white font-bold text-xs">
+                                        <div key={i} className="w-6 h-6 bg-blue-500 border-2 border-blue-700 rounded-full flex items-center justify-center text-gray-800 font-bold text-xs">
                                           1
                                         </div>
                                       ))}
                                     </div>
                                     
-                                    <div className="text-xs sm:text-sm sm:text-2xl font-bold text-blue-600">+</div>
+                                    <div className="text-2xl font-bold text-blue-600">+</div>
                                     
                                     {/* Unités du deuxième nombre */}
                                     <div className="flex space-x-1">
                                       {Array.from({length: example.num2 % 10}, (_, i) => (
-                                        <div key={i} className="w-6 h-6 bg-cyan-500 border-2 border-cyan-700 rounded-full flex items-center justify-center text-white font-bold text-xs">
+                                        <div key={i} className="w-6 h-6 bg-cyan-500 border-2 border-cyan-700 rounded-full flex items-center justify-center text-gray-800 font-bold text-xs">
                                           1
                                         </div>
                                       ))}
@@ -2691,12 +2653,12 @@ export default function AdditionsJusqua100CE1() {
                                     
                                     {(calculationStep === 'units-sum' || calculationStep === 'carry-explanation' || calculationStep === 'carry-visual' || calculationStep === 'tens' || calculationStep === 'result') && (
                                       <>
-                                        <div className="text-xs sm:text-sm sm:text-2xl font-bold text-blue-600">=</div>
+                                        <div className="text-2xl font-bold text-blue-600">=</div>
                                         
                                         {/* Résultat des unités */}
                                         <div className="flex space-x-1">
                                           {Array.from({length: (example.num1 % 10) + (example.num2 % 10)}, (_, i) => (
-                                            <div key={i} className="w-6 h-6 bg-purple-600 border-2 border-purple-800 rounded-full flex items-center justify-center text-white font-bold text-xs">
+                                            <div key={i} className="w-6 h-6 bg-purple-600 border-2 border-purple-800 rounded-full flex items-center justify-center text-gray-800 font-bold text-xs">
                                               1
                                             </div>
                                           ))}
@@ -2704,7 +2666,7 @@ export default function AdditionsJusqua100CE1() {
                                       </>
                                     )}
                                   </div>
-                                  <div className="text-sm sm:text-xs sm:text-xs sm:text-xl font-bold text-blue-700">
+                                  <div className="text-xl font-bold text-blue-700">
                                     {example.num1 % 10} + {example.num2 % 10} {(calculationStep === 'units-sum' || calculationStep === 'carry-explanation' || calculationStep === 'carry-visual' || calculationStep === 'tens' || calculationStep === 'result') ? `= ${(example.num1 % 10) + (example.num2 % 10)}` : ''}
                                   </div>
                                 </div>
@@ -2712,28 +2674,28 @@ export default function AdditionsJusqua100CE1() {
 
                               {/* Animation de la décomposition (reste visible) */}
                               {(calculationStep === 'carry-explanation' || calculationStep === 'carry-visual' || calculationStep === 'tens' || calculationStep === 'result') && (
-                                <div className="text-center bg-orange-100 p-2 sm:p-4 rounded-lg border-2 border-orange-400">
-                                  <div className="text-xs sm:text-sm sm:text-2xl font-bold text-orange-800 mb-3">
+                                <div className="text-center bg-orange-100 p-4 rounded-lg border-2 border-orange-400">
+                                  <div className="text-2xl font-bold text-orange-800 mb-3">
                                     ⚡ Décomposition : plus de 10 !
                                   </div>
-                                  <div className="text-sm sm:text-xs sm:text-xs sm:text-xl font-bold text-orange-700 mb-4">
+                                  <div className="text-xl font-bold text-orange-700 mb-4">
                                     {(example.num1 % 10) + (example.num2 % 10)} = {Math.floor(((example.num1 % 10) + (example.num2 % 10)) / 10)} dizaine + {((example.num1 % 10) + (example.num2 % 10)) % 10} unités
                                   </div>
                                   <div className="flex justify-center items-center space-x-4">
                                     {/* Représentation de la décomposition */}
                                     <div className="text-center">
-                                      <div className="w-12 h-16 bg-red-500 border-2 border-red-700 rounded flex items-center justify-center text-white font-bold text-xs sm:text-lg">
+                                      <div className="w-12 h-16 bg-red-500 border-2 border-red-700 rounded flex items-center justify-center text-gray-800 font-bold text-lg">
                                         10
                                       </div>
                                       <div className="text-sm font-bold text-red-700 mt-1">1 dizaine</div>
                                     </div>
                                     
-                                    <div className="text-xs sm:text-sm sm:text-2xl font-bold text-orange-600">+</div>
+                                    <div className="text-2xl font-bold text-orange-600">+</div>
                                     
                                     <div className="text-center">
                                       <div className="flex space-x-1">
                                         {Array.from({length: ((example.num1 % 10) + (example.num2 % 10)) % 10}, (_, i) => (
-                                          <div key={i} className="w-6 h-6 bg-blue-500 border-2 border-blue-700 rounded-full flex items-center justify-center text-white font-bold text-xs">
+                                          <div key={i} className="w-6 h-6 bg-blue-500 border-2 border-blue-700 rounded-full flex items-center justify-center text-gray-800 font-bold text-xs">
                                             1
                                           </div>
                                         ))}
@@ -2746,14 +2708,14 @@ export default function AdditionsJusqua100CE1() {
 
                               {/* Animation visuelle de la retenue qui glisse (reste visible) */}
                               {(calculationStep === 'carry-visual' || calculationStep === 'tens' || calculationStep === 'result') && (
-                                <div className="text-center bg-red-100 p-2 sm:p-4 rounded-lg border-2 border-red-400">
-                                  <div className="text-xs sm:text-sm sm:text-2xl font-bold text-red-800 mb-3">
+                                <div className="text-center bg-red-100 p-4 rounded-lg border-2 border-red-400">
+                                  <div className="text-2xl font-bold text-red-800 mb-3">
                                     🎯 La retenue glisse vers le haut !
                                   </div>
                                   <div className="relative flex justify-center items-center space-x-8">
                                     {/* La dizaine qui "glisse" vers le haut */}
                                     <div className="text-center">
-                                      <div className="w-12 h-16 bg-red-500 border-2 border-red-700 rounded flex items-center justify-center text-white font-bold text-xs sm:text-lg animate-bounce transform -translate-y-4">
+                                      <div className="w-12 h-16 bg-red-500 border-2 border-red-700 rounded flex items-center justify-center text-gray-800 font-bold text-lg animate-bounce transform -translate-y-4">
                                         10
                                       </div>
                                       <div className="text-sm font-bold text-red-700 mt-1">↑ Vers les dizaines</div>
@@ -2763,7 +2725,7 @@ export default function AdditionsJusqua100CE1() {
                                     <div className="text-center">
                                       <div className="flex space-x-1">
                                         {Array.from({length: ((example.num1 % 10) + (example.num2 % 10)) % 10}, (_, i) => (
-                                          <div key={i} className="w-6 h-6 bg-blue-500 border-2 border-blue-700 rounded-full flex items-center justify-center text-white font-bold text-xs animate-pulse">
+                                          <div key={i} className="w-6 h-6 bg-blue-500 border-2 border-blue-700 rounded-full flex items-center justify-center text-gray-800 font-bold text-xs animate-pulse">
                                             1
                                           </div>
                                         ))}
@@ -2771,7 +2733,7 @@ export default function AdditionsJusqua100CE1() {
                                       <div className="text-sm font-bold text-blue-700 mt-1">↓ Restent en unités</div>
                                     </div>
                                   </div>
-                                  <div className="text-xs sm:text-lg font-bold text-red-700 mt-4">
+                                  <div className="text-lg font-bold text-red-700 mt-4">
                                     J'écris {((example.num1 % 10) + (example.num2 % 10)) % 10} en unités et je retiens 1 en dizaines !
                                   </div>
                                 </div>
@@ -2779,50 +2741,50 @@ export default function AdditionsJusqua100CE1() {
 
                               {/* Animation des dizaines (reste visible) */}
                               {(calculationStep === 'tens' || calculationStep === 'result') && (
-                                <div className="text-center bg-purple-100 p-2 sm:p-4 rounded-lg border-2 border-purple-400">
-                                  <div className="text-xs sm:text-sm sm:text-2xl font-bold text-purple-800 mb-3">
+                                <div className="text-center bg-purple-100 p-4 rounded-lg border-2 border-purple-400">
+                                  <div className="text-2xl font-bold text-purple-800 mb-3">
                                     🔢 Calcul des dizaines avec retenue
                                   </div>
                                   <div className="flex justify-center items-center space-x-4 mb-4">
                                     {/* Dizaines du premier nombre */}
                                     <div className="flex space-x-1">
                                       {Array.from({length: Math.floor(example.num1 / 10)}, (_, i) => (
-                                        <div key={i} className="w-10 h-14 bg-yellow-500 border-2 border-yellow-700 rounded flex items-center justify-center text-white font-bold animate-pulse">
+                                        <div key={i} className="w-10 h-14 bg-yellow-500 border-2 border-yellow-700 rounded flex items-center justify-center text-gray-800 font-bold animate-pulse">
                                           10
                                         </div>
                                       ))}
                                     </div>
                                     
-                                    <div className="text-xs sm:text-sm sm:text-2xl font-bold text-purple-600">+</div>
+                                    <div className="text-2xl font-bold text-purple-600">+</div>
                                     
                                     {/* Dizaines du deuxième nombre */}
                                     <div className="flex space-x-1">
                                       {Array.from({length: Math.floor(example.num2 / 10)}, (_, i) => (
-                                        <div key={i} className="w-10 h-14 bg-orange-500 border-2 border-orange-700 rounded flex items-center justify-center text-white font-bold animate-pulse">
+                                        <div key={i} className="w-10 h-14 bg-orange-500 border-2 border-orange-700 rounded flex items-center justify-center text-gray-800 font-bold animate-pulse">
                                           10
                                         </div>
                                       ))}
                                     </div>
                                     
-                                    <div className="text-xs sm:text-sm sm:text-2xl font-bold text-purple-600">+</div>
+                                    <div className="text-2xl font-bold text-purple-600">+</div>
                                     
                                     {/* Retenue */}
-                                    <div className="w-10 h-14 bg-red-500 border-2 border-red-700 rounded flex items-center justify-center text-white font-bold animate-bounce">
+                                    <div className="w-10 h-14 bg-red-500 border-2 border-red-700 rounded flex items-center justify-center text-gray-800 font-bold animate-bounce">
                                       10
                                     </div>
                                     
-                                    <div className="text-xs sm:text-sm sm:text-2xl font-bold text-purple-600">=</div>
+                                    <div className="text-2xl font-bold text-purple-600">=</div>
                                     
                                     {/* Résultat des dizaines */}
                                     <div className="flex space-x-1">
                                       {Array.from({length: Math.floor(example.num1 / 10) + Math.floor(example.num2 / 10) + 1}, (_, i) => (
-                                        <div key={i} className="w-10 h-14 bg-purple-600 border-2 border-purple-800 rounded flex items-center justify-center text-white font-bold animate-bounce">
+                                        <div key={i} className="w-10 h-14 bg-purple-600 border-2 border-purple-800 rounded flex items-center justify-center text-gray-800 font-bold animate-bounce">
                                           10
                                         </div>
                                       ))}
                                     </div>
                                   </div>
-                                  <div className="text-sm sm:text-xs sm:text-xs sm:text-xl font-bold text-purple-700">
+                                  <div className="text-xl font-bold text-purple-700">
                                     {Math.floor(example.num1 / 10)} + {Math.floor(example.num2 / 10)} + 1 (retenue) = {Math.floor(example.num1 / 10) + Math.floor(example.num2 / 10) + 1}
                                   </div>
                                 </div>
@@ -2830,14 +2792,14 @@ export default function AdditionsJusqua100CE1() {
 
                               {/* Résultat final */}
                               {calculationStep === 'result' && (
-                                <div className="text-center bg-green-100 p-2 sm:p-4 rounded-lg border-2 border-green-400">
-                                  <div className="text-xs sm:text-xl sm:text-xl sm:text-5xl font-bold text-green-700 animate-bounce mb-4">
+                                <div className="text-center bg-green-100 p-4 rounded-lg border-2 border-green-400">
+                                  <div className="text-5xl font-bold text-green-700 animate-bounce mb-4">
                                     = {example.result}
                                   </div>
-                                  <div className="text-xs sm:text-sm sm:text-2xl font-bold text-green-600">
+                                  <div className="text-2xl font-bold text-green-600">
                                     🏆 Bravo ! Tu maîtrises la retenue !
                                   </div>
-                                  <div className="text-xs sm:text-lg text-green-700 mt-2">
+                                  <div className="text-lg text-green-700 mt-2">
                                     {Math.floor(example.result / 10)} dizaines + {example.result % 10} unités = {example.result}
                                   </div>
                                 </div>
@@ -2847,14 +2809,14 @@ export default function AdditionsJusqua100CE1() {
 
                           {/* Animation pour calcul mental */}
                           {currentTechnique === 'calcul-mental' && calculationStep && (
-                            <div className="space-y-2 sm:space-y-6 bg-gradient-to-br from-purple-50 to-blue-50 p-2 sm:p-6 rounded-xl border-2 border-purple-200">
+                            <div className="space-y-6 bg-gradient-to-br from-purple-50 to-blue-50 p-6 rounded-xl border-2 border-purple-200">
                               {/* Étape : Setup */}
                               {calculationStep === 'setup' && (
                                 <div className="text-center">
-                                  <div className="text-xs sm:text-4xl font-bold text-purple-800 animate-pulse">
+                                  <div className="text-4xl font-bold text-purple-800 animate-pulse">
                                     {example.calculation}
                                   </div>
-                                  <div className="text-xs sm:text-lg text-purple-600 mt-2">
+                                  <div className="text-lg text-purple-600 mt-2">
                                     🧠 Technique du calcul mental magique !
                                   </div>
                                 </div>
@@ -2863,7 +2825,7 @@ export default function AdditionsJusqua100CE1() {
                               {/* Étape : Montrer le premier nombre */}
                               {(calculationStep === 'show-first' || calculationStep === 'decompose-first') && (
                                 <div className="text-center">
-                                  <div className="text-xs sm:text-base sm:text-3xl font-bold text-red-700 mb-4 animate-pulse">
+                                  <div className="text-3xl font-bold text-red-700 mb-4 animate-pulse">
                                     Premier nombre : {example.num1}
                                   </div>
                                   {calculationStep === 'decompose-first' && (
@@ -2875,29 +2837,29 @@ export default function AdditionsJusqua100CE1() {
                                           <div className="text-sm font-semibold text-red-600 mb-2">Dizaines</div>
                                           <div className="flex space-x-1">
                                             {Array.from({length: Math.floor(example.num1 / 10)}, (_, i) => (
-                                              <div key={i} className="w-8 h-12 bg-red-500 border-2 border-red-700 rounded flex items-center justify-center text-white font-bold animate-bounce" style={{animationDelay: `${i * 0.2}s`}}>
+                                              <div key={i} className="w-8 h-12 bg-red-500 border-2 border-red-700 rounded flex items-center justify-center text-gray-800 font-bold animate-bounce" style={{animationDelay: `${i * 0.2}s`}}>
                                                 10
                                               </div>
                                             ))}
                                           </div>
-                                          <div className="text-xs sm:text-lg font-bold text-red-700 mt-2">
+                                          <div className="text-lg font-bold text-red-700 mt-2">
                                             {Math.floor(example.num1 / 10)} × 10 = {Math.floor(example.num1 / 10) * 10}
                                           </div>
                                         </div>
 
-                                        <div className="text-xs sm:text-base sm:text-3xl font-bold text-gray-600">+</div>
+                                        <div className="text-3xl font-bold text-gray-600">+</div>
 
                                         {/* Unités en bleu */}
                                         <div className="text-center">
                                           <div className="text-sm font-semibold text-blue-600 mb-2">Unités</div>
                                           <div className="flex space-x-1">
                                             {Array.from({length: example.num1 % 10}, (_, i) => (
-                                              <div key={i} className="w-6 h-6 bg-blue-500 border-2 border-blue-700 rounded-full flex items-center justify-center text-white font-bold animate-bounce" style={{animationDelay: `${i * 0.1}s`}}>
+                                              <div key={i} className="w-6 h-6 bg-blue-500 border-2 border-blue-700 rounded-full flex items-center justify-center text-gray-800 font-bold animate-bounce" style={{animationDelay: `${i * 0.1}s`}}>
                                                 1
                                               </div>
                                             ))}
                                           </div>
-                                          <div className="text-xs sm:text-lg font-bold text-blue-700 mt-2">
+                                          <div className="text-lg font-bold text-blue-700 mt-2">
                                             {example.num1 % 10} unité{example.num1 % 10 > 1 ? 's' : ''}
                                           </div>
                                         </div>
@@ -2910,7 +2872,7 @@ export default function AdditionsJusqua100CE1() {
                               {/* Étape : Montrer le deuxième nombre */}
                               {(calculationStep === 'show-second' || calculationStep === 'decompose-second') && (
                                 <div className="text-center">
-                                  <div className="text-xs sm:text-base sm:text-3xl font-bold text-green-700 mb-4 animate-pulse">
+                                  <div className="text-3xl font-bold text-green-700 mb-4 animate-pulse">
                                     Deuxième nombre : {example.num2}
                                   </div>
                                   {calculationStep === 'decompose-second' && (
@@ -2922,29 +2884,29 @@ export default function AdditionsJusqua100CE1() {
                                           <div className="text-sm font-semibold text-orange-600 mb-2">Dizaines</div>
                                           <div className="flex space-x-1">
                                             {Array.from({length: Math.floor(example.num2 / 10)}, (_, i) => (
-                                              <div key={i} className="w-8 h-12 bg-orange-500 border-2 border-orange-700 rounded flex items-center justify-center text-white font-bold animate-bounce" style={{animationDelay: `${i * 0.2}s`}}>
+                                              <div key={i} className="w-8 h-12 bg-orange-500 border-2 border-orange-700 rounded flex items-center justify-center text-gray-800 font-bold animate-bounce" style={{animationDelay: `${i * 0.2}s`}}>
                                                 10
                                               </div>
                                             ))}
                                           </div>
-                                          <div className="text-xs sm:text-lg font-bold text-orange-700 mt-2">
+                                          <div className="text-lg font-bold text-orange-700 mt-2">
                                             {Math.floor(example.num2 / 10)} × 10 = {Math.floor(example.num2 / 10) * 10}
                                           </div>
                                         </div>
 
-                                        <div className="text-xs sm:text-base sm:text-3xl font-bold text-gray-600">+</div>
+                                        <div className="text-3xl font-bold text-gray-600">+</div>
 
                                         {/* Unités en cyan */}
                                         <div className="text-center">
                                           <div className="text-sm font-semibold text-cyan-600 mb-2">Unités</div>
                                           <div className="flex space-x-1">
                                             {Array.from({length: example.num2 % 10}, (_, i) => (
-                                              <div key={i} className="w-6 h-6 bg-cyan-500 border-2 border-cyan-700 rounded-full flex items-center justify-center text-white font-bold animate-bounce" style={{animationDelay: `${i * 0.1}s`}}>
+                                              <div key={i} className="w-6 h-6 bg-cyan-500 border-2 border-cyan-700 rounded-full flex items-center justify-center text-gray-800 font-bold animate-bounce" style={{animationDelay: `${i * 0.1}s`}}>
                                                 1
                                               </div>
                                             ))}
                                           </div>
-                                          <div className="text-xs sm:text-lg font-bold text-cyan-700 mt-2">
+                                          <div className="text-lg font-bold text-cyan-700 mt-2">
                                             {example.num2 % 10} unité{example.num2 % 10 > 1 ? 's' : ''}
                                           </div>
                                         </div>
@@ -2956,11 +2918,11 @@ export default function AdditionsJusqua100CE1() {
 
                               {/* Étape : Explication de la stratégie */}
                               {calculationStep === 'explain-strategy' && (
-                                <div className="text-center bg-yellow-100 p-2 sm:p-4 rounded-lg border-2 border-yellow-400">
-                                  <div className="text-xs sm:text-sm sm:text-2xl font-bold text-yellow-800 mb-2">
+                                <div className="text-center bg-yellow-100 p-4 rounded-lg border-2 border-yellow-400">
+                                  <div className="text-2xl font-bold text-yellow-800 mb-2">
                                     🎯 Stratégie secrète !
                                   </div>
-                                  <div className="text-xs sm:text-lg text-yellow-700">
+                                  <div className="text-lg text-yellow-700">
                                     Je vais additionner les dizaines ensemble, puis les unités ensemble !
                                   </div>
                                 </div>
@@ -2969,42 +2931,42 @@ export default function AdditionsJusqua100CE1() {
                               {/* Étape : Calcul des dizaines */}
                               {calculationStep === 'tens' && (
                                 <div className="text-center">
-                                  <div className="text-xs sm:text-sm sm:text-2xl font-bold text-purple-800 mb-4">
+                                  <div className="text-2xl font-bold text-purple-800 mb-4">
                                     🔢 Addition des dizaines
                                   </div>
                                   <div className="flex justify-center items-center space-x-4 mb-4">
                                     {/* Dizaines du premier nombre */}
                                     <div className="flex space-x-1">
                                       {Array.from({length: Math.floor(example.num1 / 10)}, (_, i) => (
-                                        <div key={i} className="w-8 h-12 bg-red-500 border-2 border-red-700 rounded flex items-center justify-center text-white font-bold animate-pulse">
+                                        <div key={i} className="w-8 h-12 bg-red-500 border-2 border-red-700 rounded flex items-center justify-center text-gray-800 font-bold animate-pulse">
                                           10
                                         </div>
                                       ))}
                                     </div>
                                     
-                                    <div className="text-xs sm:text-base sm:text-3xl font-bold text-purple-600">+</div>
+                                    <div className="text-3xl font-bold text-purple-600">+</div>
                                     
                                     {/* Dizaines du deuxième nombre */}
                                     <div className="flex space-x-1">
                                       {Array.from({length: Math.floor(example.num2 / 10)}, (_, i) => (
-                                        <div key={i} className="w-8 h-12 bg-orange-500 border-2 border-orange-700 rounded flex items-center justify-center text-white font-bold animate-pulse">
+                                        <div key={i} className="w-8 h-12 bg-orange-500 border-2 border-orange-700 rounded flex items-center justify-center text-gray-800 font-bold animate-pulse">
                                           10
                                         </div>
                                       ))}
                                     </div>
                                     
-                                    <div className="text-xs sm:text-base sm:text-3xl font-bold text-purple-600">=</div>
+                                    <div className="text-3xl font-bold text-purple-600">=</div>
                                     
                                     {/* Résultat des dizaines */}
                                     <div className="flex space-x-1">
                                       {Array.from({length: Math.floor(example.num1 / 10) + Math.floor(example.num2 / 10)}, (_, i) => (
-                                        <div key={i} className="w-8 h-12 bg-purple-600 border-2 border-purple-800 rounded flex items-center justify-center text-white font-bold animate-bounce">
+                                        <div key={i} className="w-8 h-12 bg-purple-600 border-2 border-purple-800 rounded flex items-center justify-center text-gray-800 font-bold animate-bounce">
                                           10
                                         </div>
                                       ))}
                                     </div>
                                   </div>
-                                  <div className="text-sm sm:text-xs sm:text-xs sm:text-xl font-bold text-purple-700">
+                                  <div className="text-xl font-bold text-purple-700">
                                     {Math.floor(example.num1 / 10)} + {Math.floor(example.num2 / 10)} = {Math.floor(example.num1 / 10) + Math.floor(example.num2 / 10)} dizaines
                                   </div>
                                 </div>
@@ -3013,42 +2975,42 @@ export default function AdditionsJusqua100CE1() {
                               {/* Étape : Calcul des unités */}
                               {calculationStep === 'units' && (
                                 <div className="text-center">
-                                  <div className="text-xs sm:text-sm sm:text-2xl font-bold text-blue-800 mb-4">
+                                  <div className="text-2xl font-bold text-blue-800 mb-4">
                                     🔹 Addition des unités
                                   </div>
                                   <div className="flex justify-center items-center space-x-4 mb-4">
                                     {/* Unités du premier nombre */}
                                     <div className="flex space-x-1">
                                       {Array.from({length: example.num1 % 10}, (_, i) => (
-                                        <div key={i} className="w-6 h-6 bg-blue-500 border-2 border-blue-700 rounded-full flex items-center justify-center text-white font-bold animate-pulse">
+                                        <div key={i} className="w-6 h-6 bg-blue-500 border-2 border-blue-700 rounded-full flex items-center justify-center text-gray-800 font-bold animate-pulse">
                                           1
                                         </div>
                                       ))}
                                     </div>
                                     
-                                    <div className="text-xs sm:text-sm sm:text-2xl font-bold text-blue-600">+</div>
+                                    <div className="text-2xl font-bold text-blue-600">+</div>
                                     
                                     {/* Unités du deuxième nombre */}
                                     <div className="flex space-x-1">
                                       {Array.from({length: example.num2 % 10}, (_, i) => (
-                                        <div key={i} className="w-6 h-6 bg-cyan-500 border-2 border-cyan-700 rounded-full flex items-center justify-center text-white font-bold animate-pulse">
+                                        <div key={i} className="w-6 h-6 bg-cyan-500 border-2 border-cyan-700 rounded-full flex items-center justify-center text-gray-800 font-bold animate-pulse">
                                           1
                                         </div>
                                       ))}
                                     </div>
                                     
-                                    <div className="text-xs sm:text-sm sm:text-2xl font-bold text-blue-600">=</div>
+                                    <div className="text-2xl font-bold text-blue-600">=</div>
                                     
                                     {/* Résultat des unités */}
                                     <div className="flex space-x-1">
                                       {Array.from({length: (example.num1 % 10) + (example.num2 % 10)}, (_, i) => (
-                                        <div key={i} className="w-6 h-6 bg-indigo-600 border-2 border-indigo-800 rounded-full flex items-center justify-center text-white font-bold animate-bounce">
+                                        <div key={i} className="w-6 h-6 bg-indigo-600 border-2 border-indigo-800 rounded-full flex items-center justify-center text-gray-800 font-bold animate-bounce">
                                           1
                                         </div>
                                       ))}
                                     </div>
                                   </div>
-                                  <div className="text-sm sm:text-xs sm:text-xs sm:text-xl font-bold text-blue-700">
+                                  <div className="text-xl font-bold text-blue-700">
                                     {example.num1 % 10} + {example.num2 % 10} = {(example.num1 % 10) + (example.num2 % 10)} unités
                                   </div>
                                 </div>
@@ -3056,14 +3018,14 @@ export default function AdditionsJusqua100CE1() {
 
                               {/* Étape : Regroupement */}
                               {calculationStep === 'regroup' && (
-                                <div className="text-center bg-green-100 p-2 sm:p-4 rounded-lg border-2 border-green-400">
-                                  <div className="text-xs sm:text-sm sm:text-2xl font-bold text-green-800 mb-4">
+                                <div className="text-center bg-green-100 p-4 rounded-lg border-2 border-green-400">
+                                  <div className="text-2xl font-bold text-green-800 mb-4">
                                     🔄 Regroupement final
                                   </div>
-                                  <div className="text-sm sm:text-xs sm:text-xs sm:text-xl font-bold text-green-700">
+                                  <div className="text-xl font-bold text-green-700">
                                     {Math.floor(example.num1 / 10) + Math.floor(example.num2 / 10)} dizaines + {(example.num1 % 10) + (example.num2 % 10)} unités
                                   </div>
-                                  <div className="text-xs sm:text-lg text-green-600 mt-2">
+                                  <div className="text-lg text-green-600 mt-2">
                                     = {(Math.floor(example.num1 / 10) + Math.floor(example.num2 / 10)) * 10} + {(example.num1 % 10) + (example.num2 % 10)}
                                   </div>
                                 </div>
@@ -3072,10 +3034,10 @@ export default function AdditionsJusqua100CE1() {
                               {/* Étape : Résultat final */}
                               {calculationStep === 'result' && (
                                 <div className="text-center">
-                                  <div className="text-xs sm:text-xl sm:text-xl sm:text-5xl font-bold text-green-700 animate-bounce mb-4">
+                                  <div className="text-5xl font-bold text-green-700 animate-bounce mb-4">
                                     = {example.result}
                                   </div>
-                                  <div className="text-xs sm:text-sm sm:text-2xl font-bold text-green-600">
+                                  <div className="text-2xl font-bold text-green-600">
                                     🏆 Bravo ! Tu maîtrises le calcul mental !
                                   </div>
                                 </div>
@@ -3083,30 +3045,30 @@ export default function AdditionsJusqua100CE1() {
                             </div>
                           )}
 
-                          {/* Animation pour complément à 10 */}
+                          {/* Animation pour complément à 10 - VERSION MOBILE ULTRA COMPACTE */}
                           {currentTechnique === 'complement-10' && calculationStep && (
-                            <div className="space-y-2 sm:space-y-6 bg-gradient-to-br from-yellow-50 to-green-50 p-2 sm:p-6 rounded-xl border-2 border-yellow-200">
+                            <div className="space-y-2 sm:space-y-6 bg-gradient-to-br from-yellow-50 to-green-50 p-1 sm:p-6 rounded-lg border border-yellow-200">
                               
                               {/* Étape : Introduction */}
                               {calculationStep === 'setup' && (
                                 <div className="text-center">
-                                  <div className="text-xs sm:text-4xl font-bold text-yellow-800 animate-pulse">
+                                  <div className="text-xl sm:text-4xl font-bold text-yellow-800 animate-pulse">
                                     {example.calculation}
                                   </div>
-                                  <div className="text-xs sm:text-lg text-yellow-600 mt-2">
-                                    🎯 Technique du complément à 10 - Astuce géniale !
+                                  <div className="text-xs sm:text-lg text-yellow-600 mt-1 sm:mt-2">
+                                    🎯 Technique du complément à 10
                                   </div>
                                 </div>
                               )}
 
                               {/* Affichage permanent du problème (reste visible) */}
                               {(calculationStep === 'show-problem' || calculationStep === 'find-complement' || calculationStep === 'add-complement' || calculationStep === 'show-intermediate' || calculationStep === 'add-remaining' || calculationStep === 'result') && (
-                                <div className="bg-white rounded-lg p-2 sm:p-6 shadow-lg max-w-lg mx-auto">
-                                  <div className="text-center mb-4">
-                                    <div className="text-xs sm:text-lg font-bold text-gray-800">🎯 Problème à résoudre</div>
+                                <div className="bg-white rounded-lg p-2 sm:p-6 shadow-lg max-w-sm sm:max-w-lg mx-auto">
+                                  <div className="text-center mb-2 sm:mb-4">
+                                    <div className="text-sm sm:text-lg font-bold text-gray-800">🎯 Problème à résoudre</div>
                                   </div>
                                   <div className="text-center">
-                                    <div className="text-xs sm:text-4xl font-bold text-gray-800 mb-4">
+                                    <div className="text-2xl sm:text-4xl font-bold text-gray-800 mb-2 sm:mb-4">
                                       {example.num1} + {example.num2} = ?
                                     </div>
                                   </div>
@@ -3115,142 +3077,155 @@ export default function AdditionsJusqua100CE1() {
 
                               {/* Étape : Trouver le complément (reste visible) */}
                               {(calculationStep === 'find-complement' || calculationStep === 'add-complement' || calculationStep === 'show-intermediate' || calculationStep === 'add-remaining' || calculationStep === 'result') && (
-                                <div className="text-center bg-blue-100 p-2 sm:p-4 rounded-lg border-2 border-blue-400">
-                                  <div className="text-xs sm:text-sm sm:text-2xl font-bold text-blue-800 mb-3">
+                                <div className="text-center bg-blue-100 p-2 sm:p-4 rounded-lg border border-blue-400">
+                                  <div className="text-sm sm:text-2xl font-bold text-blue-800 mb-1 sm:mb-3">
                                     🔍 Étape 1 : Trouver le complément
                                   </div>
                                   
-                                  {/* Version mobile : calcul simple */}
+                                  {/* VERSION MOBILE : Représentation numérique simple */}
                                   <div className="block sm:hidden">
-                                    <div className="text-center text-xs font-bold text-blue-800 bg-white p-3 rounded-lg border-2 border-blue-300">
-                                      {example.num1} + {10 - (example.num1 % 10)} = {Math.ceil(example.num1 / 10) * 10}
+                                    <div className="text-center space-y-2">
+                                      <div className="flex justify-center items-center space-x-1 text-sm font-bold">
+                                        <div className="bg-blue-100 px-2 py-1 rounded text-blue-800">{example.num1}</div>
+                                        <div>+</div>
+                                        <div className="bg-green-100 px-2 py-1 rounded text-green-800">{10 - (example.num1 % 10)}</div>
+                                        <div>=</div>
+                                        <div className="bg-purple-100 px-2 py-1 rounded text-purple-800 animate-pulse">{Math.ceil(example.num1 / 10) * 10}</div>
+                                      </div>
+                                      <div className="text-xs text-gray-600">
+                                        {example.num1} + {10 - (example.num1 % 10)} = {Math.ceil(example.num1 / 10) * 10} (dizaine ronde !)
+                                      </div>
                                     </div>
                                   </div>
 
-                                  {/* Version desktop : représentation visuelle complète */}
-                                  <div className="hidden sm:block">
-                                    {/* Représentation visuelle du nombre à arrondir */}
-                                    <div className="flex justify-center items-center space-x-4 mb-4">
-                                      <div className="text-center">
-                                        <div className="text-sm sm:text-xs sm:text-xs sm:text-xl font-bold text-blue-700 mb-2">{example.num1}</div>
-                                        <div className="flex items-center space-x-2">
-                                          {/* Dizaines */}
-                                          {Array.from({length: Math.floor(example.num1 / 10)}, (_, i) => (
-                                            <div key={i} className="w-8 h-12 bg-blue-500 border-2 border-blue-700 rounded flex items-center justify-center text-white font-bold text-sm">
-                                              10
-                                            </div>
-                                          ))}
-                                          {/* Unités */}
-                                          {Array.from({length: example.num1 % 10}, (_, i) => (
-                                            <div key={i} className="w-6 h-6 bg-cyan-500 border-2 border-cyan-700 rounded-full flex items-center justify-center text-white font-bold text-xs">
-                                              1
-                                            </div>
-                                          ))}
-                                        </div>
-                                      </div>
-
-                                      <div className="text-xs sm:text-sm sm:text-2xl font-bold text-blue-600">+</div>
-
-                                      {/* Complément nécessaire */}
-                                      <div className="text-center">
-                                        <div className="text-sm sm:text-xs sm:text-xs sm:text-xl font-bold text-green-700 mb-2">{10 - (example.num1 % 10)}</div>
-                                        <div className="flex items-center space-x-1 justify-center">
-                                          {Array.from({length: 10 - (example.num1 % 10)}, (_, i) => (
-                                            <div key={i} className="w-6 h-6 bg-green-500 border-2 border-green-700 rounded-full flex items-center justify-center text-white font-bold text-xs animate-pulse">
-                                              1
-                                            </div>
-                                          ))}
-                                        </div>
-                                        <div className="text-sm font-bold text-green-700 mt-1">Complément</div>
-                                      </div>
-
-                                      <div className="text-xs sm:text-sm sm:text-2xl font-bold text-blue-600">=</div>
-
-                                      {/* Résultat arrondi */}
-                                      <div className="text-center">
-                                        <div className="text-sm sm:text-xs sm:text-xs sm:text-xl font-bold text-purple-700 mb-2">{Math.ceil(example.num1 / 10) * 10}</div>
-                                        <div className="flex items-center space-x-2">
-                                          {Array.from({length: Math.ceil(example.num1 / 10)}, (_, i) => (
-                                            <div key={i} className="w-8 h-12 bg-purple-600 border-2 border-purple-800 rounded flex items-center justify-center text-white font-bold text-sm animate-bounce">
-                                              10
-                                            </div>
-                                          ))}
-                                        </div>
-                                        <div className="text-sm font-bold text-purple-700 mt-1">Dizaine ronde !</div>
+                                  {/* VERSION DESKTOP : Représentation visuelle avec objets */}
+                                  <div className="hidden sm:flex justify-center items-center space-x-4 mb-4">
+                                    <div className="text-center">
+                                      <div className="text-xl font-bold text-blue-700 mb-2">{example.num1}</div>
+                                      <div className="flex items-center space-x-2">
+                                        {/* Dizaines */}
+                                        {Array.from({length: Math.floor(example.num1 / 10)}, (_, i) => (
+                                          <div key={i} className="w-8 h-12 bg-blue-500 border-2 border-blue-700 rounded flex items-center justify-center text-gray-800 font-bold text-sm">
+                                            10
+                                          </div>
+                                        ))}
+                                        {/* Unités */}
+                                        {Array.from({length: example.num1 % 10}, (_, i) => (
+                                          <div key={i} className="w-6 h-6 bg-cyan-500 border-2 border-cyan-700 rounded-full flex items-center justify-center text-gray-800 font-bold text-xs">
+                                            1
+                                          </div>
+                                        ))}
                                       </div>
                                     </div>
 
-                                    <div className="text-sm sm:text-xs sm:text-xs sm:text-xl font-bold text-blue-700">
-                                      {example.num1} + {10 - (example.num1 % 10)} = {Math.ceil(example.num1 / 10) * 10}
+                                    <div className="text-2xl font-bold text-blue-600">+</div>
+
+                                    {/* Complément nécessaire */}
+                                    <div className="text-center">
+                                      <div className="text-xl font-bold text-green-700 mb-2">{10 - (example.num1 % 10)}</div>
+                                      <div className="flex items-center space-x-1">
+                                        {Array.from({length: 10 - (example.num1 % 10)}, (_, i) => (
+                                          <div key={i} className="w-6 h-6 bg-green-500 border-2 border-green-700 rounded-full flex items-center justify-center text-gray-800 font-bold text-xs animate-pulse">
+                                            1
+                                          </div>
+                                        ))}
+                                      </div>
+                                      <div className="text-sm font-bold text-green-700 mt-1">Complément</div>
                                     </div>
+
+                                    <div className="text-2xl font-bold text-blue-600">=</div>
+
+                                    {/* Résultat arrondi */}
+                                    <div className="text-center">
+                                      <div className="text-xl font-bold text-purple-700 mb-2">{Math.ceil(example.num1 / 10) * 10}</div>
+                                      <div className="flex items-center space-x-2">
+                                        {Array.from({length: Math.ceil(example.num1 / 10)}, (_, i) => (
+                                          <div key={i} className="w-8 h-12 bg-purple-600 border-2 border-purple-800 rounded flex items-center justify-center text-gray-800 font-bold text-sm animate-bounce">
+                                            10
+                                          </div>
+                                        ))}
+                                      </div>
+                                      <div className="text-sm font-bold text-purple-700 mt-1">Dizaine ronde !</div>
+                                    </div>
+                                  </div>
+
+                                  <div className="text-xl font-bold text-blue-700">
+                                    {example.num1} + {10 - (example.num1 % 10)} = {Math.ceil(example.num1 / 10) * 10}
                                   </div>
                                 </div>
                               )}
 
                               {/* Étape : Décomposer le deuxième nombre (reste visible) */}
                               {(calculationStep === 'add-complement' || calculationStep === 'show-intermediate' || calculationStep === 'add-remaining' || calculationStep === 'result') && (
-                                <div className="text-center bg-orange-100 p-2 sm:p-4 rounded-lg border-2 border-orange-400">
-                                  <div className="text-xs sm:text-sm sm:text-2xl font-bold text-orange-800 mb-3">
+                                <div className="text-center bg-orange-100 p-2 sm:p-4 rounded-lg border border-orange-400">
+                                  <div className="text-sm sm:text-2xl font-bold text-orange-800 mb-1 sm:mb-3">
                                     ✂️ Étape 2 : Décomposer {example.num2}
                                   </div>
                                   
-                                  {/* Version mobile : calcul simple */}
+                                  {/* VERSION MOBILE : Décomposition numérique simple */}
                                   <div className="block sm:hidden">
-                                    <div className="text-center text-xs font-bold text-orange-800 bg-white p-3 rounded-lg border-2 border-orange-300">
-                                      {example.num2} = {10 - (example.num1 % 10)} + {example.num2 - (10 - (example.num1 % 10))}
-                                    </div>
-                                  </div>
-
-                                  {/* Version desktop : représentation visuelle complète */}
-                                  <div className="hidden sm:block">
-                                    <div className="flex justify-center items-center space-x-4 mb-4">
-                                      {/* Nombre original */}
-                                      <div className="text-center">
-                                        <div className="text-sm sm:text-xs sm:text-xs sm:text-xl font-bold text-orange-700 mb-2">{example.num2}</div>
-                                        <div className="flex items-center space-x-1">
-                                          {Array.from({length: example.num2}, (_, i) => (
-                                            <div key={i} className={`w-6 h-6 border-2 rounded-full flex items-center justify-center text-white font-bold text-xs ${
-                                              i < (10 - (example.num1 % 10)) ? 'bg-green-500 border-green-700 animate-pulse' : 'bg-orange-500 border-orange-700'
-                                            }`}>
-                                              1
-                                            </div>
-                                          ))}
-                                        </div>
+                                    <div className="text-center space-y-2">
+                                      <div className="flex justify-center items-center space-x-1 text-sm font-bold">
+                                        <div className="bg-orange-100 px-2 py-1 rounded text-orange-800">{example.num2}</div>
+                                        <div>=</div>
+                                        <div className="bg-green-100 px-2 py-1 rounded text-green-800">{10 - (example.num1 % 10)}</div>
+                                        <div>+</div>
+                                        <div className="bg-red-100 px-2 py-1 rounded text-red-800">{example.num2 - (10 - (example.num1 % 10))}</div>
                                       </div>
-
-                                      <div className="text-xs sm:text-sm sm:text-2xl font-bold text-orange-600">=</div>
-
-                                      {/* Complément (qui sera utilisé) */}
-                                      <div className="text-center">
-                                        <div className="text-sm sm:text-xs sm:text-xs sm:text-xl font-bold text-green-700 mb-2">{10 - (example.num1 % 10)}</div>
-                                        <div className="flex items-center space-x-1">
-                                          {Array.from({length: 10 - (example.num1 % 10)}, (_, i) => (
-                                            <div key={i} className="w-6 h-6 bg-green-500 border-2 border-green-700 rounded-full flex items-center justify-center text-white font-bold text-xs animate-pulse">
-                                              1
-                                            </div>
-                                          ))}
-                                        </div>
-                                        <div className="text-sm font-bold text-green-700 mt-1">Pour le complément</div>
-                                      </div>
-
-                                      <div className="text-xs sm:text-sm sm:text-2xl font-bold text-orange-600">+</div>
-
-                                      {/* Reste */}
-                                      <div className="text-center">
-                                        <div className="text-sm sm:text-xs sm:text-xs sm:text-xl font-bold text-red-700 mb-2">{example.num2 - (10 - (example.num1 % 10))}</div>
-                                        <div className="flex items-center space-x-1">
-                                          {Array.from({length: example.num2 - (10 - (example.num1 % 10))}, (_, i) => (
-                                            <div key={i} className="w-6 h-6 bg-red-500 border-2 border-red-700 rounded-full flex items-center justify-center text-white font-bold text-xs">
-                                              1
-                                            </div>
-                                          ))}
-                                        </div>
-                                        <div className="text-sm font-bold text-red-700 mt-1">Ce qui reste</div>
+                                      <div className="text-xs text-gray-600">
+                                        {example.num2} = {10 - (example.num1 % 10)} (complément) + {example.num2 - (10 - (example.num1 % 10))} (reste)
                                       </div>
                                     </div>
                                   </div>
 
-                                  <div className="text-sm sm:text-xs sm:text-xs sm:text-xl font-bold text-orange-700">
+                                  {/* VERSION DESKTOP : Décomposition visuelle avec objets */}
+                                  <div className="hidden sm:flex justify-center items-center space-x-4 mb-4">
+                                    {/* Nombre original */}
+                                    <div className="text-center">
+                                      <div className="text-xl font-bold text-orange-700 mb-2">{example.num2}</div>
+                                      <div className="flex items-center space-x-1">
+                                        {Array.from({length: example.num2}, (_, i) => (
+                                          <div key={i} className={`w-6 h-6 border-2 rounded-full flex items-center justify-center text-gray-800 font-bold text-xs ${
+                                            i < (10 - (example.num1 % 10)) ? 'bg-green-500 border-green-700 animate-pulse' : 'bg-orange-500 border-orange-700'
+                                          }`}>
+                                            1
+                                          </div>
+                                        ))}
+                                      </div>
+                                    </div>
+
+                                    <div className="text-2xl font-bold text-orange-600">=</div>
+
+                                    {/* Complément (qui sera utilisé) */}
+                                    <div className="text-center">
+                                      <div className="text-xl font-bold text-green-700 mb-2">{10 - (example.num1 % 10)}</div>
+                                      <div className="flex items-center space-x-1">
+                                        {Array.from({length: 10 - (example.num1 % 10)}, (_, i) => (
+                                          <div key={i} className="w-6 h-6 bg-green-500 border-2 border-green-700 rounded-full flex items-center justify-center text-gray-800 font-bold text-xs animate-pulse">
+                                            1
+                                          </div>
+                                        ))}
+                                      </div>
+                                      <div className="text-sm font-bold text-green-700 mt-1">Pour le complément</div>
+                                    </div>
+
+                                    <div className="text-2xl font-bold text-orange-600">+</div>
+
+                                    {/* Reste */}
+                                    <div className="text-center">
+                                      <div className="text-xl font-bold text-red-700 mb-2">{example.num2 - (10 - (example.num1 % 10))}</div>
+                                      <div className="flex items-center space-x-1">
+                                        {Array.from({length: example.num2 - (10 - (example.num1 % 10))}, (_, i) => (
+                                          <div key={i} className="w-6 h-6 bg-red-500 border-2 border-red-700 rounded-full flex items-center justify-center text-gray-800 font-bold text-xs">
+                                            1
+                                          </div>
+                                        ))}
+                                      </div>
+                                      <div className="text-sm font-bold text-red-700 mt-1">Ce qui reste</div>
+                                    </div>
+                                  </div>
+
+                                  <div className="text-xl font-bold text-orange-700">
                                     {example.num2} = {10 - (example.num1 % 10)} + {example.num2 - (10 - (example.num1 % 10))}
                                   </div>
                                 </div>
@@ -3258,8 +3233,8 @@ export default function AdditionsJusqua100CE1() {
 
                               {/* Étape : Transformation magique (reste visible) */}
                               {(calculationStep === 'show-intermediate' || calculationStep === 'add-remaining' || calculationStep === 'result') && (
-                                <div className="text-center bg-purple-100 p-2 sm:p-4 rounded-lg border-2 border-purple-400">
-                                  <div className="text-xs sm:text-sm sm:text-2xl font-bold text-purple-800 mb-3">
+                                <div className="text-center bg-purple-100 p-4 rounded-lg border-2 border-purple-400">
+                                  <div className="text-2xl font-bold text-purple-800 mb-3">
                                     ✨ Étape 3 : Transformation magique !
                                   </div>
                                   
@@ -3267,25 +3242,25 @@ export default function AdditionsJusqua100CE1() {
                                     {/* Problème original */}
                                     <div className="text-center p-3 bg-gray-200 rounded-lg">
                                       <div className="text-sm font-bold text-gray-700 mb-1">Avant</div>
-                                      <div className="text-xs sm:text-lg font-bold text-gray-800">
+                                      <div className="text-lg font-bold text-gray-800">
                                         {example.num1} + {example.num2}
                                       </div>
                                       <div className="text-sm text-gray-600">Difficile !</div>
                                     </div>
 
-                                    <div className="text-xs sm:text-base sm:text-3xl text-purple-600">→</div>
+                                    <div className="text-3xl text-purple-600">→</div>
 
                                     {/* Problème transformé */}
                                     <div className="text-center p-3 bg-green-200 rounded-lg">
                                       <div className="text-sm font-bold text-green-700 mb-1">Après</div>
-                                      <div className="text-xs sm:text-lg font-bold text-green-800">
+                                      <div className="text-lg font-bold text-green-800">
                                         {Math.ceil(example.num1 / 10) * 10} + {example.num2 - (10 - (example.num1 % 10))}
                                       </div>
                                       <div className="text-sm text-green-600">Facile !</div>
                                     </div>
                                   </div>
 
-                                  <div className="text-sm sm:text-xs sm:text-xs sm:text-xl font-bold text-purple-700">
+                                  <div className="text-xl font-bold text-purple-700">
                                     Maintenant c'est plus simple : {Math.ceil(example.num1 / 10) * 10} + {example.num2 - (10 - (example.num1 % 10))}
                                   </div>
                                 </div>
@@ -3293,63 +3268,67 @@ export default function AdditionsJusqua100CE1() {
 
                               {/* Étape : Calcul final (reste visible) */}
                               {(calculationStep === 'add-remaining' || calculationStep === 'result') && (
-                                <div className="text-center bg-green-100 p-2 sm:p-4 rounded-lg border-2 border-green-400">
-                                  <div className="text-xs sm:text-sm sm:text-2xl font-bold text-green-800 mb-3">
-                                    🧮 Étape 4 : Calcul final
+                                <div className="text-center bg-green-100 p-2 sm:p-4 rounded-lg border border-green-400">
+                                  <div className="text-sm sm:text-2xl font-bold text-green-800 mb-1 sm:mb-3">
+                                    🧮 Calcul final
                                   </div>
                                   
-                                  {/* Version mobile : calcul simple */}
+                                  {/* VERSION MOBILE : Calcul final numérique simple */}
                                   <div className="block sm:hidden">
-                                    <div className="text-center text-xs font-bold text-green-800 bg-white p-3 rounded-lg border-2 border-green-300">
-                                      {Math.ceil(example.num1 / 10) * 10} + {example.num2 - (10 - (example.num1 % 10))} = {example.result}
-                                    </div>
-                                  </div>
-
-                                  {/* Version desktop : représentation visuelle complète */}
-                                  <div className="hidden sm:block">
-                                    <div className="flex justify-center items-center space-x-4 mb-4">
-                                      {/* Dizaine ronde */}
-                                      <div className="text-center">
-                                        <div className="flex items-center space-x-2">
-                                          {Array.from({length: Math.ceil(example.num1 / 10)}, (_, i) => (
-                                            <div key={i} className="w-8 h-12 bg-green-500 border-2 border-green-700 rounded flex items-center justify-center text-white font-bold text-sm animate-pulse">
-                                              10
-                                            </div>
-                                          ))}
-                                        </div>
-                                        <div className="text-sm sm:text-xs sm:text-xs sm:text-xl font-bold text-green-700 mt-2">
-                                          {Math.ceil(example.num1 / 10) * 10}
-                                        </div>
-                                      </div>
-
-                                      <div className="text-xs sm:text-base sm:text-3xl font-bold text-green-600">+</div>
-
-                                      {/* Reste à ajouter */}
-                                      <div className="text-center">
-                                        <div className="flex items-center space-x-1">
-                                          {Array.from({length: example.num2 - (10 - (example.num1 % 10))}, (_, i) => (
-                                            <div key={i} className="w-6 h-6 bg-red-500 border-2 border-red-700 rounded-full flex items-center justify-center text-white font-bold text-xs animate-pulse">
-                                              1
-                                            </div>
-                                          ))}
-                                        </div>
-                                        <div className="text-sm sm:text-xs sm:text-xs sm:text-xl font-bold text-red-700 mt-2">
-                                          {example.num2 - (10 - (example.num1 % 10))}
-                                        </div>
-                                      </div>
-
-                                      <div className="text-xs sm:text-base sm:text-3xl font-bold text-green-600">=</div>
-
-                                      {/* Résultat */}
-                                      <div className="text-center">
-                                        <div className="text-xs sm:text-base sm:text-3xl font-bold text-purple-700 animate-bounce">
-                                          {example.result}
-                                        </div>
+                                    <div className="text-center space-y-1">
+                                      <div className="flex justify-center items-center space-x-1 text-sm font-bold">
+                                        <div className="bg-green-100 px-2 py-1 rounded text-green-800">{Math.ceil(example.num1 / 10) * 10}</div>
+                                        <div>+</div>
+                                        <div className="bg-red-100 px-2 py-1 rounded text-red-800">{example.num2 - (10 - (example.num1 % 10))}</div>
+                                        <div>=</div>
+                                        <div className="bg-purple-100 px-2 py-1 rounded text-purple-800 animate-pulse">{example.result}</div>
                                       </div>
                                     </div>
                                   </div>
 
-                                  <div className="text-sm sm:text-xs sm:text-xs sm:text-xl font-bold text-green-700">
+                                  {/* VERSION DESKTOP : Calcul final avec objets visuels */}
+                                  <div className="hidden sm:flex justify-center items-center space-x-4 mb-4">
+                                    {/* Dizaine ronde */}
+                                    <div className="text-center">
+                                      <div className="flex items-center space-x-2">
+                                        {Array.from({length: Math.ceil(example.num1 / 10)}, (_, i) => (
+                                          <div key={i} className="w-8 h-12 bg-green-500 border-2 border-green-700 rounded flex items-center justify-center text-gray-800 font-bold text-sm animate-pulse">
+                                            10
+                                          </div>
+                                        ))}
+                                      </div>
+                                      <div className="text-xl font-bold text-green-700 mt-2">
+                                        {Math.ceil(example.num1 / 10) * 10}
+                                      </div>
+                                    </div>
+
+                                    <div className="text-3xl font-bold text-green-600">+</div>
+
+                                    {/* Reste à ajouter */}
+                                    <div className="text-center">
+                                      <div className="flex items-center space-x-1">
+                                        {Array.from({length: example.num2 - (10 - (example.num1 % 10))}, (_, i) => (
+                                          <div key={i} className="w-6 h-6 bg-red-500 border-2 border-red-700 rounded-full flex items-center justify-center text-gray-800 font-bold text-xs animate-pulse">
+                                            1
+                                          </div>
+                                        ))}
+                                      </div>
+                                      <div className="text-xl font-bold text-red-700 mt-2">
+                                        {example.num2 - (10 - (example.num1 % 10))}
+                                      </div>
+                                    </div>
+
+                                    <div className="text-3xl font-bold text-green-600">=</div>
+
+                                    {/* Résultat */}
+                                    <div className="text-center">
+                                      <div className="text-3xl font-bold text-purple-700 animate-bounce">
+                                        {example.result}
+                                      </div>
+                                    </div>
+                                  </div>
+
+                                  <div className="text-xl font-bold text-green-700">
                                     {Math.ceil(example.num1 / 10) * 10} + {example.num2 - (10 - (example.num1 % 10))} = {example.result}
                                   </div>
                                 </div>
@@ -3357,14 +3336,14 @@ export default function AdditionsJusqua100CE1() {
 
                               {/* Résultat final avec célébration */}
                               {calculationStep === 'result' && (
-                                <div className="text-center bg-yellow-100 p-2 sm:p-4 rounded-lg border-2 border-yellow-400">
-                                  <div className="text-xs sm:text-xl sm:text-xl sm:text-5xl font-bold text-yellow-700 animate-bounce mb-4">
+                                <div className="text-center bg-yellow-100 p-4 rounded-lg border-2 border-yellow-400">
+                                  <div className="text-5xl font-bold text-yellow-700 animate-bounce mb-4">
                                     = {example.result}
                                   </div>
-                                  <div className="text-xs sm:text-sm sm:text-2xl font-bold text-yellow-600">
+                                  <div className="text-2xl font-bold text-yellow-600">
                                     🏆 Bravo ! Le complément à 10, c'est magique !
                                   </div>
-                                  <div className="text-xs sm:text-lg text-yellow-700 mt-2">
+                                  <div className="text-lg text-yellow-700 mt-2">
                                     Tu as transformé un calcul difficile en calcul facile !
                                   </div>
                                 </div>
@@ -3374,22 +3353,22 @@ export default function AdditionsJusqua100CE1() {
 
                           {/* Animation pour décomposition */}
                           {currentTechnique === 'decomposition' && calculationStep && (
-                            <div id="decomposition-animation" className="space-y-2 sm:space-y-6 bg-gradient-to-br from-blue-50 to-indigo-50 p-2 sm:p-6 rounded-xl border-2 border-blue-200">
+                            <div id="decomposition-animation" className="space-y-6 bg-gradient-to-br from-blue-50 to-indigo-50 p-6 rounded-xl border-2 border-blue-200">
                               
 
 
                               {/* Décomposition sur une seule ligne - Version épurée */}
                               {(calculationStep === 'decompose-first' || calculationStep === 'decompose-second' || calculationStep === 'tens' || calculationStep === 'units' || calculationStep === 'result') && (
-                                <div className="bg-white rounded-lg shadow-md p-2 sm:p-4 max-w-xl mx-auto">
+                                <div className="bg-white rounded-lg shadow-md p-4 max-w-xl mx-auto">
                                   <div className="text-center mb-4">
-                                    <div className="text-xs sm:text-lg font-bold text-gray-800">🔢 Je décompose chaque nombre</div>
+                                    <div className="text-lg font-bold text-gray-800">🔢 Je décompose chaque nombre</div>
                         </div>
                                   
                                   {/* Premier nombre - ligne unique */}
                                   <div className={`transition-all duration-700 mb-3 ${
                                     calculationStep === 'decompose-first' ? 'transform scale-105' : ''
                                   }`}>
-                                    <div className={`flex justify-center items-center space-x-3 text-xs sm:text-sm sm:text-2xl font-bold p-1 sm:p-3 rounded-lg transition-all duration-500 ${
+                                    <div className={`flex justify-center items-center space-x-3 text-2xl font-bold p-3 rounded-lg transition-all duration-500 ${
                                       calculationStep === 'decompose-first' ? 'animate-pulse' : ''
                                     }`} 
                                          style={{
@@ -3426,7 +3405,7 @@ export default function AdditionsJusqua100CE1() {
                                     <div className={`transition-all duration-700 ${
                                       calculationStep === 'decompose-second' ? 'transform scale-105' : ''
                                     }`}>
-                                      <div className={`flex justify-center items-center space-x-3 text-xs sm:text-sm sm:text-2xl font-bold p-1 sm:p-3 rounded-lg transition-all duration-500 ${
+                                      <div className={`flex justify-center items-center space-x-3 text-2xl font-bold p-3 rounded-lg transition-all duration-500 ${
                                         calculationStep === 'decompose-second' ? 'animate-pulse' : ''
                                       }`}
                                            style={{
@@ -3463,15 +3442,15 @@ export default function AdditionsJusqua100CE1() {
 
                               {/* Addition des dizaines - Ligne épurée */}
                               {(calculationStep === 'tens' || calculationStep === 'units' || calculationStep === 'result') && (
-                                <div id="tens-addition" className="bg-white rounded-lg shadow-md p-2 sm:p-4 max-w-xl mx-auto">
+                                <div id="tens-addition" className="bg-white rounded-lg shadow-md p-4 max-w-xl mx-auto">
                                   <div className="text-center mb-3">
-                                    <div className="text-xs sm:text-lg font-bold text-blue-700">🔵 J'additionne les dizaines</div>
+                                    <div className="text-lg font-bold text-blue-700">🔵 J'additionne les dizaines</div>
                                   </div>
                                   
                                   <div className={`transition-all duration-700 ${
                                     calculationStep === 'tens' ? 'transform scale-105' : ''
                                   }`}>
-                                    <div className="flex justify-center items-center space-x-3 text-xs sm:text-sm sm:text-2xl font-bold p-1 sm:p-3 rounded-lg"
+                                    <div className="flex justify-center items-center space-x-3 text-2xl font-bold p-3 rounded-lg"
                                          style={{
                                            background: calculationStep === 'tens' 
                                              ? 'linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%)' 
@@ -3495,15 +3474,15 @@ export default function AdditionsJusqua100CE1() {
 
                               {/* Addition des unités - Ligne épurée */}
                               {(calculationStep === 'units' || calculationStep === 'result') && (
-                                <div id="units-addition" className="bg-white rounded-lg shadow-md p-2 sm:p-4 max-w-xl mx-auto">
+                                <div id="units-addition" className="bg-white rounded-lg shadow-md p-4 max-w-xl mx-auto">
                                   <div className="text-center mb-3">
-                                    <div className="text-xs sm:text-lg font-bold text-green-700">🟢 J'additionne les unités</div>
+                                    <div className="text-lg font-bold text-green-700">🟢 J'additionne les unités</div>
                                   </div>
                                   
                                   <div className={`transition-all duration-700 ${
                                     calculationStep === 'units' ? 'transform scale-105' : ''
                                   }`}>
-                                    <div className="flex justify-center items-center space-x-3 text-xs sm:text-sm sm:text-2xl font-bold p-1 sm:p-3 rounded-lg"
+                                    <div className="flex justify-center items-center space-x-3 text-2xl font-bold p-3 rounded-lg"
                                          style={{
                                            background: calculationStep === 'units' 
                                              ? 'linear-gradient(135deg, #e8f5e8 0%, #c8e6c8 100%)' 
@@ -3527,13 +3506,13 @@ export default function AdditionsJusqua100CE1() {
 
                               {/* Résultat final - Ligne épurée */}
                               {calculationStep === 'result' && (
-                                <div id="final-result" className="bg-white rounded-lg shadow-md p-2 sm:p-4 max-w-xl mx-auto">
+                                <div id="final-result" className="bg-white rounded-lg shadow-md p-4 max-w-xl mx-auto">
                                   <div className="text-center mb-3">
-                                    <div className="text-xs sm:text-lg font-bold text-purple-700">🎉 Résultat final</div>
+                                    <div className="text-lg font-bold text-purple-700">🎉 Résultat final</div>
                                   </div>
                                   
                                   <div className="transform scale-105">
-                                    <div className="flex justify-center items-center space-x-3 text-xs sm:text-base sm:text-3xl font-bold p-2 sm:p-4 rounded-lg"
+                                    <div className="flex justify-center items-center space-x-3 text-3xl font-bold p-4 rounded-lg"
                                          style={{
                                            background: 'linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%)',
                                            border: '3px solid #8e24aa',
@@ -3548,7 +3527,7 @@ export default function AdditionsJusqua100CE1() {
                                   </div>
 
                                   <div className="text-center mt-4">
-                                    <div className="text-xs sm:text-lg font-bold text-purple-600 animate-pulse">
+                                    <div className="text-lg font-bold text-purple-600 animate-pulse">
                                       🏆 Parfait ! La décomposition, c'est logique !
                                     </div>
                                   </div>
@@ -3559,25 +3538,25 @@ export default function AdditionsJusqua100CE1() {
 
                           {/* Animation pour bonds de 10 */}
                           {currentTechnique === 'bonds-10' && calculationStep && (
-                            <div id="bonds-animation" className="space-y-2 sm:space-y-6 bg-gradient-to-br from-orange-50 to-yellow-50 p-2 sm:p-6 rounded-xl border-2 border-orange-200">
+                            <div id="bonds-animation" className="space-y-6 bg-gradient-to-br from-orange-50 to-yellow-50 p-6 rounded-xl border-2 border-orange-200">
                               
 
 
                               {/* Point de départ */}
                               {(calculationStep === 'show-first' || calculationStep === 'tens' || calculationStep === 'units' || calculationStep === 'result') && (
-                                <div className="bg-white rounded-lg shadow-md p-2 sm:p-4 max-w-xl mx-auto">
+                                <div className="bg-white rounded-lg shadow-md p-4 max-w-xl mx-auto">
                                   <div className="text-center mb-4">
-                                    <div className="text-xs sm:text-lg font-bold text-orange-700">🎯 Point de départ</div>
+                                    <div className="text-lg font-bold text-orange-700">🎯 Point de départ</div>
                                   </div>
                                   
                                   <div className="text-center p-4 bg-orange-100 rounded-lg border-2 border-orange-400 mb-4">
-                                    <div className="text-xs sm:text-base sm:text-3xl font-bold text-orange-800">
+                                    <div className="text-3xl font-bold text-orange-800">
                                       Je pars de {example.num1}
                                     </div>
                                   </div>
                                   
                                   <div className="text-center">
-                                    <div className="text-xs sm:text-lg text-orange-600">
+                                    <div className="text-lg text-orange-600">
                                       Je vais ajouter {example.num2} en sautant par bonds de 10 !
                                     </div>
                                     {Math.floor(example.num2 / 10) > 0 && (
@@ -3592,15 +3571,15 @@ export default function AdditionsJusqua100CE1() {
 
                               {/* Explication du nombre de bonds */}
                               {(calculationStep === 'tens' || calculationStep === 'units' || calculationStep === 'result') && (
-                                <div id="bonds-explanation" className="bg-white rounded-lg shadow-md p-2 sm:p-4 max-w-xl mx-auto">
+                                <div id="bonds-explanation" className="bg-white rounded-lg shadow-md p-4 max-w-xl mx-auto">
                                   <div className="text-center mb-4">
-                                    <div className="text-xs sm:text-lg font-bold text-blue-700">🧮 Plan d'action</div>
+                                    <div className="text-lg font-bold text-blue-700">🧮 Plan d'action</div>
                                   </div>
                                   
                                   <div className={`transition-all duration-700 ${
                                     calculationStep === 'tens' ? 'transform scale-105' : ''
                                   }`}>
-                                    <div className="p-2 sm:p-4 rounded-lg"
+                                    <div className="p-4 rounded-lg"
                                          style={{
                                            background: calculationStep === 'tens' 
                                              ? 'linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%)' 
@@ -3615,7 +3594,7 @@ export default function AdditionsJusqua100CE1() {
                                       
                                       {/* Analyse du nombre */}
                                       <div className="text-center mb-4">
-                                        <div className="text-sm sm:text-xs sm:text-xs sm:text-xl font-bold text-gray-800 mb-3">
+                                        <div className="text-xl font-bold text-gray-800 mb-3">
                                           J'ajoute {example.num2}
                                         </div>
                                         <div className="flex justify-center items-center space-x-3 text-lg">
@@ -3628,7 +3607,7 @@ export default function AdditionsJusqua100CE1() {
 
                                       {/* Explication des bonds */}
                                       <div className="text-center p-3 bg-yellow-100 rounded-lg border-2 border-yellow-400">
-                                        <div className="text-xs sm:text-lg font-bold text-yellow-800 mb-2">
+                                        <div className="text-lg font-bold text-yellow-800 mb-2">
                                           {Math.floor(example.num2 / 10) * 10} = {Math.floor(example.num2 / 10)} dizaines
                                         </div>
                                         <div className="text-base text-yellow-700">
@@ -3642,9 +3621,9 @@ export default function AdditionsJusqua100CE1() {
 
                               {/* Exécution des bonds de 10 */}
                               {(calculationStep === 'units' || calculationStep === 'result') && (
-                                <div id="bonds-execution" className="bg-white rounded-lg shadow-md p-2 sm:p-4 max-w-xl mx-auto">
+                                <div id="bonds-execution" className="bg-white rounded-lg shadow-md p-4 max-w-xl mx-auto">
                                   <div className="text-center mb-4">
-                                    <div className="text-xs sm:text-lg font-bold text-yellow-700">🦘 Exécution des bonds !</div>
+                                    <div className="text-lg font-bold text-yellow-700">🦘 Exécution des bonds !</div>
                                   </div>
                                   
                                   <div className="space-y-3">
@@ -3658,7 +3637,7 @@ export default function AdditionsJusqua100CE1() {
                                           <div key={i} className={`transition-all duration-500 ${
                                             calculationStep === 'units' ? 'transform scale-105 animate-pulse' : ''
                                           }`}>
-                                            <div className={`flex justify-center items-center space-x-3 p-1 sm:p-3 rounded-lg transition-all duration-300 ${
+                                            <div className={`flex justify-center items-center space-x-3 p-3 rounded-lg transition-all duration-300 ${
                                               calculationStep === 'units' ? 'shadow-xl' : ''
                                             }`}
                                                  style={{
@@ -3672,12 +3651,12 @@ export default function AdditionsJusqua100CE1() {
                                                      ? '0 8px 25px rgba(255, 152, 0, 0.4)' 
                                                      : '0 6px 15px rgba(255, 152, 0, 0.2)'
                                                  }}>
-                                              <div className={`text-xs sm:text-lg font-bold transition-all duration-300 ${
+                                              <div className={`text-lg font-bold transition-all duration-300 ${
                                                 calculationStep === 'units' ? 'text-orange-900 scale-110' : 'text-orange-800'
                                               }`}>
                                                 Bond {i + 1} :
                                               </div>
-                                              <div className="flex items-center space-x-2 text-xs sm:text-lg font-bold">
+                                              <div className="flex items-center space-x-2 text-lg font-bold">
                                                 <div className={`transition-all duration-300 ${
                                                   calculationStep === 'units' ? 'text-orange-800 scale-110' : 'text-orange-700'
                                                 }`}>{current}</div>
@@ -3692,7 +3671,7 @@ export default function AdditionsJusqua100CE1() {
                                                   calculationStep === 'units' ? 'text-orange-900 scale-110 font-extrabold' : 'text-orange-800'
                                                 }`}>{current + 10}</div>
                                               </div>
-                                              <div className={`text-xs sm:text-sm sm:text-2xl transition-all duration-300 ${
+                                              <div className={`text-2xl transition-all duration-300 ${
                                                 calculationStep === 'units' ? 'animate-bounce scale-125' : 'animate-bounce'
                                               }`}>🦘</div>
                       </div>
@@ -3709,12 +3688,12 @@ export default function AdditionsJusqua100CE1() {
 
                               {/* Ajout des unités restantes (s'il y en a) */}
                               {(calculationStep === 'result') && example.num2 % 10 > 0 && (
-                                <div id="bonds-units" className="bg-white rounded-lg shadow-md p-2 sm:p-4 max-w-xl mx-auto">
+                                <div id="bonds-units" className="bg-white rounded-lg shadow-md p-4 max-w-xl mx-auto">
                                   <div className="text-center mb-4">
-                                    <div className="text-xs sm:text-lg font-bold text-green-700">🔢 Dernière étape : les unités</div>
+                                    <div className="text-lg font-bold text-green-700">🔢 Dernière étape : les unités</div>
                                   </div>
                                   
-                                  <div className="p-2 sm:p-4 rounded-lg"
+                                  <div className="p-4 rounded-lg"
                                        style={{
                                          background: 'linear-gradient(135deg, #e8f5e8 0%, #c8e6c8 100%)',
                                          border: '2px solid #4caf50',
@@ -3722,7 +3701,7 @@ export default function AdditionsJusqua100CE1() {
                                        }}>
                                     
                                     <div className="text-center mb-3">
-                                      <div className="text-xs sm:text-lg text-green-700 mb-2">
+                                      <div className="text-lg text-green-700 mb-2">
                                         Après mes {Math.floor(example.num2 / 10)} bonds, je suis à {example.num1 + Math.floor(example.num2 / 10) * 10}
                                       </div>
                                       <div className="text-base text-green-600">
@@ -3730,7 +3709,7 @@ export default function AdditionsJusqua100CE1() {
                                       </div>
                                     </div>
 
-                                    <div className="flex justify-center items-center space-x-3 text-sm sm:text-xs sm:text-xs sm:text-xl font-bold">
+                                    <div className="flex justify-center items-center space-x-3 text-xl font-bold">
                                       <div className="text-green-700">{example.num1 + Math.floor(example.num2 / 10) * 10}</div>
                                       <div className="text-gray-600">+</div>
                                       <div className="text-green-700">{example.num2 % 10}</div>
@@ -3745,11 +3724,11 @@ export default function AdditionsJusqua100CE1() {
                               {calculationStep === 'result' && (
                                 <div id="bonds-result" className="bg-white rounded-lg p-4 shadow-md max-w-xl mx-auto">
                                   <div className="text-center mb-3">
-                                    <div className="text-xs sm:text-lg font-bold text-green-700">🎉 Arrivée !</div>
+                                    <div className="text-lg font-bold text-green-700">🎉 Arrivée !</div>
                                   </div>
                                   
                                   <div className="text-center p-3 bg-green-100 rounded-lg border-2 border-green-400">
-                                    <div className="text-xs sm:text-sm sm:text-2xl font-bold text-green-800 animate-bounce">
+                                    <div className="text-2xl font-bold text-green-800 animate-bounce">
                                       Résultat : {example.result}
                                     </div>
                                   </div>
@@ -3766,21 +3745,21 @@ export default function AdditionsJusqua100CE1() {
 
                           {/* Animation pour compensation */}
                           {currentTechnique === 'compensation' && calculationStep && (
-                            <div className="space-y-3 bg-gradient-to-br from-purple-50 to-pink-50 p-2 sm:p-4 rounded-lg border-2 border-purple-200">
+                            <div className="space-y-3 bg-gradient-to-br from-purple-50 to-pink-50 p-4 rounded-lg border-2 border-purple-200">
                               
 
 
                               {/* Analyse et décomposition du second nombre */}
                               {(calculationStep === 'find-complement' || calculationStep === 'show-first' || calculationStep === 'result') && (
-                                <div className="bg-white rounded-lg shadow-md p-2 sm:p-4 max-w-xl mx-auto">
+                                <div className="bg-white rounded-lg shadow-md p-4 max-w-xl mx-auto">
                                   <div className="text-center mb-4">
-                                    <div className="text-sm sm:text-xs sm:text-lg font-bold text-blue-700">🔍 Analyse intelligente</div>
+                                    <div className="text-lg font-bold text-blue-700">🔍 Analyse intelligente</div>
                                   </div>
                                   
                                   <div className={`transition-all duration-700 ${
                                     calculationStep === 'find-complement' ? 'transform scale-105' : ''
                                   }`}>
-                                    <div className="p-2 sm:p-4 rounded-lg mb-4"
+                                    <div className="p-4 rounded-lg mb-4"
                                          style={{
                                            background: calculationStep === 'find-complement' 
                                              ? 'linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%)' 
@@ -3794,23 +3773,23 @@ export default function AdditionsJusqua100CE1() {
                                          }}>
                                       
                                       <div className="text-center mb-4">
-                                        <div className="text-sm sm:text-xs sm:text-lg font-bold text-gray-800 mb-2 sm:mb-3">
+                                        <div className="text-lg font-bold text-gray-800 mb-3">
                                           🤔 Je remarque que {example.num1} est proche d'un nombre rond !
                                         </div>
-                                        <div className="text-xs sm:text-base text-blue-600">
+                                        <div className="text-base text-blue-600">
                                           {example.num1} + 1 = {example.num1 + 1} (beaucoup plus facile !)
                                         </div>
                                       </div>
 
-                                      <div className={`text-center p-1 sm:p-3 rounded-lg border-2 mb-4 transition-all duration-500 ${
+                                      <div className={`text-center p-3 rounded-lg border-2 mb-4 transition-all duration-500 ${
                                         calculationStep === 'find-complement' 
                                           ? 'bg-yellow-200 border-yellow-500 shadow-lg animate-pulse' 
                                           : 'bg-yellow-100 border-yellow-400'
                                       }`}>
-                                        <div className="text-xs sm:text-base font-bold text-yellow-800 mb-1 sm:mb-2">
+                                        <div className="text-base font-bold text-yellow-800 mb-2">
                                           💡 Étape 1 : Je décompose {example.num2}
                                         </div>
-                                        <div className="flex justify-center items-center space-x-2 sm:space-x-3 text-sm sm:text-xs sm:text-lg font-bold">
+                                        <div className="flex justify-center items-center space-x-3 text-lg font-bold">
                                           <div className={`transition-all duration-300 ${
                                             calculationStep === 'find-complement' ? 'text-gray-900 scale-110' : 'text-gray-800'
                                           }`}>{example.num2}</div>
@@ -3828,7 +3807,7 @@ export default function AdditionsJusqua100CE1() {
                                       </div>
 
                                       <div className="text-center p-3 bg-green-100 rounded-lg border-2 border-green-400">
-                                        <div className="text-xs sm:text-base font-bold text-green-800">
+                                        <div className="text-base font-bold text-green-800">
                                           🎯 Étape 2 : Ce "1" va compléter {example.num1} pour faire {example.num1 + 1} !
                                         </div>
                                       </div>
@@ -3839,9 +3818,9 @@ export default function AdditionsJusqua100CE1() {
 
                               {/* Exécution de l'échange */}
                               {(calculationStep === 'show-first' || calculationStep === 'result') && (
-                                <div className="bg-white rounded-lg shadow-md p-2 sm:p-4 max-w-xl mx-auto">
+                                <div className="bg-white rounded-lg shadow-md p-4 max-w-xl mx-auto">
                                   <div className="text-center mb-4">
-                                    <div className="text-sm sm:text-xs sm:text-lg font-bold text-purple-700">🔄 Exécution de l'échange</div>
+                                    <div className="text-lg font-bold text-purple-700">🔄 Exécution de l'échange</div>
                                   </div>
                                   
                                   <div className={`transition-all duration-700 ${
@@ -3849,15 +3828,15 @@ export default function AdditionsJusqua100CE1() {
                                   }`}>
                                     
                                     {/* Étape 1 : Prendre le 1 */}
-                                    <div className={`text-center mb-4 p-1 sm:p-3 rounded-lg border-2 transition-all duration-500 ${
+                                    <div className={`text-center mb-4 p-3 rounded-lg border-2 transition-all duration-500 ${
                                       calculationStep === 'show-first' 
                                         ? 'bg-red-100 border-red-400 shadow-lg animate-pulse' 
                                         : 'bg-red-50 border-red-300'
                                     }`}>
-                                      <div className="text-xs sm:text-base font-bold text-red-700 mb-1 sm:mb-2">
+                                      <div className="text-base font-bold text-red-700 mb-2">
                                         🎯 Étape 1 : Je prends le "1" de {example.num2}
                                       </div>
-                                      <div className="flex justify-center items-center space-x-2 sm:space-x-3 text-sm sm:text-lg">
+                                      <div className="flex justify-center items-center space-x-3 text-lg">
                                         <div className={`transition-all duration-300 ${
                                           calculationStep === 'show-first' ? 'text-gray-900 scale-105' : 'text-gray-700'
                                         }`}>{example.num2} = {example.num2 - 1} + </div>
@@ -3870,15 +3849,15 @@ export default function AdditionsJusqua100CE1() {
                                     </div>
 
                                     {/* Étape 2 : Donner le 1 */}
-                                    <div className={`text-center mb-4 p-1 sm:p-3 rounded-lg border-2 transition-all duration-500 ${
+                                    <div className={`text-center mb-4 p-3 rounded-lg border-2 transition-all duration-500 ${
                                       calculationStep === 'show-first' 
                                         ? 'bg-green-100 border-green-400 shadow-lg animate-pulse' 
                                         : 'bg-green-50 border-green-300'
                                     }`}>
-                                      <div className="text-xs sm:text-base font-bold text-green-700 mb-1 sm:mb-2">
+                                      <div className="text-base font-bold text-green-700 mb-2">
                                         ✨ Étape 2 : Je donne ce "1" à {example.num1}
                                       </div>
-                                      <div className="flex justify-center items-center space-x-2 sm:space-x-3 text-sm sm:text-lg">
+                                      <div className="flex justify-center items-center space-x-3 text-lg">
                                         <div className={`transition-all duration-300 ${
                                           calculationStep === 'show-first' ? 'text-gray-900 scale-105' : 'text-gray-700'
                                         }`}>{example.num1} + </div>
@@ -3895,15 +3874,15 @@ export default function AdditionsJusqua100CE1() {
 
                                     {/* Résultat de l'échange */}
                                     <div className="text-center p-4 bg-purple-100 rounded-lg border-2 border-purple-400">
-                                      <div className="text-sm sm:text-xs sm:text-lg font-bold text-purple-800 mb-2 sm:mb-3">
+                                      <div className="text-lg font-bold text-purple-800 mb-3">
                                         🎉 Résultat de l'échange :
                                       </div>
-                                      <div className="flex justify-center items-center space-x-3 text-sm sm:text-xs sm:text-xs sm:text-xl font-bold">
+                                      <div className="flex justify-center items-center space-x-3 text-xl font-bold">
                                         <div className="text-green-700">{example.num1 + 1}</div>
                                         <div className="text-gray-600">+</div>
                                         <div className="text-blue-700">{example.num2 - 1}</div>
                                       </div>
-                                      <div className="text-xs sm:text-base text-purple-600 mt-1 sm:mt-2">
+                                      <div className="text-base text-purple-600 mt-2">
                                         Beaucoup plus facile à calculer !
                                       </div>
                                     </div>
@@ -3915,12 +3894,12 @@ export default function AdditionsJusqua100CE1() {
                               {calculationStep === 'result' && (
                                 <div className="bg-white rounded-lg p-4 shadow-md max-w-xl mx-auto">
                                   <div className="text-center mb-3">
-                                    <div className="text-sm sm:text-xs sm:text-lg font-bold text-green-700">✨ Nouveau calcul facilité</div>
+                                    <div className="text-lg font-bold text-green-700">✨ Nouveau calcul facilité</div>
                                   </div>
                                   
                                   <div className="text-center space-y-4">
                                     <div className="text-center p-4 bg-green-100 rounded-lg border-2 border-green-400">
-                                      <div className="text-xs sm:text-sm sm:text-2xl font-bold text-green-800">
+                                      <div className="text-2xl font-bold text-green-800">
                                         {(example.num1 === 29 || example.num1 === 49 || example.num1 === 59 || example.num1 === 39) 
                                           ? `${example.num1 + 1} + ${example.num2 - 1}` 
                                           : `${example.num1 - 1} + ${example.num2 + 1}`}
@@ -3930,13 +3909,13 @@ export default function AdditionsJusqua100CE1() {
                                       </div>
                                     </div>
                                     
-                                    <div className="text-xs sm:text-sm sm:text-2xl font-bold text-green-700">
+                                    <div className="text-3xl font-bold text-green-700">
                                       = {example.result}
                                     </div>
                                   </div>
 
                                   <div className="text-center mt-4">
-                                    <div className="text-sm sm:text-xs sm:text-lg font-bold text-purple-600">
+                                    <div className="text-lg font-bold text-purple-600">
                                       🏆 Génie ! La compensation rend tout plus simple !
                                     </div>
                                   </div>
@@ -3947,7 +3926,7 @@ export default function AdditionsJusqua100CE1() {
 
                           {/* Animation pour étapes successives */}
                           {currentTechnique === 'etapes-successives' && calculationStep && (
-                            <div className="space-y-3 bg-gradient-to-br from-teal-50 to-cyan-50 p-2 sm:p-4 rounded-lg border-2 border-teal-200">
+                            <div className="space-y-3 bg-gradient-to-br from-teal-50 to-cyan-50 p-4 rounded-lg border-2 border-teal-200">
                               
                               {/* Étape : Introduction */}
 
@@ -3956,11 +3935,11 @@ export default function AdditionsJusqua100CE1() {
                               {(calculationStep === 'show-first' || calculationStep === 'tens' || calculationStep === 'units' || calculationStep === 'result') && (
                                 <div className="bg-white rounded-lg p-4 shadow-md max-w-xl mx-auto">
                                   <div className="text-center mb-3">
-                                    <div className="text-xs sm:text-lg font-bold text-teal-700">🎯 Point de départ</div>
+                                    <div className="text-lg font-bold text-teal-700">🎯 Point de départ</div>
                                   </div>
                                   
                                   <div className="text-center p-3 bg-teal-100 rounded-lg border-2 border-teal-400">
-                                    <div className="text-xs sm:text-sm sm:text-2xl font-bold text-teal-800">
+                                    <div className="text-2xl font-bold text-teal-800">
                                       Je commence avec {example.num1}
                                     </div>
                                   </div>
@@ -3977,17 +3956,17 @@ export default function AdditionsJusqua100CE1() {
                               {(calculationStep === 'tens' || calculationStep === 'units' || calculationStep === 'result') && (
                                 <div className="bg-white rounded-lg p-4 shadow-md max-w-xl mx-auto">
                                   <div className="text-center mb-3">
-                                    <div className="text-xs sm:text-lg font-bold text-blue-700">🥇 Première étape : les dizaines</div>
+                                    <div className="text-lg font-bold text-blue-700">🥇 Première étape : les dizaines</div>
                                   </div>
                                   
-                                  <div className={`text-center p-1 sm:p-3 rounded-lg border-2 transition-all ${
+                                  <div className={`text-center p-3 rounded-lg border-2 transition-all ${
                                     calculationStep === 'tens' ? 'bg-blue-100 border-blue-400 animate-pulse' : 'bg-blue-50 border-blue-200'
                                   }`}>
                                     <div className="space-y-2">
                                       <div className="text-base text-blue-600">
                                         J'ajoute {Math.floor(example.num2 / 10) * 10} à {example.num1}
                                       </div>
-                                      <div className="flex justify-center items-center space-x-2 text-xs sm:text-lg font-bold">
+                                      <div className="flex justify-center items-center space-x-2 text-lg font-bold">
                                         <div className={`transition-all duration-300 ${
                                           calculationStep === 'tens' ? 'text-blue-800 scale-110' : 'text-blue-700'
                                         }`}>{example.num1}</div>
@@ -4011,17 +3990,17 @@ export default function AdditionsJusqua100CE1() {
                               {(calculationStep === 'units' || calculationStep === 'result') && (
                                 <div className="bg-white rounded-lg p-4 shadow-md max-w-xl mx-auto">
                                   <div className="text-center mb-3">
-                                    <div className="text-xs sm:text-lg font-bold text-green-700">🥈 Deuxième étape : les unités</div>
+                                    <div className="text-lg font-bold text-green-700">🥈 Deuxième étape : les unités</div>
                                   </div>
                                   
-                                  <div className={`text-center p-1 sm:p-3 rounded-lg border-2 transition-all ${
+                                  <div className={`text-center p-3 rounded-lg border-2 transition-all ${
                                     calculationStep === 'units' ? 'bg-green-100 border-green-400 animate-pulse' : 'bg-green-50 border-green-200'
                                   }`}>
                                     <div className="space-y-2">
                                       <div className="text-base text-green-600">
                                         J'ajoute {example.num2 % 10} à {example.num1 + Math.floor(example.num2 / 10) * 10}
                                       </div>
-                                      <div className="flex justify-center items-center space-x-2 text-xs sm:text-lg font-bold">
+                                      <div className="flex justify-center items-center space-x-2 text-lg font-bold">
                                         <div className={`transition-all duration-300 ${
                                           calculationStep === 'units' ? 'text-green-800 scale-110' : 'text-green-700'
                                         }`}>{example.num1 + Math.floor(example.num2 / 10) * 10}</div>
@@ -4045,7 +4024,7 @@ export default function AdditionsJusqua100CE1() {
                               {calculationStep === 'result' && (
                                 <div className="bg-white rounded-lg p-4 shadow-md max-w-xl mx-auto">
                                   <div className="text-center mb-3">
-                                    <div className="text-xs sm:text-lg font-bold text-purple-700">🎉 Résumé des étapes</div>
+                                    <div className="text-lg font-bold text-purple-700">🎉 Résumé des étapes</div>
                                   </div>
                                   
                                   <div className="space-y-2">
@@ -4055,7 +4034,7 @@ export default function AdditionsJusqua100CE1() {
                                       </div>
                                     </div>
                                     
-                                    <div className="text-center text-xs sm:text-xs sm:text-xl">⬇️</div>
+                                    <div className="text-center text-xl">⬇️</div>
                                     
                                     <div className="text-center p-2 bg-green-100 rounded-lg">
                                       <div className="text-base font-bold text-green-800">
@@ -4065,7 +4044,7 @@ export default function AdditionsJusqua100CE1() {
                                   </div>
 
                                   <div className="text-center mt-4">
-                                    <div className="text-sm sm:text-xs sm:text-xs sm:text-xl font-bold text-purple-800 animate-bounce">
+                                    <div className="text-xl font-bold text-purple-800 animate-bounce">
                                       = {example.result}
                                     </div>
                                     <div className="text-base font-bold text-purple-600 mt-2">
@@ -4079,7 +4058,7 @@ export default function AdditionsJusqua100CE1() {
 
                           {/* Animation pour doubles */}
                           {currentTechnique === 'doubles' && calculationStep && (
-                            <div className="space-y-3 bg-gradient-to-br from-pink-50 to-rose-50 p-2 sm:p-4 rounded-lg border-2 border-pink-200">
+                            <div className="space-y-3 bg-gradient-to-br from-pink-50 to-rose-50 p-4 rounded-lg border-2 border-pink-200">
                               
 
 
@@ -4087,7 +4066,7 @@ export default function AdditionsJusqua100CE1() {
                               {(calculationStep === 'show-problem' || calculationStep === 'show-first' || calculationStep === 'units' || calculationStep === 'result') && (
                                 <div className="bg-white rounded-lg p-4 shadow-md max-w-xl mx-auto">
                                   <div className="text-center mb-3">
-                                    <div className="text-xs sm:text-lg font-bold text-pink-700">🔍 Observation intelligente</div>
+                                    <div className="text-lg font-bold text-pink-700">🔍 Observation intelligente</div>
                                   </div>
                                   
                                   <div className="text-center p-3 bg-pink-100 rounded-lg border-2 border-pink-400">
@@ -4095,7 +4074,7 @@ export default function AdditionsJusqua100CE1() {
                                       <div className="text-base text-pink-600">
                                         Je remarque que {example.num2} = {example.num1} + 1
                                       </div>
-                                      <div className="flex justify-center items-center space-x-2 text-xs sm:text-lg font-bold">
+                                      <div className="flex justify-center items-center space-x-2 text-lg font-bold">
                                         <div className={`transition-all duration-300 ${
                                           calculationStep === 'show-problem' ? 'text-pink-800 scale-110' : 'text-pink-700'
                                         }`}>{example.num2}</div>
@@ -4119,22 +4098,22 @@ export default function AdditionsJusqua100CE1() {
                               {(calculationStep === 'show-first' || calculationStep === 'units' || calculationStep === 'result') && (
                                 <div className="bg-white rounded-lg p-4 shadow-md max-w-xl mx-auto">
                                   <div className="text-center mb-3">
-                                    <div className="text-xs sm:text-lg font-bold text-blue-700">🔄 Transformation en double</div>
+                                    <div className="text-lg font-bold text-blue-700">🔄 Transformation en double</div>
                                   </div>
                                   
                                   <div className="space-y-3">
                                     <div className="text-center p-2 bg-gray-100 rounded-lg">
                                       <div className="text-base text-gray-700 mb-1">Calcul original :</div>
-                                      <div className="text-xs sm:text-lg font-bold text-gray-800">
+                                      <div className="text-lg font-bold text-gray-800">
                                         {example.num1} + {example.num2}
                                       </div>
                                     </div>
 
-                                    <div className="text-center text-xs sm:text-xs sm:text-xl">⬇️</div>
+                                    <div className="text-center text-xl">⬇️</div>
 
                                     <div className="text-center p-2 bg-blue-100 rounded-lg border-2 border-blue-400">
                                       <div className="text-base text-blue-700 mb-1">Devient :</div>
-                                      <div className="text-xs sm:text-lg font-bold text-blue-800">
+                                      <div className="text-lg font-bold text-blue-800">
                                         {example.num1} + {example.num1} + 1
                                       </div>
                                     </div>
@@ -4146,17 +4125,17 @@ export default function AdditionsJusqua100CE1() {
                               {(calculationStep === 'units' || calculationStep === 'result') && (
                                 <div className="bg-white rounded-lg p-4 shadow-md max-w-xl mx-auto">
                                   <div className="text-center mb-3">
-                                    <div className="text-xs sm:text-lg font-bold text-green-700">✨ Calcul du double</div>
+                                    <div className="text-lg font-bold text-green-700">✨ Calcul du double</div>
                                   </div>
                                   
-                                  <div className={`text-center p-1 sm:p-3 rounded-lg border-2 transition-all ${
+                                  <div className={`text-center p-3 rounded-lg border-2 transition-all ${
                                     calculationStep === 'units' ? 'bg-green-100 border-green-400 animate-pulse' : 'bg-green-50 border-green-200'
                                   }`}>
                                     <div className="space-y-2">
                                       <div className="text-base text-green-600">
                                         Le double de {example.num1} :
                                       </div>
-                                      <div className="flex justify-center items-center space-x-2 text-sm sm:text-xs sm:text-xs sm:text-xl font-bold">
+                                      <div className="flex justify-center items-center space-x-2 text-xl font-bold">
                                         <div className="text-green-700">{example.num1}</div>
                                         <div className="text-gray-500">+</div>
                                         <div className="text-green-700">{example.num1}</div>
@@ -4172,7 +4151,7 @@ export default function AdditionsJusqua100CE1() {
                               {calculationStep === 'result' && (
                                 <div className="bg-white rounded-lg p-4 shadow-md max-w-xl mx-auto">
                                   <div className="text-center mb-3">
-                                    <div className="text-xs sm:text-lg font-bold text-purple-700">🎉 Résultat final</div>
+                                    <div className="text-lg font-bold text-purple-700">🎉 Résultat final</div>
                                   </div>
                                   
                                   <div className="space-y-3">
@@ -4181,7 +4160,7 @@ export default function AdditionsJusqua100CE1() {
                                         <div className="text-base text-purple-600">
                                           Double + 1 :
                                         </div>
-                                        <div className="flex justify-center items-center space-x-2 text-sm sm:text-xs sm:text-xs sm:text-xl font-bold">
+                                        <div className="flex justify-center items-center space-x-2 text-xl font-bold">
                                           <div className="text-purple-700">{example.num1 * 2}</div>
                                           <div className="text-gray-500">+</div>
                                           <div className="text-green-700">1</div>
@@ -4217,9 +4196,9 @@ export default function AdditionsJusqua100CE1() {
           </div>
         ) : (
           /* EXERCICES - RESPONSIVE MOBILE OPTIMISÉ */
-          <div id="exercise-interface" className="pb-20 sm:pb-8">
+          <div className="pb-20 sm:pb-8">
             {/* Introduction de Sam le Pirate - toujours visible */}
-            <div className="mb-2 sm:mb-4 mt-2 sm:mt-4">
+            <div className="mb-6 sm:mb-4 mt-4">
               {/* JSX pour l'introduction de Sam le Pirate dans les exercices */}
               <div className="flex justify-center p-0 sm:p-1 mt-0 sm:mt-2">
                 <div className="flex items-center gap-1 sm:gap-2">
@@ -4228,7 +4207,7 @@ export default function AdditionsJusqua100CE1() {
                     id="sam-pirate"
                     className={`relative flex-shrink-0 rounded-full bg-gradient-to-br from-blue-100 to-purple-100 border-1 sm:border-2 border-blue-200 shadow-md transition-all duration-300 ${
                     isPlayingVocal
-                      ? 'w-12 sm:w-32 h-12 sm:h-32 scale-105 sm:scale-110'
+                      ? 'w-12 sm:w-32 h-12 sm:h-32 scale-110 sm:scale-150'
                       : pirateIntroStarted
                         ? 'w-10 sm:w-16 h-10 sm:h-16'
                         : 'w-12 sm:w-20 h-12 sm:h-20'
@@ -4241,7 +4220,7 @@ export default function AdditionsJusqua100CE1() {
                         onError={() => setImageError(true)}
                       />
                     ) : (
-                      <div className="w-full h-full rounded-full flex items-center justify-center text-sm sm:text-sm sm:text-2xl">
+                      <div className="w-full h-full rounded-full flex items-center justify-center text-sm sm:text-2xl">
                         🏴‍☠️
                       </div>
                     )}
@@ -4261,10 +4240,10 @@ export default function AdditionsJusqua100CE1() {
                   disabled={isPlayingVocal}
                   className={`relative transition-all duration-300 transform ${
                     isPlayingVocal 
-                      ? 'px-3 sm:px-12 py-1 sm:py-5 rounded-lg sm:rounded-xl font-black text-sm sm:text-sm sm:text-2xl bg-gradient-to-r from-gray-400 to-gray-500 text-gray-200 cursor-not-allowed animate-pulse shadow-md' 
+                      ? 'px-3 sm:px-12 py-1 sm:py-5 rounded-lg sm:rounded-xl font-black text-sm sm:text-2xl bg-gradient-to-r from-gray-400 to-gray-500 text-gray-200 cursor-not-allowed animate-pulse shadow-md' 
                       : pirateIntroStarted
                         ? 'px-2 sm:px-8 py-2 sm:py-3 rounded-md sm:rounded-lg font-bold text-xs sm:text-lg bg-gradient-to-r from-blue-500 to-purple-600 text-white hover:from-blue-600 hover:to-purple-700 hover:scale-105 shadow-lg border-1 sm:border-2 border-blue-300'
-                        : 'px-3 sm:px-12 py-1 sm:py-5 rounded-lg sm:rounded-xl font-black text-sm sm:text-sm sm:text-2xl bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 text-white hover:from-blue-600 hover:via-indigo-600 hover:to-purple-600 hover:scale-110 shadow-2xl hover:shadow-3xl animate-pulse border-2 sm:border-4 border-yellow-300'
+                        : 'px-3 sm:px-12 py-1 sm:py-5 rounded-lg sm:rounded-xl font-black text-sm sm:text-2xl bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 text-white hover:from-blue-600 hover:via-indigo-600 hover:to-purple-600 hover:scale-110 shadow-2xl hover:shadow-3xl animate-pulse border-2 sm:border-4 border-yellow-300'
                   } ${!isPlayingVocal && !pirateIntroStarted ? 'ring-4 ring-yellow-300 ring-opacity-75' : ''} ${pirateIntroStarted && !isPlayingVocal ? 'ring-2 ring-blue-300 ring-opacity-75' : ''}`}
                   style={{
                     animationDuration: !isPlayingVocal && !pirateIntroStarted ? '1.5s' : '2s',
@@ -4317,10 +4296,15 @@ export default function AdditionsJusqua100CE1() {
               </div>
             </div>
 
-            {/* Sélecteur de séries */}
-            <div id="exercise-series-selector" className="bg-white rounded-xl p-2 sm:p-4 shadow-lg mt-2 sm:mt-6">
-              <h3 className="text-sm sm:text-xs sm:text-lg font-bold text-gray-900 mb-2 sm:mb-4 text-center">📚 Choisir une série d'exercices</h3>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-4">
+            {/* Sélecteur de séries - VERSION MOBILE COMPACTE */}
+            <div 
+              id="exercise-series-selector"
+              className={`bg-white rounded-xl p-2 sm:p-4 shadow-lg mt-2 sm:mt-6 transition-all duration-300 ${
+                highlightedElement === 'exercise-series-selector' ? 'ring-4 ring-blue-400 bg-blue-50 scale-105' : ''
+              }`}
+            >
+              <h3 className="text-sm sm:text-lg font-bold text-gray-900 mb-2 sm:mb-4 text-center">📚 Choisir une série d'exercices</h3>
+              <div className="grid grid-cols-2 sm:grid-cols-1 md:grid-cols-3 gap-2 sm:gap-4">
                 {Object.entries(exerciseSeries).map(([seriesKey, seriesExercises]) => {
                   const seriesNames = {
                     decomposition: '🔢 Décomposition',
@@ -4335,23 +4319,25 @@ export default function AdditionsJusqua100CE1() {
                     <button
                       key={seriesKey}
                       onClick={() => {
+                        // Arrêter tous les audios et animations en cours
+                        stopAllVocalsAndAnimations();
+                        
+                        // Réinitialiser tous les états des exercices
                         setCurrentSeries(seriesKey);
                         setCurrentExercise(0);
                         setScore(0);
                         setAnsweredCorrectly(new Set());
                         setShowCompletionModal(false);
-                        clearExerciseCorrection(); // Nettoyer les états de correction
                         
-                        // Scroll vers la zone d'exercices après sélection
-                        setTimeout(() => {
-                          const exerciseSection = document.getElementById('exercise-interface');
-                          if (exerciseSection) {
-                            exerciseSection.scrollIntoView({ 
-                              behavior: 'smooth', 
-                              block: window.innerWidth < 768 ? 'center' : 'start' 
-                            });
-                          }
-                        }, 100);
+                        // Réinitialiser les états de correction et d'affichage
+                        setUserAnswer('');
+                        setIsCorrect(null);
+                        setIsPlayingEnonce(false);
+                        setFinalScore(0);
+                        setPirateIntroStarted(false);
+                        setHighlightNextButton(false);
+                        setAnimatedObjects([]);
+                        setCountingIndex(-1);
                       }}
                       className={`p-2 sm:p-4 rounded-lg font-bold text-xs sm:text-sm transition-all duration-300 min-h-[60px] sm:min-h-[80px] flex flex-col justify-center items-center ${
                         currentSeries === seriesKey
@@ -4359,8 +4345,8 @@ export default function AdditionsJusqua100CE1() {
                           : 'bg-gray-100 text-gray-700 hover:bg-gray-200 hover:scale-102'
                       }`}
                     >
-                      <div>{seriesNames[seriesKey as keyof typeof seriesNames]}</div>
-                      <div className="text-xs opacity-75 mt-0 sm:mt-1 hidden sm:block">
+                      <div className="text-center leading-tight">{seriesNames[seriesKey as keyof typeof seriesNames]}</div>
+                      <div className="text-xs opacity-75 mt-1 hidden sm:block">
                         {seriesKey === 'melange' ? '15 exercices' : '10 exercices'}
                       </div>
                     </button>
@@ -4372,7 +4358,7 @@ export default function AdditionsJusqua100CE1() {
             {/* Header exercices - caché sur mobile */}
             <div className="bg-white rounded-xl p-2 shadow-lg mt-6 hidden sm:block">
               <div className="flex justify-between items-center mb-1">
-                <h2 className="text-xs sm:text-lg font-bold text-gray-900">
+                <h2 className="text-lg font-bold text-gray-900">
                   Exercice {currentExercise + 1}
                 </h2>
                 
@@ -4411,44 +4397,44 @@ export default function AdditionsJusqua100CE1() {
               </div>
             </div>
 
-            {/* Question principale */}
-            <div className="bg-white rounded-xl p-4 sm:p-8 shadow-lg mt-4">
-              {/* Header avec bouton écouter en haut à droite */}
-              <div className="flex justify-between items-start mb-6">
+            {/* Question principale - VERSION MOBILE COMPACTE */}
+            <div className="bg-white rounded-xl p-2 sm:p-4 md:p-8 shadow-lg mt-2 sm:mt-4">
+              {/* Header compact pour mobile */}
+              <div className="flex justify-between items-center mb-3 sm:mb-6">
                 <div className="flex-1">
-                  {/* Titre de la question */}
-                  <h3 className="text-xs sm:text-xs sm:text-xl sm:text-xs sm:text-sm sm:text-2xl font-bold mb-2 sm:mb-4 text-gray-900 text-center">
-                  {exercises[currentExercise].question}
-                </h3>
-                
-                {/* Badge du type */}
-                <div className="flex justify-center mb-4">
-                  <span className={`px-3 py-1 rounded-full text-sm font-semibold ${
-                    exercises[currentExercise].type === 'decomposition' ? 'bg-blue-100 text-blue-800' :
-                    exercises[currentExercise].type === 'complement-10' ? 'bg-green-100 text-green-800' :
-                    exercises[currentExercise].type === 'bonds-10' ? 'bg-yellow-100 text-yellow-800' :
-                    exercises[currentExercise].type === 'compensation' ? 'bg-orange-100 text-orange-800' :
-                    exercises[currentExercise].type === 'etapes-successives' ? 'bg-purple-100 text-purple-800' :
-                    exercises[currentExercise].type === 'doubles' ? 'bg-pink-100 text-pink-800' :
-                    'bg-gray-100 text-gray-800'
-                  }`}>
-                    {exercises[currentExercise].type === 'decomposition' ? '🧮 Décomposition' :
-                     exercises[currentExercise].type === 'complement-10' ? '🎯 Complément à 10' :
-                     exercises[currentExercise].type === 'bonds-10' ? '⚡ Bonds de 10' :
-                     exercises[currentExercise].type === 'compensation' ? '🔄 Compensation' :
-                     exercises[currentExercise].type === 'etapes-successives' ? '🎲 Étapes successives' :
-                     exercises[currentExercise].type === 'doubles' ? '🧠 Doubles' :
-                     '✨ Technique CE1'}
-                  </span>
+                  {/* Titre de la question - plus petit sur mobile */}
+                  <h3 className="text-base sm:text-xl md:text-2xl font-bold mb-2 sm:mb-4 text-gray-900 text-center leading-tight">
+                    {exercises[currentExercise].question}
+                  </h3>
+                  
+                  {/* Badge du type - masqué sur très petit mobile */}
+                  <div className="flex justify-center mb-2 sm:mb-4 hidden sm:block">
+                    <span className={`px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-semibold ${
+                      exercises[currentExercise].type === 'decomposition' ? 'bg-blue-100 text-blue-800' :
+                      exercises[currentExercise].type === 'complement-10' ? 'bg-green-100 text-green-800' :
+                      exercises[currentExercise].type === 'bonds-10' ? 'bg-yellow-100 text-yellow-800' :
+                      exercises[currentExercise].type === 'compensation' ? 'bg-orange-100 text-orange-800' :
+                      exercises[currentExercise].type === 'etapes-successives' ? 'bg-purple-100 text-purple-800' :
+                      exercises[currentExercise].type === 'doubles' ? 'bg-pink-100 text-pink-800' :
+                      'bg-gray-100 text-gray-800'
+                    }`}>
+                      {exercises[currentExercise].type === 'decomposition' ? '🧮 Décomposition' :
+                       exercises[currentExercise].type === 'complement-10' ? '🎯 Complément à 10' :
+                       exercises[currentExercise].type === 'bonds-10' ? '⚡ Bonds de 10' :
+                       exercises[currentExercise].type === 'compensation' ? '🔄 Compensation' :
+                       exercises[currentExercise].type === 'etapes-successives' ? '🎲 Étapes successives' :
+                       exercises[currentExercise].type === 'doubles' ? '🧠 Doubles' :
+                       '✨ Technique CE1'}
+                    </span>
                   </div>
                 </div>
 
-                {/* Bouton écouter l'énoncé - en haut à droite */}
+                {/* Bouton écouter l'énoncé - compact sur mobile */}
                 <button
                   id="listen-question-button"
                   onClick={startExerciseExplanation}
                   disabled={isPlayingEnonce}
-                  className={`flex-shrink-0 ml-4 px-3 py-2 sm:px-4 sm:py-2 rounded-lg font-bold text-xs sm:text-sm transition-all ${
+                  className={`flex-shrink-0 ml-2 sm:ml-4 px-2 py-2 sm:px-4 sm:py-2 rounded-lg font-bold text-xs sm:text-sm transition-all ${
                     isPlayingEnonce 
                       ? 'bg-gray-400 text-white cursor-not-allowed' 
                       : highlightedElement === 'listen-question-button'
@@ -4463,24 +4449,24 @@ export default function AdditionsJusqua100CE1() {
                 </button>
               </div>
 
-              {/* Zone de réponse */}
+              {/* Zone de réponse - VERSION MOBILE COMPACTE */}
               <div 
                 id="answer-zone"
-                className={`max-w-md mx-auto mb-6 transition-all duration-300 ${
+                className={`max-w-sm mx-auto mb-3 sm:mb-6 transition-all duration-300 ${
                   highlightedElement === 'answer-zone' ? 'ring-4 ring-blue-400 rounded-lg scale-105' : ''
                 }`}
               >
-                <div className="text-center mb-4">
-                  <label className="block text-xs sm:text-lg font-bold text-gray-800 mb-2">
+                <div className="text-center mb-3 sm:mb-4">
+                  <label className="block text-sm sm:text-lg font-bold text-gray-800 mb-1 sm:mb-2">
                     Écris le résultat :
                   </label>
                   
-                  {/* Équation centrée */}
-                  <div className="text-center mb-3">
-                    <span className="text-lg sm:text-sm sm:text-xs sm:text-xs sm:text-xl font-bold">{exercises[currentExercise].firstNumber} + {exercises[currentExercise].secondNumber} = ?</span>
+                  {/* Équation centrée - plus petite sur mobile */}
+                  <div className="text-center mb-2 sm:mb-3">
+                    <span className="text-base sm:text-lg md:text-xl font-bold">{exercises[currentExercise].firstNumber} + {exercises[currentExercise].secondNumber} = ?</span>
                   </div>
                   
-                  {/* Input parfaitement centré */}
+                  {/* Input parfaitement centré - adaptatif */}
                   <div className="flex justify-center">
                     <input
                       type="number"
@@ -4488,7 +4474,7 @@ export default function AdditionsJusqua100CE1() {
                       onChange={(e) => setUserAnswer(e.target.value)}
                       placeholder="?"
                       disabled={isCorrect !== null}
-                      className={`w-16 sm:w-20 h-12 text-lg sm:text-sm sm:text-xs sm:text-xs sm:text-xl font-bold text-center border-2 rounded-lg ${
+                      className={`w-14 sm:w-16 md:w-20 h-10 sm:h-12 text-base sm:text-lg md:text-xl font-bold text-center border-2 rounded-lg ${
                         isCorrect === true 
                           ? 'border-green-500 bg-green-50 text-green-800' 
                           : isCorrect === false 
@@ -4501,16 +4487,19 @@ export default function AdditionsJusqua100CE1() {
                   </div>
                 </div>
 
-                {/* Bouton vérifier */}
+                {/* Bouton vérifier - plus compact sur mobile */}
                 {isCorrect === null && (
                   <div className="text-center">
                     <button
+                      id="validate-button"
                       onClick={handleAnswerSubmit}
                       disabled={!userAnswer.trim() || isPlayingVocal}
-                      className={`px-6 py-3 rounded-lg font-bold text-xs sm:text-lg transition-all ${
+                      className={`px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-bold text-sm sm:text-lg transition-all ${
                         !userAnswer.trim() || isPlayingVocal
                           ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                          : 'bg-green-500 text-white hover:bg-green-600 hover:scale-105 shadow-lg'
+                          : highlightedElement === 'validate-button'
+                            ? 'bg-yellow-500 text-white ring-4 ring-yellow-300 animate-pulse scale-110 shadow-xl'
+                            : 'bg-green-500 text-white hover:bg-green-600 hover:scale-105 shadow-lg'
                       }`}
                     >
                       ✅ Valider
@@ -4528,14 +4517,14 @@ export default function AdditionsJusqua100CE1() {
                     {isCorrect ? (
                       <>
                         <CheckCircle className="w-6 h-6 sm:w-8 sm:h-8 animate-bounce" />
-                        <span className="font-bold text-xs sm:text-lg">
+                        <span className="font-bold text-lg sm:text-xl">
                           🎉 Parfait ! {exercises[currentExercise].firstNumber} + {exercises[currentExercise].secondNumber} = {exercises[currentExercise].correctAnswer} !
                         </span>
                       </>
                     ) : (
                       <>
                         <XCircle className="w-6 h-6 sm:w-8 sm:h-8" />
-                        <span className="font-bold text-xs sm:text-lg">
+                        <span className="font-bold text-lg sm:text-xl">
                           Pas tout à fait... La bonne réponse est : {exercises[currentExercise].correctAnswer}
                         </span>
                       </>
@@ -4546,16 +4535,16 @@ export default function AdditionsJusqua100CE1() {
 
               {/* Animation de décomposition réduite pour les exercices de décomposition */}
               {exercises[currentExercise].type === 'decomposition' && isCorrect !== null && (
-                <div data-correction-type="decomposition" className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-2 sm:p-4 mb-2 sm:mb-4 border-2 border-blue-200">
-                  <h4 className="text-sm sm:text-xs sm:text-lg font-bold text-center text-blue-800 mb-2 sm:mb-4">
+                <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-4 mb-4 border-2 border-blue-200">
+                  <h4 className="text-lg font-bold text-center text-blue-800 mb-4">
                     🔢 Méthode de décomposition
                   </h4>
                   
                   {/* Décomposition simplifiée */}
-                  <div className="space-y-2 sm:space-y-3 max-w-lg mx-auto">
+                  <div className="space-y-3 max-w-lg mx-auto">
                     {/* Premier nombre */}
-                    <div className="bg-white rounded-lg p-2 sm:p-3 shadow-sm">
-                      <div className="flex justify-center items-center space-x-1 sm:space-x-2 text-sm sm:text-xs sm:text-lg font-bold">
+                    <div className="bg-white rounded-lg p-3 shadow-sm">
+                      <div className="flex justify-center items-center space-x-2 text-lg font-bold">
                         <div className="text-gray-800">{exercises[currentExercise].firstNumber}</div>
                         <div className="text-gray-600">=</div>
                         <div className="text-blue-600 px-2 py-1 bg-blue-100 rounded">
@@ -4570,7 +4559,7 @@ export default function AdditionsJusqua100CE1() {
                     
                     {/* Second nombre */}
                     <div className="bg-white rounded-lg p-3 shadow-sm">
-                      <div className="flex justify-center items-center space-x-2 text-xs sm:text-lg font-bold">
+                      <div className="flex justify-center items-center space-x-2 text-lg font-bold">
                         <div className="text-gray-800">{exercises[currentExercise].secondNumber}</div>
                         <div className="text-gray-600">=</div>
                         <div className="text-blue-600 px-2 py-1 bg-blue-100 rounded">
@@ -4585,7 +4574,7 @@ export default function AdditionsJusqua100CE1() {
                     
                     {/* Addition des dizaines */}
                     <div className="bg-white rounded-lg p-3 shadow-sm border-l-4 border-blue-400">
-                      <div className="flex justify-center items-center space-x-2 text-xs sm:text-lg font-bold">
+                      <div className="flex justify-center items-center space-x-2 text-lg font-bold">
                         <div className="text-blue-700">
                           {Math.floor(exercises[currentExercise].firstNumber / 10) * 10}
                       </div>
@@ -4603,7 +4592,7 @@ export default function AdditionsJusqua100CE1() {
                     
                     {/* Addition des unités */}
                     <div className="bg-white rounded-lg p-3 shadow-sm border-l-4 border-green-400">
-                      <div className="flex justify-center items-center space-x-2 text-xs sm:text-lg font-bold">
+                      <div className="flex justify-center items-center space-x-2 text-lg font-bold">
                         <div className="text-green-700">
                           {exercises[currentExercise].firstNumber % 10}
                       </div>
@@ -4621,7 +4610,7 @@ export default function AdditionsJusqua100CE1() {
                     
                     {/* Résultat final */}
                     <div className="bg-white rounded-lg p-3 shadow-sm border-l-4 border-purple-400">
-                      <div className="flex justify-center items-center space-x-2 text-sm sm:text-xs sm:text-xs sm:text-xl font-bold">
+                      <div className="flex justify-center items-center space-x-2 text-xl font-bold">
                         <div className="text-blue-700">
                           {(Math.floor(exercises[currentExercise].firstNumber / 10) + Math.floor(exercises[currentExercise].secondNumber / 10)) * 10}
                       </div>
@@ -4642,8 +4631,8 @@ export default function AdditionsJusqua100CE1() {
 
               {/* Animation bonds de 10 réduite pour les exercices bonds-10 */}
               {exercises[currentExercise].type === 'bonds-10' && isCorrect !== null && (
-                <div data-correction-type="bonds-10" className="bg-gradient-to-br from-yellow-50 to-orange-50 rounded-xl p-2 sm:p-4 mb-2 sm:mb-4 border-2 border-yellow-200">
-                  <h4 className="text-sm sm:text-xs sm:text-lg font-bold text-center text-yellow-800 mb-2 sm:mb-4">
+                <div className="bg-gradient-to-br from-yellow-50 to-orange-50 rounded-xl p-4 mb-4 border-2 border-yellow-200">
+                  <h4 className="text-lg font-bold text-center text-yellow-800 mb-4">
                     🦘 Méthode des bonds de 10
                   </h4>
                   
@@ -4651,7 +4640,7 @@ export default function AdditionsJusqua100CE1() {
                   <div className="space-y-3 max-w-lg mx-auto">
                     {/* Point de départ */}
                     <div className="bg-white rounded-lg p-3 shadow-sm">
-                      <div className="text-center text-xs sm:text-lg font-bold text-orange-700 mb-2">
+                      <div className="text-center text-lg font-bold text-orange-700 mb-2">
                         🎯 Je pars de {exercises[currentExercise].firstNumber}
                       </div>
                       <div className="text-center text-base text-orange-600">
@@ -4661,7 +4650,7 @@ export default function AdditionsJusqua100CE1() {
                         
                     {/* Analyse du nombre à ajouter */}
                     <div className="bg-white rounded-lg p-3 shadow-sm">
-                      <div className="flex justify-center items-center space-x-2 text-xs sm:text-lg font-bold mb-2">
+                      <div className="flex justify-center items-center space-x-2 text-lg font-bold mb-2">
                         <div className="text-gray-800">{exercises[currentExercise].secondNumber}</div>
                         <div className="text-gray-600">=</div>
                         <div className="text-blue-600 px-2 py-1 bg-blue-100 rounded">
@@ -4718,7 +4707,7 @@ export default function AdditionsJusqua100CE1() {
                         <div className="text-center text-base font-bold text-green-700 mb-2">
                           🔢 Ajout des unités restantes
                         </div>
-                        <div className="flex justify-center items-center space-x-2 text-xs sm:text-lg font-bold">
+                        <div className="flex justify-center items-center space-x-2 text-lg font-bold">
                           <div className="text-gray-700">
                             {exercises[currentExercise].firstNumber + Math.floor(exercises[currentExercise].secondNumber / 10) * 10}
                           </div>
@@ -4736,7 +4725,7 @@ export default function AdditionsJusqua100CE1() {
                     
                     {/* Résultat final */}
                     <div className="bg-white rounded-lg p-3 shadow-sm border-l-4 border-yellow-400">
-                      <div className="flex justify-center items-center space-x-2 text-sm sm:text-xs sm:text-xs sm:text-xl font-bold">
+                      <div className="flex justify-center items-center space-x-2 text-xl font-bold">
                         <div className="text-yellow-800 bg-yellow-200 px-3 py-1 rounded animate-pulse">
                           🎉 Résultat : {exercises[currentExercise].correctAnswer}
                       </div>
@@ -4749,8 +4738,8 @@ export default function AdditionsJusqua100CE1() {
 
               {/* Animation compensation réduite pour les exercices compensation */}
               {exercises[currentExercise].type === 'compensation' && isCorrect !== null && (
-                <div data-correction-type="compensation" className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl p-2 sm:p-4 mb-2 sm:mb-4 border-2 border-purple-200">
-                  <h4 className="text-sm sm:text-xs sm:text-lg font-bold text-center text-purple-800 mb-2 sm:mb-4">
+                <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl p-4 mb-4 border-2 border-purple-200">
+                  <h4 className="text-lg font-bold text-center text-purple-800 mb-4">
                     🔄 Méthode de compensation
                   </h4>
                   
@@ -4758,10 +4747,10 @@ export default function AdditionsJusqua100CE1() {
                   <div className="space-y-3 max-w-lg mx-auto">
                     {/* Problème de départ */}
                     <div className="bg-white rounded-lg p-3 shadow-sm">
-                      <div className="text-center text-xs sm:text-lg font-bold text-purple-700 mb-2">
+                      <div className="text-center text-lg font-bold text-purple-700 mb-2">
                         🎯 Calcul original
                       </div>
-                      <div className="flex justify-center items-center space-x-2 text-sm sm:text-xs sm:text-xs sm:text-xl font-bold">
+                      <div className="flex justify-center items-center space-x-2 text-xl font-bold">
                         <div className="text-gray-800">{exercises[currentExercise].firstNumber}</div>
                         <div className="text-gray-600">+</div>
                         <div className="text-gray-800">{exercises[currentExercise].secondNumber}</div>
@@ -4793,7 +4782,7 @@ export default function AdditionsJusqua100CE1() {
                                 <div className="text-center text-sm font-bold text-yellow-800">
                                   Étape 1 : Je décompose {second}
                                 </div>
-                                <div className="flex justify-center items-center space-x-2 text-xs sm:text-lg font-bold mt-1">
+                                <div className="flex justify-center items-center space-x-2 text-lg font-bold mt-1">
                                   <div className="text-gray-800">{second}</div>
                                   <div className="text-gray-600">=</div>
                                   <div className="text-green-600 px-2 py-1 bg-green-100 rounded">{second - 1}</div>
@@ -4805,7 +4794,7 @@ export default function AdditionsJusqua100CE1() {
                                 <div className="text-center text-sm font-bold text-green-800">
                                   Étape 2 : Ce "1" complète {first}
                                 </div>
-                                <div className="flex justify-center items-center space-x-2 text-xs sm:text-lg font-bold mt-1">
+                                <div className="flex justify-center items-center space-x-2 text-lg font-bold mt-1">
                                   <div className="text-gray-800">{first}</div>
                                   <div className="text-gray-600">+</div>
                                   <div className="text-red-600 px-2 py-1 bg-red-100 rounded animate-pulse">1</div>
@@ -4827,7 +4816,7 @@ export default function AdditionsJusqua100CE1() {
                                 <div className="text-center text-sm font-bold text-yellow-800">
                                   Étape 1 : Je prends 1 de {first}
                                 </div>
-                                <div className="flex justify-center items-center space-x-2 text-xs sm:text-lg font-bold mt-1">
+                                <div className="flex justify-center items-center space-x-2 text-lg font-bold mt-1">
                                   <div className="text-gray-800">{first}</div>
                                   <div className="text-gray-600">=</div>
                                   <div className="text-green-600 px-2 py-1 bg-green-100 rounded">{first - 1}</div>
@@ -4839,7 +4828,7 @@ export default function AdditionsJusqua100CE1() {
                                 <div className="text-center text-sm font-bold text-green-800">
                                   Étape 2 : Ce "1" complète {second}
                                 </div>
-                                <div className="flex justify-center items-center space-x-2 text-xs sm:text-lg font-bold mt-1">
+                                <div className="flex justify-center items-center space-x-2 text-lg font-bold mt-1">
                                   <div className="text-gray-800">{second}</div>
                                   <div className="text-gray-600">+</div>
                                   <div className="text-red-600 px-2 py-1 bg-red-100 rounded animate-pulse">1</div>
@@ -4863,7 +4852,7 @@ export default function AdditionsJusqua100CE1() {
                                   <div className="text-center text-sm font-bold text-purple-800">
                                     Compensation : j'échange pour simplifier
                                   </div>
-                                  <div className="flex justify-center items-center space-x-2 text-xs sm:text-lg font-bold mt-1">
+                                  <div className="flex justify-center items-center space-x-2 text-lg font-bold mt-1">
                                     <div className="text-green-800 px-2 py-1 bg-green-200 rounded">{Math.ceil(first / 10) * 10}</div>
                                     <div className="text-gray-600">+</div>
                                     <div className="text-blue-800 px-2 py-1 bg-blue-200 rounded">{second - (Math.ceil(first / 10) * 10 - first)}</div>
@@ -4909,7 +4898,7 @@ export default function AdditionsJusqua100CE1() {
                         
                         return (
                           <div className="space-y-3">
-                            <div className="flex justify-center items-center space-x-2 text-sm sm:text-xs sm:text-xs sm:text-xl font-bold">
+                            <div className="flex justify-center items-center space-x-2 text-xl font-bold">
                               <div className="text-green-700 px-3 py-2 bg-green-100 rounded-lg">{newFirst}</div>
                               <div className="text-gray-600">+</div>
                               <div className="text-blue-700 px-3 py-2 bg-blue-100 rounded-lg">{newSecond}</div>
@@ -4924,7 +4913,7 @@ export default function AdditionsJusqua100CE1() {
 
                     {/* Résultat final */}
                     <div className="bg-white rounded-lg p-3 shadow-sm border-l-4 border-purple-400">
-                      <div className="flex justify-center items-center space-x-2 text-sm sm:text-xs sm:text-xs sm:text-xl font-bold">
+                      <div className="flex justify-center items-center space-x-2 text-xl font-bold">
                         <div className="text-purple-800 bg-purple-200 px-3 py-1 rounded animate-pulse">
                           🎉 Résultat : {exercises[currentExercise].correctAnswer}
                         </div>
@@ -4937,8 +4926,8 @@ export default function AdditionsJusqua100CE1() {
 
               {/* Animation étapes successives réduite pour les exercices etapes-successives */}
               {exercises[currentExercise].type === 'etapes-successives' && isCorrect !== null && (
-                <div data-correction-type="etapes-successives" className="bg-gradient-to-br from-teal-50 to-cyan-50 rounded-xl p-2 sm:p-4 mb-2 sm:mb-4 border-2 border-teal-200">
-                  <h4 className="text-sm sm:text-xs sm:text-lg font-bold text-center text-teal-800 mb-2 sm:mb-4">
+                <div className="bg-gradient-to-br from-teal-50 to-cyan-50 rounded-xl p-4 mb-4 border-2 border-teal-200">
+                  <h4 className="text-lg font-bold text-center text-teal-800 mb-4">
                     🎲 Méthode des étapes successives
                   </h4>
                   
@@ -4946,10 +4935,10 @@ export default function AdditionsJusqua100CE1() {
                   <div className="space-y-3 max-w-lg mx-auto">
                     {/* Point de départ */}
                     <div className="bg-white rounded-lg p-3 shadow-sm">
-                      <div className="text-center text-xs sm:text-lg font-bold text-teal-700 mb-2">
+                      <div className="text-center text-lg font-bold text-teal-700 mb-2">
                         🎯 Point de départ
                       </div>
-                      <div className="text-center text-sm sm:text-xs sm:text-xs sm:text-xl font-bold text-teal-800 mb-2">
+                      <div className="text-center text-xl font-bold text-teal-800 mb-2">
                         Je commence avec {exercises[currentExercise].firstNumber}
                       </div>
                       <div className="text-center text-sm text-teal-600">
@@ -4962,7 +4951,7 @@ export default function AdditionsJusqua100CE1() {
                       <div className="text-center text-base font-bold text-blue-700 mb-3">
                         📋 Plan : Je décompose {exercises[currentExercise].secondNumber}
                       </div>
-                      <div className="flex justify-center items-center space-x-2 text-xs sm:text-lg font-bold">
+                      <div className="flex justify-center items-center space-x-2 text-lg font-bold">
                         <div className="text-gray-800">{exercises[currentExercise].secondNumber}</div>
                         <div className="text-gray-600">=</div>
                         <div className="text-blue-600 px-2 py-1 bg-blue-100 rounded">
@@ -4987,7 +4976,7 @@ export default function AdditionsJusqua100CE1() {
                         <div className="text-center text-sm text-blue-600">
                           J'ajoute {Math.floor(exercises[currentExercise].secondNumber / 10) * 10} à {exercises[currentExercise].firstNumber}
                         </div>
-                        <div className="flex justify-center items-center space-x-2 text-xs sm:text-lg font-bold">
+                        <div className="flex justify-center items-center space-x-2 text-lg font-bold">
                           <div className="text-blue-700">{exercises[currentExercise].firstNumber}</div>
                           <div className="text-gray-500">+</div>
                           <div className="text-blue-600 px-2 py-1 bg-blue-100 rounded">
@@ -5010,7 +4999,7 @@ export default function AdditionsJusqua100CE1() {
                         <div className="text-center text-sm text-green-600">
                           J'ajoute {exercises[currentExercise].secondNumber % 10} à {exercises[currentExercise].firstNumber + Math.floor(exercises[currentExercise].secondNumber / 10) * 10}
                         </div>
-                        <div className="flex justify-center items-center space-x-2 text-xs sm:text-lg font-bold">
+                        <div className="flex justify-center items-center space-x-2 text-lg font-bold">
                           <div className="text-green-700">
                             {exercises[currentExercise].firstNumber + Math.floor(exercises[currentExercise].secondNumber / 10) * 10}
                           </div>
@@ -5050,7 +5039,7 @@ export default function AdditionsJusqua100CE1() {
 
                     {/* Résultat final */}
                     <div className="bg-white rounded-lg p-3 shadow-sm border-l-4 border-purple-400">
-                      <div className="flex justify-center items-center space-x-2 text-sm sm:text-xs sm:text-xs sm:text-xl font-bold">
+                      <div className="flex justify-center items-center space-x-2 text-xl font-bold">
                         <div className="text-purple-800 bg-purple-200 px-3 py-1 rounded animate-pulse">
                           🎉 Résultat : {exercises[currentExercise].correctAnswer}
                         </div>
@@ -5063,8 +5052,8 @@ export default function AdditionsJusqua100CE1() {
 
               {/* Animation doubles réduite pour les exercices doubles */}
               {exercises[currentExercise].type === 'doubles' && isCorrect !== null && (
-                <div data-correction-type="doubles" className="bg-gradient-to-br from-pink-50 to-rose-50 rounded-xl p-2 sm:p-4 mb-2 sm:mb-4 border-2 border-pink-200">
-                  <h4 className="text-sm sm:text-xs sm:text-lg font-bold text-center text-pink-800 mb-2 sm:mb-4">
+                <div className="bg-gradient-to-br from-pink-50 to-rose-50 rounded-xl p-4 mb-4 border-2 border-pink-200">
+                  <h4 className="text-lg font-bold text-center text-pink-800 mb-4">
                     👥 Méthode des doubles
                   </h4>
                   
@@ -5072,13 +5061,13 @@ export default function AdditionsJusqua100CE1() {
                   <div className="space-y-3 max-w-lg mx-auto">
                     {/* Observation intelligente */}
                     <div className="bg-white rounded-lg p-3 shadow-sm">
-                      <div className="text-center text-xs sm:text-lg font-bold text-pink-700 mb-2">
+                      <div className="text-center text-lg font-bold text-pink-700 mb-2">
                         🔍 Observation intelligente
                       </div>
                       <div className="text-center text-base text-pink-600 mb-2">
                         Je remarque que {exercises[currentExercise].secondNumber} = {exercises[currentExercise].firstNumber} + 1
                       </div>
-                      <div className="flex justify-center items-center space-x-2 text-xs sm:text-lg font-bold">
+                      <div className="flex justify-center items-center space-x-2 text-lg font-bold">
                         <div className="text-pink-700">{exercises[currentExercise].secondNumber}</div>
                         <div className="text-gray-500">=</div>
                         <div className="text-pink-700">{exercises[currentExercise].firstNumber}</div>
@@ -5098,7 +5087,7 @@ export default function AdditionsJusqua100CE1() {
                       <div className="space-y-3">
                         <div className="text-center p-2 bg-gray-100 rounded-lg">
                           <div className="text-sm text-gray-700 mb-1">Calcul original :</div>
-                          <div className="text-xs sm:text-lg font-bold text-gray-800">
+                          <div className="text-lg font-bold text-gray-800">
                             {exercises[currentExercise].firstNumber} + {exercises[currentExercise].secondNumber}
                           </div>
                         </div>
@@ -5107,7 +5096,7 @@ export default function AdditionsJusqua100CE1() {
 
                         <div className="text-center p-2 bg-blue-100 rounded-lg border-2 border-blue-400">
                           <div className="text-sm text-blue-700 mb-1">Devient :</div>
-                          <div className="text-xs sm:text-lg font-bold text-blue-800">
+                          <div className="text-lg font-bold text-blue-800">
                             {exercises[currentExercise].firstNumber} + {exercises[currentExercise].firstNumber} + 1
                           </div>
                         </div>
@@ -5123,7 +5112,7 @@ export default function AdditionsJusqua100CE1() {
                         <div className="text-center text-sm text-green-600">
                           Le double de {exercises[currentExercise].firstNumber} :
                         </div>
-                        <div className="flex justify-center items-center space-x-2 text-sm sm:text-xs sm:text-xs sm:text-xl font-bold">
+                        <div className="flex justify-center items-center space-x-2 text-xl font-bold">
                           <div className="text-green-700">{exercises[currentExercise].firstNumber}</div>
                           <div className="text-gray-500">+</div>
                           <div className="text-green-700">{exercises[currentExercise].firstNumber}</div>
@@ -5147,7 +5136,7 @@ export default function AdditionsJusqua100CE1() {
                         <div className="text-center text-sm text-purple-600">
                           J'ajoute le 1 restant :
                         </div>
-                        <div className="flex justify-center items-center space-x-2 text-sm sm:text-xs sm:text-xs sm:text-xl font-bold">
+                        <div className="flex justify-center items-center space-x-2 text-xl font-bold">
                           <div className="text-purple-700">{exercises[currentExercise].firstNumber * 2}</div>
                           <div className="text-gray-500">+</div>
                           <div className="text-green-700 px-2 py-1 bg-green-100 rounded">1</div>
@@ -5180,7 +5169,7 @@ export default function AdditionsJusqua100CE1() {
 
                     {/* Résultat final */}
                     <div className="bg-white rounded-lg p-3 shadow-sm border-l-4 border-pink-400">
-                      <div className="flex justify-center items-center space-x-2 text-sm sm:text-xs sm:text-xs sm:text-xl font-bold">
+                      <div className="flex justify-center items-center space-x-2 text-xl font-bold">
                         <div className="text-pink-800 bg-pink-200 px-3 py-1 rounded animate-pulse">
                           🎉 Résultat : {exercises[currentExercise].correctAnswer}
                         </div>
@@ -5220,13 +5209,13 @@ export default function AdditionsJusqua100CE1() {
                 return (
                   <>
                     <div className="text-6xl mb-4">{result.emoji}</div>
-                    <h3 className="text-xs sm:text-sm sm:text-2xl font-bold text-gray-900 mb-3">{result.title}</h3>
-                    <p className="text-xs sm:text-lg text-gray-700 mb-6">{result.message}</p>
+                    <h3 className="text-2xl font-bold text-gray-900 mb-3">{result.title}</h3>
+                    <p className="text-lg text-gray-700 mb-6">{result.message}</p>
                     <div className="bg-blue-100 rounded-lg p-4 mb-6">
-                      <p className="text-sm sm:text-xs sm:text-xs sm:text-xl font-bold text-gray-900">
+                      <p className="text-xl font-bold text-gray-900">
                         Score : {finalScore}/{exercises.length}
                       </p>
-                      <div className="text-xs sm:text-4xl mt-2">
+                      <div className="text-4xl mt-2">
                         {finalScore >= 8 ? '⭐⭐⭐' : finalScore >= 6 ? '⭐⭐' : '⭐'}
                       </div>
                       <p className="text-sm text-gray-600 mt-2">
