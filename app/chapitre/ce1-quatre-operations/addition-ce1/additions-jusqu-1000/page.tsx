@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, Play, Pause } from 'lucide-react';
+import { ArrowLeft, Play, Pause, CheckCircle, XCircle } from 'lucide-react';
 
 export default function AdditionsJusqu1000CE1() {
   // États pour l'audio et animations
@@ -37,6 +37,7 @@ export default function AdditionsJusqu1000CE1() {
   const [exercisesIntroStarted, setExercisesIntroStarted] = useState(false);
   const [exercisesSamSizeExpanded, setExercisesSamSizeExpanded] = useState(false);
   const [exercisesImageError, setExercisesImageError] = useState(false);
+  const [isPlayingEnonce, setIsPlayingEnonce] = useState(false);
 
   // État pour la détection mobile
   const [isMobile, setIsMobile] = useState(false);
@@ -345,31 +346,48 @@ export default function AdditionsJusqu1000CE1() {
     }
   ];
 
-  // Exercices CE1 - Calcul mental jusqu'à 1000 (Programme français)
-  const exercises = [
-    // Série 1 : Additions par centaines qui font 1000
-    { type: 'additions-centaines', question: '100 + 900 = ?', answer: 1000 },
-    { type: 'additions-centaines', question: '200 + 800 = ?', answer: 1000 },
-    { type: 'additions-centaines', question: '300 + 700 = ?', answer: 1000 },
-    { type: 'additions-centaines', question: '400 + 600 = ?', answer: 1000 },
-    { type: 'additions-centaines', question: '500 + 500 = ?', answer: 1000 },
+  // Base d'exercices CE1 - Calcul mental jusqu'à 1000 (Programme français)
+  const exerciseBank = [
+    // Série 1 : Additions par centaines variées
+    { type: 'additions-centaines', question: '100 + 200 = ?', calculation: '100 + 200', answer: 300 },
+    { type: 'additions-centaines', question: '300 + 400 = ?', calculation: '300 + 400', answer: 700 },
+    { type: 'additions-centaines', question: '200 + 300 = ?', calculation: '200 + 300', answer: 500 },
+    { type: 'additions-centaines', question: '400 + 200 = ?', calculation: '400 + 200', answer: 600 },
+    { type: 'additions-centaines', question: '100 + 500 = ?', calculation: '100 + 500', answer: 600 },
+    { type: 'additions-centaines', question: '300 + 200 = ?', calculation: '300 + 200', answer: 500 },
+    { type: 'additions-centaines', question: '500 + 300 = ?', calculation: '500 + 300', answer: 800 },
     
-    // Série 2 : Additions par cinquantaines (50, 100, 150...)
-    { type: 'additions-cinquantaines', question: '150 + 100 = ?', answer: 250 },
-    { type: 'additions-cinquantaines', question: '250 + 150 = ?', answer: 400 },
-    { type: 'additions-cinquantaines', question: '350 + 200 = ?', answer: 550 },
-    { type: 'additions-cinquantaines', question: '200 + 250 = ?', answer: 450 },
-    { type: 'additions-cinquantaines', question: '450 + 250 = ?', answer: 700 },
+    // Série 2 : Additions par cinquantaines variées
+    { type: 'additions-cinquantaines', question: '150 + 50 = ?', calculation: '150 + 50', answer: 200 },
+    { type: 'additions-cinquantaines', question: '200 + 150 = ?', calculation: '200 + 150', answer: 350 },
+    { type: 'additions-cinquantaines', question: '350 + 100 = ?', calculation: '350 + 100', answer: 450 },
+    { type: 'additions-cinquantaines', question: '250 + 200 = ?', calculation: '250 + 200', answer: 450 },
+    { type: 'additions-cinquantaines', question: '400 + 150 = ?', calculation: '400 + 150', answer: 550 },
+    { type: 'additions-cinquantaines', question: '300 + 250 = ?', calculation: '300 + 250', answer: 550 },
+    { type: 'additions-cinquantaines', question: '450 + 100 = ?', calculation: '450 + 100', answer: 550 },
     
-
-    
-    // Série 5 : Compléments par centaines jusqu'à 1000
-    { type: 'complements-centaines', question: '400 + ? = 1000', answer: 600 },
-    { type: 'complements-centaines', question: '200 + ? = 1000', answer: 800 },
-    { type: 'complements-centaines', question: '700 + ? = 1000', answer: 300 },
-    { type: 'complements-centaines', question: '100 + ? = 1000', answer: 900 },
-    { type: 'complements-centaines', question: '800 + ? = 1000', answer: 200 }
+    // Série 3 : Compléments variés (pas seulement à 1000)
+    { type: 'complements-centaines', question: '300 + ? = 500', calculation: '300 + ?', answer: 200 },
+    { type: 'complements-centaines', question: '200 + ? = 600', calculation: '200 + ?', answer: 400 },
+    { type: 'complements-centaines', question: '400 + ? = 800', calculation: '400 + ?', answer: 400 },
+    { type: 'complements-centaines', question: '100 + ? = 700', calculation: '100 + ?', answer: 600 },
+    { type: 'complements-centaines', question: '500 + ? = 900', calculation: '500 + ?', answer: 400 },
+    { type: 'complements-centaines', question: '300 + ? = 800', calculation: '300 + ?', answer: 500 },
+    { type: 'complements-centaines', question: '250 + ? = 600', calculation: '250 + ?', answer: 350 }
   ];
+
+  // Fonction pour mélanger les exercices de façon aléatoire
+  const shuffleExercises = (array: typeof exerciseBank) => {
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled.slice(0, 15); // Prendre 15 exercices aléatoires
+  };
+
+  // Exercices mélangés pour cette session
+  const [exercises, setExercises] = useState(() => shuffleExercises(exerciseBank));
 
   // Fonction pour arrêter tous les vocaux et animations
   const stopAllVocalsAndAnimations = () => {
@@ -766,17 +784,26 @@ export default function AdditionsJusqu1000CE1() {
       });
     }
     
+    // Gestion après validation
+    if (correct) {
+      // Passage automatique si la réponse est correcte
     setTimeout(() => {
       if (currentExercise < exercises.length - 1) {
         setCurrentExercise(currentExercise + 1);
         setUserAnswer('');
         setIsCorrect(null);
       } else {
-        const finalScoreValue = score + (correct ? 1 : 0);
+          const finalScoreValue = score + 1;
         setFinalScore(finalScoreValue);
         setShowCompletionModal(true);
       }
     }, 1500);
+    } else {
+      // Expliquer la correction avec animation si la réponse est fausse
+      setTimeout(() => {
+        explainWrongAnswer();
+      }, 1000);
+    }
   };
 
   const nextExercise = () => {
@@ -792,6 +819,8 @@ export default function AdditionsJusqu1000CE1() {
 
   const resetAll = () => {
     stopAllVocalsAndAnimations();
+    // Re-mélanger les exercices pour une nouvelle session
+    setExercises(shuffleExercises(exerciseBank));
     setCurrentExercise(0);
     setUserAnswer('');
     setIsCorrect(null);
@@ -801,7 +830,72 @@ export default function AdditionsJusqu1000CE1() {
     setFinalScore(0);
   };
 
-  // Initialisation côté client
+  // Fonction pour lire l'énoncé de l'exercice
+  const playExerciseAudio = async (text: string) => {
+    console.log('playExerciseAudio appelée avec:', text);
+    
+    if (isPlayingEnonce) {
+      console.log('isPlayingEnonce est true, sortie');
+      return;
+    }
+
+    try {
+      setIsPlayingEnonce(true);
+      console.log('isPlayingEnonce mis à true');
+      
+      await playAudio(text);
+      console.log('Lecture terminée avec succès');
+      
+    } catch (error) {
+      console.error('Erreur dans playExerciseAudio:', error);
+      alert('Erreur audio: ' + (error instanceof Error ? error.message : String(error)));
+    } finally {
+      setIsPlayingEnonce(false);
+      console.log('isPlayingEnonce mis à false');
+    }
+  };
+
+  // Fonction pour expliquer une mauvaise réponse avec animation de correction
+  const explainWrongAnswer = async () => {
+    stopSignalRef.current = false;
+    setIsPlayingVocal(true);
+    setExercisesSamSizeExpanded(true);
+    
+    try {
+      const exercise = exercises[currentExercise];
+      
+      // Introduction
+      await playAudio("Pas de problème ! Regardons comment bien calculer...");
+      if (stopSignalRef.current) return;
+      
+      await wait(500);
+      
+      // Expliquer la méthode selon le type d'exercice
+      if (exercise.type === 'additions-centaines') {
+        await playAudio(`Pour ${exercise.calculation}, on ajoute les centaines ! La réponse est ${exercise.answer}.`);
+      } else if (exercise.type === 'complements-centaines') {
+        await playAudio(`Pour ${exercise.calculation}, on cherche le complément ! La réponse est ${exercise.answer}.`);
+      } else if (exercise.type === 'additions-cinquantaines') {
+        await playAudio(`Pour ${exercise.calculation}, on compte par groupes de 50 ! Cela donne ${exercise.answer}.`);
+      } else {
+        await playAudio(`Pour ${exercise.calculation}, la bonne réponse est ${exercise.answer}.`);
+      }
+      
+      if (stopSignalRef.current) return;
+      
+      await wait(1000);
+      await playAudio("Clique sur suivant pour continuer !");
+      if (stopSignalRef.current) return;
+      
+    } catch (error) {
+      console.error('Erreur dans explainWrongAnswer:', error);
+    } finally {
+      setIsPlayingVocal(false);
+      setExercisesSamSizeExpanded(false);
+    }
+  };
+
+    // Initialisation côté client
   useEffect(() => {
     setIsClient(true);
     setIsMobile(window.innerWidth < 768);
@@ -809,9 +903,44 @@ export default function AdditionsJusqu1000CE1() {
     const handleResize = () => {
       setIsMobile(window.innerWidth < 768);
     };
-    
+
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Arrêter les animations lors du changement d'onglet ou de la sortie de la page
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        console.log('🔄 Page cachée, arrêt des animations');
+        stopAllVocalsAndAnimations();
+      }
+    };
+
+    const handleBeforeUnload = () => {
+      console.log('🔄 Page en cours de fermeture, arrêt des animations');
+      stopAllVocalsAndAnimations();
+    };
+
+    const handlePopState = () => {
+      console.log('🔄 Navigation back/forward, arrêt des animations');
+      stopAllVocalsAndAnimations();
+    };
+
+    // Écouter les changements de visibilité de la page
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    
+    // Écouter la fermeture/rechargement de la page
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    
+    // Écouter la navigation back/forward
+    window.addEventListener('popstate', handlePopState);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+      window.removeEventListener('popstate', handlePopState);
+    };
   }, []);
 
   if (!isClient) {
@@ -976,7 +1105,7 @@ export default function AdditionsJusqu1000CE1() {
                 highlightedElement === 'examples-section' ? 'ring-4 ring-orange-400 bg-orange-50 scale-105' : ''
               }`}
             >
-
+              
               
 
               <div className="space-y-6 lg:space-y-10">
@@ -1123,134 +1252,285 @@ export default function AdditionsJusqu1000CE1() {
             </div>
           </div>
         ) : (
-          /* EXERCICES */
-          <div className="bg-white rounded-xl p-4 sm:p-8 shadow-lg">
-            <div className="flex items-center justify-between mb-4 sm:mb-6">
-              <h2 className="text-lg sm:text-2xl font-bold text-gray-900">
-                ✏️ Exercices - Calcul mental CE1 jusqu'à 1000
-              </h2>
-              <div className="text-sm sm:text-lg font-semibold text-gray-600">
-                {currentExercise + 1} / {exercises.length}
-              </div>
-            </div>
-
-            {/* Image de Minecraft avec bouton COMMENCER pour les exercices */}
-            <div className="flex items-center justify-center gap-2 sm:gap-4 p-2 sm:p-4 mb-4 sm:mb-6">
-              <div className={`relative transition-all duration-500 border-2 border-green-400 rounded-full bg-gradient-to-br from-green-100 to-emerald-100 ${
-                isAnimationRunning
-                  ? 'w-14 sm:w-24 h-14 sm:h-24'
-                  : exercisesSamSizeExpanded
-                    ? 'w-12 sm:w-32 h-12 sm:h-32'
-                    : 'w-12 sm:w-20 h-12 sm:h-20'
-                }`}>
-                {!exercisesImageError ? (
-                  <img 
-                    src="/image/Minecraftstyle.png" 
-                    alt="Personnage Minecraft" 
-                    className="w-full h-full rounded-full object-cover"
-                    onError={() => setExercisesImageError(true)}
-                  />
-                ) : (
-                  <div className="w-full h-full rounded-full flex items-center justify-center text-xs sm:text-2xl">
-                    🧱
+          /* EXERCICES - RESPONSIVE MOBILE OPTIMISÉ */
+          <div className="pb-20 sm:pb-8">
+            {/* Introduction de Sam le Pirate - toujours visible */}
+            <div className="mb-6 sm:mb-4 mt-4">
+              {/* JSX pour l'introduction de Sam le Pirate dans les exercices */}
+              <div className="flex justify-center p-0 sm:p-1 mt-0 sm:mt-2">
+                <div className="flex items-center gap-1 sm:gap-2">
+                  {/* Image de Sam le Pirate */}
+                  <div 
+                    id="sam-pirate-exercises"
+                    className={`relative flex-shrink-0 rounded-full bg-gradient-to-br from-blue-100 to-purple-100 border-1 sm:border-2 border-blue-200 shadow-md transition-all duration-300 ${
+                    isPlayingVocal
+                      ? 'w-12 sm:w-24 h-12 sm:h-24 scale-105 sm:scale-120'
+                      : exercisesIntroStarted
+                        ? 'w-10 sm:w-16 h-10 sm:h-16'
+                        : 'w-12 sm:w-20 h-12 sm:h-20'
+                  } ${highlightedElement === 'sam-pirate-exercises' ? 'ring-4 ring-yellow-400 ring-opacity-75 animate-bounce scale-125' : ''}`}>
+                    {!exercisesImageError ? (
+                      <img 
+                        src="/image/Minecraftstyle.png" 
+                        alt="Personnage Minecraft" 
+                        className="w-full h-full rounded-full object-cover"
+                        onError={() => setExercisesImageError(true)}
+                      />
+                    ) : (
+                      <div className="w-full h-full rounded-full flex items-center justify-center text-sm sm:text-2xl">
+                        🧱
+                      </div>
+                    )}
+                    {/* Haut-parleur animé quand il parle */}
+                    {isPlayingVocal && (
+                      <div className="absolute -top-1 -right-1 bg-orange-500 text-white p-1 sm:p-2 rounded-full animate-bounce shadow-lg">
+                        <svg className="w-2 sm:w-4 h-2 sm:h-4" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.617.77L4.916 14H2a1 1 0 01-1-1V7a1 1 0 011-1h2.916l3.467-2.77a1 1 0 011.617.77zM14.657 2.929a1 1 0 011.414 0A9.972 9.972 0 0119 10a9.972 9.972 0 01-2.929 7.071 1 1 0 01-1.414-1.414A7.971 7.971 0 0017 10c0-2.21-.894-4.208-2.343-5.657a1 1 0 010-1.414zm-2.829 2.828a1 1 0 011.415 0A5.983 5.983 0 0115 10a5.983 5.983 0 01-1.757 4.243 1 1 0 01-1.415-1.414A3.983 3.983 0 0013 10a3.983 3.983 0 00-1.172-2.829 1 1 0 010-1.414z" clipRule="evenodd" />
+                        </svg>
+                      </div>
+                    )}
                   </div>
-                )}
-                {isAnimationRunning && (
-                  <div className="absolute -top-1 -right-1 bg-green-500 text-white p-1 rounded-full shadow-lg">
-                    <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.617.77L4.916 14H2a1 1 0 01-1-1V7a1 1 0 011-1h2.916l3.467-2.77a1 1 0 011.617.77zM14.657 2.929a1 1 0 011.414 0A9.972 9.972 0 0119 10a9.972 9.972 0 01-2.929 7.071 1 1 0 01-1.414-1.414A7.971 7.971 0 0017 10c0-2.21-.894-4.208-2.343-5.657a1 1 0 010-1.414zm-2.829 2.828a1 1 0 011.415 0A5.983 5.983 0 0115 10a5.983 5.983 0 01-1.757 4.243 1 1 0 01-1.415-1.414A3.983 3.983 0 0013 10a3.983 3.983 0 00-1.172-2.829 1 1 0 010-1.414z" clipRule="evenodd" />
-                      </svg>
-                    </div>
-                )}
-              </div>
-              
-              <div className="text-center">
-                <button
-                  onClick={() => {
-                    if (!exercisesIntroStarted) {
-                      setExercisesSamSizeExpanded(true);
-                      explainExercises();
-                    }
+                  
+                  {/* Bouton Start Exercices */}
+                  <button
+                  onClick={explainExercises}
+                  disabled={isPlayingVocal}
+                  className={`relative transition-all duration-300 transform ${
+                    isPlayingVocal 
+                      ? 'px-3 sm:px-12 py-1 sm:py-5 rounded-lg sm:rounded-xl font-black text-sm sm:text-2xl bg-gradient-to-r from-gray-400 to-gray-500 text-gray-200 cursor-not-allowed animate-pulse shadow-md' 
+                      : exercisesIntroStarted
+                        ? 'px-2 sm:px-8 py-2 sm:py-3 rounded-md sm:rounded-lg font-bold text-xs sm:text-lg bg-gradient-to-r from-orange-500 to-red-600 text-white hover:from-orange-600 hover:to-red-700 hover:scale-105 shadow-lg border-1 sm:border-2 border-orange-300'
+                        : 'px-3 sm:px-12 py-1 sm:py-5 rounded-lg sm:rounded-xl font-black text-sm sm:text-2xl bg-gradient-to-r from-orange-500 via-red-500 to-pink-500 text-white hover:from-orange-600 hover:via-red-600 hover:to-pink-600 hover:scale-110 shadow-2xl hover:shadow-3xl animate-pulse border-2 sm:border-4 border-yellow-300'
+                  } ${!isPlayingVocal && !exercisesIntroStarted ? 'ring-4 ring-yellow-300 ring-opacity-75' : ''} ${exercisesIntroStarted && !isPlayingVocal ? 'ring-2 ring-orange-300 ring-opacity-75' : ''}`}
+                  style={{
+                    animationDuration: !isPlayingVocal && !exercisesIntroStarted ? '1.5s' : '2s',
+                    animationIterationCount: isPlayingVocal ? 'none' : 'infinite',
+                    textShadow: '2px 2px 4px rgba(0,0,0,0.3)',
+                    boxShadow: !isPlayingVocal && !exercisesIntroStarted 
+                      ? '0 10px 25px rgba(0,0,0,0.3), 0 0 30px rgba(255,215,0,0.4), inset 0 1px 0 rgba(255,255,255,0.2)' 
+                      : exercisesIntroStarted && !isPlayingVocal
+                        ? '0 8px 20px rgba(0,0,0,0.2), 0 0 15px rgba(255,130,46,0.3), inset 0 1px 0 rgba(255,255,255,0.1)'
+                        : ''
                   }}
-                  disabled={isAnimationRunning}
-                  className={`bg-gradient-to-r from-green-500 to-emerald-500 text-white px-3 sm:px-8 py-2 sm:py-4 rounded-xl font-bold text-xs sm:text-xl shadow-2xl hover:shadow-3xl transition-all transform hover:scale-105 ${
-                    isAnimationRunning ? 'opacity-75 cursor-not-allowed' : 'hover:from-green-600 hover:to-emerald-600'
-                  } ${!exercisesIntroStarted ? 'animate-pulse' : ''}`}
                 >
-                  {isAnimationRunning ? (
+                  {/* Effet de brillance */}
+                  {!isPlayingVocal && !exercisesIntroStarted && (
+                    <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-transparent via-white to-transparent opacity-20 animate-pulse"></div>
+                  )}
+                  
+                  {/* Icônes et texte */}
+                  <span className="relative z-10 flex items-center justify-center gap-2">
+                    {isPlayingVocal 
+                      ? <>🎤 <span>Minecraft parle...</span></> 
+                      : exercisesIntroStarted
+                        ? <>🔄 <span>REJOUER L'INTRO</span> 🧱</>
+                        : <>🚀 <span>COMMENCER</span> ✨</>
+                    }
+                  </span>
+                  
+                  {/* Particules brillantes */}
+                  {!isPlayingVocal && (
                     <>
-                      <svg className="w-3 sm:w-5 h-3 sm:h-5 inline-block mr-1 sm:mr-2 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                      </svg>
-                      {exercisesIntroStarted ? 'En cours...' : 'Démarrage...'}
-                    </>
-                  ) : (
-                    <>
-                      <Play className="w-3 sm:w-5 h-3 sm:h-5 inline-block mr-1 sm:mr-2" />
-                      {exercisesIntroStarted ? 'Redémarrer' : 'COMMENCER'}
+                      {!exercisesIntroStarted ? (
+                        /* Particules initiales - dorées */
+                        <>
+                          <div className="absolute -top-1 -right-1 w-3 h-3 bg-yellow-300 rounded-full animate-ping"></div>
+                          <div className="absolute -bottom-1 -left-1 w-2 h-2 bg-pink-300 rounded-full animate-ping" style={{animationDelay: '0.5s'}}></div>
+                          <div className="absolute top-2 left-2 w-1 h-1 bg-white rounded-full animate-ping" style={{animationDelay: '1s'}}></div>
+                        </>
+                      ) : (
+                        /* Particules de replay - orange */
+                        <>
+                          <div className="absolute -top-1 -right-1 w-2 h-2 bg-orange-300 rounded-full animate-ping"></div>
+                          <div className="absolute -bottom-1 -left-1 w-2 h-2 bg-red-300 rounded-full animate-ping" style={{animationDelay: '0.7s'}}></div>
+                          <div className="absolute top-2 right-2 w-1 h-1 bg-yellow-300 rounded-full animate-ping" style={{animationDelay: '1.2s'}}></div>
+                        </>
+                      )}
                     </>
                   )}
                 </button>
+                </div>
               </div>
             </div>
 
-            <div className="text-center mb-4 sm:mb-8">
-              <div className="text-xl sm:text-3xl font-bold text-gray-900 mb-3 sm:mb-4">
-                {exercises[currentExercise].question}
+            {/* Header exercices - caché sur mobile */}
+            <div className="bg-white rounded-xl p-2 shadow-lg mt-6 hidden sm:block">
+              <div className="flex justify-between items-center mb-1">
+                <h2 className="text-lg font-bold text-gray-900">
+                  Exercice {currentExercise + 1}
+              </h2>
+                
+                  <div className="text-sm font-bold text-orange-600">
+                    Score : {score}/{exercises.length}
+              </div>
+            </div>
+
+              {/* Barre de progression */}
+              <div className="w-full bg-gray-200 rounded-full h-2">
+                <div 
+                  className="bg-orange-500 h-2 rounded-full transition-all duration-500"
+                  style={{ width: `${((currentExercise + 1) / exercises.length) * 100}%` }}
+                ></div>
+              </div>
+            </div>
+
+            {/* Header exercices mobile - visible uniquement sur mobile */}
+            <div className="bg-white rounded-xl p-3 shadow-lg mt-2 block sm:hidden">
+              <div className="flex justify-between items-center mb-2">
+                <h2 className="text-base font-bold text-gray-900">
+                  Exercice {currentExercise + 1}/{exercises.length}
+                </h2>
+                
+                <div className="text-xs font-bold text-orange-600">
+                  Score: {score}/{exercises.length}
+                </div>
               </div>
               
+              {/* Barre de progression mobile */}
+              <div className="w-full bg-gray-200 rounded-full h-2">
+                <div 
+                  className="bg-orange-500 h-2 rounded-full transition-all duration-500"
+                  style={{ width: `${((currentExercise + 1) / exercises.length) * 100}%` }}
+                ></div>
+              </div>
+            </div>
+
+            {/* Zone principale de l'exercice - MOBILE OPTIMISÉ */}
+            <div className="bg-white rounded-xl p-3 sm:p-6 shadow-lg mt-2 sm:mt-4 relative">
+              
+              {/* Bouton écouter l'énoncé - en haut à droite */}
+              <button
+                id="listen-question-button"
+                onClick={() => playExerciseAudio(exercises[currentExercise].question)}
+                disabled={isPlayingEnonce}
+                className={`absolute top-3 right-3 sm:top-4 sm:right-4 px-3 sm:px-4 py-2 sm:py-2 rounded-lg font-bold text-xs sm:text-sm transition-all shadow-md ${
+                  isPlayingEnonce 
+                    ? 'bg-gray-400 text-white cursor-not-allowed' 
+                    : highlightedElement === 'listen-question-button'
+                      ? 'bg-yellow-500 text-white ring-4 ring-yellow-300 animate-pulse scale-105'
+                      : 'bg-orange-500 text-white hover:bg-orange-600 hover:scale-105'
+                }`}
+                title="Écouter l'énoncé de l'exercice"
+              >
+                {isPlayingEnonce ? '🎤' : '🎧'}
+                <span className="hidden sm:inline ml-1">
+                  {isPlayingEnonce ? 'Écoute...' : 'Énoncé'}
+                </span>
+              </button>
+              
+              {/* Question centrée */}
+              <div className="text-center mb-6 sm:mb-8 pt-4 sm:pt-2">
+                <h3 className="text-xl sm:text-2xl md:text-3xl font-bold mb-4 sm:mb-6 text-gray-900 leading-tight">
+                {exercises[currentExercise].question}
+                </h3>
+              </div>
+              
+              {/* Zone de réponse - CENTRÉE ET AMÉLIORÉE */}
+              <div 
+                id="answer-zone"
+                className={`max-w-md mx-auto mb-6 sm:mb-8 transition-all duration-300 ${
+                  highlightedElement === 'answer-zone' ? 'ring-4 ring-orange-400 rounded-lg scale-105' : ''
+                }`}
+              >
+                <div className="text-center space-y-4 sm:space-y-6">
+                  {/* Équation simple et claire */}
+                  <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-800 mb-6">
+                    {exercises[currentExercise].calculation}
+                  </div>
+                  
+                  <label className="block text-lg sm:text-xl font-bold text-gray-800">
+                    Écris le résultat :
+                  </label>
+                  
+                  {/* Input plus grand et mieux centré */}
+                  <div className="flex justify-center">
               <input
                 type="number"
                 value={userAnswer}
                 onChange={(e) => setUserAnswer(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && handleValidateAnswer()}
-                className="text-lg sm:text-2xl font-bold text-center border-2 border-gray-300 rounded-lg px-3 sm:px-4 py-2 sm:py-3 w-32 sm:w-48 focus:border-orange-500 focus:outline-none"
                 placeholder="?"
-                autoFocus
-              />
-              
-              <div className="mt-3 sm:mt-4">
+                      disabled={isCorrect !== null}
+                      className={`w-20 sm:w-24 md:w-28 h-12 sm:h-14 text-xl sm:text-2xl md:text-3xl font-bold text-center border-3 rounded-xl shadow-md ${
+                        isCorrect === true 
+                          ? 'border-green-500 bg-green-50 text-green-800' 
+                          : isCorrect === false 
+                            ? 'border-red-500 bg-red-50 text-red-800'
+                            : 'border-gray-300 focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-200'
+                      }`}
+                      min="0"
+                      max="1000"
+                    />
+                  </div>
+                </div>
+
+                {/* Bouton valider - plus grand et attractif */}
+                {isCorrect === null && (
+                  <div className="text-center mt-6">
                 <button
+                      id="validate-button"
                   onClick={handleValidateAnswer}
-                  disabled={!userAnswer.trim()}
-                  className="bg-gradient-to-r from-orange-500 to-red-500 text-white px-4 sm:px-8 py-2 sm:py-3 rounded-lg font-bold text-sm sm:text-lg disabled:opacity-50 disabled:cursor-not-allowed hover:from-orange-600 hover:to-red-600 transition-all"
-                >
-                  Valider
+                      disabled={!userAnswer.trim() || isPlayingVocal}
+                      className={`px-8 sm:px-12 py-3 sm:py-4 rounded-xl font-bold text-lg sm:text-xl transition-all shadow-lg ${
+                        !userAnswer.trim() || isPlayingVocal
+                          ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                          : highlightedElement === 'validate-button'
+                            ? 'bg-yellow-500 text-white ring-4 ring-yellow-300 animate-pulse scale-110 shadow-xl'
+                            : 'bg-gradient-to-r from-green-500 to-green-600 text-white hover:from-green-600 hover:to-green-700 hover:scale-105 shadow-xl'
+                      }`}
+                    >
+                      ✅ Valider ma réponse
                 </button>
               </div>
+                )}
 
+                {/* Feedback après validation - AMÉLIORÉ */}
               {isCorrect !== null && (
-                <div className={`mt-3 sm:mt-4 text-lg sm:text-xl font-bold ${isCorrect ? 'text-green-600' : 'text-red-600'}`}>
-                  {isCorrect ? '✅ Correct ! Bravo !' : '❌ Oops, essaie encore !'}
+                  <div className="text-center mt-6 sm:mt-8">
+                    <div className={`inline-flex items-center justify-center px-6 sm:px-8 py-4 sm:py-6 rounded-xl font-bold text-lg sm:text-xl mb-4 sm:mb-6 shadow-lg ${
+                      isCorrect 
+                        ? 'bg-gradient-to-r from-green-100 to-green-200 text-green-800 border-2 border-green-400' 
+                        : 'bg-gradient-to-r from-red-100 to-red-200 text-red-800 border-2 border-red-400'
+                    }`}>
+                      {isCorrect ? (
+                        <>
+                          <CheckCircle className="w-6 sm:w-7 h-6 sm:h-7 mr-2 sm:mr-3" />
+                          {correctAnswerCompliments[Math.floor(Math.random() * correctAnswerCompliments.length)]} !
+                        </>
+                      ) : (
+                        <>
+                          <XCircle className="w-6 sm:w-7 h-6 sm:h-7 mr-2 sm:mr-3" />
+                          Pas tout à fait...
+                        </>
+                      )}
+                    </div>
+                    
                   {!isCorrect && (
-                    <div className="text-sm sm:text-lg text-gray-600 mt-2">
-                      La bonne réponse est : {exercises[currentExercise].answer}
+                      <div className="bg-orange-50 border border-orange-200 rounded-lg p-4 sm:p-6">
+                        <div className="text-base sm:text-lg text-orange-800">
+                          La bonne réponse est : <span className="font-bold text-orange-900 text-xl sm:text-2xl">{exercises[currentExercise].answer}</span>
+                        </div>
                     </div>
                   )}
                 </div>
               )}
             </div>
 
-            <div className="flex justify-between items-center">
-              <div className="text-sm sm:text-lg font-semibold text-gray-600">
-                Score : {score} / {exercises.length}
-              </div>
-              
-              <div className="flex gap-2 sm:gap-4">
-                <button
-                  onClick={resetAll}
-                  className="bg-gray-500 text-white px-3 sm:px-6 py-1.5 sm:py-2 rounded-lg font-bold text-xs sm:text-sm hover:bg-gray-600 transition-colors"
-                >
-                  Recommencer
-                </button>
-                
+              {/* Bouton exercice suivant - uniquement si faux */}
+              {isCorrect === false && (
+                <div className="flex justify-center mt-6 sm:mt-8">
                 <button
                   onClick={nextExercise}
-                  className="bg-gradient-to-r from-orange-500 to-red-500 text-white px-3 sm:px-6 py-1.5 sm:py-2 rounded-lg font-bold text-xs sm:text-sm hover:from-orange-600 hover:to-red-600 transition-all"
-                >
-                  Suivant
+                    className={`px-8 sm:px-12 py-3 sm:py-4 rounded-xl font-bold text-lg sm:text-xl transition-all shadow-lg ${
+                      highlightedElement === 'next-button'
+                        ? 'bg-yellow-500 text-white ring-4 ring-yellow-300 animate-pulse scale-110 shadow-xl'
+                        : 'bg-gradient-to-r from-orange-500 to-red-500 text-white hover:from-orange-600 hover:to-red-600 hover:scale-105 hover:shadow-xl'
+                    }`}
+                  >
+                    {currentExercise === exercises.length - 1 ? '🏆 Terminer les exercices' : '➡️ Exercice suivant'}
                 </button>
               </div>
+              )}
             </div>
           </div>
         )}
@@ -1273,7 +1553,7 @@ export default function AdditionsJusqu1000CE1() {
                   }}
                   className="bg-gradient-to-r from-orange-500 to-red-500 text-white px-6 py-3 rounded-lg font-bold hover:from-orange-600 hover:to-red-600 transition-all"
                 >
-                  Recommencer
+                  🎲 Nouveaux exercices
                 </button>
                 <button
                   onClick={() => setShowCompletionModal(false)}
