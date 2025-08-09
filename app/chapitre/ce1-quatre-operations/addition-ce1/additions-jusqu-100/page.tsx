@@ -34,10 +34,7 @@ export default function AdditionsJusqua100CE1() {
   const [imageError, setImageError] = useState(false);
   const [isPlayingEnonce, setIsPlayingEnonce] = useState(false);
 
-  // État pour l'animation de correction
-  const [showAnimatedCorrection, setShowAnimatedCorrection] = useState(false);
-  const [correctionStep, setCorrectionStep] = useState<'numbers' | 'adding' | 'counting' | 'result' | 'complete' | 'carry-step' | 'decomposition' | 'final-sum' | null>(null);
-  const [correctionTechnique, setCorrectionTechnique] = useState<string>('');
+
   const [highlightNextButton, setHighlightNextButton] = useState(false);
   
   // États pour le cadre séparé des exemples
@@ -48,15 +45,7 @@ export default function AdditionsJusqua100CE1() {
   const [isMobile, setIsMobile] = useState(false);
   const [animatedObjects, setAnimatedObjects] = useState<string[]>([]);
 
-  // État pour stocker les nombres de la correction en cours
-  const [correctionNumbers, setCorrectionNumbers] = useState<{
-    first: number;
-    second: number;
-    result: number;
-    objectEmoji1: string;
-    objectEmoji2: string;
-    objectName: string;
-  } | null>(null);
+
 
   // État pour l'animation de comptage objet par objet
   const [countingIndex, setCountingIndex] = useState<number>(-1);
@@ -728,12 +717,9 @@ export default function AdditionsJusqua100CE1() {
     setHighlightedDigits([]);
     setSamSizeExpanded(false);
     
-    // Nouveaux états pour la correction animée
-    setShowAnimatedCorrection(false);
-    setCorrectionStep(null);
+    // États de base
     setHighlightNextButton(false);
     setAnimatedObjects([]);
-    setCorrectionNumbers(null);
     setCountingIndex(-1);
     setSelectedTechnique(null);
     setSelectedExampleIndex(0);
@@ -888,155 +874,7 @@ export default function AdditionsJusqua100CE1() {
     };
   };
 
-  // Fonction pour créer une correction animée avec addition posée en colonnes
-  const createAnimatedCorrection = async (exercise: any, userAnswer?: string) => {
-    if (stopSignalRef.current) return;
-    
-    console.log('Début correction animée pour addition jusqu\'à 100:', exercise, 'avec réponse:', userAnswer);
-    
-    const { first, second, result, objectEmoji1, objectEmoji2, objectName } = parseAdditionNumbers(exercise);
-    
-    // Stocker les nombres pour l'affichage
-    setCorrectionNumbers({ first, second, result, objectEmoji1, objectEmoji2, objectName });
-    
-    // Démarrer l'affichage de correction
-    setShowAnimatedCorrection(true);
-    setCorrectionStep('numbers');
-    setHighlightedDigits([]);
-    
-    // Scroller pour garder la correction visible
-    setTimeout(() => {
-      const correctionElement = document.getElementById('animated-correction');
-      if (correctionElement) {
-        correctionElement.scrollIntoView({
-          behavior: 'smooth',
-          block: 'center'
-        });
-      }
-    }, 100);
-    
-    // Étape 1: Présentation du problème
-    const hasUserAnswer = userAnswer && userAnswer.trim();
-    if (hasUserAnswer) {
-      const userNum = parseInt(userAnswer);
-      if (userNum === result) {
-        await playAudio(`Je vais te montrer que ${first} plus ${second} égale bien ${result} avec une addition posée !`);
-      } else {
-        await playAudio(`Tu as répondu ${userAnswer}, mais regardons le bon calcul avec une addition posée !`);
-      }
-    } else {
-      await playAudio(`Je vais t'expliquer cette addition avec la technique de l'addition posée !`);
-    }
-    if (stopSignalRef.current) return;
-    await wait(1500);
-    
-    // Étape 2: Placement en colonnes
-    await playAudio(`D'abord, je place les nombres en colonnes : dizaines sous dizaines, unités sous unités.`);
-    if (stopSignalRef.current) return;
-    await wait(2500);
-    
-    // Déterminer s'il y a une retenue
-    const hasCarry = (first % 10) + (second % 10) >= 10;
-    
-    if (hasCarry) {
-      // Addition avec retenue
-      setCorrectionStep('carry-step');
-      
-      // Étape 3: Focus sur les unités
-      setHighlightedDigits(['units']);
-      await playAudio(`Commençons par les unités : ${first % 10} plus ${second % 10}.`);
-      if (stopSignalRef.current) return;
-      await wait(2000);
-      
-      // Étape 4: Calcul des unités avec retenue - résultat brut
-      const unitsSum = (first % 10) + (second % 10);
-      await playAudio(`${first % 10} plus ${second % 10} égale ${unitsSum}.`);
-      if (stopSignalRef.current) return;
-      await wait(2000);
-      
-      // Étape 5: Explication de la décomposition
-      setCorrectionStep('decomposition');
-      await playAudio(`Attention ! ${unitsSum} est plus grand que 9, donc je dois le décomposer !`);
-      if (stopSignalRef.current) return;
-      await wait(2500);
-      
-      await playAudio(`${unitsSum} égale ${Math.floor(unitsSum / 10)} dizaine plus ${unitsSum % 10} unités.`);
-      if (stopSignalRef.current) return;
-      await wait(3500);
-      
-      await playAudio(`J'écris ${unitsSum % 10} en bas dans les unités, et je retiens ${Math.floor(unitsSum / 10)} en haut pour les dizaines !`);
-      if (stopSignalRef.current) return;
-      await wait(3500);
-      
-      // Étape 6: Montrer la retenue
-      await playAudio(`Regardez ! J'écris 1 au-dessus des dizaines pour me rappeler de l'ajouter.`);
-      if (stopSignalRef.current) return;
-      await wait(2500);
-      
-      // Étape 7: Focus sur les dizaines
-      setHighlightedDigits(['tens']);
-      const tensSum = Math.floor(first / 10) + Math.floor(second / 10) + 1;
-      await playAudio(`Maintenant les dizaines : ${Math.floor(first / 10)} plus ${Math.floor(second / 10)} plus 1 de retenue égale ${tensSum}.`);
-      if (stopSignalRef.current) return;
-      await wait(3000);
-      
-    } else {
-      // Addition sans retenue
-      setCorrectionStep('adding');
-      
-      // Étape 3: Focus sur les unités
-      setHighlightedDigits(['units']);
-      await playAudio(`Commençons par les unités : ${first % 10} plus ${second % 10} égale ${(first % 10) + (second % 10)}.`);
-      if (stopSignalRef.current) return;
-      await wait(2500);
-      
-      // Étape 4: Focus sur les dizaines
-      setHighlightedDigits(['tens']);
-      await playAudio(`Maintenant les dizaines : ${Math.floor(first / 10)} plus ${Math.floor(second / 10)} égale ${Math.floor(first / 10) + Math.floor(second / 10)}.`);
-      if (stopSignalRef.current) return;
-      await wait(2500);
-    }
-    
-    // Étape finale: Résultat complet
-    setCorrectionStep('final-sum');
-    setHighlightedDigits([]);
-    await playAudio(`Et voilà le résultat complet : ${result} !`);
-    if (stopSignalRef.current) return;
-    await wait(2000);
-    
-    await playAudio(`Donc ${first} + ${second} = ${result} ! C'est comme ça qu'on fait une addition posée !`);
-    if (stopSignalRef.current) return;
-    await wait(2000);
-    
-    // Étape terminée
-    setCorrectionStep('complete');
-    
-    // Messages différents selon mobile/desktop
-    if (isMobile) {
-      await playAudio(`Appuie sur suivant pour un autre exercice !`);
-    } else {
-      await playAudio(`Maintenant tu peux cliquer sur suivant pour continuer !`);
-    }
-    
-    // Illuminer le bouton et scroller
-    setHighlightNextButton(true);
-    
-    if (isMobile) {
-      setTimeout(() => {
-        if (nextButtonRef.current) {
-          nextButtonRef.current.scrollIntoView({
-            behavior: 'smooth',
-            block: 'center',
-            inline: 'nearest'
-          });
-        }
-      }, 800);
-    } else {
-      setTimeout(() => {
-        scrollToNextButton();
-      }, 500);
-    }
-  };
+
 
   // Fonction pour expliquer le chapitre dans le cours avec Sam
   const explainChapterWithSam = async () => {
@@ -1837,12 +1675,7 @@ export default function AdditionsJusqua100CE1() {
       await wait(1000);
       if (stopSignalRef.current) return;
       
-      // Lancer l'animation de correction pour additions avec la réponse utilisateur si incorrecte
-      if (isCorrect === false && userAnswer) {
-        await createAnimatedCorrection(exercise, userAnswer);
-      } else {
-        await createAnimatedCorrection(exercise);
-      }
+      // Plus de correction avec addition posée - elle a été supprimée
       if (stopSignalRef.current) return;
       
     } catch (error) {
@@ -2012,9 +1845,7 @@ export default function AdditionsJusqua100CE1() {
           setCurrentExercise(currentExercise + 1);
           setUserAnswer('');
           setIsCorrect(null);
-          setShowAnimatedCorrection(false);
-          setCorrectionStep(null);
-          setCorrectionNumbers(null);
+
           setAnimatedObjects([]);
           setCountingIndex(-1);
         } else {
@@ -2037,9 +1868,7 @@ export default function AdditionsJusqua100CE1() {
       setCurrentExercise(currentExercise + 1);
       setUserAnswer('');
       setIsCorrect(null);
-      setShowAnimatedCorrection(false);
-      setCorrectionStep(null);
-      setCorrectionNumbers(null);
+
       setAnimatedObjects([]);
       setCountingIndex(-1);
     } else {
@@ -2059,9 +1888,7 @@ export default function AdditionsJusqua100CE1() {
     setFinalScore(0);
     setPirateIntroStarted(false);
     setHighlightNextButton(false);
-    setShowAnimatedCorrection(false);
-    setCorrectionStep(null);
-    setCorrectionNumbers(null);
+
     setAnimatedObjects([]);
     setCountingIndex(-1);
   };
@@ -4335,8 +4162,8 @@ export default function AdditionsJusqua100CE1() {
                   Exercice {currentExercise + 1}
                 </h2>
                 
-                <div className="text-sm font-bold text-blue-600">
-                  Score : {score}/{exercises.length}
+                  <div className="text-sm font-bold text-blue-600">
+                    Score : {score}/{exercises.length}
                 </div>
               </div>
               
@@ -4377,28 +4204,28 @@ export default function AdditionsJusqua100CE1() {
                 <div className="flex-1">
                   {/* Titre de la question */}
                   <h3 className="text-xl sm:text-2xl font-bold mb-4 text-gray-900 text-center">
-                    {exercises[currentExercise].question}
-                  </h3>
-                  
-                  {/* Badge du type */}
-                  <div className="flex justify-center mb-4">
-                    <span className={`px-3 py-1 rounded-full text-sm font-semibold ${
-                      exercises[currentExercise].type === 'decomposition' ? 'bg-blue-100 text-blue-800' :
-                      exercises[currentExercise].type === 'complement-10' ? 'bg-green-100 text-green-800' :
-                      exercises[currentExercise].type === 'bonds-10' ? 'bg-yellow-100 text-yellow-800' :
-                      exercises[currentExercise].type === 'compensation' ? 'bg-orange-100 text-orange-800' :
-                      exercises[currentExercise].type === 'etapes-successives' ? 'bg-purple-100 text-purple-800' :
-                      exercises[currentExercise].type === 'doubles' ? 'bg-pink-100 text-pink-800' :
-                      'bg-gray-100 text-gray-800'
-                    }`}>
-                      {exercises[currentExercise].type === 'decomposition' ? '🧮 Décomposition' :
-                       exercises[currentExercise].type === 'complement-10' ? '🎯 Complément à 10' :
-                       exercises[currentExercise].type === 'bonds-10' ? '⚡ Bonds de 10' :
-                       exercises[currentExercise].type === 'compensation' ? '🔄 Compensation' :
-                       exercises[currentExercise].type === 'etapes-successives' ? '🎲 Étapes successives' :
-                       exercises[currentExercise].type === 'doubles' ? '🧠 Doubles' :
-                       '✨ Technique CE1'}
-                    </span>
+                  {exercises[currentExercise].question}
+                </h3>
+                
+                {/* Badge du type */}
+                <div className="flex justify-center mb-4">
+                  <span className={`px-3 py-1 rounded-full text-sm font-semibold ${
+                    exercises[currentExercise].type === 'decomposition' ? 'bg-blue-100 text-blue-800' :
+                    exercises[currentExercise].type === 'complement-10' ? 'bg-green-100 text-green-800' :
+                    exercises[currentExercise].type === 'bonds-10' ? 'bg-yellow-100 text-yellow-800' :
+                    exercises[currentExercise].type === 'compensation' ? 'bg-orange-100 text-orange-800' :
+                    exercises[currentExercise].type === 'etapes-successives' ? 'bg-purple-100 text-purple-800' :
+                    exercises[currentExercise].type === 'doubles' ? 'bg-pink-100 text-pink-800' :
+                    'bg-gray-100 text-gray-800'
+                  }`}>
+                    {exercises[currentExercise].type === 'decomposition' ? '🧮 Décomposition' :
+                     exercises[currentExercise].type === 'complement-10' ? '🎯 Complément à 10' :
+                     exercises[currentExercise].type === 'bonds-10' ? '⚡ Bonds de 10' :
+                     exercises[currentExercise].type === 'compensation' ? '🔄 Compensation' :
+                     exercises[currentExercise].type === 'etapes-successives' ? '🎲 Étapes successives' :
+                     exercises[currentExercise].type === 'doubles' ? '🧠 Doubles' :
+                     '✨ Technique CE1'}
+                  </span>
                   </div>
                 </div>
 
@@ -4519,13 +4346,13 @@ export default function AdditionsJusqua100CE1() {
                         <div className="text-gray-600">=</div>
                         <div className="text-blue-600 px-2 py-1 bg-blue-100 rounded">
                           {Math.floor(exercises[currentExercise].firstNumber / 10) * 10}
-                        </div>
+                    </div>
                         <div className="text-gray-600">+</div>
                         <div className="text-green-600 px-2 py-1 bg-green-100 rounded">
                           {exercises[currentExercise].firstNumber % 10}
+                            </div>
                         </div>
                       </div>
-                    </div>
 
                     {/* Second nombre */}
                     <div className="bg-white rounded-lg p-3 shadow-sm">
@@ -4534,32 +4361,32 @@ export default function AdditionsJusqua100CE1() {
                         <div className="text-gray-600">=</div>
                         <div className="text-blue-600 px-2 py-1 bg-blue-100 rounded">
                           {Math.floor(exercises[currentExercise].secondNumber / 10) * 10}
-                        </div>
+                    </div>
                         <div className="text-gray-600">+</div>
                         <div className="text-green-600 px-2 py-1 bg-green-100 rounded">
                           {exercises[currentExercise].secondNumber % 10}
-                        </div>
+                      </div>
                       </div>
                     </div>
-
+                    
                     {/* Addition des dizaines */}
                     <div className="bg-white rounded-lg p-3 shadow-sm border-l-4 border-blue-400">
                       <div className="flex justify-center items-center space-x-2 text-lg font-bold">
                         <div className="text-blue-700">
                           {Math.floor(exercises[currentExercise].firstNumber / 10) * 10}
-                        </div>
+                      </div>
                         <div className="text-gray-600">+</div>
                         <div className="text-blue-700">
                           {Math.floor(exercises[currentExercise].secondNumber / 10) * 10}
-                        </div>
+                      </div>
                         <div className="text-gray-600">=</div>
                         <div className="text-blue-800 bg-blue-200 px-2 py-1 rounded">
                           {(Math.floor(exercises[currentExercise].firstNumber / 10) + Math.floor(exercises[currentExercise].secondNumber / 10)) * 10}
-                        </div>
+                    </div>
                       </div>
                       <div className="text-center text-sm text-blue-600 mt-1">Dizaines</div>
-                    </div>
-
+                        </div>
+                        
                     {/* Addition des unités */}
                     <div className="bg-white rounded-lg p-3 shadow-sm border-l-4 border-green-400">
                       <div className="flex justify-center items-center space-x-2 text-lg font-bold">
@@ -4569,11 +4396,11 @@ export default function AdditionsJusqua100CE1() {
                         <div className="text-gray-600">+</div>
                         <div className="text-green-700">
                           {exercises[currentExercise].secondNumber % 10}
-                        </div>
+                      </div>
                         <div className="text-gray-600">=</div>
                         <div className="text-green-800 bg-green-200 px-2 py-1 rounded">
                           {(exercises[currentExercise].firstNumber % 10) + (exercises[currentExercise].secondNumber % 10)}
-                        </div>
+                  </div>
                       </div>
                       <div className="text-center text-sm text-green-600 mt-1">Unités</div>
                     </div>
@@ -4583,200 +4410,23 @@ export default function AdditionsJusqua100CE1() {
                       <div className="flex justify-center items-center space-x-2 text-xl font-bold">
                         <div className="text-blue-700">
                           {(Math.floor(exercises[currentExercise].firstNumber / 10) + Math.floor(exercises[currentExercise].secondNumber / 10)) * 10}
-                        </div>
+                          </div>
                         <div className="text-gray-600">+</div>
                         <div className="text-green-700">
                           {(exercises[currentExercise].firstNumber % 10) + (exercises[currentExercise].secondNumber % 10)}
-                        </div>
+                          </div>
                         <div className="text-gray-600">=</div>
                         <div className="text-purple-800 bg-purple-200 px-3 py-1 rounded animate-pulse">
                           {exercises[currentExercise].correctAnswer}
                         </div>
-                      </div>
+                        </div>
                       <div className="text-center text-sm text-purple-600 mt-1">🎉 Résultat final</div>
-                    </div>
+                      </div>
                   </div>
                 </div>
               )}
 
-              {/* Correction animée avec addition posée */}
-              {showAnimatedCorrection && correctionNumbers && (
-                <div id="animated-correction" className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-3 sm:p-6 mb-4 sm:mb-8 border-2 border-blue-200">
-                  <h4 className="text-base sm:text-2xl font-bold text-center text-blue-800 mb-3 sm:mb-6">
-                    🎯 Addition posée : {correctionNumbers.first} + {correctionNumbers.second}
-                  </h4>
-                  
-                  {/* Addition posée en colonnes */}
-                  <div className="bg-white rounded-lg p-4 sm:p-6 shadow-lg max-w-lg mx-auto mb-4">
-                    <div className="text-center mb-4">
-                      <div className="text-base sm:text-lg font-bold text-gray-700">📊 Addition en colonnes</div>
-                    </div>
-                    
-                    {/* Retenue (visible avec retenue uniquement) */}
-                    {((correctionNumbers.first % 10) + (correctionNumbers.second % 10)) >= 10 && (
-                      <div className="flex justify-center mb-2">
-                        <div className="w-6 sm:w-8"></div>
-                        <div className="w-12 sm:w-16 text-center">
-                          {(correctionStep === 'carry-step' || correctionStep === 'decomposition' || correctionStep === 'final-sum' || correctionStep === 'complete') && (
-                            <div className="text-base sm:text-lg font-bold text-red-700 animate-bounce border-2 border-red-400 bg-red-100 rounded-full px-2 py-1">
-                              1
-                            </div>
-                          )}
-                        </div>
-                        <div className="w-12 sm:w-16"></div>
-                      </div>
-                    )}
-                    
-                    {/* En-têtes de colonnes */}
-                    <div className="flex justify-center mb-3">
-                      <div className="w-6 sm:w-8"></div>
-                      <div className="w-12 sm:w-16 text-center text-sm sm:text-lg font-bold text-gray-600 border-b-2 border-gray-400 pb-1">D</div>
-                      <div className="w-12 sm:w-16 text-center text-sm sm:text-lg font-bold text-gray-600 border-b-2 border-gray-400 pb-1">U</div>
-                    </div>
-                    
-                    {/* Premier nombre */}
-                    <div className="flex justify-center py-3">
-                      <div className="w-6 sm:w-8"></div>
-                      <div className={`w-12 sm:w-16 text-xl sm:text-3xl font-bold text-center transition-all ${
-                        highlightedDigits.includes('tens') ? 'bg-yellow-200 text-yellow-900 rounded-lg px-2 py-1 ring-2 ring-yellow-400' : 'text-gray-900'
-                      }`}>
-                        {Math.floor(correctionNumbers.first / 10)}
-                      </div>
-                      <div className={`w-12 sm:w-16 text-xl sm:text-3xl font-bold text-center transition-all ${
-                        highlightedDigits.includes('units') ? 'bg-blue-200 text-blue-900 rounded-lg px-2 py-1 ring-2 ring-blue-400' : 'text-gray-900'
-                      }`}>
-                        {correctionNumbers.first % 10}
-                      </div>
-                    </div>
-                    
-                    {/* Ligne avec le signe + et le deuxième nombre */}
-                    <div className="flex justify-center py-3">
-                      <div className="w-6 sm:w-8 text-xl sm:text-3xl font-bold text-orange-700 text-center">+</div>
-                      <div className={`w-12 sm:w-16 text-xl sm:text-3xl font-bold text-center transition-all ${
-                        highlightedDigits.includes('tens') ? 'bg-yellow-200 text-yellow-900 rounded-lg px-2 py-1 ring-2 ring-yellow-400' : 'text-gray-900'
-                      }`}>
-                        {Math.floor(correctionNumbers.second / 10)}
-                      </div>
-                      <div className={`w-12 sm:w-16 text-xl sm:text-3xl font-bold text-center transition-all ${
-                        highlightedDigits.includes('units') ? 'bg-blue-200 text-blue-900 rounded-lg px-2 py-1 ring-2 ring-blue-400' : 'text-gray-900'
-                      }`}>
-                        {correctionNumbers.second % 10}
-                      </div>
-                    </div>
-                    
-                    {/* Ligne de séparation */}
-                    <div className="border-b-4 border-gray-600 my-4 w-32 sm:w-40 mx-auto"></div>
-                    
-                    {/* Résultat progressif */}
-                    {(correctionStep === 'adding' || correctionStep === 'carry-step' || correctionStep === 'decomposition' || correctionStep === 'final-sum' || correctionStep === 'complete') && (
-                      <div className="flex justify-center py-3">
-                        <div className="w-6 sm:w-8"></div>
-                        
-                        {/* Chiffre des dizaines */}
-                        <div className={`w-12 sm:w-16 text-xl sm:text-3xl font-bold text-center transition-all ${
-                          (correctionStep === 'decomposition' || correctionStep === 'final-sum' || correctionStep === 'complete')
-                            ? 'text-green-700 animate-pulse bg-green-100 rounded-lg px-2 py-1' 
-                            : 'text-gray-300'
-                        }`}>
-                          {(correctionStep === 'decomposition' || correctionStep === 'final-sum' || correctionStep === 'complete')
-                            ? Math.floor(correctionNumbers.result / 10) 
-                            : '?'}
-                        </div>
-                        
-                        {/* Chiffre des unités */}
-                        <div className={`w-12 sm:w-16 text-xl sm:text-3xl font-bold text-center transition-all ${
-                          (correctionStep === 'adding' || correctionStep === 'carry-step' || correctionStep === 'decomposition' || correctionStep === 'final-sum' || correctionStep === 'complete')
-                            ? 'text-green-700 animate-pulse bg-green-100 rounded-lg px-2 py-1' 
-                            : 'text-gray-300'
-                        }`}>
-                          {(correctionStep === 'adding' || correctionStep === 'carry-step' || correctionStep === 'decomposition' || correctionStep === 'final-sum' || correctionStep === 'complete')
-                            ? correctionNumbers.result % 10
-                            : '?'}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                  
-                  {/* Explications textuelles selon l'étape */}
-                  <div className="text-center">
-                    {/* Explication placement - toujours visible une fois affichée */}
-                    {(correctionStep === 'numbers' || correctionStep === 'carry-step' || correctionStep === 'decomposition' || correctionStep === 'adding' || correctionStep === 'final-sum' || correctionStep === 'complete') && (
-                      <p className="text-sm sm:text-lg text-blue-700 font-semibold mb-3">
-                        📋 Je place les nombres en colonnes : dizaines sous dizaines, unités sous unités
-                      </p>
-                    )}
-                    
-                    {/* Explication retenue - reste visible une fois affichée */}
-                    {((correctionNumbers.first % 10) + (correctionNumbers.second % 10)) >= 10 && (correctionStep === 'carry-step' || correctionStep === 'decomposition' || correctionStep === 'final-sum' || correctionStep === 'complete') && (
-                      <div className="space-y-2 mb-3">
-                        <p className="text-sm sm:text-lg text-orange-700 font-semibold">
-                          🔄 Addition avec retenue !
-                        </p>
-                        <p className="text-xs sm:text-base text-orange-600">
-                          Les unités ({correctionNumbers.first % 10} + {correctionNumbers.second % 10} = {(correctionNumbers.first % 10) + (correctionNumbers.second % 10)}) dépassent 9
-                        </p>
-                      </div>
-                    )}
-                    
-                    {/* Décomposition - reste visible une fois affichée avec retenue */}
-                    {((correctionNumbers.first % 10) + (correctionNumbers.second % 10)) >= 10 && (correctionStep === 'decomposition' || correctionStep === 'final-sum' || correctionStep === 'complete') && (
-                      <div className="bg-orange-50 rounded-lg p-4 border-2 border-orange-200 mb-4">
-                        <p className="text-sm sm:text-lg text-orange-700 font-semibold mb-3">
-                          🔧 Décomposition de {(correctionNumbers.first % 10) + (correctionNumbers.second % 10)}
-                        </p>
-                        <div className="flex items-center justify-center space-x-4 text-lg sm:text-2xl font-bold">
-                          <span className="bg-orange-200 px-3 py-2 rounded-lg text-orange-800">
-                            {(correctionNumbers.first % 10) + (correctionNumbers.second % 10)}
-                          </span>
-                          <span className="text-orange-600">=</span>
-                          <div className="bg-yellow-100 px-3 py-2 rounded-lg border-2 border-yellow-400">
-                            <span className="text-yellow-800 text-sm block">dizaine</span>
-                            <span className="text-yellow-900 font-bold text-xl">
-                              {Math.floor(((correctionNumbers.first % 10) + (correctionNumbers.second % 10)) / 10)}
-                            </span>
-                          </div>
-                          <span className="text-orange-600">+</span>
-                          <div className="bg-blue-100 px-3 py-2 rounded-lg border-2 border-blue-400">
-                            <span className="text-blue-800 text-sm block">unités</span>
-                            <span className="text-blue-900 font-bold text-xl">
-                              {((correctionNumbers.first % 10) + (correctionNumbers.second % 10)) % 10}
-                            </span>
-                          </div>
-                        </div>
-                        <div className="mt-3 text-xs sm:text-sm text-orange-600 text-center">
-                          <span className="text-yellow-700">↑ retenue</span>
-                          <span className="mx-4">|</span>
-                          <span className="text-blue-700">↑ résultat unités</span>
-                        </div>
-                      </div>
-                    )}
-                    
-                    {/* Explication pour addition sans retenue - reste visible */}
-                    {((correctionNumbers.first % 10) + (correctionNumbers.second % 10)) < 10 && (correctionStep === 'adding' || correctionStep === 'final-sum' || correctionStep === 'complete') && (
-                      <p className="text-sm sm:text-lg text-blue-700 font-semibold mb-3">
-                        ✨ Addition simple : pas de retenue nécessaire !
-                      </p>
-                    )}
-                    
-                    {(correctionStep === 'final-sum' || correctionStep === 'complete') && (
-                      <p className="text-sm sm:text-lg text-green-700 font-semibold mb-3">
-                        🎯 Résultat final : {correctionNumbers.result} !
-                      </p>
-                    )}
-                    
-                    {correctionStep === 'complete' && (
-                      <div className="bg-green-100 rounded-lg p-3 sm:p-4">
-                        <p className="text-lg sm:text-xl font-bold text-green-800 mb-2">
-                          🎉 Parfait ! Addition posée réussie !
-                        </p>
-                        <p className="text-sm sm:text-base text-green-700">
-                          {correctionNumbers.first} + {correctionNumbers.second} = {correctionNumbers.result}
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
+
 
               {/* Navigation */}
               {isCorrect === false && (
