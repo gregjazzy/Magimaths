@@ -4417,7 +4417,7 @@ export default function AdditionsJusqua100CE1() {
                 >
                   {isPlayingEnonce ? '🎤' : '🎧'}
                   <span className="hidden sm:inline ml-1">
-                    {isPlayingEnonce ? 'Écoute...' : 'Écouter'}
+                    {isPlayingEnonce ? 'Écoute...' : 'Écouter l\'énoncé'}
                   </span>
                 </button>
               </div>
