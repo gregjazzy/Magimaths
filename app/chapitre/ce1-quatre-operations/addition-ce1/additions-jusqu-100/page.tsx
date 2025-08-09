@@ -543,21 +543,87 @@ export default function AdditionsJusqua100CE1() {
     }
   ];
 
-  // Exercices sur les additions jusqu'à 100 - CE1 : 6 techniques variées
-  const exercises = [
+  // 7 séries de 10 exercices : 6 spécialisées + 1 mélangée
+  const exerciseSeries = {
+    decomposition: [
     { question: 'Calcule 35 + 24', firstNumber: 35, secondNumber: 24, correctAnswer: 59, type: 'decomposition', hint: 'Décompose : 30+20=50 et 5+4=9, puis 50+9=59' },
-    { question: 'Calcule 27 + 8', firstNumber: 27, secondNumber: 8, correctAnswer: 35, type: 'complement-10', hint: 'Ajoute 3 pour faire 30, puis ajoute les 5 qui restent' },
-    { question: 'Calcule 23 + 30', firstNumber: 23, secondNumber: 30, correctAnswer: 53, type: 'bonds-10', hint: 'Fais 3 bonds de 10 : 23→33→43→53' },
-    { question: 'Calcule 29 + 15', firstNumber: 29, secondNumber: 15, correctAnswer: 44, type: 'compensation', hint: 'Transforme en 30 + 14, c\'est plus facile !' },
-    { question: 'Calcule 34 + 28', firstNumber: 34, secondNumber: 28, correctAnswer: 62, type: 'etapes-successives', hint: 'D\'abord 34+20=54, puis 54+8=62' },
-    { question: 'Calcule 25 + 26', firstNumber: 25, secondNumber: 26, correctAnswer: 51, type: 'doubles', hint: 'C\'est 25+25+1 = 50+1 = 51' },
     { question: 'Calcule 42 + 36', firstNumber: 42, secondNumber: 36, correctAnswer: 78, type: 'decomposition', hint: 'Sépare : 40+30=70 et 2+6=8, puis 70+8=78' },
-    { question: 'Calcule 56 + 9', firstNumber: 56, secondNumber: 9, correctAnswer: 65, type: 'complement-10', hint: 'Ajoute 4 pour faire 60, puis ajoute les 5 qui restent' },
+      { question: 'Calcule 53 + 25', firstNumber: 53, secondNumber: 25, correctAnswer: 78, type: 'decomposition', hint: 'Décompose : 50+20=70 et 3+5=8, puis 70+8=78' },
+      { question: 'Calcule 46 + 32', firstNumber: 46, secondNumber: 32, correctAnswer: 78, type: 'decomposition', hint: 'Sépare : 40+30=70 et 6+2=8, puis 70+8=78' },
+      { question: 'Calcule 37 + 41', firstNumber: 37, secondNumber: 41, correctAnswer: 78, type: 'decomposition', hint: 'Décompose : 30+40=70 et 7+1=8, puis 70+8=78' },
+      { question: 'Calcule 24 + 33', firstNumber: 24, secondNumber: 33, correctAnswer: 57, type: 'decomposition', hint: 'Sépare : 20+30=50 et 4+3=7, puis 50+7=57' },
+      { question: 'Calcule 51 + 26', firstNumber: 51, secondNumber: 26, correctAnswer: 77, type: 'decomposition', hint: 'Décompose : 50+20=70 et 1+6=7, puis 70+7=77' },
+      { question: 'Calcule 43 + 34', firstNumber: 43, secondNumber: 34, correctAnswer: 77, type: 'decomposition', hint: 'Sépare : 40+30=70 et 3+4=7, puis 70+7=77' },
+      { question: 'Calcule 32 + 45', firstNumber: 32, secondNumber: 45, correctAnswer: 77, type: 'decomposition', hint: 'Décompose : 30+40=70 et 2+5=7, puis 70+7=77' },
+      { question: 'Calcule 61 + 15', firstNumber: 61, secondNumber: 15, correctAnswer: 76, type: 'decomposition', hint: 'Sépare : 60+10=70 et 1+5=6, puis 70+6=76' }
+    ],
+    'bonds-10': [
+      { question: 'Calcule 23 + 30', firstNumber: 23, secondNumber: 30, correctAnswer: 53, type: 'bonds-10', hint: 'Fais 3 bonds de 10 : 23→33→43→53' },
     { question: 'Calcule 45 + 20', firstNumber: 45, secondNumber: 20, correctAnswer: 65, type: 'bonds-10', hint: 'Deux bonds de 10 : 45→55→65' },
+      { question: 'Calcule 17 + 40', firstNumber: 17, secondNumber: 40, correctAnswer: 57, type: 'bonds-10', hint: 'Quatre bonds de 10 : 17→27→37→47→57' },
+      { question: 'Calcule 32 + 50', firstNumber: 32, secondNumber: 50, correctAnswer: 82, type: 'bonds-10', hint: 'Cinq bonds de 10 : 32→42→52→62→72→82' },
+      { question: 'Calcule 28 + 20', firstNumber: 28, secondNumber: 20, correctAnswer: 48, type: 'bonds-10', hint: 'Deux bonds de 10 : 28→38→48' },
+      { question: 'Calcule 14 + 30', firstNumber: 14, secondNumber: 30, correctAnswer: 44, type: 'bonds-10', hint: 'Trois bonds de 10 : 14→24→34→44' },
+      { question: 'Calcule 36 + 40', firstNumber: 36, secondNumber: 40, correctAnswer: 76, type: 'bonds-10', hint: 'Quatre bonds de 10 : 36→46→56→66→76' },
+      { question: 'Calcule 51 + 20', firstNumber: 51, secondNumber: 20, correctAnswer: 71, type: 'bonds-10', hint: 'Deux bonds de 10 : 51→61→71' },
+      { question: 'Calcule 29 + 30', firstNumber: 29, secondNumber: 30, correctAnswer: 59, type: 'bonds-10', hint: 'Trois bonds de 10 : 29→39→49→59' },
+      { question: 'Calcule 43 + 50', firstNumber: 43, secondNumber: 50, correctAnswer: 93, type: 'bonds-10', hint: 'Cinq bonds de 10 : 43→53→63→73→83→93' }
+    ],
+    compensation: [
+      { question: 'Calcule 29 + 15', firstNumber: 29, secondNumber: 15, correctAnswer: 44, type: 'compensation', hint: 'Transforme en 30 + 14, c\'est plus facile !' },
     { question: 'Calcule 38 + 19', firstNumber: 38, secondNumber: 19, correctAnswer: 57, type: 'compensation', hint: 'Transforme en 37 + 20 = 57' },
+      { question: 'Calcule 49 + 16', firstNumber: 49, secondNumber: 16, correctAnswer: 65, type: 'compensation', hint: 'Transforme en 50 + 15 = 65' },
+      { question: 'Calcule 59 + 18', firstNumber: 59, secondNumber: 18, correctAnswer: 77, type: 'compensation', hint: 'Transforme en 60 + 17 = 77' },
+      { question: 'Calcule 39 + 17', firstNumber: 39, secondNumber: 17, correctAnswer: 56, type: 'compensation', hint: 'Transforme en 40 + 16 = 56' },
+      { question: 'Calcule 28 + 19', firstNumber: 28, secondNumber: 19, correctAnswer: 47, type: 'compensation', hint: 'Transforme en 27 + 20 = 47' },
+      { question: 'Calcule 48 + 19', firstNumber: 48, secondNumber: 19, correctAnswer: 67, type: 'compensation', hint: 'Transforme en 47 + 20 = 67' },
+      { question: 'Calcule 69 + 15', firstNumber: 69, secondNumber: 15, correctAnswer: 84, type: 'compensation', hint: 'Transforme en 70 + 14 = 84' },
+      { question: 'Calcule 58 + 17', firstNumber: 58, secondNumber: 17, correctAnswer: 75, type: 'compensation', hint: 'Transforme en 57 + 18 ou 60 + 15' },
+      { question: 'Calcule 79 + 14', firstNumber: 79, secondNumber: 14, correctAnswer: 93, type: 'compensation', hint: 'Transforme en 80 + 13 = 93' }
+    ],
+    'etapes-successives': [
+      { question: 'Calcule 34 + 28', firstNumber: 34, secondNumber: 28, correctAnswer: 62, type: 'etapes-successives', hint: 'D\'abord 34+20=54, puis 54+8=62' },
     { question: 'Calcule 47 + 35', firstNumber: 47, secondNumber: 35, correctAnswer: 82, type: 'etapes-successives', hint: 'Étapes : 47+30=77, puis 77+5=82' },
-    { question: 'Calcule 34 + 35', firstNumber: 34, secondNumber: 35, correctAnswer: 69, type: 'doubles', hint: 'C\'est 34+34+1 = 68+1 = 69' }
-  ];
+      { question: 'Calcule 56 + 27', firstNumber: 56, secondNumber: 27, correctAnswer: 83, type: 'etapes-successives', hint: 'Étapes : 56+20=76, puis 76+7=83' },
+      { question: 'Calcule 43 + 39', firstNumber: 43, secondNumber: 39, correctAnswer: 82, type: 'etapes-successives', hint: 'Étapes : 43+30=73, puis 73+9=82' },
+      { question: 'Calcule 65 + 26', firstNumber: 65, secondNumber: 26, correctAnswer: 91, type: 'etapes-successives', hint: 'Étapes : 65+20=85, puis 85+6=91' },
+      { question: 'Calcule 52 + 39', firstNumber: 52, secondNumber: 39, correctAnswer: 91, type: 'etapes-successives', hint: 'Étapes : 52+30=82, puis 82+9=91' },
+      { question: 'Calcule 38 + 45', firstNumber: 38, secondNumber: 45, correctAnswer: 83, type: 'etapes-successives', hint: 'Étapes : 38+40=78, puis 78+5=83' },
+      { question: 'Calcule 27 + 46', firstNumber: 27, secondNumber: 46, correctAnswer: 73, type: 'etapes-successives', hint: 'Étapes : 27+40=67, puis 67+6=73' },
+      { question: 'Calcule 59 + 24', firstNumber: 59, secondNumber: 24, correctAnswer: 83, type: 'etapes-successives', hint: 'Étapes : 59+20=79, puis 79+4=83' },
+      { question: 'Calcule 46 + 37', firstNumber: 46, secondNumber: 37, correctAnswer: 83, type: 'etapes-successives', hint: 'Étapes : 46+30=76, puis 76+7=83' }
+    ],
+    doubles: [
+      { question: 'Calcule 25 + 26', firstNumber: 25, secondNumber: 26, correctAnswer: 51, type: 'doubles', hint: 'C\'est 25+25+1 = 50+1 = 51' },
+      { question: 'Calcule 34 + 35', firstNumber: 34, secondNumber: 35, correctAnswer: 69, type: 'doubles', hint: 'C\'est 34+34+1 = 68+1 = 69' },
+      { question: 'Calcule 42 + 43', firstNumber: 42, secondNumber: 43, correctAnswer: 85, type: 'doubles', hint: 'C\'est 42+42+1 = 84+1 = 85' },
+      { question: 'Calcule 36 + 37', firstNumber: 36, secondNumber: 37, correctAnswer: 73, type: 'doubles', hint: 'C\'est 36+36+1 = 72+1 = 73' },
+      { question: 'Calcule 23 + 24', firstNumber: 23, secondNumber: 24, correctAnswer: 47, type: 'doubles', hint: 'C\'est 23+23+1 = 46+1 = 47' },
+      { question: 'Calcule 47 + 48', firstNumber: 47, secondNumber: 48, correctAnswer: 95, type: 'doubles', hint: 'C\'est 47+47+1 = 94+1 = 95' },
+      { question: 'Calcule 31 + 32', firstNumber: 31, secondNumber: 32, correctAnswer: 63, type: 'doubles', hint: 'C\'est 31+31+1 = 62+1 = 63' },
+      { question: 'Calcule 28 + 29', firstNumber: 28, secondNumber: 29, correctAnswer: 57, type: 'doubles', hint: 'C\'est 28+28+1 = 56+1 = 57' },
+      { question: 'Calcule 45 + 46', firstNumber: 45, secondNumber: 46, correctAnswer: 91, type: 'doubles', hint: 'C\'est 45+45+1 = 90+1 = 91' },
+      { question: 'Calcule 33 + 34', firstNumber: 33, secondNumber: 34, correctAnswer: 67, type: 'doubles', hint: 'C\'est 33+33+1 = 66+1 = 67' }
+    ],
+    melange: [
+      { question: 'Calcule 47 + 32', firstNumber: 47, secondNumber: 32, correctAnswer: 79, type: 'decomposition', hint: 'Décompose : 40+30=70 et 7+2=9, puis 70+9=79' },
+      { question: 'Calcule 26 + 40', firstNumber: 26, secondNumber: 40, correctAnswer: 66, type: 'bonds-10', hint: 'Quatre bonds de 10 : 26→36→46→56→66' },
+      { question: 'Calcule 39 + 18', firstNumber: 39, secondNumber: 18, correctAnswer: 57, type: 'compensation', hint: 'Transforme en 40 + 17 = 57' },
+      { question: 'Calcule 54 + 29', firstNumber: 54, secondNumber: 29, correctAnswer: 83, type: 'etapes-successives', hint: 'Étapes : 54+20=74, puis 74+9=83' },
+      { question: 'Calcule 37 + 38', firstNumber: 37, secondNumber: 38, correctAnswer: 75, type: 'doubles', hint: 'C\'est 37+37+1 = 74+1 = 75' },
+      { question: 'Calcule 51 + 24', firstNumber: 51, secondNumber: 24, correctAnswer: 75, type: 'decomposition', hint: 'Décompose : 50+20=70 et 1+4=5, puis 70+5=75' },
+      { question: 'Calcule 33 + 30', firstNumber: 33, secondNumber: 30, correctAnswer: 63, type: 'bonds-10', hint: 'Trois bonds de 10 : 33→43→53→63' },
+      { question: 'Calcule 48 + 17', firstNumber: 48, secondNumber: 17, correctAnswer: 65, type: 'compensation', hint: 'Transforme en 50 + 15 = 65' },
+      { question: 'Calcule 35 + 48', firstNumber: 35, secondNumber: 48, correctAnswer: 83, type: 'etapes-successives', hint: 'Étapes : 35+40=75, puis 75+8=83' },
+      { question: 'Calcule 44 + 45', firstNumber: 44, secondNumber: 45, correctAnswer: 89, type: 'doubles', hint: 'C\'est 44+44+1 = 88+1 = 89' }
+    ]
+  };
+
+  // État pour gérer les séries
+  const [currentSeries, setCurrentSeries] = useState<string>('decomposition');
+
+  // Exercices actuels basés sur la série sélectionnée
+  const exercises = exerciseSeries[currentSeries as keyof typeof exerciseSeries];
 
   // Mount check
   useEffect(() => {
@@ -3290,7 +3356,7 @@ export default function AdditionsJusqua100CE1() {
                                 <div className="bg-white rounded-lg shadow-md p-4 max-w-xl mx-auto">
                                   <div className="text-center mb-4">
                                     <div className="text-lg font-bold text-gray-800">🔢 Je décompose chaque nombre</div>
-                                  </div>
+                        </div>
                                   
                                   {/* Premier nombre - ligne unique */}
                                   <div className={`transition-all duration-700 mb-3 ${
@@ -3602,14 +3668,14 @@ export default function AdditionsJusqua100CE1() {
                                               <div className={`text-2xl transition-all duration-300 ${
                                                 calculationStep === 'units' ? 'animate-bounce scale-125' : 'animate-bounce'
                                               }`}>🦘</div>
-                                            </div>
-                                          </div>
-                                        );
+                      </div>
+                    </div>
+                  );
                                         current += 10;
                                       }
                                       
                                       return bonds;
-                                    })()}
+                })()}
                                   </div>
                                 </div>
                               )}
@@ -4224,8 +4290,46 @@ export default function AdditionsJusqua100CE1() {
               </div>
             </div>
 
+            {/* Sélecteur de séries */}
+            <div className="bg-white rounded-xl p-4 shadow-lg mt-6">
+              <h3 className="text-lg font-bold text-gray-900 mb-4 text-center">📚 Choisir une série d'exercices</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                {Object.entries(exerciseSeries).map(([seriesKey, seriesExercises]) => {
+                  const seriesNames = {
+                    decomposition: '🔢 Décomposition',
+                    'bonds-10': '🦘 Bonds de 10',
+                    compensation: '🔄 Compensation',
+                    'etapes-successives': '🥇 Étapes successives',
+                    doubles: '👥 Doubles',
+                    melange: '🎯 Mélange'
+                  };
+                  
+                  return (
+                    <button
+                      key={seriesKey}
+                      onClick={() => {
+                        setCurrentSeries(seriesKey);
+                        setCurrentExercise(0);
+                        setScore(0);
+                        setAnsweredCorrectly(new Set());
+                        setShowCompletionModal(false);
+                      }}
+                      className={`p-3 rounded-lg font-bold text-sm transition-all duration-300 ${
+                        currentSeries === seriesKey
+                          ? 'bg-blue-500 text-white shadow-lg scale-105'
+                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200 hover:scale-102'
+                      }`}
+                    >
+                      <div>{seriesNames[seriesKey as keyof typeof seriesNames]}</div>
+                      <div className="text-xs opacity-75 mt-1">10 exercices</div>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
             {/* Header exercices - caché sur mobile */}
-            <div className="bg-white rounded-xl p-2 shadow-lg mt-8 hidden sm:block">
+            <div className="bg-white rounded-xl p-2 shadow-lg mt-6 hidden sm:block">
               <div className="flex justify-between items-center mb-1">
                 <h2 className="text-lg font-bold text-gray-900">
                   Exercice {currentExercise + 1}
