@@ -158,147 +158,8 @@ export default function AdditionsJusqu1000CE1() {
         }
       ]
     },
-    {
-      id: 'additions-cinquantaines',
-      title: 'Additions par cinquantaines',
-      icon: '🔢',
-      description: 'Ajouter par bonds de 50 (50, 100, 150, 200...)',
-      method: 'Je compte par 50 : 50, 100, 150, 200, 250...',
-      examples: [
-        { 
-          calculation: '150 + 100', 
-          start: 150, 
-          addition: 100, 
-          result: 250,
-          steps: [
-            'Je pars de 150',
-            'J\'ajoute 100 (= 2 fois 50)',
-            '150 + 50 = 200',
-            '200 + 50 = 250',
-            'Résultat : 250'
-          ],
-          visualSteps: [
-            { step: 0, value: 150, highlight: false },
-            { step: 1, value: 200, highlight: true },
-            { step: 2, value: 250, highlight: true }
-          ]
-        },
-        { 
-          calculation: '250 + 150', 
-          start: 250, 
-          addition: 150, 
-          result: 400,
-          steps: [
-            'Je pars de 250',
-            'J\'ajoute 150 (= 3 fois 50)',
-            '250 + 50 = 300, + 50 = 350, + 50 = 400',
-            'Résultat : 400'
-          ],
-          visualSteps: [
-            { step: 0, value: 250, highlight: false },
-            { step: 1, value: 300, highlight: true },
-            { step: 2, value: 350, highlight: true },
-            { step: 3, value: 400, highlight: true }
-          ]
-        },
-        { 
-          calculation: '350 + 200', 
-          start: 350, 
-          addition: 200, 
-          result: 550,
-          steps: [
-            'Je pars de 350',
-            'J\'ajoute 200 (= 4 fois 50)',
-            '350 → 400 → 450 → 500 → 550',
-            'Résultat : 550'
-          ],
-          visualSteps: [
-            { step: 0, value: 350, highlight: false },
-            { step: 1, value: 400, highlight: true },
-            { step: 2, value: 450, highlight: true },
-            { step: 3, value: 500, highlight: true },
-            { step: 4, value: 550, highlight: true }
-          ]
-        },
-        { 
-          calculation: '450 + 250', 
-          start: 450, 
-          addition: 250, 
-          result: 700,
-          steps: [
-            'Je pars de 450',
-            'J\'ajoute 250 (= 5 fois 50)',
-            '450 → 500 → 550 → 600 → 650 → 700',
-            'Résultat : 700'
-          ],
-          visualSteps: [
-            { step: 0, value: 450, highlight: false },
-            { step: 1, value: 500, highlight: true },
-            { step: 2, value: 550, highlight: true },
-            { step: 3, value: 600, highlight: true },
-            { step: 4, value: 650, highlight: true },
-            { step: 5, value: 700, highlight: true }
-          ]
-        }
-      ]
-    },
-    {
-      id: 'complements-1000',
-      title: 'Compléments à 1000',
-      icon: '🎯',
-      description: 'Compléter pour arriver exactement à 1000',
-      method: 'Je cherche ce qui manque pour faire 1000',
-      examples: [
-        { 
-          calculation: '300 + ? = 1000', 
-          start: 300, 
-          complement: 700, 
-          result: 1000,
-          steps: [
-            'Je pars de 300',
-            'Je compte par centaines jusqu\'à 1000',
-            '300 → 400 → 500 → 600 → 700 → 800 → 900 → 1000',
-            'J\'ai compté 7 centaines = 700',
-            'Réponse : 700'
-          ],
-          visualSteps: [
-            { step: 0, value: 300, highlight: false },
-            { step: 1, value: 400, highlight: true },
-            { step: 2, value: 500, highlight: true },
-            { step: 3, value: 600, highlight: true },
-            { step: 4, value: 700, highlight: true },
-            { step: 5, value: 800, highlight: true },
-            { step: 6, value: 900, highlight: true },
-            { step: 7, value: 1000, highlight: true }
-          ]
-        },
-        { 
-          calculation: '550 + ? = 1000', 
-          start: 550, 
-          complement: 450, 
-          result: 1000,
-          steps: [
-            'Je pars de 550',
-            'Je compte par 50 jusqu\'à 1000',
-            '550 → 600 → 650 → 700 → 750 → 800 → 850 → 900 → 950 → 1000',
-            'J\'ai compté 9 fois 50 = 450',
-            'Réponse : 450'
-          ],
-          visualSteps: [
-            { step: 0, value: 550, highlight: false },
-            { step: 1, value: 600, highlight: true },
-            { step: 2, value: 650, highlight: true },
-            { step: 3, value: 700, highlight: true },
-            { step: 4, value: 750, highlight: true },
-            { step: 5, value: 800, highlight: true },
-            { step: 6, value: 850, highlight: true },
-            { step: 7, value: 900, highlight: true },
-            { step: 8, value: 950, highlight: true },
-            { step: 9, value: 1000, highlight: true }
-          ]
-        }
-      ]
-    },
+
+
     {
       id: 'complements-centaines',
       title: 'Compléments par centaines',
@@ -397,6 +258,90 @@ export default function AdditionsJusqu1000CE1() {
           ]
         }
       ]
+    },
+    {
+      id: 'additions-cinquantaines',
+      title: 'Additions par cinquantaines',
+      icon: '🔢',
+      description: 'Ajouter par bonds de 50 (50, 100, 150, 200...)',
+      method: 'Je compte par 50 : 50, 100, 150, 200, 250...',
+      examples: [
+        { 
+          calculation: '150 + 100', 
+          start: 150, 
+          addition: 100, 
+          result: 250,
+          steps: [
+            'Je pars de 150',
+            'J\'ajoute 100 (= 2 fois 50)',
+            '150 + 50 = 200',
+            '200 + 50 = 250',
+            'Résultat : 250'
+          ],
+          visualSteps: [
+            { step: 0, value: 150, highlight: false },
+            { step: 1, value: 200, highlight: true },
+            { step: 2, value: 250, highlight: true }
+          ]
+        },
+        { 
+          calculation: '250 + 150', 
+          start: 250, 
+          addition: 150, 
+          result: 400,
+          steps: [
+            'Je pars de 250',
+            'J\'ajoute 150 (= 3 fois 50)',
+            '250 + 50 = 300, + 50 = 350, + 50 = 400',
+            'Résultat : 400'
+          ],
+          visualSteps: [
+            { step: 0, value: 250, highlight: false },
+            { step: 1, value: 300, highlight: true },
+            { step: 2, value: 350, highlight: true },
+            { step: 3, value: 400, highlight: true }
+          ]
+        },
+        { 
+          calculation: '350 + 200', 
+          start: 350, 
+          addition: 200, 
+          result: 550,
+          steps: [
+            'Je pars de 350',
+            'J\'ajoute 200 (= 4 fois 50)',
+            '350 → 400 → 450 → 500 → 550',
+            'Résultat : 550'
+          ],
+          visualSteps: [
+            { step: 0, value: 350, highlight: false },
+            { step: 1, value: 400, highlight: true },
+            { step: 2, value: 450, highlight: true },
+            { step: 3, value: 500, highlight: true },
+            { step: 4, value: 550, highlight: true }
+          ]
+        },
+        { 
+          calculation: '450 + 250', 
+          start: 450, 
+          addition: 250, 
+          result: 700,
+          steps: [
+            'Je pars de 450',
+            'J\'ajoute 250 (= 5 fois 50)',
+            '450 → 500 → 550 → 600 → 650 → 700',
+            'Résultat : 700'
+          ],
+          visualSteps: [
+            { step: 0, value: 450, highlight: false },
+            { step: 1, value: 500, highlight: true },
+            { step: 2, value: 550, highlight: true },
+            { step: 3, value: 600, highlight: true },
+            { step: 4, value: 650, highlight: true },
+            { step: 5, value: 700, highlight: true }
+          ]
+        }
+      ]
     }
   ];
 
@@ -416,19 +361,7 @@ export default function AdditionsJusqu1000CE1() {
     { type: 'additions-cinquantaines', question: '200 + 250 = ?', answer: 450 },
     { type: 'additions-cinquantaines', question: '450 + 250 = ?', answer: 700 },
     
-    // Série 3 : Compléments à 1000 (centaines)
-    { type: 'complements-1000', question: '300 + ? = 1000', answer: 700 },
-    { type: 'complements-1000', question: '400 + ? = 1000', answer: 600 },
-    { type: 'complements-1000', question: '600 + ? = 1000', answer: 400 },
-    { type: 'complements-1000', question: '200 + ? = 1000', answer: 800 },
-    { type: 'complements-1000', question: '500 + ? = 1000', answer: 500 },
-    
-    // Série 4 : Compléments à 1000 (cinquantaines)
-    { type: 'complements-1000', question: '550 + ? = 1000', answer: 450 },
-    { type: 'complements-1000', question: '350 + ? = 1000', answer: 650 },
-    { type: 'complements-1000', question: '750 + ? = 1000', answer: 250 },
-    { type: 'complements-1000', question: '650 + ? = 1000', answer: 350 },
-    { type: 'complements-1000', question: '150 + ? = 1000', answer: 850 },
+
     
     // Série 5 : Compléments par centaines jusqu'à 1000
     { type: 'complements-centaines', question: '400 + ? = 1000', answer: 600 },
@@ -534,11 +467,17 @@ export default function AdditionsJusqu1000CE1() {
 
   // Fonction pour animer les additions par centaines
   const animateAdditionsCentaines = async (example: any, exampleIndex: number) => {
+    console.log('🎬 Animation centaines démarrée', example);
+    // Réinitialiser le signal d'arrêt
+    stopSignalRef.current = false;
     setSelectedTechnique('additions-centaines');
     setSelectedExampleIndex(exampleIndex);
     setIsAnimationRunning(true);
     setAnimationStep(0);
     setShowingSteps(true);
+
+    // S'assurer que l'animation sera visible (avec délai pour le DOM)
+    setTimeout(() => ensureAnimationVisible(), 500);
 
     try {
       await playAudio(`Regardons l'exemple : ${example.calculation}`);
@@ -573,11 +512,17 @@ export default function AdditionsJusqu1000CE1() {
 
   // Fonction pour animer les additions par cinquantaines
   const animateAdditionsCinquantaines = async (example: any, exampleIndex: number) => {
+    console.log('🎬 Animation cinquantaines démarrée', example);
+    // Réinitialiser le signal d'arrêt
+    stopSignalRef.current = false;
     setSelectedTechnique('additions-cinquantaines');
     setSelectedExampleIndex(exampleIndex);
     setIsAnimationRunning(true);
     setAnimationStep(0);
     setShowingSteps(true);
+
+    // S'assurer que l'animation sera visible (avec délai pour le DOM)
+    setTimeout(() => ensureAnimationVisible(), 500);
 
     try {
       await playAudio(`Voyons maintenant : ${example.calculation}`);
@@ -600,7 +545,7 @@ export default function AdditionsJusqu1000CE1() {
       }
 
       await wait(1500);
-      await playAudio(`Parfait ! En comptant par 50, ${example.calculation} = ${example.result} !`);
+      await playAudio(`Excellent ! En comptant par 50, ${example.calculation} = ${example.result} !`);
 
     } catch (error) {
       console.error('Erreur animation cinquantaines:', error);
@@ -610,57 +555,21 @@ export default function AdditionsJusqu1000CE1() {
     }
   };
 
-  // Fonction pour animer les compléments à 1000
-  const animateComplements1000 = async (example: any, exampleIndex: number) => {
-    setSelectedTechnique('complements-1000');
-    setSelectedExampleIndex(exampleIndex);
-    setIsAnimationRunning(true);
-    setAnimationStep(0);
-    setShowingSteps(true);
 
-    try {
-      await playAudio(`Trouvons le complément : ${example.calculation}`);
-      if (stopSignalRef.current) return;
-
-      await wait(1000);
-      await playAudio(example.steps[0]); // "Je pars de X"
-      setAnimationStep(0);
-
-      await wait(1500);
-      await playAudio(example.steps[1]); // "Je compte jusqu'à 1000"
-
-      // Animation du comptage jusqu'à 1000
-      for (let i = 1; i < example.visualSteps.length; i++) {
-        await wait(800);
-        setAnimationStep(i);
-        const step = example.visualSteps[i];
-        if (step.value === 1000) {
-          await playAudio(`Et j'arrive à 1000 !`);
-        } else {
-          await playAudio(`${step.value}`);
-        }
-        if (stopSignalRef.current) return;
-      }
-
-      await wait(1500);
-      const complement = example.complement || (1000 - example.start);
-      await playAudio(`Le complément est ${complement} !`);
-
-    } catch (error) {
-      console.error('Erreur animation compléments:', error);
-    } finally {
-      setIsAnimationRunning(false);
-      setShowingSteps(false);
-    }
-  };
 
   // Fonction pour animer les compléments par centaines
   const animateComplementsCentaines = async (example: any, exampleIndex: number) => {
+    console.log('🎬 Animation compléments démarrée', example);
+    // Réinitialiser le signal d'arrêt
+    stopSignalRef.current = false;
     setSelectedTechnique('complements-centaines');
     setSelectedExampleIndex(exampleIndex);
     setIsAnimationRunning(true);
     setAnimationStep(0);
     setShowingSteps(true);
+
+    // S'assurer que l'animation sera visible (avec délai pour le DOM)
+    setTimeout(() => ensureAnimationVisible(), 500);
 
     try {
       await playAudio(`Cherchons le complément par centaines : ${example.calculation}`);
@@ -722,51 +631,38 @@ export default function AdditionsJusqu1000CE1() {
       await wait(1000);
       scrollToElement('examples-section', 'start');
       setHighlightedElement('examples-section');
-      await playAudio("Clique sur les cartes d'exemples ci-dessous pour voir les animations explicatives !");
+      await playAudio("Chaque technique a ses propres cartes d'exemples colorées ! Tu peux cliquer dessus pour découvrir comment ça marche !");
       if (stopSignalRef.current) return;
       
       await wait(1800);
       scrollToElement('technique-additions-centaines', 'start');
       setHighlightedElement('technique-additions-centaines');
-      await playAudio("Clique sur les cartes bleues pour voir l'animation !");
+      await playAudio("Première technique : ajouter des centaines ! C'est comme ajouter des paquets de 100. Découvre-la en cliquant sur les cartes bleues !");
       if (stopSignalRef.current) return;
       
       await wait(1500);
       scrollToElement('technique-complements-centaines', 'center');
       setHighlightedElement('technique-complements-centaines');
-      await playAudio("Clique sur les cartes vertes pour voir l'animation !");
+      await playAudio("Deuxième technique : les compléments à la centaine ! Très utile pour calculer plus vite. Teste avec les cartes vertes !");
       if (stopSignalRef.current) return;
       
       await wait(1200);
       scrollToElement('technique-additions-cinquantaines', 'center');
       setHighlightedElement('technique-additions-cinquantaines');
-      await playAudio("Clique sur les cartes orange pour voir l'animation !");
+      await playAudio("Troisième technique : ajouter par groupes de 50 ! Très efficace pour les grands nombres. Explore avec les cartes orange !");
       if (stopSignalRef.current) return;
       
       await wait(1200);
       await playAudio("C'est parti pour devenir un champion du calcul mental !");
       if (stopSignalRef.current) return;
       
-      // 3. Présentation des autres exemples
-      await wait(2500);
+      // 3. Transition directe vers les exercices
+      await wait(1500);
       setHighlightedElement(null);
       setCurrentExample(null);
-      await playAudio("Parfait ! Maintenant tu comprends les additions jusqu'à 1000 !");
-      if (stopSignalRef.current) return;
-      
-      await wait(1200);
-      await playAudio("Il y a d'autres exemples à découvrir !");
-      if (stopSignalRef.current) return;
-      
-      await wait(1500);
-      setHighlightedElement('examples-section');
-      await playAudio("Regarde ! Tu peux essayer avec d'autres nombres !");
-      if (stopSignalRef.current) return;
-      
-      await wait(2000);
       window.scrollTo({ top: 0, behavior: 'smooth' });
       setHighlightedElement('exercises-tab');
-      await playAudio("Quand tu es prêt, tu peux faire les exercices pour t'entraîner !");
+      await playAudio("Tu pourras ensuite passer aux exercices pour t'entraîner !");
       if (stopSignalRef.current) return;
       
       await wait(3000);
@@ -793,6 +689,29 @@ export default function AdditionsJusqu1000CE1() {
     }, 100);
   };
 
+  // Fonction pour s'assurer que l'animation est visible
+  const ensureAnimationVisible = () => {
+    setTimeout(() => {
+      const animationElement = document.getElementById('animation-section');
+      if (animationElement) {
+        const rect = animationElement.getBoundingClientRect();
+        const viewportHeight = window.innerHeight;
+        
+        // Vérifier si l'animation est complètement visible
+        const isCompletelyVisible = rect.top >= 0 && rect.bottom <= viewportHeight;
+        
+        // Si l'animation n'est pas complètement visible, la centrer
+        if (!isCompletelyVisible) {
+          animationElement.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'center',
+            inline: 'nearest' 
+          });
+        }
+      }
+    }, 300); // Délai pour laisser le DOM se mettre à jour
+  };
+
   // Fonction pour l'introduction des exercices
   const explainExercises = async () => {
     stopAllVocalsAndAnimations();
@@ -802,7 +721,7 @@ export default function AdditionsJusqu1000CE1() {
     setExercisesIntroStarted(true);
 
     try {
-      await playAudio("Parfait ! Maintenant, c'est l'heure de s'entraîner avec les exercices !");
+      await playAudio("Super ! Maintenant, c'est l'heure de s'entraîner avec les exercices !");
       if (stopSignalRef.current) return;
       
       await wait(1500);
@@ -901,6 +820,7 @@ export default function AdditionsJusqu1000CE1() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-yellow-50 to-red-50 p-2 sm:p-4">
+
       {/* Bouton flottant stop - visible quand une animation ou vocal est en cours */}
       {(isPlayingVocal || isAnimationRunning) && (
         <div className="fixed top-4 right-4 z-[60]">
@@ -941,21 +861,12 @@ export default function AdditionsJusqu1000CE1() {
                 🧮 Calcul mental jusqu'à 1000 - CE1
               </h1>
               <p className="text-xs sm:text-lg text-gray-600">
-                Compléments à 1000 et calculs par tranches de 50 - Programme français
+                Calculs par tranches de 50 et 100 - Programme français
               </p>
             </div>
           </div>
 
-          {/* Bouton d'arrêt global */}
-          <div className="flex justify-end">
-            <button
-              onClick={handleStopAllVocalsAndAnimations}
-              className="bg-red-100 hover:bg-red-200 text-red-700 px-2 sm:px-4 py-1 sm:py-2 rounded-lg text-xs sm:text-sm font-bold transition-colors flex items-center gap-1 sm:gap-2"
-            >
-              <Pause className="w-3 h-3 sm:w-4 sm:h-4" />
-              Arrêter
-            </button>
-          </div>
+
         </div>
 
         {/* Navigation entre cours et exercices */}
@@ -1055,22 +966,7 @@ export default function AdditionsJusqu1000CE1() {
                 </h2>
               </div>
               
-              <div className="bg-orange-50 rounded-lg p-3 sm:p-6 mb-3 sm:mb-6">
-                <p className="text-sm sm:text-lg text-center text-orange-800 font-semibold mb-3 sm:mb-6">
-                  Le calcul mental jusqu'à 1000 avec les centaines et cinquantaines !
-                </p>
-                
-                <div className="bg-white rounded-lg p-3 sm:p-6">
-                  <div className="text-center mb-3 sm:mb-6">
-                    <div className="text-lg sm:text-2xl font-bold text-orange-600 mb-1 sm:mb-4">
-                      Exemples : 100 + 900 = 1000 | 150 + 100 = 250 | 400 + ? = 1000
-                    </div>
-                    <div className="text-sm sm:text-base text-gray-600">
-                      Techniques : centaines, cinquantaines, compléments
-                    </div>
-                  </div>
-                </div>
-              </div>
+
             </div>
 
             {/* Section des exemples */}
@@ -1080,33 +976,32 @@ export default function AdditionsJusqu1000CE1() {
                 highlightedElement === 'examples-section' ? 'ring-4 ring-orange-400 bg-orange-50 scale-105' : ''
               }`}
             >
-              <h2 className="text-lg sm:text-2xl font-bold text-center text-gray-900 mb-4 sm:mb-6">
-                🧮 Techniques de calcul mental CE1
-              </h2>
+
               
-              <div className="space-y-6">
+
+              <div className="space-y-6 lg:space-y-10">
                 {mentalCalculationTechniques.map((technique, techIndex) => (
                   <div 
                     key={technique.id} 
                     id={`technique-${technique.id}`}
-                    className={`bg-gradient-to-br from-blue-50 to-green-50 rounded-xl p-4 sm:p-6 border-2 border-blue-200 transition-all duration-1000 ${
+                    className={`bg-gradient-to-br from-blue-50 to-green-50 rounded-xl p-4 sm:p-6 lg:p-8 border-2 border-blue-200 transition-all duration-1000 ${
                       highlightedElement === `technique-${technique.id}` ? 'ring-4 ring-yellow-400 animate-pulse bg-opacity-80' : ''
                     }`}
                   >
-                    <div className="text-center mb-4">
-                      <div className="text-2xl sm:text-4xl mb-2">{technique.icon}</div>
-                      <h3 className="text-lg sm:text-xl font-bold text-blue-700 mb-2">
+                    <div className="text-center mb-5">
+                      <div className="text-3xl sm:text-4xl mb-3">{technique.icon}</div>
+                      <h3 className="text-lg sm:text-xl lg:text-2xl font-bold text-blue-700 mb-2">
                         {technique.title}
                       </h3>
-                      <p className="text-sm sm:text-base text-gray-600 mb-2">
+                      <p className="text-sm sm:text-base lg:text-lg text-gray-600 mb-2">
                         {technique.description}
                       </p>
-                      <p className="text-xs sm:text-sm text-blue-600 font-semibold italic">
+                      <p className="text-xs sm:text-sm lg:text-base text-blue-600 font-semibold italic">
                         💡 Méthode : {technique.method}
                       </p>
                     </div>
                     
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6 mb-6">
                       {technique.examples.slice(0, 4).map((example, index) => (
                         <button
                           key={index}
@@ -1115,24 +1010,44 @@ export default function AdditionsJusqu1000CE1() {
                               animateAdditionsCentaines(example, index);
                             } else if (technique.id === 'additions-cinquantaines') {
                               animateAdditionsCinquantaines(example, index);
-                            } else if (technique.id === 'complements-1000') {
-                              animateComplements1000(example, index);
                             } else if (technique.id === 'complements-centaines') {
                               animateComplementsCentaines(example, index);
                             }
                           }}
                           disabled={isAnimationRunning}
-                          className="bg-white rounded-lg p-3 sm:p-4 border border-gray-200 hover:border-blue-400 hover:shadow-md transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                          className={`rounded-lg p-3 sm:p-4 lg:p-5 border-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105 ${
+                            technique.id === 'additions-centaines' 
+                              ? 'bg-gradient-to-br from-blue-100 to-blue-200 border-blue-300 hover:border-blue-500 hover:shadow-lg hover:from-blue-200 hover:to-blue-300' 
+                              : technique.id === 'complements-centaines'
+                                ? 'bg-gradient-to-br from-green-100 to-green-200 border-green-300 hover:border-green-500 hover:shadow-lg hover:from-green-200 hover:to-green-300'
+                                : technique.id === 'additions-cinquantaines'
+                                  ? 'bg-gradient-to-br from-orange-100 to-orange-200 border-orange-300 hover:border-orange-500 hover:shadow-lg hover:from-orange-200 hover:to-orange-300'
+                                  : 'bg-gradient-to-br from-purple-100 to-purple-200 border-purple-300 hover:border-purple-500 hover:shadow-lg hover:from-purple-200 hover:to-purple-300'
+                          } ${
+                            highlightedElement === `technique-${technique.id}` 
+                              ? 'ring-4 ring-yellow-400 shadow-xl animate-pulse bg-opacity-80' 
+                              : ''
+                          }`}
                         >
                     <div className="text-center">
-                            <div className="text-sm sm:text-base font-bold text-gray-800 mb-2">
+                            <div className="text-sm sm:text-base lg:text-lg font-bold text-gray-800 mb-2">
                               {example.calculation}
                       </div>
-                      <div className="text-lg sm:text-xl font-bold text-green-600">
+                      <div className="text-lg sm:text-xl lg:text-2xl font-bold text-green-600 mb-2">
                         = {example.result}
                       </div>
-                            <div className="text-xs sm:text-sm text-blue-600 mt-2">
-                              🎬 Voir l'animation
+                      
+                      {/* Indicateur de clic */}
+                      <div className={`mt-2 px-2 py-1 rounded-full text-xs lg:text-sm font-semibold ${
+                        technique.id === 'additions-centaines' 
+                          ? 'bg-blue-300 text-blue-900' 
+                          : technique.id === 'complements-centaines'
+                            ? 'bg-green-300 text-green-900'
+                            : technique.id === 'additions-cinquantaines'
+                              ? 'bg-orange-300 text-orange-900'
+                              : 'bg-purple-300 text-purple-900'
+                      }`}>
+                        ▶️ Cliquer pour l'animation !
                       </div>
                       </div>
                         </button>
@@ -1144,7 +1059,10 @@ export default function AdditionsJusqu1000CE1() {
 
               {/* Section d'animation */}
               {showingSteps && selectedTechnique && selectedExampleIndex !== null && (
-                <div className="mt-6 bg-gradient-to-br from-yellow-50 to-orange-50 rounded-xl p-4 sm:p-6 border-2 border-orange-300">
+                <div 
+                  id="animation-section"
+                  className="mt-6 bg-gradient-to-br from-yellow-50 to-orange-50 rounded-xl p-4 sm:p-6 border-2 border-orange-300"
+                >
                   <h3 className="text-lg sm:text-xl font-bold text-center text-orange-700 mb-4">
                     🎬 Animation en cours...
                   </h3>
@@ -1180,8 +1098,8 @@ export default function AdditionsJusqu1000CE1() {
                                   {step.value}
                                 </div>
                                 {index < example.visualSteps.length - 1 && (
-                                  <div className="mx-1 sm:mx-2 text-gray-800 font-bold">
-                                    {selectedTechnique === 'complements-1000' ? '→' : '+'}
+                                  <div className="mx-2 sm:mx-3 text-gray-600 text-xl font-bold">
+                                    →
                                   </div>
                                 )}
                               </div>
