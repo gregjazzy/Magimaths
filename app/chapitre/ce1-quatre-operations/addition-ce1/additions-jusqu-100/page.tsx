@@ -4381,39 +4381,42 @@ export default function AdditionsJusqua100CE1() {
 
             {/* Question principale */}
             <div className="bg-white rounded-xl p-4 sm:p-8 shadow-lg mt-4">
-              {/* Question et bouton lecture */}
-              <div className="text-center mb-6">
-                <h3 className="text-xl sm:text-2xl font-bold mb-4 text-gray-900">
-                  {exercises[currentExercise].question}
-                </h3>
-                
-                {/* Badge du type */}
-                <div className="flex justify-center mb-4">
-                  <span className={`px-3 py-1 rounded-full text-sm font-semibold ${
-                    exercises[currentExercise].type === 'decomposition' ? 'bg-blue-100 text-blue-800' :
-                    exercises[currentExercise].type === 'complement-10' ? 'bg-green-100 text-green-800' :
-                    exercises[currentExercise].type === 'bonds-10' ? 'bg-yellow-100 text-yellow-800' :
-                    exercises[currentExercise].type === 'compensation' ? 'bg-orange-100 text-orange-800' :
-                    exercises[currentExercise].type === 'etapes-successives' ? 'bg-purple-100 text-purple-800' :
-                    exercises[currentExercise].type === 'doubles' ? 'bg-pink-100 text-pink-800' :
-                    'bg-gray-100 text-gray-800'
-                  }`}>
-                    {exercises[currentExercise].type === 'decomposition' ? '🧮 Décomposition' :
-                     exercises[currentExercise].type === 'complement-10' ? '🎯 Complément à 10' :
-                     exercises[currentExercise].type === 'bonds-10' ? '⚡ Bonds de 10' :
-                     exercises[currentExercise].type === 'compensation' ? '🔄 Compensation' :
-                     exercises[currentExercise].type === 'etapes-successives' ? '🎲 Étapes successives' :
-                     exercises[currentExercise].type === 'doubles' ? '🧠 Doubles' :
-                     '✨ Technique CE1'}
-                  </span>
+              {/* Header avec bouton écouter en haut à droite */}
+              <div className="flex justify-between items-start mb-6">
+                <div className="flex-1">
+                  {/* Titre de la question */}
+                  <h3 className="text-xl sm:text-2xl font-bold mb-4 text-gray-900 text-center">
+                    {exercises[currentExercise].question}
+                  </h3>
+                  
+                  {/* Badge du type */}
+                  <div className="flex justify-center mb-4">
+                    <span className={`px-3 py-1 rounded-full text-sm font-semibold ${
+                      exercises[currentExercise].type === 'decomposition' ? 'bg-blue-100 text-blue-800' :
+                      exercises[currentExercise].type === 'complement-10' ? 'bg-green-100 text-green-800' :
+                      exercises[currentExercise].type === 'bonds-10' ? 'bg-yellow-100 text-yellow-800' :
+                      exercises[currentExercise].type === 'compensation' ? 'bg-orange-100 text-orange-800' :
+                      exercises[currentExercise].type === 'etapes-successives' ? 'bg-purple-100 text-purple-800' :
+                      exercises[currentExercise].type === 'doubles' ? 'bg-pink-100 text-pink-800' :
+                      'bg-gray-100 text-gray-800'
+                    }`}>
+                      {exercises[currentExercise].type === 'decomposition' ? '🧮 Décomposition' :
+                       exercises[currentExercise].type === 'complement-10' ? '🎯 Complément à 10' :
+                       exercises[currentExercise].type === 'bonds-10' ? '⚡ Bonds de 10' :
+                       exercises[currentExercise].type === 'compensation' ? '🔄 Compensation' :
+                       exercises[currentExercise].type === 'etapes-successives' ? '🎲 Étapes successives' :
+                       exercises[currentExercise].type === 'doubles' ? '🧠 Doubles' :
+                       '✨ Technique CE1'}
+                    </span>
+                  </div>
                 </div>
 
-                {/* Bouton écouter l'énoncé */}
+                {/* Bouton écouter l'énoncé - en haut à droite */}
                 <button
                   id="listen-question-button"
                   onClick={startExerciseExplanation}
                   disabled={isPlayingEnonce}
-                  className={`px-4 py-2 sm:px-6 sm:py-3 rounded-lg font-bold text-sm sm:text-base transition-all ${
+                  className={`flex-shrink-0 ml-4 px-3 py-2 sm:px-4 sm:py-2 rounded-lg font-bold text-xs sm:text-sm transition-all ${
                     isPlayingEnonce 
                       ? 'bg-gray-400 text-white cursor-not-allowed' 
                       : highlightedElement === 'listen-question-button'
@@ -4421,7 +4424,10 @@ export default function AdditionsJusqua100CE1() {
                         : 'bg-blue-500 text-white hover:bg-blue-600 hover:scale-105'
                   }`}
                 >
-                  {isPlayingEnonce ? '🎤 Écoute...' : '🎧 Écouter l\'énoncé'}
+                  {isPlayingEnonce ? '🎤' : '🎧'}
+                  <span className="hidden sm:inline ml-1">
+                    {isPlayingEnonce ? 'Écoute...' : 'Écouter'}
+                  </span>
                 </button>
               </div>
 
