@@ -13,6 +13,10 @@ export default function AdditionsJusqu1000CE1() {
   const [isClient, setIsClient] = useState(false);
   const [animatingStep, setAnimatingStep] = useState<string | null>(null);
   const [currentExample, setCurrentExample] = useState<number | null>(null);
+  const [selectedTechnique, setSelectedTechnique] = useState<string | null>(null);
+  const [selectedExampleIndex, setSelectedExampleIndex] = useState<number | null>(null);
+  const [animationStep, setAnimationStep] = useState(0);
+  const [showingSteps, setShowingSteps] = useState(false);
 
   // États pour les exercices
   const [showExercises, setShowExercises] = useState(false);
@@ -48,57 +52,385 @@ export default function AdditionsJusqu1000CE1() {
     "Super", "Génial", "Fantastique", "Merveilleux", "Extraordinaire"
   ];
 
-  // Données des exemples d'additions jusqu'à 1000
-  const additionExamples = [
-    { 
-      first: 345, 
-      second: 128, 
-      result: 473,
-      description: 'addition de nombres à 3 chiffres',
-      explanation: '345 plus 128 égale 473'
+  // Techniques de calcul mental CE1 jusqu'à 1000 - Programme français
+  const mentalCalculationTechniques = [
+    {
+      id: 'additions-centaines',
+      title: 'Additions par centaines',
+      icon: '💯',
+      description: 'Ajouter des centaines entières (100, 200, 300...)',
+      method: 'J\'additionne les centaines : 1 + 9 = 10 centaines = 1000',
+      examples: [
+        { 
+          calculation: '100 + 900', 
+          start: 100, 
+          addition: 900, 
+          result: 1000,
+          steps: [
+            'Je regarde les centaines : 1 centaine + 9 centaines',
+            '1 + 9 = 10',
+            '10 centaines = 1000',
+            'Résultat : 100 + 900 = 1000'
+          ],
+          visualSteps: [
+            { step: 0, value: '1 + 9', highlight: false },
+            { step: 1, value: '= 10', highlight: true },
+            { step: 2, value: '10 centaines', highlight: true },
+            { step: 3, value: '= 1000', highlight: true }
+          ]
+        },
+        { 
+          calculation: '200 + 800', 
+          start: 200, 
+          addition: 800, 
+          result: 1000,
+          steps: [
+            'Je regarde les centaines : 2 centaines + 8 centaines',
+            '2 + 8 = 10',
+            '10 centaines = 1000',
+            'Résultat : 200 + 800 = 1000'
+          ],
+          visualSteps: [
+            { step: 0, value: '2 + 8', highlight: false },
+            { step: 1, value: '= 10', highlight: true },
+            { step: 2, value: '10 centaines', highlight: true },
+            { step: 3, value: '= 1000', highlight: true }
+          ]
+        },
+        { 
+          calculation: '300 + 700', 
+          start: 300, 
+          addition: 700, 
+          result: 1000,
+          steps: [
+            'Je regarde les centaines : 3 centaines + 7 centaines',
+            '3 + 7 = 10',
+            '10 centaines = 1000',
+            'Résultat : 300 + 700 = 1000'
+          ],
+          visualSteps: [
+            { step: 0, value: '3 + 7', highlight: false },
+            { step: 1, value: '= 10', highlight: true },
+            { step: 2, value: '10 centaines', highlight: true },
+            { step: 3, value: '= 1000', highlight: true }
+          ]
+        },
+        { 
+          calculation: '400 + 600', 
+          start: 400, 
+          addition: 600, 
+          result: 1000,
+          steps: [
+            'Je regarde les centaines : 4 centaines + 6 centaines',
+            '4 + 6 = 10',
+            '10 centaines = 1000',
+            'Résultat : 400 + 600 = 1000'
+          ],
+          visualSteps: [
+            { step: 0, value: '4 + 6', highlight: false },
+            { step: 1, value: '= 10', highlight: true },
+            { step: 2, value: '10 centaines', highlight: true },
+            { step: 3, value: '= 1000', highlight: true }
+          ]
+        },
+        { 
+          calculation: '500 + 500', 
+          start: 500, 
+          addition: 500, 
+          result: 1000,
+          steps: [
+            'Je regarde les centaines : 5 centaines + 5 centaines',
+            '5 + 5 = 10',
+            '10 centaines = 1000',
+            'Résultat : 500 + 500 = 1000'
+          ],
+          visualSteps: [
+            { step: 0, value: '5 + 5', highlight: false },
+            { step: 1, value: '= 10', highlight: true },
+            { step: 2, value: '10 centaines', highlight: true },
+            { step: 3, value: '= 1000', highlight: true }
+          ]
+        }
+      ]
     },
-    { 
-      first: 567, 
-      second: 234, 
-      result: 801,
-      description: 'addition avec centaines',
-      explanation: '567 plus 234 égale 801'
+    {
+      id: 'additions-cinquantaines',
+      title: 'Additions par cinquantaines',
+      icon: '🔢',
+      description: 'Ajouter par bonds de 50 (50, 100, 150, 200...)',
+      method: 'Je compte par 50 : 50, 100, 150, 200, 250...',
+      examples: [
+        { 
+          calculation: '150 + 100', 
+          start: 150, 
+          addition: 100, 
+          result: 250,
+          steps: [
+            'Je pars de 150',
+            'J\'ajoute 100 (= 2 fois 50)',
+            '150 + 50 = 200',
+            '200 + 50 = 250',
+            'Résultat : 250'
+          ],
+          visualSteps: [
+            { step: 0, value: 150, highlight: false },
+            { step: 1, value: 200, highlight: true },
+            { step: 2, value: 250, highlight: true }
+          ]
+        },
+        { 
+          calculation: '250 + 150', 
+          start: 250, 
+          addition: 150, 
+          result: 400,
+          steps: [
+            'Je pars de 250',
+            'J\'ajoute 150 (= 3 fois 50)',
+            '250 + 50 = 300, + 50 = 350, + 50 = 400',
+            'Résultat : 400'
+          ],
+          visualSteps: [
+            { step: 0, value: 250, highlight: false },
+            { step: 1, value: 300, highlight: true },
+            { step: 2, value: 350, highlight: true },
+            { step: 3, value: 400, highlight: true }
+          ]
+        },
+        { 
+          calculation: '350 + 200', 
+          start: 350, 
+          addition: 200, 
+          result: 550,
+          steps: [
+            'Je pars de 350',
+            'J\'ajoute 200 (= 4 fois 50)',
+            '350 → 400 → 450 → 500 → 550',
+            'Résultat : 550'
+          ],
+          visualSteps: [
+            { step: 0, value: 350, highlight: false },
+            { step: 1, value: 400, highlight: true },
+            { step: 2, value: 450, highlight: true },
+            { step: 3, value: 500, highlight: true },
+            { step: 4, value: 550, highlight: true }
+          ]
+        },
+        { 
+          calculation: '450 + 250', 
+          start: 450, 
+          addition: 250, 
+          result: 700,
+          steps: [
+            'Je pars de 450',
+            'J\'ajoute 250 (= 5 fois 50)',
+            '450 → 500 → 550 → 600 → 650 → 700',
+            'Résultat : 700'
+          ],
+          visualSteps: [
+            { step: 0, value: 450, highlight: false },
+            { step: 1, value: 500, highlight: true },
+            { step: 2, value: 550, highlight: true },
+            { step: 3, value: 600, highlight: true },
+            { step: 4, value: 650, highlight: true },
+            { step: 5, value: 700, highlight: true }
+          ]
+        }
+      ]
     },
-    { 
-      first: 423, 
-      second: 156, 
-      result: 579,
-      description: 'addition sans retenue',
-      explanation: '423 plus 156 égale 579'
+    {
+      id: 'complements-1000',
+      title: 'Compléments à 1000',
+      icon: '🎯',
+      description: 'Compléter pour arriver exactement à 1000',
+      method: 'Je cherche ce qui manque pour faire 1000',
+      examples: [
+        { 
+          calculation: '300 + ? = 1000', 
+          start: 300, 
+          complement: 700, 
+          result: 1000,
+          steps: [
+            'Je pars de 300',
+            'Je compte par centaines jusqu\'à 1000',
+            '300 → 400 → 500 → 600 → 700 → 800 → 900 → 1000',
+            'J\'ai compté 7 centaines = 700',
+            'Réponse : 700'
+          ],
+          visualSteps: [
+            { step: 0, value: 300, highlight: false },
+            { step: 1, value: 400, highlight: true },
+            { step: 2, value: 500, highlight: true },
+            { step: 3, value: 600, highlight: true },
+            { step: 4, value: 700, highlight: true },
+            { step: 5, value: 800, highlight: true },
+            { step: 6, value: 900, highlight: true },
+            { step: 7, value: 1000, highlight: true }
+          ]
+        },
+        { 
+          calculation: '550 + ? = 1000', 
+          start: 550, 
+          complement: 450, 
+          result: 1000,
+          steps: [
+            'Je pars de 550',
+            'Je compte par 50 jusqu\'à 1000',
+            '550 → 600 → 650 → 700 → 750 → 800 → 850 → 900 → 950 → 1000',
+            'J\'ai compté 9 fois 50 = 450',
+            'Réponse : 450'
+          ],
+          visualSteps: [
+            { step: 0, value: 550, highlight: false },
+            { step: 1, value: 600, highlight: true },
+            { step: 2, value: 650, highlight: true },
+            { step: 3, value: 700, highlight: true },
+            { step: 4, value: 750, highlight: true },
+            { step: 5, value: 800, highlight: true },
+            { step: 6, value: 850, highlight: true },
+            { step: 7, value: 900, highlight: true },
+            { step: 8, value: 950, highlight: true },
+            { step: 9, value: 1000, highlight: true }
+          ]
+        }
+      ]
     },
-    { 
-      first: 378, 
-      second: 145, 
-      result: 523,
-      description: 'addition avec calcul par colonnes',
-      explanation: '378 plus 145 égale 523'
-    },
-    { 
-      first: 654, 
-      second: 289, 
-      result: 943,
-      description: 'addition proche de 1000',
-      explanation: '654 plus 289 égale 943'
+    {
+      id: 'complements-centaines',
+      title: 'Compléments par centaines',
+      icon: '🏆',
+      description: 'Compléter par bonds de 100 jusqu\'à 1000',
+      method: 'Je compte par centaines jusqu\'à 1000 : +100, +100, +100...',
+      examples: [
+        { 
+          calculation: '400 + ? = 1000', 
+          start: 400, 
+          complement: 600, 
+          result: 1000,
+          steps: [
+            'Je pars de 400',
+            'Je compte par centaines jusqu\'à 1000',
+            '400 + 100 = 500, + 100 = 600, + 100 = 700, + 100 = 800, + 100 = 900, + 100 = 1000',
+            'J\'ai ajouté 6 centaines = 600',
+            'Réponse : 600'
+          ],
+          visualSteps: [
+            { step: 0, value: 400, highlight: false },
+            { step: 1, value: 500, highlight: true },
+            { step: 2, value: 600, highlight: true },
+            { step: 3, value: 700, highlight: true },
+            { step: 4, value: 800, highlight: true },
+            { step: 5, value: 900, highlight: true },
+            { step: 6, value: 1000, highlight: true }
+          ]
+        },
+        { 
+          calculation: '200 + ? = 1000', 
+          start: 200, 
+          complement: 800, 
+          result: 1000,
+          steps: [
+            'Je pars de 200',
+            'Je compte par centaines jusqu\'à 1000',
+            '200 → 300 → 400 → 500 → 600 → 700 → 800 → 900 → 1000',
+            'J\'ai ajouté 8 centaines = 800',
+            'Réponse : 800'
+          ],
+          visualSteps: [
+            { step: 0, value: 200, highlight: false },
+            { step: 1, value: 300, highlight: true },
+            { step: 2, value: 400, highlight: true },
+            { step: 3, value: 500, highlight: true },
+            { step: 4, value: 600, highlight: true },
+            { step: 5, value: 700, highlight: true },
+            { step: 6, value: 800, highlight: true },
+            { step: 7, value: 900, highlight: true },
+            { step: 8, value: 1000, highlight: true }
+          ]
+        },
+        { 
+          calculation: '700 + ? = 1000', 
+          start: 700, 
+          complement: 300, 
+          result: 1000,
+          steps: [
+            'Je pars de 700',
+            'Je compte par centaines jusqu\'à 1000',
+            '700 + 100 = 800, + 100 = 900, + 100 = 1000',
+            'J\'ai ajouté 3 centaines = 300',
+            'Réponse : 300'
+          ],
+          visualSteps: [
+            { step: 0, value: 700, highlight: false },
+            { step: 1, value: 800, highlight: true },
+            { step: 2, value: 900, highlight: true },
+            { step: 3, value: 1000, highlight: true }
+          ]
+        },
+        { 
+          calculation: '100 + ? = 1000', 
+          start: 100, 
+          complement: 900, 
+          result: 1000,
+          steps: [
+            'Je pars de 100',
+            'Je compte par centaines jusqu\'à 1000',
+            '100 → 200 → 300 → 400 → 500 → 600 → 700 → 800 → 900 → 1000',
+            'J\'ai ajouté 9 centaines = 900',
+            'Réponse : 900'
+          ],
+          visualSteps: [
+            { step: 0, value: 100, highlight: false },
+            { step: 1, value: 200, highlight: true },
+            { step: 2, value: 300, highlight: true },
+            { step: 3, value: 400, highlight: true },
+            { step: 4, value: 500, highlight: true },
+            { step: 5, value: 600, highlight: true },
+            { step: 6, value: 700, highlight: true },
+            { step: 7, value: 800, highlight: true },
+            { step: 8, value: 900, highlight: true },
+            { step: 9, value: 1000, highlight: true }
+          ]
+        }
+      ]
     }
   ];
 
-  // Exercices sur les additions jusqu'à 1000
+  // Exercices CE1 - Calcul mental jusqu'à 1000 (Programme français)
   const exercises = [
-    { first: 234, second: 145, question: '234 + 145 = ?' },
-    { first: 456, second: 123, question: '456 + 123 = ?' },
-    { first: 345, second: 234, question: '345 + 234 = ?' },
-    { first: 567, second: 156, question: '567 + 156 = ?' },
-    { first: 678, second: 234, question: '678 + 234 = ?' },
-    { first: 123, second: 456, question: '123 + 456 = ?' },
-    { first: 789, second: 123, question: '789 + 123 = ?' },
-    { first: 234, second: 567, question: '234 + 567 = ?' },
-    { first: 345, second: 456, question: '345 + 456 = ?' },
-    { first: 456, second: 345, question: '456 + 345 = ?' }
+    // Série 1 : Additions par centaines qui font 1000
+    { type: 'additions-centaines', question: '100 + 900 = ?', answer: 1000 },
+    { type: 'additions-centaines', question: '200 + 800 = ?', answer: 1000 },
+    { type: 'additions-centaines', question: '300 + 700 = ?', answer: 1000 },
+    { type: 'additions-centaines', question: '400 + 600 = ?', answer: 1000 },
+    { type: 'additions-centaines', question: '500 + 500 = ?', answer: 1000 },
+    
+    // Série 2 : Additions par cinquantaines (50, 100, 150...)
+    { type: 'additions-cinquantaines', question: '150 + 100 = ?', answer: 250 },
+    { type: 'additions-cinquantaines', question: '250 + 150 = ?', answer: 400 },
+    { type: 'additions-cinquantaines', question: '350 + 200 = ?', answer: 550 },
+    { type: 'additions-cinquantaines', question: '200 + 250 = ?', answer: 450 },
+    { type: 'additions-cinquantaines', question: '450 + 250 = ?', answer: 700 },
+    
+    // Série 3 : Compléments à 1000 (centaines)
+    { type: 'complements-1000', question: '300 + ? = 1000', answer: 700 },
+    { type: 'complements-1000', question: '400 + ? = 1000', answer: 600 },
+    { type: 'complements-1000', question: '600 + ? = 1000', answer: 400 },
+    { type: 'complements-1000', question: '200 + ? = 1000', answer: 800 },
+    { type: 'complements-1000', question: '500 + ? = 1000', answer: 500 },
+    
+    // Série 4 : Compléments à 1000 (cinquantaines)
+    { type: 'complements-1000', question: '550 + ? = 1000', answer: 450 },
+    { type: 'complements-1000', question: '350 + ? = 1000', answer: 650 },
+    { type: 'complements-1000', question: '750 + ? = 1000', answer: 250 },
+    { type: 'complements-1000', question: '650 + ? = 1000', answer: 350 },
+    { type: 'complements-1000', question: '150 + ? = 1000', answer: 850 },
+    
+    // Série 5 : Compléments par centaines jusqu'à 1000
+    { type: 'complements-centaines', question: '400 + ? = 1000', answer: 600 },
+    { type: 'complements-centaines', question: '200 + ? = 1000', answer: 800 },
+    { type: 'complements-centaines', question: '700 + ? = 1000', answer: 300 },
+    { type: 'complements-centaines', question: '100 + ? = 1000', answer: 900 },
+    { type: 'complements-centaines', question: '800 + ? = 1000', answer: 200 }
   ];
 
   // Fonction pour arrêter tous les vocaux et animations
@@ -195,6 +527,175 @@ export default function AdditionsJusqu1000CE1() {
     return new Promise(resolve => setTimeout(resolve, ms));
   };
 
+  // Fonction pour animer les additions par centaines
+  const animateAdditionsCentaines = async (example: any, exampleIndex: number) => {
+    setSelectedTechnique('additions-centaines');
+    setSelectedExampleIndex(exampleIndex);
+    setIsAnimationRunning(true);
+    setAnimationStep(0);
+    setShowingSteps(true);
+
+    try {
+      await playAudio(`Regardons l'exemple : ${example.calculation}`);
+      if (stopSignalRef.current) return;
+
+      await wait(1000);
+      await playAudio(example.steps[0]); // "Je regarde les centaines"
+      setAnimationStep(0);
+
+      await wait(1500);
+      await playAudio(example.steps[1]); // "X + Y = 10"
+      setAnimationStep(1);
+
+      await wait(1500);
+      await playAudio(example.steps[2]); // "10 centaines = 1000"
+      setAnimationStep(2);
+
+      await wait(1500);
+      await playAudio(example.steps[3]); // "Résultat final"
+      setAnimationStep(3);
+
+      await wait(1000);
+      await playAudio("C'est simple ! On additionne juste les centaines !");
+
+    } catch (error) {
+      console.error('Erreur animation centaines:', error);
+    } finally {
+      setIsAnimationRunning(false);
+      setShowingSteps(false);
+    }
+  };
+
+  // Fonction pour animer les additions par cinquantaines
+  const animateAdditionsCinquantaines = async (example: any, exampleIndex: number) => {
+    setSelectedTechnique('additions-cinquantaines');
+    setSelectedExampleIndex(exampleIndex);
+    setIsAnimationRunning(true);
+    setAnimationStep(0);
+    setShowingSteps(true);
+
+    try {
+      await playAudio(`Voyons maintenant : ${example.calculation}`);
+      if (stopSignalRef.current) return;
+
+      await wait(1000);
+      await playAudio(example.steps[0]); // "Je pars de X"
+      setAnimationStep(0);
+
+      await wait(1500);
+      await playAudio(example.steps[1]); // "J'ajoute Y par bonds de 50"
+
+      // Animation des bonds de 50
+      for (let i = 1; i < example.visualSteps.length; i++) {
+        await wait(1000);
+        setAnimationStep(i);
+        const step = example.visualSteps[i];
+        await playAudio(`${step.value}`);
+        if (stopSignalRef.current) return;
+      }
+
+      await wait(1500);
+      await playAudio(`Parfait ! En comptant par 50, ${example.calculation} = ${example.result} !`);
+
+    } catch (error) {
+      console.error('Erreur animation cinquantaines:', error);
+    } finally {
+      setIsAnimationRunning(false);
+      setShowingSteps(false);
+    }
+  };
+
+  // Fonction pour animer les compléments à 1000
+  const animateComplements1000 = async (example: any, exampleIndex: number) => {
+    setSelectedTechnique('complements-1000');
+    setSelectedExampleIndex(exampleIndex);
+    setIsAnimationRunning(true);
+    setAnimationStep(0);
+    setShowingSteps(true);
+
+    try {
+      await playAudio(`Trouvons le complément : ${example.calculation}`);
+      if (stopSignalRef.current) return;
+
+      await wait(1000);
+      await playAudio(example.steps[0]); // "Je pars de X"
+      setAnimationStep(0);
+
+      await wait(1500);
+      await playAudio(example.steps[1]); // "Je compte jusqu'à 1000"
+
+      // Animation du comptage jusqu'à 1000
+      for (let i = 1; i < example.visualSteps.length; i++) {
+        await wait(800);
+        setAnimationStep(i);
+        const step = example.visualSteps[i];
+        if (step.value === 1000) {
+          await playAudio(`Et j'arrive à 1000 !`);
+        } else {
+          await playAudio(`${step.value}`);
+        }
+        if (stopSignalRef.current) return;
+      }
+
+      await wait(1500);
+      const complement = example.complement || (1000 - example.start);
+      await playAudio(`Le complément est ${complement} !`);
+
+    } catch (error) {
+      console.error('Erreur animation compléments:', error);
+    } finally {
+      setIsAnimationRunning(false);
+      setShowingSteps(false);
+    }
+  };
+
+  // Fonction pour animer les compléments par centaines
+  const animateComplementsCentaines = async (example: any, exampleIndex: number) => {
+    setSelectedTechnique('complements-centaines');
+    setSelectedExampleIndex(exampleIndex);
+    setIsAnimationRunning(true);
+    setAnimationStep(0);
+    setShowingSteps(true);
+
+    try {
+      await playAudio(`Cherchons le complément par centaines : ${example.calculation}`);
+      if (stopSignalRef.current) return;
+
+      await wait(1000);
+      await playAudio(example.steps[0]); // "Je pars de X"
+      setAnimationStep(0);
+
+      await wait(1500);
+      await playAudio(example.steps[1]); // "Je compte par centaines jusqu'à 1000"
+
+      await wait(1000);
+      await playAudio("Je vais compter combien de centaines je dois ajouter...");
+
+      // Animation du comptage par centaines jusqu'à 1000
+      for (let i = 1; i < example.visualSteps.length; i++) {
+        await wait(900);
+        setAnimationStep(i);
+        const step = example.visualSteps[i];
+        if (step.value === 1000) {
+          await playAudio(`Et j'arrive à 1000 !`);
+        } else {
+          await playAudio(`${step.value}`);
+        }
+        if (stopSignalRef.current) return;
+      }
+
+      await wait(1500);
+      const complement = example.complement || (1000 - example.start);
+      await playAudio(`J'ai compté ${(example.visualSteps.length - 1)} centaines, donc ${complement} !`);
+
+    } catch (error) {
+      console.error('Erreur animation compléments centaines:', error);
+    } finally {
+      setIsAnimationRunning(false);
+      setShowingSteps(false);
+    }
+  };
+
   // Fonction pour expliquer le chapitre principal
   const explainChapter = async () => {
     stopAllVocalsAndAnimations();
@@ -205,37 +706,33 @@ export default function AdditionsJusqu1000CE1() {
 
     try {
       // 1. Objet du chapitre
-      await playAudio("Bonjour ! Aujourd'hui, nous allons apprendre les additions jusqu'à 1000 !");
+      await playAudio("Bonjour ! Aujourd'hui, nous allons apprendre le calcul mental jusqu'à 1000 !");
       if (stopSignalRef.current) return;
       
       await wait(1200);
-      await playAudio("Les additions avec des nombres à 3 chiffres, c'est formidable !");
+      await playAudio("Nous allons découvrir 4 techniques formidables pour le CE1 !");
       if (stopSignalRef.current) return;
       
       // 2. Explication du concept avec animations
       await wait(1800);
       setHighlightedElement('concept-section');
-      await playAudio("Regardons ensemble comment additionner 345 et 128 !");
+      await playAudio("Les additions par centaines : 100 plus 900 égale 1000 !");
       if (stopSignalRef.current) return;
       
       await wait(1500);
-      setCurrentExample(0);
-      setAnimatingStep('introduction');
-      const example = additionExamples[0];
-      
-      await playAudio(`D'abord, j'ai ${example.first} et je veux ajouter ${example.second}.`);
+      await playAudio("Les additions par cinquantaines : 150 plus 100 égale 250 !");
       if (stopSignalRef.current) return;
       
       await wait(1200);
-      await playAudio("Pour additionner des nombres à 3 chiffres, on peut utiliser la méthode par colonnes !");
+      await playAudio("Et les compléments à 1000 : 400 plus combien égale 1000 ?");
       if (stopSignalRef.current) return;
       
       await wait(1500);
-      await playAudio("On additionne d'abord les unités, puis les dizaines, puis les centaines !");
+      await playAudio("4 techniques pour compter par centaines et cinquantaines !");
       if (stopSignalRef.current) return;
       
       await wait(1200);
-      await playAudio(`${example.first} plus ${example.second} égale ${example.result} !`);
+      await playAudio("C'est parti pour devenir un champion du calcul mental !");
       if (stopSignalRef.current) return;
       
       // 3. Présentation des autres exemples
@@ -273,7 +770,8 @@ export default function AdditionsJusqu1000CE1() {
   const handleValidateAnswer = () => {
     if (!userAnswer.trim()) return;
     
-    const correctAnswer = exercises[currentExercise].first + exercises[currentExercise].second;
+    const exercise = exercises[currentExercise];
+    const correctAnswer = exercise.answer;
     const userNum = parseInt(userAnswer);
     const correct = userNum === correctAnswer;
     
@@ -351,10 +849,10 @@ export default function AdditionsJusqu1000CE1() {
             </Link>
             <div>
               <h1 className="text-lg sm:text-3xl font-bold text-gray-900">
-                🔢 Additions jusqu'à 1000 - CE1
+                🧮 Calcul mental jusqu'à 1000 - CE1
               </h1>
               <p className="text-xs sm:text-lg text-gray-600">
-                Maîtrise les additions avec les nombres à 3 chiffres !
+                Compléments à 1000 et calculs par tranches de 50 - Programme français
               </p>
             </div>
           </div>
@@ -470,16 +968,16 @@ export default function AdditionsJusqu1000CE1() {
               
               <div className="bg-orange-50 rounded-lg p-3 sm:p-6 mb-3 sm:mb-6">
                 <p className="text-sm sm:text-lg text-center text-orange-800 font-semibold mb-3 sm:mb-6">
-                  Les additions avec des nombres à 3 chiffres, c'est comme les plus petites !
+                  Le calcul mental jusqu'à 1000 avec les centaines et cinquantaines !
                 </p>
                 
                 <div className="bg-white rounded-lg p-3 sm:p-6">
                   <div className="text-center mb-3 sm:mb-6">
                     <div className="text-lg sm:text-2xl font-bold text-orange-600 mb-1 sm:mb-4">
-                      {currentExample !== null ? 
-                        `Exemple : ${additionExamples[currentExample].first} + ${additionExamples[currentExample].second} = ${additionExamples[currentExample].result}` 
-                        : 'Exemple : 345 + 128 = 473'
-                      }
+                      Exemples : 100 + 900 = 1000 | 150 + 100 = 250 | 400 + ? = 1000
+                    </div>
+                    <div className="text-sm sm:text-base text-gray-600">
+                      Techniques : centaines, cinquantaines, compléments
                     </div>
                   </div>
                 </div>
@@ -494,26 +992,121 @@ export default function AdditionsJusqu1000CE1() {
               }`}
             >
               <h2 className="text-lg sm:text-2xl font-bold text-center text-gray-900 mb-4 sm:mb-6">
-                📚 Exemples d'additions
+                🧮 Techniques de calcul mental CE1
               </h2>
               
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
-                {additionExamples.map((example, index) => (
-                  <div key={index} className="bg-gradient-to-br from-orange-100 to-yellow-100 rounded-lg p-3 sm:p-4 border-2 border-orange-200">
+              <div className="space-y-6">
+                {mentalCalculationTechniques.map((technique, techIndex) => (
+                  <div key={technique.id} className="bg-gradient-to-br from-blue-50 to-green-50 rounded-xl p-4 sm:p-6 border-2 border-blue-200">
+                    <div className="text-center mb-4">
+                      <div className="text-2xl sm:text-4xl mb-2">{technique.icon}</div>
+                      <h3 className="text-lg sm:text-xl font-bold text-blue-700 mb-2">
+                        {technique.title}
+                      </h3>
+                      <p className="text-sm sm:text-base text-gray-600 mb-2">
+                        {technique.description}
+                      </p>
+                      <p className="text-xs sm:text-sm text-blue-600 font-semibold italic">
+                        💡 Méthode : {technique.method}
+                      </p>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-4">
+                      {technique.examples.slice(0, 4).map((example, index) => (
+                        <button
+                          key={index}
+                          onClick={() => {
+                            if (technique.id === 'additions-centaines') {
+                              animateAdditionsCentaines(example, index);
+                            } else if (technique.id === 'additions-cinquantaines') {
+                              animateAdditionsCinquantaines(example, index);
+                            } else if (technique.id === 'complements-1000') {
+                              animateComplements1000(example, index);
+                            } else if (technique.id === 'complements-centaines') {
+                              animateComplementsCentaines(example, index);
+                            }
+                          }}
+                          disabled={isAnimationRunning}
+                          className="bg-white rounded-lg p-3 sm:p-4 border border-gray-200 hover:border-blue-400 hover:shadow-md transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
                     <div className="text-center">
-                      <div className="text-sm sm:text-lg font-bold text-orange-700 mb-2">
-                        {example.first} + {example.second}
+                            <div className="text-sm sm:text-base font-bold text-gray-800 mb-2">
+                              {example.calculation}
                       </div>
                       <div className="text-lg sm:text-xl font-bold text-green-600">
                         = {example.result}
                       </div>
-                      <div className="text-xs sm:text-sm text-gray-600 mt-2">
-                        {example.description}
+                            <div className="text-xs sm:text-sm text-blue-600 mt-2">
+                              🎬 Voir l'animation
                       </div>
+                      </div>
+                        </button>
+                      ))}
                     </div>
                   </div>
                 ))}
               </div>
+
+              {/* Section d'animation */}
+              {showingSteps && selectedTechnique && selectedExampleIndex !== null && (
+                <div className="mt-6 bg-gradient-to-br from-yellow-50 to-orange-50 rounded-xl p-4 sm:p-6 border-2 border-orange-300">
+                  <h3 className="text-lg sm:text-xl font-bold text-center text-orange-700 mb-4">
+                    🎬 Animation en cours...
+                  </h3>
+                  
+                  {(() => {
+                    const technique = mentalCalculationTechniques.find(t => t.id === selectedTechnique);
+                    const example = technique?.examples[selectedExampleIndex];
+                    
+                    if (!technique || !example) return null;
+
+                    return (
+                      <div className="space-y-4">
+                        <div className="text-center">
+                          <div className="text-xl sm:text-2xl font-bold text-gray-800 mb-2">
+                            {example.calculation}
+                          </div>
+                        </div>
+
+                        {/* Affichage des étapes visuelles */}
+                        <div className="flex justify-center">
+                          <div className="flex flex-wrap gap-2 sm:gap-3 items-center justify-center max-w-4xl">
+                            {example.visualSteps?.map((step, index) => (
+                              <div key={index} className="flex items-center">
+                                <div 
+                                  className={`px-3 py-2 sm:px-4 sm:py-3 rounded-lg font-bold text-sm sm:text-lg transition-all duration-500 ${
+                                    index <= animationStep 
+                                      ? step.highlight 
+                                        ? 'bg-green-500 text-white scale-110 shadow-lg animate-pulse' 
+                                        : 'bg-blue-500 text-white'
+                                      : 'bg-gray-200 text-gray-500'
+                                  }`}
+                                >
+                                  {step.value}
+                                </div>
+                                {index < example.visualSteps.length - 1 && (
+                                  <div className="mx-1 sm:mx-2 text-gray-400 font-bold">
+                                    {selectedTechnique === 'complements-1000' ? '→' : '+'}
+                                  </div>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Explication textuelle */}
+                        <div className="text-center">
+                          <div className="bg-white rounded-lg p-3 sm:p-4 border-2 border-orange-200">
+                            <p className="text-sm sm:text-base text-gray-700">
+                              {animationStep < example.steps.length ? example.steps[animationStep] : example.steps[example.steps.length - 1]}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })()}
+                </div>
+              )}
             </div>
           </div>
         ) : (
@@ -521,7 +1114,7 @@ export default function AdditionsJusqu1000CE1() {
           <div className="bg-white rounded-xl p-4 sm:p-8 shadow-lg">
             <div className="flex items-center justify-between mb-4 sm:mb-6">
               <h2 className="text-lg sm:text-2xl font-bold text-gray-900">
-                ✏️ Exercices - Additions jusqu'à 1000
+                ✏️ Exercices - Calcul mental CE1 jusqu'à 1000
               </h2>
               <div className="text-sm sm:text-lg font-semibold text-gray-600">
                 {currentExercise + 1} / {exercises.length}
@@ -558,7 +1151,7 @@ export default function AdditionsJusqu1000CE1() {
                   {isCorrect ? '✅ Correct ! Bravo !' : '❌ Oops, essaie encore !'}
                   {!isCorrect && (
                     <div className="text-sm sm:text-lg text-gray-600 mt-2">
-                      La bonne réponse est : {exercises[currentExercise].first + exercises[currentExercise].second}
+                      La bonne réponse est : {exercises[currentExercise].answer}
                     </div>
                   )}
                 </div>
