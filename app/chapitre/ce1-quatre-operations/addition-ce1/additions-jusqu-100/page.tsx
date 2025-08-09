@@ -4506,6 +4506,102 @@ export default function AdditionsJusqua100CE1() {
                 </div>
               )}
 
+              {/* Animation de décomposition réduite pour les exercices de décomposition */}
+              {exercises[currentExercise].type === 'decomposition' && isCorrect !== null && (
+                <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-4 mb-4 border-2 border-blue-200">
+                  <h4 className="text-lg font-bold text-center text-blue-800 mb-4">
+                    🔢 Méthode de décomposition
+                  </h4>
+                  
+                  {/* Décomposition simplifiée */}
+                  <div className="space-y-3 max-w-lg mx-auto">
+                    {/* Premier nombre */}
+                    <div className="bg-white rounded-lg p-3 shadow-sm">
+                      <div className="flex justify-center items-center space-x-2 text-lg font-bold">
+                        <div className="text-gray-800">{exercises[currentExercise].firstNumber}</div>
+                        <div className="text-gray-600">=</div>
+                        <div className="text-blue-600 px-2 py-1 bg-blue-100 rounded">
+                          {Math.floor(exercises[currentExercise].firstNumber / 10) * 10}
+                        </div>
+                        <div className="text-gray-600">+</div>
+                        <div className="text-green-600 px-2 py-1 bg-green-100 rounded">
+                          {exercises[currentExercise].firstNumber % 10}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Second nombre */}
+                    <div className="bg-white rounded-lg p-3 shadow-sm">
+                      <div className="flex justify-center items-center space-x-2 text-lg font-bold">
+                        <div className="text-gray-800">{exercises[currentExercise].secondNumber}</div>
+                        <div className="text-gray-600">=</div>
+                        <div className="text-blue-600 px-2 py-1 bg-blue-100 rounded">
+                          {Math.floor(exercises[currentExercise].secondNumber / 10) * 10}
+                        </div>
+                        <div className="text-gray-600">+</div>
+                        <div className="text-green-600 px-2 py-1 bg-green-100 rounded">
+                          {exercises[currentExercise].secondNumber % 10}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Addition des dizaines */}
+                    <div className="bg-white rounded-lg p-3 shadow-sm border-l-4 border-blue-400">
+                      <div className="flex justify-center items-center space-x-2 text-lg font-bold">
+                        <div className="text-blue-700">
+                          {Math.floor(exercises[currentExercise].firstNumber / 10) * 10}
+                        </div>
+                        <div className="text-gray-600">+</div>
+                        <div className="text-blue-700">
+                          {Math.floor(exercises[currentExercise].secondNumber / 10) * 10}
+                        </div>
+                        <div className="text-gray-600">=</div>
+                        <div className="text-blue-800 bg-blue-200 px-2 py-1 rounded">
+                          {(Math.floor(exercises[currentExercise].firstNumber / 10) + Math.floor(exercises[currentExercise].secondNumber / 10)) * 10}
+                        </div>
+                      </div>
+                      <div className="text-center text-sm text-blue-600 mt-1">Dizaines</div>
+                    </div>
+
+                    {/* Addition des unités */}
+                    <div className="bg-white rounded-lg p-3 shadow-sm border-l-4 border-green-400">
+                      <div className="flex justify-center items-center space-x-2 text-lg font-bold">
+                        <div className="text-green-700">
+                          {exercises[currentExercise].firstNumber % 10}
+                        </div>
+                        <div className="text-gray-600">+</div>
+                        <div className="text-green-700">
+                          {exercises[currentExercise].secondNumber % 10}
+                        </div>
+                        <div className="text-gray-600">=</div>
+                        <div className="text-green-800 bg-green-200 px-2 py-1 rounded">
+                          {(exercises[currentExercise].firstNumber % 10) + (exercises[currentExercise].secondNumber % 10)}
+                        </div>
+                      </div>
+                      <div className="text-center text-sm text-green-600 mt-1">Unités</div>
+                    </div>
+
+                    {/* Résultat final */}
+                    <div className="bg-white rounded-lg p-3 shadow-sm border-l-4 border-purple-400">
+                      <div className="flex justify-center items-center space-x-2 text-xl font-bold">
+                        <div className="text-blue-700">
+                          {(Math.floor(exercises[currentExercise].firstNumber / 10) + Math.floor(exercises[currentExercise].secondNumber / 10)) * 10}
+                        </div>
+                        <div className="text-gray-600">+</div>
+                        <div className="text-green-700">
+                          {(exercises[currentExercise].firstNumber % 10) + (exercises[currentExercise].secondNumber % 10)}
+                        </div>
+                        <div className="text-gray-600">=</div>
+                        <div className="text-purple-800 bg-purple-200 px-3 py-1 rounded animate-pulse">
+                          {exercises[currentExercise].correctAnswer}
+                        </div>
+                      </div>
+                      <div className="text-center text-sm text-purple-600 mt-1">🎉 Résultat final</div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {/* Correction animée avec addition posée */}
               {showAnimatedCorrection && correctionNumbers && (
                 <div id="animated-correction" className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-3 sm:p-6 mb-4 sm:mb-8 border-2 border-blue-200">
