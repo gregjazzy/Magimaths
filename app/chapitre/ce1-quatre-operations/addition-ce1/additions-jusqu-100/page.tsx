@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, Calculator, Target, Star, CheckCircle, XCircle, Trophy, Brain, Zap, BookOpen, Eye, RotateCcw, Play } from 'lucide-react';
+import { ArrowLeft, Calculator, Target, Star, CheckCircle, XCircle, Trophy, Brain, Zap, BookOpen, Eye, Play } from 'lucide-react';
 
 export default function AdditionsJusqua100CE1() {
   // États pour l'audio et animations
@@ -4335,17 +4335,8 @@ export default function AdditionsJusqua100CE1() {
                   Exercice {currentExercise + 1}
                 </h2>
                 
-                <div className="flex items-center space-x-4">
-                  <div className="text-sm font-bold text-blue-600">
-                    Score : {score}/{exercises.length}
-                  </div>
-                  <button
-                    onClick={resetExercises}
-                    className="bg-gray-500 text-white px-3 py-1 rounded-lg font-bold text-sm hover:bg-gray-600 transition-colors"
-                  >
-                    <RotateCcw className="inline w-3 h-3 mr-1" />
-                    Reset
-                  </button>
+                <div className="text-sm font-bold text-blue-600">
+                  Score : {score}/{exercises.length}
                 </div>
               </div>
               
@@ -4829,19 +4820,13 @@ export default function AdditionsJusqua100CE1() {
                         Bravo ! Tu maîtrises les additions jusqu'à 100 !
                       </p>
                     </div>
-                    <div className="flex space-x-3">
-                      <button
-                        onClick={resetExercises}
-                        className="flex-1 bg-blue-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-blue-600 transition-colors"
-                      >
-                        Recommencer
-                      </button>
+                    <div className="flex justify-center">
                       <button
                         onClick={() => {
                           stopAllVocalsAndAnimations();
                           setShowCompletionModal(false);
                         }}
-                        className="flex-1 bg-gray-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-gray-600 transition-colors"
+                        className="bg-gray-500 text-white px-8 py-3 rounded-lg font-bold hover:bg-gray-600 transition-colors"
                       >
                         Fermer
                       </button>
