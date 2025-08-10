@@ -282,6 +282,7 @@ export default function AdditionPoseeCE1() {
     await wait(300);
     stopSignalRef.current = false;
     setIsPlayingVocal(true);
+    setHasStarted(true);
     setSamSizeExpanded(true);
     
     try {
@@ -679,7 +680,7 @@ export default function AdditionPoseeCE1() {
   };
 
   // Fonction pour rendre une addition posée avec animations améliorées
-  const renderPostedAddition = (example: any, isAnimated = false) => {
+  const renderPostedAddition = (example: any, isAnimated = false, showHelperBox = false) => {
     // Déterminer le nombre de chiffres maximum
     const maxDigits = Math.max(example.num1.toString().length, example.num2.toString().length, example.result.toString().length);
     const num1Str = example.num1.toString().padStart(maxDigits, ' ');
@@ -868,8 +869,8 @@ export default function AdditionPoseeCE1() {
             )}
           </div>
 
-          {/* Panneau explicatif des retenues - Position fixe à droite */}
-          {example.hasCarry && showingCarry && (
+          {/* Panneau explicatif des retenues - Contrôlé par le paramètre showHelperBox */}
+          {example.hasCarry && showingCarry && showHelperBox && (
             <div className="fixed top-20 right-4 z-10 bg-yellow-100 border-2 border-yellow-300 rounded-lg p-4 shadow-lg animate-fade-in max-w-xs">
               <div className="flex items-center justify-between mb-3">
                 <div className="text-sm text-yellow-700 font-medium">Calculs avec retenues :</div>
@@ -1248,50 +1249,98 @@ export default function AdditionPoseeCE1() {
         </div>
       </div>
 
-        {/* Image du personnage Minecraft avec bouton DÉMARRER */}
-        <div className="flex items-center justify-center gap-2 sm:gap-4 p-2 sm:p-4 mb-3 sm:mb-6">
-          {/* Image du personnage */}
-          <div className={`relative transition-all duration-500 border-2 border-orange-300 rounded-full bg-gradient-to-br from-orange-100 to-red-100 ${
-            exercisesIsPlayingVocal
-                ? 'w-14 sm:w-24 h-14 sm:h-24' // When speaking - plus petit sur mobile
-                : 'w-12 sm:w-20 h-12 sm:h-20' // Normal size
-          }`}>
-            {!exercisesImageError ? (
-              <img 
-                src="/image/Minecraftstyle.png" 
-                alt="Personnage Minecraft" 
-                className="w-full h-full object-cover rounded-full"
-                onError={() => setExercisesImageError(true)}
-              />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center text-lg sm:text-2xl rounded-full bg-gradient-to-br from-orange-200 to-red-200">
-                🧱
-              </div>
-            )}
-            
-            {exercisesIsPlayingVocal && (
-              <div className="absolute -top-1 -right-1 w-3 h-3 sm:w-4 sm:h-4 bg-red-500 rounded-full animate-pulse">
-                <svg className="w-full h-full text-white" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12 2C13.1 2 14 2.9 14 4V12C14 13.1 13.1 14 12 14C10.9 14 10 13.1 10 12V4C10 2.9 10.9 2 12 2M19 11C19 15.4 15.4 19 11 19V21H13V23H11V21H9V23H7V21H9V19C4.6 19 1 15.4 1 11H3C3 14.3 5.7 17 9 17V15C7.3 15 6 13.7 6 12V11H4V9H6V8C6 6.3 7.3 5 9 5V7C8.4 7 8 7.4 8 8V12C8 12.6 8.4 13 9 13V11H11V13C11.6 13 12 12.6 12 12V8C12 7.4 11.6 7 11 7V5C12.7 5 14 6.3 14 8V9H16V11H14V12C14 13.7 12.7 15 11 15V17C14.3 17 17 14.3 17 11H19Z"/>
-                </svg>
-              </div>
-            )}
-          </div>
+        {/* Section DÉMARRER - Affiche le bouton selon l'onglet actif */}
+        {!showExercises ? (
+          /* Bouton DÉMARRER pour le COURS */
+          <div className="flex items-center justify-center gap-2 sm:gap-4 p-2 sm:p-4 mb-3 sm:mb-6">
+            {/* Image du personnage */}
+            <div className={`relative transition-all duration-500 border-2 border-green-300 rounded-full bg-gradient-to-br from-green-100 to-teal-100 ${
+              isPlayingVocal
+                  ? 'w-14 sm:w-24 h-14 sm:h-24' // When speaking - plus petit sur mobile
+                  : 'w-12 sm:w-20 h-12 sm:h-20' // Normal size
+            }`}>
+              {!imageError ? (
+                <img 
+                  src="/image/Minecraftstyle.png" 
+                  alt="Personnage Minecraft" 
+                  className="w-full h-full object-cover rounded-full"
+                  onError={() => setImageError(true)}
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-lg sm:text-2xl rounded-full bg-gradient-to-br from-green-200 to-teal-200">
+                  🧱
+                </div>
+              )}
+              
+              {isPlayingVocal && (
+                <div className="absolute -top-1 -right-1 w-3 h-3 sm:w-4 sm:h-4 bg-red-500 rounded-full animate-pulse">
+                  <svg className="w-full h-full text-white" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2C13.1 2 14 2.9 14 4V12C14 13.1 13.1 14 12 14C10.9 14 10 13.1 10 12V4C10 2.9 10.9 2 12 2M19 11C19 15.4 15.4 19 11 19V21H13V23H11V21H9V23H7V21H9V19C4.6 19 1 15.4 1 11H3C3 14.3 5.7 17 9 17V15C7.3 15 6 13.7 6 12V11H4V9H6V8C6 6.3 7.3 5 9 5V7C8.4 7 8 7.4 8 8V12C8 12.6 8.4 13 9 13V11H11V13C11.6 13 12 12.6 12 12V8C12 7.4 11.6 7 11 7V5C12.7 5 14 6.3 14 8V9H16V11H14V12C14 13.7 12.7 15 11 15V17C14.3 17 17 14.3 17 11H19Z"/>
+                  </svg>
+                </div>
+              )}
+            </div>
 
-          {/* Bouton DÉMARRER avec le personnage */}
-          <button
-            onClick={explainExercisesWithSam}
-            disabled={exercisesIsPlayingVocal}
-            className={`px-2 sm:px-4 py-1 sm:py-2 rounded-lg font-bold text-xs sm:text-base shadow-lg transition-all ${
+            {/* Bouton DÉMARRER pour le COURS */}
+            <button
+              onClick={explainChapterWithSam}
+              disabled={isPlayingVocal}
+              className={`px-2 sm:px-4 py-1 sm:py-2 rounded-lg font-bold text-xs sm:text-base shadow-lg transition-all ${
+                isPlayingVocal
+                  ? 'bg-gray-400 text-gray-200 cursor-not-allowed'
+                  : 'bg-gradient-to-r from-green-500 to-teal-500 text-white hover:shadow-xl hover:scale-105'
+              } ${!hasStarted && !isPlayingVocal ? 'animate-pulse' : ''}`}
+            >
+              <Play className="w-3 h-3 sm:w-5 sm:h-5 inline-block mr-1 sm:mr-2" />
+              {isPlayingVocal ? 'Le personnage explique...' : 'DÉMARRER LE COURS'}
+            </button>
+          </div>
+        ) : (
+          /* Bouton DÉMARRER pour les EXERCICES */
+          <div className="flex items-center justify-center gap-2 sm:gap-4 p-2 sm:p-4 mb-3 sm:mb-6">
+            {/* Image du personnage */}
+            <div className={`relative transition-all duration-500 border-2 border-orange-300 rounded-full bg-gradient-to-br from-orange-100 to-red-100 ${
               exercisesIsPlayingVocal
-                ? 'bg-gray-400 text-gray-200 cursor-not-allowed'
-                : 'bg-gradient-to-r from-orange-500 to-red-500 text-white hover:shadow-xl hover:scale-105'
-            } ${!exercisesHasStarted && !exercisesIsPlayingVocal ? 'animate-pulse' : ''}`}
-          >
-            <Play className="w-3 h-3 sm:w-5 sm:h-5 inline-block mr-1 sm:mr-2" />
-            {exercisesIsPlayingVocal ? 'Le personnage explique...' : 'DÉMARRER'}
-          </button>
-        </div>
+                  ? 'w-14 sm:w-24 h-14 sm:h-24' // When speaking - plus petit sur mobile
+                  : 'w-12 sm:w-20 h-12 sm:h-20' // Normal size
+            }`}>
+              {!exercisesImageError ? (
+                <img 
+                  src="/image/Minecraftstyle.png" 
+                  alt="Personnage Minecraft" 
+                  className="w-full h-full object-cover rounded-full"
+                  onError={() => setExercisesImageError(true)}
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-lg sm:text-2xl rounded-full bg-gradient-to-br from-orange-200 to-red-200">
+                  🧱
+                </div>
+              )}
+              
+              {exercisesIsPlayingVocal && (
+                <div className="absolute -top-1 -right-1 w-3 h-3 sm:w-4 sm:h-4 bg-red-500 rounded-full animate-pulse">
+                  <svg className="w-full h-full text-white" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2C13.1 2 14 2.9 14 4V12C14 13.1 13.1 14 12 14C10.9 14 10 13.1 10 12V4C10 2.9 10.9 2 12 2M19 11C19 15.4 15.4 19 11 19V21H13V23H11V21H9V23H7V21H9V19C4.6 19 1 15.4 1 11H3C3 14.3 5.7 17 9 17V15C7.3 15 6 13.7 6 12V11H4V9H6V8C6 6.3 7.3 5 9 5V7C8.4 7 8 7.4 8 8V12C8 12.6 8.4 13 9 13V11H11V13C11.6 13 12 12.6 12 12V8C12 7.4 11.6 7 11 7V5C12.7 5 14 6.3 14 8V9H16V11H14V12C14 13.7 12.7 15 11 15V17C14.3 17 17 14.3 17 11H19Z"/>
+                  </svg>
+                </div>
+              )}
+            </div>
+
+            {/* Bouton DÉMARRER pour les EXERCICES */}
+            <button
+              onClick={explainExercisesWithSam}
+              disabled={exercisesIsPlayingVocal}
+              className={`px-2 sm:px-4 py-1 sm:py-2 rounded-lg font-bold text-xs sm:text-base shadow-lg transition-all ${
+                exercisesIsPlayingVocal
+                  ? 'bg-gray-400 text-gray-200 cursor-not-allowed'
+                  : 'bg-gradient-to-r from-orange-500 to-red-500 text-white hover:shadow-xl hover:scale-105'
+              } ${!exercisesHasStarted && !exercisesIsPlayingVocal ? 'animate-pulse' : ''}`}
+            >
+              <Play className="w-3 h-3 sm:w-5 sm:h-5 inline-block mr-1 sm:mr-2" />
+              {exercisesIsPlayingVocal ? 'Le personnage explique...' : 'DÉMARRER LES EXERCICES'}
+            </button>
+          </div>
+        )}
 
 
 
@@ -1373,7 +1422,7 @@ export default function AdditionPoseeCE1() {
                 {currentExample !== null ? (
                   <div className="text-center">
                     <div className="mb-6">
-                      {renderPostedAddition(additionExamples[currentExample], true)}
+                      {renderPostedAddition(additionExamples[currentExample], true, true)}
                         </div>
                     
                     {calculationStep && (
@@ -1391,7 +1440,7 @@ export default function AdditionPoseeCE1() {
               ) : (
                   <div className="text-center">
                     <div className="mb-6">
-                      {renderPostedAddition(additionExamples[0])}
+                      {renderPostedAddition(additionExamples[0], false, false)}
                   </div>
                     <button
                       onClick={() => explainExample(0)}
@@ -1443,7 +1492,7 @@ export default function AdditionPoseeCE1() {
                   >
                     <div className="text-center">
                       <div className="mb-4">
-                        {renderPostedAddition(example)}
+                        {renderPostedAddition(example, false, false)}
                     </div>
                       <div className="text-xs sm:text-sm text-gray-600 mb-3">
                         Addition {example.description}
@@ -1550,151 +1599,22 @@ export default function AdditionPoseeCE1() {
               {/* Visuel si disponible */}
               {exercises[currentExercise].visual && (
                 <div className="bg-gradient-to-br from-orange-50 to-red-50 border border-orange-200 rounded-lg p-6 mb-8 flex justify-center">
-                  {isAnimationRunning && isCorrect === false ? (
-                    // Animation interactive pendant les corrections - Version simplifiée sans panneau flottant
-                    (() => {
-                      const match = exercises[currentExercise].question.match(/Calcule : (\d+) \+ (\d+)/);
-                      if (match) {
-                        const num1 = parseInt(match[1]);
-                        const num2 = parseInt(match[2]);
-                        const result = parseInt(exercises[currentExercise].correctAnswer);
-                        const example = { num1, num2, result, hasCarry: true };
-                        
-                        // Affichage simple de l'addition avec animation mais sans panneau flottant
-                        const maxDigits = Math.max(example.num1.toString().length, example.num2.toString().length, example.result.toString().length);
-                        const num1Str = example.num1.toString().padStart(maxDigits, ' ');
-                        const num2Str = example.num2.toString().padStart(maxDigits, ' ');
-                        const resultStr = example.result.toString().padStart(maxDigits, ' ');
-                        
-                        return (
-                          <div className="bg-gradient-to-br from-white to-blue-50 p-8 rounded-xl shadow-lg border-2 border-blue-400 bg-blue-50 scale-105 shadow-xl transition-all duration-500 w-full max-w-2xl mx-auto">
-                            <div className="flex justify-center">
-                              <div className="space-y-4 w-full">
-                                {/* Tableau des colonnes C, D et U */}
-                                <div className="flex justify-center mb-4">
-                                  <div className={`grid gap-4 sm:gap-6 font-bold text-sm sm:text-base ${maxDigits >= 3 ? 'grid-cols-3' : 'grid-cols-2'}`}>
-                                    {maxDigits >= 3 && (
-                                      <div className="text-center p-2 rounded-lg bg-gray-100 text-gray-600">C</div>
-                                    )}
-                                    <div className="text-center p-2 rounded-lg bg-gray-100 text-gray-600">D</div>
-                                    <div className="text-center p-2 rounded-lg bg-gray-100 text-gray-600">U</div>
-                                  </div>
-                                </div>
-
-                                {/* Retenues si nécessaire */}
-                                <div className="flex justify-center">
-                                  <div className={`grid gap-8 ${maxDigits >= 3 ? 'grid-cols-3' : 'grid-cols-2'}`}>
-                                    {maxDigits >= 3 && (
-                                      <div className="text-center text-red-500 text-lg">
-                                        <sup className="bg-red-100 px-2 py-1 rounded-full border-2 border-red-300">1</sup>
-                                      </div>
-                                    )}
-                                    <div className="text-center text-red-500 text-lg">
-                                      <sup className="bg-red-100 px-2 py-1 rounded-full border-2 border-red-300">1</sup>
-                                    </div>
-                                    <div className="text-center"></div>
-                                  </div>
-                                </div>
-                                
-                                {/* Addition avec animation */}
-                                <div className="flex justify-center">
-                                  <div className={`grid gap-2 sm:gap-6 font-mono text-base sm:text-2xl ${maxDigits >= 3 ? 'grid-cols-3' : 'grid-cols-2'}`}>
-                                    {/* Premier nombre */}
-                                    {maxDigits >= 3 && (
-                                      <div className="text-center p-3 rounded-lg text-blue-600 font-bold border-2 border-dashed border-purple-300">
-                                        {num1Str[num1Str.length - 3] !== ' ' ? num1Str[num1Str.length - 3] : ''}
-                                      </div>
-                                    )}
-                                    <div className="text-center p-3 rounded-lg text-blue-600 font-bold border-2 border-dashed border-orange-300">
-                                      {num1Str[num1Str.length - 2] !== ' ' ? num1Str[num1Str.length - 2] : ''}
-                                    </div>
-                                    <div className="text-center p-3 rounded-lg text-blue-600 font-bold border-2 border-dashed border-blue-300">
-                                      {num1Str[num1Str.length - 1]}
-                                    </div>
-                                  </div>
-                                </div>
-                                
-                                {/* Deuxième nombre */}
-                                <div className="flex justify-center">
-                                  <div className={`grid gap-2 sm:gap-6 font-mono text-base sm:text-2xl ${maxDigits >= 3 ? 'grid-cols-3' : 'grid-cols-2'}`}>
-                                    {maxDigits >= 3 && (
-                                      <div className="text-center p-3 rounded-lg text-green-600 font-bold border-2 border-dashed border-purple-300">
-                                        {num2Str[num2Str.length - 3] !== ' ' ? num2Str[num2Str.length - 3] : ''}
-                                      </div>
-                                    )}
-                                    <div className="text-center p-3 rounded-lg text-green-600 font-bold border-2 border-dashed border-orange-300">
-                                      {num2Str[num2Str.length - 2] !== ' ' ? num2Str[num2Str.length - 2] : ''}
-                                    </div>
-                                    <div className="text-center p-3 rounded-lg text-green-600 font-bold relative border-2 border-dashed border-blue-300">
-                                      <span className="absolute -left-8 sm:-left-10 top-1/2 transform -translate-y-1/2 text-gray-800 text-lg sm:text-xl">+</span>
-                                      {num2Str[num2Str.length - 1]}
-                                    </div>
-                                  </div>
-                                </div>
-                                
-                                {/* Ligne de séparation */}
-                                <div className="flex justify-center">
-                                  <div className="w-full max-w-md border-t-2 border-gray-400"></div>
-                                </div>
-                                
-                                {/* Résultat */}
-                                <div className="flex justify-center">
-                                  <div className={`grid gap-2 sm:gap-6 font-mono text-base sm:text-2xl ${maxDigits >= 3 ? 'grid-cols-3' : 'grid-cols-2'}`}>
-                                    {maxDigits >= 3 && (
-                                      <div className="text-center p-3 rounded-lg text-purple-600 font-bold bg-purple-100 animate-result-reveal border-2 border-purple-300">
-                                        {resultStr[resultStr.length - 3] !== ' ' ? resultStr[resultStr.length - 3] : ''}
-                                      </div>
-                                    )}
-                                    <div className="text-center p-3 rounded-lg text-purple-600 font-bold bg-purple-100 animate-result-reveal border-2 border-purple-300">
-                                      {resultStr[resultStr.length - 2] !== ' ' ? resultStr[resultStr.length - 2] : ''}
-                                    </div>
-                                    <div className="text-center p-3 rounded-lg text-purple-600 font-bold bg-purple-100 animate-result-reveal border-2 border-purple-300">
-                                      {resultStr[resultStr.length - 1]}
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        );
-                      }
-                      return null;
-                    })()
-                  ) : (
-                    // Visuel statique simple avec retenues au-dessus seulement
-                    (() => {
-                      const match = exercises[currentExercise].question.match(/Calcule : (\d+) \+ (\d+)/);
-                      if (match) {
-                        const num1 = parseInt(match[1]);
-                        const num2 = parseInt(match[2]);
-                        const maxDigits = Math.max(num1.toString().length, num2.toString().length);
-                        
-                        // Calculer les retenues
-                        const num1Units = num1 % 10;
-                        const num2Units = num2 % 10;
-                        const unitsSum = num1Units + num2Units;
-                        const carryToTens = Math.floor(unitsSum / 10);
-                        
-                        const num1Tens = Math.floor((num1 % 100) / 10);
-                        const num2Tens = Math.floor((num2 % 100) / 10);
-                        const tensSum = num1Tens + num2Tens + carryToTens;
-                        const carryToHundreds = Math.floor(tensSum / 10);
-                        
-                        const num1Str = num1.toString().padStart(maxDigits, ' ');
-                        const num2Str = num2.toString().padStart(maxDigits, ' ');
-                        
-                        return (
-                          <div className="font-mono text-lg sm:text-xl text-gray-800 leading-tight text-right">
-                            <div>{num1Str.replace(/(\d)/g, '$1 ')}</div>
-                            <div>+ {num2Str.replace(/(\d)/g, '$1 ')}</div>
-                            <div>{'─'.repeat(maxDigits * 2 + 1)}</div>
-                            <div>{'?'.padStart(maxDigits * 2 + 1, ' ')}</div>
-                          </div>
-                        );
-                      }
-                      return null;
-                    })()
-                  )}
+                  {(() => {
+                    const match = exercises[currentExercise].question.match(/Calcule : (\d+) \+ (\d+)/);
+                    if (match) {
+                      const num1 = parseInt(match[1]);
+                      const num2 = parseInt(match[2]);
+                      const result = parseInt(exercises[currentExercise].correctAnswer);
+                      const example = { num1, num2, result, hasCarry: true };
+                      
+                      // Utiliser notre fonction renderPostedAddition avec animation si mauvaise réponse
+                      const isExerciseAnimated = isAnimationRunning && isCorrect === false;
+                      const showHelperInExercise = false; // Pas de boîte jaune dans les exercices
+                      
+                      return renderPostedAddition(example, isExerciseAnimated, showHelperInExercise);
+                    }
+                    return null;
+                  })()}
                 </div>
               )}
 
@@ -1850,6 +1770,8 @@ export default function AdditionPoseeCE1() {
             </div>
           </div>
         )}
+
+
       </div>
     </div>
   );
