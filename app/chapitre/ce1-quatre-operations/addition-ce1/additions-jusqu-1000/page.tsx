@@ -895,7 +895,7 @@ export default function AdditionsJusqu1000CE1() {
     }
   };
 
-    // Initialisation côté client
+  // Initialisation côté client
   useEffect(() => {
     setIsClient(true);
     setIsMobile(window.innerWidth < 768);
@@ -903,7 +903,7 @@ export default function AdditionsJusqu1000CE1() {
     const handleResize = () => {
       setIsMobile(window.innerWidth < 768);
     };
-
+    
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
