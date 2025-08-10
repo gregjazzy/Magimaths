@@ -717,7 +717,7 @@ export default function AdditionPoseeCE1() {
             
             {/* Premier nombre */}
             <div className="flex justify-center">
-              <div className={`grid gap-4 sm:gap-6 font-mono text-xl sm:text-2xl ${maxDigits >= 3 ? 'grid-cols-3' : 'grid-cols-2'}`}>
+              <div className={`grid gap-2 sm:gap-6 font-mono text-base sm:text-2xl ${maxDigits >= 3 ? 'grid-cols-3' : 'grid-cols-2'}`}>
                 {maxDigits >= 3 && (
                   <div className={`text-center p-3 rounded-lg transition-all duration-500 ${
                     calculationStep === 'hundreds' ? 'bg-purple-100 text-purple-700 animate-column-highlight' : 
@@ -744,7 +744,7 @@ export default function AdditionPoseeCE1() {
             {/* Deuxième nombre avec signe + */}
             <div className="flex justify-center">
               <div className="relative">
-                <div className={`grid gap-4 sm:gap-6 font-mono text-xl sm:text-2xl ${maxDigits >= 3 ? 'grid-cols-3' : 'grid-cols-2'}`}>
+                <div className={`grid gap-2 sm:gap-6 font-mono text-base sm:text-2xl ${maxDigits >= 3 ? 'grid-cols-3' : 'grid-cols-2'}`}>
                   {maxDigits >= 3 && (
                     <div className={`text-center p-3 rounded-lg transition-all duration-500 ${
                       calculationStep === 'hundreds' ? 'bg-purple-100 text-purple-700 animate-column-highlight' : 
@@ -782,7 +782,7 @@ export default function AdditionPoseeCE1() {
             
             {/* Résultat avec animations progressives */}
             <div className="flex justify-center">
-              <div className={`grid gap-8 font-mono text-3xl font-bold ${maxDigits >= 3 ? 'grid-cols-3' : 'grid-cols-2'}`}>
+              <div className={`grid gap-4 sm:gap-8 font-mono text-lg sm:text-3xl font-bold ${maxDigits >= 3 ? 'grid-cols-3' : 'grid-cols-2'}`}>
                 {maxDigits >= 3 && (
                   <div className={`text-center p-3 rounded-lg transition-all duration-1000 ${
                     partialResults.hundreds || calculationStep === 'result' ? 'bg-purple-100 text-purple-700 animate-result-reveal' : 'text-gray-400'
@@ -837,7 +837,7 @@ export default function AdditionPoseeCE1() {
                 <div className="text-sm text-yellow-700 font-medium">Calcul des unités :</div>
                 <div className="text-yellow-600 text-xs">💡 Aide</div>
               </div>
-              <div className="font-mono text-xl text-yellow-800 text-center mb-3">
+              <div className="font-mono text-base sm:text-xl text-yellow-800 text-center mb-3">
                 {example.num1 % 10} + {example.num2 % 10} = {(example.num1 % 10) + (example.num2 % 10)}
               </div>
               <div className="space-y-2">
