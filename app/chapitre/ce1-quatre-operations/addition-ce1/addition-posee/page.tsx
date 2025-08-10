@@ -28,9 +28,14 @@ export default function AdditionPoseeCE1() {
   const [showCompletionModal, setShowCompletionModal] = useState(false);
   const [finalScore, setFinalScore] = useState(0);
   
-  // États pour le personnage Minecraft
+  // États pour le personnage Minecraft (cours)
   const [samSizeExpanded, setSamSizeExpanded] = useState(false);
   const [imageError, setImageError] = useState(false);
+  
+  // États pour le personnage Minecraft (exercices)
+  const [exercisesIsPlayingVocal, setExercisesIsPlayingVocal] = useState(false);
+  const [exercisesHasStarted, setExercisesHasStarted] = useState(false);
+  const [exercisesImageError, setExercisesImageError] = useState(false);
   
   // Refs pour gérer l'audio
   const stopSignalRef = useRef(false);
@@ -59,31 +64,14 @@ export default function AdditionPoseeCE1() {
   };
 
   const baseExercises = [
-    // 1. Questions théoriques de base
+    // 1. Introduction rapide
     {
       question: 'Pour poser une addition, je dois...', 
       correctAnswer: 'Aligner les chiffres en colonnes',
       choices: ['Écrire n\'importe comment', 'Aligner les chiffres en colonnes', 'Mélanger les nombres']
     },
-    { 
-      question: 'Par quelle colonne commence-t-on ?', 
-      correctAnswer: 'Les unités (à droite)',
-      choices: ['Les dizaines (à gauche)', 'Les unités (à droite)', 'N\'importe laquelle']
-    },
     
-    // 2. Additions simples à 2 chiffres
-    { 
-      question: 'Calcule : 14 + 25', 
-      correctAnswer: '39',
-      choices: ['35', '39', '42'],
-      visual: '   14\n+  25\n─────\n   ?'
-    },
-    { 
-      question: 'Calcule : 21 + 17', 
-      correctAnswer: '38',
-      choices: ['34', '38', '43'],
-      visual: '   21\n+  17\n─────\n   ?'
-    },
+    // 2. Démarrage avec calculs simples (seulement 2 exercices)
     { 
       question: 'Calcule : 23 + 14', 
       correctAnswer: '37',
@@ -91,43 +79,23 @@ export default function AdditionPoseeCE1() {
       visual: '   23\n+  14\n─────\n   ?'
     },
     { 
-      question: 'Calcule : 32 + 23', 
-      correctAnswer: '55',
-      choices: ['55', '51', '59'],
-      visual: '   32\n+  23\n─────\n   ?'
-    },
-    { 
       question: 'Calcule : 42 + 35', 
       correctAnswer: '77',
       choices: ['73', '81', '77'],
       visual: '   42\n+  35\n─────\n   ?'
     },
-    { 
-      question: 'Calcule : 51 + 26', 
-      correctAnswer: '77',
-      choices: ['83', '77', '71'],
-      visual: '   51\n+  26\n─────\n   ?'
-    },
     
-    // 3. Question théorique sur les 3 chiffres
+    // 3. Passage rapide aux 3 chiffres + 2 chiffres
     { 
       question: 'Pour les nombres à 3 chiffres, combien de colonnes ?', 
       correctAnswer: '3 colonnes',
       choices: ['2 colonnes', '4 colonnes', '3 colonnes']
     },
-    
-    // 4. Additions 3 chiffres + 2 chiffres (niveau intermédiaire)
     { 
       question: 'Calcule : 142 + 36', 
       correctAnswer: '178',
       choices: ['174', '178', '182'],
       visual: '  142\n+  36\n─────\n   ?'
-    },
-    { 
-      question: 'Calcule : 156 + 32', 
-      correctAnswer: '188',
-      choices: ['192', '184', '188'],
-      visual: '  156\n+  32\n─────\n   ?'
     },
     { 
       question: 'Calcule : 234 + 52', 
@@ -142,7 +110,7 @@ export default function AdditionPoseeCE1() {
       visual: '  325\n+  43\n─────\n   ?'
     },
     
-    // 5. Additions 3 chiffres + 3 chiffres (niveau avancé)
+    // 4. Montée vers les 3 chiffres + 3 chiffres (niveau avancé)
     { 
       question: 'Calcule : 123 + 145', 
       correctAnswer: '268',
@@ -167,8 +135,45 @@ export default function AdditionPoseeCE1() {
       choices: ['553', '546', '561'],
       visual: '  312\n+ 241\n─────\n   ?'
     },
+    { 
+      question: 'Calcule : 456 + 321', 
+      correctAnswer: '777',
+      choices: ['777', '768', '786'],
+      visual: '  456\n+ 321\n─────\n   ?'
+    },
+    { 
+      question: 'Calcule : 523 + 164', 
+      correctAnswer: '687',
+      choices: ['679', '687', '695'],
+      visual: '  523\n+ 164\n─────\n   ?'
+    },
     
-    // 6. Question de synthèse finale
+    // 5. Exercices de fin plus complexes
+    { 
+      question: 'Calcule : 64 + 25', 
+      correctAnswer: '89',
+      choices: ['87', '89', '91'],
+      visual: '   64\n+  25\n─────\n   ?'
+    },
+    { 
+      question: 'Calcule : 417 + 281', 
+      correctAnswer: '698',
+      choices: ['698', '689', '707'],
+      visual: '  417\n+ 281\n─────\n   ?'
+    },
+    { 
+      question: 'Par quelle colonne commence-t-on toujours ?', 
+      correctAnswer: 'Les unités (à droite)',
+      choices: ['Les dizaines (à gauche)', 'Les unités (à droite)', 'Les centaines (à gauche)']
+    },
+    
+    // 6. Défi final
+    { 
+      question: 'Calcule : 635 + 243', 
+      correctAnswer: '878',
+      choices: ['878', '867', '889'],
+      visual: '  635\n+ 243\n─────\n   ?'
+    },
     { 
       question: 'L\'addition posée sans retenue nous aide à...', 
       correctAnswer: 'Calculer plus facilement',
@@ -192,6 +197,7 @@ export default function AdditionPoseeCE1() {
     }
     
     setIsPlayingVocal(false);
+    setExercisesIsPlayingVocal(false);
     setIsAnimationRunning(false);
     setHighlightedElement(null);
     setAnimatingStep(null);
@@ -332,6 +338,89 @@ export default function AdditionPoseeCE1() {
   };
 
   // Fonction pour expliquer un exemple spécifique avec animations interactives
+  const explainExercisesWithSam = async () => {
+    if (exercisesIsPlayingVocal) return;
+    
+    setExercisesIsPlayingVocal(true);
+    setExercisesHasStarted(true);
+    stopSignalRef.current = false;
+    
+    const speak = (text: string, highlightElement?: string) => {
+      return new Promise<void>((resolve) => {
+        if (stopSignalRef.current) {
+          resolve();
+          return;
+        }
+        
+        if (highlightElement) {
+          setHighlightedElement(highlightElement);
+        }
+        
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.rate = 0.9;
+        utterance.pitch = 1.1;
+        utterance.volume = 1;
+        
+        utterance.onend = () => {
+          if (highlightElement) {
+            setTimeout(() => setHighlightedElement(''), 300);
+          }
+          resolve();
+        };
+        
+        utterance.onerror = () => resolve();
+        currentAudioRef.current = utterance;
+        speechSynthesis.speak(utterance);
+      });
+    };
+
+    const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+    
+    try {
+      await speak("Salut ! Je vais t'expliquer comment faire les exercices d'addition posée !");
+      if (stopSignalRef.current) return;
+
+      await speak("D'abord, clique sur l'onglet Exercices pour voir les questions !");
+      if (stopSignalRef.current) return;
+
+      // Basculer vers l'onglet exercices
+      setShowExercises(true);
+      await wait(1000); // Attendre que l'onglet se charge
+      if (stopSignalRef.current) return;
+      
+      await speak("Parfait ! Maintenant tu vois la première question !", 'exercises-header');
+      if (stopSignalRef.current) return;
+      
+      await speak("Tu peux écouter l'énoncé en cliquant sur ce bouton bleu !", 'listen-button');
+      if (stopSignalRef.current) return;
+      
+      await speak("Ensuite, écris ta réponse dans cette case !", 'answer-input');
+      if (stopSignalRef.current) return;
+      
+      await speak("Quand tu es sûr de ta réponse, clique sur Valider !", 'validate-button');
+      if (stopSignalRef.current) return;
+      
+      await speak("Si c'est correct, tu passes automatiquement à l'exercice suivant !");
+      if (stopSignalRef.current) return;
+      
+      await speak("Si c'est faux, je te montre l'animation pour t'expliquer la bonne méthode !");
+      if (stopSignalRef.current) return;
+      
+      await speak("Puis tu pourras cliquer sur Exercice suivant pour continuer !", 'next-button');
+      if (stopSignalRef.current) return;
+      
+      await speak("Ton score s'affiche ici en haut à droite ! Allez, c'est parti !", 'score-display');
+      
+    } catch (error) {
+      console.error('Erreur lors de l\'explication des exercices:', error);
+    } finally {
+      if (!stopSignalRef.current) {
+        setExercisesIsPlayingVocal(false);
+        setHighlightedElement('');
+      }
+    }
+  };
+
   const explainExample = async (index: number) => {
     if (isAnimationRunning) return;
     
@@ -344,6 +433,9 @@ export default function AdditionPoseeCE1() {
     
     const example = additionExamples[index];
     
+    // Scroll automatique vers l'animation
+    scrollToElement('example-section');
+    
     try {
       // Introduction avec focus sur le tableau U/D
       setCalculationStep('setup');
@@ -352,7 +444,12 @@ export default function AdditionPoseeCE1() {
       if (stopSignalRef.current) return;
       
       await wait(1000);
-      await playAudio("Vois-tu le tableau au-dessus ? D pour dizaines... U pour unités ! C'est très important de bien comprendre ça !", true);
+      const maxDigits = Math.max(example.num1.toString().length, example.num2.toString().length);
+      if (maxDigits >= 3) {
+        await playAudio("Vois-tu le tableau au-dessus ? C pour centaines, D pour dizaines, et U pour unités ! C'est très important !", true);
+      } else {
+        await playAudio("Vois-tu le tableau au-dessus ? D pour dizaines... U pour unités ! C'est très important de bien comprendre ça !", true);
+      }
       if (stopSignalRef.current) return;
       
       await wait(1500);
@@ -388,38 +485,51 @@ export default function AdditionPoseeCE1() {
       }
       
       // Focus sur les dizaines avec animation orange
-      await wait(2000);
-      setCalculationStep('tens');
-      const num1Tens = Math.floor(example.num1 / 10);
-      const num2Tens = Math.floor(example.num2 / 10);
-      const carry = example.hasCarry ? Math.floor(unitsSum / 10) : 0;
-      
-              if (num1Tens > 0 || num2Tens > 0) {
-          await playAudio(`Maintenant, la colonne des dizaines devient orange ! Regarde comme elle s'anime... Fantastique !`, true);
-          if (stopSignalRef.current) return;
-          
-          await wait(1000);
-          const tensSum = num1Tens + num2Tens + carry;
-          if (example.hasCarry) {
-            await playAudio(`Je calcule : ${num1Tens} plus ${num2Tens}... plus ${carry} de retenue ! Ça fait ${tensSum} !`, true);
-          } else {
-            await playAudio(`Je calcule : ${num1Tens} plus ${num2Tens}... égale ${tensSum} !`, true);
-          }
-          if (stopSignalRef.current) return;
-          
-          // Afficher le résultat des dizaines immédiatement
-          await wait(500);
-          setPartialResults(prev => ({ ...prev, tens: tensSum > 0 ? tensSum.toString() : '' }));
-          await wait(1000);
-        } else if (carry > 0) {
-          await playAudio(`Pour les dizaines... j'ai seulement ma petite retenue de ${carry} qui m'attend ! Facile !`, true);
-          if (stopSignalRef.current) return;
-          
-          // Afficher la retenue comme résultat des dizaines
-          await wait(500);
-          setPartialResults(prev => ({ ...prev, tens: carry.toString() }));
-          await wait(1000);
+      if (maxDigits >= 2) {
+        await wait(2000);
+        setCalculationStep('tens');
+        const num1Tens = Math.floor((example.num1 % 100) / 10);
+        const num2Tens = Math.floor((example.num2 % 100) / 10);
+        const carry = example.hasCarry ? Math.floor(unitsSum / 10) : 0;
+        
+        await playAudio(`Maintenant, la colonne des dizaines devient orange ! Regarde comme elle s'anime... Fantastique !`, true);
+        if (stopSignalRef.current) return;
+        
+        await wait(1000);
+        const tensSum = num1Tens + num2Tens + carry;
+        if (example.hasCarry) {
+          await playAudio(`Je calcule : ${num1Tens} plus ${num2Tens}... plus ${carry} de retenue ! Ça fait ${tensSum} !`, true);
+        } else {
+          await playAudio(`Je calcule : ${num1Tens} plus ${num2Tens}... égale ${tensSum} !`, true);
         }
+        if (stopSignalRef.current) return;
+        
+        // Afficher le résultat des dizaines immédiatement
+        await wait(500);
+        setPartialResults(prev => ({ ...prev, tens: tensSum.toString() }));
+        await wait(1000);
+      }
+      
+      // Focus sur les centaines avec animation violette
+      if (maxDigits >= 3) {
+        await wait(2000);
+        setCalculationStep('hundreds');
+        const num1Hundreds = Math.floor(example.num1 / 100) % 10;
+        const num2Hundreds = Math.floor(example.num2 / 100) % 10;
+        
+        await playAudio(`Maintenant, la colonne des centaines devient violette ! Regarde bien...`, true);
+        if (stopSignalRef.current) return;
+        
+        await wait(1000);
+        const hundredsSum = num1Hundreds + num2Hundreds;
+        await playAudio(`Je calcule : ${num1Hundreds} plus ${num2Hundreds}... égale ${hundredsSum} !`, true);
+        if (stopSignalRef.current) return;
+        
+        // Afficher le résultat des centaines immédiatement
+        await wait(500);
+        setPartialResults(prev => ({ ...prev, hundreds: hundredsSum.toString() }));
+        await wait(1000);
+      }
       
               // Résultat final avec animation violette spectaculaire
         await wait(2000);
@@ -571,7 +681,7 @@ export default function AdditionPoseeCE1() {
           <div className="space-y-4">
             {/* Tableau des colonnes C, D et U (ou seulement D et U) */}
             <div className="flex justify-center mb-4">
-              <div className={`grid gap-8 font-bold text-lg ${maxDigits >= 3 ? 'grid-cols-3' : 'grid-cols-2'}`}>
+              <div className={`grid gap-4 sm:gap-6 font-bold text-sm sm:text-base ${maxDigits >= 3 ? 'grid-cols-3' : 'grid-cols-2'}`}>
                 {maxDigits >= 3 && (
                   <div className={`text-center p-2 rounded-lg transition-all duration-500 ${
                     calculationStep === 'hundreds' ? 'bg-purple-200 text-purple-800 animate-column-highlight' : 'bg-gray-100 text-gray-600'
@@ -607,7 +717,7 @@ export default function AdditionPoseeCE1() {
             
             {/* Premier nombre */}
             <div className="flex justify-center">
-              <div className={`grid gap-8 font-mono text-3xl ${maxDigits >= 3 ? 'grid-cols-3' : 'grid-cols-2'}`}>
+              <div className={`grid gap-4 sm:gap-6 font-mono text-xl sm:text-2xl ${maxDigits >= 3 ? 'grid-cols-3' : 'grid-cols-2'}`}>
                 {maxDigits >= 3 && (
                   <div className={`text-center p-3 rounded-lg transition-all duration-500 ${
                     calculationStep === 'hundreds' ? 'bg-purple-100 text-purple-700 animate-column-highlight' : 
@@ -634,7 +744,7 @@ export default function AdditionPoseeCE1() {
             {/* Deuxième nombre avec signe + */}
             <div className="flex justify-center">
               <div className="relative">
-                <div className={`grid gap-8 font-mono text-3xl ${maxDigits >= 3 ? 'grid-cols-3' : 'grid-cols-2'}`}>
+                <div className={`grid gap-4 sm:gap-6 font-mono text-xl sm:text-2xl ${maxDigits >= 3 ? 'grid-cols-3' : 'grid-cols-2'}`}>
                   {maxDigits >= 3 && (
                     <div className={`text-center p-3 rounded-lg transition-all duration-500 ${
                       calculationStep === 'hundreds' ? 'bg-purple-100 text-purple-700 animate-column-highlight' : 
@@ -747,8 +857,116 @@ export default function AdditionPoseeCE1() {
     );
   };
 
+  // Fonction pour expliquer une mauvaise réponse avec animation
+  const explainWrongAnswer = async (exercise: any) => {
+    if (!exercise.visual) return; // Seulement pour les exercices de calcul
+    
+    stopAllVocalsAndAnimations();
+    await wait(500);
+    stopSignalRef.current = false;
+    setIsAnimationRunning(true);
+    
+    // Extraire les nombres de l'exercice
+    const match = exercise.question.match(/Calcule : (\d+) \+ (\d+)/);
+    if (!match) {
+      setIsAnimationRunning(false);
+      return;
+    }
+    
+    const num1 = parseInt(match[1]);
+    const num2 = parseInt(match[2]);
+    const result = parseInt(exercise.correctAnswer);
+    const example = { num1, num2, result, hasCarry: false };
+    
+    try {
+      // Reset des états d'animation
+      setCalculationStep('setup');
+      setPartialResults({units: null, tens: null, hundreds: null});
+      setShowingCarry(false);
+      
+      await playAudio(`Regardons ensemble comment faire ${num1} plus ${num2} avec la méthode posée !`, true);
+      if (stopSignalRef.current) return;
+      
+      await wait(1000);
+      const maxDigits = Math.max(num1.toString().length, num2.toString().length);
+      if (maxDigits >= 3) {
+        await playAudio("Tu vois les trois colonnes : C pour centaines, D pour dizaines, et U pour unités !", true);
+      } else {
+        await playAudio("Tu vois les deux colonnes : D pour dizaines et U pour unités !", true);
+      }
+      if (stopSignalRef.current) return;
+      
+      await wait(1000);
+      await playAudio("On commence toujours par la colonne des unités, à droite !", true);
+      if (stopSignalRef.current) return;
+      
+      // Animation des unités
+      await wait(1500);
+      setCalculationStep('units');
+      const num1Units = num1 % 10;
+      const num2Units = num2 % 10;
+      const unitsSum = num1Units + num2Units;
+      
+      await playAudio(`Colonne U : ${num1Units} plus ${num2Units} égale ${unitsSum}`, true);
+      if (stopSignalRef.current) return;
+      
+      await wait(500);
+      const unitsResult = unitsSum >= 10 ? (unitsSum % 10).toString() : unitsSum.toString();
+      setPartialResults(prev => ({ ...prev, units: unitsResult }));
+      await wait(1000);
+      
+      // Animation des dizaines si nécessaire
+      if (maxDigits >= 2) {
+        await wait(1500);
+        setCalculationStep('tens');
+        // Extraire uniquement le chiffre des dizaines
+        const num1Tens = Math.floor((num1 % 100) / 10);
+        const num2Tens = Math.floor((num2 % 100) / 10);
+        const tensSum = num1Tens + num2Tens;
+        
+        await playAudio(`Colonne D : ${num1Tens} plus ${num2Tens} égale ${tensSum}`, true);
+        if (stopSignalRef.current) return;
+        
+        await wait(500);
+        setPartialResults(prev => ({ ...prev, tens: tensSum.toString() }));
+        await wait(1000);
+      }
+      
+      // Animation des centaines si nécessaire
+      if (maxDigits >= 3) {
+        await wait(1500);
+        setCalculationStep('hundreds');
+        // Extraire uniquement le chiffre des centaines
+        const num1Hundreds = Math.floor(num1 / 100) % 10;
+        const num2Hundreds = Math.floor(num2 / 100) % 10;
+        const hundredsSum = num1Hundreds + num2Hundreds;
+        
+        await playAudio(`Colonne C : ${num1Hundreds} plus ${num2Hundreds} égale ${hundredsSum}`, true);
+        if (stopSignalRef.current) return;
+        
+        await wait(500);
+        setPartialResults(prev => ({ ...prev, hundreds: hundredsSum.toString() }));
+        await wait(1000);
+      }
+      
+      // Résultat final
+      await wait(1500);
+      setCalculationStep('result');
+      await playAudio(`Et voilà ! Le résultat est ${result} ! Tu vois comme c'est plus facile avec la méthode posée ?`, true);
+      if (stopSignalRef.current) return;
+      
+    } catch (error) {
+      console.error('Erreur dans explainWrongAnswer:', error);
+    } finally {
+      setIsAnimationRunning(false);
+      setCalculationStep(null);
+      setPartialResults({units: null, tens: null, hundreds: null});
+      setShowingCarry(false);
+    }
+  };
+
   // Gestion des exercices
-  const handleAnswerClick = (answer: string) => {
+  const handleAnswerClick = async (answer: string) => {
     stopAllVocalsAndAnimations();
     setUserAnswer(answer);
     const correct = answer === exercises[currentExercise].correctAnswer;
@@ -775,6 +993,13 @@ export default function AdditionPoseeCE1() {
           setShowCompletionModal(true);
         }
       }, 1500);
+    } else {
+      // Lancer l'animation d'explication pour les mauvaises réponses
+      setTimeout(() => {
+        if (exercises[currentExercise].visual) {
+          explainWrongAnswer(exercises[currentExercise]);
+        }
+      }, 1000);
     }
   };
 
@@ -926,12 +1151,9 @@ export default function AdditionPoseeCE1() {
             </Link>
           
           <div className="bg-white rounded-xl p-4 sm:p-6 shadow-lg text-center">
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
-              📝 Addition posée - CE1
+            <h1 className="text-lg sm:text-2xl lg:text-3xl font-bold text-gray-900 mb-3">
+              📝 Addition posée
             </h1>
-            <p className="text-base sm:text-lg text-gray-600 mb-4 sm:mb-6 px-2">
-              Apprends à poser tes additions en colonnes comme un vrai mathématicien !
-            </p>
         </div>
       </div>
 
@@ -939,29 +1161,27 @@ export default function AdditionPoseeCE1() {
         <div className="flex items-center justify-center gap-2 sm:gap-4 p-2 sm:p-4 mb-3 sm:mb-6">
           {/* Image du personnage */}
           <div className={`relative transition-all duration-500 border-2 border-green-300 rounded-full bg-gradient-to-br from-green-100 to-emerald-100 ${
-            isPlayingVocal
+            exercisesIsPlayingVocal
                 ? 'w-14 sm:w-24 h-14 sm:h-24' // When speaking - plus petit sur mobile
-              : samSizeExpanded
-                  ? 'w-12 sm:w-32 h-12 sm:h-32' // Enlarged - plus petit sur mobile
-                  : 'w-10 sm:w-20 h-10 sm:h-20' // Normal - plus petit sur mobile
-          } flex items-center justify-center hover:scale-105 cursor-pointer`}>
-            {!imageError && (
+                : 'w-12 sm:w-20 h-12 sm:h-20' // Normal size
+          }`}>
+            {!exercisesImageError ? (
               <img 
-                src="/image/Minecraftstyle.png"
-                alt="Personnage Minecraft"
+                src="/image/Minecraftstyle.png" 
+                alt="Personnage Minecraft" 
                 className="w-full h-full object-cover rounded-full"
-                onError={() => setImageError(true)}
+                onError={() => setExercisesImageError(true)}
               />
-            )}
-            {imageError && (
-              <div className="text-lg sm:text-2xl">⛏️</div>
+            ) : (
+              <div className="w-full h-full flex items-center justify-center text-lg sm:text-2xl rounded-full bg-gradient-to-br from-green-200 to-emerald-200">
+                🧱
+              </div>
             )}
             
-            {/* Megaphone animé quand le personnage parle */}
-            {isPlayingVocal && (
-              <div className="absolute -top-1 -right-1 sm:-top-2 sm:-right-2 bg-red-500 rounded-full p-1 sm:p-2 shadow-lg animate-bounce">
-                <svg className="w-2 h-2 sm:w-4 sm:h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M18 3a1 1 0 00-1.447-.894L8.763 6H5a3 3 0 000 6h3.763l7.79 3.894A1 1 0 0018 15V3zM14 8.59c0 1.2.8 2.27 2 2.27v.64c-1.77 0-3.2-1.4-3.2-3.14 0-1.74 1.43-3.14 3.2-3.14v.64c-1.2 0-2 1.07-2 2.27z" clipRule="evenodd" />
+            {exercisesIsPlayingVocal && (
+              <div className="absolute -top-1 -right-1 w-3 h-3 sm:w-4 sm:h-4 bg-red-500 rounded-full animate-pulse">
+                <svg className="w-full h-full text-white" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 2C13.1 2 14 2.9 14 4V12C14 13.1 13.1 14 12 14C10.9 14 10 13.1 10 12V4C10 2.9 10.9 2 12 2M19 11C19 15.4 15.4 19 11 19V21H13V23H11V21H9V23H7V21H9V19C4.6 19 1 15.4 1 11H3C3 14.3 5.7 17 9 17V15C7.3 15 6 13.7 6 12V11H4V9H6V8C6 6.3 7.3 5 9 5V7C8.4 7 8 7.4 8 8V12C8 12.6 8.4 13 9 13V11H11V13C11.6 13 12 12.6 12 12V8C12 7.4 11.6 7 11 7V5C12.7 5 14 6.3 14 8V9H16V11H14V12C14 13.7 12.7 15 11 15V17C14.3 17 17 14.3 17 11H19Z"/>
                 </svg>
               </div>
             )}
@@ -969,30 +1189,22 @@ export default function AdditionPoseeCE1() {
 
           {/* Bouton DÉMARRER avec le personnage */}
           <button
-            onClick={explainChapterWithSam}
-            disabled={isPlayingVocal}
-            className={`px-3 sm:px-6 py-2 sm:py-3 rounded-lg font-bold text-sm sm:text-lg shadow-lg transition-all ${
-              isPlayingVocal
+            onClick={explainExercisesWithSam}
+            disabled={exercisesIsPlayingVocal}
+            className={`px-2 sm:px-4 py-1 sm:py-2 rounded-lg font-bold text-xs sm:text-base shadow-lg transition-all ${
+              exercisesIsPlayingVocal
                 ? 'bg-gray-400 text-gray-200 cursor-not-allowed'
                 : 'bg-gradient-to-r from-green-500 to-emerald-500 text-white hover:shadow-xl hover:scale-105'
-            } ${!hasStarted && !isPlayingVocal ? 'animate-pulse' : ''}`}
+            } ${!exercisesHasStarted && !exercisesIsPlayingVocal ? 'animate-pulse' : ''}`}
           >
             <Play className="w-3 h-3 sm:w-5 sm:h-5 inline-block mr-1 sm:mr-2" />
-            {isPlayingVocal ? 'Le personnage explique...' : 'DÉMARRER'}
+            {exercisesIsPlayingVocal ? 'Le personnage explique...' : 'DÉMARRER'}
           </button>
         </div>
 
-        {/* Description de ce qu'on va découvrir */}
-        <div className="text-center mb-6 sm:mb-8">
-          <div className="bg-green-50 border-2 border-green-200 rounded-xl p-4 sm:p-6 max-w-2xl mx-auto">
-            <h2 className="text-lg sm:text-xl font-bold text-green-800 mb-2">
-              🎯 Dans cette leçon
-            </h2>
-            <p className="text-sm sm:text-lg text-green-700">
-              On va découvrir les additions <strong>sans retenues</strong> à 2 ou 3 chiffres !
-            </p>
-          </div>
-        </div>
+
+
+
 
         {/* Navigation Tabs */}
         <div className="flex justify-center space-x-4 mb-8">
@@ -1037,7 +1249,7 @@ export default function AdditionPoseeCE1() {
               <div className="text-center mb-3 sm:mb-6">
                 <div className="text-3xl sm:text-6xl mb-2 sm:mb-4">📝</div>
                 <div className="flex items-center justify-center gap-1 sm:gap-3 mb-3 sm:mb-4">
-                  <h2 className="text-base sm:text-2xl font-bold text-gray-900">
+                  <h2 className="text-sm sm:text-xl font-bold text-gray-900">
                     Qu'est-ce que poser une addition ?
                   </h2>
                   {/* Icône d'animation pour l'introduction */}
@@ -1046,7 +1258,7 @@ export default function AdditionPoseeCE1() {
                     📝
                   </div>
                 </div>
-                <p className="text-sm sm:text-lg text-gray-600">
+                <p className="text-xs sm:text-base text-gray-600">
                   C'est aligner les nombres en colonnes pour calculer plus facilement !
                 </p>
             </div>
@@ -1062,7 +1274,7 @@ export default function AdditionPoseeCE1() {
                   🎯 Exemple principal
                 </h3>
                 <div className="text-center mb-6">
-                  <div className="bg-green-100 text-green-800 px-4 py-2 rounded-lg inline-block font-bold text-lg">
+                  <div className="bg-green-100 text-green-800 px-2 sm:px-4 py-1 sm:py-2 rounded-lg inline-block font-bold text-sm sm:text-lg">
                     📝 Calculer : 23 + 14
                   </div>
                 </div>
@@ -1114,7 +1326,7 @@ export default function AdditionPoseeCE1() {
               }`}
             >
               <div className="flex items-center justify-center gap-1 sm:gap-3 mb-3 sm:mb-6">
-                <h2 className="text-base sm:text-2xl font-bold text-gray-900">
+                <h2 className="text-sm sm:text-xl font-bold text-gray-900">
                   🌟 Autres exemples d'additions posées
                 </h2>
                 {/* Icône d'animation pour les exemples */}
@@ -1142,10 +1354,10 @@ export default function AdditionPoseeCE1() {
                       <div className="mb-4">
                         {renderPostedAddition(example)}
                     </div>
-                      <div className="text-sm text-gray-600 mb-3">
+                      <div className="text-xs sm:text-sm text-gray-600 mb-3">
                         Addition {example.description}
                     </div>
-                      <button className={`px-4 py-2 rounded-lg text-sm transition-colors ${
+                      <button className={`px-2 sm:px-4 py-1 sm:py-2 rounded-lg text-xs sm:text-sm transition-colors ${
                         isAnimationRunning 
                           ? 'bg-gray-400 text-gray-200' 
                           : 'bg-green-500 text-white hover:bg-green-600'
@@ -1166,18 +1378,18 @@ export default function AdditionPoseeCE1() {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-2 sm:gap-4 text-center">
                 <div>
                   <div className="text-2xl sm:text-3xl mb-1 sm:mb-2">1️⃣</div>
-                  <div className="font-bold text-sm sm:text-base">Aligner</div>
-                  <div className="text-xs sm:text-sm">Unités sous unités, dizaines sous dizaines</div>
+                  <div className="font-bold text-xs sm:text-sm">Aligner</div>
+                  <div className="text-xs">Unités sous unités, dizaines sous dizaines</div>
               </div>
                 <div>
-                  <div className="text-2xl sm:text-3xl mb-1 sm:mb-2">2️⃣</div>
-                  <div className="font-bold text-sm sm:text-base">Calculer</div>
-                  <div className="text-xs sm:text-sm">Commence par la droite (unités)</div>
+                  <div className="text-xl sm:text-2xl mb-1">2️⃣</div>
+                  <div className="font-bold text-xs sm:text-sm">Calculer</div>
+                  <div className="text-xs">Commence par la droite (unités)</div>
             </div>
                 <div>
-                  <div className="text-2xl sm:text-3xl mb-1 sm:mb-2">3️⃣</div>
-                  <div className="font-bold text-sm sm:text-base">Retenue</div>
-                  <div className="text-xs sm:text-sm">Si ≥ 10, écris l'unité et retiens</div>
+                  <div className="text-xl sm:text-2xl mb-1">3️⃣</div>
+                  <div className="font-bold text-xs sm:text-sm">Retenue</div>
+                  <div className="text-xs">Si ≥ 10, écris l'unité et retiens</div>
                 </div>
               </div>
             </div>
@@ -1190,21 +1402,28 @@ export default function AdditionPoseeCE1() {
               highlightedElement === 'exercises-section' ? 'scale-105' : ''
             }`}
           >
+
+
             {/* Header exercices */}
-            <div className={`bg-white rounded-xl p-6 shadow-lg ${
-              highlightedElement === 'exercises-section' ? 'ring-4 ring-blue-400 bg-blue-50' : ''
-            }`}>
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-2xl font-bold text-gray-900">
+            <div 
+              id="exercises-header"
+              className={`bg-white rounded-xl p-6 shadow-lg ${
+                highlightedElement === 'exercises-header' ? 'ring-4 ring-blue-400 bg-blue-50' : ''
+              }`}
+            >
+              <div className="flex justify-between items-start mb-4">
+                <h2 className="text-lg sm:text-xl font-bold text-gray-900">
                   ✏️ Exercice {currentExercise + 1} sur {exercises.length}
-              </h2>
-                <button
-                  onClick={resetAll}
-                  className="bg-gray-500 text-white px-4 py-2 rounded-lg font-bold hover:bg-gray-600 transition-colors"
+                </h2>
+                <div 
+                  id="score-display"
+                  className={`text-sm sm:text-xl font-bold text-green-600 ${
+                    highlightedElement === 'score-display' ? 'ring-2 ring-green-400 bg-green-50 rounded px-2 py-1' : ''
+                  }`}
                 >
-                  🔄 Recommencer
-                </button>
+                    Score : {score}/{exercises.length}
                 </div>
+              </div>
               
               {/* Barre de progression */}
               <div className="w-full bg-gray-200 rounded-full h-4 mb-3">
@@ -1213,86 +1432,151 @@ export default function AdditionPoseeCE1() {
                   style={{ width: `${((currentExercise + 1) / exercises.length) * 100}%` }}
                 ></div>
               </div>
-              
-              {/* Score */}
-              <div className="text-center">
-                <div className="text-xl font-bold text-green-600">
-                    Score : {score}/{exercises.length}
-                </div>
-              </div>
             </div>
 
             {/* Question */}
             <div className="bg-white rounded-xl p-8 shadow-lg text-center">
-              <h3 className="text-2xl font-bold mb-8 text-gray-900">
-                {exercises[currentExercise].question}
-              </h3>
+              <div className="flex justify-between items-start mb-4 sm:mb-6">
+                <h3 className="text-lg sm:text-xl font-bold text-gray-900 flex-1">
+                  {exercises[currentExercise].question}
+                </h3>
+                <button
+                  id="listen-button"
+                  onClick={() => {
+                    const utterance = new SpeechSynthesisUtterance(exercises[currentExercise].question);
+                    utterance.rate = 0.9;
+                    utterance.pitch = 1.1;
+                    speechSynthesis.speak(utterance);
+                  }}
+                  className={`ml-4 px-3 py-2 bg-blue-500 text-white rounded-lg text-sm font-bold hover:bg-blue-600 transition-all ${
+                    highlightedElement === 'listen-button' ? 'ring-4 ring-blue-400 animate-pulse' : ''
+                  }`}
+                >
+                  🔊 Écouter
+                </button>
+              </div>
               
               {/* Visuel si disponible */}
               {exercises[currentExercise].visual && (
                 <div className="bg-gray-50 rounded-lg p-6 mb-8 flex justify-center">
-                  <div className="font-mono text-2xl text-gray-800 leading-tight" style={{ width: '12rem' }}>
-                    {exercises[currentExercise].visual.split('\n').map((line, index) => {
-                      // Espacer les chiffres mais pas les autres caractères
-                      let formattedLine = line;
-                      if (line.includes('─') || line === '  ?' || line === ' ?') {
-                        formattedLine = line; // Garder tel quel pour les lignes et les ?
-                      } else {
-                        // Pour les nombres, espacer les chiffres
-                        formattedLine = line.replace(/(\d)/g, '$1 ').replace(/\s+$/, '');
+                  {isAnimationRunning && isCorrect === false ? (
+                    // Animation interactive pendant les corrections
+                    (() => {
+                      const match = exercises[currentExercise].question.match(/Calcule : (\d+) \+ (\d+)/);
+                      if (match) {
+                        const num1 = parseInt(match[1]);
+                        const num2 = parseInt(match[2]);
+                        const result = parseInt(exercises[currentExercise].correctAnswer);
+                        const example = { num1, num2, result, hasCarry: false };
+                        return renderPostedAddition(example, true);
                       }
-                      
-                      return (
-                        <div key={index} style={{ textAlign: 'right', minHeight: '1.2em' }}>
-                          {formattedLine}
+                      return null;
+                    })()
+                  ) : (
+                    // Visuel statique normal
+                    <div className="font-mono text-lg sm:text-xl text-gray-800 leading-tight" style={{ width: '10rem' }}>
+                      {exercises[currentExercise].visual.split('\n').map((line, index) => {
+                        // Espacer les chiffres mais pas les autres caractères
+                        let formattedLine = line;
+                        if (line.includes('─') || line === '  ?' || line === ' ?') {
+                          formattedLine = line; // Garder tel quel pour les lignes et les ?
+                        } else {
+                          // Pour les nombres, espacer les chiffres
+                          formattedLine = line.replace(/(\d)/g, '$1 ').replace(/\s+$/, '');
+                        }
+                        
+                        return (
+                          <div key={index} style={{ textAlign: 'right', minHeight: '1.2em' }}>
+                            {formattedLine}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
                 </div>
-                      );
-                    })}
-              </div>
-            </div>
               )}
 
-            {/* Choix multiples */}
-            <div className="grid grid-cols-1 gap-4 max-w-md mx-auto mb-8">
-              {exercises[currentExercise].choices.map((choice) => (
-                <button
-                  key={choice}
-                  onClick={() => handleAnswerClick(choice)}
-                  disabled={isCorrect !== null}
-                  className={`p-6 rounded-lg font-bold text-xl transition-all ${
-                    userAnswer === choice
-                      ? isCorrect === true
-                        ? 'bg-green-500 text-white'
-                        : isCorrect === false
-                        ? 'bg-red-500 text-white'
-                        : 'bg-green-500 text-white'
-                      : exercises[currentExercise].correctAnswer === choice && isCorrect === false
-                        ? 'bg-green-200 text-green-800 border-2 border-green-500'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200 disabled:opacity-50'
-                  } disabled:cursor-not-allowed`}
-                >
-                  {choice}
-                </button>
-              ))}
-            </div>
+            {/* Saisie ou choix multiples selon le type d'exercice */}
+            {exercises[currentExercise].visual ? (
+              // Case de saisie pour les calculs d'additions posées
+              <div className="max-w-sm mx-auto mb-6">
+                <div className="flex items-center justify-center gap-4">
+                  <input
+                    id="answer-input"
+                    type="number"
+                    value={userAnswer}
+                    onChange={(e) => setUserAnswer(e.target.value)}
+                    onKeyPress={(e) => e.key === 'Enter' && userAnswer && handleAnswerClick(userAnswer)}
+                    disabled={isCorrect !== null}
+                    placeholder="?"
+                    autoComplete="off"
+                    autoCorrect="off"
+                    autoCapitalize="off"
+                    className={`w-32 p-3 sm:p-4 text-center rounded-lg font-bold text-lg sm:text-xl border-2 transition-all ${
+                      isCorrect === null
+                        ? 'border-gray-300 focus:border-green-500 focus:outline-none'
+                        : isCorrect
+                        ? 'border-green-500 bg-green-50'
+                        : 'border-red-500 bg-red-50'
+                    } disabled:opacity-50 disabled:cursor-not-allowed ${
+                      highlightedElement === 'answer-input' ? 'ring-4 ring-green-400 animate-pulse' : ''
+                    }`}
+                  />
+                  <button
+                    id="validate-button"
+                    onClick={() => handleAnswerClick(userAnswer)}
+                    disabled={!userAnswer || isCorrect !== null}
+                    className={`px-4 py-3 sm:px-6 sm:py-4 bg-green-500 text-white rounded-lg font-bold text-sm sm:text-lg hover:bg-green-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
+                      highlightedElement === 'validate-button' ? 'ring-4 ring-green-400 animate-pulse' : ''
+                    }`}
+                  >
+                    Valider
+                  </button>
+                </div>
+              </div>
+            ) : (
+              // Choix multiples pour les questions théoriques
+              <div className="grid grid-cols-1 gap-3 max-w-sm mx-auto mb-6">
+                {exercises[currentExercise].choices.map((choice) => (
+                  <button
+                    key={choice}
+                    onClick={() => handleAnswerClick(choice)}
+                    disabled={isCorrect !== null}
+                    className={`p-2 sm:p-4 rounded-lg font-bold text-sm sm:text-xl transition-all ${
+                      userAnswer === choice
+                        ? isCorrect === true
+                          ? 'bg-green-500 text-white'
+                          : isCorrect === false
+                          ? 'bg-red-500 text-white'
+                          : 'bg-green-500 text-white'
+                        : exercises[currentExercise].correctAnswer === choice && isCorrect === false
+                          ? 'bg-green-200 text-green-800 border-2 border-green-500'
+                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200 disabled:opacity-50'
+                    } disabled:cursor-not-allowed`}
+                  >
+                    {choice}
+                  </button>
+                ))}
+              </div>
+            )}
 
               {/* Résultat */}
             {isCorrect !== null && (
-              <div className={`p-6 rounded-lg mb-6 ${
+              <div className={`p-3 sm:p-4 rounded-lg mb-4 ${
                 isCorrect ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
               }`}>
-                  <div className="flex items-center justify-center space-x-3">
+                  <div className="flex items-center justify-center space-x-2">
                   {isCorrect ? (
                     <>
-                      <span className="text-2xl">✅</span>
-                      <span className="font-bold text-xl">
+                      <span className="text-xl sm:text-2xl">✅</span>
+                      <span className="font-bold text-sm sm:text-lg">
                         Excellent ! C'est la bonne réponse !
                       </span>
                     </>
                   ) : (
                     <>
-                      <span className="text-2xl">❌</span>
-                      <span className="font-bold text-xl">
+                      <span className="text-xl sm:text-2xl">❌</span>
+                      <span className="font-bold text-sm sm:text-lg">
                         Pas tout à fait... La bonne réponse est : {exercises[currentExercise].correctAnswer}
                       </span>
                     </>
@@ -1305,8 +1589,11 @@ export default function AdditionPoseeCE1() {
             {isCorrect === false && (
               <div className="flex justify-center">
                 <button
+                  id="next-button"
                   onClick={nextExercise}
-                  className="bg-green-500 text-white px-8 py-4 rounded-lg font-bold text-lg hover:bg-green-600 transition-colors"
+                  className={`bg-green-500 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-bold text-sm sm:text-base hover:bg-green-600 transition-colors ${
+                    highlightedElement === 'next-button' ? 'ring-4 ring-green-400 animate-pulse' : ''
+                  }`}
                 >
                   Suivant →
                 </button>
@@ -1364,4 +1651,4 @@ export default function AdditionPoseeCE1() {
       </div>
     </div>
   );
-} 
+}
