@@ -39,14 +39,27 @@ export default function AdditionPoseeCE1() {
   // Exemples d'additions posées
   const additionExamples = [
     { num1: 23, num2: 14, result: 37, hasCarry: false, description: 'sans retenue' },
-    { num1: 31, num2: 26, result: 57, hasCarry: false, description: 'sans retenue' },
-    { num1: 37, num2: 28, result: 65, hasCarry: true, description: 'avec retenue' },
-    { num1: 49, num2: 27, result: 76, hasCarry: true, description: 'avec retenue' },
-    { num1: 123, num2: 145, result: 268, hasCarry: false, description: 'nombres à 3 chiffres' }
+    { num1: 42, num2: 35, result: 77, hasCarry: false, description: 'sans retenue' },
+    { num1: 51, num2: 26, result: 77, hasCarry: false, description: 'sans retenue' },
+    { num1: 234, num2: 52, result: 286, hasCarry: false, description: '3 chiffres + 2 chiffres sans retenue' },
+    { num1: 231, num2: 126, result: 357, hasCarry: false, description: 'à 3 chiffres sans retenue' },
+    { num1: 312, num2: 241, result: 553, hasCarry: false, description: 'à 3 chiffres sans retenue' },
+    { num1: 123, num2: 145, result: 268, hasCarry: false, description: 'à 3 chiffres sans retenue' }
   ];
 
   // Exercices progressifs
-  const exercises = [
+  // Fonction pour mélanger un tableau (Fisher-Yates)
+  const shuffleArray = (array: any[]) => {
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+  };
+
+  const baseExercises = [
+    // 1. Questions théoriques de base
     {
       question: 'Pour poser une addition, je dois...', 
       correctAnswer: 'Aligner les chiffres en colonnes',
@@ -57,52 +70,113 @@ export default function AdditionPoseeCE1() {
       correctAnswer: 'Les unités (à droite)',
       choices: ['Les dizaines (à gauche)', 'Les unités (à droite)', 'N\'importe laquelle']
     },
+    
+    // 2. Additions simples à 2 chiffres
+    { 
+      question: 'Calcule : 14 + 25', 
+      correctAnswer: '39',
+      choices: ['35', '39', '42'],
+      visual: '   14\n+  25\n─────\n   ?'
+    },
+    { 
+      question: 'Calcule : 21 + 17', 
+      correctAnswer: '38',
+      choices: ['34', '38', '43'],
+      visual: '   21\n+  17\n─────\n   ?'
+    },
     { 
       question: 'Calcule : 23 + 14', 
       correctAnswer: '37',
-      choices: ['36', '37', '38'],
+      choices: ['41', '33', '37'],
       visual: '   23\n+  14\n─────\n   ?'
     },
     { 
-      question: 'Calcule : 31 + 26', 
-      correctAnswer: '57',
-      choices: ['56', '57', '58'],
-      visual: '   31\n+  26\n─────\n   ?'
-    },
-    { 
-      question: 'Quand faut-il faire une retenue ?', 
-      correctAnswer: 'Quand le résultat dépasse 9',
-      choices: ['Toujours', 'Quand le résultat dépasse 9', 'Jamais']
-    },
-    { 
-      question: 'Calcule avec retenue : 27 + 18', 
-      correctAnswer: '45',
-      choices: ['44', '45', '46'],
-      visual: '   27\n+  18\n─────\n   ?'
-    },
-    { 
-      question: 'Calcule avec retenue : 39 + 16', 
+      question: 'Calcule : 32 + 23', 
       correctAnswer: '55',
-      choices: ['54', '55', '56'],
-      visual: '   39\n+  16\n─────\n   ?'
+      choices: ['55', '51', '59'],
+      visual: '   32\n+  23\n─────\n   ?'
     },
+    { 
+      question: 'Calcule : 42 + 35', 
+      correctAnswer: '77',
+      choices: ['73', '81', '77'],
+      visual: '   42\n+  35\n─────\n   ?'
+    },
+    { 
+      question: 'Calcule : 51 + 26', 
+      correctAnswer: '77',
+      choices: ['83', '77', '71'],
+      visual: '   51\n+  26\n─────\n   ?'
+    },
+    
+    // 3. Question théorique sur les 3 chiffres
     { 
       question: 'Pour les nombres à 3 chiffres, combien de colonnes ?', 
       correctAnswer: '3 colonnes',
-      choices: ['2 colonnes', '3 colonnes', '4 colonnes']
+      choices: ['2 colonnes', '4 colonnes', '3 colonnes']
     },
+    
+    // 4. Additions 3 chiffres + 2 chiffres (niveau intermédiaire)
+    { 
+      question: 'Calcule : 142 + 36', 
+      correctAnswer: '178',
+      choices: ['174', '178', '182'],
+      visual: '  142\n+  36\n─────\n   ?'
+    },
+    { 
+      question: 'Calcule : 156 + 32', 
+      correctAnswer: '188',
+      choices: ['192', '184', '188'],
+      visual: '  156\n+  32\n─────\n   ?'
+    },
+    { 
+      question: 'Calcule : 234 + 52', 
+      correctAnswer: '286',
+      choices: ['286', '280', '292'],
+      visual: '  234\n+  52\n─────\n   ?'
+    },
+    { 
+      question: 'Calcule : 325 + 43', 
+      correctAnswer: '368',
+      choices: ['362', '374', '368'],
+      visual: '  325\n+  43\n─────\n   ?'
+    },
+    
+    // 5. Additions 3 chiffres + 3 chiffres (niveau avancé)
     { 
       question: 'Calcule : 123 + 145', 
       correctAnswer: '268',
-      choices: ['267', '268', '269'],
+      choices: ['275', '268', '261'],
       visual: '  123\n+ 145\n─────\n   ?'
     },
     { 
-      question: 'L\'addition posée nous aide à...', 
-      correctAnswer: 'Ne pas faire d\'erreurs',
-      choices: ['Aller plus vite', 'Ne pas faire d\'erreurs', 'Faire plus joli']
+      question: 'Calcule : 213 + 154', 
+      correctAnswer: '367',
+      choices: ['359', '367', '374'],
+      visual: '  213\n+ 154\n─────\n   ?'
+    },
+    { 
+      question: 'Calcule : 231 + 126', 
+      correctAnswer: '357',
+      choices: ['364', '349', '357'],
+      visual: '  231\n+ 126\n─────\n   ?'
+    },
+    { 
+      question: 'Calcule : 312 + 241', 
+      correctAnswer: '553',
+      choices: ['553', '546', '561'],
+      visual: '  312\n+ 241\n─────\n   ?'
+    },
+    
+    // 6. Question de synthèse finale
+    { 
+      question: 'L\'addition posée sans retenue nous aide à...', 
+      correctAnswer: 'Calculer plus facilement',
+      choices: ['Aller plus vite', 'Faire plus joli', 'Calculer plus facilement']
     }
   ];
+
+  const exercises = baseExercises;
 
   // Fonction pour arrêter toutes les animations et vocaux
   const stopAllVocalsAndAnimations = () => {
@@ -184,6 +258,14 @@ export default function AdditionPoseeCE1() {
     });
   };
 
+  // Fonction pour scroller vers un élément
+  const scrollToElement = (elementId: string) => {
+    const element = document.getElementById(elementId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  };
+
   // Fonction pour expliquer le chapitre dans le cours avec le personnage
   const explainChapterWithSam = async () => {
     if (isPlayingVocal) return;
@@ -195,25 +277,49 @@ export default function AdditionPoseeCE1() {
     setSamSizeExpanded(true);
     
     try {
-      await playAudio("Bonjour ! Aujourd'hui, nous allons apprendre à poser une addition !", true);
+      await playAudio("Bonjour ! Découvrons ensemble l'addition posée sans retenue !", true);
       if (stopSignalRef.current) return;
       
       await wait(1000);
       if (stopSignalRef.current) return;
       
-              await playAudio("Poser une addition, c'est aligner les nombres en colonnes pour calculer plus facilement, par les blocs de diamant !", true);
+      // Présenter l'exemple principal
+      setHighlightedElement('example-section');
+      scrollToElement('example-section');
+      await playAudio("D'abord, voici l'exemple principal avec son animation !", true);
       if (stopSignalRef.current) return;
       
-      await wait(1200);
+      await wait(800);
       if (stopSignalRef.current) return;
       
-      await playAudio("Tu vas découvrir les additions sans retenue, avec retenue, et même avec de grands nombres !", true);
+      // Mettre en évidence le bouton d'animation principal
+      await playAudio("Clique sur le bouton vert pour voir comment faire !", true);
       if (stopSignalRef.current) return;
       
       await wait(1500);
       if (stopSignalRef.current) return;
       
-      await playAudio("Souviens-toi : D pour dizaines, U pour unités ! Et on commence toujours par la droite !", true);
+      // Présenter la section des autres exemples
+      setHighlightedElement('examples-section');
+      scrollToElement('examples-section');
+      await playAudio("Ensuite, tu trouveras d'autres exemples à 2 et 3 chiffres !", true);
+      if (stopSignalRef.current) return;
+      
+      await wait(800);
+      if (stopSignalRef.current) return;
+      
+      // Mettre en évidence les cartes d'exemples
+      setHighlightedElement('example-0');
+      await playAudio("Chaque carte verte a son animation ! Clique sur les cartes pour les voir !", true);
+      if (stopSignalRef.current) return;
+      
+      await wait(1500);
+      if (stopSignalRef.current) return;
+      
+      // Présenter la section exercices - scroller vers le haut pour voir l'onglet
+      setHighlightedElement('exercise_tab');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      await playAudio("Et pour finir, tu pourras t'entraîner avec les exercices ! N'oublie pas : on commence toujours par les unités !", true);
       if (stopSignalRef.current) return;
       
     } catch (error) {
@@ -221,6 +327,7 @@ export default function AdditionPoseeCE1() {
     } finally {
       setIsPlayingVocal(false);
       setSamSizeExpanded(false);
+      setHighlightedElement(null);
     }
   };
 
@@ -762,6 +869,34 @@ export default function AdditionPoseeCE1() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-teal-50">
+      {/* Bouton Stop flottant */}
+      {(isPlayingVocal || isAnimationRunning) && (
+        <div className="fixed top-4 right-4 z-[60]">
+          <button
+            onClick={stopAllVocalsAndAnimations}
+            className="relative flex items-center gap-2 px-3 py-2 rounded-full shadow-2xl transition-all duration-300 bg-gradient-to-r from-red-500 to-red-600 text-white hover:from-red-600 hover:to-red-700 hover:scale-105 animate-pulse"
+            title={isPlayingVocal ? "Arrêter le personnage" : "Arrêter l'animation"}
+          >
+            {/* Image du personnage */}
+            <div className="w-8 h-8 rounded-full overflow-hidden border-2 border-white/50">
+              <img
+                src="/image/Minecraftstyle.png"
+                alt="Personnage Minecraft"
+                className="w-full h-full object-cover"
+              />
+            </div>
+            
+            {/* Texte et icône */}
+            <>
+              <span className="text-sm font-bold hidden sm:block">
+                {isPlayingVocal ? 'Stop' : 'Stop Animation'}
+              </span>
+              <div className="w-3 h-3 bg-white rounded-sm animate-pulse"></div>
+            </>
+          </button>
+        </div>
+      )}
+
       {/* Animation CSS personnalisée pour les icônes */}
       <style dangerouslySetInnerHTML={{
         __html: `
@@ -780,20 +915,7 @@ export default function AdditionPoseeCE1() {
         `
       }} />
       
-              {/* Bouton flottant du personnage - visible uniquement quand il parle */}
-      {isPlayingVocal && (
-        <div className="fixed top-4 right-4 z-[60]">
-          <button
-            onClick={stopAllVocalsAndAnimations}
-            className="bg-red-600 hover:bg-red-700 text-white rounded-full p-3 shadow-lg animate-pulse"
-            title="Arrêter le personnage"
-          >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-        </div>
-      )}
+
       
       <div className="max-w-6xl mx-auto px-3 sm:px-4 py-4 sm:py-8">
       {/* Header */}
@@ -813,113 +935,93 @@ export default function AdditionPoseeCE1() {
         </div>
       </div>
 
-        {/* Section avec le personnage Minecraft et boutons */}
-        <div className="bg-gradient-to-r from-green-500 to-blue-500 rounded-xl shadow-lg p-3 sm:p-6 mb-6 sm:mb-8">
-          {/* Image du personnage Minecraft avec bouton DÉMARRER */}
-          <div className="flex items-center justify-center gap-2 sm:gap-4 mb-3 sm:mb-4">
-            {/* Image du personnage */}
-            <div className={`relative transition-all duration-500 border-2 border-white rounded-full bg-gradient-to-br from-green-100 to-teal-100 ${
-              isPlayingVocal
-                  ? 'w-14 sm:w-24 h-14 sm:h-24' // When speaking - plus petit sur mobile
-                : samSizeExpanded
-                    ? 'w-12 sm:w-32 h-12 sm:h-32' // Enlarged - plus petit sur mobile
-                    : 'w-10 sm:w-20 h-10 sm:h-20' // Normal - plus petit sur mobile
-            } flex items-center justify-center hover:scale-105 cursor-pointer`}>
-              {!imageError && (
-                <img 
-                  src="/image/Minecraftstyle.png"
-                  alt="Personnage Minecraft"
-                  className="w-full h-full object-cover rounded-full"
-                  onError={() => setImageError(true)}
-                />
-              )}
-              {imageError && (
-                <div className="text-lg sm:text-2xl">⛏️</div>
-              )}
-              
-              {/* Megaphone animé quand le personnage parle */}
-              {isPlayingVocal && (
-                <div className="absolute -top-1 -right-1 sm:-top-2 sm:-right-2 bg-red-500 rounded-full p-1 sm:p-2 shadow-lg animate-bounce">
-                  <svg className="w-2 h-2 sm:w-4 sm:h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M18 3a1 1 0 00-1.447-.894L8.763 6H5a3 3 0 000 6h3.763l7.79 3.894A1 1 0 0018 15V3zM14 8.59c0 1.2.8 2.27 2 2.27v.64c-1.77 0-3.2-1.4-3.2-3.14 0-1.74 1.43-3.14 3.2-3.14v.64c-1.2 0-2 1.07-2 2.27z" clipRule="evenodd" />
-                  </svg>
-                </div>
-              )}
-            </div>
-
-            {/* Bouton DÉMARRER avec le personnage */}
-            <button
-              onClick={explainChapterWithSam}
-              disabled={isPlayingVocal}
-              className={`px-3 sm:px-6 py-2 sm:py-3 rounded-lg font-bold text-sm sm:text-lg shadow-lg transition-all ${
-                isPlayingVocal
-                  ? 'bg-gray-400 text-gray-200 cursor-not-allowed'
-                  : 'bg-white text-green-600 hover:bg-green-50 hover:scale-105'
-              } ${!hasStarted && !isPlayingVocal ? 'animate-pulse' : ''}`}
-            >
-              <Play className="w-3 h-3 sm:w-5 sm:h-5 inline-block mr-1 sm:mr-2" />
-              {isPlayingVocal ? 'Le personnage explique...' : 'DÉMARRER'}
-            </button>
-          </div>
-
-          <h2 className="text-lg sm:text-2xl font-bold text-white mb-2 sm:mb-4 text-center">🎯 Découvrir les additions posées</h2>
-          <p className="text-green-100 mb-3 sm:mb-6 text-sm sm:text-lg text-center">
-            Présentation rapide des techniques disponibles sur cette page !
-          </p>
-          <div className="flex gap-2 sm:gap-4 justify-center">
-            <button
-              onClick={startLessonPresentation}
-              disabled={isAnimationRunning}
-              className={`px-4 sm:px-8 py-3 sm:py-4 rounded-xl font-bold text-sm sm:text-xl transition-all ${
-                isAnimationRunning 
-                  ? 'bg-gray-400 text-gray-200 cursor-not-allowed' 
-                  : 'bg-white text-green-600 hover:bg-green-50 hover:scale-105 shadow-lg'
-              }`}
-            >
-              {isAnimationRunning ? '⏳ Présentation en cours...' : '🚀 Découvrir les techniques'}
-            </button>
-            
-            {isAnimationRunning && (
-              <button
-                onClick={stopAllVocalsAndAnimations}
-                className="px-3 sm:px-6 py-3 sm:py-4 rounded-xl font-bold text-sm sm:text-xl bg-red-500 text-white hover:bg-red-600 shadow-lg transition-all"
-              >
-                ⏹️ Arrêter
-              </button>
+        {/* Image du personnage Minecraft avec bouton DÉMARRER */}
+        <div className="flex items-center justify-center gap-2 sm:gap-4 p-2 sm:p-4 mb-3 sm:mb-6">
+          {/* Image du personnage */}
+          <div className={`relative transition-all duration-500 border-2 border-green-300 rounded-full bg-gradient-to-br from-green-100 to-emerald-100 ${
+            isPlayingVocal
+                ? 'w-14 sm:w-24 h-14 sm:h-24' // When speaking - plus petit sur mobile
+              : samSizeExpanded
+                  ? 'w-12 sm:w-32 h-12 sm:h-32' // Enlarged - plus petit sur mobile
+                  : 'w-10 sm:w-20 h-10 sm:h-20' // Normal - plus petit sur mobile
+          } flex items-center justify-center hover:scale-105 cursor-pointer`}>
+            {!imageError && (
+              <img 
+                src="/image/Minecraftstyle.png"
+                alt="Personnage Minecraft"
+                className="w-full h-full object-cover rounded-full"
+                onError={() => setImageError(true)}
+              />
             )}
-        </div>
-      </div>
-
-        {/* Navigation entre cours et exercices */}
-        <div className="flex justify-center mb-6 sm:mb-8">
-          <div className="bg-white rounded-lg p-1 shadow-md flex">
-            <button
-              onClick={() => {
-                setShowExercises(false);
-                stopAllVocalsAndAnimations();
-              }}
-              className={`px-6 py-3 rounded-lg font-bold transition-all ${
-                !showExercises 
-                  ? 'bg-green-500 text-white shadow-md' 
-                  : 'text-gray-600 hover:bg-gray-100'
-              }`}
-            >
-              📖 Cours
-            </button>
-            <button
-              onClick={() => {
-                setShowExercises(true);
-                stopAllVocalsAndAnimations();
-              }}
-              className={`px-6 py-3 rounded-lg font-bold transition-all ${
-                showExercises 
-                  ? 'bg-blue-500 text-white shadow-md' 
-                  : 'text-gray-600 hover:bg-gray-100'
-              }`}
-            >
-              ✏️ Exercices ({score}/{exercises.length})
-            </button>
+            {imageError && (
+              <div className="text-lg sm:text-2xl">⛏️</div>
+            )}
+            
+            {/* Megaphone animé quand le personnage parle */}
+            {isPlayingVocal && (
+              <div className="absolute -top-1 -right-1 sm:-top-2 sm:-right-2 bg-red-500 rounded-full p-1 sm:p-2 shadow-lg animate-bounce">
+                <svg className="w-2 h-2 sm:w-4 sm:h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M18 3a1 1 0 00-1.447-.894L8.763 6H5a3 3 0 000 6h3.763l7.79 3.894A1 1 0 0018 15V3zM14 8.59c0 1.2.8 2.27 2 2.27v.64c-1.77 0-3.2-1.4-3.2-3.14 0-1.74 1.43-3.14 3.2-3.14v.64c-1.2 0-2 1.07-2 2.27z" clipRule="evenodd" />
+                </svg>
+              </div>
+            )}
           </div>
+
+          {/* Bouton DÉMARRER avec le personnage */}
+          <button
+            onClick={explainChapterWithSam}
+            disabled={isPlayingVocal}
+            className={`px-3 sm:px-6 py-2 sm:py-3 rounded-lg font-bold text-sm sm:text-lg shadow-lg transition-all ${
+              isPlayingVocal
+                ? 'bg-gray-400 text-gray-200 cursor-not-allowed'
+                : 'bg-gradient-to-r from-green-500 to-emerald-500 text-white hover:shadow-xl hover:scale-105'
+            } ${!hasStarted && !isPlayingVocal ? 'animate-pulse' : ''}`}
+          >
+            <Play className="w-3 h-3 sm:w-5 sm:h-5 inline-block mr-1 sm:mr-2" />
+            {isPlayingVocal ? 'Le personnage explique...' : 'DÉMARRER'}
+          </button>
+        </div>
+
+        {/* Description de ce qu'on va découvrir */}
+        <div className="text-center mb-6 sm:mb-8">
+          <div className="bg-green-50 border-2 border-green-200 rounded-xl p-4 sm:p-6 max-w-2xl mx-auto">
+            <h2 className="text-lg sm:text-xl font-bold text-green-800 mb-2">
+              🎯 Dans cette leçon
+            </h2>
+            <p className="text-sm sm:text-lg text-green-700">
+              On va découvrir les additions <strong>sans retenues</strong> à 2 ou 3 chiffres !
+            </p>
+          </div>
+        </div>
+
+        {/* Navigation Tabs */}
+        <div className="flex justify-center space-x-4 mb-8">
+          <button
+            onClick={() => {
+              stopAllVocalsAndAnimations();
+              setShowExercises(false);
+            }}
+            className={`px-6 py-3 rounded-lg font-semibold transition-all ${
+              !showExercises
+                ? 'bg-green-600 text-white shadow-lg'
+                : 'bg-white text-green-600 hover:bg-green-50'
+            } ${highlightedElement === 'course_tab' ? 'ring-4 ring-green-400 animate-pulse' : ''}`}
+          >
+            📚 Cours
+          </button>
+          <button
+            onClick={() => {
+              stopAllVocalsAndAnimations();
+              setShowExercises(true);
+            }}
+            className={`px-6 py-3 rounded-lg font-semibold transition-all ${
+              showExercises
+                ? 'bg-green-600 text-white shadow-lg'
+                : 'bg-white text-green-600 hover:bg-green-50'
+            } ${highlightedElement === 'exercise_tab' ? 'ring-4 ring-green-400 animate-pulse' : ''}`}
+          >
+            🎯 Exercices ({score}/{exercises.length})
+          </button>
         </div>
 
         {!showExercises ? (
@@ -956,9 +1058,14 @@ export default function AdditionPoseeCE1() {
                   highlightedElement === 'example-section' ? 'ring-4 ring-blue-400 scale-105' : ''
                 }`}
               >
-                <h3 className="text-xl font-bold text-center mb-6 text-gray-800">
+                <h3 className="text-xl font-bold text-center mb-4 text-gray-800">
                   🎯 Exemple principal
-                  </h3>
+                </h3>
+                <div className="text-center mb-6">
+                  <div className="bg-green-100 text-green-800 px-4 py-2 rounded-lg inline-block font-bold text-lg">
+                    📝 Calculer : 23 + 14
+                  </div>
+                </div>
 
                 {currentExample !== null ? (
                   <div className="text-center">
