@@ -1352,7 +1352,7 @@ export default function DecompositionsCP() {
             {/* Texte et icône */}
             <>
               <span className="text-sm font-bold hidden sm:block">
-                {isPlayingVocal ? 'Stop' : 'Stop Animation'}
+                Stop
               </span>
               <div className="w-3 h-3 bg-white rounded-sm animate-pulse"></div>
             </>
