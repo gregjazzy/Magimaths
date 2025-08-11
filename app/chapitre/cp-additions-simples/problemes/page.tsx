@@ -941,7 +941,7 @@ export default function ProblemesAddition() {
     }
   };
 
-  // Fonction pour correction vocale automatique et rapide
+  // Fonction pour correction vocale automatique
   const quickVocalCorrection = async () => {
     const exercise = exercises[currentExercise];
     
@@ -953,12 +953,23 @@ export default function ProblemesAddition() {
     const second = parseInt(numbers[1]);
     const result = exercise.answer;
 
-    // Fonction audio rapide pour cette correction
+    // Scroll vers la zone de correction
+    setTimeout(() => {
+      const correctionElement = document.getElementById('exercise-correction');
+      if (correctionElement) {
+        correctionElement.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'center' 
+        });
+      }
+    }, 300);
+
+    // Fonction audio avec vitesse normale pour la correction
     const quickAudio = (text: string) => {
       return new Promise<void>((resolve) => {
         const utterance = new SpeechSynthesisUtterance(text);
         utterance.lang = 'fr-FR';
-        utterance.rate = 1.4; // Plus rapide
+        utterance.rate = 1.0; // Vitesse normale
         utterance.pitch = 1.0;
         utterance.volume = 1.0;
         
@@ -978,17 +989,20 @@ export default function ProblemesAddition() {
     };
 
     try {
-      // Correction rapide et directe avec mise en évidence
+      // Correction avec mise en évidence et vitesse normale
       setExerciseAnimationStep('highlight-numbers');
       await quickAudio(`Les nombres sont ${first} et ${second}`);
-      await wait(200);
+      await wait(500);
       
       setExerciseAnimationStep('show-calculation');
       await quickAudio(`${first} plus ${second} égale ${result}`);
-      await wait(200);
+      await wait(500);
       
       setExerciseAnimationStep('show-result');
       await quickAudio(`La bonne réponse est ${result} !`);
+      await wait(800);
+      
+      setExerciseAnimationStep(null);
       
     } catch (error) {
       console.error('Erreur dans quickVocalCorrection:', error);
@@ -1768,9 +1782,11 @@ export default function ProblemesAddition() {
 
                   {/* Feedback */}
                   {isCorrect !== null && (
-                    <div className={`p-4 rounded-lg text-center ${
-                      isCorrect ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                    }`}>
+                    <div 
+                      id="exercise-correction"
+                      className={`p-4 rounded-lg text-center ${
+                        isCorrect ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                      }`}>
                       <div className="flex items-center justify-center gap-2 mb-2">
                         {isCorrect ? (
                           <CheckCircle className="w-6 h-6" />
