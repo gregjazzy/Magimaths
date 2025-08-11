@@ -48,12 +48,12 @@ export default function AdditionPoseeCE1() {
 
   // Exemples d'additions posées
   const additionExamples = [
+    { num1: 3, num2: 4, result: 7, hasCarry: false, description: 'simple sans retenue' },
+    { num1: 2, num2: 6, result: 8, hasCarry: false, description: 'simple sans retenue' },
+    { num1: 7, num2: 9, result: 16, hasCarry: true, description: 'avec retenue' },
     { num1: 27, num2: 19, result: 46, hasCarry: true, description: 'avec retenue' },
     { num1: 48, num2: 37, result: 85, hasCarry: true, description: 'avec retenue' },
-    { num1: 56, num2: 28, result: 84, hasCarry: true, description: 'avec retenue' },
-    { num1: 247, num2: 58, result: 305, hasCarry: true, description: '3 chiffres + 2 chiffres avec retenue' },
     { num1: 168, num2: 197, result: 365, hasCarry: true, description: 'à 3 chiffres avec retenue' },
-    { num1: 329, num2: 185, result: 514, hasCarry: true, description: 'à 3 chiffres avec retenue' },
     { num1: 146, num2: 278, result: 424, hasCarry: true, description: 'à 3 chiffres avec retenue' }
   ];
 
@@ -301,7 +301,7 @@ export default function AdditionPoseeCE1() {
     setSamSizeExpanded(true);
     
     try {
-      await playAudio("Bonjour ! Découvrons ensemble l'addition posée sans retenue !", true);
+      await playAudio("Bonjour ! Découvrons ensemble l'addition posée avec et sans retenue !", true);
       if (stopSignalRef.current) return;
       
       await wait(1000);
@@ -1293,7 +1293,7 @@ export default function AdditionPoseeCE1() {
           
           <div className="bg-gradient-to-br from-orange-50 to-red-50 border-2 border-orange-200 rounded-xl p-4 sm:p-6 shadow-lg text-center">
             <h1 className="text-lg sm:text-2xl lg:text-3xl font-bold text-orange-900 mb-3">
-              📝 Addition avec retenues
+              📝 Addition posée (avec et sans retenue)
             </h1>
         </div>
       </div>
@@ -1439,7 +1439,7 @@ export default function AdditionPoseeCE1() {
                 <div className="text-3xl sm:text-6xl mb-2 sm:mb-4">📝</div>
                 <div className="flex items-center justify-center gap-1 sm:gap-3 mb-3 sm:mb-4">
                   <h2 className="text-sm sm:text-xl font-bold text-gray-900">
-                    Qu'est-ce qu'une addition avec retenue ?
+                    L'addition posée : simple et avec retenue
                   </h2>
                   {/* Icône d'animation pour l'introduction */}
                   <div className="bg-gradient-to-r from-green-500 to-teal-600 text-white rounded-full w-6 h-6 sm:w-12 sm:h-12 flex items-center justify-center text-xs sm:text-xl font-bold shadow-lg hover:scale-110 cursor-pointer transition-all duration-300 ring-2 ring-green-300" 
@@ -1448,7 +1448,7 @@ export default function AdditionPoseeCE1() {
                   </div>
                 </div>
                 <p className="text-xs sm:text-base text-gray-600">
-                  Quand la somme dépasse 9, on écrit la retenue au-dessus !
+                  On commence simple, puis on apprend les retenues quand la somme dépasse 9 !
                 </p>
             </div>
 
@@ -1464,7 +1464,7 @@ export default function AdditionPoseeCE1() {
                 </h3>
                 <div className="text-center mb-6">
                   <div className="bg-orange-100 text-orange-800 px-2 sm:px-4 py-1 sm:py-2 rounded-lg inline-block font-bold text-sm sm:text-lg">
-                    📝 Calculer : 27 + 19
+                    📝 Calculer : 3 + 4
                   </div>
                 </div>
 
@@ -1517,7 +1517,7 @@ export default function AdditionPoseeCE1() {
             >
               <div className="flex items-center justify-center gap-1 sm:gap-3 mb-3 sm:mb-6">
                 <h2 className="text-sm sm:text-xl font-bold text-gray-900">
-                  🌟 Autres exemples d'additions avec retenues
+                  🌟 Autres exemples : simple à complexe
                 </h2>
                 {/* Icône d'animation pour les exemples */}
                 <div className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-full w-6 h-6 sm:w-12 sm:h-12 flex items-center justify-center text-xs sm:text-xl font-bold shadow-lg hover:scale-110 cursor-pointer transition-all duration-300 ring-2 ring-blue-300" 
