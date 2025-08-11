@@ -679,6 +679,27 @@ export default function ProblemesAddition() {
     }
   };
 
+  // Fonction pour lire l'énoncé de l'exercice actuel
+  const readCurrentStory = () => {
+    const currentStory = exercises[currentExercise].story;
+    const utterance = new SpeechSynthesisUtterance(currentStory);
+    utterance.lang = 'fr-FR';
+    utterance.rate = 0.9;
+    utterance.pitch = 1.1;
+    utterance.volume = 1.0;
+    
+    const voices = speechSynthesis.getVoices();
+    const frenchVoice = voices.find(voice => 
+      voice.lang === 'fr-FR' && voice.localService === true
+    );
+    
+    if (frenchVoice) {
+      utterance.voice = frenchVoice;
+    }
+    
+    speechSynthesis.speak(utterance);
+  };
+
   // Fonction pour expliquer les exercices avec Sam
   const explainExercisesWithSam = async () => {
     if (exercisesIsPlayingVocal) return;
@@ -704,12 +725,31 @@ export default function ProblemesAddition() {
       await wait(1200);
       if (stopSignalRef.current) return;
       
-      await playAudio("Lis bien chaque histoire, trouve les nombres, et tape ta réponse dans la case !");
+      // Mettre en évidence le bouton "Lire l'énoncé"
+      setHighlightedElement('read-story-button');
+      await playAudio("Pour chaque exercice, tu peux lire l'énoncé en cliquant sur le bouton 'Lire l'énoncé' !");
       if (stopSignalRef.current) return;
       
       await wait(1500);
       if (stopSignalRef.current) return;
       
+      // Mettre en évidence la zone de réponse
+      setHighlightedElement('answer-input');
+      await playAudio("Ensuite, tu saisis ta réponse dans la zone de réponse !");
+      if (stopSignalRef.current) return;
+      
+      await wait(1200);
+      if (stopSignalRef.current) return;
+      
+      // Mettre en évidence le bouton Vérifier
+      setHighlightedElement('validate-button');
+      await playAudio("Et pour finir, tu appuies sur le bouton 'Vérifier' pour vérifier ta réponse !");
+      if (stopSignalRef.current) return;
+      
+      await wait(1000);
+      if (stopSignalRef.current) return;
+      
+      setHighlightedElement(null);
       await playAudio("Si tu te trompes, je t'aiderai avec une animation pour comprendre ! En avant, petit pirate !");
       if (stopSignalRef.current) return;
       
@@ -719,6 +759,7 @@ export default function ProblemesAddition() {
       setExercisesIsPlayingVocal(false);
       setSamSizeExpanded(false);
       setHighlightExerciseButton(false);
+      setHighlightedElement(null);
     }
   };
 
@@ -1511,24 +1552,43 @@ export default function ProblemesAddition() {
 
                   {/* Énoncé du problème */}
                   <div className="p-4 bg-blue-50 rounded-lg">
-                    <div className="text-lg text-center text-gray-800">{exercises[currentExercise].story}</div>
+                    <div className="text-lg text-center text-gray-800 mb-4">{exercises[currentExercise].story}</div>
+                    
+                    {/* Bouton Lire l'énoncé */}
+                    <div className="text-center">
+                      <button
+                        id="read-story-button"
+                        onClick={readCurrentStory}
+                        className={`px-4 py-2 bg-green-500 text-white rounded-lg font-semibold hover:bg-green-600 transition-all ${
+                          highlightedElement === 'read-story-button' ? 'ring-4 ring-yellow-400 animate-pulse bg-yellow-500' : ''
+                        }`}
+                      >
+                        🔊 Lire l'énoncé
+                      </button>
+                    </div>
                   </div>
 
                   {/* Zone de réponse */}
                   <div className="text-center space-y-4">
                     <input
+                      id="answer-input"
                       type="number"
                       value={userAnswer}
                       onChange={(e) => setUserAnswer(e.target.value)}
                       placeholder="?"
-                      className="text-center text-xl font-bold border-2 border-gray-300 rounded-lg px-4 py-2 w-32"
+                      className={`text-center text-xl font-bold border-2 border-gray-300 rounded-lg px-4 py-2 w-32 transition-all ${
+                        highlightedElement === 'answer-input' ? 'ring-4 ring-yellow-400 animate-pulse border-yellow-500' : ''
+                      }`}
                       onKeyPress={(e) => e.key === 'Enter' && checkAnswer()}
                     />
                     <div>
                       <button
+                        id="validate-button"
                         onClick={checkAnswer}
                         disabled={!userAnswer}
-                        className="bg-blue-500 text-white px-6 py-2 rounded-lg font-semibold hover:bg-blue-600 disabled:opacity-50"
+                        className={`bg-blue-500 text-white px-6 py-2 rounded-lg font-semibold hover:bg-blue-600 disabled:opacity-50 transition-all ${
+                          highlightedElement === 'validate-button' ? 'ring-4 ring-yellow-400 animate-pulse bg-yellow-500' : ''
+                        }`}
                       >
                         Vérifier
                       </button>
