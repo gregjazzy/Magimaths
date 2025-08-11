@@ -97,68 +97,68 @@ export default function SoustractionRetenueCE1() {
       choices: ['On ajoute 10', 'On emprunte 1 à la colonne de gauche', 'On enlève 1']
     },
     { 
-      question: 'Calcule : 158 + 47', 
-      correctAnswer: '205',
-      choices: ['201', '205', '209'],
-      visual: '  158\n+  47\n─────\n   ?'
+      question: 'Calcule : 205 - 47', 
+      correctAnswer: '158',
+      choices: ['154', '158', '162'],
+      visual: '  205\n-  47\n─────\n   ?'
     },
     { 
-      question: 'Calcule : 247 + 58', 
-      correctAnswer: '305',
-      choices: ['301', '305', '309'],
-      visual: '  247\n+  58\n─────\n   ?'
+      question: 'Calcule : 305 - 58', 
+      correctAnswer: '247',
+      choices: ['243', '247', '251'],
+      visual: '  305\n-  58\n─────\n   ?'
     },
     { 
-      question: 'Calcule : 169 + 76', 
-      correctAnswer: '245',
-      choices: ['241', '245', '249'],
-      visual: '  169\n+  76\n─────\n   ?'
-    },
-    
-    // 4. Additions 3 chiffres avec retenues multiples
-    { 
-      question: 'Calcule : 168 + 197', 
-      correctAnswer: '365',
-      choices: ['361', '365', '369'],
-      visual: '  168\n+ 197\n─────\n   ?'
-    },
-    { 
-      question: 'Calcule : 329 + 185', 
-      correctAnswer: '514',
-      choices: ['510', '514', '518'],
-      visual: '  329\n+ 185\n─────\n   ?'
-    },
-    { 
-      question: 'Calcule : 146 + 278', 
-      correctAnswer: '424',
-      choices: ['420', '424', '428'],
-      visual: '  146\n+ 278\n─────\n   ?'
-    },
-    { 
-      question: 'Calcule : 397 + 258', 
-      correctAnswer: '655',
-      choices: ['651', '655', '659'],
-      visual: '  397\n+ 258\n─────\n   ?'
-    },
-    { 
-      question: 'Calcule : 489 + 367', 
-      correctAnswer: '856',
-      choices: ['852', '856', '860'],
-      visual: '  489\n+ 367\n─────\n   ?'
-    },
-    { 
-      question: 'Calcule : 578 + 296', 
-      correctAnswer: '874',
-      choices: ['870', '874', '878'],
-      visual: '  578\n+ 296\n─────\n   ?'
+      question: 'Calcule : 245 - 76', 
+      correctAnswer: '169',
+      choices: ['165', '169', '173'],
+      visual: '  245\n-  76\n─────\n   ?'
     },
     
-    // 5. Exercices complexes avec retenues
+    // 4. Soustractions 3 chiffres avec emprunts multiples
     { 
-      question: 'Calcule : 89 + 56', 
-      correctAnswer: '145',
-      choices: ['141', '145', '149'],
-      visual: '   89\n+  56\n─────\n   ?'
+      question: 'Calcule : 365 - 197', 
+      correctAnswer: '168',
+      choices: ['164', '168', '172'],
+      visual: '  365\n- 197\n─────\n   ?'
+    },
+    { 
+      question: 'Calcule : 514 - 185', 
+      correctAnswer: '329',
+      choices: ['325', '329', '333'],
+      visual: '  514\n- 185\n─────\n   ?'
+    },
+    { 
+      question: 'Calcule : 424 - 278', 
+      correctAnswer: '146',
+      choices: ['142', '146', '150'],
+      visual: '  424\n- 278\n─────\n   ?'
+    },
+    { 
+      question: 'Calcule : 655 - 258', 
+      correctAnswer: '397',
+      choices: ['393', '397', '401'],
+      visual: '  655\n- 258\n─────\n   ?'
+    },
+    { 
+      question: 'Calcule : 856 - 367', 
+      correctAnswer: '489',
+      choices: ['485', '489', '493'],
+      visual: '  856\n- 367\n─────\n   ?'
+    },
+    { 
+      question: 'Calcule : 874 - 296', 
+      correctAnswer: '578',
+      choices: ['574', '578', '582'],
+      visual: '  874\n- 296\n─────\n   ?'
+    },
+    
+    // 5. Exercices complexes avec emprunts
+    { 
+      question: 'Calcule : 145 - 56', 
+      correctAnswer: '89',
+      choices: ['85', '89', '93'],
+      visual: '  145\n-  56\n─────\n   ?'
     },
     { 
       question: 'Calcule : 679 + 485', 
@@ -459,7 +459,7 @@ export default function SoustractionRetenueCE1() {
     setPartialResults({units: null, tens: null, hundreds: null}); // Reset des résultats partiels
     setCarryValues({toTens: 0, toHundreds: 0}); // Reset des retenues
     
-    const example = additionExamples[index];
+    const example = subtractionExamples[index];
     
     // Pré-calculer toutes les retenues
     const num1Units = example.num1 % 10;
@@ -704,7 +704,7 @@ export default function SoustractionRetenueCE1() {
   };
 
   // Fonction pour rendre une addition posée avec animations améliorées
-  const renderPostedAddition = (example: any, isAnimated = false, showHelperBox = false) => {
+  const renderPostedSubtraction = (example: any, isAnimated = false, showHelperBox = false) => {
     // Déterminer le nombre de chiffres maximum
     const maxDigits = Math.max(example.num1.toString().length, example.num2.toString().length, example.result.toString().length);
     const num1Str = example.num1.toString().padStart(maxDigits, ' ');
@@ -726,7 +726,7 @@ export default function SoustractionRetenueCE1() {
     
     return (
       <div className={`bg-gradient-to-br from-white to-blue-50 p-8 rounded-xl shadow-lg border-2 transition-all duration-500 ${
-        isAnimated && currentExample === additionExamples.indexOf(example) ? 'border-blue-400 bg-blue-50 scale-105 shadow-xl' : 'border-gray-200'
+        isAnimated && currentExample === subtractionExamples.indexOf(example) ? 'border-blue-400 bg-blue-50 scale-105 shadow-xl' : 'border-gray-200'
       }`}>
         <div className="flex justify-center">
           <div className="space-y-4">
@@ -1471,7 +1471,7 @@ export default function SoustractionRetenueCE1() {
                 {currentExample !== null ? (
                   <div className="text-center">
                     <div className="mb-6">
-                      {renderPostedAddition(additionExamples[currentExample], true, true)}
+                      {renderPostedSubtraction(subtractionExamples[currentExample], true, true)}
                         </div>
                     
                     {calculationStep && (
@@ -1489,7 +1489,7 @@ export default function SoustractionRetenueCE1() {
               ) : (
                   <div className="text-center">
                     <div className="mb-6">
-                      {renderPostedAddition(additionExamples[0], false, false)}
+                      {renderPostedSubtraction(subtractionExamples[0], false, false)}
                   </div>
                     <button
                       id="main-example-button"
@@ -1527,7 +1527,7 @@ export default function SoustractionRetenueCE1() {
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {additionExamples.map((example, index) => (
+                {subtractionExamples.map((example, index) => (
                   <div 
                     key={index}
                     id={`example-${index}`}
@@ -1542,7 +1542,7 @@ export default function SoustractionRetenueCE1() {
                   >
                     <div className="text-center">
                       <div className="mb-4">
-                        {renderPostedAddition(example, false, false)}
+                        {renderPostedSubtraction(example, false, false)}
                     </div>
                       <div className="text-xs sm:text-sm text-gray-600 mb-3">
                         Addition {example.description}
@@ -1657,11 +1657,11 @@ export default function SoustractionRetenueCE1() {
                       const result = parseInt(exercises[currentExercise].correctAnswer);
                       const example = { num1, num2, result, hasCarry: true };
                       
-                      // Utiliser notre fonction renderPostedAddition avec animation si mauvaise réponse
+                      // Utiliser notre fonction renderPostedSubtraction avec animation si mauvaise réponse
                       const isExerciseAnimated = isAnimationRunning && isCorrect === false;
                       const showHelperInExercise = false; // Pas de boîte jaune dans les exercices
                       
-                      return renderPostedAddition(example, isExerciseAnimated, showHelperInExercise);
+                      return renderPostedSubtraction(example, isExerciseAnimated, showHelperInExercise);
                     }
                     return null;
                   })()}
