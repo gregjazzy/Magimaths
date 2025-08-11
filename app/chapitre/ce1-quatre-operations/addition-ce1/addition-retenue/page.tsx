@@ -19,6 +19,10 @@ export default function AdditionPoseeCE1() {
   const [carryValues, setCarryValues] = useState<{toTens: number, toHundreds: number}>({toTens: 0, toHundreds: 0});
   const [partialResults, setPartialResults] = useState<{units: string | null, tens: string | null, hundreds: string | null}>({units: null, tens: null, hundreds: null});
   
+  // États pour la synchronisation vocale avec les boutons d'animation
+  const [currentVocalSection, setCurrentVocalSection] = useState<string | null>(null);
+  const [activeSpeakingButton, setActiveSpeakingButton] = useState<string | null>(null);
+  
   // États pour les exercices
   const [showExercises, setShowExercises] = useState(false);
   const [currentExercise, setCurrentExercise] = useState(0);
@@ -209,10 +213,13 @@ export default function AdditionPoseeCE1() {
     setCarryValues({toTens: 0, toHundreds: 0});
     setPartialResults({units: null, tens: null, hundreds: null});
     setSamSizeExpanded(false);
+    // Reset des états de synchronisation vocale
+    setCurrentVocalSection(null);
+    setActiveSpeakingButton(null);
   };
 
-  // Fonction pour jouer l'audio
-  const playAudio = async (text: string, slowMode = false) => {
+  // Fonction pour jouer l'audio avec synchronisation des boutons
+  const playAudio = async (text: string, slowMode = false, buttonId?: string) => {
     return new Promise<void>((resolve) => {
       if (stopSignalRef.current) {
         resolve();
@@ -220,6 +227,12 @@ export default function AdditionPoseeCE1() {
       }
       
       setIsPlayingVocal(true);
+      
+      // Activer le bouton correspondant si spécifié
+      if (buttonId) {
+        setActiveSpeakingButton(buttonId);
+      }
+      
       const utterance = new SpeechSynthesisUtterance(text);
       
       utterance.lang = 'fr-FR';
@@ -238,12 +251,14 @@ export default function AdditionPoseeCE1() {
 
       utterance.onend = () => {
         setIsPlayingVocal(false);
+        setActiveSpeakingButton(null); // Désactiver le bouton à la fin
         currentAudioRef.current = null;
         resolve();
       };
 
       utterance.onerror = () => {
         setIsPlayingVocal(false);
+        setActiveSpeakingButton(null); // Désactiver le bouton en cas d'erreur
         currentAudioRef.current = null;
         resolve();
       };
@@ -295,14 +310,14 @@ export default function AdditionPoseeCE1() {
       // Présenter l'exemple principal
       setHighlightedElement('example-section');
       scrollToElement('example-section');
-      await playAudio("D'abord, voici l'exemple principal avec son animation !", true);
+      await playAudio("D'abord, voici l'exemple principal avec son animation !", true, 'main-example-button');
       if (stopSignalRef.current) return;
       
       await wait(800);
       if (stopSignalRef.current) return;
       
       // Mettre en évidence le bouton d'animation principal
-      await playAudio("Clique sur le bouton vert pour voir comment faire !", true);
+      await playAudio("Clique sur le bouton vert pour voir comment faire !", true, 'main-example-button');
       if (stopSignalRef.current) return;
       
       await wait(1500);
@@ -319,7 +334,7 @@ export default function AdditionPoseeCE1() {
       
       // Mettre en évidence les cartes d'exemples
       setHighlightedElement('example-0');
-      await playAudio("Chaque carte verte a son animation ! Clique sur les cartes pour les voir !", true);
+      await playAudio("Chaque carte verte a son animation ! Clique sur les cartes pour les voir !", true, 'examples-buttons');
       if (stopSignalRef.current) return;
       
       await wait(1500);
@@ -348,7 +363,7 @@ export default function AdditionPoseeCE1() {
     setExercisesHasStarted(true);
     stopSignalRef.current = false;
     
-    const speak = (text: string, highlightElement?: string) => {
+    const speak = (text: string, highlightElement?: string, buttonId?: string) => {
       return new Promise<void>((resolve) => {
         if (stopSignalRef.current) {
           resolve();
@@ -357,6 +372,11 @@ export default function AdditionPoseeCE1() {
         
         if (highlightElement) {
           setHighlightedElement(highlightElement);
+        }
+        
+        // Activer le bouton correspondant si spécifié
+        if (buttonId) {
+          setActiveSpeakingButton(buttonId);
         }
         
         const utterance = new SpeechSynthesisUtterance(text);
@@ -368,10 +388,14 @@ export default function AdditionPoseeCE1() {
           if (highlightElement) {
             setTimeout(() => setHighlightedElement(''), 300);
           }
+          setActiveSpeakingButton(null); // Désactiver le bouton à la fin
           resolve();
         };
         
-        utterance.onerror = () => resolve();
+        utterance.onerror = () => {
+          setActiveSpeakingButton(null); // Désactiver le bouton en cas d'erreur
+          resolve();
+        };
         currentAudioRef.current = utterance;
         speechSynthesis.speak(utterance);
       });
@@ -394,13 +418,13 @@ export default function AdditionPoseeCE1() {
       await speak("Parfait ! Maintenant tu vois la première question !", 'exercises-header');
       if (stopSignalRef.current) return;
       
-      await speak("Tu peux écouter l'énoncé en cliquant sur ce bouton bleu !", 'listen-button');
+      await speak("Tu peux écouter l'énoncé en cliquant sur ce bouton bleu !", 'listen-button', 'listen-button');
       if (stopSignalRef.current) return;
       
-      await speak("Ensuite, écris ta réponse dans cette case !", 'answer-input');
+      await speak("Ensuite, écris ta réponse dans cette case !", 'answer-input', 'answer-input');
       if (stopSignalRef.current) return;
       
-      await speak("Quand tu es sûr de ta réponse, clique sur Valider !", 'validate-button');
+      await speak("Quand tu es sûr de ta réponse, clique sur Valider !", 'validate-button', 'validate-button');
       if (stopSignalRef.current) return;
       
       await speak("Si c'est correct, tu passes automatiquement à l'exercice suivant !");
@@ -409,7 +433,7 @@ export default function AdditionPoseeCE1() {
       await speak("Si c'est faux, je te montre l'animation pour t'expliquer la bonne méthode !");
       if (stopSignalRef.current) return;
       
-      await speak("Puis tu pourras cliquer sur Exercice suivant pour continuer !", 'next-button');
+      await speak("Puis tu pourras cliquer sur Exercice suivant pour continuer !", 'next-button', 'next-button');
       if (stopSignalRef.current) return;
       
       await speak("Ton score s'affiche ici en haut à droite ! Allez, c'est parti !", 'score-display');
@@ -1214,7 +1238,7 @@ export default function AdditionPoseeCE1() {
         </div>
       )}
 
-      {/* Animation CSS personnalisée pour les icônes */}
+      {/* Animation CSS personnalisée pour les icônes et boutons parlants */}
       <style dangerouslySetInnerHTML={{
         __html: `
           @keyframes subtle-glow {
@@ -1228,6 +1252,31 @@ export default function AdditionPoseeCE1() {
               transform: scale(1.05);
               filter: brightness(1.1);
             }
+          }
+          
+          @keyframes speaking-button {
+            0%, 100% {
+              background-color: #10b981;
+              box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+              border-color: #059669;
+            }
+            50% {
+              background-color: #059669;
+              box-shadow: 0 0 0 10px rgba(16, 185, 129, 0);
+              border-color: #047857;
+              transform: scale(1.02);
+            }
+          }
+          
+          .speaking-button {
+            animation: speaking-button 1.5s infinite;
+            filter: brightness(1.1);
+          }
+          
+          .speaking-input {
+            animation: speaking-button 1.5s infinite;
+            border-color: #10b981 !important;
+            box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.3);
           }
         `
       }} />
@@ -1443,13 +1492,14 @@ export default function AdditionPoseeCE1() {
                       {renderPostedAddition(additionExamples[0], false, false)}
                   </div>
                     <button
+                      id="main-example-button"
                       onClick={() => explainExample(0)}
                       disabled={isAnimationRunning}
                       className={`px-6 py-3 rounded-lg font-bold text-lg transition-colors ${
                         isAnimationRunning 
                           ? 'bg-gray-400 text-gray-200 cursor-not-allowed' 
                           : 'bg-green-500 text-white hover:bg-green-600'
-                      }`}
+                      } ${activeSpeakingButton === 'main-example-button' ? 'speaking-button' : ''}`}
                     >
                       {isAnimationRunning ? '⏳ Animation en cours...' : '▶️ Voir l\'animation'}
                     </button>
@@ -1501,7 +1551,7 @@ export default function AdditionPoseeCE1() {
                         isAnimationRunning 
                           ? 'bg-gray-400 text-gray-200' 
                           : 'bg-green-500 text-white hover:bg-green-600'
-                      }`}>
+                      } ${activeSpeakingButton === 'examples-buttons' ? 'speaking-button' : ''}`}>
                         {isAnimationRunning ? '⏳ Attendez...' : '▶️ Voir l\'animation'}
                       </button>
                   </div>
@@ -1590,7 +1640,7 @@ export default function AdditionPoseeCE1() {
                   }}
                   className={`ml-4 px-3 py-2 bg-blue-500 text-white rounded-lg text-sm font-bold hover:bg-blue-600 transition-all ${
                     highlightedElement === 'listen-button' ? 'ring-4 ring-blue-400 animate-pulse' : ''
-                  }`}
+                  } ${activeSpeakingButton === 'listen-button' ? 'speaking-button' : ''}`}
                 >
                   🔊 Écouter
                 </button>
@@ -1642,7 +1692,7 @@ export default function AdditionPoseeCE1() {
                         : 'border-red-500 bg-red-50'
                     } disabled:opacity-50 disabled:cursor-not-allowed ${
                       highlightedElement === 'answer-input' ? 'ring-4 ring-green-400 animate-pulse' : ''
-                    }`}
+                    } ${activeSpeakingButton === 'answer-input' ? 'speaking-input' : ''}`}
                   />
                   <button
                     id="validate-button"
@@ -1650,7 +1700,7 @@ export default function AdditionPoseeCE1() {
                     disabled={!userAnswer || isCorrect !== null}
                     className={`px-4 py-3 sm:px-6 sm:py-4 bg-orange-500 text-white rounded-lg font-bold text-sm sm:text-lg hover:bg-orange-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
                       highlightedElement === 'validate-button' ? 'ring-4 ring-green-400 animate-pulse' : ''
-                    }`}
+                    } ${activeSpeakingButton === 'validate-button' ? 'speaking-button' : ''}`}
                   >
                     Valider
                   </button>
@@ -1715,7 +1765,7 @@ export default function AdditionPoseeCE1() {
                   onClick={nextExercise}
                   className={`bg-orange-500 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-bold text-sm sm:text-base hover:bg-orange-600 transition-colors ${
                     highlightedElement === 'next-button' ? 'ring-4 ring-green-400 animate-pulse' : ''
-                  }`}
+                  } ${activeSpeakingButton === 'next-button' ? 'speaking-button' : ''}`}
                 >
                   Suivant →
                 </button>
