@@ -880,24 +880,6 @@ export default function ProblemesAddition() {
               </button>
             </div>
 
-            {/* Bouton COMMENCER (animation complète) */}
-            <div className="text-center mb-3 sm:mb-8">
-              <button
-                onClick={() => {
-                  stopAllVocalsAndAnimations();
-                  explainChapter();
-                }}
-                disabled={isAnimationRunning}
-                className={`px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-bold text-base sm:text-xl shadow-lg transition-all transform ${
-                  isAnimationRunning 
-                    ? 'bg-gray-400 text-gray-200 cursor-not-allowed' 
-                    : 'bg-gradient-to-r from-orange-500 to-red-500 text-white hover:shadow-xl hover:scale-105'
-                } ${!hasStarted && !isAnimationRunning ? 'animate-pulse' : ''}`}
-              >
-                {isAnimationRunning ? '⏳ Animation en cours...' : '▶️ COMMENCER (Animation complète) !'}
-              </button>
-            </div>
-
             {/* Introduction */}
             <div 
               id="intro-section"
