@@ -146,207 +146,220 @@ export default function ProblemesAddition() {
     }
   ];
 
-  // 20 Exercices pour les élèves - NIVEAU CE1 (nombres adaptés, contextes familiers)
+  // 20 Exercices progressifs CE1 : simple → nombres à 2-3 chiffres avec retenues → jusqu'à 1000+
   const exercises = [
+    // NIVEAU 1 : Additions simples (1-20)
     {
-      story: 'Léa range ses autocollants. Elle a 6 autocollants d\'animaux et 5 autocollants de fleurs. Combien d\'autocollants a-t-elle ?',
-      answer: 11,
+      story: 'Léa range ses autocollants. Elle a 8 autocollants d\'animaux et 7 autocollants de fleurs. Combien d\'autocollants a-t-elle ?',
+      answer: 15,
       visual: '🌟',
-      first: 6,
-      second: 5,
+      first: 8,
+      second: 7,
       item: '🌟',
       color1: 'text-blue-600',
       color2: 'text-pink-600'
     },
     {
-      story: 'Dans son pot à crayons, Nina compte 7 crayons bleus et 8 crayons rouges. Combien de crayons y a-t-il ?',
-      answer: 15,
+      story: 'Dans son pot à crayons, Nina compte 9 crayons bleus et 8 crayons rouges. Combien de crayons y a-t-il ?',
+      answer: 17,
       visual: '✏️',
-      first: 7,
+      first: 9,
       second: 8,
       item: '✏️',
       color1: 'text-blue-600',
       color2: 'text-red-600'
     },
+    
+    // NIVEAU 2 : Additions avec nombres jusqu'à 50
     {
-      story: 'Tom collectionne les petites voitures. Il a 9 voitures rouges et 6 voitures bleues. Combien de voitures a-t-il ?',
-      answer: 15,
-      visual: '🚗',
-      first: 9,
-      second: 6,
-      item: '🚗',
-      color1: 'text-red-600',
-      color2: 'text-blue-600'
-    },
-    {
-      story: 'Maman a acheté des pommes. Elle a 8 pommes vertes et 7 pommes rouges. Combien de pommes a-t-elle ?',
-      answer: 15,
-      visual: '🍎',
-      first: 8,
-      second: 7,
-      item: '🍎',
+      story: 'Tom collectionne les cartes. Il a 23 cartes de football et 18 cartes de basketball. Combien de cartes a-t-il ?',
+      answer: 41,
+      visual: '🎴',
+      first: 23,
+      second: 18,
+      item: '🎴',
       color1: 'text-green-600',
-      color2: 'text-red-600'
+      color2: 'text-orange-600'
     },
     {
-      story: 'Dans la classe de CE1, il y a 10 filles et 12 garçons. Combien d\'élèves y a-t-il en tout ?',
-      answer: 22,
-      visual: '👶',
-      first: 10,
-      second: 12,
-      item: '👶',
-      color1: 'text-pink-600',
+      story: 'Maman a acheté des fruits. Elle a 27 pommes et 16 poires pour la semaine. Combien de fruits a-t-elle ?',
+      answer: 43,
+      visual: '🍎',
+      first: 27,
+      second: 16,
+      item: '🍎',
+      color1: 'text-red-600',
+      color2: 'text-yellow-600'
+    },
+    {
+      story: 'Dans la classe de CE1, il y a 34 livres de mathématiques et 29 livres de français. Combien de livres y a-t-il ?',
+      answer: 63,
+      visual: '📚',
+      first: 34,
+      second: 29,
+      item: '📚',
+      color1: 'text-blue-600',
+      color2: 'text-green-600'
+    },
+    
+    // NIVEAU 3 : Additions avec retenues (50-100)
+    {
+      story: 'Julie collectionne les billes. Elle a 38 billes colorées et 27 billes transparentes. Combien de billes a-t-elle ?',
+      answer: 65,
+      visual: '⚪',
+      first: 38,
+      second: 27,
+      item: '⚪',
+      color1: 'text-purple-600',
+      color2: 'text-gray-400'
+    },
+    {
+      story: 'Papa plante des fleurs. Il met 47 tulipes dans le jardin du devant et 36 tulipes dans le jardin de derrière. Combien de tulipes a-t-il plantées ?',
+      answer: 83,
+      visual: '🌷',
+      first: 47,
+      second: 36,
+      item: '🌷',
+      color1: 'text-red-600',
+      color2: 'text-yellow-600'
+    },
+    {
+      story: 'Dans la bibliothèque, il y a 59 livres d\'aventure et 28 livres de science. Combien de livres y a-t-il ?',
+      answer: 87,
+      visual: '📖',
+      first: 59,
+      second: 28,
+      item: '📖',
+      color1: 'text-orange-600',
       color2: 'text-blue-600'
     },
+    
+    // NIVEAU 4 : Nombres plus grands (100-200)
     {
-      story: 'Julie a des billes dans sa trousse. Elle a 11 billes transparentes et 9 billes colorées. Combien de billes a-t-elle ?',
-      answer: 20,
-      visual: '⚪',
-      first: 11,
-      second: 9,
-      item: '⚪',
-      color1: 'text-gray-400',
-      color2: 'text-purple-600'
-    },
-    {
-      story: 'Papa plante des fleurs. Il met 12 tulipes jaunes et 8 tulipes roses dans le jardin. Combien de tulipes a-t-il plantées ?',
-      answer: 20,
-      visual: '🌷',
-      first: 12,
-      second: 8,
-      item: '🌷',
-      color1: 'text-yellow-600',
-      color2: 'text-pink-600'
-    },
-    {
-      story: 'Dans la bibliothèque, il y a 13 livres sur les animaux et 7 livres sur les plantes. Combien de livres y a-t-il ?',
-      answer: 20,
-      visual: '📚',
-      first: 13,
-      second: 7,
-      item: '📚',
-      color1: 'text-orange-600',
+      story: 'Sophie compte ses autocollants. Elle a 68 autocollants de princesses et 45 autocollants d\'animaux. Combien d\'autocollants a-t-elle ?',
+      answer: 113,
+      visual: '🌟',
+      first: 68,
+      second: 45,
+      item: '🌟',
+      color1: 'text-pink-600',
       color2: 'text-green-600'
     },
     {
-      story: 'Sophie compte ses jouets. Elle a 14 peluches d\'animaux et 6 poupées. Combien de jouets a-t-elle ?',
-      answer: 20,
-      visual: '🧸',
-      first: 14,
-      second: 6,
-      item: '🧸',
-      color1: 'text-amber-700',
-      color2: 'text-pink-600'
+      story: 'Lucas compte ses LEGO. Il a 76 pièces rouges et 58 pièces bleues. Combien de pièces a-t-il en tout ?',
+      answer: 134,
+      visual: '🧱',
+      first: 76,
+      second: 58,
+      item: '🧱',
+      color1: 'text-red-600',
+      color2: 'text-blue-600'
     },
+    
+    // NIVEAU 5 : Additions complexes (200-500)
     {
-      story: 'Lucas a des cartes de jeu. Il a 15 cartes bleues et 5 cartes rouges. Combien de cartes a-t-il en tout ?',
-      answer: 20,
-      visual: '🎴',
-      first: 15,
-      second: 5,
-      item: '🎴',
-      color1: 'text-blue-600',
-      color2: 'text-red-600'
-    },
-    {
-      story: 'Marie fait un puzzle. Elle a déjà posé 16 pièces bleues et 4 pièces vertes. Combien de pièces a-t-elle posées ?',
-      answer: 20,
+      story: 'Marie fait un puzzle géant. Elle a déjà posé 87 pièces le matin et 96 pièces l\'après-midi. Combien de pièces a-t-elle posées ?',
+      answer: 183,
       visual: '🧩',
-      first: 16,
-      second: 4,
+      first: 87,
+      second: 96,
       item: '🧩',
       color1: 'text-blue-600',
       color2: 'text-green-600'
     },
     {
-      story: 'Dans le potager de l\'école, les enfants ont planté 17 graines de radis et 3 graines de carottes. Combien de graines ont-ils plantées ?',
-      answer: 20,
-      visual: '🌱',
-      first: 17,
-      second: 3,
-      item: '🌱',
-      color1: 'text-green-600',
+      story: 'Dans la ferme de grand-père, il y a 128 poules et 97 canards. Combien d\'oiseaux y a-t-il ?',
+      answer: 225,
+      visual: '🐔',
+      first: 128,
+      second: 97,
+      item: '🐔',
+      color1: 'text-yellow-600',
       color2: 'text-orange-600'
     },
     {
-      story: 'Antoine collectionne les capsules. Il a 18 capsules de sodas et 2 capsules d\'eau. Combien de capsules a-t-il ?',
-      answer: 20,
-      visual: '🔴',
-      first: 18,
-      second: 2,
-      item: '🔴',
-      color1: 'text-red-600',
+      story: 'Antoine collectionne les cartes. Il a 156 cartes dans sa première boîte et 178 cartes dans sa deuxième boîte. Combien de cartes a-t-il ?',
+      answer: 334,
+      visual: '🎮',
+      first: 156,
+      second: 178,
+      item: '🎮',
+      color1: 'text-purple-600',
       color2: 'text-blue-600'
     },
+    
+    // NIVEAU 6 : Grandes additions (500-1000)
     {
-      story: 'Emma dessine des étoiles. Elle a dessiné 19 étoiles jaunes et 1 étoile argentée. Combien d\'étoiles a-t-elle dessinées ?',
-      answer: 20,
-      visual: '⭐',
-      first: 19,
-      second: 1,
-      item: '⭐',
-      color1: 'text-yellow-500',
-      color2: 'text-gray-400'
+      story: 'Emma dessine des pixels sur son ordinateur. Elle en a colorié 234 le matin et 289 l\'après-midi. Combien de pixels a-t-elle coloriés ?',
+      answer: 523,
+      visual: '🎨',
+      first: 234,
+      second: 289,
+      item: '🎨',
+      color1: 'text-pink-600',
+      color2: 'text-purple-600'
     },
     {
-      story: 'Dans sa boîte, Léo a 11 coquillages blancs et 8 coquillages roses qu\'il a ramassés à la plage. Combien de coquillages a-t-il ?',
-      answer: 19,
+      story: 'Dans sa collection, Léo a 367 coquillages de la mer du Nord et 258 coquillages de la Méditerranée. Combien de coquillages a-t-il ?',
+      answer: 625,
       visual: '🐚',
-      first: 11,
-      second: 8,
+      first: 367,
+      second: 258,
       item: '🐚',
-      color1: 'text-gray-200',
-      color2: 'text-pink-600'
-    },
-    {
-      story: 'Hugo compte ses timbres. Il a 12 timbres français et 7 timbres étrangers. Combien de timbres a-t-il en tout ?',
-      answer: 19,
-      visual: '📮',
-      first: 12,
-      second: 7,
-      item: '📮',
       color1: 'text-blue-600',
-      color2: 'text-green-600'
+      color2: 'text-cyan-600'
     },
     {
-      story: 'Dans la cuisine, Maman a préparé 13 gâteaux au chocolat et 6 gâteaux à la vanille. Combien de gâteaux a-t-elle faits ?',
-      answer: 19,
-      visual: '🧁',
-      first: 13,
-      second: 6,
-      item: '🧁',
-      color1: 'text-amber-800',
-      color2: 'text-yellow-500'
+      story: 'Hugo compte les pages qu\'il a lues. Il a lu 428 pages en janvier et 345 pages en février. Combien de pages a-t-il lues ?',
+      answer: 773,
+      visual: '📚',
+      first: 428,
+      second: 345,
+      item: '📚',
+      color1: 'text-green-600',
+      color2: 'text-blue-600'
+    },
+    
+    // NIVEAU 7 : Très grandes additions (1000+)
+    {
+      story: 'Dans le jeu vidéo de Maman, elle a collecté 456 pièces d\'or dans le premier niveau et 567 pièces dans le second niveau. Combien de pièces a-t-elle ?',
+      answer: 1023,
+      visual: '🪙',
+      first: 456,
+      second: 567,
+      item: '🪙',
+      color1: 'text-yellow-600',
+      color2: 'text-amber-600'
     },
     {
-      story: 'Paul joue avec des blocs de construction. Il a 14 blocs rouges et 5 blocs verts. Combien de blocs a-t-il ?',
-      answer: 19,
-      visual: '🧱',
-      first: 14,
-      second: 5,
-      item: '🧱',
+      story: 'Paul construit une grande tour. Il utilise 678 blocs rouges et 445 blocs verts. Combien de blocs utilise-t-il en tout ?',
+      answer: 1123,
+      visual: '🏗️',
+      first: 678,
+      second: 445,
+      item: '🏗️',
       color1: 'text-red-600',
       color2: 'text-green-600'
     },
     {
-      story: 'Dans son album photo, Zoé a collé 15 photos de vacances et 4 photos d\'anniversaire. Combien de photos a-t-elle ?',
-      answer: 19,
+      story: 'Zoé compte les photos dans sa famille. Il y a 589 photos de vacances et 634 photos d\'anniversaires. Combien de photos y a-t-il ?',
+      answer: 1223,
       visual: '📷',
-      first: 15,
-      second: 4,
+      first: 589,
+      second: 634,
       item: '📷',
       color1: 'text-blue-600',
       color2: 'text-pink-600'
     },
     {
-      story: 'Thomas a des badges sur son sac. Il a 16 badges de sports et 3 badges de musique. Combien de badges a-t-il ?',
-      answer: 19,
-      visual: '🏅',
-      first: 16,
-      second: 3,
-      item: '🏅',
+      story: 'Thomas compte ses points dans le jeu. Il a marqué 734 points hier et 789 points aujourd\'hui. Combien de points a-t-il en tout ?',
+      answer: 1523,
+      visual: '🎯',
+      first: 734,
+      second: 789,
+      item: '🎯',
       color1: 'text-orange-600',
-      color2: 'text-purple-600'
+      color2: 'text-red-600'
     }
   ];
 
@@ -700,6 +713,106 @@ export default function ProblemesAddition() {
     speechSynthesis.speak(utterance);
   };
 
+  // Fonction pour lire une étape spécifique de la méthode
+  const readMethodStep = async (step: string) => {
+    console.log('🎯 readMethodStep appelée pour:', step);
+    
+    // Arrêter tous les autres vocaux en cours
+    stopAllVocalsAndAnimations();
+    await wait(200);
+    stopSignalRef.current = false;
+    
+    try {
+      // Mettre en évidence l'étape correspondante
+      setAnimatingStep(step);
+      console.log('🌟 Mise en évidence de l\'étape:', step);
+      
+      let text = '';
+      switch (step) {
+        case 'step1':
+          text = "Première étape : Je lis le problème et je comprends l'histoire. Je dois bien comprendre ce qui se passe dans l'histoire pour identifier les nombres importants.";
+          break;
+        case 'step2':
+          text = "Deuxième étape : Je trouve les deux nombres à additionner. Je cherche dans l'histoire les quantités que je dois rassembler ou compter ensemble.";
+          break;
+        case 'step3':
+          text = "Troisième étape : J'écris l'addition et je calcule. Je pose l'opération et je trouve le résultat pour répondre à la question.";
+          break;
+        default:
+          text = "Étape de la méthode.";
+      }
+      
+      console.log('🔊 Lecture du texte:', text);
+      await playAudio(text);
+      console.log('✅ Lecture terminée');
+      
+      // Attendre un peu puis enlever la mise en évidence
+      await wait(500);
+      setAnimatingStep(null);
+      console.log('🎯 Mise en évidence supprimée');
+      
+    } catch (error) {
+      console.error('Erreur lors de la lecture de l\'étape:', error);
+      setAnimatingStep(null);
+    }
+  };
+
+  // Fonction pour lire la section méthode
+  const readSectionMethod = async () => {
+    console.log('🎯 readSectionMethod appelée');
+    
+    // Arrêter tous les autres vocaux en cours
+    stopAllVocalsAndAnimations();
+    await wait(200);
+    stopSignalRef.current = false;
+    
+    try {
+      // Mettre en évidence la section méthode
+      setHighlightedElement('method');
+      scrollToSection(methodSectionRef);
+      
+      // Introduction générale
+      await playAudio("Ma méthode en 3 étapes pour résoudre un problème d'addition.");
+      if (stopSignalRef.current) return;
+      
+      await wait(800);
+      if (stopSignalRef.current) return;
+      
+      // Étape 1 avec mise en évidence
+      setAnimatingStep('step1');
+      await playAudio("Première étape : je lis le problème et je comprends l'histoire. Je dois bien comprendre ce qui se passe dans l'histoire pour identifier les nombres importants.");
+      if (stopSignalRef.current) return;
+      
+      await wait(1000);
+      if (stopSignalRef.current) return;
+      
+      // Étape 2 avec mise en évidence  
+      setAnimatingStep('step2');
+      await playAudio("Deuxième étape : je trouve les deux nombres à additionner. Je cherche dans l'histoire les quantités que je dois rassembler ou compter ensemble.");
+      if (stopSignalRef.current) return;
+      
+      await wait(1000);
+      if (stopSignalRef.current) return;
+      
+      // Étape 3 avec mise en évidence
+      setAnimatingStep('step3');
+      await playAudio("Troisième étape : j'écris l'addition et je calcule le résultat. Je pose l'opération et je trouve le résultat pour répondre à la question.");
+      if (stopSignalRef.current) return;
+      
+      await wait(500);
+      if (stopSignalRef.current) return;
+      
+      console.log('✅ Lecture terminée');
+      
+    } catch (error) {
+      console.error('Erreur lors de la lecture de la méthode:', error);
+    } finally {
+      // Enlever toutes les mises en évidence
+      setHighlightedElement(null);
+      setAnimatingStep(null);
+    }
+  };
+
   // Fonction pour expliquer les exercices avec Sam
   const explainExercisesWithSam = async () => {
     if (exercisesIsPlayingVocal) return;
@@ -933,6 +1046,10 @@ export default function ProblemesAddition() {
     
     if (correct) {
       setScore(score + 1);
+      // Passer automatiquement au suivant après 2 secondes
+      setTimeout(() => {
+        nextExercise();
+      }, 2000);
     } else {
       // Déclencher la correction vocale automatique et l'animation visuelle
       setShowExerciseAnimation(true);
@@ -1374,34 +1491,56 @@ export default function ProblemesAddition() {
                   <Target className="w-4 h-4 sm:w-6 sm:h-6 text-purple-600" />
                 </div>
                 <h2 className="text-base sm:text-2xl font-bold text-gray-800">Ma méthode en 3 étapes</h2>
-                {/* Icône d'animation pour la méthode */}
-                <div className={`bg-gradient-to-r from-purple-500 to-indigo-600 text-white rounded-full w-6 h-6 sm:w-12 sm:h-12 flex items-center justify-center text-xs sm:text-xl font-bold shadow-lg hover:scale-110 cursor-pointer transition-all duration-300 ring-2 ring-purple-300 ${
-                  highlightedElement === 'method' ? 'ring-4 ring-yellow-400 animate-bounce scale-110' : ''
-                }`} 
-                     style={{animation: 'subtle-glow 2s infinite'}}>
+                {/* Bouton d'animation pour la méthode */}
+                <button 
+                  onClick={() => readSectionMethod()}
+                  className={`bg-gradient-to-r from-purple-500 to-indigo-600 text-white rounded-full w-6 h-6 sm:w-12 sm:h-12 flex items-center justify-center text-xs sm:text-xl font-bold shadow-lg hover:scale-110 cursor-pointer transition-all duration-300 ring-2 ring-purple-300 ${
+                    highlightedElement === 'method' ? 'ring-4 ring-yellow-400 animate-bounce scale-110' : ''
+                  }`} 
+                  style={{animation: 'subtle-glow 2s infinite'}}
+                  title="Cliquer pour écouter cette section"
+                >
                   🎯
-                </div>
+                </button>
               </div>
               
               <div className="space-y-4">
                 <div className={`flex items-center gap-4 p-4 rounded-lg transition-all ${
                   animatingStep === 'step1' ? 'bg-blue-100 ring-2 ring-blue-400' : 'bg-gray-100'
                 }`}>
-                  <div className="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold">1</div>
+                  <div 
+                    className="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold cursor-pointer hover:scale-110 transition-all duration-300 hover:bg-blue-600"
+                    onClick={() => readMethodStep('step1')}
+                    title="Cliquer pour écouter cette étape"
+                  >
+                    1
+                  </div>
                   <p className="text-lg text-gray-800">Je lis le problème et je comprends l'histoire</p>
                 </div>
                 
                 <div className={`flex items-center gap-4 p-4 rounded-lg transition-all ${
                   animatingStep === 'step2' ? 'bg-green-100 ring-2 ring-green-400' : 'bg-gray-100'
                 }`}>
-                  <div className="w-8 h-8 bg-green-500 text-white rounded-full flex items-center justify-center font-bold">2</div>
+                  <div 
+                    className="w-8 h-8 bg-green-500 text-white rounded-full flex items-center justify-center font-bold cursor-pointer hover:scale-110 transition-all duration-300 hover:bg-green-600"
+                    onClick={() => readMethodStep('step2')}
+                    title="Cliquer pour écouter cette étape"
+                  >
+                    2
+                  </div>
                   <p className="text-lg text-gray-800">Je trouve les deux nombres à additionner</p>
                 </div>
                 
                 <div className={`flex items-center gap-4 p-4 rounded-lg transition-all ${
                   animatingStep === 'step3' ? 'bg-purple-100 ring-2 ring-purple-400' : 'bg-gray-100'
                 }`}>
-                  <div className="w-8 h-8 bg-purple-500 text-white rounded-full flex items-center justify-center font-bold">3</div>
+                  <div 
+                    className="w-8 h-8 bg-purple-500 text-white rounded-full flex items-center justify-center font-bold cursor-pointer hover:scale-110 transition-all duration-300 hover:bg-purple-600"
+                    onClick={() => readMethodStep('step3')}
+                    title="Cliquer pour écouter cette étape"
+                  >
+                    3
+                  </div>
                   <p className="text-lg text-gray-800">J'écris l'addition et je calcule</p>
                 </div>
               </div>
@@ -1757,7 +1896,7 @@ export default function ProblemesAddition() {
                               </div>
                             )}
 
-                            {/* Animation des objets */}
+                            {/* Animation des objets avec représentation adaptée */}
                             {(exerciseAnimationStep === 'show-groups' || exerciseAnimationStep === 'show-calculation' || exerciseAnimationStep === 'show-result') && (
                               <div className="flex justify-center items-center space-x-6">
                                 {/* Premier groupe */}
@@ -1765,22 +1904,57 @@ export default function ProblemesAddition() {
                                   <div className="text-center mb-2">
                                     <span className="font-bold text-red-800">{exercise.first}</span>
                                   </div>
-                                  <div className="grid grid-cols-3 gap-1">
-                                    {Array.from({ length: Math.min(exercise.first, 9) }, (_, i) => (
-                                      <div
-                                        key={i}
-                                        className={`text-2xl ${exercise.color1} animate-bounce`}
-                                        style={{ animationDelay: `${i * 100}ms` }}
-                                      >
-                                        {exercise.item}
-                                      </div>
-                                    ))}
-                                    {exercise.first > 9 && (
-                                      <div className="text-sm text-gray-600 col-span-3 text-center">
-                                        + {exercise.first - 9} autres...
-                                      </div>
-                                    )}
-                                  </div>
+                                  {exercise.first <= 12 ? (
+                                    /* Petits nombres : affichage direct */
+                                    <div className="grid grid-cols-4 gap-1 max-w-32">
+                                      {Array.from({ length: exercise.first }, (_, i) => (
+                                        <div
+                                          key={i}
+                                          className={`text-xl ${exercise.color1} animate-bounce`}
+                                          style={{ animationDelay: `${i * 100}ms` }}
+                                        >
+                                          {exercise.item}
+                                        </div>
+                                      ))}
+                                    </div>
+                                  ) : (
+                                    /* Grands nombres : représentation dizaines + unités */
+                                    <div className="space-y-2">
+                                      {Math.floor(exercise.first / 10) > 0 && (
+                                        <div className="text-center">
+                                          <div className="text-xs text-gray-600 mb-1">Dizaines</div>
+                                          <div className="flex justify-center space-x-1">
+                                            {Array.from({ length: Math.floor(exercise.first / 10) }, (_, i) => (
+                                              <div
+                                                key={i}
+                                                className="w-6 h-8 bg-red-400 rounded animate-pulse border border-red-600"
+                                                style={{ animationDelay: `${i * 200}ms` }}
+                                                title="10"
+                                              >
+                                                <div className="text-xs text-white text-center leading-8 font-bold">10</div>
+                                              </div>
+                                            ))}
+                                          </div>
+                                        </div>
+                                      )}
+                                      {exercise.first % 10 > 0 && (
+                                        <div className="text-center">
+                                          <div className="text-xs text-gray-600 mb-1">Unités</div>
+                                          <div className="flex justify-center space-x-1">
+                                            {Array.from({ length: exercise.first % 10 }, (_, i) => (
+                                              <div
+                                                key={i}
+                                                className={`text-sm ${exercise.color1} animate-bounce`}
+                                                style={{ animationDelay: `${i * 100}ms` }}
+                                              >
+                                                {exercise.item}
+                                              </div>
+                                            ))}
+                                          </div>
+                                        </div>
+                                      )}
+                                    </div>
+                                  )}
                                 </div>
 
                                 <div className="text-3xl font-bold text-gray-700">+</div>
@@ -1790,22 +1964,57 @@ export default function ProblemesAddition() {
                                   <div className="text-center mb-2">
                                     <span className="font-bold text-blue-800">{exercise.second}</span>
                                   </div>
-                                  <div className="grid grid-cols-3 gap-1">
-                                    {Array.from({ length: Math.min(exercise.second, 9) }, (_, i) => (
-                                      <div
-                                        key={i}
-                                        className={`text-2xl ${exercise.color2} animate-bounce`}
-                                        style={{ animationDelay: `${i * 100}ms` }}
-                                      >
-                                        {exercise.item}
-                                      </div>
-                                    ))}
-                                    {exercise.second > 9 && (
-                                      <div className="text-sm text-gray-600 col-span-3 text-center">
-                                        + {exercise.second - 9} autres...
-                                      </div>
-                                    )}
-                                  </div>
+                                  {exercise.second <= 12 ? (
+                                    /* Petits nombres : affichage direct */
+                                    <div className="grid grid-cols-4 gap-1 max-w-32">
+                                      {Array.from({ length: exercise.second }, (_, i) => (
+                                        <div
+                                          key={i}
+                                          className={`text-xl ${exercise.color2} animate-bounce`}
+                                          style={{ animationDelay: `${i * 100}ms` }}
+                                        >
+                                          {exercise.item}
+                                        </div>
+                                      ))}
+                                    </div>
+                                  ) : (
+                                    /* Grands nombres : représentation dizaines + unités */
+                                    <div className="space-y-2">
+                                      {Math.floor(exercise.second / 10) > 0 && (
+                                        <div className="text-center">
+                                          <div className="text-xs text-gray-600 mb-1">Dizaines</div>
+                                          <div className="flex justify-center space-x-1">
+                                            {Array.from({ length: Math.floor(exercise.second / 10) }, (_, i) => (
+                                              <div
+                                                key={i}
+                                                className="w-6 h-8 bg-blue-400 rounded animate-pulse border border-blue-600"
+                                                style={{ animationDelay: `${i * 200}ms` }}
+                                                title="10"
+                                              >
+                                                <div className="text-xs text-white text-center leading-8 font-bold">10</div>
+                                              </div>
+                                            ))}
+                                          </div>
+                                        </div>
+                                      )}
+                                      {exercise.second % 10 > 0 && (
+                                        <div className="text-center">
+                                          <div className="text-xs text-gray-600 mb-1">Unités</div>
+                                          <div className="flex justify-center space-x-1">
+                                            {Array.from({ length: exercise.second % 10 }, (_, i) => (
+                                              <div
+                                                key={i}
+                                                className={`text-sm ${exercise.color2} animate-bounce`}
+                                                style={{ animationDelay: `${i * 100}ms` }}
+                                              >
+                                                {exercise.item}
+                                              </div>
+                                            ))}
+                                          </div>
+                                        </div>
+                                      )}
+                                    </div>
+                                  )}
                                 </div>
                               </div>
                             )}
@@ -1860,12 +2069,22 @@ export default function ProblemesAddition() {
                         </div>
                       </div>
                       
-                      <button
-                        onClick={nextExercise}
-                        className="bg-orange-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-orange-600 mt-2 transition-all"
-                      >
-                        {currentExercise < exercises.length - 1 ? 'Exercice suivant' : 'Voir mes résultats'}
-                      </button>
+                      {/* Afficher le bouton seulement si la réponse est incorrecte */}
+                      {!isCorrect && (
+                        <button
+                          onClick={nextExercise}
+                          className="bg-orange-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-orange-600 mt-2 transition-all"
+                        >
+                          {currentExercise < exercises.length - 1 ? 'Exercice suivant' : 'Voir mes résultats'}
+                        </button>
+                      )}
+                      
+                      {/* Message pour bonne réponse */}
+                      {isCorrect && (
+                        <div className="text-sm text-green-600 mt-2 animate-pulse">
+                          Passage automatique à l'exercice suivant...
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>

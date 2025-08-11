@@ -772,11 +772,17 @@ export default function ProblemesAddition() {
 
   // Fonction pour lire une étape spécifique de la méthode
   const readMethodStep = async (step: string) => {
-    if (isPlayingVocal) return;
+    console.log('🎯 readMethodStep appelée pour:', step);
+    
+    // Arrêter tous les autres vocaux en cours
+    stopAllVocalsAndAnimations();
+    await wait(200);
+    stopSignalRef.current = false;
     
     try {
       // Mettre en évidence l'étape correspondante
       setAnimatingStep(step);
+      console.log('🌟 Mise en évidence de l\'étape:', step);
       
       let text = '';
       switch (step) {
@@ -793,15 +799,134 @@ export default function ProblemesAddition() {
           text = "Étape de la méthode.";
       }
       
+      console.log('🔊 Lecture du texte:', text);
       await playAudio(text);
+      console.log('✅ Lecture terminée');
       
       // Attendre un peu puis enlever la mise en évidence
       await wait(500);
       setAnimatingStep(null);
+      console.log('🎯 Mise en évidence supprimée');
       
     } catch (error) {
       console.error('Erreur lors de la lecture de l\'étape:', error);
       setAnimatingStep(null);
+    }
+  };
+
+  // Fonction pour lire la section introduction
+  const readSectionIntro = async () => {
+    console.log('🎯 readSectionIntro appelée');
+    
+    // Arrêter tous les autres vocaux en cours
+    stopAllVocalsAndAnimations();
+    await wait(200);
+    stopSignalRef.current = false;
+    
+    try {
+      // Mettre en évidence la section introduction
+      setHighlightedElement('intro');
+      scrollToSection(introSectionRef);
+      
+      const text = "Qu'est-ce qu'un problème d'addition ? Un problème d'addition raconte une histoire avec des nombres. Notre mission est de trouver ces nombres et de les additionner pour répondre à la question !";
+      
+      console.log('🔊 Lecture du texte:', text);
+      await playAudio(text);
+      console.log('✅ Lecture terminée');
+      
+      // Attendre un peu puis enlever la mise en évidence
+      await wait(500);
+      setHighlightedElement(null);
+      
+    } catch (error) {
+      console.error('Erreur lors de la lecture de l\'introduction:', error);
+      setHighlightedElement(null);
+    }
+  };
+
+  // Fonction pour lire la section méthode
+  const readSectionMethod = async () => {
+    console.log('🎯 readSectionMethod appelée');
+    
+    // Arrêter tous les autres vocaux en cours
+    stopAllVocalsAndAnimations();
+    await wait(200);
+    stopSignalRef.current = false;
+    
+    try {
+      // Mettre en évidence la section méthode
+      setHighlightedElement('method');
+      scrollToSection(methodSectionRef);
+      
+      // Introduction générale
+      await playAudio("Ma méthode en 3 étapes pour résoudre un problème d'addition.");
+      if (stopSignalRef.current) return;
+      
+      await wait(800);
+      if (stopSignalRef.current) return;
+      
+      // Étape 1 avec mise en évidence
+      setAnimatingStep('step1');
+      await playAudio("Première étape : je lis le problème et je comprends l'histoire. Je dois bien comprendre ce qui se passe dans l'histoire pour identifier les nombres importants.");
+      if (stopSignalRef.current) return;
+      
+      await wait(1000);
+      if (stopSignalRef.current) return;
+      
+      // Étape 2 avec mise en évidence  
+      setAnimatingStep('step2');
+      await playAudio("Deuxième étape : je trouve les deux nombres à additionner. Je cherche dans l'histoire les quantités que je dois rassembler ou compter ensemble.");
+      if (stopSignalRef.current) return;
+      
+      await wait(1000);
+      if (stopSignalRef.current) return;
+      
+      // Étape 3 avec mise en évidence
+      setAnimatingStep('step3');
+      await playAudio("Troisième étape : j'écris l'addition et je calcule le résultat. Je pose l'opération et je trouve le résultat pour répondre à la question.");
+      if (stopSignalRef.current) return;
+      
+      await wait(500);
+      if (stopSignalRef.current) return;
+      
+      console.log('✅ Lecture terminée');
+      
+    } catch (error) {
+      console.error('Erreur lors de la lecture de la méthode:', error);
+    } finally {
+      // Enlever toutes les mises en évidence
+      setHighlightedElement(null);
+      setAnimatingStep(null);
+    }
+  };
+
+  // Fonction pour lire la section exemples
+  const readSectionExamples = async () => {
+    console.log('🎯 readSectionExamples appelée');
+    
+    // Arrêter tous les autres vocaux en cours
+    stopAllVocalsAndAnimations();
+    await wait(200);
+    stopSignalRef.current = false;
+    
+    try {
+      // Mettre en évidence la section exemples
+      setHighlightedElement('examples');
+      scrollToSection(examplesSectionRef);
+      
+      const text = "Choisis un problème à résoudre ensemble ! Ici tu trouveras 9 exemples différents avec des animations pour bien comprendre comment résoudre chaque problème d'addition. Clique sur celui que tu préfères pour voir l'animation détaillée !";
+      
+      console.log('🔊 Lecture du texte:', text);
+      await playAudio(text);
+      console.log('✅ Lecture terminée');
+      
+      // Attendre un peu puis enlever la mise en évidence
+      await wait(500);
+      setHighlightedElement(null);
+      
+    } catch (error) {
+      console.error('Erreur lors de la lecture des exemples:', error);
+      setHighlightedElement(null);
     }
   };
 
@@ -975,6 +1100,12 @@ export default function ProblemesAddition() {
     
     if (correct) {
       setScore(score + 1);
+      // Passer automatiquement au suivant après 1.5 secondes
+      setTimeout(() => {
+        setIsCorrect(null); // Reset l'état pour éviter le flash
+        setUserAnswer(''); // Reset la réponse
+        nextExercise();
+      }, 1500);
     } else {
       // Déclencher la correction vocale automatique et l'animation visuelle
       setShowExerciseAnimation(true);
@@ -1393,13 +1524,17 @@ export default function ProblemesAddition() {
                   <Book className="w-4 h-4 sm:w-6 sm:h-6 text-orange-600" />
                 </div>
                 <h2 className="text-base sm:text-2xl font-bold text-gray-800">Qu'est-ce qu'un problème d'addition ?</h2>
-                {/* Icône d'animation pour l'introduction */}
-                <div className={`bg-gradient-to-r from-orange-500 to-red-600 text-white rounded-full w-6 h-6 sm:w-12 sm:h-12 flex items-center justify-center text-xs sm:text-xl font-bold shadow-lg hover:scale-110 cursor-pointer transition-all duration-300 ring-2 ring-orange-300 ${
-                  highlightedElement === 'intro' ? 'ring-4 ring-yellow-400 animate-bounce scale-110' : ''
-                }`} 
-                     style={{animation: 'subtle-glow 2s infinite'}}>
+                {/* Bouton d'animation pour l'introduction */}
+                <button 
+                  onClick={() => readSectionIntro()}
+                  className={`bg-gradient-to-r from-orange-500 to-red-600 text-white rounded-full w-6 h-6 sm:w-12 sm:h-12 flex items-center justify-center text-xs sm:text-xl font-bold shadow-lg hover:scale-110 cursor-pointer transition-all duration-300 ring-2 ring-orange-300 ${
+                    highlightedElement === 'intro' ? 'ring-4 ring-yellow-400 animate-bounce scale-110' : ''
+                  }`} 
+                  style={{animation: 'subtle-glow 2s infinite'}}
+                  title="Cliquer pour écouter cette section"
+                >
                   🧮
-                </div>
+                </button>
               </div>
               <p className="text-sm sm:text-lg text-gray-700 leading-relaxed">
                 Un problème d'addition raconte une histoire avec des nombres. 
@@ -1420,13 +1555,17 @@ export default function ProblemesAddition() {
                   <Target className="w-4 h-4 sm:w-6 sm:h-6 text-purple-600" />
                 </div>
                 <h2 className="text-base sm:text-2xl font-bold text-gray-800">Ma méthode en 3 étapes</h2>
-                {/* Icône d'animation pour la méthode */}
-                <div className={`bg-gradient-to-r from-purple-500 to-indigo-600 text-white rounded-full w-6 h-6 sm:w-12 sm:h-12 flex items-center justify-center text-xs sm:text-xl font-bold shadow-lg hover:scale-110 cursor-pointer transition-all duration-300 ring-2 ring-purple-300 ${
-                  highlightedElement === 'method' ? 'ring-4 ring-yellow-400 animate-bounce scale-110' : ''
-                }`} 
-                     style={{animation: 'subtle-glow 2s infinite'}}>
+                {/* Bouton d'animation pour la méthode */}
+                <button 
+                  onClick={() => readSectionMethod()}
+                  className={`bg-gradient-to-r from-purple-500 to-indigo-600 text-white rounded-full w-6 h-6 sm:w-12 sm:h-12 flex items-center justify-center text-xs sm:text-xl font-bold shadow-lg hover:scale-110 cursor-pointer transition-all duration-300 ring-2 ring-purple-300 ${
+                    highlightedElement === 'method' ? 'ring-4 ring-yellow-400 animate-bounce scale-110' : ''
+                  }`} 
+                  style={{animation: 'subtle-glow 2s infinite'}}
+                  title="Cliquer pour écouter cette section"
+                >
                   🎯
-                </div>
+                </button>
               </div>
               
               <div className="space-y-4">
@@ -1510,13 +1649,17 @@ export default function ProblemesAddition() {
                 <h2 className="text-base sm:text-2xl font-bold text-gray-800">
                   🎯 Choisis un problème à résoudre ensemble !
                 </h2>
-                {/* Icône d'animation pour les exemples */}
-                <div className={`bg-gradient-to-r from-green-500 to-teal-600 text-white rounded-full w-6 h-6 sm:w-12 sm:h-12 flex items-center justify-center text-xs sm:text-xl font-bold shadow-lg hover:scale-110 cursor-pointer transition-all duration-300 ring-2 ring-green-300 ${
-                  highlightedElement === 'examples' ? 'ring-4 ring-yellow-400 animate-bounce scale-110' : ''
-                }`} 
-                     style={{animation: 'subtle-glow 2s infinite'}}>
+                {/* Bouton d'animation pour les exemples */}
+                <button 
+                  onClick={() => readSectionExamples()}
+                  className={`bg-gradient-to-r from-green-500 to-teal-600 text-white rounded-full w-6 h-6 sm:w-12 sm:h-12 flex items-center justify-center text-xs sm:text-xl font-bold shadow-lg hover:scale-110 cursor-pointer transition-all duration-300 ring-2 ring-green-300 ${
+                    highlightedElement === 'examples' ? 'ring-4 ring-yellow-400 animate-bounce scale-110' : ''
+                  }`} 
+                  style={{animation: 'subtle-glow 2s infinite'}}
+                  title="Cliquer pour écouter cette section"
+                >
                   🎯
-                </div>
+                </button>
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -1907,29 +2050,42 @@ export default function ProblemesAddition() {
                   {isCorrect !== null && (
                     <div 
                       id="exercise-correction"
-                      className={`p-4 rounded-lg text-center ${
+                      className={`p-4 rounded-lg text-center transition-all duration-300 ${
                         isCorrect ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
                       }`}>
-                      <div className="flex items-center justify-center gap-2 mb-2">
-                        {isCorrect ? (
-                          <CheckCircle className="w-6 h-6" />
-                        ) : (
-                          <XCircle className="w-6 h-6" />
-                        )}
-                        <div className="text-2xl">{exercises[currentExercise].visual}</div>
-                      </div>
-                      <div className="mb-3">
-                        <div className="font-bold">
-                          {getPersonalizedFeedback(currentExercise, isCorrect)}
-                        </div>
-                      </div>
                       
-                      <button
-                        onClick={nextExercise}
-                        className="bg-orange-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-orange-600 mt-2 transition-all"
-                      >
-                        {currentExercise < exercises.length - 1 ? 'Exercice suivant' : 'Voir mes résultats'}
-                      </button>
+                      {/* Feedback pour bonne réponse - Simple et rapide */}
+                      {isCorrect ? (
+                        <div className="animate-bounce">
+                          <div className="flex items-center justify-center gap-2 mb-2">
+                            <CheckCircle className="w-8 h-8 text-green-600" />
+                            <div className="text-3xl">{exercises[currentExercise].visual}</div>
+                          </div>
+                          <div className="text-2xl font-bold text-green-700">
+                            C'est bien !
+                          </div>
+                        </div>
+                      ) : (
+                        /* Feedback pour mauvaise réponse - Détaillé */
+                        <>
+                          <div className="flex items-center justify-center gap-2 mb-2">
+                            <XCircle className="w-6 h-6" />
+                            <div className="text-2xl">{exercises[currentExercise].visual}</div>
+                          </div>
+                          <div className="mb-3">
+                            <div className="font-bold">
+                              {getPersonalizedFeedback(currentExercise, isCorrect)}
+                            </div>
+                          </div>
+                          
+                          <button
+                            onClick={nextExercise}
+                            className="bg-orange-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-orange-600 mt-2 transition-all"
+                          >
+                            {currentExercise < exercises.length - 1 ? 'Exercice suivant' : 'Voir mes résultats'}
+                          </button>
+                        </>
+                      )}
                     </div>
                   )}
                 </div>
