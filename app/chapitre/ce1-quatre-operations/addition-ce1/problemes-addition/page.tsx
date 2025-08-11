@@ -354,6 +354,26 @@ export default function ProblemesAddition() {
     setSamSizeExpanded(false);
   };
 
+  // Fonction pour lire le texte de l'introduction
+  const readIntroduction = async () => {
+    if (isPlayingVocal) {
+      stopAllVocalsAndAnimations();
+      return;
+    }
+
+    stopSignalRef.current = false;
+    setIsPlayingVocal(true);
+    
+    try {
+      const introText = "Un problème d'addition raconte une histoire avec des nombres. Notre mission est de trouver ces nombres et de les additionner pour répondre à la question !";
+      await playAudio(introText);
+    } catch (error) {
+      console.error('Erreur lors de la lecture de l\'introduction:', error);
+    } finally {
+      setIsPlayingVocal(false);
+    }
+  };
+
   // Fonction pour jouer l'audio avec voix féminine française
   const playAudio = async (text: string, slowMode = false) => {
     return new Promise<void>((resolve) => {
@@ -892,10 +912,16 @@ export default function ProblemesAddition() {
                   <Book className="w-4 h-4 sm:w-6 sm:h-6 text-orange-600" />
                 </div>
                 <h2 className="text-base sm:text-2xl font-bold text-gray-800">Qu'est-ce qu'un problème d'addition ?</h2>
-                {/* Icône d'animation pour l'introduction */}
-                <div className="bg-gradient-to-r from-orange-500 to-red-600 text-white rounded-full w-6 h-6 sm:w-12 sm:h-12 flex items-center justify-center text-xs sm:text-xl font-bold shadow-lg hover:scale-110 cursor-pointer transition-all duration-300 ring-2 ring-orange-300" 
-                     style={{animation: 'subtle-glow 2s infinite'}}>
-                  🧮
+                {/* Bouton vocal pour l'introduction */}
+                <div 
+                  onClick={readIntroduction}
+                  className={`bg-gradient-to-r from-orange-500 to-red-600 text-white rounded-full w-6 h-6 sm:w-12 sm:h-12 flex items-center justify-center text-xs sm:text-xl font-bold shadow-lg hover:scale-110 cursor-pointer transition-all duration-300 ring-2 ring-orange-300 ${
+                    isPlayingVocal ? 'animate-pulse bg-gradient-to-r from-green-500 to-green-600' : ''
+                  }`}
+                  style={{animation: isPlayingVocal ? 'pulse 1s infinite' : 'subtle-glow 2s infinite'}}
+                  title={isPlayingVocal ? "Arrêter la lecture" : "Écouter l'explication"}
+                >
+                  {isPlayingVocal ? '🔊' : '🧮'}
                 </div>
               </div>
               <p className="text-sm sm:text-lg text-gray-700 leading-relaxed">
