@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, Play, Pause } from 'lucide-react';
 
-export default function SoustractionRetenueCE1() {
+export default function SoustractionEmpruntCE1() {
   // États pour l'audio et animations
   const [isPlayingVocal, setIsPlayingVocal] = useState(false);
   const [isAnimationRunning, setIsAnimationRunning] = useState(false);
@@ -167,7 +167,7 @@ export default function SoustractionRetenueCE1() {
       visual: '  679\n+ 485\n─────\n   ?'
     },
     { 
-      question: 'Que fait-on avec la retenue ?', 
+      question: 'Que fait-on avec la emprunt ?', 
       correctAnswer: 'On l\'ajoute à la colonne suivante',
       choices: ['On l\'oublie', 'On l\'ajoute à la colonne suivante', 'On la soustrait']
     },
@@ -180,7 +180,7 @@ export default function SoustractionRetenueCE1() {
       visual: '  758\n+ 397\n─────\n   ?'
     },
     { 
-      question: 'L\'addition avec retenue nous aide à...', 
+      question: 'La soustraction avec emprunt nous aide à...', 
       correctAnswer: 'Calculer des gros nombres',
       choices: ['Aller plus vite', 'Faire plus joli', 'Calculer des gros nombres']
     }
@@ -404,7 +404,7 @@ export default function SoustractionRetenueCE1() {
     const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
     
     try {
-      await speak("Salut ! Je vais t'expliquer comment faire les exercices d'addition avec retenues !");
+      await speak("Salut ! Je vais t'expliquer comment faire les exercices de soustraction avec emprunts !");
       if (stopSignalRef.current) return;
 
       await speak("D'abord, clique sur l'onglet Exercices pour voir les questions !");
@@ -457,11 +457,11 @@ export default function SoustractionRetenueCE1() {
     setIsAnimationRunning(true);
     setCurrentExample(index);
     setPartialResults({units: null, tens: null, hundreds: null}); // Reset des résultats partiels
-    setCarryValues({toTens: 0, toHundreds: 0}); // Reset des retenues
+    setCarryValues({toTens: 0, toHundreds: 0}); // Reset des emprunts
     
     const example = subtractionExamples[index];
     
-    // Pré-calculer toutes les retenues
+    // Pré-calculer toutes les emprunts
     const num1Units = example.num1 % 10;
     const num2Units = example.num2 % 10;
     const unitsSum = num1Units + num2Units;
@@ -479,7 +479,7 @@ export default function SoustractionRetenueCE1() {
       // Introduction avec focus sur le tableau U/D
       setCalculationStep('setup');
       setHighlightedElement('example-section');
-      await playAudio(`Regardons ensemble cette addition posée : ${example.num1} plus ${example.num2} ! C'est parti !`, true);
+      await playAudio(`Regardons ensemble cette soustraction posée : ${example.num1} moins ${example.num2} ! C'est parti !`, true);
       if (stopSignalRef.current) return;
       
       await wait(1000);
@@ -499,7 +499,7 @@ export default function SoustractionRetenueCE1() {
       await wait(2000);
       setCalculationStep('units');
       
-      await playAudio(`Maintenant, la colonne des unités devient bleue ! Regarde bien... Je calcule : ${num1Units} plus ${num2Units} égale ${unitsSum} !`, true);
+      await playAudio(`Maintenant, la colonne des unités devient bleue ! Regarde bien... Je calcule : ${num1Units} moins ${num2Units} égale ${unitsSum} !`, true);
       if (stopSignalRef.current) return;
       
       // Afficher le résultat des unités immédiatement
@@ -508,16 +508,16 @@ export default function SoustractionRetenueCE1() {
       setPartialResults(prev => ({ ...prev, units: unitsResult }));
       await wait(1000);
       
-      // Gestion de la retenue avec animation spéciale
+      // Gestion de la emprunt avec animation spéciale
       if (carryToTens > 0) {
           await wait(1500);
           setCarryValues(prev => ({ ...prev, toTens: carryToTens }));
           setShowingCarry(true);
-          await playAudio(`Oh là là ! ${unitsSum} est plus grand que 9 ! Attention... Regarde la petite retenue rouge qui apparaît !`, true);
+          await playAudio(`Oh là là ! ${num1Units} est plus petit que ${num2Units} ! Attention... Regarde l'emprunt rouge qui apparaît !`, true);
           if (stopSignalRef.current) return;
           
           await wait(1000);
-          await playAudio(`Regarde à côté ! ${unitsSum} égale ${carryToTens} dizaine et ${unitsSum % 10} unités ! Le ${carryToTens} va en retenue... et le ${unitsSum % 10} reste dans les unités ! C'est magique, non ?`, true);
+          await playAudio(`Regarde ! J'emprunte 1 dizaine qui devient 10 unités ! Maintenant j'ai ${num1Units + 10} unités pour faire ${num1Units + 10} moins ${num2Units} ! C'est magique, non ?`, true);
         if (stopSignalRef.current) return;
       }
       
@@ -531,7 +531,7 @@ export default function SoustractionRetenueCE1() {
         
         await wait(1000);
         if (carryToTens > 0) {
-          await playAudio(`Je calcule : ${num1Tens} plus ${num2Tens}... plus ${carryToTens} de retenue ! Ça fait ${tensSum} !`, true);
+          await playAudio(`Je calcule : ${num1Tens} plus ${num2Tens}... plus ${carryToTens} de emprunt ! Ça fait ${tensSum} !`, true);
         } else {
           await playAudio(`Je calcule : ${num1Tens} plus ${num2Tens}... égale ${tensSum} !`, true);
         }
@@ -543,15 +543,15 @@ export default function SoustractionRetenueCE1() {
         setPartialResults(prev => ({ ...prev, tens: tensResult }));
         await wait(1000);
         
-        // Gestion de la retenue vers les centaines
+        // Gestion de la emprunt vers les centaines
         if (carryToHundreds > 0) {
           await wait(1500);
           setCarryValues(prev => ({ ...prev, toHundreds: carryToHundreds }));
-          await playAudio(`Attention ! ${tensSum} est plus grand que 9 ! Une nouvelle retenue de ${carryToHundreds} apparaît pour les centaines !`, true);
+          await playAudio(`Attention ! On a besoin d'emprunter encore ! Une nouvelle emprunt de ${carryToHundreds} apparaît pour les centaines !`, true);
           if (stopSignalRef.current) return;
           
           await wait(1000);
-          await playAudio(`${tensSum} égale ${carryToHundreds} centaine et ${tensSum % 10} dizaines ! Le ${carryToHundreds} va en retenue vers les centaines !`, true);
+          await playAudio(`J'emprunte encore 1 centaine qui devient 10 dizaines ! Maintenant je peux calculer !`, true);
           if (stopSignalRef.current) return;
         }
       }
@@ -569,7 +569,7 @@ export default function SoustractionRetenueCE1() {
         await wait(1000);
         const hundredsSum = num1Hundreds + num2Hundreds + carryToHundreds;
         if (carryToHundreds > 0) {
-          await playAudio(`Je calcule : ${num1Hundreds} plus ${num2Hundreds}... plus ${carryToHundreds} de retenue ! Ça fait ${hundredsSum} !`, true);
+          await playAudio(`Je calcule : ${num1Hundreds} plus ${num2Hundreds}... plus ${carryToHundreds} de emprunt ! Ça fait ${hundredsSum} !`, true);
         } else {
           await playAudio(`Je calcule : ${num1Hundreds} plus ${num2Hundreds}... égale ${hundredsSum} !`, true);
         }
@@ -589,12 +589,12 @@ export default function SoustractionRetenueCE1() {
         if (stopSignalRef.current) return;
         
         await wait(1500);
-        await playAudio("As-tu vu comme tout s'est bien aligné ? C'est ça, l'addition posée ! Parfait !", true);
+        await playAudio("As-tu vu comme tout s'est bien aligné ? C'est ça, la soustraction posée ! Parfait !", true);
         if (stopSignalRef.current) return;
         
         // Message pédagogique final
         await wait(1000);
-        await playAudio("Souviens-toi : toujours commencer par les unités... puis les dizaines... et n'oublie jamais les retenues !", true);
+        await playAudio("Souviens-toi : toujours commencer par les unités... puis les dizaines... et n'hésite pas à emprunter quand c'est nécessaire !", true);
       if (stopSignalRef.current) return;
       
       await wait(2500);
@@ -629,26 +629,26 @@ export default function SoustractionRetenueCE1() {
       document.getElementById('intro-section')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
       await wait(1000);
       
-      await playAudio("Voici le chapitre pour apprendre à poser les additions ! C'est plus facile comme cela !", true);
+      await playAudio("Voici le chapitre pour apprendre à poser les soustractions ! C'est plus facile comme cela !", true);
       if (stopSignalRef.current) return;
       
       await wait(1500);
       setHighlightedElement(null);
       
       // Présentation des différentes techniques
-      await playAudio("Tu as en dessous les différentes techniques d'additions posées...", true);
+      await playAudio("Tu as en dessous les différentes techniques de soustractions posées...", true);
       if (stopSignalRef.current) return;
       
       await wait(1000);
       
-      // Focus sur les additions sans retenue
+      // Focus sur les additions sans emprunt
       setHighlightedElement('examples-section');
       document.getElementById('examples-section')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
       await wait(1000);
       
-      await playAudio("D'abord, les additions posées sans retenue ! Comme 23 plus 14 ou 31 plus 26...", true);
+      await playAudio("D'abord, les soustractions posées sans emprunt ! Comme 89 moins 14 ou 67 moins 26...", true);
       
-      // Illuminer les exemples sans retenue (indices 0 et 1)
+      // Illuminer les exemples sans emprunt (indices 0 et 1)
       setHighlightedElement('example-0');
       document.getElementById('example-0')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
       await wait(800);
@@ -657,10 +657,10 @@ export default function SoustractionRetenueCE1() {
       await wait(1000);
       if (stopSignalRef.current) return;
       
-      // Highlight spécifiquement les exemples avec retenue
-      await playAudio("Ensuite, les additions avec retenue ! Comme 37 plus 28... c'est un peu plus compliqué !", true);
+      // Highlight spécifiquement les exemples avec emprunt
+      await playAudio("Ensuite, les soustractions avec emprunt ! Comme 52 moins 28... c'est un peu plus compliqué !", true);
       
-      // Illuminer les exemples avec retenue (indices 2 et 3)
+      // Illuminer les exemples avec emprunt (indices 2 et 3)
       setHighlightedElement('example-2');
       document.getElementById('example-2')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
       await wait(800);
@@ -670,7 +670,7 @@ export default function SoustractionRetenueCE1() {
       if (stopSignalRef.current) return;
       
       // Highlight les grands nombres
-      await playAudio("Et enfin, les additions avec de grands nombres ! Par exemple 123 plus 145... avec 3 chiffres !", true);
+      await playAudio("Et enfin, les soustractions avec de grands nombres ! Par exemple 523 moins 145... avec 3 chiffres !", true);
       
       // Illuminer l'exemple à 3 chiffres (indice 4)
       setHighlightedElement('example-4');
@@ -690,7 +690,7 @@ export default function SoustractionRetenueCE1() {
       if (stopSignalRef.current) return;
       
       await wait(1500);
-      await playAudio("Chaque exemple te montrera... étape par étape... comment bien poser ton addition ! Bonne découverte !", true);
+      await playAudio("Chaque exemple te montrera... étape par étape... comment bien poser ta soustraction ! Bonne découverte !", true);
       if (stopSignalRef.current) return;
       
       await wait(1000);
@@ -703,7 +703,7 @@ export default function SoustractionRetenueCE1() {
     }
   };
 
-  // Fonction pour rendre une addition posée avec animations améliorées
+  // Fonction pour rendre une soustraction posée avec animations améliorées
   const renderPostedSubtraction = (example: any, isAnimated = false, showHelperBox = false) => {
     // Déterminer le nombre de chiffres maximum
     const maxDigits = Math.max(example.num1.toString().length, example.num2.toString().length, example.result.toString().length);
@@ -753,7 +753,7 @@ export default function SoustractionRetenueCE1() {
               </div>
             </div>
 
-            {/* Retenues si nécessaire */}
+            {/* Emprunts si nécessaire */}
             {example.hasCarry && showingCarry && (
               <div className="flex justify-center">
                 <div className={`grid gap-8 ${maxDigits >= 3 ? 'grid-cols-3' : 'grid-cols-2'}`}>
@@ -886,18 +886,18 @@ export default function SoustractionRetenueCE1() {
                 )}
                 {showingCarry && (
                   <div className="bg-red-100 text-red-800 p-3 rounded-lg animate-bounce font-medium mt-2">
-                    ⚠️ <strong>Retenue</strong> : regarde le calcul à côté ! Attention !
+                    ⚠️ <strong>Emprunt</strong> : regarde le calcul à côté ! Attention !
                   </div>
                 )}
               </div>
             )}
           </div>
 
-          {/* Panneau explicatif des retenues - Contrôlé par le paramètre showHelperBox */}
+          {/* Panneau explicatif des emprunts - Contrôlé par le paramètre showHelperBox */}
           {example.hasCarry && showingCarry && showHelperBox && (
             <div className="fixed top-20 right-4 z-10 bg-yellow-100 border-2 border-yellow-300 rounded-lg p-4 shadow-lg animate-fade-in max-w-xs">
               <div className="flex items-center justify-between mb-3">
-                <div className="text-sm text-yellow-700 font-medium">Calculs avec retenues :</div>
+                <div className="text-sm text-yellow-700 font-medium">Calculs avec emprunts :</div>
                 <div className="text-yellow-600 text-xs">💡 Aide</div>
               </div>
               
@@ -960,7 +960,7 @@ export default function SoustractionRetenueCE1() {
     const num2 = parseInt(match[2]);
     const result = parseInt(exercise.correctAnswer);
     
-    // Pré-calculer toutes les retenues comme dans explainExample
+    // Pré-calculer toutes les emprunts comme dans explainExample
     const num1Units = num1 % 10;
     const num2Units = num2 % 10;
     const unitsSum = num1Units + num2Units;
@@ -981,7 +981,7 @@ export default function SoustractionRetenueCE1() {
       setCarryValues({toTens: 0, toHundreds: 0});
       setShowingCarry(false);
       
-      await playAudio(`Regardons ensemble comment faire ${num1} plus ${num2} avec la méthode posée !`, true);
+      await playAudio(`Regardons ensemble comment faire ${num1} moins ${num2} avec la méthode posée !`, true);
       if (stopSignalRef.current) return;
       
       await wait(1000);
@@ -1001,7 +1001,7 @@ export default function SoustractionRetenueCE1() {
       await wait(1500);
       setCalculationStep('units');
       
-      await playAudio(`Colonne U : ${num1Units} plus ${num2Units} égale ${unitsSum}`, true);
+      await playAudio(`Colonne U : ${num1Units} moins ${num2Units} égale ${unitsSum}`, true);
       if (stopSignalRef.current) return;
       
       await wait(500);
@@ -1009,12 +1009,12 @@ export default function SoustractionRetenueCE1() {
       setPartialResults(prev => ({ ...prev, units: unitsResult }));
       await wait(1000);
       
-      // Gestion de la retenue des unités
+      // Gestion de la emprunt des unités
       if (carryToTens > 0) {
         await wait(1000);
         setCarryValues(prev => ({ ...prev, toTens: carryToTens }));
         setShowingCarry(true);
-        await playAudio(`Attention ! ${unitsSum} est plus grand que 9 ! Je mets ${carryToTens} en retenue !`, true);
+        await playAudio(`Attention ! ${num1Units} est plus petit que ${num2Units} ! Je dois emprunter ${carryToTens} !`, true);
         if (stopSignalRef.current) return;
       }
       
@@ -1024,9 +1024,9 @@ export default function SoustractionRetenueCE1() {
         setCalculationStep('tens');
         
         if (carryToTens > 0) {
-          await playAudio(`Colonne D : ${num1Tens} plus ${num2Tens} plus ${carryToTens} de retenue égale ${tensSum}`, true);
+          await playAudio(`Colonne D : ${num1Tens} moins ${num2Tens} avec ${carryToTens} d'emprunt égale ${tensSum}`, true);
         } else {
-          await playAudio(`Colonne D : ${num1Tens} plus ${num2Tens} égale ${tensSum}`, true);
+          await playAudio(`Colonne D : ${num1Tens} moins ${num2Tens} égale ${tensSum}`, true);
         }
         if (stopSignalRef.current) return;
         
@@ -1035,11 +1035,11 @@ export default function SoustractionRetenueCE1() {
         setPartialResults(prev => ({ ...prev, tens: tensResult }));
         await wait(1000);
         
-        // Gestion de la retenue des dizaines
+        // Gestion de la emprunt des dizaines
         if (carryToHundreds > 0) {
           await wait(1000);
           setCarryValues(prev => ({ ...prev, toHundreds: carryToHundreds }));
-          await playAudio(`Encore une retenue ! ${tensSum} est plus grand que 9 ! Je mets ${carryToHundreds} en retenue vers les centaines !`, true);
+          await playAudio(`Encore un emprunt nécessaire ! Je dois emprunter ${carryToHundreds} aux centaines !`, true);
           if (stopSignalRef.current) return;
         }
       }
@@ -1053,9 +1053,9 @@ export default function SoustractionRetenueCE1() {
         const hundredsSum = num1Hundreds + num2Hundreds + carryToHundreds;
         
         if (carryToHundreds > 0) {
-          await playAudio(`Colonne C : ${num1Hundreds} plus ${num2Hundreds} plus ${carryToHundreds} de retenue égale ${hundredsSum}`, true);
+          await playAudio(`Colonne C : ${num1Hundreds} moins ${num2Hundreds} avec ${carryToHundreds} d'emprunt égale ${hundredsSum}`, true);
         } else {
-          await playAudio(`Colonne C : ${num1Hundreds} plus ${num2Hundreds} égale ${hundredsSum}`, true);
+          await playAudio(`Colonne C : ${num1Hundreds} moins ${num2Hundreds} égale ${hundredsSum}`, true);
         }
         if (stopSignalRef.current) return;
         
@@ -1145,7 +1145,7 @@ export default function SoustractionRetenueCE1() {
   // Fonction helper pour les messages de fin
   const getCompletionMessage = (score: number, total: number) => {
     const percentage = Math.round((score / total) * 100);
-    if (percentage >= 90) return { title: "🎉 Maître des additions posées !", message: "Tu maîtrises parfaitement la technique !", emoji: "🎉" };
+    if (percentage >= 90) return { title: "🎉 Maître des soustractions posées !", message: "Tu maîtrises parfaitement la technique !", emoji: "🎉" };
     if (percentage >= 70) return { title: "👏 Très bien !", message: "Tu progresses super bien !", emoji: "👏" };
     if (percentage >= 50) return { title: "👍 C'est bien !", message: "Continue, tu apprends bien !", emoji: "😊" };
     return { title: "💪 Continue !", message: "Recommence pour mieux maîtriser !", emoji: "📚" };
@@ -1439,7 +1439,7 @@ export default function SoustractionRetenueCE1() {
                 <div className="text-3xl sm:text-6xl mb-2 sm:mb-4">📝</div>
                 <div className="flex items-center justify-center gap-1 sm:gap-3 mb-3 sm:mb-4">
                   <h2 className="text-sm sm:text-xl font-bold text-gray-900">
-                    L'addition posée : simple et avec retenue
+                    La soustraction posée : simple et avec emprunt
                   </h2>
                   {/* Icône d'animation pour l'introduction */}
                   <div className="bg-gradient-to-r from-green-500 to-teal-600 text-white rounded-full w-6 h-6 sm:w-12 sm:h-12 flex items-center justify-center text-xs sm:text-xl font-bold shadow-lg hover:scale-110 cursor-pointer transition-all duration-300 ring-2 ring-green-300" 
@@ -1448,7 +1448,7 @@ export default function SoustractionRetenueCE1() {
                   </div>
                 </div>
                 <p className="text-xs sm:text-base text-gray-600">
-                  On commence simple, puis on apprend les retenues quand la somme dépasse 9 !
+                  On commence simple, puis on apprend les emprunts quand on ne peut pas soustraire !
                 </p>
             </div>
 
@@ -1478,10 +1478,10 @@ export default function SoustractionRetenueCE1() {
                       <div className="bg-white rounded-lg p-4 shadow-inner">
                         <div className="text-lg font-semibold text-orange-700">
                           {calculationStep === 'setup' && '1️⃣ J\'aligne les nombres en colonnes !'}
-                          {calculationStep === 'units' && '2️⃣ Je calcule les unités : il y a une retenue !'}
-                          {calculationStep === 'carry' && '3️⃣ J\'écris la retenue au-dessus des dizaines !'}
-                          {calculationStep === 'tens' && '4️⃣ Je calcule les dizaines + la retenue !'}
-                          {calculationStep === 'result' && '5️⃣ Résultat avec retenue ! Bravo !'}
+                          {calculationStep === 'units' && '2️⃣ Je calcule les unités : j\'ai besoin d\'emprunter !'}
+                          {calculationStep === 'carry' && '3️⃣ J\'écris l\'emprunt au-dessus des dizaines !'}
+                          {calculationStep === 'tens' && '4️⃣ Je calcule les dizaines avec l\'emprunt !'}
+                          {calculationStep === 'result' && '5️⃣ Résultat avec emprunt ! Bravo !'}
                       </div>
                     </div>
                   )}
@@ -1545,7 +1545,7 @@ export default function SoustractionRetenueCE1() {
                         {renderPostedSubtraction(example, false, false)}
                     </div>
                       <div className="text-xs sm:text-sm text-gray-600 mb-3">
-                        Addition {example.description}
+                        Soustraction {example.description}
                     </div>
                       <button className={`px-2 sm:px-4 py-1 sm:py-2 rounded-lg text-xs sm:text-sm transition-colors ${
                         isAnimationRunning 
@@ -1563,7 +1563,7 @@ export default function SoustractionRetenueCE1() {
             {/* Guide pratique */}
             <div className="bg-gradient-to-r from-green-400 to-teal-500 rounded-xl p-3 sm:p-6 text-white">
               <h3 className="text-base sm:text-xl font-bold mb-3 sm:mb-4 text-center">
-                💡 Guide pour poser une addition
+                💡 Guide pour poser une soustraction
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-2 sm:gap-4 text-center">
                 <div>
@@ -1578,7 +1578,7 @@ export default function SoustractionRetenueCE1() {
             </div>
                 <div>
                   <div className="text-xl sm:text-2xl mb-1">3️⃣</div>
-                  <div className="font-bold text-xs sm:text-sm">Retenue</div>
+                  <div className="font-bold text-xs sm:text-sm">Emprunt</div>
                   <div className="text-xs">Si ≥ 10, écris l'unité et retiens</div>
                 </div>
               </div>
@@ -1794,7 +1794,7 @@ export default function SoustractionRetenueCE1() {
                         {finalScore >= 9 ? '⭐⭐⭐' : finalScore >= 7 ? '⭐⭐' : '⭐'}
                       </div>
                       <p className="text-sm text-gray-600 mt-2">
-                        Poser une addition est une technique essentielle !
+                        Poser une soustraction est une technique essentielle !
                       </p>
                     </div>
                     <div className="flex space-x-3">
