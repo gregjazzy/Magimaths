@@ -22,24 +22,36 @@ export default function ProblemesAddition() {
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
   const [score, setScore] = useState(0);
   const [showCompletionModal, setShowCompletionModal] = useState(false);
+  const [showExerciseAnimation, setShowExerciseAnimation] = useState(false);
+  const [exerciseAnimationStep, setExerciseAnimationStep] = useState<string | null>(null);
+  const [exercisesHasStarted, setExercisesHasStarted] = useState(false);
+  const [exercisesIsPlayingVocal, setExercisesIsPlayingVocal] = useState(false);
   
   // États pour Sam le Pirate
   const [samSizeExpanded, setSamSizeExpanded] = useState(false);
   const [imageError, setImageError] = useState(false);
+  const [highlightCourseButton, setHighlightCourseButton] = useState(false);
+  const [highlightExerciseButton, setHighlightExerciseButton] = useState(false);
 
   // Refs pour gérer l'audio
   const stopSignalRef = useRef(false);
   const currentAudioRef = useRef<SpeechSynthesisUtterance | null>(null);
 
-  // Données des problèmes avec animations - NIVEAU CE1
+  // Refs pour les sections
+  const introSectionRef = useRef<HTMLDivElement>(null);
+  const methodSectionRef = useRef<HTMLDivElement>(null);
+  const examplesSectionRef = useRef<HTMLDivElement>(null);
+  const exerciseTabRef = useRef<HTMLButtonElement>(null);
+
+  // Données des problèmes avec animations
   const problemExamples = [
     {
       id: 'bonbons',
       title: 'Les bonbons de Marie',
-      story: 'Marie a 13 bonbons rouges et 12 bonbons bleus. Combien a-t-elle de bonbons en tout ?',
-      first: 13,
-      second: 12,
-      result: 25,
+      story: 'Marie a 3 bonbons rouges et 4 bonbons bleus. Combien a-t-elle de bonbons en tout ?',
+      first: 3,
+      second: 4,
+      result: 7,
       item: '🍬',
       color1: 'text-red-600',
       color2: 'text-blue-600'
@@ -47,10 +59,10 @@ export default function ProblemesAddition() {
     {
       id: 'jouets',
       title: 'Les voitures de Tom',
-      story: 'Tom a 17 petites voitures et 14 camions. Combien a-t-il de véhicules au total ?',
-      first: 17,
-      second: 14,
-      result: 31,
+      story: 'Tom a 5 petites voitures et 3 camions. Combien a-t-il de véhicules au total ?',
+      first: 5,
+      second: 3,
+      result: 8,
       item: '🚗',
       color1: 'text-orange-600',
       color2: 'text-green-600'
@@ -58,10 +70,10 @@ export default function ProblemesAddition() {
     {
       id: 'animaux',
       title: 'Les poissons de l\'aquarium',
-      story: 'Dans l\'aquarium, il y a 16 poissons rouges et 15 poissons jaunes. Combien y a-t-il de poissons ?',
-      first: 16,
-      second: 15,
-      result: 31,
+      story: 'Dans l\'aquarium, il y a 6 poissons rouges et 2 poissons jaunes. Combien y a-t-il de poissons ?',
+      first: 6,
+      second: 2,
+      result: 8,
       item: '🐠',
       color1: 'text-red-600',
       color2: 'text-amber-600'
@@ -69,10 +81,10 @@ export default function ProblemesAddition() {
     {
       id: 'ecole',
       title: 'La cour de récréation',
-      story: 'Pendant la récréation, Julie compte les enfants qui jouent. Elle voit 18 enfants qui jouent au ballon près du grand chêne et 16 autres enfants qui font de la corde à sauter près des bancs. Combien d\'enfants s\'amusent dans la cour ?',
-      first: 18,
-      second: 16,
-      result: 34,
+      story: 'Pendant la récréation, Julie compte les enfants qui jouent. Elle voit 7 enfants qui jouent au ballon près du grand chêne et 5 autres enfants qui font de la corde à sauter près des bancs. Combien d\'enfants s\'amusent dans la cour ?',
+      first: 7,
+      second: 5,
+      result: 12,
       item: '👦',
       color1: 'text-blue-600',
       color2: 'text-green-600'
@@ -80,10 +92,10 @@ export default function ProblemesAddition() {
     {
       id: 'marche',
       title: 'Au marché avec Maman',
-      story: 'Au marché du village, Maman achète des légumes frais pour la semaine. Le gentil marchand lui donne 23 tomates bien mûres qu\'elle met dans son panier d\'osier, puis il ajoute 19 concombres verts et croquants. Maman veut savoir combien de légumes elle rapporte à la maison.',
-      first: 23,
-      second: 19,
-      result: 42,
+      story: 'Au marché du village, Maman achète des légumes frais pour la semaine. Le gentil marchand lui donne 9 tomates bien mûres qu\'elle met dans son panier d\'osier, puis il ajoute 6 concombres verts et croquants. Maman veut savoir combien de légumes elle rapporte à la maison.',
+      first: 9,
+      second: 6,
+      result: 15,
       item: '🍅',
       color1: 'text-red-600',
       color2: 'text-green-600'
@@ -91,10 +103,10 @@ export default function ProblemesAddition() {
     {
       id: 'parc',
       title: 'Les canards du parc',
-      story: 'Au parc près de l\'étang, Pablo adore nourrir les canards avec du pain. Ce matin ensoleillé, il compte 26 canards qui nagent tranquillement près du petit pont en bois. Soudain, 17 autres canards arrivent en se dandinant depuis les roseaux. Pablo se demande combien de canards vont partager son délicieux pain.',
-      first: 26,
-      second: 17,
-      result: 43,
+      story: 'Au parc près de l\'étang, Pablo adore nourrir les canards avec du pain. Ce matin ensoleillé, il compte 8 canards qui nagent tranquillement près du petit pont en bois. Soudain, 7 autres canards arrivent en se dandinant depuis les roseaux. Pablo se demande combien de canards vont partager son délicieux pain.',
+      first: 8,
+      second: 7,
+      result: 15,
       item: '🦆',
       color1: 'text-yellow-600',
       color2: 'text-blue-600'
@@ -102,10 +114,10 @@ export default function ProblemesAddition() {
     {
       id: 'bibliotheque',
       title: 'La grande bibliothèque de l\'école',
-      story: 'Pour organiser la bibliothèque de l\'école, Madame Dupont compte les livres. Sur l\'étagère des contes, elle trouve 35 livres d\'aventures poussiéreux qu\'elle nettoie soigneusement. Puis, dans un carton tout neuf livré ce matin, elle découvre 28 magnifiques livres de contes de fées avec des couvertures dorées. Elle veut savoir combien de livres de contes elle aura en tout pour ses élèves.',
-      first: 35,
-      second: 28,
-      result: 63,
+      story: 'Pour organiser la bibliothèque de l\'école, Madame Dupont compte les livres. Sur l\'étagère des contes, elle trouve 12 livres d\'aventures poussiéreux qu\'elle nettoie soigneusement. Puis, dans un carton tout neuf livré ce matin, elle découvre 8 magnifiques livres de contes de fées avec des couvertures dorées. Elle veut savoir combien de livres de contes elle aura en tout pour ses élèves.',
+      first: 12,
+      second: 8,
+      result: 20,
       item: '📚',
       color1: 'text-purple-600',
       color2: 'text-amber-600'
@@ -113,10 +125,10 @@ export default function ProblemesAddition() {
     {
       id: 'patisserie',
       title: 'La boulangerie de Monsieur Paul',
-      story: 'Ce matin, dans sa petite boulangerie qui sent bon le pain chaud, Monsieur Paul prépare des croissants pour le petit-déjeuner de ses clients fidèles. Il sort du four 34 croissants dorés et croustillants qu\'il place délicatement sur un plateau. Ensuite, il prépare une nouvelle fournée et cuit 28 croissants supplémentaires qu\'il dispose sur un second plateau. Madame Martin, sa meilleure cliente, lui demande combien de croissants il a préparés ce matin.',
-      first: 34,
-      second: 28,
-      result: 62,
+      story: 'Ce matin, dans sa petite boulangerie qui sent bon le pain chaud, Monsieur Paul prépare des croissants pour le petit-déjeuner de ses clients fidèles. Il sort du four 15 croissants dorés et croustillants qu\'il place délicatement sur un plateau. Ensuite, il prépare une nouvelle fournée et cuit 9 croissants supplémentaires qu\'il dispose sur un second plateau. Madame Martin, sa meilleure cliente, lui demande combien de croissants il a préparés ce matin.',
+      first: 15,
+      second: 9,
+      result: 24,
       item: '🥐',
       color1: 'text-amber-700',
       color2: 'text-yellow-600'
@@ -124,132 +136,217 @@ export default function ProblemesAddition() {
     {
       id: 'jardin',
       title: 'Le jardin secret de Grand-Papa',
-      story: 'Dans son magnifique jardin fleuri qu\'il cultive avec amour depuis des années, Grand-Papa plante des tulipes colorées pour faire une surprise à sa petite-fille Léa. Il creuse soigneusement la terre humide et plante 47 bulbes de tulipes rouges près de la tonnelle en bois. Puis, inspiré par tant de beauté, il se dirige vers le parterre près de la fontaine et plante 35 bulbes de tulipes jaunes qui brilleront comme des soleils au printemps prochain. Léa, curieuse, veut savoir combien de tulipes fleuriront dans le jardin.',
-      first: 47,
-      second: 35,
-      result: 82,
+      story: 'Dans son magnifique jardin fleuri qu\'il cultive avec amour depuis des années, Grand-Papa plante des tulipes colorées pour faire une surprise à sa petite-fille Léa. Il creuse soigneusement la terre humide et plante 18 bulbes de tulipes rouges près de la tonnelle en bois. Puis, inspiré par tant de beauté, il se dirige vers le parterre près de la fontaine et plante 13 bulbes de tulipes jaunes qui brilleront comme des soleils au printemps prochain. Léa, curieuse, veut savoir combien de tulipes fleuriront dans le jardin.',
+      first: 18,
+      second: 13,
+      result: 31,
       item: '🌷',
       color1: 'text-red-700',
       color2: 'text-yellow-700'
-    },
-    {
-      id: 'pizzeria',
-      title: 'La pizzeria de Tony',
-      story: 'Tony le pizzaïolo prépare ses délicieuses pizzas pour le dîner. Il sort du four 22 pizzas margherita fumantes qu\'il dispose sur le comptoir chaud. Puis il ajoute 18 pizzas aux champignons qui sentent bon l\'ail et les herbes. Sa femme Maria veut savoir combien de pizzas Tony a préparées pour ses clients affamés.',
-      first: 22,
-      second: 18,
-      result: 40,
-      item: '🍕',
-      color1: 'text-red-600',
-      color2: 'text-green-600'
-    },
-    {
-      id: 'plage',
-      title: 'Les coquillages de la plage',
-      story: 'Pendant ses vacances au bord de la mer, Emma collectionne les plus beaux coquillages sur le sable doré. Le matin, elle trouve 29 coquillages nacrés qui brillent au soleil près des rochers. L\'après-midi, elle découvre 24 coquillages colorés cachés dans les algues. Ses parents lui demandent combien de trésors marins elle a récoltés aujourd\'hui.',
-      first: 29,
-      second: 24,
-      result: 53,
-      item: '🐚',
-      color1: 'text-blue-600',
-      color2: 'text-purple-600'
-    },
-    {
-      id: 'ferme',
-      title: 'La ferme de Madame Dubois',
-      story: 'Dans sa grande ferme à la campagne, Madame Dubois élève des poules heureuses qui picorent librement dans la cour. Ce matin, elle compte 31 œufs frais dans le poulailler principal où vivent ses poules rousses. Puis elle se dirige vers le petit poulailler et y trouve 26 œufs tout chauds pondus par ses poules blanches. Elle veut savoir combien d\'œufs elle va pouvoir vendre au marché.',
-      first: 31,
-      second: 26,
-      result: 57,
-      item: '🥚',
-      color1: 'text-amber-600',
-      color2: 'text-gray-600'
-    },
-    {
-      id: 'cirque',
-      title: 'Le grand cirque Paillettes',
-      story: 'Sous le grand chapiteau rayé du cirque Paillettes, la représentation va bientôt commencer ! Le chef machiniste compte les spectacles pour préparer le programme. Il y aura 25 numéros d\'acrobates qui voleront dans les airs avec grâce et 19 numéros de clowns rigolos qui feront rire les enfants. Le directeur du cirque veut annoncer combien de numéros magiques les spectateurs vont admirer.',
-      first: 25,
-      second: 19,
-      result: 44,
-      item: '🎪',
-      color1: 'text-red-600',
-      color2: 'text-yellow-600'
-    },
-    {
-      id: 'magasin',
-      title: 'Le magasin de jouets de Sophie',
-      story: 'Dans son merveilleux magasin de jouets aux vitrines colorées, Sophie prépare une grande exposition pour les fêtes de fin d\'année. Elle installe 38 poupées aux robes scintillantes sur les étagères du haut, puis place 27 petites voitures de course sur les présentoirs du bas. Un papa curieux lui demande combien de jouets brillants sont exposés dans sa magnifique boutique.',
-      first: 38,
-      second: 27,
-      result: 65,
-      item: '🧸',
-      color1: 'text-pink-600',
-      color2: 'text-blue-600'
     }
   ];
 
-  // Exercices pour les élèves - NIVEAU CE1
+  // 20 Exercices originaux pour les élèves - NIVEAU CP avec animations de correction
   const exercises = [
     {
-      story: 'Lucas a 24 billes rouges et 18 billes vertes. Combien a-t-il de billes en tout ?',
-      answer: 42,
-      visual: '🔵'
+      story: 'Léo a trouvé 3 champignons rouges et 5 champignons blancs dans la forêt. Combien de champignons a-t-il trouvés ?',
+      answer: 8,
+      visual: '🍄',
+      first: 3,
+      second: 5,
+      item: '🍄',
+      color1: 'text-red-600',
+      color2: 'text-gray-600'
     },
     {
-      story: 'Dans le panier, il y a 27 pommes et 16 oranges. Combien y a-t-il de fruits ?',
-      answer: 43,
-      visual: '🍎'
+      story: 'Dans son pot à crayons, Nina compte 4 crayons violets et 6 crayons roses. Combien de crayons y a-t-il ?',
+      answer: 10,
+      visual: '✏️',
+      first: 4,
+      second: 6,
+      item: '✏️',
+      color1: 'text-purple-600',
+      color2: 'text-pink-600'
     },
     {
-      story: 'Sophie collectionne les autocollants. Elle en a 38 brillants et 25 colorés. Combien en a-t-elle ?',
-      answer: 63,
-      visual: '✨'
+      story: 'Au cirque, Victor voit 7 clowns qui font des blagues et 2 clowns qui jonglent. Combien de clowns y a-t-il ?',
+      answer: 9,
+      visual: '🤡',
+      first: 7,
+      second: 2,
+      item: '🤡',
+      color1: 'text-red-500',
+      color2: 'text-blue-500'
     },
     {
-      story: 'Au zoo, il y a 29 singes et 14 éléphants. Combien d\'animaux voit-on ?',
-      answer: 43,
-      visual: '🐵'
+      story: 'Mélanie collectionne les papillons. Elle en a 5 bleus dans une boîte et 4 oranges dans une autre. Combien de papillons a-t-elle ?',
+      answer: 9,
+      visual: '🦋',
+      first: 5,
+      second: 4,
+      item: '🦋',
+      color1: 'text-blue-600',
+      color2: 'text-orange-600'
     },
     {
-      story: 'Dans la boîte de crayons, il y a 32 crayons de couleur et 19 feutres. Combien d\'outils pour dessiner ?',
-      answer: 51,
-      visual: '🖍️'
+      story: 'Dans la classe, il y a 12 chaises bleues et 8 chaises rouges. Combien de chaises y a-t-il en tout ?',
+      answer: 20,
+      visual: '🪑',
+      first: 12,
+      second: 8,
+      item: '🪑',
+      color1: 'text-blue-600',
+      color2: 'text-red-600'
     },
     {
-      story: 'Dans le petit jardin de Mamie, les fleurs poussent magnifiquement. Elle compte 26 tournesols géants qui brillent au soleil et 18 jolies marguerites blanches qui dansent dans le vent. Combien de fleurs colorent son jardin ?',
-      answer: 44,
-      visual: '🌻'
+      story: 'Paul mange des bonbons. Il a 11 bonbons à la fraise et 7 bonbons au citron. Combien de bonbons a-t-il ?',
+      answer: 18,
+      visual: '🍭',
+      first: 11,
+      second: 7,
+      item: '🍭',
+      color1: 'text-red-500',
+      color2: 'text-yellow-500'
     },
     {
-      story: 'Pour son goûter d\'anniversaire, Théo prépare des petits gâteaux. Il place 29 cupcakes à la vanille sur le plateau doré et 17 muffins aux pépites de chocolat sur l\'assiette en porcelaine. Combien de délicieuses pâtisseries a-t-il préparées ?',
-      answer: 46,
-      visual: '🧁'
+      story: 'Dans le parc, Alice compte les oiseaux. Elle voit 9 moineaux sur l\'arbre et 8 pigeons sur le sol. Combien d\'oiseaux y a-t-il ?',
+      answer: 17,
+      visual: '🐦',
+      first: 9,
+      second: 8,
+      item: '🐦',
+      color1: 'text-amber-700',
+      color2: 'text-gray-600'
     },
     {
-      story: 'En classe de sport, Madame Rousseau organise les équipes. Elle compte 28 filles qui portent des maillots rouges et 19 garçons en maillots bleus. Combien d\'élèves participent au match de handball ?',
-      answer: 47,
-      visual: '⚽'
+      story: 'Thomas joue avec ses dominos. Il a 12 dominos noirs et 6 dominos blancs. Combien de dominos a-t-il ?',
+      answer: 18,
+      visual: '⚫',
+      first: 12,
+      second: 6,
+      item: '⚫',
+      color1: 'text-black',
+      color2: 'text-gray-600'
     },
     {
-      story: 'Pour le spectacle de l\'école, Madame Leblanc prépare les costumes. Elle a cousu 34 robes de princesses scintillantes et 27 costumes de chevaliers avec des armures dorées. Combien de costumes brillants a-t-elle préparés pour ses petits acteurs ?',
-      answer: 61,
-      visual: '👗'
+      story: 'À la piscine, Sarah voit 8 enfants qui nagent et 11 enfants qui jouent dans l\'eau. Combien d\'enfants s\'amusent ?',
+      answer: 19,
+      visual: '🏊',
+      first: 8,
+      second: 11,
+      item: '🏊',
+      color1: 'text-blue-500',
+      color2: 'text-cyan-500'
     },
     {
-      story: 'Dans le grand verger de Maître Jacques, les arbres regorgent de fruits mûrs. Ce matin, il cueille 36 poires juteuses dans les premiers arbres ensoleillés, puis 28 poires supplémentaires dans les arbres plus ombragés. Sa femme lui demande combien de poires délicieuses il a récoltées pour faire de la compote.',
-      answer: 64,
-      visual: '🍐'
+      story: 'Dans le garage, Papa compte ses outils. Il a 11 marteaux et 9 tournevis. Combien d\'outils y a-t-il ?',
+      answer: 20,
+      visual: '🔨',
+      first: 11,
+      second: 9,
+      item: '🔨',
+      color1: 'text-amber-700',
+      color2: 'text-gray-600'
     },
     {
-      story: 'Léo le petit collectionneur est très fier de ses cartes précieuses. Dans son album rouge, il range soigneusement 39 cartes de dragons étincelants qu\'il a échangées avec ses amis. Dans son album bleu, il classe 25 cartes de héros légendaires qu\'il a reçues pour son anniversaire. Il veut épater son grand frère en lui disant combien de cartes extraordinaires il possède maintenant.',
-      answer: 64,
-      visual: '🎯'
+      story: 'Julie fait un collier. Elle enfile 12 perles bleues et 7 perles dorées. Combien de perles utilise-t-elle ?',
+      answer: 19,
+      visual: '🔮',
+      first: 12,
+      second: 7,
+      item: '🔮',
+      color1: 'text-blue-600',
+      color2: 'text-yellow-500'
     },
     {
-      story: 'Au petit étang du parc, Alice adore observer les canards. Elle voit d\'abord 31 canards blancs qui nagent paisiblement près des nénuphars roses. Puis, 26 canards bruns arrivent en cancanant joyeusement depuis l\'autre rive. Alice veut savoir combien de canards barbotent maintenant dans l\'étang.',
-      answer: 57,
-      visual: '🦆'
+      story: 'Dans le potager, Mamie récolte 9 carottes et 11 radis. Combien de légumes a-t-elle cueillis ?',
+      answer: 20,
+      visual: '🥕',
+      first: 9,
+      second: 11,
+      item: '🥕',
+      color1: 'text-orange-600',
+      color2: 'text-red-600'
+    },
+    {
+      story: 'Antoine collectionne les timbres. Il colle 8 timbres français et 10 timbres étrangers dans son album. Combien de timbres a-t-il ?',
+      answer: 18,
+      visual: '📮',
+      first: 8,
+      second: 10,
+      item: '📮',
+      color1: 'text-blue-600',
+      color2: 'text-green-600'
+    },
+    {
+      story: 'À la plage, Zoé ramasse des galets. Elle trouve 7 galets ronds et 12 galets plats. Combien de galets a-t-elle ?',
+      answer: 19,
+      visual: '🪨',
+      first: 7,
+      second: 12,
+      item: '🪨',
+      color1: 'text-gray-600',
+      color2: 'text-stone-600'
+    },
+    {
+      story: 'Dans sa tirelire, Lucas a 12 pièces de 1 euro et 8 pièces de 2 euros. Combien de pièces a-t-il ?',
+      answer: 20,
+      visual: '🪙',
+      first: 12,
+      second: 8,
+      item: '🪙',
+      color1: 'text-yellow-600',
+      color2: 'text-amber-700'
+    },
+    {
+      story: 'Élise compte les nuages dans le ciel. Elle voit 8 gros nuages blancs et 10 petits nuages gris. Combien de nuages y a-t-il ?',
+      answer: 18,
+      visual: '☁️',
+      first: 8,
+      second: 10,
+      item: '☁️',
+      color1: 'text-gray-600',
+      color2: 'text-gray-500'
+    },
+    {
+      story: 'Dans la cuisine, Maman prépare des cookies. Elle fait 11 cookies aux pépites et 8 cookies au chocolat. Combien de cookies a-t-elle ?',
+      answer: 19,
+      visual: '🍪',
+      first: 11,
+      second: 8,
+      item: '🍪',
+      color1: 'text-amber-600',
+      color2: 'text-amber-800'
+    },
+    {
+      story: 'Hugo joue aux cartes. Il a 9 cartes rouges dans une main et 11 cartes noires dans l\'autre. Combien de cartes a-t-il ?',
+      answer: 20,
+      visual: '🂠',
+      first: 9,
+      second: 11,
+      item: '🂠',
+      color1: 'text-red-600',
+      color2: 'text-black'
+    },
+    {
+      story: 'Dans son sac d\'école, Emma range 8 livres de mathématiques et 11 livres de français. Combien de livres a-t-elle ?',
+      answer: 19,
+      visual: '📖',
+      first: 8,
+      second: 11,
+      item: '📖',
+      color1: 'text-blue-600',
+      color2: 'text-green-600'
+    },
+    {
+      story: 'Au magasin de jouets, Théo voit 6 robots rouges et 9 robots verts sur l\'étagère. Combien de robots y a-t-il ?',
+      answer: 15,
+      visual: '🤖',
+      first: 6,
+      second: 9,
+      item: '🤖',
+      color1: 'text-red-600',
+      color2: 'text-green-600'
     }
   ];
 
@@ -260,34 +357,50 @@ export default function ProblemesAddition() {
     
     if (isCorrect) {
              const successMessages = [
-        `Bravo ! ${icon} Lucas a effectivement ${exercise.answer} billes colorées (rouges et vertes) !`,
-        `Parfait ! ${icon} Il y a bien ${exercise.answer} fruits délicieux dans le panier !`,
-        `Excellent ! ${icon} Sophie a exactement ${exercise.answer} autocollants dans sa collection !`,
-        `Super ! ${icon} On compte bien ${exercise.answer} animaux fascinants au zoo !`,
-        `Bravo ! ${icon} Il y a précisément ${exercise.answer} outils artistiques dans la boîte !`,
-        `Magnifique ! ${icon} Le petit jardin de Mamie rayonne avec ${exercise.answer} fleurs !`,
-        `Délicieux ! ${icon} Théo a mitonné ${exercise.answer} pâtisseries pour son anniversaire !`,
-        `Formidable ! ${icon} ${exercise.answer} élèves vont s'affronter au handball !`,
-        `Merveilleux ! ${icon} Madame Leblanc a confectionné ${exercise.answer} costumes scintillants !`,
-        `Excellent ! ${icon} Maître Jacques a récolté ${exercise.answer} poires succulentes !`,
-                 `Fantastique ! ${icon} Léo possède maintenant ${exercise.answer} cartes extraordinaires !`,
-        `Merveilleux ! ${icon} Alice observe ${exercise.answer} canards qui barbotent dans l'étang !`
+        `Bravo ! ${icon} Léo a trouvé exactement ${exercise.answer} champignons dans la forêt !`,
+        `Parfait ! ${icon} Nina a bien ${exercise.answer} crayons colorés dans son pot !`,
+        `Excellent ! ${icon} Victor compte ${exercise.answer} clowns amusants au cirque !`,
+        `Super ! ${icon} Mélanie a ${exercise.answer} beaux papillons dans sa collection !`,
+        `Bravo ! ${icon} Il y a précisément ${exercise.answer} chaises dans la classe !`,
+        `Délicieux ! ${icon} Paul a ${exercise.answer} bonbons sucrés à savourer !`,
+        `Magnifique ! ${icon} Alice observe ${exercise.answer} oiseaux dans le parc !`,
+        `Formidable ! ${icon} Thomas a ${exercise.answer} dominos pour jouer !`,
+        `Excellent ! ${icon} Sarah voit ${exercise.answer} enfants qui s'amusent à la piscine !`,
+        `Parfait ! ${icon} Papa a ${exercise.answer} outils pratiques dans son garage !`,
+        `Merveilleux ! ${icon} Julie utilise ${exercise.answer} perles pour son beau collier !`,
+        `Fantastique ! ${icon} Mamie a récolté ${exercise.answer} légumes frais !`,
+        `Génial ! ${icon} Antoine a ${exercise.answer} timbres dans sa collection !`,
+        `Bravo ! ${icon} Zoé a ramassé ${exercise.answer} jolis galets à la plage !`,
+        `Super ! ${icon} Lucas a ${exercise.answer} pièces dans sa tirelire !`,
+        `Excellent ! ${icon} Élise compte ${exercise.answer} nuages dans le ciel !`,
+        `Délicieux ! ${icon} Maman a préparé ${exercise.answer} cookies savoureux !`,
+        `Formidable ! ${icon} Hugo a ${exercise.answer} cartes dans ses mains !`,
+        `Parfait ! ${icon} Emma a ${exercise.answer} livres dans son sac d'école !`,
+        `Fantastique ! ${icon} Théo voit ${exercise.answer} robots fascinants au magasin !`
       ];
       return successMessages[exerciseIndex] || `Bravo ! ${icon} Tu as trouvé ${exercise.answer} !`;
     } else {
              const correctionMessages = [
-        `${icon} Lucas avait 24 billes rouges + 18 billes vertes = ${exercise.answer} billes colorées !`,
-        `${icon} Dans le panier délicieux : 27 pommes + 16 oranges = ${exercise.answer} fruits juteux !`,
-        `${icon} Sophie collectionne : 38 autocollants brillants + 25 colorés = ${exercise.answer} autocollants !`,
-        `${icon} Au zoo fascinant : 29 singes espiègles + 14 éléphants majestueux = ${exercise.answer} animaux !`,
-        `${icon} Dans la boîte artistique : 32 crayons colorés + 19 feutres = ${exercise.answer} outils créatifs !`,
-        `${icon} Dans le jardin de Mamie : 26 tournesols géants + 18 marguerites blanches = ${exercise.answer} fleurs magnifiques !`,
-        `${icon} Pour l'anniversaire de Théo : 29 cupcakes vanille + 17 muffins chocolat = ${exercise.answer} pâtisseries délicieuses !`,
-        `${icon} Match de handball : 28 filles en rouge + 19 garçons en bleu = ${exercise.answer} élèves sportifs !`,
-        `${icon} Spectacle scintillant : 34 robes de princesses + 27 costumes de chevaliers = ${exercise.answer} costumes brillants !`,
-        `${icon} Verger de Maître Jacques : 36 poires des arbres ensoleillés + 28 des ombragés = ${exercise.answer} poires juteuses !`,
-        `${icon} Collection de Léo : 39 cartes de dragons + 25 cartes de héros = ${exercise.answer} cartes précieuses !`,
-        `${icon} À l'étang d'Alice : 31 canards blancs + 26 canards bruns = ${exercise.answer} canards barboteurs !`
+        `${icon} Léo a trouvé : ${exercise.first} champignons rouges + ${exercise.second} champignons blancs = ${exercise.answer} champignons !`,
+        `${icon} Nina a : ${exercise.first} crayons violets + ${exercise.second} crayons roses = ${exercise.answer} crayons !`,
+        `${icon} Au cirque : ${exercise.first} clowns blagueurs + ${exercise.second} clowns jongleurs = ${exercise.answer} clowns !`,
+        `${icon} Mélanie a : ${exercise.first} papillons bleus + ${exercise.second} papillons oranges = ${exercise.answer} papillons !`,
+        `${icon} Dans la classe : ${exercise.first} chaises bleues + ${exercise.second} chaises rouges = ${exercise.answer} chaises !`,
+        `${icon} Paul a : ${exercise.first} bonbons fraise + ${exercise.second} bonbons citron = ${exercise.answer} bonbons !`,
+        `${icon} Dans le parc : ${exercise.first} moineaux + ${exercise.second} pigeons = ${exercise.answer} oiseaux !`,
+        `${icon} Thomas a : ${exercise.first} dominos noirs + ${exercise.second} dominos blancs = ${exercise.answer} dominos !`,
+        `${icon} À la piscine : ${exercise.first} enfants nageurs + ${exercise.second} enfants joueurs = ${exercise.answer} enfants !`,
+        `${icon} Papa a : ${exercise.first} marteaux + ${exercise.second} tournevis = ${exercise.answer} outils !`,
+        `${icon} Julie utilise : ${exercise.first} perles bleues + ${exercise.second} perles dorées = ${exercise.answer} perles !`,
+        `${icon} Mamie a récolté : ${exercise.first} carottes + ${exercise.second} radis = ${exercise.answer} légumes !`,
+        `${icon} Antoine a : ${exercise.first} timbres français + ${exercise.second} timbres étrangers = ${exercise.answer} timbres !`,
+        `${icon} Zoé a trouvé : ${exercise.first} galets ronds + ${exercise.second} galets plats = ${exercise.answer} galets !`,
+        `${icon} Lucas a : ${exercise.first} pièces de 1€ + ${exercise.second} pièces de 2€ = ${exercise.answer} pièces !`,
+        `${icon} Élise voit : ${exercise.first} gros nuages + ${exercise.second} petits nuages = ${exercise.answer} nuages !`,
+        `${icon} Maman a fait : ${exercise.first} cookies pépites + ${exercise.second} cookies chocolat = ${exercise.answer} cookies !`,
+        `${icon} Hugo a : ${exercise.first} cartes rouges + ${exercise.second} cartes noires = ${exercise.answer} cartes !`,
+        `${icon} Emma a : ${exercise.first} livres de maths + ${exercise.second} livres de français = ${exercise.answer} livres !`,
+        `${icon} Théo voit : ${exercise.first} robots rouges + ${exercise.second} robots verts = ${exercise.answer} robots !`
       ];
      return correctionMessages[exerciseIndex] || `${icon} La réponse était ${exercise.answer} !`;
     }
@@ -345,6 +458,7 @@ export default function ProblemesAddition() {
     }
     
     setIsPlayingVocal(false);
+    setExercisesIsPlayingVocal(false);
     setIsAnimationRunning(false);
     setHighlightedElement(null);
     setAnimatingStep(null);
@@ -352,73 +466,18 @@ export default function ProblemesAddition() {
     setHighlightedExamples([]);
     setHighlightNumbersInStory(false);
     setSamSizeExpanded(false);
+    setHighlightCourseButton(false);
+    setHighlightExerciseButton(false);
   };
 
-  // Fonction pour lire le texte de l'introduction
-  const readIntroduction = async () => {
-    if (isPlayingVocal) {
-      stopAllVocalsAndAnimations();
-      return;
-    }
-
-    stopSignalRef.current = false;
-    setIsPlayingVocal(true);
-    
-    try {
-      const introText = "Un problème d'addition raconte une histoire avec des nombres. Notre mission est de trouver ces nombres et de les additionner pour répondre à la question !";
-      await playAudio(introText);
-    } catch (error) {
-      console.error('Erreur lors de la lecture de l\'introduction:', error);
-    } finally {
-      setIsPlayingVocal(false);
-    }
-  };
-
-  // Fonction pour lire la méthode en 3 étapes
-  const readMethod = async () => {
-    if (isPlayingVocal) {
-      stopAllVocalsAndAnimations();
-      return;
-    }
-
-    stopSignalRef.current = false;
-    setIsPlayingVocal(true);
-    
-    try {
-      await playAudio("Voici ma méthode en 3 étapes pour résoudre un problème d'addition !");
-      await wait(800);
-      
-      if (stopSignalRef.current) return;
-      
-      // Étape 1
-      setAnimatingStep('step1');
-      await playAudio("Première étape : Je lis le problème et je comprends bien l'histoire qui est racontée.");
-      await wait(1000);
-      
-      if (stopSignalRef.current) return;
-      
-      // Étape 2
-      setAnimatingStep('step2');
-      await playAudio("Deuxième étape : Je trouve les deux nombres importants qu'il faut additionner dans l'histoire.");
-      await wait(1000);
-      
-      if (stopSignalRef.current) return;
-      
-      // Étape 3
-      setAnimatingStep('step3');
-      await playAudio("Troisième étape : J'écris l'addition avec ces deux nombres et je calcule le résultat !");
-      await wait(1000);
-      
-      if (stopSignalRef.current) return;
-      
-      setAnimatingStep(null);
-      await playAudio("Avec ces 3 étapes, tu peux résoudre tous les problèmes d'addition !");
-      
-    } catch (error) {
-      console.error('Erreur lors de la lecture de la méthode:', error);
-    } finally {
-      setIsPlayingVocal(false);
-      setAnimatingStep(null);
+  // Fonction pour faire défiler vers une section
+  const scrollToSection = (ref: React.RefObject<HTMLElement>) => {
+    if (ref.current) {
+      ref.current.scrollIntoView({ 
+        behavior: 'smooth', 
+        block: 'center',
+        inline: 'nearest'
+      });
     }
   };
 
@@ -499,8 +558,8 @@ export default function ProblemesAddition() {
     });
   };
 
-  // Fonction pour faire défiler vers une section
-  const scrollToSection = (elementId: string) => {
+    // Fonction pour faire défiler vers un élément par ID (pour compatibilité)
+  const scrollToElement = (elementId: string) => {
     setTimeout(() => {
       const element = document.getElementById(elementId);
       if (element) {
@@ -521,28 +580,92 @@ export default function ProblemesAddition() {
     await wait(300);
     stopSignalRef.current = false;
     setIsPlayingVocal(true);
+    setHasStarted(true);
     setSamSizeExpanded(true);
+    setHighlightCourseButton(true);
     
     try {
-      await playAudio("Bonjour ! Aujourd'hui, nous allons apprendre à résoudre des problèmes d'addition !");
+      // Introduction et objectif
+      await playAudio("Ahoy moussaillon ! Bienvenue dans l'aventure des problèmes d'addition !");
       if (stopSignalRef.current) return;
       
       await wait(1000);
       if (stopSignalRef.current) return;
       
-      await playAudio("Un problème d'addition, c'est une histoire avec des nombres cachés !");
+      await playAudio("Aujourd'hui, tu vas apprendre à être un vrai détective des nombres !");
       if (stopSignalRef.current) return;
       
       await wait(1200);
       if (stopSignalRef.current) return;
       
-      await playAudio("Ta mission : trouver les nombres dans l'histoire et les additionner !");
+      // Présentation de la première section
+      await playAudio("D'abord, nous allons voir ce qu'est un problème d'addition...");
+      if (stopSignalRef.current) return;
+      
+      // Scroll vers l'introduction et surbrillance
+      scrollToSection(introSectionRef);
+      setHighlightedElement('intro');
+      await wait(500);
+      
+      await playAudio("Regarde bien cette section ! Tu peux cliquer sur l'icône pour voir une animation !");
+      if (stopSignalRef.current) return;
+      
+      await wait(2000);
+      if (stopSignalRef.current) return;
+      
+      // Présentation de la méthode
+      await playAudio("Ensuite, nous verrons la méthode en 3 étapes...");
+      if (stopSignalRef.current) return;
+      
+      // Scroll vers la méthode et surbrillance
+      scrollToSection(methodSectionRef);
+      setHighlightedElement('method');
+      await wait(500);
+      
+      await playAudio("Voici la méthode secrète des pirates ! N'oublie pas de tester l'animation !");
+      if (stopSignalRef.current) return;
+      
+      await wait(2000);
+      if (stopSignalRef.current) return;
+      
+      // Présentation des exemples
+      await playAudio("Et enfin, nous pratiquerons avec plein d'exemples...");
+      if (stopSignalRef.current) return;
+      
+      // Scroll vers les exemples et surbrillance
+      scrollToSection(examplesSectionRef);
+      setHighlightedElement('examples');
+      await wait(500);
+      
+      await playAudio("Ici tu trouveras 9 exemples avec des animations pour bien comprendre !");
+      if (stopSignalRef.current) return;
+      
+      await wait(2000);
+      if (stopSignalRef.current) return;
+      
+      // Mention de la section exercices
+      await playAudio("Quand tu seras prêt, tu pourras aussi aller à la section exercices...");
+      if (stopSignalRef.current) return;
+      
+      // Scroll vers l'onglet exercices et surbrillance
+      setHighlightedElement(null);
+      setHighlightExerciseButton(true);
+      if (exerciseTabRef.current) {
+        exerciseTabRef.current.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'center' 
+        });
+      }
+      await wait(500);
+      
+      await playAudio("Là-bas, 20 problèmes t'attendent pour tester tes nouvelles compétences !");
       if (stopSignalRef.current) return;
       
       await wait(1500);
       if (stopSignalRef.current) return;
       
-      await playAudio("Souviens-toi des 3 étapes : lire, chercher les nombres, puis calculer !");
+      // Encouragement final
+      await playAudio("Bon courage, petit pirate ! L'aventure commence maintenant !");
       if (stopSignalRef.current) return;
       
     } catch (error) {
@@ -550,6 +673,93 @@ export default function ProblemesAddition() {
     } finally {
       setIsPlayingVocal(false);
       setSamSizeExpanded(false);
+      setHighlightCourseButton(false);
+      setHighlightExerciseButton(false);
+      setHighlightedElement(null);
+    }
+  };
+
+  // Fonction pour lire l'énoncé de l'exercice actuel
+  const readCurrentStory = () => {
+    const currentStory = exercises[currentExercise].story;
+    const utterance = new SpeechSynthesisUtterance(currentStory);
+    utterance.lang = 'fr-FR';
+    utterance.rate = 0.9;
+    utterance.pitch = 1.1;
+    utterance.volume = 1.0;
+    
+    const voices = speechSynthesis.getVoices();
+    const frenchVoice = voices.find(voice => 
+      voice.lang === 'fr-FR' && voice.localService === true
+    );
+    
+    if (frenchVoice) {
+      utterance.voice = frenchVoice;
+    }
+    
+    speechSynthesis.speak(utterance);
+  };
+
+  // Fonction pour expliquer les exercices avec Sam
+  const explainExercisesWithSam = async () => {
+    if (exercisesIsPlayingVocal) return;
+    
+    stopAllVocalsAndAnimations();
+    await wait(300);
+    stopSignalRef.current = false;
+    setExercisesIsPlayingVocal(true);
+    setExercisesHasStarted(true);
+    setSamSizeExpanded(true);
+    setHighlightExerciseButton(true);
+    
+    try {
+      await playAudio("Ahoy moussaillon ! C'est l'heure de t'entraîner avec les exercices !");
+      if (stopSignalRef.current) return;
+      
+      await wait(1000);
+      if (stopSignalRef.current) return;
+      
+      await playAudio("Tu vas résoudre 20 problèmes d'addition différents, nom d'un sabre !");
+      if (stopSignalRef.current) return;
+      
+      await wait(1200);
+      if (stopSignalRef.current) return;
+      
+      // Mettre en évidence le bouton "Lire l'énoncé"
+      setHighlightedElement('read-story-button');
+      await playAudio("Pour chaque exercice, tu peux lire l'énoncé en cliquant sur le bouton 'Lire l'énoncé' !");
+      if (stopSignalRef.current) return;
+      
+      await wait(1500);
+      if (stopSignalRef.current) return;
+      
+      // Mettre en évidence la zone de réponse
+      setHighlightedElement('answer-input');
+      await playAudio("Ensuite, tu saisis ta réponse dans la zone de réponse !");
+      if (stopSignalRef.current) return;
+      
+      await wait(1200);
+      if (stopSignalRef.current) return;
+      
+      // Mettre en évidence le bouton Vérifier
+      setHighlightedElement('validate-button');
+      await playAudio("Et pour finir, tu appuies sur le bouton 'Vérifier' pour vérifier ta réponse !");
+      if (stopSignalRef.current) return;
+      
+      await wait(1000);
+      if (stopSignalRef.current) return;
+      
+      setHighlightedElement(null);
+      await playAudio("Si tu te trompes, je t'aiderai avec une animation pour comprendre ! En avant, petit pirate !");
+      if (stopSignalRef.current) return;
+      
+    } catch (error) {
+      console.error('Erreur dans explainExercisesWithSam:', error);
+    } finally {
+      setExercisesIsPlayingVocal(false);
+      setSamSizeExpanded(false);
+      setHighlightExerciseButton(false);
+      setHighlightedElement(null);
     }
   };
 
@@ -564,7 +774,7 @@ export default function ProblemesAddition() {
     try {
       // Introduction
       setHighlightedElement('intro');
-      scrollToSection('intro-section');
+      scrollToElement('intro-section');
       await playAudio("Bonjour ! Aujourd'hui, nous allons apprendre à résoudre des problèmes d'addition. C'est très important de savoir transformer une histoire en calcul !");
       await wait(500);
 
@@ -572,7 +782,7 @@ export default function ProblemesAddition() {
 
       // Méthode
       setHighlightedElement('method');
-      scrollToSection('method-section');
+      scrollToElement('method-section');
       await playAudio("Pour résoudre un problème d'addition, il faut suivre 3 étapes importantes :");
       await wait(300);
 
@@ -614,7 +824,7 @@ export default function ProblemesAddition() {
 
       // Transition vers les exemples
       setHighlightedElement('examples');
-      scrollToSection('examples-section');
+      scrollToElement('examples-section');
       await playAudio("Maintenant, regardons des exemples ensemble !");
       await wait(300);
 
@@ -654,7 +864,7 @@ export default function ProblemesAddition() {
 
     try {
       // Scroll vers la zone d'animation
-      scrollToSection('animation-section');
+      scrollToElement('animation-section');
       await wait(500);
 
       // Lecture du problème
@@ -723,6 +933,161 @@ export default function ProblemesAddition() {
     
     if (correct) {
       setScore(score + 1);
+    } else {
+      // Déclencher la correction vocale automatique et l'animation visuelle
+      setShowExerciseAnimation(true);
+      quickVocalCorrection();
+      animateExerciseCorrection();
+    }
+  };
+
+  // Fonction pour correction vocale automatique
+  const quickVocalCorrection = async () => {
+    const exercise = exercises[currentExercise];
+    
+    // Extraire les nombres de l'énoncé
+    const numbers = exercise.story.match(/\d+/g);
+    if (!numbers || numbers.length < 2) return;
+    
+    const first = parseInt(numbers[0]);
+    const second = parseInt(numbers[1]);
+    const result = exercise.answer;
+
+    // Scroll vers la zone de correction
+    setTimeout(() => {
+      const correctionElement = document.getElementById('exercise-correction');
+      if (correctionElement) {
+        correctionElement.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'center' 
+        });
+      }
+    }, 300);
+
+    // Fonction audio avec vitesse lente pour la correction
+    const quickAudio = (text: string) => {
+      return new Promise<void>((resolve) => {
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'fr-FR';
+        utterance.rate = 0.8; // Vitesse plus lente pour la correction
+        utterance.pitch = 1.0;
+        utterance.volume = 1.0;
+        
+        const voices = speechSynthesis.getVoices();
+        const frenchVoice = voices.find(voice => 
+          voice.lang === 'fr-FR' && voice.localService === true
+        );
+        
+        if (frenchVoice) {
+          utterance.voice = frenchVoice;
+        }
+        
+        utterance.onend = () => resolve();
+        utterance.onerror = () => resolve();
+        speechSynthesis.speak(utterance);
+      });
+    };
+
+    try {
+      // Créer une explication personnalisée basée sur le contexte du problème
+      const getPersonalizedExplanation = () => {
+        const story = exercise.story.toLowerCase();
+        let context = '';
+        
+        if (story.includes('chaise')) {
+          context = `Il y a ${first} chaises et ${second} chaises`;
+        } else if (story.includes('champignon')) {
+          context = `Il y a ${first} champignons et ${second} champignons`;
+        } else if (story.includes('crayon')) {
+          context = `Il y a ${first} crayons et ${second} crayons`;
+        } else if (story.includes('clown')) {
+          context = `Il y a ${first} clowns et ${second} clowns`;
+        } else if (story.includes('papillon')) {
+          context = `Il y a ${first} papillons et ${second} papillons`;
+        } else if (story.includes('livre')) {
+          context = `Il y a ${first} livres et ${second} livres`;
+        } else if (story.includes('bonbon')) {
+          context = `Il y a ${first} bonbons et ${second} bonbons`;
+        } else if (story.includes('oiseau') || story.includes('moineau') || story.includes('pigeon')) {
+          context = `Il y a ${first} oiseaux et ${second} oiseaux`;
+        } else if (story.includes('voiture') || story.includes('camion') || story.includes('véhicule')) {
+          context = `Il y a ${first} véhicules et ${second} véhicules`;
+        } else if (story.includes('poisson')) {
+          context = `Il y a ${first} poissons et ${second} poissons`;
+        } else if (story.includes('enfant')) {
+          context = `Il y a ${first} enfants et ${second} enfants`;
+        } else if (story.includes('tomate') || story.includes('concombre') || story.includes('légume') || story.includes('carotte') || story.includes('radis')) {
+          context = `Il y a ${first} légumes et ${second} légumes`;
+        } else if (story.includes('canard')) {
+          context = `Il y a ${first} canards et ${second} canards`;
+        } else if (story.includes('croissant')) {
+          context = `Il y a ${first} croissants et ${second} croissants`;
+        } else if (story.includes('tulipe') || story.includes('bulbe')) {
+          context = `Il y a ${first} tulipes et ${second} tulipes`;
+        } else if (story.includes('domino')) {
+          context = `Il y a ${first} dominos et ${second} dominos`;
+        } else if (story.includes('outil') || story.includes('marteau') || story.includes('tournevis')) {
+          context = `Il y a ${first} outils et ${second} outils`;
+        } else if (story.includes('perle')) {
+          context = `Il y a ${first} perles et ${second} perles`;
+        } else if (story.includes('timbre')) {
+          context = `Il y a ${first} timbres et ${second} timbres`;
+        } else if (story.includes('galet')) {
+          context = `Il y a ${first} galets et ${second} galets`;
+        } else if (story.includes('pièce')) {
+          context = `Il y a ${first} pièces et ${second} pièces`;
+        } else if (story.includes('nuage')) {
+          context = `Il y a ${first} nuages et ${second} nuages`;
+        } else if (story.includes('cookie')) {
+          context = `Il y a ${first} cookies et ${second} cookies`;
+        } else if (story.includes('carte')) {
+          context = `Il y a ${first} cartes et ${second} cartes`;
+        } else if (story.includes('robot')) {
+          context = `Il y a ${first} robots et ${second} robots`;
+        } else {
+          // Fallback générique
+          context = `Les nombres sont ${first} et ${second}`;
+        }
+        
+        return context;
+      };
+      
+      // Correction avec mise en évidence et vitesse lente
+      setExerciseAnimationStep('highlight-numbers');
+      await quickAudio(getPersonalizedExplanation());
+      await wait(700);
+      
+      setExerciseAnimationStep('show-calculation');
+      await quickAudio(`${first} plus ${second} égale ${result}`);
+      await wait(700);
+      
+      setExerciseAnimationStep('show-result');
+      await quickAudio(`La bonne réponse est ${result} !`);
+      await wait(1000);
+      
+      setExerciseAnimationStep(null);
+      
+    } catch (error) {
+      console.error('Erreur dans quickVocalCorrection:', error);
+    }
+  };
+
+  // Fonction pour animer la correction de l'exercice
+  const animateExerciseCorrection = async () => {
+    try {
+      await wait(500);
+      setExerciseAnimationStep('highlight-numbers');
+      await wait(2000);
+      setExerciseAnimationStep('show-groups');
+      await wait(2000);
+      setExerciseAnimationStep('show-calculation');
+      await wait(2000);
+      setExerciseAnimationStep('show-result');
+      // Ne pas remettre à null pour garder l'animation visible
+    } catch (error) {
+      console.error('Erreur dans animateExerciseCorrection:', error);
+      setExerciseAnimationStep(null);
+      setShowExerciseAnimation(false);
     }
   };
 
@@ -731,6 +1096,8 @@ export default function ProblemesAddition() {
       setCurrentExercise(currentExercise + 1);
       setUserAnswer('');
       setIsCorrect(null);
+      setShowExerciseAnimation(false);
+      setExerciseAnimationStep(null);
     } else {
       setShowCompletionModal(true);
     }
@@ -742,6 +1109,10 @@ export default function ProblemesAddition() {
     setIsCorrect(null);
     setScore(0);
     setShowCompletionModal(false);
+    setShowExerciseAnimation(false);
+    setExerciseAnimationStep(null);
+    setExercisesHasStarted(false);
+    setExercisesIsPlayingVocal(false);
   };
 
   // Gestion des événements pour arrêter les vocaux
@@ -831,20 +1202,7 @@ export default function ProblemesAddition() {
         `
       }} />
       
-      {/* Bouton flottant de Sam - visible uniquement quand Sam parle */}
-      {isPlayingVocal && (
-        <div className="fixed top-4 right-4 z-[60]">
-          <button
-            onClick={stopAllVocalsAndAnimations}
-            className="bg-red-600 hover:bg-red-700 text-white rounded-full p-3 shadow-lg animate-pulse"
-            title="Arrêter Sam"
-          >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-        </div>
-      )}
+
       
       <div className="max-w-6xl mx-auto px-4 py-8">
         {/* Header */}
@@ -855,7 +1213,7 @@ export default function ProblemesAddition() {
             className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors mb-4"
           >
             <ArrowLeft className="w-4 h-4" />
-            <span>Retour à l'addition CE1</span>
+            <span>Retour au chapitre</span>
           </Link>
           
           <div className="text-center">
@@ -863,7 +1221,7 @@ export default function ProblemesAddition() {
               🧮 Problèmes d'addition
             </h1>
             <p className="text-lg text-gray-600">
-              Apprendre à résoudre des problèmes avec des histoires
+              Apprendre à résoudre des problèmes d'addition - Niveau CE1
             </p>
           </div>
         </div>
@@ -879,11 +1237,12 @@ export default function ProblemesAddition() {
               !showExercises
                 ? 'bg-orange-600 text-white shadow-lg'
                 : 'bg-white text-orange-600 hover:bg-orange-50'
-            } ${highlightedElement === 'course_tab' ? 'ring-4 ring-orange-400 animate-pulse' : ''}`}
+            } ${highlightCourseButton ? 'ring-4 ring-orange-400 animate-pulse scale-105' : ''}`}
           >
             📚 Cours
           </button>
           <button
+            ref={exerciseTabRef}
             onClick={() => {
               stopAllVocalsAndAnimations();
               setShowExercises(true);
@@ -892,11 +1251,40 @@ export default function ProblemesAddition() {
               showExercises
                 ? 'bg-orange-600 text-white shadow-lg'
                 : 'bg-white text-orange-600 hover:bg-orange-50'
-            } ${highlightedElement === 'exercise_tab' ? 'ring-4 ring-orange-400 animate-pulse' : ''}`}
+            } ${highlightExerciseButton ? 'ring-4 ring-blue-400 animate-pulse scale-105' : ''}`}
           >
             🎯 Exercices
           </button>
         </div>
+
+        {/* Bouton Stop unique avec Sam - visible quand une animation est en cours */}
+        {(isPlayingVocal || exercisesIsPlayingVocal || isAnimationRunning) && (
+          <div className="fixed top-20 right-4 z-10 animate-fade-in">
+            <button
+              onClick={stopAllVocalsAndAnimations}
+              className="flex items-center gap-2 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg shadow-lg transition-all hover:scale-105"
+            >
+              <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
+                {!imageError && (
+                  <img
+                    src="/images/pirate-small.png"
+                    alt="Sam le Pirate"
+                    className="w-full h-full object-cover rounded-full"
+                    onError={() => setImageError(true)}
+                  />
+                )}
+                {imageError && (
+                  <div className="text-sm">🏴‍☠️</div>
+                )}
+              </div>
+              <span className="font-semibold text-sm">Stop</span> 
+              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                <rect x="6" y="4" width="2" height="12" />
+                <rect x="12" y="4" width="2" height="12" />
+              </svg>
+            </button>
+          </div>
+        )}
 
         {!showExercises ? (
           /* COURS - MOBILE OPTIMISÉ */
@@ -948,8 +1336,11 @@ export default function ProblemesAddition() {
               </button>
             </div>
 
+
+
             {/* Introduction */}
             <div 
+              ref={introSectionRef}
               id="intro-section"
               className={`bg-white rounded-xl shadow-lg p-3 sm:p-6 transition-all duration-300 ${
                 highlightedElement === 'intro' ? 'ring-4 ring-orange-400 bg-orange-50' : ''
@@ -960,16 +1351,12 @@ export default function ProblemesAddition() {
                   <Book className="w-4 h-4 sm:w-6 sm:h-6 text-orange-600" />
                 </div>
                 <h2 className="text-base sm:text-2xl font-bold text-gray-800">Qu'est-ce qu'un problème d'addition ?</h2>
-                {/* Bouton vocal pour l'introduction */}
-                <div 
-                  onClick={readIntroduction}
-                  className={`bg-gradient-to-r from-orange-500 to-red-600 text-white rounded-full w-6 h-6 sm:w-12 sm:h-12 flex items-center justify-center text-xs sm:text-xl font-bold shadow-lg hover:scale-110 cursor-pointer transition-all duration-300 ring-2 ring-orange-300 ${
-                    isPlayingVocal ? 'animate-pulse bg-gradient-to-r from-green-500 to-green-600' : ''
-                  }`}
-                  style={{animation: isPlayingVocal ? 'pulse 1s infinite' : 'subtle-glow 2s infinite'}}
-                  title={isPlayingVocal ? "Arrêter la lecture" : "Écouter l'explication"}
-                >
-                  {isPlayingVocal ? '🔊' : '🧮'}
+                {/* Icône d'animation pour l'introduction */}
+                <div className={`bg-gradient-to-r from-orange-500 to-red-600 text-white rounded-full w-6 h-6 sm:w-12 sm:h-12 flex items-center justify-center text-xs sm:text-xl font-bold shadow-lg hover:scale-110 cursor-pointer transition-all duration-300 ring-2 ring-orange-300 ${
+                  highlightedElement === 'intro' ? 'ring-4 ring-yellow-400 animate-bounce scale-110' : ''
+                }`} 
+                     style={{animation: 'subtle-glow 2s infinite'}}>
+                  🧮
                 </div>
               </div>
               <p className="text-sm sm:text-lg text-gray-700 leading-relaxed">
@@ -980,6 +1367,7 @@ export default function ProblemesAddition() {
 
             {/* Méthode */}
             <div 
+              ref={methodSectionRef}
               id="method-section"
               className={`bg-white rounded-xl shadow-lg p-3 sm:p-6 transition-all duration-300 ${
                 highlightedElement === 'method' ? 'ring-4 ring-orange-400 bg-orange-50' : ''
@@ -990,16 +1378,12 @@ export default function ProblemesAddition() {
                   <Target className="w-4 h-4 sm:w-6 sm:h-6 text-purple-600" />
                 </div>
                 <h2 className="text-base sm:text-2xl font-bold text-gray-800">Ma méthode en 3 étapes</h2>
-                {/* Bouton vocal pour la méthode */}
-                <div 
-                  onClick={readMethod}
-                  className={`bg-gradient-to-r from-purple-500 to-indigo-600 text-white rounded-full w-6 h-6 sm:w-12 sm:h-12 flex items-center justify-center text-xs sm:text-xl font-bold shadow-lg hover:scale-110 cursor-pointer transition-all duration-300 ring-2 ring-purple-300 ${
-                    isPlayingVocal ? 'animate-pulse bg-gradient-to-r from-green-500 to-green-600' : ''
-                  }`}
-                  style={{animation: isPlayingVocal ? 'pulse 1s infinite' : 'subtle-glow 2s infinite'}}
-                  title={isPlayingVocal ? "Arrêter la lecture" : "Écouter la méthode"}
-                >
-                  {isPlayingVocal ? '🔊' : '🎯'}
+                {/* Icône d'animation pour la méthode */}
+                <div className={`bg-gradient-to-r from-purple-500 to-indigo-600 text-white rounded-full w-6 h-6 sm:w-12 sm:h-12 flex items-center justify-center text-xs sm:text-xl font-bold shadow-lg hover:scale-110 cursor-pointer transition-all duration-300 ring-2 ring-purple-300 ${
+                  highlightedElement === 'method' ? 'ring-4 ring-yellow-400 animate-bounce scale-110' : ''
+                }`} 
+                     style={{animation: 'subtle-glow 2s infinite'}}>
+                  🎯
                 </div>
               </div>
               
@@ -1040,14 +1424,14 @@ export default function ProblemesAddition() {
                 <div className="p-4 bg-gray-50 rounded-lg">
                   <p className="text-lg font-semibold text-gray-800 mb-3">Exemple d'histoire :</p>
                   <div className="text-lg text-gray-700 p-3 bg-white rounded border">
-                    {highlightNumbers("Marie a 13 bonbons rouges et 12 bonbons bleus. Combien a-t-elle de bonbons en tout ?", highlightNumbersInStory)}
+                    {highlightNumbers("Marie a 3 bonbons rouges et 4 bonbons bleus. Combien a-t-elle de bonbons en tout ?", highlightNumbersInStory)}
                   </div>
                 </div>
                 
                 {highlightNumbersInStory && (
                   <div className="text-center p-4 bg-yellow-50 border-2 border-yellow-200 rounded-lg">
                     <p className="text-lg text-yellow-800 font-semibold">
-                      🎯 Voyez comme les nombres <span className="bg-yellow-300 px-2 py-1 rounded font-black">13</span> et <span className="bg-yellow-300 px-2 py-1 rounded font-black">12</span> ressortent bien !
+                      🎯 Voyez comme les nombres <span className="bg-yellow-300 px-2 py-1 rounded font-black">3</span> et <span className="bg-yellow-300 px-2 py-1 rounded font-black">4</span> ressortent bien !
                     </p>
                   </div>
                 )}
@@ -1056,6 +1440,7 @@ export default function ProblemesAddition() {
 
             {/* Exemples */}
             <div 
+              ref={examplesSectionRef}
               id="examples-section"
               className={`bg-white rounded-xl shadow-lg p-3 sm:p-6 transition-all duration-300 ${
                 highlightedElement === 'examples' ? 'ring-4 ring-orange-400 bg-orange-50' : ''
@@ -1066,7 +1451,9 @@ export default function ProblemesAddition() {
                   🎯 Choisis un problème à résoudre ensemble !
                 </h2>
                 {/* Icône d'animation pour les exemples */}
-                <div className="bg-gradient-to-r from-green-500 to-teal-600 text-white rounded-full w-6 h-6 sm:w-12 sm:h-12 flex items-center justify-center text-xs sm:text-xl font-bold shadow-lg hover:scale-110 cursor-pointer transition-all duration-300 ring-2 ring-green-300" 
+                <div className={`bg-gradient-to-r from-green-500 to-teal-600 text-white rounded-full w-6 h-6 sm:w-12 sm:h-12 flex items-center justify-center text-xs sm:text-xl font-bold shadow-lg hover:scale-110 cursor-pointer transition-all duration-300 ring-2 ring-green-300 ${
+                  highlightedElement === 'examples' ? 'ring-4 ring-yellow-400 animate-bounce scale-110' : ''
+                }`} 
                      style={{animation: 'subtle-glow 2s infinite'}}>
                   🎯
                 </div>
@@ -1202,6 +1589,82 @@ export default function ProblemesAddition() {
         ) : (
           /* Section Exercices */
           <div className="space-y-6">
+            {/* Image de Sam le Pirate avec bouton DÉMARRER pour les exercices */}
+            <div className="flex items-center justify-center gap-2 sm:gap-4 p-2 sm:p-4 mb-3 sm:mb-6">
+              {/* Image de Sam le Pirate */}
+              <div className={`relative transition-all duration-500 border-2 border-blue-300 rounded-full bg-gradient-to-br from-blue-100 to-cyan-100 ${
+                exercisesIsPlayingVocal
+                    ? 'w-14 sm:w-24 h-14 sm:h-24' // When speaking - plus petit sur mobile
+                  : samSizeExpanded
+                      ? 'w-12 sm:w-32 h-12 sm:h-32' // Enlarged - plus petit sur mobile
+                      : 'w-10 sm:w-20 h-10 sm:h-20' // Normal - plus petit sur mobile
+              } flex items-center justify-center hover:scale-105 cursor-pointer`}>
+                {!imageError && (
+                  <img 
+                    src="/images/pirate-small.png"
+                    alt="Sam le Pirate"
+                    className="w-full h-full object-cover rounded-full"
+                    onError={() => setImageError(true)}
+                  />
+                )}
+                {imageError && (
+                  <div className="text-lg sm:text-2xl">🏴‍☠️</div>
+                )}
+                
+                {/* Megaphone animé quand Sam parle */}
+                {exercisesIsPlayingVocal && (
+                  <div className="absolute -top-1 -right-1 sm:-top-2 sm:-right-2 bg-red-500 rounded-full p-1 sm:p-2 shadow-lg animate-bounce">
+                    <svg className="w-2 h-2 sm:w-4 sm:h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M18 3a1 1 0 00-1.447-.894L8.763 6H5a3 3 0 000 6h3.763l7.79 3.894A1 1 0 0018 15V3zM14 8.59c0 1.2.8 2.27 2 2.27v.64c-1.77 0-3.2-1.4-3.2-3.14 0-1.74 1.43-3.14 3.2-3.14v.64c-1.2 0-2 1.07-2 2.27z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                )}
+              </div>
+
+              {/* Bouton DÉMARRER avec Sam pour les exercices */}
+              <button
+                onClick={explainExercisesWithSam}
+                disabled={exercisesIsPlayingVocal}
+                className={`px-3 sm:px-6 py-2 sm:py-3 rounded-lg font-bold text-sm sm:text-lg shadow-lg transition-all ${
+                  exercisesIsPlayingVocal
+                    ? 'bg-gray-400 text-gray-200 cursor-not-allowed'
+                    : 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white hover:shadow-xl hover:scale-105'
+                } ${!exercisesHasStarted && !exercisesIsPlayingVocal ? 'animate-pulse' : ''}`}
+              >
+                <Play className="w-3 h-3 sm:w-5 sm:h-5 inline-block mr-1 sm:mr-2" />
+                {exercisesIsPlayingVocal ? 'Sam explique...' : 'DÉMARRER LES EXERCICES'}
+              </button>
+            </div>
+
+            {/* Instructions pour les exercices */}
+            <div className="bg-blue-50 border-2 border-blue-200 rounded-xl shadow-lg p-4 sm:p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="p-2 bg-blue-100 rounded-lg">
+                  <span className="text-2xl">🎯</span>
+                </div>
+                <h2 className="text-xl sm:text-2xl font-bold text-blue-800">Comment bien réussir tes exercices ?</h2>
+              </div>
+              
+              <div className="space-y-3 text-sm sm:text-base text-blue-700">
+                <div className="flex items-start gap-3">
+                  <span className="text-lg">📖</span>
+                  <p><strong>1. Lis bien l'histoire</strong> de chaque problème pour comprendre la situation.</p>
+                </div>
+                <div className="flex items-start gap-3">
+                  <span className="text-lg">🔍</span>
+                  <p><strong>2. Trouve les deux nombres</strong> importants dans l'histoire à additionner.</p>
+                </div>
+                <div className="flex items-start gap-3">
+                  <span className="text-lg">✏️</span>
+                  <p><strong>3. Tape ta réponse</strong> dans la case avec le point d'interrogation.</p>
+                </div>
+                <div className="flex items-start gap-3">
+                  <span className="text-lg">✨</span>
+                  <p><strong>4. Si tu te trompes</strong>, Sam t'aidera avec une animation pour comprendre !</p>
+                </div>
+              </div>
+            </div>
+
             <div className="bg-white rounded-xl shadow-lg p-6">
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-2xl font-bold text-gray-800">
@@ -1221,33 +1684,170 @@ export default function ProblemesAddition() {
 
                   {/* Énoncé du problème */}
                   <div className="p-4 bg-blue-50 rounded-lg">
-                    <div className="text-lg text-center">{exercises[currentExercise].story}</div>
+                    <div className="text-lg text-center text-gray-800 mb-4">{exercises[currentExercise].story}</div>
+                    
+                    {/* Bouton Lire l'énoncé */}
+                    <div className="text-center">
+                      <button
+                        id="read-story-button"
+                        onClick={readCurrentStory}
+                        className={`px-4 py-2 bg-green-500 text-white rounded-lg font-semibold hover:bg-green-600 transition-all ${
+                          highlightedElement === 'read-story-button' ? 'ring-4 ring-yellow-400 animate-pulse bg-yellow-500' : ''
+                        }`}
+                      >
+                        🔊 Lire l'énoncé
+                      </button>
+                    </div>
                   </div>
 
                   {/* Zone de réponse */}
                   <div className="text-center space-y-4">
                     <input
+                      id="answer-input"
                       type="number"
                       value={userAnswer}
                       onChange={(e) => setUserAnswer(e.target.value)}
-                      placeholder="Ta réponse..."
-                      className="text-center text-xl font-bold border-2 border-gray-300 rounded-lg px-4 py-2 w-32"
+                      placeholder="?"
+                      autoComplete="off"
+                      autoCorrect="off"
+                      autoCapitalize="off"
+                      spellCheck="false"
+                      className={`text-center text-xl font-bold border-2 border-gray-300 rounded-lg px-4 py-2 w-32 transition-all ${
+                        highlightedElement === 'answer-input' ? 'ring-4 ring-yellow-400 animate-pulse border-yellow-500' : ''
+                      }`}
                       onKeyPress={(e) => e.key === 'Enter' && checkAnswer()}
                     />
                     <div>
                       <button
+                        id="validate-button"
                         onClick={checkAnswer}
                         disabled={!userAnswer}
-                        className="bg-blue-500 text-white px-6 py-2 rounded-lg font-semibold hover:bg-blue-600 disabled:opacity-50"
+                        className={`bg-blue-500 text-white px-6 py-2 rounded-lg font-semibold hover:bg-blue-600 disabled:opacity-50 transition-all ${
+                          highlightedElement === 'validate-button' ? 'ring-4 ring-yellow-400 animate-pulse bg-yellow-500' : ''
+                        }`}
                       >
                         Vérifier
                       </button>
                     </div>
                   </div>
 
+                  {/* Animation de correction visuelle pour les réponses incorrectes */}
+                  {showExerciseAnimation && !isCorrect && (
+                    <div className="bg-yellow-50 border-2 border-yellow-300 rounded-lg p-6 mb-4">
+                      <h3 className="text-lg font-bold text-center mb-4 text-yellow-800">
+                        🎯 Regardons ensemble la solution !
+                      </h3>
+                      
+                      {(() => {
+                        const exercise = exercises[currentExercise];
+                        return (
+                          <div className="space-y-4">
+                            {/* Énoncé en surbrillance avec nombres mis en évidence */}
+                            <div className="p-3 bg-blue-100 rounded-lg">
+                              <div className="text-center font-semibold text-blue-800">
+                                {exerciseAnimationStep === 'highlight-numbers' ? 
+                                  highlightNumbers(exercise.story, true) : 
+                                  exercise.story
+                                }
+                              </div>
+                            </div>
+
+                            {/* Explication de l'identification des nombres */}
+                            {(exerciseAnimationStep === 'highlight-numbers' || exerciseAnimationStep === 'show-groups' || exerciseAnimationStep === 'show-calculation' || exerciseAnimationStep === 'show-result') && (
+                              <div className="text-center p-3 bg-yellow-100 rounded-lg">
+                                <p className="text-lg text-yellow-800">
+                                  🎯 Je trouve les nombres : <span className="font-bold text-blue-600">{exercise.first}</span> et <span className="font-bold text-green-600">{exercise.second}</span>
+                                </p>
+                              </div>
+                            )}
+
+                            {/* Animation des objets */}
+                            {(exerciseAnimationStep === 'show-groups' || exerciseAnimationStep === 'show-calculation' || exerciseAnimationStep === 'show-result') && (
+                              <div className="flex justify-center items-center space-x-6">
+                                {/* Premier groupe */}
+                                <div className="p-3 rounded-lg bg-red-100 ring-2 ring-red-400">
+                                  <div className="text-center mb-2">
+                                    <span className="font-bold text-red-800">{exercise.first}</span>
+                                  </div>
+                                  <div className="grid grid-cols-3 gap-1">
+                                    {Array.from({ length: Math.min(exercise.first, 9) }, (_, i) => (
+                                      <div
+                                        key={i}
+                                        className={`text-2xl ${exercise.color1} animate-bounce`}
+                                        style={{ animationDelay: `${i * 100}ms` }}
+                                      >
+                                        {exercise.item}
+                                      </div>
+                                    ))}
+                                    {exercise.first > 9 && (
+                                      <div className="text-sm text-gray-600 col-span-3 text-center">
+                                        + {exercise.first - 9} autres...
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+
+                                <div className="text-3xl font-bold text-gray-700">+</div>
+
+                                {/* Deuxième groupe */}
+                                <div className="p-3 rounded-lg bg-blue-100 ring-2 ring-blue-400">
+                                  <div className="text-center mb-2">
+                                    <span className="font-bold text-blue-800">{exercise.second}</span>
+                                  </div>
+                                  <div className="grid grid-cols-3 gap-1">
+                                    {Array.from({ length: Math.min(exercise.second, 9) }, (_, i) => (
+                                      <div
+                                        key={i}
+                                        className={`text-2xl ${exercise.color2} animate-bounce`}
+                                        style={{ animationDelay: `${i * 100}ms` }}
+                                      >
+                                        {exercise.item}
+                                      </div>
+                                    ))}
+                                    {exercise.second > 9 && (
+                                      <div className="text-sm text-gray-600 col-span-3 text-center">
+                                        + {exercise.second - 9} autres...
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Calcul écrit */}
+                            {(exerciseAnimationStep === 'show-calculation' || exerciseAnimationStep === 'show-result') && (
+                              <div className="text-center p-4 bg-purple-100 rounded-lg">
+                                <div className="text-2xl font-bold text-purple-800">
+                                  {exerciseAnimationStep === 'show-result' ? 
+                                    `${exercise.first} + ${exercise.second} = ${exercise.answer}` :
+                                    `${exercise.first} + ${exercise.second} = ?`
+                                  }
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Résultat final */}
+                            {exerciseAnimationStep === 'show-result' && (
+                              <div className="text-center p-4 bg-green-100 rounded-lg ring-2 ring-green-400 animate-pulse">
+                                <div className="text-3xl font-bold text-green-800 mb-2">
+                                  {exercise.first} + {exercise.second} = {exercise.answer}
+                                </div>
+                                <div className="text-lg text-green-700">
+                                  La réponse est {exercise.answer} !
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })()}
+                    </div>
+                  )}
+
                   {/* Feedback */}
                   {isCorrect !== null && (
-                    <div className={`p-4 rounded-lg text-center ${
+                    <div 
+                      id="exercise-correction"
+                      className={`p-4 rounded-lg text-center ${
                       isCorrect ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
                     }`}>
                       <div className="flex items-center justify-center gap-2 mb-2">
@@ -1266,7 +1866,7 @@ export default function ProblemesAddition() {
                       
                       <button
                         onClick={nextExercise}
-                        className="bg-orange-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-orange-600 mt-2"
+                        className="bg-orange-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-orange-600 mt-2 transition-all"
                       >
                         {currentExercise < exercises.length - 1 ? 'Exercice suivant' : 'Voir mes résultats'}
                       </button>
