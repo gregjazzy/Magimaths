@@ -146,10 +146,11 @@ export default function ProblemesAddition() {
     }
   ];
 
-  // 20 Exercices originaux pour les élèves - NIVEAU CP avec animations de correction
+  // 20 Exercices progressifs CP : 10 → 20 → 100 (additions posées SANS retenue)
   const exercises = [
+    // NIVEAU 1 : Additions simples jusqu'à 10 (mentalement)
     {
-      story: 'Léo a trouvé 3 champignons rouges et 5 champignons blancs dans la forêt. Combien de champignons a-t-il trouvés ?',
+      story: 'Léa trouve des champignons. Elle a 3 champignons rouges et 5 champignons blancs. Combien de champignons a-t-elle ?',
       answer: 8,
       visual: '🍄',
       first: 3,
@@ -159,194 +160,200 @@ export default function ProblemesAddition() {
       color2: 'text-gray-600'
     },
     {
-      story: 'Dans son pot à crayons, Nina compte 4 crayons violets et 6 crayons roses. Combien de crayons y a-t-il ?',
-      answer: 10,
+      story: 'Nina range ses crayons. Elle a 4 crayons bleus et 2 crayons rouges. Combien de crayons a-t-elle ?',
+      answer: 6,
       visual: '✏️',
       first: 4,
-      second: 6,
+      second: 2,
       item: '✏️',
-      color1: 'text-purple-600',
-      color2: 'text-pink-600'
+      color1: 'text-blue-600',
+      color2: 'text-red-600'
     },
     {
-      story: 'Au cirque, Victor voit 7 clowns qui font des blagues et 2 clowns qui jonglent. Combien de clowns y a-t-il ?',
+      story: 'Tom collectionne les billes. Il a 6 billes vertes et 3 billes jaunes. Combien de billes a-t-il ?',
+      answer: 9,
+      visual: '⚪',
+      first: 6,
+      second: 3,
+      item: '⚪',
+      color1: 'text-green-600',
+      color2: 'text-yellow-600'
+    },
+    {
+      story: 'Au cirque, Victor voit 5 clowns qui dansent et 4 clowns qui jonglent. Combien de clowns y a-t-il ?',
       answer: 9,
       visual: '🤡',
-      first: 7,
-      second: 2,
+      first: 5,
+      second: 4,
       item: '🤡',
       color1: 'text-red-500',
       color2: 'text-blue-500'
     },
     {
-      story: 'Mélanie collectionne les papillons. Elle en a 5 bleus dans une boîte et 4 oranges dans une autre. Combien de papillons a-t-elle ?',
+      story: 'Mélanie compte ses autocollants. Elle a 2 autocollants d\'animaux et 7 autocollants de fleurs. Combien d\'autocollants a-t-elle ?',
       answer: 9,
-      visual: '🦋',
-      first: 5,
-      second: 4,
-      item: '🦋',
-      color1: 'text-blue-600',
-      color2: 'text-orange-600'
+      visual: '🌟',
+      first: 2,
+      second: 7,
+      item: '🌟',
+      color1: 'text-orange-600',
+      color2: 'text-pink-600'
     },
+    
+    // NIVEAU 2 : Additions jusqu'à 20 (posées simples)
     {
-      story: 'Dans la classe, il y a 12 chaises bleues et 8 chaises rouges. Combien de chaises y a-t-il en tout ?',
-      answer: 20,
+      story: 'Dans la classe, il y a 12 chaises bleues et 6 chaises rouges. Combien de chaises y a-t-il ?',
+      answer: 18,
       visual: '🪑',
       first: 12,
-      second: 8,
+      second: 6,
       item: '🪑',
       color1: 'text-blue-600',
       color2: 'text-red-600'
     },
     {
-      story: 'Paul mange des bonbons. Il a 11 bonbons à la fraise et 7 bonbons au citron. Combien de bonbons a-t-il ?',
+      story: 'Paul collectionne les cartes. Il a 11 cartes de football et 7 cartes de basketball. Combien de cartes a-t-il ?',
       answer: 18,
-      visual: '🍭',
+      visual: '🎴',
       first: 11,
       second: 7,
-      item: '🍭',
-      color1: 'text-red-500',
-      color2: 'text-yellow-500'
+      item: '🎴',
+      color1: 'text-green-600',
+      color2: 'text-orange-600'
     },
     {
-      story: 'Dans le parc, Alice compte les oiseaux. Elle voit 9 moineaux sur l\'arbre et 8 pigeons sur le sol. Combien d\'oiseaux y a-t-il ?',
-      answer: 17,
+      story: 'Alice nourrit les oiseaux. Elle voit 13 moineaux et 5 pigeons. Combien d\'oiseaux y a-t-il ?',
+      answer: 18,
       visual: '🐦',
-      first: 9,
-      second: 8,
+      first: 13,
+      second: 5,
       item: '🐦',
       color1: 'text-amber-700',
       color2: 'text-gray-600'
     },
     {
-      story: 'Thomas joue avec ses dominos. Il a 12 dominos noirs et 6 dominos blancs. Combien de dominos a-t-il ?',
+      story: 'Thomas joue avec ses blocs. Il a 14 blocs rouges et 4 blocs verts. Combien de blocs a-t-il ?',
       answer: 18,
-      visual: '⚫',
-      first: 12,
-      second: 6,
-      item: '⚫',
-      color1: 'text-black',
-      color2: 'text-gray-600'
+      visual: '🧱',
+      first: 14,
+      second: 4,
+      item: '🧱',
+      color1: 'text-red-600',
+      color2: 'text-green-600'
     },
     {
-      story: 'À la piscine, Sarah voit 8 enfants qui nagent et 11 enfants qui jouent dans l\'eau. Combien d\'enfants s\'amusent ?',
-      answer: 19,
+      story: 'À la piscine, Sarah compte les enfants. Elle voit 15 enfants qui nagent et 3 enfants qui jouent. Combien d\'enfants y a-t-il ?',
+      answer: 18,
       visual: '🏊',
-      first: 8,
-      second: 11,
+      first: 15,
+      second: 3,
       item: '🏊',
       color1: 'text-blue-500',
       color2: 'text-cyan-500'
     },
+    
+    // NIVEAU 3 : Additions posées jusqu'à 50 (sans retenue)
     {
-      story: 'Dans le garage, Papa compte ses outils. Il a 11 marteaux et 9 tournevis. Combien d\'outils y a-t-il ?',
-      answer: 20,
-      visual: '🔨',
-      first: 11,
-      second: 9,
-      item: '🔨',
-      color1: 'text-amber-700',
-      color2: 'text-gray-600'
-    },
-    {
-      story: 'Julie fait un collier. Elle enfile 12 perles bleues et 7 perles dorées. Combien de perles utilise-t-elle ?',
-      answer: 19,
-      visual: '🔮',
-      first: 12,
-      second: 7,
-      item: '🔮',
+      story: 'Julie fait un collier. Elle enfile 23 perles bleues et 14 perles dorées. Combien de perles utilise-t-elle ?',
+      answer: 37,
+      visual: '💎',
+      first: 23,
+      second: 14,
+      item: '💎',
       color1: 'text-blue-600',
       color2: 'text-yellow-500'
     },
     {
-      story: 'Dans le potager, Mamie récolte 9 carottes et 11 radis. Combien de légumes a-t-elle cueillis ?',
-      answer: 20,
+      story: 'Dans le potager, Mamie récolte 31 carottes et 12 radis. Combien de légumes a-t-elle cueillis ?',
+      answer: 43,
       visual: '🥕',
-      first: 9,
-      second: 11,
+      first: 31,
+      second: 12,
       item: '🥕',
       color1: 'text-orange-600',
       color2: 'text-red-600'
     },
     {
-      story: 'Antoine collectionne les timbres. Il colle 8 timbres français et 10 timbres étrangers dans son album. Combien de timbres a-t-il ?',
-      answer: 18,
+      story: 'Antoine collectionne les timbres. Il a 22 timbres français et 15 timbres étrangers. Combien de timbres a-t-il ?',
+      answer: 37,
       visual: '📮',
-      first: 8,
-      second: 10,
+      first: 22,
+      second: 15,
       item: '📮',
       color1: 'text-blue-600',
       color2: 'text-green-600'
     },
     {
-      story: 'À la plage, Zoé ramasse des galets. Elle trouve 7 galets ronds et 12 galets plats. Combien de galets a-t-elle ?',
-      answer: 19,
-      visual: '🪨',
-      first: 7,
-      second: 12,
-      item: '🪨',
-      color1: 'text-gray-600',
-      color2: 'text-stone-600'
+      story: 'À la plage, Zoé ramasse des coquillages. Elle trouve 24 petits coquillages et 13 gros coquillages. Combien de coquillages a-t-elle ?',
+      answer: 37,
+      visual: '🐚',
+      first: 24,
+      second: 13,
+      item: '🐚',
+      color1: 'text-pink-600',
+      color2: 'text-blue-600'
     },
     {
-      story: 'Dans sa tirelire, Lucas a 12 pièces de 1 euro et 8 pièces de 2 euros. Combien de pièces a-t-il ?',
-      answer: 20,
+      story: 'Dans sa tirelire, Lucas a 32 pièces jaunes et 11 pièces argentées. Combien de pièces a-t-il ?',
+      answer: 43,
       visual: '🪙',
-      first: 12,
-      second: 8,
+      first: 32,
+      second: 11,
       item: '🪙',
       color1: 'text-yellow-600',
-      color2: 'text-amber-700'
+      color2: 'text-gray-400'
     },
+    
+    // NIVEAU 4 : Additions posées jusqu'à 100 (sans retenue - nombres à 2 chiffres)
     {
-      story: 'Élise compte les nuages dans le ciel. Elle voit 8 gros nuages blancs et 10 petits nuages gris. Combien de nuages y a-t-il ?',
-      answer: 18,
+      story: 'Élise compte les nuages. Elle voit 42 nuages blancs et 24 nuages gris. Combien de nuages y a-t-il ?',
+      answer: 66,
       visual: '☁️',
-      first: 8,
-      second: 10,
+      first: 42,
+      second: 24,
       item: '☁️',
-      color1: 'text-gray-600',
-      color2: 'text-gray-500'
+      color1: 'text-gray-300',
+      color2: 'text-gray-600'
     },
     {
-      story: 'Dans la cuisine, Maman prépare des cookies. Elle fait 11 cookies aux pépites et 8 cookies au chocolat. Combien de cookies a-t-elle ?',
-      answer: 19,
+      story: 'Maman prépare des cookies. Elle fait 35 cookies au chocolat et 32 cookies nature. Combien de cookies a-t-elle ?',
+      answer: 67,
       visual: '🍪',
-      first: 11,
-      second: 8,
+      first: 35,
+      second: 32,
       item: '🍪',
-      color1: 'text-amber-600',
-      color2: 'text-amber-800'
+      color1: 'text-amber-800',
+      color2: 'text-amber-600'
     },
     {
-      story: 'Hugo joue aux cartes. Il a 9 cartes rouges dans une main et 11 cartes noires dans l\'autre. Combien de cartes a-t-il ?',
-      answer: 20,
+      story: 'Hugo range ses cartes. Il a 43 cartes rouges et 25 cartes noires. Combien de cartes a-t-il ?',
+      answer: 68,
       visual: '🂠',
-      first: 9,
-      second: 11,
+      first: 43,
+      second: 25,
       item: '🂠',
       color1: 'text-red-600',
       color2: 'text-black'
     },
     {
-      story: 'Dans son sac d\'école, Emma range 8 livres de mathématiques et 11 livres de français. Combien de livres a-t-elle ?',
-      answer: 19,
+      story: 'Emma compte ses livres. Elle a 44 livres d\'histoires et 23 livres de sciences. Combien de livres a-t-elle ?',
+      answer: 67,
       visual: '📖',
-      first: 8,
-      second: 11,
+      first: 44,
+      second: 23,
       item: '📖',
-      color1: 'text-blue-600',
+      color1: 'text-purple-600',
       color2: 'text-green-600'
     },
     {
-      story: 'Au magasin de jouets, Théo voit 6 robots rouges et 9 robots verts sur l\'étagère. Combien de robots y a-t-il ?',
-      answer: 15,
-      visual: '🤖',
-      first: 6,
-      second: 9,
-      item: '🤖',
-      color1: 'text-red-600',
-      color2: 'text-green-600'
+      story: 'Au magasin de jouets, Théo compte les peluches. Il voit 51 ours en peluche et 26 lapins en peluche. Combien de peluches y a-t-il ?',
+      answer: 77,
+      visual: '🧸',
+      first: 51,
+      second: 26,
+      item: '🧸',
+      color1: 'text-amber-700',
+      color2: 'text-gray-600'
     }
   ];
 
@@ -357,50 +364,50 @@ export default function ProblemesAddition() {
     
     if (isCorrect) {
              const successMessages = [
-        `Bravo ! ${icon} Léo a trouvé exactement ${exercise.answer} champignons dans la forêt !`,
-        `Parfait ! ${icon} Nina a bien ${exercise.answer} crayons colorés dans son pot !`,
-        `Excellent ! ${icon} Victor compte ${exercise.answer} clowns amusants au cirque !`,
-        `Super ! ${icon} Mélanie a ${exercise.answer} beaux papillons dans sa collection !`,
-        `Bravo ! ${icon} Il y a précisément ${exercise.answer} chaises dans la classe !`,
-        `Délicieux ! ${icon} Paul a ${exercise.answer} bonbons sucrés à savourer !`,
+        `Bravo ! ${icon} Léa a trouvé exactement ${exercise.answer} champignons dans la forêt !`,
+        `Parfait ! ${icon} Nina a bien ${exercise.answer} crayons dans son pot !`,
+        `Excellent ! ${icon} Tom a ${exercise.answer} billes colorées !`,
+        `Super ! ${icon} Victor compte ${exercise.answer} clowns amusants au cirque !`,
+        `Bravo ! ${icon} Mélanie a ${exercise.answer} beaux autocollants !`,
+        `Formidable ! ${icon} Il y a précisément ${exercise.answer} chaises dans la classe !`,
+        `Parfait ! ${icon} Paul a ${exercise.answer} cartes dans sa collection !`,
         `Magnifique ! ${icon} Alice observe ${exercise.answer} oiseaux dans le parc !`,
-        `Formidable ! ${icon} Thomas a ${exercise.answer} dominos pour jouer !`,
-        `Excellent ! ${icon} Sarah voit ${exercise.answer} enfants qui s'amusent à la piscine !`,
-        `Parfait ! ${icon} Papa a ${exercise.answer} outils pratiques dans son garage !`,
+        `Excellent ! ${icon} Thomas a ${exercise.answer} blocs pour construire !`,
+        `Super ! ${icon} Sarah voit ${exercise.answer} enfants qui s'amusent à la piscine !`,
         `Merveilleux ! ${icon} Julie utilise ${exercise.answer} perles pour son beau collier !`,
         `Fantastique ! ${icon} Mamie a récolté ${exercise.answer} légumes frais !`,
         `Génial ! ${icon} Antoine a ${exercise.answer} timbres dans sa collection !`,
-        `Bravo ! ${icon} Zoé a ramassé ${exercise.answer} jolis galets à la plage !`,
-        `Super ! ${icon} Lucas a ${exercise.answer} pièces dans sa tirelire !`,
-        `Excellent ! ${icon} Élise compte ${exercise.answer} nuages dans le ciel !`,
+        `Bravo ! ${icon} Zoé a ramassé ${exercise.answer} coquillages à la plage !`,
+        `Excellent ! ${icon} Lucas a ${exercise.answer} pièces dans sa tirelire !`,
+        `Super ! ${icon} Élise compte ${exercise.answer} nuages dans le ciel !`,
         `Délicieux ! ${icon} Maman a préparé ${exercise.answer} cookies savoureux !`,
         `Formidable ! ${icon} Hugo a ${exercise.answer} cartes dans ses mains !`,
-        `Parfait ! ${icon} Emma a ${exercise.answer} livres dans son sac d'école !`,
-        `Fantastique ! ${icon} Théo voit ${exercise.answer} robots fascinants au magasin !`
+        `Parfait ! ${icon} Emma a ${exercise.answer} livres sur son étagère !`,
+        `Fantastique ! ${icon} Théo voit ${exercise.answer} peluches au magasin !`
        ];
        return successMessages[exerciseIndex] || `Bravo ! ${icon} Tu as trouvé ${exercise.answer} !`;
     } else {
              const correctionMessages = [
-        `${icon} Léo a trouvé : ${exercise.first} champignons rouges + ${exercise.second} champignons blancs = ${exercise.answer} champignons !`,
-        `${icon} Nina a : ${exercise.first} crayons violets + ${exercise.second} crayons roses = ${exercise.answer} crayons !`,
-        `${icon} Au cirque : ${exercise.first} clowns blagueurs + ${exercise.second} clowns jongleurs = ${exercise.answer} clowns !`,
-        `${icon} Mélanie a : ${exercise.first} papillons bleus + ${exercise.second} papillons oranges = ${exercise.answer} papillons !`,
+        `${icon} Léa a trouvé : ${exercise.first} champignons rouges + ${exercise.second} champignons blancs = ${exercise.answer} champignons !`,
+        `${icon} Nina a : ${exercise.first} crayons bleus + ${exercise.second} crayons rouges = ${exercise.answer} crayons !`,
+        `${icon} Tom a : ${exercise.first} billes vertes + ${exercise.second} billes jaunes = ${exercise.answer} billes !`,
+        `${icon} Au cirque : ${exercise.first} clowns danseurs + ${exercise.second} clowns jongleurs = ${exercise.answer} clowns !`,
+        `${icon} Mélanie a : ${exercise.first} autocollants d'animaux + ${exercise.second} autocollants de fleurs = ${exercise.answer} autocollants !`,
         `${icon} Dans la classe : ${exercise.first} chaises bleues + ${exercise.second} chaises rouges = ${exercise.answer} chaises !`,
-        `${icon} Paul a : ${exercise.first} bonbons fraise + ${exercise.second} bonbons citron = ${exercise.answer} bonbons !`,
-        `${icon} Dans le parc : ${exercise.first} moineaux + ${exercise.second} pigeons = ${exercise.answer} oiseaux !`,
-        `${icon} Thomas a : ${exercise.first} dominos noirs + ${exercise.second} dominos blancs = ${exercise.answer} dominos !`,
+        `${icon} Paul a : ${exercise.first} cartes de foot + ${exercise.second} cartes de basket = ${exercise.answer} cartes !`,
+        `${icon} Alice voit : ${exercise.first} moineaux + ${exercise.second} pigeons = ${exercise.answer} oiseaux !`,
+        `${icon} Thomas a : ${exercise.first} blocs rouges + ${exercise.second} blocs verts = ${exercise.answer} blocs !`,
         `${icon} À la piscine : ${exercise.first} enfants nageurs + ${exercise.second} enfants joueurs = ${exercise.answer} enfants !`,
-        `${icon} Papa a : ${exercise.first} marteaux + ${exercise.second} tournevis = ${exercise.answer} outils !`,
         `${icon} Julie utilise : ${exercise.first} perles bleues + ${exercise.second} perles dorées = ${exercise.answer} perles !`,
         `${icon} Mamie a récolté : ${exercise.first} carottes + ${exercise.second} radis = ${exercise.answer} légumes !`,
         `${icon} Antoine a : ${exercise.first} timbres français + ${exercise.second} timbres étrangers = ${exercise.answer} timbres !`,
-        `${icon} Zoé a trouvé : ${exercise.first} galets ronds + ${exercise.second} galets plats = ${exercise.answer} galets !`,
-        `${icon} Lucas a : ${exercise.first} pièces de 1€ + ${exercise.second} pièces de 2€ = ${exercise.answer} pièces !`,
-        `${icon} Élise voit : ${exercise.first} gros nuages + ${exercise.second} petits nuages = ${exercise.answer} nuages !`,
-        `${icon} Maman a fait : ${exercise.first} cookies pépites + ${exercise.second} cookies chocolat = ${exercise.answer} cookies !`,
+        `${icon} Zoé a trouvé : ${exercise.first} petits coquillages + ${exercise.second} gros coquillages = ${exercise.answer} coquillages !`,
+        `${icon} Lucas a : ${exercise.first} pièces jaunes + ${exercise.second} pièces argentées = ${exercise.answer} pièces !`,
+        `${icon} Élise voit : ${exercise.first} nuages blancs + ${exercise.second} nuages gris = ${exercise.answer} nuages !`,
+        `${icon} Maman a fait : ${exercise.first} cookies chocolat + ${exercise.second} cookies nature = ${exercise.answer} cookies !`,
         `${icon} Hugo a : ${exercise.first} cartes rouges + ${exercise.second} cartes noires = ${exercise.answer} cartes !`,
-        `${icon} Emma a : ${exercise.first} livres de maths + ${exercise.second} livres de français = ${exercise.answer} livres !`,
-        `${icon} Théo voit : ${exercise.first} robots rouges + ${exercise.second} robots verts = ${exercise.answer} robots !`
+        `${icon} Emma a : ${exercise.first} livres d'histoires + ${exercise.second} livres de sciences = ${exercise.answer} livres !`,
+        `${icon} Théo voit : ${exercise.first} ours en peluche + ${exercise.second} lapins en peluche = ${exercise.answer} peluches !`
        ];
       return correctionMessages[exerciseIndex] || `${icon} La réponse était ${exercise.answer} !`;
     }
@@ -760,6 +767,41 @@ export default function ProblemesAddition() {
       setSamSizeExpanded(false);
       setHighlightExerciseButton(false);
       setHighlightedElement(null);
+    }
+  };
+
+  // Fonction pour lire une étape spécifique de la méthode
+  const readMethodStep = async (step: string) => {
+    if (isPlayingVocal) return;
+    
+    try {
+      // Mettre en évidence l'étape correspondante
+      setAnimatingStep(step);
+      
+      let text = '';
+      switch (step) {
+        case 'step1':
+          text = "Première étape : Je lis le problème et je comprends l'histoire. Je dois bien comprendre ce qui se passe dans l'histoire pour identifier les nombres importants.";
+          break;
+        case 'step2':
+          text = "Deuxième étape : Je trouve les deux nombres à additionner. Je cherche dans l'histoire les quantités que je dois rassembler ou compter ensemble.";
+          break;
+        case 'step3':
+          text = "Troisième étape : J'écris l'addition et je calcule. Je pose l'opération et je trouve le résultat pour répondre à la question.";
+          break;
+        default:
+          text = "Étape de la méthode.";
+      }
+      
+      await playAudio(text);
+      
+      // Attendre un peu puis enlever la mise en évidence
+      await wait(500);
+      setAnimatingStep(null);
+      
+    } catch (error) {
+      console.error('Erreur lors de la lecture de l\'étape:', error);
+      setAnimatingStep(null);
     }
   };
 
@@ -1391,21 +1433,39 @@ export default function ProblemesAddition() {
                 <div className={`flex items-center gap-4 p-4 rounded-lg transition-all ${
                   animatingStep === 'step1' ? 'bg-blue-100 ring-2 ring-blue-400' : 'bg-gray-100'
                 }`}>
-                  <div className="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold">1</div>
+                  <div 
+                    className="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold cursor-pointer hover:scale-110 transition-all duration-300 hover:bg-blue-600"
+                    onClick={() => readMethodStep('step1')}
+                    title="Cliquer pour écouter cette étape"
+                  >
+                    1
+                  </div>
                   <p className="text-lg text-gray-800">Je lis le problème et je comprends l'histoire</p>
                 </div>
                 
                 <div className={`flex items-center gap-4 p-4 rounded-lg transition-all ${
                   animatingStep === 'step2' ? 'bg-green-100 ring-2 ring-green-400' : 'bg-gray-100'
                 }`}>
-                  <div className="w-8 h-8 bg-green-500 text-white rounded-full flex items-center justify-center font-bold">2</div>
+                  <div 
+                    className="w-8 h-8 bg-green-500 text-white rounded-full flex items-center justify-center font-bold cursor-pointer hover:scale-110 transition-all duration-300 hover:bg-green-600"
+                    onClick={() => readMethodStep('step2')}
+                    title="Cliquer pour écouter cette étape"
+                  >
+                    2
+                  </div>
                   <p className="text-lg text-gray-800">Je trouve les deux nombres à additionner</p>
                 </div>
                 
                 <div className={`flex items-center gap-4 p-4 rounded-lg transition-all ${
                   animatingStep === 'step3' ? 'bg-purple-100 ring-2 ring-purple-400' : 'bg-gray-100'
                 }`}>
-                  <div className="w-8 h-8 bg-purple-500 text-white rounded-full flex items-center justify-center font-bold">3</div>
+                  <div 
+                    className="w-8 h-8 bg-purple-500 text-white rounded-full flex items-center justify-center font-bold cursor-pointer hover:scale-110 transition-all duration-300 hover:bg-purple-600"
+                    onClick={() => readMethodStep('step3')}
+                    title="Cliquer pour écouter cette étape"
+                  >
+                    3
+                  </div>
                   <p className="text-lg text-gray-800">J'écris l'addition et je calcule</p>
                 </div>
               </div>
