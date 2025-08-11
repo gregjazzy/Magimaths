@@ -934,9 +934,64 @@ export default function ProblemesAddition() {
     if (correct) {
       setScore(score + 1);
     } else {
-      // Déclencher l'animation de correction si la réponse est fausse
+      // Déclencher la correction vocale automatique et l'animation visuelle
       setShowExerciseAnimation(true);
+      quickVocalCorrection();
       animateExerciseCorrection();
+    }
+  };
+
+  // Fonction pour correction vocale automatique et rapide
+  const quickVocalCorrection = async () => {
+    const exercise = exercises[currentExercise];
+    
+    // Extraire les nombres de l'énoncé
+    const numbers = exercise.story.match(/\d+/g);
+    if (!numbers || numbers.length < 2) return;
+    
+    const first = parseInt(numbers[0]);
+    const second = parseInt(numbers[1]);
+    const result = exercise.answer;
+
+    // Fonction audio rapide pour cette correction
+    const quickAudio = (text: string) => {
+      return new Promise<void>((resolve) => {
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'fr-FR';
+        utterance.rate = 1.4; // Plus rapide
+        utterance.pitch = 1.0;
+        utterance.volume = 1.0;
+        
+        const voices = speechSynthesis.getVoices();
+        const frenchVoice = voices.find(voice => 
+          voice.lang === 'fr-FR' && voice.localService === true
+        );
+        
+        if (frenchVoice) {
+          utterance.voice = frenchVoice;
+        }
+        
+        utterance.onend = () => resolve();
+        utterance.onerror = () => resolve();
+        speechSynthesis.speak(utterance);
+      });
+    };
+
+    try {
+      // Correction rapide et directe avec mise en évidence
+      setExerciseAnimationStep('highlight-numbers');
+      await quickAudio(`Les nombres sont ${first} et ${second}`);
+      await wait(200);
+      
+      setExerciseAnimationStep('show-calculation');
+      await quickAudio(`${first} plus ${second} égale ${result}`);
+      await wait(200);
+      
+      setExerciseAnimationStep('show-result');
+      await quickAudio(`La bonne réponse est ${result} !`);
+      
+    } catch (error) {
+      console.error('Erreur dans quickVocalCorrection:', error);
     }
   };
 
