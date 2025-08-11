@@ -374,6 +374,54 @@ export default function ProblemesAddition() {
     }
   };
 
+  // Fonction pour lire la méthode en 3 étapes
+  const readMethod = async () => {
+    if (isPlayingVocal) {
+      stopAllVocalsAndAnimations();
+      return;
+    }
+
+    stopSignalRef.current = false;
+    setIsPlayingVocal(true);
+    
+    try {
+      await playAudio("Voici ma méthode en 3 étapes pour résoudre un problème d'addition !");
+      await wait(800);
+      
+      if (stopSignalRef.current) return;
+      
+      // Étape 1
+      setAnimatingStep('step1');
+      await playAudio("Première étape : Je lis le problème et je comprends bien l'histoire qui est racontée.");
+      await wait(1000);
+      
+      if (stopSignalRef.current) return;
+      
+      // Étape 2
+      setAnimatingStep('step2');
+      await playAudio("Deuxième étape : Je trouve les deux nombres importants qu'il faut additionner dans l'histoire.");
+      await wait(1000);
+      
+      if (stopSignalRef.current) return;
+      
+      // Étape 3
+      setAnimatingStep('step3');
+      await playAudio("Troisième étape : J'écris l'addition avec ces deux nombres et je calcule le résultat !");
+      await wait(1000);
+      
+      if (stopSignalRef.current) return;
+      
+      setAnimatingStep(null);
+      await playAudio("Avec ces 3 étapes, tu peux résoudre tous les problèmes d'addition !");
+      
+    } catch (error) {
+      console.error('Erreur lors de la lecture de la méthode:', error);
+    } finally {
+      setIsPlayingVocal(false);
+      setAnimatingStep(null);
+    }
+  };
+
   // Fonction pour jouer l'audio avec voix féminine française
   const playAudio = async (text: string, slowMode = false) => {
     return new Promise<void>((resolve) => {
@@ -942,10 +990,16 @@ export default function ProblemesAddition() {
                   <Target className="w-4 h-4 sm:w-6 sm:h-6 text-purple-600" />
                 </div>
                 <h2 className="text-base sm:text-2xl font-bold text-gray-800">Ma méthode en 3 étapes</h2>
-                {/* Icône d'animation pour la méthode */}
-                <div className="bg-gradient-to-r from-purple-500 to-indigo-600 text-white rounded-full w-6 h-6 sm:w-12 sm:h-12 flex items-center justify-center text-xs sm:text-xl font-bold shadow-lg hover:scale-110 cursor-pointer transition-all duration-300 ring-2 ring-purple-300" 
-                     style={{animation: 'subtle-glow 2s infinite'}}>
-                  🎯
+                {/* Bouton vocal pour la méthode */}
+                <div 
+                  onClick={readMethod}
+                  className={`bg-gradient-to-r from-purple-500 to-indigo-600 text-white rounded-full w-6 h-6 sm:w-12 sm:h-12 flex items-center justify-center text-xs sm:text-xl font-bold shadow-lg hover:scale-110 cursor-pointer transition-all duration-300 ring-2 ring-purple-300 ${
+                    isPlayingVocal ? 'animate-pulse bg-gradient-to-r from-green-500 to-green-600' : ''
+                  }`}
+                  style={{animation: isPlayingVocal ? 'pulse 1s infinite' : 'subtle-glow 2s infinite'}}
+                  title={isPlayingVocal ? "Arrêter la lecture" : "Écouter la méthode"}
+                >
+                  {isPlayingVocal ? '🔊' : '🎯'}
                 </div>
               </div>
               
