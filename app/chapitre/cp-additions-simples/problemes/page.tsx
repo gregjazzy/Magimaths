@@ -964,12 +964,12 @@ export default function ProblemesAddition() {
       }
     }, 300);
 
-    // Fonction audio avec vitesse normale pour la correction
+    // Fonction audio avec vitesse lente pour la correction
     const quickAudio = (text: string) => {
       return new Promise<void>((resolve) => {
         const utterance = new SpeechSynthesisUtterance(text);
         utterance.lang = 'fr-FR';
-        utterance.rate = 1.0; // Vitesse normale
+        utterance.rate = 0.8; // Vitesse plus lente pour la correction
         utterance.pitch = 1.0;
         utterance.volume = 1.0;
         
@@ -989,18 +989,18 @@ export default function ProblemesAddition() {
     };
 
     try {
-      // Correction avec mise en évidence et vitesse normale
+      // Correction avec mise en évidence et vitesse lente
       setExerciseAnimationStep('highlight-numbers');
       await quickAudio(`Les nombres sont ${first} et ${second}`);
-      await wait(500);
+      await wait(700);
       
       setExerciseAnimationStep('show-calculation');
       await quickAudio(`${first} plus ${second} égale ${result}`);
-      await wait(500);
+      await wait(700);
       
       setExerciseAnimationStep('show-result');
       await quickAudio(`La bonne réponse est ${result} !`);
-      await wait(800);
+      await wait(1000);
       
       setExerciseAnimationStep(null);
       
