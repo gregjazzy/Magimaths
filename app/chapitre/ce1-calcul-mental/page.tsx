@@ -51,13 +51,34 @@ export default function CE1CalculMentalPage() {
     },
 
     {
+      id: 'additions-jusqu-100',
+      title: 'Additions jusqu\'à 100',
+      description: 'Maîtrise les additions avec des nombres plus grands !',
+      icon: '🧮',
+      duration: '35 min',
+      xp: 70,
+      color: 'from-green-500 to-emerald-500',
+      href: '/chapitre/ce1-quatre-operations/addition-ce1/additions-jusqu-100'
+    },
+    {
+      id: 'additions-jusqu-1000',
+      title: 'Additions jusqu\'à 1000',
+      description: 'Maîtrise les additions avec les nombres à 3 chiffres !',
+      icon: '🔢',
+      duration: '40 min',
+      xp: 80,
+      color: 'from-emerald-500 to-teal-500',
+      href: '/chapitre/ce1-quatre-operations/addition-ce1/additions-jusqu-1000'
+    },
+
+    {
       id: 'doubles-moities',
       title: 'Doubles et moitiés',
       description: 'Nombres usuels jusqu\'à 70 (6, 8, 11, 13, 17...)',
       icon: '👥',
       duration: '10 min',
       xp: 12,
-      color: 'from-green-500 to-emerald-500'
+      color: 'from-cyan-500 to-blue-500'
     },
 
     {
@@ -231,9 +252,11 @@ export default function CE1CalculMentalPage() {
           {sections.map((section, index) => {
             const isCompleted = completedSections.includes(section.id);
             
+            const linkHref = section.href || `/chapitre/ce1-calcul-mental/${section.id}`;
+            
             return (
               <div key={section.id} className="relative group">
-                <Link href={`/chapitre/ce1-calcul-mental/${section.id}`}>
+                <Link href={linkHref}>
                   <div className={`
                     bg-white rounded-xl p-4 sm:p-6 shadow-lg transition-all duration-300 border-2 touch-manipulation
                     ${isCompleted ? 'border-green-400 bg-green-50' : 'border-transparent hover:shadow-xl hover:scale-105 hover:border-gray-200 active:scale-95'}
