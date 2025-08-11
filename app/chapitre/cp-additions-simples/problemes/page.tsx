@@ -989,9 +989,72 @@ export default function ProblemesAddition() {
     };
 
     try {
+      // Créer une explication personnalisée basée sur le contexte du problème
+      const getPersonalizedExplanation = () => {
+        const story = exercise.story.toLowerCase();
+        let context = '';
+        
+        if (story.includes('chaise')) {
+          context = `Il y a ${first} chaises et ${second} chaises`;
+        } else if (story.includes('champignon')) {
+          context = `Il y a ${first} champignons et ${second} champignons`;
+        } else if (story.includes('crayon')) {
+          context = `Il y a ${first} crayons et ${second} crayons`;
+        } else if (story.includes('clown')) {
+          context = `Il y a ${first} clowns et ${second} clowns`;
+        } else if (story.includes('papillon')) {
+          context = `Il y a ${first} papillons et ${second} papillons`;
+        } else if (story.includes('livre')) {
+          context = `Il y a ${first} livres et ${second} livres`;
+        } else if (story.includes('bonbon')) {
+          context = `Il y a ${first} bonbons et ${second} bonbons`;
+        } else if (story.includes('oiseau') || story.includes('moineau') || story.includes('pigeon')) {
+          context = `Il y a ${first} oiseaux et ${second} oiseaux`;
+        } else if (story.includes('voiture') || story.includes('camion') || story.includes('véhicule')) {
+          context = `Il y a ${first} véhicules et ${second} véhicules`;
+        } else if (story.includes('poisson')) {
+          context = `Il y a ${first} poissons et ${second} poissons`;
+        } else if (story.includes('enfant')) {
+          context = `Il y a ${first} enfants et ${second} enfants`;
+        } else if (story.includes('tomate') || story.includes('concombre') || story.includes('légume') || story.includes('carotte') || story.includes('radis')) {
+          context = `Il y a ${first} légumes et ${second} légumes`;
+        } else if (story.includes('canard')) {
+          context = `Il y a ${first} canards et ${second} canards`;
+        } else if (story.includes('croissant')) {
+          context = `Il y a ${first} croissants et ${second} croissants`;
+        } else if (story.includes('tulipe') || story.includes('bulbe')) {
+          context = `Il y a ${first} tulipes et ${second} tulipes`;
+        } else if (story.includes('domino')) {
+          context = `Il y a ${first} dominos et ${second} dominos`;
+        } else if (story.includes('outil') || story.includes('marteau') || story.includes('tournevis')) {
+          context = `Il y a ${first} outils et ${second} outils`;
+        } else if (story.includes('perle')) {
+          context = `Il y a ${first} perles et ${second} perles`;
+        } else if (story.includes('timbre')) {
+          context = `Il y a ${first} timbres et ${second} timbres`;
+        } else if (story.includes('galet')) {
+          context = `Il y a ${first} galets et ${second} galets`;
+        } else if (story.includes('pièce')) {
+          context = `Il y a ${first} pièces et ${second} pièces`;
+        } else if (story.includes('nuage')) {
+          context = `Il y a ${first} nuages et ${second} nuages`;
+        } else if (story.includes('cookie')) {
+          context = `Il y a ${first} cookies et ${second} cookies`;
+        } else if (story.includes('carte')) {
+          context = `Il y a ${first} cartes et ${second} cartes`;
+        } else if (story.includes('robot')) {
+          context = `Il y a ${first} robots et ${second} robots`;
+        } else {
+          // Fallback générique
+          context = `Les nombres sont ${first} et ${second}`;
+        }
+        
+        return context;
+      };
+      
       // Correction avec mise en évidence et vitesse lente
       setExerciseAnimationStep('highlight-numbers');
-      await quickAudio(`Les nombres sont ${first} et ${second}`);
+      await quickAudio(getPersonalizedExplanation());
       await wait(700);
       
       setExerciseAnimationStep('show-calculation');
