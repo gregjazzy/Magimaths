@@ -131,6 +131,61 @@ export default function ProblemesAddition() {
       item: '🌷',
       color1: 'text-red-700',
       color2: 'text-yellow-700'
+    },
+    {
+      id: 'pizzeria',
+      title: 'La pizzeria de Tony',
+      story: 'Tony le pizzaïolo prépare ses délicieuses pizzas pour le dîner. Il sort du four 22 pizzas margherita fumantes qu\'il dispose sur le comptoir chaud. Puis il ajoute 18 pizzas aux champignons qui sentent bon l\'ail et les herbes. Sa femme Maria veut savoir combien de pizzas Tony a préparées pour ses clients affamés.',
+      first: 22,
+      second: 18,
+      result: 40,
+      item: '🍕',
+      color1: 'text-red-600',
+      color2: 'text-green-600'
+    },
+    {
+      id: 'plage',
+      title: 'Les coquillages de la plage',
+      story: 'Pendant ses vacances au bord de la mer, Emma collectionne les plus beaux coquillages sur le sable doré. Le matin, elle trouve 29 coquillages nacrés qui brillent au soleil près des rochers. L\'après-midi, elle découvre 24 coquillages colorés cachés dans les algues. Ses parents lui demandent combien de trésors marins elle a récoltés aujourd\'hui.',
+      first: 29,
+      second: 24,
+      result: 53,
+      item: '🐚',
+      color1: 'text-blue-600',
+      color2: 'text-purple-600'
+    },
+    {
+      id: 'ferme',
+      title: 'La ferme de Madame Dubois',
+      story: 'Dans sa grande ferme à la campagne, Madame Dubois élève des poules heureuses qui picorent librement dans la cour. Ce matin, elle compte 31 œufs frais dans le poulailler principal où vivent ses poules rousses. Puis elle se dirige vers le petit poulailler et y trouve 26 œufs tout chauds pondus par ses poules blanches. Elle veut savoir combien d\'œufs elle va pouvoir vendre au marché.',
+      first: 31,
+      second: 26,
+      result: 57,
+      item: '🥚',
+      color1: 'text-amber-600',
+      color2: 'text-gray-600'
+    },
+    {
+      id: 'cirque',
+      title: 'Le grand cirque Paillettes',
+      story: 'Sous le grand chapiteau rayé du cirque Paillettes, la représentation va bientôt commencer ! Le chef machiniste compte les spectacles pour préparer le programme. Il y aura 25 numéros d\'acrobates qui voleront dans les airs avec grâce et 19 numéros de clowns rigolos qui feront rire les enfants. Le directeur du cirque veut annoncer combien de numéros magiques les spectateurs vont admirer.',
+      first: 25,
+      second: 19,
+      result: 44,
+      item: '🎪',
+      color1: 'text-red-600',
+      color2: 'text-yellow-600'
+    },
+    {
+      id: 'magasin',
+      title: 'Le magasin de jouets de Sophie',
+      story: 'Dans son merveilleux magasin de jouets aux vitrines colorées, Sophie prépare une grande exposition pour les fêtes de fin d\'année. Elle installe 38 poupées aux robes scintillantes sur les étagères du haut, puis place 27 petites voitures de course sur les présentoirs du bas. Un papa curieux lui demande combien de jouets brillants sont exposés dans sa magnifique boutique.',
+      first: 38,
+      second: 27,
+      result: 65,
+      item: '🧸',
+      color1: 'text-pink-600',
+      color2: 'text-blue-600'
     }
   ];
 
