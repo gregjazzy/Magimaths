@@ -46,15 +46,20 @@ export default function AdditionPoseeCE1() {
   const stopSignalRef = useRef(false);
   const currentAudioRef = useRef<SpeechSynthesisUtterance | null>(null);
 
-  // Exemples d'additions posées
+  // Exemples d'additions posées - COURS UNIQUEMENT avec retenue
   const additionExamples = [
-    { num1: 3, num2: 4, result: 7, hasCarry: false, description: 'simple sans retenue' },
-    { num1: 2, num2: 6, result: 8, hasCarry: false, description: 'simple sans retenue' },
-    { num1: 7, num2: 9, result: 16, hasCarry: true, description: 'avec retenue' },
-    { num1: 27, num2: 19, result: 46, hasCarry: true, description: 'avec retenue' },
-    { num1: 48, num2: 37, result: 85, hasCarry: true, description: 'avec retenue' },
-    { num1: 168, num2: 197, result: 365, hasCarry: true, description: 'à 3 chiffres avec retenue' },
-    { num1: 146, num2: 278, result: 424, hasCarry: true, description: 'à 3 chiffres avec retenue' }
+    // Exemples 1-3 : nombres à 2 chiffres avec retenue
+    { num1: 27, num2: 19, result: 46, hasCarry: true, description: 'nombres à 2 chiffres avec retenue' },
+    { num1: 48, num2: 37, result: 85, hasCarry: true, description: 'nombres à 2 chiffres avec retenue' },
+    { num1: 56, num2: 28, result: 84, hasCarry: true, description: 'nombres à 2 chiffres avec retenue' },
+    
+    // Exemple 4 : un nombre à 2 chiffres + un nombre à 3 chiffres avec retenue
+    { num1: 67, num2: 158, result: 225, hasCarry: true, description: '2 chiffres + 3 chiffres avec retenue' },
+    
+    // Exemples 5+ : nombres à 3 chiffres avec retenue
+    { num1: 168, num2: 197, result: 365, hasCarry: true, description: 'nombres à 3 chiffres avec retenue' },
+    { num1: 146, num2: 278, result: 424, hasCarry: true, description: 'nombres à 3 chiffres avec retenue' },
+    { num1: 289, num2: 357, result: 646, hasCarry: true, description: 'nombres à 3 chiffres avec retenue' }
   ];
 
   // Exercices progressifs
@@ -300,9 +305,9 @@ export default function AdditionPoseeCE1() {
     setHasStarted(true);
     setSamSizeExpanded(true);
     
-    try {
-      await playAudio("Bonjour ! Découvrons ensemble l'addition posée avec et sans retenue !", true);
-      if (stopSignalRef.current) return;
+          try {
+        await playAudio("Bonjour ! Découvrons ensemble l'addition posée avec retenue !", true);
+        if (stopSignalRef.current) return;
       
       await wait(1000);
       if (stopSignalRef.current) return;
@@ -641,14 +646,14 @@ export default function AdditionPoseeCE1() {
       
       await wait(1000);
       
-      // Focus sur les additions sans retenue
+      // Focus sur les additions avec retenue
       setHighlightedElement('examples-section');
       document.getElementById('examples-section')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
       await wait(1000);
       
-      await playAudio("D'abord, les additions posées sans retenue ! Comme 23 plus 14 ou 31 plus 26...", true);
+      await playAudio("Nous allons voir des additions posées avec retenue ! Comme 27 plus 19 ou 48 plus 37...", true);
       
-      // Illuminer les exemples sans retenue (indices 0 et 1)
+      // Illuminer les premiers exemples avec retenue (indices 0 et 1)
       setHighlightedElement('example-0');
       document.getElementById('example-0')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
       await wait(800);
@@ -1292,9 +1297,9 @@ export default function AdditionPoseeCE1() {
             </Link>
           
           <div className="bg-gradient-to-br from-orange-50 to-red-50 border-2 border-orange-200 rounded-xl p-4 sm:p-6 shadow-lg text-center">
-            <h1 className="text-lg sm:text-2xl lg:text-3xl font-bold text-orange-900 mb-3">
-              📝 Addition posée (avec et sans retenue)
-            </h1>
+                          <h1 className="text-lg sm:text-2xl lg:text-3xl font-bold text-orange-900 mb-3">
+                📝 Addition posée avec retenue
+              </h1>
         </div>
       </div>
 
@@ -1439,7 +1444,7 @@ export default function AdditionPoseeCE1() {
                 <div className="text-3xl sm:text-6xl mb-2 sm:mb-4">📝</div>
                 <div className="flex items-center justify-center gap-1 sm:gap-3 mb-3 sm:mb-4">
                   <h2 className="text-sm sm:text-xl font-bold text-gray-900">
-                    L'addition posée : simple et avec retenue
+                    L'addition posée avec retenue
                   </h2>
                   {/* Icône d'animation pour l'introduction */}
                   <div className="bg-gradient-to-r from-green-500 to-teal-600 text-white rounded-full w-6 h-6 sm:w-12 sm:h-12 flex items-center justify-center text-xs sm:text-xl font-bold shadow-lg hover:scale-110 cursor-pointer transition-all duration-300 ring-2 ring-green-300" 
@@ -1448,7 +1453,7 @@ export default function AdditionPoseeCE1() {
                   </div>
                 </div>
                 <p className="text-xs sm:text-base text-gray-600">
-                  On commence simple, puis on apprend les retenues quand la somme dépasse 9 !
+                  Nous apprenons les additions avec retenues quand la somme dépasse 9 !
                 </p>
             </div>
 
@@ -1464,7 +1469,7 @@ export default function AdditionPoseeCE1() {
                 </h3>
                 <div className="text-center mb-6">
                   <div className="bg-orange-100 text-orange-800 px-2 sm:px-4 py-1 sm:py-2 rounded-lg inline-block font-bold text-sm sm:text-lg">
-                    📝 Calculer : 3 + 4
+                    📝 Calculer : {additionExamples[0].num1} + {additionExamples[0].num2}
                   </div>
                 </div>
 
