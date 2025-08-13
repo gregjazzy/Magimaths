@@ -146,16 +146,16 @@ export default function AdditionPoseeCE1() {
       visual: '  397\n+ 258\n─────\n   ?'
     },
     { 
-      question: 'Calcule : 489 + 367', 
-      correctAnswer: '856',
-      choices: ['852', '856', '860'],
-      visual: '  489\n+ 367\n─────\n   ?'
+      question: 'Calcule : 189 + 267', 
+      correctAnswer: '456',
+      choices: ['452', '456', '460'],
+      visual: '  189\n+ 267\n─────\n   ?'
     },
     { 
-      question: 'Calcule : 578 + 296', 
-      correctAnswer: '874',
-      choices: ['870', '874', '878'],
-      visual: '  578\n+ 296\n─────\n   ?'
+      question: 'Calcule : 378 + 259', 
+      correctAnswer: '637',
+      choices: ['633', '637', '641'],
+      visual: '  378\n+ 259\n─────\n   ?'
     },
     
     // 5. Exercices complexes avec retenues
@@ -166,10 +166,10 @@ export default function AdditionPoseeCE1() {
       visual: '   89\n+  56\n─────\n   ?'
     },
     { 
-      question: 'Calcule : 679 + 485', 
-      correctAnswer: '1164',
-      choices: ['1160', '1164', '1168'],
-      visual: '  679\n+ 485\n─────\n   ?'
+      question: 'Calcule : 579 + 293', 
+      correctAnswer: '872',
+      choices: ['868', '872', '876'],
+      visual: '  579\n+ 293\n─────\n   ?'
     },
     { 
       question: 'Que fait-on avec la retenue ?', 
@@ -179,10 +179,10 @@ export default function AdditionPoseeCE1() {
     
     // 6. Défis finaux
     { 
-      question: 'Calcule : 758 + 397', 
-      correctAnswer: '1155',
-      choices: ['1151', '1155', '1159'],
-      visual: '  758\n+ 397\n─────\n   ?'
+      question: 'Calcule : 687 + 264', 
+      correctAnswer: '951',
+      choices: ['947', '951', '955'],
+      visual: '  687\n+ 264\n─────\n   ?'
     },
     { 
       question: 'L\'addition avec retenue nous aide à...', 
@@ -954,6 +954,26 @@ export default function AdditionPoseeCE1() {
     stopSignalRef.current = false;
     setIsAnimationRunning(true);
     
+    // Scroll immédiat vers l'animation pour qu'elle soit totalement visible
+    setTimeout(() => {
+      const animationSection = document.getElementById('exercise-animation-section');
+      if (animationSection) {
+        if (window.innerWidth <= 768) {
+          // Sur mobile, scroll pour voir toute l'animation
+          animationSection.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'start' 
+          });
+        } else {
+          // Sur desktop, centrer l'animation
+          animationSection.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'center' 
+          });
+        }
+      }
+    }, 200);
+    
     // Extraire les nombres de l'exercice
     const match = exercise.question.match(/Calcule : (\d+) \+ (\d+)/);
     if (!match) {
@@ -1075,14 +1095,51 @@ export default function AdditionPoseeCE1() {
       await playAudio(`Et voilà ! Le résultat est ${result} ! Tu vois comme c'est plus facile avec la méthode posée ?`, true);
       if (stopSignalRef.current) return;
       
+      // Scroll vers le bouton "Suivant" après l'explication complète
+      // Adaptation pour mobile : scroll pour voir l'animation complète et le bouton
+      setTimeout(() => {
+        const nextButton = document.getElementById('next-button');
+        const animationSection = document.getElementById('exercise-animation-section');
+        
+        if (nextButton) {
+          // Sur mobile, on veut voir l'animation complète et le bouton en bas
+          if (window.innerWidth <= 768) {
+            // Scroll vers le haut de l'animation d'abord
+            if (animationSection) {
+              animationSection.scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'start' 
+              });
+              
+              // Puis scroll vers le bouton après un délai
+              setTimeout(() => {
+                nextButton.scrollIntoView({ 
+                  behavior: 'smooth', 
+                  block: 'end' 
+                });
+              }, 1500);
+            } else {
+              nextButton.scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'end' 
+              });
+            }
+          } else {
+            // Sur desktop, comportement normal
+            nextButton.scrollIntoView({ 
+              behavior: 'smooth', 
+              block: 'center' 
+            });
+          }
+        }
+      }, 1000);
+      
     } catch (error) {
       console.error('Erreur dans explainWrongAnswer:', error);
     } finally {
-      setIsAnimationRunning(false);
-      setCalculationStep(null);
-      setPartialResults({units: null, tens: null, hundreds: null});
-      setCarryValues({toTens: 0, toHundreds: 0});
-      setShowingCarry(false);
+      // NE PAS remettre setIsAnimationRunning(false) pour garder l'affichage
+      // L'animation reste visible jusqu'au clic sur "Suivant"
+      // Les états sont remis à zéro seulement dans nextExercise()
     }
   };
 
@@ -1130,6 +1187,12 @@ export default function AdditionPoseeCE1() {
       setCurrentExercise(currentExercise + 1);
       setUserAnswer('');
       setIsCorrect(null);
+      // Reset des états d'animation pour le prochain exercice
+      setIsAnimationRunning(false);
+      setCalculationStep(null);
+      setPartialResults({units: null, tens: null, hundreds: null});
+      setCarryValues({toTens: 0, toHundreds: 0});
+      setShowingCarry(false);
     } else {
       setFinalScore(score);
       setShowCompletionModal(true);
@@ -1651,9 +1714,9 @@ export default function AdditionPoseeCE1() {
                 </button>
               </div>
               
-              {/* Visuel si disponible */}
-              {exercises[currentExercise].visual && (
-                <div className="bg-gradient-to-br from-orange-50 to-red-50 border border-orange-200 rounded-lg p-6 mb-8 flex justify-center">
+              {/* Addition posée - UNIQUEMENT pour correction de réponses incorrectes */}
+              {exercises[currentExercise].visual && isCorrect === false && (
+                <div id="exercise-animation-section" className="bg-gradient-to-br from-orange-50 to-red-50 border border-orange-200 rounded-lg p-6 mb-8 flex justify-center">
                   {(() => {
                     const match = exercises[currentExercise].question.match(/Calcule : (\d+) \+ (\d+)/);
                     if (match) {
@@ -1662,8 +1725,8 @@ export default function AdditionPoseeCE1() {
                       const result = parseInt(exercises[currentExercise].correctAnswer);
                       const example = { num1, num2, result, hasCarry: true };
                       
-                      // Utiliser notre fonction renderPostedAddition avec animation si mauvaise réponse
-                      const isExerciseAnimated = isAnimationRunning && isCorrect === false;
+                      // Animation activée pour la correction (réponse fausse)
+                      const isExerciseAnimated = isAnimationRunning;
                       const showHelperInExercise = false; // Pas de boîte jaune dans les exercices
                       
                       return renderPostedAddition(example, isExerciseAnimated, showHelperInExercise);
