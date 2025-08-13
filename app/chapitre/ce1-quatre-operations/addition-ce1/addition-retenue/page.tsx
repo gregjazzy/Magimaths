@@ -1279,12 +1279,12 @@ export default function AdditionPoseeCE1() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-teal-50">
       {/* Bouton Stop flottant */}
-      {(isPlayingVocal || isAnimationRunning) && (
+      {(isPlayingVocal || isAnimationRunning || exercisesIsPlayingVocal) && (
         <div className="fixed top-4 right-4 z-[60]">
           <button
             onClick={stopAllVocalsAndAnimations}
             className="relative flex items-center gap-2 px-3 py-2 rounded-full shadow-2xl transition-all duration-300 bg-gradient-to-r from-red-500 to-red-600 text-white hover:from-red-600 hover:to-red-700 hover:scale-105 animate-pulse"
-            title={isPlayingVocal ? "Arrêter le personnage" : "Arrêter l'animation"}
+            title={(isPlayingVocal || exercisesIsPlayingVocal) ? "Arrêter le personnage" : "Arrêter l'animation"}
           >
             {/* Image du personnage */}
             <div className="w-8 h-8 rounded-full overflow-hidden border-2 border-white/50">
@@ -1298,7 +1298,7 @@ export default function AdditionPoseeCE1() {
             {/* Texte et icône */}
             <>
               <span className="text-sm font-bold hidden sm:block">
-                {isPlayingVocal ? 'Stop' : 'Stop Animation'}
+                {(isPlayingVocal || exercisesIsPlayingVocal) ? 'Stop' : 'Stop Animation'}
               </span>
               <div className="w-3 h-3 bg-white rounded-sm animate-pulse"></div>
             </>
