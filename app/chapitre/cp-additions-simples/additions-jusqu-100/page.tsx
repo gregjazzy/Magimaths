@@ -111,38 +111,6 @@ export default function AdditionsJusqua100() {
       ]
     },
     {
-      id: 'avec-retenue',
-      title: 'Addition avec retenue',
-      icon: '🔄',
-      description: 'Quand ça dépasse 10, on fait une retenue magique !',
-      examples: [
-        { 
-          calculation: '37 + 28', 
-          num1: 37, 
-          num2: 28, 
-          result: 65,
-          steps: [
-            'On place les nombres l\'un sous l\'autre',
-            'Unités : 7 + 8 = 15, j\'écris 5 et je retiens 1',
-            'Dizaines : 3 + 2 + 1 (retenue) = 6',
-            'Le résultat est 65 !'
-          ]
-        },
-        { 
-          calculation: '49 + 27', 
-          num1: 49, 
-          num2: 27, 
-          result: 76,
-          steps: [
-            'On aligne les nombres en colonnes soigneusement',
-            'Unités : 9 + 7 = 16, j\'écris 6 et retiens 1',
-            'Dizaines : 4 + 2 + 1 = 7',
-            'Résultat : 76 !'
-          ]
-        }
-      ]
-    },
-    {
       id: 'calcul-mental',
       title: 'Calcul mental rapide',
       icon: '🧠',
@@ -205,21 +173,185 @@ export default function AdditionsJusqua100() {
           ]
         }
       ]
+    },
+    {
+      id: 'bond-10',
+      title: 'Compter par bond de 10',
+      icon: '🦘',
+      description: 'Sauter de 10 en 10 pour additionner rapidement !',
+      examples: [
+        { 
+          calculation: '23 + 40', 
+          num1: 23, 
+          num2: 40, 
+          result: 63,
+          steps: [
+            'Je regarde 40 : combien de dizaines ? 4 dizaines !',
+            'Chaque dizaine = 1 saut de 10',
+            'Je pars de 23 et je fais 4 sauts de 10',
+            '1er saut : 23 + 10 = 33',
+            '2ème saut : 33 + 10 = 43', 
+            '3ème saut : 43 + 10 = 53',
+            '4ème saut : 53 + 10 = 63',
+            'Résultat : 63 ! 4 dizaines = 4 sauts !'
+          ]
+        },
+        { 
+          calculation: '35 + 30', 
+          num1: 35, 
+          num2: 30, 
+          result: 65,
+          steps: [
+            'Je regarde 30 : combien de dizaines ? 3 dizaines !',
+            'Chaque dizaine = 1 saut de 10',
+            'Je pars de 35 et je fais 3 sauts de 10',
+            '1er saut : 35 + 10 = 45',
+            '2ème saut : 45 + 10 = 55',
+            '3ème saut : 55 + 10 = 65',
+            'Résultat : 65 ! 3 dizaines = 3 sauts !'
+          ]
+        }
+      ]
     }
   ];
 
-  // Exercices sur les additions jusqu'à 100 - saisie libre
+  // Exercices sur les additions jusqu'à 100 - techniques mélangées dans l'ordre
   const exercises = [
-    { question: 'Calcule 23 + 45', firstNumber: 23, secondNumber: 45, correctAnswer: 68, type: 'sans-retenue', hint: 'Additionne d\'abord les unités : 3 + 5, puis les dizaines : 2 + 4' },
-    { question: 'Calcule 41 + 37', firstNumber: 41, secondNumber: 37, correctAnswer: 78, type: 'avec-retenue', hint: '1 + 7 = 8, puis 4 + 3 = 7, donc 78' },
-    { question: 'Calcule 36 + 28', firstNumber: 36, secondNumber: 28, correctAnswer: 64, type: 'avec-retenue', hint: '6 + 8 = 14, écris 4 et retiens 1' },
-    { question: 'Calcule 52 + 33', firstNumber: 52, secondNumber: 33, correctAnswer: 85, type: 'sans-retenue', hint: '2 + 3 = 5, puis 5 + 3 = 8' },
-    { question: 'Calcule 47 + 26', firstNumber: 47, secondNumber: 26, correctAnswer: 73, type: 'avec-retenue', hint: '7 + 6 = 13, écris 3 et retiens 1' },
-    { question: 'Calcule 34 + 25', firstNumber: 34, secondNumber: 25, correctAnswer: 59, type: 'sans-retenue', hint: 'Technique simple : 4 + 5 = 9, puis 3 + 2 = 5' },
-    { question: 'Calcule 58 + 19', firstNumber: 58, secondNumber: 19, correctAnswer: 77, type: 'avec-retenue', hint: '8 + 9 = 17, écris 7 et retiens 1' },
-    { question: 'Calcule 62 + 24', firstNumber: 62, secondNumber: 24, correctAnswer: 86, type: 'sans-retenue', hint: 'Addition simple : 2 + 4 = 6, puis 6 + 2 = 8' },
-    { question: 'Calcule 39 + 45', firstNumber: 39, secondNumber: 45, correctAnswer: 84, type: 'avec-retenue', hint: '9 + 5 = 14, écris 4 et retiens 1' },
-    { question: 'Calcule 56 + 32', firstNumber: 56, secondNumber: 32, correctAnswer: 88, type: 'sans-retenue', hint: 'Dernière addition : 6 + 2 = 8, puis 5 + 3 = 8' }
+    // Exercice 1 - Bond de 10
+    { 
+      question: 'Calcule 18 + 20', 
+      num1: 18, 
+      num2: 20, 
+      correctAnswer: 38,
+      type: 'bond-10',
+      explanation: 'Bond de 10 : 2 dizaines = 2 sauts de 10'
+    },
+    // Exercice 2 - Sans retenue
+    { 
+      question: 'Calcule 14 + 21', 
+      num1: 14, 
+      num2: 21, 
+      correctAnswer: 35,
+      type: 'sans-retenue',
+      explanation: 'Addition simple sans retenue'
+    },
+    // Exercice 3 - Complément à 10
+    { 
+      question: 'Calcule 34 + 9', 
+      num1: 34, 
+      num2: 9, 
+      correctAnswer: 43,
+      type: 'complement-10',
+      explanation: 'Complément à 10 : 34 + 6 = 40, puis 40 + 3 = 43'
+    },
+    // Exercice 4 - Calcul mental
+    { 
+      question: 'Calcule 26 + 32', 
+      num1: 26, 
+      num2: 32, 
+      correctAnswer: 58,
+      type: 'calcul-mental',
+      explanation: 'Calcul mental rapide'
+    },
+    // Exercice 5 - Sans retenue
+    { 
+      question: 'Calcule 42 + 15', 
+      num1: 42, 
+      num2: 15, 
+      correctAnswer: 57,
+      type: 'sans-retenue',
+      explanation: 'Addition simple sans retenue'
+    },
+    // Exercice 6 - Bond de 10
+    { 
+      question: 'Calcule 37 + 50', 
+      num1: 37, 
+      num2: 50, 
+      correctAnswer: 87,
+      type: 'bond-10',
+      explanation: 'Bond de 10 : 5 dizaines = 5 sauts de 10'
+    },
+    // Exercice 7 - Calcul mental
+    { 
+      question: 'Calcule 43 + 25', 
+      num1: 43, 
+      num2: 25, 
+      correctAnswer: 68,
+      type: 'calcul-mental',
+      explanation: 'Calcul mental rapide'
+    },
+    // Exercice 8 - Complément à 10
+    { 
+      question: 'Calcule 48 + 7', 
+      num1: 48, 
+      num2: 7, 
+      correctAnswer: 55,
+      type: 'complement-10',
+      explanation: 'Complément à 10 : 48 + 2 = 50, puis 50 + 5 = 55'
+    },
+    // Exercice 9 - Sans retenue
+    { 
+      question: 'Calcule 26 + 13', 
+      num1: 26, 
+      num2: 13, 
+      correctAnswer: 39,
+      type: 'sans-retenue',
+      explanation: 'Addition simple sans retenue'
+    },
+    // Exercice 10 - Bond de 10
+    { 
+      question: 'Calcule 29 + 30', 
+      num1: 29, 
+      num2: 30, 
+      correctAnswer: 59,
+      type: 'bond-10',
+      explanation: 'Bond de 10 : 3 dizaines = 3 sauts de 10'
+    },
+    // Exercice 11 - Calcul mental
+    { 
+      question: 'Calcule 37 + 41', 
+      num1: 37, 
+      num2: 41, 
+      correctAnswer: 78,
+      type: 'calcul-mental',
+      explanation: 'Calcul mental rapide'
+    },
+    // Exercice 12 - Sans retenue
+    { 
+      question: 'Calcule 32 + 25', 
+      num1: 32, 
+      num2: 25, 
+      correctAnswer: 57,
+      type: 'sans-retenue',
+      explanation: 'Addition simple sans retenue'
+    },
+    // Exercice 13 - Complément à 10
+    { 
+      question: 'Calcule 63 + 8', 
+      num1: 63, 
+      num2: 8, 
+      correctAnswer: 71,
+      type: 'complement-10',
+      explanation: 'Complément à 10 : 63 + 7 = 70, puis 70 + 1 = 71'
+    },
+    // Exercice 14 - Bond de 10
+    { 
+      question: 'Calcule 44 + 10', 
+      num1: 44, 
+      num2: 10, 
+      correctAnswer: 54,
+      type: 'bond-10',
+      explanation: 'Bond de 10 : 1 dizaine = 1 saut de 10'
+    },
+    // Exercice 15 - Calcul mental
+    { 
+      question: 'Calcule 28 + 31', 
+      num1: 28, 
+      num2: 31, 
+      correctAnswer: 59,
+      type: 'calcul-mental',
+      explanation: 'Calcul mental rapide'
+    }
   ];
 
   // Mount check
@@ -463,19 +595,13 @@ export default function AdditionsJusqua100() {
     }
   };
 
-  // Fonction pour vérifier si une addition est correcte
-  const isValidAddition = (userAnswer: string, exercise: any) => {
-    const answer = parseInt(userAnswer);
-    if (isNaN(answer) || answer < 0) return false;
-    
-    return answer === exercise.correctAnswer;
-  };
+
 
   // Fonction pour parser les nombres d'un exercice d'addition
   const parseAdditionNumbers = (exercise: any) => {
     return {
-      first: exercise.firstNumber,
-      second: exercise.secondNumber,
+      first: exercise.num1,
+      second: exercise.num2,
       result: exercise.correctAnswer,
       objectEmoji1: '🔴',
       objectEmoji2: '🔵',
@@ -656,7 +782,7 @@ export default function AdditionsJusqua100() {
       await wait(1200);
       if (stopSignalRef.current) return;
       
-      await playAudio("L'addition sans retenue, l'addition avec retenue, le calcul mental rapide et le complément à 10 !");
+      await playAudio("L'addition sans retenue, compter par bond de 10, le calcul mental rapide, et le complément à 10 !");
       if (stopSignalRef.current) return;
       
       await wait(1500);
@@ -705,9 +831,9 @@ export default function AdditionsJusqua100() {
 
       if (stopSignalRef.current) return;
 
-      // Deuxième technique : avec retenue
-      setAnimatingStep('avec-retenue');
-      await playAudio("Deuxième technique : l'addition avec retenue ! C'est magique, quand ça dépasse 10, on fait une retenue !");
+      // Deuxième technique : bond de 10
+      setAnimatingStep('bond-10');
+      await playAudio("Deuxième technique : compter par bond de 10 ! Comme un kangourou qui saute !");
       await wait(800);
 
       if (stopSignalRef.current) return;
@@ -766,8 +892,8 @@ export default function AdditionsJusqua100() {
       // Animation spécifique selon la technique
       if (technique.id === 'sans-retenue') {
         await animateSansRetenue(example);
-      } else if (technique.id === 'avec-retenue') {
-        await animateAvecRetenue(example);
+      } else if (technique.id === 'bond-10') {
+        await animateBond10(example);
       } else if (technique.id === 'calcul-mental') {
         await animateCalculMental(example);
       } else if (technique.id === 'complement-10') {
@@ -1129,10 +1255,35 @@ export default function AdditionsJusqua100() {
       await wait(1000);
       if (stopSignalRef.current) return;
       
-      // Lancer l'animation de correction pour additions avec la réponse utilisateur si incorrecte
-      if (isCorrect === false && userAnswer) {
-        await createAnimatedCorrection(exercise, userAnswer);
+      // Lancer l'animation de correction adaptée selon la technique de l'exercice
+      const techniqueType = exercise.type;
+      
+      // Créer un objet compatible avec les fonctions d'animation existantes
+      const animationExample = {
+        calculation: `${exercise.num1} + ${exercise.num2}`,
+        num1: exercise.num1,
+        num2: exercise.num2,
+        result: exercise.correctAnswer
+      };
+
+      await playAudio(`Je vais t'expliquer avec la technique ${techniqueType === 'sans-retenue' ? 'sans retenue' : 
+                       techniqueType === 'bond-10' ? 'du bond de 10' :
+                       techniqueType === 'calcul-mental' ? 'de calcul mental' :
+                       'du complément à 10'} !`);
+      await wait(1500);
+      if (stopSignalRef.current) return;
+
+      // Appeler la fonction d'animation appropriée selon le type
+      if (techniqueType === 'sans-retenue') {
+        await animateSansRetenue(animationExample);
+      } else if (techniqueType === 'bond-10') {
+        await animateBond10(animationExample);
+      } else if (techniqueType === 'calcul-mental') {
+        await animateCalculMental(animationExample);
+      } else if (techniqueType === 'complement-10') {
+        await animateComplement10(animationExample);
       } else {
+        // Par défaut, utiliser l'animation de correction existante
         await createAnimatedCorrection(exercise);
       }
       if (stopSignalRef.current) return;
@@ -1144,6 +1295,66 @@ export default function AdditionsJusqua100() {
       setSamSizeExpanded(false);
     }
   };
+
+
+  // Animation pour technique bond de 10
+  const animateBond10 = async (example: any) => {
+    // Étape 1 : Présentation du problème
+    setCalculationStep('setup');
+    await playAudio(`Calculons ${example.calculation} avec la technique du bond de 10 !`);
+    await wait(1500);
+
+    if (stopSignalRef.current) return;
+
+    // Étape 2 : Analyser le deuxième nombre pour compter les dizaines
+    setCalculationStep('show-second');
+    const dizaines = Math.floor(example.num2 / 10);
+    await playAudio(`D'abord, je regarde ${example.num2}. Combien de dizaines ? ${dizaines} dizaines !`);
+    await wait(2000);
+
+    if (stopSignalRef.current) return;
+
+    // Étape 3 : Expliquer la règle 
+    setCalculationStep('explain-strategy');
+    await playAudio(`Chaque dizaine égale un saut de 10. Donc ${dizaines} dizaines égale ${dizaines} sauts de 10 !`);
+    await wait(2500);
+
+    if (stopSignalRef.current) return;
+
+    // Étape 4 : Commencer les sauts
+    setCalculationStep('show-first');
+    await playAudio(`Je pars de ${example.num1} et je vais faire ${dizaines} sauts de 10.`);
+    await wait(2000);
+
+    if (stopSignalRef.current) return;
+
+    // Étapes des sauts individuels
+    let currentValue = example.num1;
+    for (let i = 1; i <= dizaines; i++) {
+      if (stopSignalRef.current) return;
+      
+      setCalculationStep('units');
+      const nextValue = currentValue + 10;
+      await playAudio(`${i}${i === 1 ? 'er' : 'ème'} saut : ${currentValue} plus 10 égale ${nextValue} !`);
+      await wait(1800);
+      
+      currentValue = nextValue;
+    }
+
+    if (stopSignalRef.current) return;
+
+    // Étape finale : Résultat
+    setCalculationStep('result');
+    await playAudio(`Et voilà ! Après ${dizaines} sauts de 10, j'arrive à ${example.result} !`);
+    await wait(2000);
+
+    if (stopSignalRef.current) return;
+
+    await playAudio(`${example.num1} plus ${example.num2} égale ${example.result} ! ${dizaines} dizaines égale ${dizaines} sauts de 10 !`);
+    await wait(2500);
+  };
+
+
 
   // Fonction pour l'introduction vocale de Sam le Pirate
   const startPirateIntro = async () => {
@@ -1255,6 +1466,15 @@ export default function AdditionsJusqua100() {
       setIsPlayingEnonce(false);
       console.log('isPlayingEnonce mis à false');
     }
+  };
+
+  // Fonction pour valider une réponse d'addition - accepte toute réponse correcte
+  const isValidAddition = (userAnswer: string, exercise: any) => {
+    const userNum = parseInt(userAnswer.trim());
+    // Vérifier si c'est un nombre valide
+    if (isNaN(userNum)) return false;
+    // Vérifier si le résultat est correct (peu importe la méthode utilisée)
+    return userNum === exercise.correctAnswer;
   };
 
   // Fonctions pour les exercices
@@ -1438,17 +1658,18 @@ export default function AdditionsJusqua100() {
         `
       }} />
       
-      {/* Bouton flottant de Sam - visible uniquement quand Sam parle */}
+      {/* Bouton Stop flottant - visible uniquement quand Sam parle */}
       {isPlayingVocal && (
         <div className="fixed top-4 right-4 z-[60]">
           <button
             onClick={stopAllVocalsAndAnimations}
-            className="bg-red-600 hover:bg-red-700 text-white rounded-full p-3 shadow-lg animate-pulse"
-            title="Arrêter Sam"
+            className="bg-red-500 hover:bg-red-600 text-white rounded-lg px-4 py-2 shadow-lg transition-all duration-200 flex items-center space-x-2"
+            title="Arrêter l'animation"
           >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
+            <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center">
+              <span className="text-red-500 text-sm font-bold">🧙‍♂️</span>
+            </div>
+            <span className="font-semibold text-sm">Stop ||</span>
           </button>
         </div>
       )}
@@ -1555,20 +1776,7 @@ export default function AdditionsJusqua100() {
               </button>
             </div>
 
-            {/* Bouton COMMENCER (animation complète) */}
-            <div className="text-center mb-3 sm:mb-8">
-              <button
-                onClick={explainChapter}
-                disabled={isAnimationRunning}
-                className={`px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-bold text-base sm:text-xl shadow-lg transition-all transform ${
-                  isAnimationRunning 
-                    ? 'bg-gray-400 text-gray-200 cursor-not-allowed' 
-                    : 'bg-gradient-to-r from-blue-500 to-indigo-500 text-white hover:shadow-xl hover:scale-105'
-                } ${!hasStarted && !isAnimationRunning ? 'animate-pulse' : ''}`}
-              >
-                {isAnimationRunning ? '⏳ Animation en cours...' : '▶️ COMMENCER (Animation complète) !'}
-              </button>
-            </div>
+
 
             {/* Introduction */}
             <div 
@@ -1623,11 +1831,11 @@ export default function AdditionsJusqua100() {
                 </div>
                 
                 <div className={`p-4 rounded-lg text-center transition-all duration-500 ${
-                  animatingStep === 'avec-retenue' ? 'bg-orange-100 ring-2 ring-orange-400 scale-105' : 'bg-gray-100'
+                  animatingStep === 'bond-10' ? 'bg-orange-100 ring-2 ring-orange-400 scale-105' : 'bg-gray-100'
                 }`}>
-                  <div className="text-3xl mb-2">🔄</div>
-                  <h4 className="font-bold text-orange-800">Avec retenue</h4>
-                  <p className="text-sm text-orange-700">La magique !</p>
+                  <div className="text-3xl mb-2">🦘</div>
+                  <h4 className="font-bold text-orange-800">Bond de 10</h4>
+                  <p className="text-sm text-orange-700">La sauteuse !</p>
                 </div>
 
                 <div className={`p-4 rounded-lg text-center transition-all duration-500 ${
@@ -2617,6 +2825,146 @@ export default function AdditionsJusqua100() {
                               )}
                             </div>
                           )}
+
+                          {/* Animation pour bond de 10 */}
+                          {currentTechnique === 'bond-10' && calculationStep && (
+                            <div className="space-y-6 bg-gradient-to-br from-purple-50 to-indigo-50 p-6 rounded-xl border-2 border-purple-200">
+                              
+                              {/* Étape : Introduction */}
+                              {calculationStep === 'setup' && (
+                                <div className="text-center">
+                                  <div className="text-4xl font-bold text-purple-800 animate-pulse">
+                                    {example.calculation}
+                                  </div>
+                                  <div className="text-lg text-purple-600 mt-2">
+                                    🦘 Technique du bond de 10 - Sautons ensemble !
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* Étape : Montrer le deuxième nombre et compter les dizaines */}
+                              {(calculationStep === 'show-second' || calculationStep === 'explain-strategy' || calculationStep === 'show-first' || calculationStep === 'units' || calculationStep === 'result') && (
+                                <div className="bg-white rounded-lg p-6 shadow-lg max-w-lg mx-auto">
+                                  <div className="text-center mb-4">
+                                    <div className="text-lg font-bold text-gray-800">🦘 Analysons les dizaines !</div>
+                                  </div>
+                                  
+                                  {/* Affichage du deuxième nombre avec dizaines */}
+                                  <div className="text-center mb-6">
+                                    <div className="text-3xl font-bold text-purple-700 mb-2">
+                                      {example.num2}
+                                    </div>
+                                    <div className="flex justify-center items-center space-x-2 mb-3">
+                                      {/* Représentation visuelle des dizaines */}
+                                      {Array.from({length: Math.floor(example.num2 / 10)}, (_, i) => (
+                                        <div key={i} className="relative">
+                                          <div className="w-12 h-16 bg-purple-500 border-2 border-purple-700 rounded flex items-center justify-center text-white font-bold text-sm animate-pulse" 
+                                               style={{animationDelay: `${i * 0.3}s`}}>
+                                            10
+                                          </div>
+                                          <div className="absolute -top-2 -right-2 w-6 h-6 bg-yellow-400 border-2 border-yellow-600 rounded-full flex items-center justify-center text-xs font-bold text-purple-800">
+                                            🦘
+                                          </div>
+                                        </div>
+                                      ))}
+                                    </div>
+                                    <div className="text-xl font-bold text-purple-700">
+                                      {Math.floor(example.num2 / 10)} dizaines = {Math.floor(example.num2 / 10)} sauts de 10 !
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* Étape : Montrer le premier nombre */}
+                              {(calculationStep === 'show-first' || calculationStep === 'units' || calculationStep === 'result') && (
+                                <div className="bg-blue-100 rounded-lg p-4 border-2 border-blue-400">
+                                  <div className="text-center">
+                                    <div className="text-2xl font-bold text-blue-800 mb-3">
+                                      🏁 Point de départ
+                                    </div>
+                                    <div className="text-4xl font-bold text-blue-700 animate-pulse">
+                                      {example.num1}
+                                    </div>
+                                    <div className="text-lg text-blue-600 mt-2">
+                                      Je pars d'ici et je vais faire {Math.floor(example.num2 / 10)} sauts !
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* Animation des sauts individuels */}
+                              {calculationStep === 'units' && (
+                                <div className="bg-gradient-to-r from-green-100 to-emerald-100 rounded-lg p-6 border-2 border-green-400">
+                                  <div className="text-center mb-4">
+                                    <div className="text-2xl font-bold text-green-800">
+                                      🦘 C'est parti pour les sauts !
+                                    </div>
+                                  </div>
+                                  
+                                  {/* Ligne des sauts */}
+                                  <div className="flex justify-center items-center space-x-1 overflow-x-auto pb-4">
+                                    {/* Point de départ */}
+                                    <div className="text-center flex-shrink-0">
+                                      <div className="w-16 h-16 bg-blue-500 border-3 border-blue-700 rounded-full flex items-center justify-center text-white font-bold animate-pulse">
+                                        {example.num1}
+                                      </div>
+                                      <div className="text-sm font-bold text-blue-700 mt-1">Départ</div>
+                                    </div>
+
+                                    {/* Sauts de 10 */}
+                                    {Array.from({length: Math.floor(example.num2 / 10)}, (_, i) => {
+                                      const currentValue = example.num1 + (i + 1) * 10;
+                                      return (
+                                        <div key={i} className="flex items-center flex-shrink-0">
+                                          {/* Flèche de saut */}
+                                          <div className="text-2xl text-green-600 mx-1">
+                                            ➡️
+                                          </div>
+                                          {/* Point d'arrivée du saut */}
+                                          <div className="text-center">
+                                            <div className="w-16 h-16 bg-green-500 border-3 border-green-700 rounded-full flex items-center justify-center text-white font-bold">
+                                              {currentValue}
+                                            </div>
+                                            <div className="text-sm font-bold text-green-700 mt-1">
+                                              Saut {i + 1}
+                                            </div>
+                                            <div className="text-xs text-green-600">
+                                              +10
+                                            </div>
+                                          </div>
+                                        </div>
+                                      );
+                                    })}
+                                  </div>
+
+                                  {/* Récapitulatif des sauts */}
+                                  <div className="text-center mt-4 p-3 bg-white rounded-lg border-2 border-green-300">
+                                    <div className="text-lg font-bold text-green-800">
+                                      {Math.floor(example.num2 / 10)} sauts de 10 : {example.num1} → {example.result}
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* Étape : Résultat final */}
+                              {calculationStep === 'result' && (
+                                <div className="text-center bg-yellow-100 p-6 rounded-lg border-2 border-yellow-400">
+                                  <div className="text-3xl font-bold text-yellow-800 mb-3">
+                                    🎉 Résultat final !
+                                  </div>
+                                  <div className="text-4xl font-bold text-yellow-700 mb-3">
+                                    {example.num1} + {example.num2} = {example.result}
+                                  </div>
+                                  <div className="text-xl font-bold text-yellow-600">
+                                    🦘 {Math.floor(example.num2 / 10)} dizaines = {Math.floor(example.num2 / 10)} sauts de 10 !
+                                  </div>
+                                  <div className="text-lg text-yellow-700 mt-2">
+                                    Sauter de 10 en 10, c'est malin !
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -2783,20 +3131,20 @@ export default function AdditionsJusqua100() {
               {/* Question et bouton lecture */}
               <div className="text-center mb-6">
                 <h3 className="text-xl sm:text-2xl font-bold mb-4 text-gray-900">
-                  {exercises[currentExercise].question}
+                  {exercises[currentExercise]?.question || 'Chargement...'}
                 </h3>
                 
                 {/* Badge du type */}
                 <div className="flex justify-center mb-4">
                   <span className={`px-3 py-1 rounded-full text-sm font-semibold ${
-                    exercises[currentExercise].type === 'sans-retenue' ? 'bg-green-100 text-green-800' :
-                    exercises[currentExercise].type === 'avec-retenue' ? 'bg-orange-100 text-orange-800' :
-                    exercises[currentExercise].type === 'calcul-mental' ? 'bg-purple-100 text-purple-800' :
+                    exercises[currentExercise]?.type === 'sans-retenue' ? 'bg-green-100 text-green-800' :
+                    exercises[currentExercise]?.type === 'avec-retenue' ? 'bg-orange-100 text-orange-800' :
+                    exercises[currentExercise]?.type === 'calcul-mental' ? 'bg-purple-100 text-purple-800' :
                     'bg-blue-100 text-blue-800'
                   }`}>
-                    {exercises[currentExercise].type === 'sans-retenue' ? '✨ Sans retenue' :
-                     exercises[currentExercise].type === 'avec-retenue' ? '🔄 Avec retenue' :
-                     exercises[currentExercise].type === 'calcul-mental' ? '🧠 Calcul mental' :
+                    {exercises[currentExercise]?.type === 'sans-retenue' ? '✨ Sans retenue' :
+                     exercises[currentExercise]?.type === 'avec-retenue' ? '🔄 Avec retenue' :
+                     exercises[currentExercise]?.type === 'calcul-mental' ? '🧠 Calcul mental' :
                      '🎯 Technique spéciale'}
                   </span>
                 </div>
@@ -2832,7 +3180,7 @@ export default function AdditionsJusqua100() {
                   
                   {/* Équation centrée */}
                   <div className="text-center mb-3">
-                    <span className="text-lg sm:text-xl font-bold">{exercises[currentExercise].firstNumber} + {exercises[currentExercise].secondNumber} = ?</span>
+                    <span className="text-lg sm:text-xl font-bold">{exercises[currentExercise].num1} + {exercises[currentExercise].num2} = ?</span>
                   </div>
                   
                   {/* Input parfaitement centré */}
@@ -2884,7 +3232,7 @@ export default function AdditionsJusqua100() {
                       <>
                         <CheckCircle className="w-6 h-6 sm:w-8 sm:h-8 animate-bounce" />
                         <span className="font-bold text-lg sm:text-xl">
-                          🎉 Parfait ! {exercises[currentExercise].firstNumber} + {exercises[currentExercise].secondNumber} = {exercises[currentExercise].correctAnswer} !
+                          🎉 Parfait ! {exercises[currentExercise].num1} + {exercises[currentExercise].num2} = {exercises[currentExercise].correctAnswer} !
                         </span>
                       </>
                     ) : (
