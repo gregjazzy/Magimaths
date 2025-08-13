@@ -599,6 +599,31 @@ export default function ProblemesAddition() {
     });
   };
 
+  // Fonction pour lire le texte d'introduction
+  const readIntroText = async () => {
+    if (isPlayingVocal) return;
+    
+    stopAllVocalsAndAnimations();
+    await wait(300);
+    stopSignalRef.current = false;
+    setIsPlayingVocal(true);
+    setHighlightedElement('intro');
+    
+    try {
+      await playAudio("Qu'est-ce qu'un problème d'addition ?");
+      await wait(800);
+      
+      if (stopSignalRef.current) return;
+      
+      await playAudio("Un problème d'addition raconte une histoire avec des nombres. Notre mission est de trouver ces nombres et de les additionner pour répondre à la question !");
+      await wait(1000);
+      
+    } finally {
+      setHighlightedElement(null);
+      setIsPlayingVocal(false);
+    }
+  };
+
     // Fonction pour faire défiler vers un élément par ID (pour compatibilité)
   const scrollToElement = (elementId: string) => {
     const element = document.getElementById(elementId);
@@ -1789,10 +1814,14 @@ export default function ProblemesAddition() {
                 </div>
                 <h2 className="text-base sm:text-2xl font-bold text-gray-800">Qu'est-ce qu'un problème d'addition ?</h2>
                 {/* Icône d'animation pour l'introduction */}
-                <div className={`bg-gradient-to-r from-orange-500 to-red-600 text-white rounded-full w-6 h-6 sm:w-12 sm:h-12 flex items-center justify-center text-xs sm:text-xl font-bold shadow-lg hover:scale-110 cursor-pointer transition-all duration-300 ring-2 ring-orange-300 ${
-                  highlightedElement === 'intro' ? 'ring-4 ring-yellow-400 animate-bounce scale-110' : ''
-                }`} 
-                     style={{animation: 'subtle-glow 2s infinite'}}>
+                <div 
+                  onClick={readIntroText}
+                  className={`bg-gradient-to-r from-orange-500 to-red-600 text-white rounded-full w-6 h-6 sm:w-12 sm:h-12 flex items-center justify-center text-xs sm:text-xl font-bold shadow-lg hover:scale-110 cursor-pointer transition-all duration-300 ring-2 ring-orange-300 ${
+                    highlightedElement === 'intro' ? 'ring-4 ring-yellow-400 animate-bounce scale-110' : ''
+                  }`} 
+                  style={{animation: 'subtle-glow 2s infinite'}}
+                  title="Cliquer pour écouter la définition"
+                >
                   🧮
                 </div>
               </div>
