@@ -280,52 +280,91 @@ export default function AdditionPoseeCE1() {
     await wait(300);
     stopSignalRef.current = false;
     setIsPlayingVocal(true);
+    setHasStarted(true);
     setSamSizeExpanded(true);
     
     try {
-      await playAudio("Bonjour ! Découvrons ensemble l'addition posée sans retenue !", true);
+      // Introduction générale
+      await playAudio("Salut ! Moi c'est Sam ! Aujourd'hui, on va apprendre l'addition posée ensemble !", true);
       if (stopSignalRef.current) return;
+      await wait(1000);
+      
+      await playAudio("L'objectif de ce chapitre est d'apprendre à poser des additions pour calculer de gros nombres facilement !", true);
+      if (stopSignalRef.current) return;
+      await wait(1000);
+      
+      // Présentation de la section introduction avec scroll
+      setHighlightedElement('intro-section');
+      document.getElementById('intro-section')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      await wait(1500);
+      
+      await playAudio("D'abord, nous allons comprendre ce que signifie 'poser une addition'.", true);
+      if (stopSignalRef.current) return;
+      await wait(1000);
+      
+      // Présentation de l'exemple principal avec scroll et surbrillance
+      setHighlightedElement('example-section');
+      document.getElementById('example-section')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      await wait(1500);
+      
+      await playAudio("Ensuite, voici l'exemple principal avec son animation !", true);
+      if (stopSignalRef.current) return;
+      await wait(1000);
+      
+      // Mettre en surbrillance le bouton "Voir l'animation"
+      const exampleButton = document.querySelector('#example-section button');
+      if (exampleButton) {
+        exampleButton.classList.add('ring-4', 'ring-yellow-400', 'animate-pulse');
+      }
+      await playAudio("Tu vois ce bouton qui clignote ? Clique sur 'Voir l'animation' pour voir la magie opérer !", true);
+      if (stopSignalRef.current) return;
+      await wait(2000);
+      
+      // Retirer la surbrillance
+      if (exampleButton) {
+        exampleButton.classList.remove('ring-4', 'ring-yellow-400', 'animate-pulse');
+      }
+      
+      // Présentation des autres exemples avec scroll
+      setHighlightedElement('examples-section');
+      document.getElementById('examples-section')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      await wait(1500);
+      
+      await playAudio("Ici, tu trouveras plein d'autres exemples à explorer !", true);
+      if (stopSignalRef.current) return;
+      await wait(1000);
+      
+      // Mettre en surbrillance toutes les cartes d'exemples
+      const exampleCards = document.querySelectorAll('#examples-section .bg-gradient-to-br');
+      exampleCards.forEach(card => {
+        card.classList.add('ring-4', 'ring-yellow-400', 'animate-pulse');
+      });
+      await playAudio("Regarde tous ces boutons qui clignotent ! Chaque carte verte a son animation spéciale !", true);
+      if (stopSignalRef.current) return;
+      await wait(2000);
+      
+      // Retirer la surbrillance des cartes
+      exampleCards.forEach(card => {
+        card.classList.remove('ring-4', 'ring-yellow-400', 'animate-pulse');
+      });
       
       await wait(1000);
-      if (stopSignalRef.current) return;
       
-      // Présenter l'exemple principal
-      setHighlightedElement('example-section');
-      scrollToElement('example-section');
-      await playAudio("D'abord, voici l'exemple principal avec son animation !", true);
+      // Présentation finale et transition vers les exercices
+      await playAudio("Tu as maintenant découvert toutes les parties du cours !", true);
       if (stopSignalRef.current) return;
+      await wait(1000);
       
-      await wait(800);
-      if (stopSignalRef.current) return;
-      
-      // Mettre en évidence le bouton d'animation principal
-      await playAudio("Clique sur le bouton vert pour voir comment faire !", true);
-      if (stopSignalRef.current) return;
-      
-      await wait(1500);
-      if (stopSignalRef.current) return;
-      
-      // Présenter la section des autres exemples
-      setHighlightedElement('examples-section');
-      scrollToElement('examples-section');
-      await playAudio("Ensuite, tu trouveras d'autres exemples à 2 et 3 chiffres !", true);
-      if (stopSignalRef.current) return;
-      
-      await wait(800);
-      if (stopSignalRef.current) return;
-      
-      // Mettre en évidence les cartes d'exemples
-      setHighlightedElement('example-0');
-      await playAudio("Chaque carte verte a son animation ! Clique sur les cartes pour les voir !", true);
-      if (stopSignalRef.current) return;
-      
-      await wait(1500);
-      if (stopSignalRef.current) return;
-      
-      // Présenter la section exercices - scroller vers le haut pour voir l'onglet
+      // Scroll vers les onglets et mettre en surbrillance le bouton exercices
       setHighlightedElement('exercise_tab');
       window.scrollTo({ top: 0, behavior: 'smooth' });
-      await playAudio("Et pour finir, tu pourras t'entraîner avec les exercices ! N'oublie pas : on commence toujours par les unités !", true);
+      await wait(1500);
+      
+      await playAudio("Quand tu te sentiras prêt, tu pourras passer aux exercices pour t'entraîner !", true);
+      if (stopSignalRef.current) return;
+      await wait(2000);
+      
+      await playAudio("Amuse-toi bien avec les additions posées ! Et n'hésite pas à refaire les animations si tu en as besoin !", true);
       if (stopSignalRef.current) return;
       
     } catch (error) {
@@ -1095,12 +1134,12 @@ export default function AdditionPoseeCE1() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-teal-50">
       {/* Bouton Stop flottant */}
-      {(isPlayingVocal || isAnimationRunning) && (
+      {(isPlayingVocal || isAnimationRunning || exercisesIsPlayingVocal) && (
         <div className="fixed top-4 right-4 z-[60]">
           <button
             onClick={stopAllVocalsAndAnimations}
             className="relative flex items-center gap-2 px-3 py-2 rounded-full shadow-2xl transition-all duration-300 bg-gradient-to-r from-red-500 to-red-600 text-white hover:from-red-600 hover:to-red-700 hover:scale-105 animate-pulse"
-            title={isPlayingVocal ? "Arrêter le personnage" : "Arrêter l'animation"}
+            title={(isPlayingVocal || exercisesIsPlayingVocal) ? "Arrêter le personnage" : "Arrêter l'animation"}
           >
             {/* Image du personnage */}
             <div className="w-8 h-8 rounded-full overflow-hidden border-2 border-white/50">
@@ -1114,7 +1153,7 @@ export default function AdditionPoseeCE1() {
             {/* Texte et icône */}
             <>
               <span className="text-sm font-bold hidden sm:block">
-                {isPlayingVocal ? 'Stop' : 'Stop Animation'}
+                {(isPlayingVocal || exercisesIsPlayingVocal) ? 'Stop' : 'Stop Animation'}
               </span>
               <div className="w-3 h-3 bg-white rounded-sm animate-pulse"></div>
             </>
@@ -1157,50 +1196,7 @@ export default function AdditionPoseeCE1() {
         </div>
       </div>
 
-        {/* Image du personnage Minecraft avec bouton DÉMARRER */}
-        <div className="flex items-center justify-center gap-2 sm:gap-4 p-2 sm:p-4 mb-3 sm:mb-6">
-          {/* Image du personnage */}
-          <div className={`relative transition-all duration-500 border-2 border-green-300 rounded-full bg-gradient-to-br from-green-100 to-emerald-100 ${
-            exercisesIsPlayingVocal
-                ? 'w-14 sm:w-24 h-14 sm:h-24' // When speaking - plus petit sur mobile
-                : 'w-12 sm:w-20 h-12 sm:h-20' // Normal size
-          }`}>
-            {!exercisesImageError ? (
-              <img 
-                src="/image/Minecraftstyle.png" 
-                alt="Personnage Minecraft" 
-                className="w-full h-full object-cover rounded-full"
-                onError={() => setExercisesImageError(true)}
-              />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center text-lg sm:text-2xl rounded-full bg-gradient-to-br from-green-200 to-emerald-200">
-                🧱
-              </div>
-            )}
-            
-            {exercisesIsPlayingVocal && (
-              <div className="absolute -top-1 -right-1 w-3 h-3 sm:w-4 sm:h-4 bg-red-500 rounded-full animate-pulse">
-                <svg className="w-full h-full text-white" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12 2C13.1 2 14 2.9 14 4V12C14 13.1 13.1 14 12 14C10.9 14 10 13.1 10 12V4C10 2.9 10.9 2 12 2M19 11C19 15.4 15.4 19 11 19V21H13V23H11V21H9V23H7V21H9V19C4.6 19 1 15.4 1 11H3C3 14.3 5.7 17 9 17V15C7.3 15 6 13.7 6 12V11H4V9H6V8C6 6.3 7.3 5 9 5V7C8.4 7 8 7.4 8 8V12C8 12.6 8.4 13 9 13V11H11V13C11.6 13 12 12.6 12 12V8C12 7.4 11.6 7 11 7V5C12.7 5 14 6.3 14 8V9H16V11H14V12C14 13.7 12.7 15 11 15V17C14.3 17 17 14.3 17 11H19Z"/>
-                </svg>
-              </div>
-            )}
-          </div>
 
-          {/* Bouton DÉMARRER avec le personnage */}
-          <button
-            onClick={explainExercisesWithSam}
-            disabled={exercisesIsPlayingVocal}
-            className={`px-2 sm:px-4 py-1 sm:py-2 rounded-lg font-bold text-xs sm:text-base shadow-lg transition-all ${
-              exercisesIsPlayingVocal
-                ? 'bg-gray-400 text-gray-200 cursor-not-allowed'
-                : 'bg-gradient-to-r from-green-500 to-emerald-500 text-white hover:shadow-xl hover:scale-105'
-            } ${!exercisesHasStarted && !exercisesIsPlayingVocal ? 'animate-pulse' : ''}`}
-          >
-            <Play className="w-3 h-3 sm:w-5 sm:h-5 inline-block mr-1 sm:mr-2" />
-            {exercisesIsPlayingVocal ? 'Le personnage explique...' : 'DÉMARRER'}
-          </button>
-        </div>
 
 
 
@@ -1239,6 +1235,45 @@ export default function AdditionPoseeCE1() {
         {!showExercises ? (
           /* COURS */
           <div className="space-y-8">
+            {/* Bouton DÉMARRER pour le cours avec personnage Minecraft */}
+            <div className="flex items-center justify-center gap-2 sm:gap-4 p-2 sm:p-4 mb-3 sm:mb-6">
+              {/* Image du personnage pour le cours */}
+              <div className={`relative transition-all duration-500 border-2 border-green-300 rounded-full bg-gradient-to-br from-green-100 to-emerald-100 ${
+                isPlayingVocal
+                    ? 'w-14 sm:w-24 h-14 sm:h-24' // When speaking - plus petit sur mobile
+                    : 'w-12 sm:w-20 h-12 sm:h-20' // Normal size
+              }`}>
+                {!imageError ? (
+                  <img 
+                    src="/image/Minecraftstyle.png" 
+                    alt="Personnage Minecraft" 
+                    className="w-full h-full object-cover rounded-full"
+                    onError={() => setImageError(true)}
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-green-600 text-lg font-bold rounded-full">
+                    <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M12 2C13.1 2 14 2.9 14 4V12C14 13.1 13.1 14 12 14C10.9 14 10 13.1 10 12V4C10 2.9 10.9 2 12 2M19 11C19 15.4 15.4 19 11 19V21H13V23H11V21H9V23H7V21H9V19C4.6 19 1 15.4 1 11H3C3 14.3 5.7 17 9 17V15C7.3 15 6 13.7 6 12V11H4V9H6V8C6 6.3 7.3 5 9 5V7C8.4 7 8 7.4 8 8V12C8 12.6 8.4 13 9 13V11H11V13C11.6 13 12 12.6 12 12V8C12 7.4 11.6 7 11 7V5C12.7 5 14 6.3 14 8V9H16V11H14V12C14 13.7 12.7 15 11 15V17C14.3 17 17 14.3 17 11H19Z"/>
+                    </svg>
+                  </div>
+                )}
+              </div>
+
+              {/* Bouton DÉMARRER pour le cours */}
+              <button
+                onClick={explainChapterWithSam}
+                disabled={isPlayingVocal}
+                className={`px-2 sm:px-4 py-1 sm:py-2 rounded-lg font-bold text-xs sm:text-base shadow-lg transition-all ${
+                  isPlayingVocal
+                    ? 'bg-gray-400 text-gray-200 cursor-not-allowed'
+                    : 'bg-gradient-to-r from-green-500 to-emerald-500 text-white hover:shadow-xl hover:scale-105'
+                } ${!hasStarted && !isPlayingVocal ? 'animate-pulse' : ''}`}
+              >
+                <Play className="w-3 h-3 sm:w-5 sm:h-5 inline-block mr-1 sm:mr-2" />
+                {isPlayingVocal ? 'Sam explique le cours...' : 'DÉMARRER LE COURS'}
+              </button>
+            </div>
+
             {/* Introduction */}
             <div 
               id="intro-section"
@@ -1252,11 +1287,6 @@ export default function AdditionPoseeCE1() {
                   <h2 className="text-sm sm:text-xl font-bold text-gray-900">
                     Qu'est-ce que poser une addition ?
                   </h2>
-                  {/* Icône d'animation pour l'introduction */}
-                  <div className="bg-gradient-to-r from-green-500 to-teal-600 text-white rounded-full w-6 h-6 sm:w-12 sm:h-12 flex items-center justify-center text-xs sm:text-xl font-bold shadow-lg hover:scale-110 cursor-pointer transition-all duration-300 ring-2 ring-green-300" 
-                       style={{animation: 'subtle-glow 2s infinite'}}>
-                    📝
-                  </div>
                 </div>
                 <p className="text-xs sm:text-base text-gray-600">
                   C'est aligner les nombres en colonnes pour calculer plus facilement !
@@ -1403,6 +1433,50 @@ export default function AdditionPoseeCE1() {
             }`}
           >
 
+            {/* Bouton DÉMARRER pour les exercices avec personnage Minecraft */}
+            <div className="flex items-center justify-center gap-2 sm:gap-4 p-2 sm:p-4 mb-3 sm:mb-6">
+              {/* Image du personnage pour les exercices */}
+              <div className={`relative transition-all duration-500 border-2 border-green-300 rounded-full bg-gradient-to-br from-green-100 to-emerald-100 ${
+                exercisesIsPlayingVocal
+                    ? 'w-14 sm:w-24 h-14 sm:h-24' // When speaking - plus petit sur mobile
+                    : 'w-12 sm:w-20 h-12 sm:h-20' // Normal size
+              }`}>
+                {!exercisesImageError ? (
+                  <img 
+                    src="/image/Minecraftstyle.png" 
+                    alt="Personnage Minecraft" 
+                    className="w-full h-full object-cover rounded-full"
+                    onError={() => setExercisesImageError(true)}
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-lg sm:text-2xl rounded-full bg-gradient-to-br from-green-200 to-emerald-200">
+                    🧱
+                  </div>
+                )}
+                
+                {exercisesIsPlayingVocal && (
+                  <div className="absolute -top-1 -right-1 w-3 h-3 sm:w-4 sm:h-4 bg-red-500 rounded-full animate-pulse">
+                    <svg className="w-full h-full text-white" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12 2C13.1 2 14 2.9 14 4V12C14 13.1 13.1 14 12 14C10.9 14 10 13.1 10 12V4C10 2.9 10.9 2 12 2M19 11C19 15.4 15.4 19 11 19V21H13V23H11V21H9V23H7V21H9V19C4.6 19 1 15.4 1 11H3C3 14.3 5.7 17 9 17V15C7.3 15 6 13.7 6 12V11H4V9H6V8C6 6.3 7.3 5 9 5V7C8.4 7 8 7.4 8 8V12C8 12.6 8.4 13 9 13V11H11V13C11.6 13 12 12.6 12 12V8C12 7.4 11.6 7 11 7V5C12.7 5 14 6.3 14 8V9H16V11H14V12C14 13.7 12.7 15 11 15V17C14.3 17 17 14.3 17 11H19Z"/>
+                    </svg>
+                  </div>
+                )}
+              </div>
+
+              {/* Bouton DÉMARRER pour les exercices */}
+              <button
+                onClick={explainExercisesWithSam}
+                disabled={exercisesIsPlayingVocal}
+                className={`px-2 sm:px-4 py-1 sm:py-2 rounded-lg font-bold text-xs sm:text-base shadow-lg transition-all ${
+                  exercisesIsPlayingVocal
+                    ? 'bg-gray-400 text-gray-200 cursor-not-allowed'
+                    : 'bg-gradient-to-r from-green-500 to-emerald-500 text-white hover:shadow-xl hover:scale-105'
+                } ${!exercisesHasStarted && !exercisesIsPlayingVocal ? 'animate-pulse' : ''}`}
+              >
+                <Play className="w-3 h-3 sm:w-5 sm:h-5 inline-block mr-1 sm:mr-2" />
+                {exercisesIsPlayingVocal ? 'Le personnage explique...' : 'DÉMARRER LES EXERCICES'}
+              </button>
+            </div>
 
             {/* Header exercices */}
             <div 
