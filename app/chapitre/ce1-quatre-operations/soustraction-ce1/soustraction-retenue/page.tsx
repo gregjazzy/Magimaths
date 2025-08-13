@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, Play, Pause } from 'lucide-react';
 
-export default function SoustractionEmpruntCE1() {
+export default function SoustractionRetenueCE1() {
   // États pour l'audio et animations
   const [isPlayingVocal, setIsPlayingVocal] = useState(false);
   const [isAnimationRunning, setIsAnimationRunning] = useState(false);
@@ -17,7 +17,14 @@ export default function SoustractionEmpruntCE1() {
   const [calculationStep, setCalculationStep] = useState<'setup' | 'units' | 'carry' | 'tens' | 'hundreds' | 'result' | null>(null);
   const [showingCarry, setShowingCarry] = useState(false);
   const [carryValues, setCarryValues] = useState<{toTens: number, toHundreds: number}>({toTens: 0, toHundreds: 0});
+  const [borrowValues, setBorrowValues] = useState<{fromTens: number, fromHundreds: number}>({fromTens: 0, fromHundreds: 0});
+  const [showingBorrow, setShowingBorrow] = useState(false);
   const [partialResults, setPartialResults] = useState<{units: string | null, tens: string | null, hundreds: string | null}>({units: null, tens: null, hundreds: null});
+  
+  // États pour les illustrations visuelles d'emprunt
+  const [showBorrowAnimation, setShowBorrowAnimation] = useState(false);
+  const [borrowStep, setBorrowStep] = useState<'problem' | 'borrow' | 'transform' | 'calculate' | null>(null);
+  const [borrowFromColumn, setBorrowFromColumn] = useState<'tens' | 'hundreds' | null>(null);
   
   // États pour la synchronisation vocale avec les boutons d'animation
   const [currentVocalSection, setCurrentVocalSection] = useState<string | null>(null);
@@ -46,15 +53,15 @@ export default function SoustractionEmpruntCE1() {
   const stopSignalRef = useRef(false);
   const currentAudioRef = useRef<SpeechSynthesisUtterance | null>(null);
 
-  // Exemples de soustractions posées avec emprunt
+  // Exemples de soustractions posées avec retenue
   const subtractionExamples = [
-    { num1: 52, num2: 27, result: 25, hasBorrow: true, description: 'avec emprunt' },
-    { num1: 81, num2: 45, result: 36, hasBorrow: true, description: 'avec emprunt' },
-    { num1: 73, num2: 38, result: 35, hasBorrow: true, description: 'avec emprunt' },
-    { num1: 125, num2: 67, result: 58, hasBorrow: true, description: 'avec emprunt' },
-    { num1: 234, num2: 156, result: 78, hasBorrow: true, description: 'avec emprunt' },
-    { num1: 321, num2: 174, result: 147, hasBorrow: true, description: 'à 3 chiffres avec emprunt' },
-    { num1: 412, num2: 268, result: 144, hasBorrow: true, description: 'à 3 chiffres avec emprunt' }
+    { num1: 52, num2: 27, result: 25, hasBorrow: true, description: 'avec retenue' },
+    { num1: 81, num2: 45, result: 36, hasBorrow: true, description: 'avec retenue' },
+    { num1: 73, num2: 38, result: 35, hasBorrow: true, description: 'avec retenue' },
+    { num1: 125, num2: 67, result: 58, hasBorrow: true, description: 'avec retenue' },
+    { num1: 234, num2: 156, result: 78, hasBorrow: true, description: 'avec retenue' },
+    { num1: 321, num2: 174, result: 147, hasBorrow: true, description: 'à 3 chiffres avec retenue' },
+    { num1: 412, num2: 268, result: 144, hasBorrow: true, description: 'à 3 chiffres avec retenue' }
   ];
 
   // Exercices progressifs
@@ -69,14 +76,14 @@ export default function SoustractionEmpruntCE1() {
   };
 
   const baseExercises = [
-    // 1. Introduction emprunts
+    // 1. Introduction retenues
     {
-      question: 'Quand fait-on un emprunt ?', 
+      question: 'Quand fait-on un retenue ?', 
       correctAnswer: 'Quand le chiffre du haut est plus petit',
       choices: ['Quand on veut', 'Quand le chiffre du haut est plus petit', 'Jamais']
     },
     
-    // 2. Démarrage avec calculs simples avec emprunts
+    // 2. Démarrage avec calculs simples avec retenues
     { 
       question: 'Calcule : 52 - 27', 
       correctAnswer: '25',
@@ -90,11 +97,11 @@ export default function SoustractionEmpruntCE1() {
       visual: '   81\n-  45\n─────\n   ?'
     },
     
-    // 3. Concept des emprunts
+    // 3. Concept des retenues
     { 
-      question: 'Comment fait-on un emprunt ?', 
-      correctAnswer: 'On emprunte 1 à la colonne de gauche',
-      choices: ['On ajoute 10', 'On emprunte 1 à la colonne de gauche', 'On enlève 1']
+      question: 'Comment fait-on un retenue ?', 
+      correctAnswer: 'On retenuee 1 à la colonne de gauche',
+      choices: ['On ajoute 10', 'On retenuee 1 à la colonne de gauche', 'On enlève 1']
     },
     { 
       question: 'Calcule : 205 - 47', 
@@ -115,7 +122,7 @@ export default function SoustractionEmpruntCE1() {
       visual: '  245\n-  76\n─────\n   ?'
     },
     
-    // 4. Soustractions 3 chiffres avec emprunts multiples
+    // 4. Soustractions 3 chiffres avec retenues multiples
     { 
       question: 'Calcule : 365 - 197', 
       correctAnswer: '168',
@@ -153,7 +160,7 @@ export default function SoustractionEmpruntCE1() {
       visual: '  874\n- 296\n─────\n   ?'
     },
     
-    // 5. Exercices complexes avec emprunts
+    // 5. Exercices complexes avec retenues
     { 
       question: 'Calcule : 145 - 56', 
       correctAnswer: '89',
@@ -161,26 +168,26 @@ export default function SoustractionEmpruntCE1() {
       visual: '  145\n-  56\n─────\n   ?'
     },
     { 
-      question: 'Calcule : 679 + 485', 
-      correctAnswer: '1164',
-      choices: ['1160', '1164', '1168'],
-      visual: '  679\n+ 485\n─────\n   ?'
+      question: 'Calcule : 679 - 485', 
+      correctAnswer: '194',
+      choices: ['190', '194', '198'],
+      visual: '  679\n- 485\n─────\n   ?'
     },
     { 
-      question: 'Que fait-on avec la emprunt ?', 
+      question: 'Que fait-on avec la retenue ?', 
       correctAnswer: 'On l\'ajoute à la colonne suivante',
       choices: ['On l\'oublie', 'On l\'ajoute à la colonne suivante', 'On la soustrait']
     },
     
     // 6. Défis finaux
     { 
-      question: 'Calcule : 758 + 397', 
-      correctAnswer: '1155',
-      choices: ['1151', '1155', '1159'],
-      visual: '  758\n+ 397\n─────\n   ?'
+      question: 'Calcule : 758 - 397', 
+      correctAnswer: '361',
+      choices: ['357', '361', '365'],
+      visual: '  758\n- 397\n─────\n   ?'
     },
     { 
-      question: 'La soustraction avec emprunt nous aide à...', 
+      question: 'La soustraction avec retenue nous aide à...', 
       correctAnswer: 'Calculer des gros nombres',
       choices: ['Aller plus vite', 'Faire plus joli', 'Calculer des gros nombres']
     }
@@ -211,6 +218,8 @@ export default function SoustractionEmpruntCE1() {
     setCalculationStep(null);
     setShowingCarry(false);
     setCarryValues({toTens: 0, toHundreds: 0});
+    setBorrowValues({fromTens: 0, fromHundreds: 0});
+    setShowingBorrow(false);
     setPartialResults({units: null, tens: null, hundreds: null});
     setSamSizeExpanded(false);
     // Reset des états de synchronisation vocale
@@ -301,7 +310,7 @@ export default function SoustractionEmpruntCE1() {
     setSamSizeExpanded(true);
     
     try {
-      await playAudio("Bonjour ! Découvrons ensemble la soustraction posée avec emprunt !", true);
+      await playAudio("Bonjour ! Découvrons ensemble la soustraction posée avec retenue !", true);
       if (stopSignalRef.current) return;
       
       await wait(1000);
@@ -404,7 +413,7 @@ export default function SoustractionEmpruntCE1() {
     const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
     
     try {
-      await speak("Salut ! Je vais t'expliquer comment faire les exercices de soustraction avec emprunts !");
+      await speak("Salut ! Je vais t'expliquer comment faire les exercices de soustraction avec retenues !");
       if (stopSignalRef.current) return;
 
       await speak("D'abord, clique sur l'onglet Exercices pour voir les questions !");
@@ -457,20 +466,21 @@ export default function SoustractionEmpruntCE1() {
     setIsAnimationRunning(true);
     setCurrentExample(index);
     setPartialResults({units: null, tens: null, hundreds: null}); // Reset des résultats partiels
-    setCarryValues({toTens: 0, toHundreds: 0}); // Reset des emprunts
+    setCarryValues({toTens: 0, toHundreds: 0}); // Reset des retenues
+    setBorrowValues({fromTens: 0, fromHundreds: 0}); // Reset des emprunts
+    setShowingBorrow(false);
     
     const example = subtractionExamples[index];
     
-    // Pré-calculer toutes les emprunts
+    // Pré-calculer toutes les retenues nécessaires
     const num1Units = example.num1 % 10;
     const num2Units = example.num2 % 10;
-    const unitsSum = num1Units + num2Units;
-    const carryToTens = Math.floor(unitsSum / 10);
+    const needsBorrowFromTens = num1Units < num2Units;
     
     const num1Tens = Math.floor((example.num1 % 100) / 10);
     const num2Tens = Math.floor((example.num2 % 100) / 10);
-    const tensSum = num1Tens + num2Tens + carryToTens;
-    const carryToHundreds = Math.floor(tensSum / 10);
+    const adjustedTens = needsBorrowFromTens ? num1Tens - 1 : num1Tens;
+    const needsBorrowFromHundreds = adjustedTens < num2Tens;
     
     // Scroll automatique vers l'animation
     scrollToElement('example-section');
@@ -499,25 +509,64 @@ export default function SoustractionEmpruntCE1() {
       await wait(2000);
       setCalculationStep('units');
       
-      await playAudio(`Maintenant, la colonne des unités devient bleue ! Regarde bien... Je calcule : ${num1Units} moins ${num2Units} égale ${unitsSum} !`, true);
+      if (needsBorrowFromTens) {
+        await playAudio(`Maintenant, la colonne des unités devient bleue ! Je veux calculer ${num1Units} moins ${num2Units}... Mais attendez !`, true);
+      } else {
+        await playAudio(`Maintenant, la colonne des unités devient bleue ! Je calcule : ${num1Units} moins ${num2Units} !`, true);
+      }
       if (stopSignalRef.current) return;
       
       // Afficher le résultat des unités immédiatement
       await wait(500);
-      const unitsResult = unitsSum >= 10 ? (unitsSum % 10).toString() : unitsSum.toString();
+      const unitsResult = needsBorrowFromTens ? ((num1Units + 10) - num2Units).toString() : (num1Units - num2Units).toString();
       setPartialResults(prev => ({ ...prev, units: unitsResult }));
       await wait(1000);
       
-      // Gestion de la emprunt avec animation spéciale
-      if (carryToTens > 0) {
+      // Gestion de l'emprunt avec animation spéciale et illustration visuelle
+      if (needsBorrowFromTens) {
           await wait(1500);
-          setCarryValues(prev => ({ ...prev, toTens: carryToTens }));
-          setShowingCarry(true);
-          await playAudio(`Oh là là ! ${num1Units} est plus petit que ${num2Units} ! Attention... Regarde l'emprunt rouge qui apparaît !`, true);
+          
+          // ÉTAPE 1 : Expliquer le problème avec illustration
+          setShowBorrowAnimation(true);
+          setBorrowStep('problem');
+          setBorrowFromColumn('tens');
+          await playAudio(`Oh là là ! On a un problème ! ${num1Units} est plus petit que ${num2Units} ! Je ne peux pas faire ${num1Units} moins ${num2Units} !`, true);
           if (stopSignalRef.current) return;
           
+          await wait(2000);
+          
+          // ÉTAPE 2 : Expliquer la solution avec animation
+          setBorrowStep('borrow');
+          await playAudio(`Mais j'ai une solution magique ! Je vais emprunter 1 dizaine à la colonne des dizaines ! Regarde la flèche !`, true);
+          if (stopSignalRef.current) return;
+          
+          await wait(2000);
+          setBorrowValues(prev => ({ ...prev, fromTens: 1 }));
+          setShowingBorrow(true);
+          setCarryValues(prev => ({ ...prev, toTens: 1 }));
+          setShowingCarry(true);
+          
+          // ÉTAPE 3 : Montrer la transformation avec illustration visuelle
+          setBorrowStep('transform');
+          await playAudio(`Regarde bien ! 1 dizaine = 10 unités ! Je transforme cette dizaine en 10 petites unités ! Vois-tu les 10 petits cubes ?`, true);
+          if (stopSignalRef.current) return;
+          
+          await wait(3000);
+          
+          // ÉTAPE 4 : Montrer le calcul final avec animation
+          setBorrowStep('calculate');
+          await playAudio(`Maintenant j'ai ${num1Units} + 10 = ${num1Units + 10} unités ! Je peux faire ${num1Units + 10} moins ${num2Units} = ${(num1Units + 10) - num2Units} !`, true);
+          if (stopSignalRef.current) return;
+          
+          await wait(2000);
+          await playAudio(`Et attention ! Comme j'ai emprunté 1 dizaine, il me reste ${num1Tens - 1} dizaines au lieu de ${num1Tens} !`, true);
+          if (stopSignalRef.current) return;
+          
+          // Fin de l'animation d'emprunt
           await wait(1000);
-          await playAudio(`Regarde ! J'emprunte 1 dizaine qui devient 10 unités ! Maintenant j'ai ${num1Units + 10} unités pour faire ${num1Units + 10} moins ${num2Units} ! C'est magique, non ?`, true);
+          setShowBorrowAnimation(false);
+          setBorrowStep(null);
+          setBorrowFromColumn(null);
         if (stopSignalRef.current) return;
       }
       
@@ -530,28 +579,50 @@ export default function SoustractionEmpruntCE1() {
         if (stopSignalRef.current) return;
         
         await wait(1000);
-        if (carryToTens > 0) {
-          await playAudio(`Je calcule : ${num1Tens} plus ${num2Tens}... plus ${carryToTens} de emprunt ! Ça fait ${tensSum} !`, true);
+        if (needsBorrowFromTens) {
+          await playAudio(`Je calcule : ${num1Tens} moins 1 (retenue) moins ${num2Tens} ! Ça fait ${adjustedTens - num2Tens} !`, true);
         } else {
-          await playAudio(`Je calcule : ${num1Tens} plus ${num2Tens}... égale ${tensSum} !`, true);
+          await playAudio(`Je calcule : ${num1Tens} moins ${num2Tens}... égale ${num1Tens - num2Tens} !`, true);
         }
         if (stopSignalRef.current) return;
         
         // Afficher le résultat des dizaines
         await wait(500);
-        const tensResult = tensSum >= 10 ? (tensSum % 10).toString() : tensSum.toString();
+        const tensResult = needsBorrowFromTens ? (adjustedTens - num2Tens).toString() : (num1Tens - num2Tens).toString();
         setPartialResults(prev => ({ ...prev, tens: tensResult }));
         await wait(1000);
         
-        // Gestion de la emprunt vers les centaines
-        if (carryToHundreds > 0) {
+        // Gestion de l'emprunt vers les centaines avec illustration
+        if (needsBorrowFromHundreds) {
           await wait(1500);
-          setCarryValues(prev => ({ ...prev, toHundreds: carryToHundreds }));
-          await playAudio(`Attention ! On a besoin d'emprunter encore ! Une nouvelle emprunt de ${carryToHundreds} apparaît pour les centaines !`, true);
+          
+          // ÉTAPE 1 : Expliquer le nouveau problème
+          await playAudio(`Oh ! Un autre problème ! ${adjustedTens} est plus petit que ${num2Tens} ! Je ne peux pas faire ${adjustedTens} moins ${num2Tens} !`, true);
           if (stopSignalRef.current) return;
           
-          await wait(1000);
-          await playAudio(`J'emprunte encore 1 centaine qui devient 10 dizaines ! Maintenant je peux calculer !`, true);
+          await wait(2000);
+          
+          // ÉTAPE 2 : Expliquer la solution pour les centaines
+          await playAudio(`Pas de panique ! Je vais emprunter 1 centaine à la colonne des centaines !`, true);
+          if (stopSignalRef.current) return;
+          
+          await wait(2000);
+          setBorrowValues(prev => ({ ...prev, fromHundreds: 1 }));
+          setCarryValues(prev => ({ ...prev, toHundreds: 1 }));
+          
+          // ÉTAPE 3 : Montrer la transformation centaine → dizaines
+          await playAudio(`Regarde ! 1 centaine = 10 dizaines ! Je transforme cette centaine en 10 dizaines !`, true);
+          if (stopSignalRef.current) return;
+          
+          await wait(2000);
+          
+          // ÉTAPE 4 : Montrer le calcul des dizaines avec emprunt
+          await playAudio(`Maintenant j'ai ${adjustedTens} + 10 = ${adjustedTens + 10} dizaines ! Je peux faire ${adjustedTens + 10} moins ${num2Tens} = ${(adjustedTens + 10) - num2Tens} !`, true);
+          if (stopSignalRef.current) return;
+          
+          await wait(1500);
+          const num1Hundreds = Math.floor(example.num1 / 100) % 10;
+          await playAudio(`Et comme j'ai emprunté 1 centaine, il me reste ${num1Hundreds - 1} centaines au lieu de ${num1Hundreds} !`, true);
           if (stopSignalRef.current) return;
         }
       }
@@ -567,18 +638,19 @@ export default function SoustractionEmpruntCE1() {
         if (stopSignalRef.current) return;
         
         await wait(1000);
-        const hundredsSum = num1Hundreds + num2Hundreds + carryToHundreds;
-        if (carryToHundreds > 0) {
-          await playAudio(`Je calcule : ${num1Hundreds} plus ${num2Hundreds}... plus ${carryToHundreds} de emprunt ! Ça fait ${hundredsSum} !`, true);
+        const adjustedHundreds = needsBorrowFromHundreds ? num1Hundreds - 1 : num1Hundreds;
+        const hundredsResult = adjustedHundreds - num2Hundreds;
+        if (needsBorrowFromHundreds) {
+          await playAudio(`Je calcule : ${num1Hundreds} moins 1 (retenue) moins ${num2Hundreds} ! Ça fait ${hundredsResult} !`, true);
         } else {
-          await playAudio(`Je calcule : ${num1Hundreds} plus ${num2Hundreds}... égale ${hundredsSum} !`, true);
+          await playAudio(`Je calcule : ${num1Hundreds} moins ${num2Hundreds}... égale ${hundredsResult} !`, true);
         }
         if (stopSignalRef.current) return;
         
         // Afficher le résultat des centaines
         await wait(500);
-        const hundredsResult = hundredsSum.toString();
-        setPartialResults(prev => ({ ...prev, hundreds: hundredsResult }));
+        const hundredsResultStr = hundredsResult.toString();
+        setPartialResults(prev => ({ ...prev, hundreds: hundredsResultStr }));
         await wait(1000);
       }
       
@@ -608,6 +680,7 @@ export default function SoustractionEmpruntCE1() {
       setCurrentExample(null);
       setCalculationStep(null);
       setShowingCarry(false);
+      setShowingBorrow(false);
       setHighlightedElement(null);
       setPartialResults({units: null, tens: null, hundreds: null});
     }
@@ -641,14 +714,14 @@ export default function SoustractionEmpruntCE1() {
       
       await wait(1000);
       
-      // Focus sur les additions sans emprunt
+      // Focus sur les soustractions avec retenues
       setHighlightedElement('examples-section');
       document.getElementById('examples-section')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
       await wait(1000);
       
-      await playAudio("D'abord, les soustractions posées sans emprunt ! Comme 89 moins 14 ou 67 moins 26...", true);
+      await playAudio("D'abord, les soustractions posées sans retenue ! Comme 89 moins 14 ou 67 moins 26...", true);
       
-      // Illuminer les exemples sans emprunt (indices 0 et 1)
+      // Illuminer les exemples sans retenue (indices 0 et 1)
       setHighlightedElement('example-0');
       document.getElementById('example-0')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
       await wait(800);
@@ -657,10 +730,10 @@ export default function SoustractionEmpruntCE1() {
       await wait(1000);
       if (stopSignalRef.current) return;
       
-      // Highlight spécifiquement les exemples avec emprunt
-      await playAudio("Ensuite, les soustractions avec emprunt ! Comme 52 moins 28... c'est un peu plus compliqué !", true);
+      // Highlight spécifiquement les exemples avec retenue
+      await playAudio("Ensuite, les soustractions avec retenue ! Comme 52 moins 28... c'est un peu plus compliqué !", true);
       
-      // Illuminer les exemples avec emprunt (indices 2 et 3)
+      // Illuminer les exemples avec retenue (indices 2 et 3)
       setHighlightedElement('example-2');
       document.getElementById('example-2')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
       await wait(800);
@@ -753,27 +826,39 @@ export default function SoustractionEmpruntCE1() {
               </div>
             </div>
 
-            {/* Emprunts si nécessaire */}
-            {example.hasCarry && showingCarry && (
+            {/* Emprunts visuels si nécessaire */}
+            {example.hasBorrow && showingBorrow && (
               <div className="flex justify-center">
                 <div className={`grid gap-8 ${maxDigits >= 3 ? 'grid-cols-3' : 'grid-cols-2'}`}>
                   {maxDigits >= 3 && (
-                    <div className="text-center text-red-500 text-lg">
-                      {carryValues.toHundreds > 0 && (
-                        <sup className="bg-red-100 px-2 py-1 rounded-full border-2 border-red-300 animate-carry-bounce">
-                          {carryValues.toHundreds}
-                        </sup>
+                    <div className="text-center text-blue-500 text-lg relative">
+                      {borrowValues.fromHundreds > 0 && (
+                        <div className="relative">
+                          <span className="text-gray-400 line-through text-sm">{Math.floor(example.num1 / 100)}</span>
+                          <br/>
+                          <span className="text-blue-600 font-bold animate-bounce">{Math.floor(example.num1 / 100) - 1}</span>
+                        </div>
                       )}
                     </div>
                   )}
-                  <div className="text-center text-red-500 text-lg">
-                    {carryValues.toTens > 0 && (
-                      <sup className="bg-red-100 px-2 py-1 rounded-full border-2 border-red-300 animate-carry-bounce">
-                        {carryValues.toTens}
-                      </sup>
+                  <div className="text-center text-blue-500 text-lg relative">
+                    {borrowValues.fromTens > 0 && (
+                      <div className="relative">
+                        <span className="text-gray-400 line-through text-sm">{Math.floor((example.num1 % 100) / 10)}</span>
+                        <br/>
+                        <span className="text-blue-600 font-bold animate-bounce">{Math.floor((example.num1 % 100) / 10) - 1}</span>
+                      </div>
                     )}
                   </div>
-                  <div className="text-center"></div>
+                  <div className="text-center text-green-500 text-lg relative">
+                    {borrowValues.fromTens > 0 && (
+                      <div className="relative">
+                        <span className="text-gray-400 line-through text-sm">{example.num1 % 10}</span>
+                        <br/>
+                        <span className="text-green-600 font-bold animate-bounce">{(example.num1 % 10) + 10}</span>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             )}
@@ -804,7 +889,7 @@ export default function SoustractionEmpruntCE1() {
               </div>
             </div>
             
-            {/* Deuxième nombre avec signe + */}
+            {/* Deuxième nombre avec signe - */}
             <div className="flex justify-center">
               <div className="relative">
                 <div className={`grid gap-2 sm:gap-6 font-mono text-base sm:text-2xl ${maxDigits >= 3 ? 'grid-cols-3' : 'grid-cols-2'}`}>
@@ -829,9 +914,9 @@ export default function SoustractionEmpruntCE1() {
                     {num2Units}
                   </div>
                 </div>
-                {/* Signe + positionné à gauche sans affecter l'alignement */}
-                <div className="absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-8 text-3xl font-mono text-green-600 font-bold">
-                  +
+                {/* Signe - positionné à gauche sans affecter l'alignement */}
+                <div className="absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-8 text-3xl font-mono text-red-600 font-bold">
+                  -
                 </div>
               </div>
             </div>
@@ -866,17 +951,17 @@ export default function SoustractionEmpruntCE1() {
               </div>
             </div>
 
-            {/* Explications textuelles animées */}
-            {isAnimated && (
+            {/* Explications textuelles animées - masquées pendant l'animation d'emprunt */}
+            {isAnimated && !showBorrowAnimation && (
               <div className="mt-6 text-center">
                 {calculationStep === 'units' && (
                   <div className="bg-blue-100 text-blue-800 p-3 rounded-lg animate-fade-in font-medium">
-                    🔵 On commence par les <strong>unités</strong> : {num1Units} + {num2Units} !
+                    🔵 On commence par les <strong>unités</strong> : {num1Units} - {num2Units} !
                   </div>
                 )}
                 {calculationStep === 'tens' && (
                   <div className="bg-orange-100 text-orange-800 p-3 rounded-lg animate-fade-in font-medium">
-                    🟠 Puis les <strong>dizaines</strong> : {num1Tens || '0'} + {num2Tens || '0'} !
+                    🟠 Puis les <strong>dizaines</strong> : {num1Tens || '0'} - {num2Tens || '0'} !
                   </div>
                 )}
                 {calculationStep === 'result' && (
@@ -884,51 +969,170 @@ export default function SoustractionEmpruntCE1() {
                     🟣 <strong>Résultat final</strong> : {example.result} ! Tu as réussi !
                   </div>
                 )}
-                {showingCarry && (
-                  <div className="bg-red-100 text-red-800 p-3 rounded-lg animate-bounce font-medium mt-2">
-                    ⚠️ <strong>Emprunt</strong> : regarde le calcul à côté ! Attention !
+                {showingBorrow && (
+                  <div className="bg-blue-100 text-blue-800 p-3 rounded-lg animate-bounce font-medium mt-2">
+                    🔄 <strong>Emprunt visuel</strong> : regarde les nombres barrés ! Attention !
                   </div>
                 )}
               </div>
             )}
           </div>
 
+          {/* Animation visuelle d'emprunt - repositionnée à gauche */}
+          {showBorrowAnimation && (
+            <div className="fixed top-20 left-4 z-20 bg-white border-4 border-blue-400 rounded-xl p-6 shadow-2xl animate-fade-in max-w-sm">
+              <div className="text-center">
+                <h3 className="text-xl font-bold text-blue-800 mb-4">
+                  🎯 Animation d'emprunt
+                </h3>
+                
+                {borrowStep === 'problem' && (
+                  <div className="space-y-3">
+                    <div className="text-lg text-red-600 font-bold">
+                      ❌ Problème détecté !
+                    </div>
+                    <div className="bg-red-50 p-3 rounded-lg">
+                      <div className="font-mono text-xl">
+                        {(currentExample !== null && subtractionExamples[currentExample]) ? subtractionExamples[currentExample].num1 % 10 : '?'} &lt; {(currentExample !== null && subtractionExamples[currentExample]) ? subtractionExamples[currentExample].num2 % 10 : '?'}
+                      </div>
+                      <div className="text-sm text-gray-600 mt-1">
+                        Je ne peux pas soustraire !
+                      </div>
+                    </div>
+                  </div>
+                )}
+                
+                {borrowStep === 'borrow' && (
+                  <div className="space-y-3">
+                    <div className="text-lg text-orange-600 font-bold">
+                      🔄 Solution : Emprunter !
+                    </div>
+                    <div className="bg-orange-50 p-3 rounded-lg">
+                      <div className="flex items-center justify-center gap-2 mb-2">
+                        <div className="text-2xl">📦</div>
+                        <div className="text-lg animate-bounce">→</div>
+                        <div className="text-lg">🔢🔢🔢🔢🔢🔢🔢🔢🔢🔢</div>
+                      </div>
+                      <div className="text-sm text-gray-600 text-center">
+                        1 dizaine = 10 unités
+                      </div>
+                    </div>
+                  </div>
+                )}
+                
+                {borrowStep === 'transform' && (
+                  <div className="space-y-3">
+                    <div className="text-lg text-green-600 font-bold">
+                      ✨ Transformation !
+                    </div>
+                    <div className="bg-green-50 p-3 rounded-lg">
+                      <div className="grid grid-cols-5 gap-1 max-w-xs mx-auto mb-2">
+                        {Array.from({ length: 10 }, (_, i) => (
+                          <div
+                            key={i}
+                            className="w-6 h-6 bg-blue-300 rounded animate-bounce text-xs flex items-center justify-center"
+                            style={{ animationDelay: `${i * 80}ms` }}
+                          >
+                            1
+                          </div>
+                        ))}
+                      </div>
+                      <div className="text-sm text-green-600 text-center">
+                        10 petites unités !
+                      </div>
+                    </div>
+                  </div>
+                )}
+                
+                {borrowStep === 'calculate' && (
+                  <div className="space-y-3">
+                    <div className="text-lg text-purple-600 font-bold">
+                      🧮 Calcul final !
+                    </div>
+                    <div className="bg-purple-50 p-3 rounded-lg">
+                      <div className="text-lg font-mono text-center mb-2">
+                        {(currentExample !== null && subtractionExamples[currentExample]) ? subtractionExamples[currentExample].num1 % 10 : '?'} + 10 - {(currentExample !== null && subtractionExamples[currentExample]) ? subtractionExamples[currentExample].num2 % 10 : '?'} = {(currentExample !== null && subtractionExamples[currentExample]) ? ((subtractionExamples[currentExample].num1 % 10) + 10) - (subtractionExamples[currentExample].num2 % 10) : '?'}
+                      </div>
+                      <div className="text-green-600 font-bold text-lg text-center">
+                        ✅ Ça marche !
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
           {/* Panneau explicatif des emprunts - Contrôlé par le paramètre showHelperBox */}
-          {example.hasCarry && showingCarry && showHelperBox && (
+          {example.hasBorrow && showingBorrow && showHelperBox && (
             <div className="fixed top-20 right-4 z-10 bg-yellow-100 border-2 border-yellow-300 rounded-lg p-4 shadow-lg animate-fade-in max-w-xs">
               <div className="flex items-center justify-between mb-3">
-                <div className="text-sm text-yellow-700 font-medium">Calculs avec emprunts :</div>
-                <div className="text-yellow-600 text-xs">💡 Aide</div>
+                <div className="text-sm text-yellow-700 font-medium">💡 Aide - Emprunts :</div>
+                <div className="text-yellow-600 text-xs">📝 Méthode</div>
               </div>
               
-              {/* Calcul des unités */}
-              {carryValues.toTens > 0 && (
+              {/* Calcul des unités avec emprunt */}
+              {borrowValues.fromTens > 0 && (
                 <div className="mb-3 p-2 bg-blue-50 rounded">
                   <div className="text-xs text-blue-700 font-medium mb-1">Unités :</div>
+                  <div className="text-xs text-gray-600 mb-1">
+                    {example.num1 % 10} &lt; {example.num2 % 10} → j'emprunte 1 dizaine
+                  </div>
                   <div className="font-mono text-sm text-blue-800 text-center mb-2">
-                    {example.num1 % 10} + {example.num2 % 10} = {(example.num1 % 10) + (example.num2 % 10)}
+                    {(example.num1 % 10) + 10} - {example.num2 % 10} = {((example.num1 % 10) + 10) - (example.num2 % 10)}
                   </div>
                   <div className="flex items-center justify-center gap-2 text-xs text-blue-700">
-                    <span className="bg-red-200 px-1 py-0.5 rounded font-bold">{carryValues.toTens}</span>
-                    <span>↗ vers D</span>
-                    <span className="bg-blue-200 px-1 py-0.5 rounded font-bold">{(example.num1 % 10 + example.num2 % 10) % 10}</span>
-                    <span>↓ U</span>
+                    <span className="bg-yellow-200 px-1 py-0.5 rounded font-bold">+10</span>
+                    <span>aux unités</span>
+                    <span className="bg-red-200 px-1 py-0.5 rounded font-bold">-1</span>
+                    <span>aux dizaines</span>
+                  </div>
+                  <div className="text-center mt-1">
+                    <span className="bg-blue-200 px-1 py-0.5 rounded font-bold text-xs">{((example.num1 % 10) + 10) - (example.num2 % 10)}</span>
+                    <span className="text-xs text-blue-700"> → résultat unités</span>
                   </div>
                 </div>
               )}
               
-              {/* Calcul des dizaines */}
-              {carryValues.toHundreds > 0 && (
+              {/* Calcul des dizaines avec emprunt */}
+              {borrowValues.fromHundreds > 0 && (
                 <div className="mb-3 p-2 bg-orange-50 rounded">
                   <div className="text-xs text-orange-700 font-medium mb-1">Dizaines :</div>
+                  <div className="text-xs text-gray-600 mb-1">
+                    Après emprunt : {Math.floor((example.num1 % 100) / 10)} → {Math.floor((example.num1 % 100) / 10) - 1}
+                  </div>
+                  <div className="text-xs text-gray-600 mb-1">
+                    {Math.floor((example.num1 % 100) / 10) - 1} &lt; {Math.floor((example.num2 % 100) / 10)} → j'emprunte 1 centaine
+                  </div>
                   <div className="font-mono text-sm text-orange-800 text-center mb-2">
-                    {Math.floor((example.num1 % 100) / 10)} + {Math.floor((example.num2 % 100) / 10)} + {carryValues.toTens} = {Math.floor((example.num1 % 100) / 10) + Math.floor((example.num2 % 100) / 10) + carryValues.toTens}
+                    {(Math.floor((example.num1 % 100) / 10) - 1) + 10} - {Math.floor((example.num2 % 100) / 10)} = {((Math.floor((example.num1 % 100) / 10) - 1) + 10) - Math.floor((example.num2 % 100) / 10)}
                   </div>
                   <div className="flex items-center justify-center gap-2 text-xs text-orange-700">
-                    <span className="bg-red-200 px-1 py-0.5 rounded font-bold">{carryValues.toHundreds}</span>
-                    <span>↗ vers C</span>
-                    <span className="bg-orange-200 px-1 py-0.5 rounded font-bold">{(Math.floor((example.num1 % 100) / 10) + Math.floor((example.num2 % 100) / 10) + carryValues.toTens) % 10}</span>
-                    <span>↓ D</span>
+                    <span className="bg-yellow-200 px-1 py-0.5 rounded font-bold">+10</span>
+                    <span>aux dizaines</span>
+                    <span className="bg-red-200 px-1 py-0.5 rounded font-bold">-1</span>
+                    <span>aux centaines</span>
+                  </div>
+                  <div className="text-center mt-1">
+                    <span className="bg-orange-200 px-1 py-0.5 rounded font-bold text-xs">{((Math.floor((example.num1 % 100) / 10) - 1) + 10) - Math.floor((example.num2 % 100) / 10)}</span>
+                    <span className="text-xs text-orange-700"> → résultat dizaines</span>
+                  </div>
+                </div>
+              )}
+              
+              {/* Calcul des centaines (si emprunt depuis centaines) */}
+              {borrowValues.fromHundreds > 0 && example.num1 >= 100 && (
+                <div className="mb-3 p-2 bg-purple-50 rounded">
+                  <div className="text-xs text-purple-700 font-medium mb-1">Centaines :</div>
+                  <div className="text-xs text-gray-600 mb-1">
+                    Après emprunt : {Math.floor(example.num1 / 100)} → {Math.floor(example.num1 / 100) - 1}
+                  </div>
+                  <div className="font-mono text-sm text-purple-800 text-center mb-2">
+                    {Math.floor(example.num1 / 100) - 1} - {Math.floor(example.num2 / 100) || 0} = {(Math.floor(example.num1 / 100) - 1) - (Math.floor(example.num2 / 100) || 0)}
+                  </div>
+                  <div className="text-center">
+                    <span className="bg-purple-200 px-1 py-0.5 rounded font-bold text-xs">{(Math.floor(example.num1 / 100) - 1) - (Math.floor(example.num2 / 100) || 0)}</span>
+                    <span className="text-xs text-purple-700"> → résultat centaines</span>
                   </div>
                 </div>
               )}
@@ -950,7 +1154,7 @@ export default function SoustractionEmpruntCE1() {
     setIsAnimationRunning(true);
     
     // Extraire les nombres de l'exercice
-    const match = exercise.question.match(/Calcule : (\d+) \+ (\d+)/);
+    const match = exercise.question.match(/Calcule : (\d+) - (\d+)/);
     if (!match) {
       setIsAnimationRunning(false);
       return;
@@ -960,19 +1164,18 @@ export default function SoustractionEmpruntCE1() {
     const num2 = parseInt(match[2]);
     const result = parseInt(exercise.correctAnswer);
     
-    // Pré-calculer toutes les emprunts comme dans explainExample
+    // Pré-calculer toutes les retenues pour la soustraction
     const num1Units = num1 % 10;
     const num2Units = num2 % 10;
-    const unitsSum = num1Units + num2Units;
-    const carryToTens = Math.floor(unitsSum / 10);
+    const needsBorrowFromTens = num1Units < num2Units;
     
     const num1Tens = Math.floor((num1 % 100) / 10);
     const num2Tens = Math.floor((num2 % 100) / 10);
-    const tensSum = num1Tens + num2Tens + carryToTens;
-    const carryToHundreds = Math.floor(tensSum / 10);
+    const adjustedTens = needsBorrowFromTens ? num1Tens - 1 : num1Tens;
+    const needsBorrowFromHundreds = adjustedTens < num2Tens;
     
-    const hasCarry = carryToTens > 0 || carryToHundreds > 0;
-    const example = { num1, num2, result, hasCarry };
+    const hasBorrow = needsBorrowFromTens || needsBorrowFromHundreds;
+    const example = { num1, num2, result, hasBorrow };
     
     try {
       // Reset des états d'animation
@@ -1001,45 +1204,48 @@ export default function SoustractionEmpruntCE1() {
       await wait(1500);
       setCalculationStep('units');
       
-      await playAudio(`Colonne U : ${num1Units} moins ${num2Units} égale ${unitsSum}`, true);
+      const unitsResult = needsBorrowFromTens ? ((num1Units + 10) - num2Units).toString() : (num1Units - num2Units).toString();
+      await playAudio(`Colonne U : ${needsBorrowFromTens ? `${num1Units} plus 10` : num1Units} moins ${num2Units} égale ${unitsResult}`, true);
       if (stopSignalRef.current) return;
       
       await wait(500);
-      const unitsResult = unitsSum >= 10 ? (unitsSum % 10).toString() : unitsSum.toString();
       setPartialResults(prev => ({ ...prev, units: unitsResult }));
       await wait(1000);
       
-      // Gestion de la emprunt des unités
-      if (carryToTens > 0) {
-        await wait(1000);
-        setCarryValues(prev => ({ ...prev, toTens: carryToTens }));
-        setShowingCarry(true);
-        await playAudio(`Attention ! ${num1Units} est plus petit que ${num2Units} ! Je dois emprunter ${carryToTens} !`, true);
-        if (stopSignalRef.current) return;
-      }
+      // Gestion de la retenue des unités
+              if (needsBorrowFromTens) {
+          await wait(1000);
+          setBorrowValues(prev => ({ ...prev, fromTens: 1 }));
+          setShowingBorrow(true);
+          setCarryValues(prev => ({ ...prev, toTens: 1 }));
+          setShowingCarry(true);
+          await playAudio(`Attention ! ${num1Units} est plus petit que ${num2Units} ! Je dois emprunter 1 dizaine qui devient 10 unités !`, true);
+          if (stopSignalRef.current) return;
+        }
       
       // Animation des dizaines si nécessaire
       if (maxDigits >= 2) {
         await wait(1500);
         setCalculationStep('tens');
         
-        if (carryToTens > 0) {
-          await playAudio(`Colonne D : ${num1Tens} moins ${num2Tens} avec ${carryToTens} d'emprunt égale ${tensSum}`, true);
+        const tensResult = needsBorrowFromHundreds ? ((adjustedTens + 10) - num2Tens).toString() : (adjustedTens - num2Tens).toString();
+        if (needsBorrowFromTens) {
+          await playAudio(`Colonne D : ${num1Tens} moins 1 (emprunté) = ${adjustedTens}, puis ${adjustedTens} moins ${num2Tens} égale ${tensResult}`, true);
         } else {
-          await playAudio(`Colonne D : ${num1Tens} moins ${num2Tens} égale ${tensSum}`, true);
+          await playAudio(`Colonne D : ${num1Tens} moins ${num2Tens} égale ${tensResult}`, true);
         }
         if (stopSignalRef.current) return;
         
         await wait(500);
-        const tensResult = tensSum >= 10 ? (tensSum % 10).toString() : tensSum.toString();
         setPartialResults(prev => ({ ...prev, tens: tensResult }));
         await wait(1000);
         
-        // Gestion de la emprunt des dizaines
-        if (carryToHundreds > 0) {
+        // Gestion de la retenue des dizaines
+        if (needsBorrowFromHundreds) {
           await wait(1000);
-          setCarryValues(prev => ({ ...prev, toHundreds: carryToHundreds }));
-          await playAudio(`Encore un emprunt nécessaire ! Je dois emprunter ${carryToHundreds} aux centaines !`, true);
+          setBorrowValues(prev => ({ ...prev, fromHundreds: 1 }));
+          setCarryValues(prev => ({ ...prev, toHundreds: 1 }));
+          await playAudio(`Attention ! ${adjustedTens} est plus petit que ${num2Tens} ! Je dois emprunter 1 centaine !`, true);
           if (stopSignalRef.current) return;
         }
       }
@@ -1050,17 +1256,18 @@ export default function SoustractionEmpruntCE1() {
         setCalculationStep('hundreds');
         const num1Hundreds = Math.floor(num1 / 100) % 10;
         const num2Hundreds = Math.floor(num2 / 100) % 10;
-        const hundredsSum = num1Hundreds + num2Hundreds + carryToHundreds;
+        const adjustedHundreds = needsBorrowFromHundreds ? num1Hundreds - 1 : num1Hundreds;
+        const hundredsResult = adjustedHundreds - num2Hundreds;
         
-        if (carryToHundreds > 0) {
-          await playAudio(`Colonne C : ${num1Hundreds} moins ${num2Hundreds} avec ${carryToHundreds} d'emprunt égale ${hundredsSum}`, true);
+        if (needsBorrowFromHundreds) {
+          await playAudio(`Colonne C : ${num1Hundreds} moins 1 (emprunté) = ${adjustedHundreds}, puis ${adjustedHundreds} moins ${num2Hundreds} égale ${hundredsResult}`, true);
         } else {
-          await playAudio(`Colonne C : ${num1Hundreds} moins ${num2Hundreds} égale ${hundredsSum}`, true);
+          await playAudio(`Colonne C : ${num1Hundreds} moins ${num2Hundreds} égale ${hundredsResult}`, true);
         }
         if (stopSignalRef.current) return;
         
         await wait(500);
-        setPartialResults(prev => ({ ...prev, hundreds: hundredsSum.toString() }));
+        setPartialResults(prev => ({ ...prev, hundreds: hundredsResult.toString() }));
         await wait(1000);
       }
       
@@ -1077,7 +1284,9 @@ export default function SoustractionEmpruntCE1() {
       setCalculationStep(null);
       setPartialResults({units: null, tens: null, hundreds: null});
       setCarryValues({toTens: 0, toHundreds: 0});
+      setBorrowValues({fromTens: 0, fromHundreds: 0});
       setShowingCarry(false);
+      setShowingBorrow(false);
     }
   };
 
@@ -1293,7 +1502,7 @@ export default function SoustractionEmpruntCE1() {
           
           <div className="bg-gradient-to-br from-orange-50 to-red-50 border-2 border-orange-200 rounded-xl p-4 sm:p-6 shadow-lg text-center">
             <h1 className="text-lg sm:text-2xl lg:text-3xl font-bold text-red-900 mb-3">
-              ➖ Soustraction avec emprunt
+              ➖ Soustraction avec retenue
             </h1>
         </div>
       </div>
@@ -1439,7 +1648,7 @@ export default function SoustractionEmpruntCE1() {
                 <div className="text-3xl sm:text-6xl mb-2 sm:mb-4">📝</div>
                 <div className="flex items-center justify-center gap-1 sm:gap-3 mb-3 sm:mb-4">
                   <h2 className="text-sm sm:text-xl font-bold text-gray-900">
-                    La soustraction posée : simple et avec emprunt
+                    La soustraction posée : simple et avec retenue
                   </h2>
                   {/* Icône d'animation pour l'introduction */}
                   <div className="bg-gradient-to-r from-green-500 to-teal-600 text-white rounded-full w-6 h-6 sm:w-12 sm:h-12 flex items-center justify-center text-xs sm:text-xl font-bold shadow-lg hover:scale-110 cursor-pointer transition-all duration-300 ring-2 ring-green-300" 
@@ -1448,7 +1657,7 @@ export default function SoustractionEmpruntCE1() {
                   </div>
                 </div>
                 <p className="text-xs sm:text-base text-gray-600">
-                  On commence simple, puis on apprend les emprunts quand on ne peut pas soustraire !
+                  On commence simple, puis on apprend les retenues quand on ne peut pas soustraire !
                 </p>
             </div>
 
@@ -1464,7 +1673,7 @@ export default function SoustractionEmpruntCE1() {
                 </h3>
                 <div className="text-center mb-6">
                   <div className="bg-orange-100 text-orange-800 px-2 sm:px-4 py-1 sm:py-2 rounded-lg inline-block font-bold text-sm sm:text-lg">
-                    📝 Calculer : 3 + 4
+                    📝 Calculer : 52 - 27
                   </div>
                 </div>
 
@@ -1578,7 +1787,7 @@ export default function SoustractionEmpruntCE1() {
             </div>
                 <div>
                   <div className="text-xl sm:text-2xl mb-1">3️⃣</div>
-                  <div className="font-bold text-xs sm:text-sm">Emprunt</div>
+                  <div className="font-bold text-xs sm:text-sm">Retenue</div>
                   <div className="text-xs">Si ≥ 10, écris l'unité et retiens</div>
                 </div>
               </div>
@@ -1650,16 +1859,16 @@ export default function SoustractionEmpruntCE1() {
               {exercises[currentExercise].visual && (
                 <div className="bg-gradient-to-br from-orange-50 to-red-50 border border-orange-200 rounded-lg p-6 mb-8 flex justify-center">
                   {(() => {
-                    const match = exercises[currentExercise].question.match(/Calcule : (\d+) \+ (\d+)/);
+                    const match = exercises[currentExercise].question.match(/Calcule : (\d+) - (\d+)/);
                     if (match) {
                       const num1 = parseInt(match[1]);
                       const num2 = parseInt(match[2]);
                       const result = parseInt(exercises[currentExercise].correctAnswer);
-                      const example = { num1, num2, result, hasCarry: true };
+                      const example = { num1, num2, result, hasBorrow: true };
                       
                       // Utiliser notre fonction renderPostedSubtraction avec animation si mauvaise réponse
                       const isExerciseAnimated = isAnimationRunning && isCorrect === false;
-                      const showHelperInExercise = false; // Pas de boîte jaune dans les exercices
+                      const showHelperInExercise = isCorrect === false; // Boîte jaune si réponse incorrecte
                       
                       return renderPostedSubtraction(example, isExerciseAnimated, showHelperInExercise);
                     }
@@ -1670,7 +1879,7 @@ export default function SoustractionEmpruntCE1() {
 
             {/* Saisie ou choix multiples selon le type d'exercice */}
             {exercises[currentExercise].visual ? (
-              // Case de saisie pour les calculs d'additions posées
+              // Case de saisie pour les calculs de soustractions posées
               <div className="max-w-sm mx-auto mb-6">
                 <div className="flex items-center justify-center gap-4">
                   <input

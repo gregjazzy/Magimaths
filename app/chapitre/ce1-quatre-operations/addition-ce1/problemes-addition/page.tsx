@@ -70,10 +70,10 @@ export default function ProblemesAddition() {
     {
       id: 'animaux',
       title: 'Les chats de la ferme',
-      story: 'Dans la ferme de Mamie, il y a 5 chatons noirs et 3 chatons blancs. Combien y a-t-il de chatons ?',
-      first: 5,
-      second: 3,
-      result: 8,
+      story: 'Dans la ferme de Mamie, il y a 35 chatons noirs et 28 chatons blancs. Combien y a-t-il de chatons ?',
+      first: 35,
+      second: 28,
+      result: 63,
       item: '🐱',
       color1: 'text-gray-800',
       color2: 'text-gray-400'
@@ -81,10 +81,10 @@ export default function ProblemesAddition() {
     {
       id: 'ecole',
       title: 'Les crayons de couleur',
-      story: 'Dans la trousse de Julie, il y a 6 crayons rouges et 4 crayons verts. Combien de crayons a-t-elle ?',
-      first: 6,
-      second: 4,
-      result: 10,
+      story: 'Dans la trousse de Julie, il y a 46 crayons rouges et 37 crayons verts. Combien de crayons a-t-elle ?',
+      first: 46,
+      second: 37,
+      result: 83,
       item: '✏️',
       color1: 'text-red-600',
       color2: 'text-green-600'
@@ -92,10 +92,10 @@ export default function ProblemesAddition() {
     {
       id: 'cuisine',
       title: 'Les cookies de Maman',
-      story: 'Maman a fait 7 cookies au chocolat et 5 cookies aux pépites. Combien de cookies a-t-elle préparés ?',
-      first: 7,
-      second: 5,
-      result: 12,
+      story: 'Maman a fait 47 cookies au chocolat et 35 cookies aux pépites. Combien de cookies a-t-elle préparés ?',
+      first: 47,
+      second: 35,
+      result: 82,
       item: '🍪',
       color1: 'text-amber-700',
       color2: 'text-amber-600'
@@ -103,10 +103,10 @@ export default function ProblemesAddition() {
     {
       id: 'jardin',
       title: 'Les fleurs du jardin',
-      story: 'Dans le jardin, Papa a planté 8 tulipes rouges et 6 tulipes jaunes. Combien de fleurs vont pousser ?',
-      first: 8,
-      second: 6,
-      result: 14,
+      story: 'Dans le jardin, Papa a planté 248 tulipes rouges et 316 tulipes jaunes. Combien de fleurs vont pousser ?',
+      first: 248,
+      second: 316,
+      result: 564,
       item: '🌷',
       color1: 'text-red-600',
       color2: 'text-yellow-600'
@@ -114,10 +114,10 @@ export default function ProblemesAddition() {
     {
       id: 'bibliotheque',
       title: 'Les livres de la classe',
-      story: 'Sur l\'étagère de la classe, il y a 9 livres de contes et 7 livres d\'images. Combien de livres y a-t-il ?',
-      first: 9,
-      second: 7,
-      result: 16,
+      story: 'Sur l\'étagère de la classe, il y a 329 livres de contes et 287 livres d\'images. Combien de livres y a-t-il ?',
+      first: 329,
+      second: 287,
+      result: 616,
       item: '📚',
       color1: 'text-purple-600',
       color2: 'text-blue-600'
@@ -125,10 +125,10 @@ export default function ProblemesAddition() {
     {
       id: 'recreation',
       title: 'Les billes de Paul',
-      story: 'Paul a 11 billes bleues et 8 billes rouges dans son sac. Combien de billes a-t-il en tout ?',
-      first: 11,
-      second: 8,
-      result: 19,
+      story: 'Paul collectionne les billes depuis qu\'il a 6 ans. Il possède 411 billes bleues et 378 billes rouges dans son coffre à trésors. Combien de billes a-t-il au total dans sa collection ?',
+      first: 411,
+      second: 378,
+      result: 789,
       item: '⚪',
       color1: 'text-blue-600',
       color2: 'text-red-600'
@@ -136,230 +136,210 @@ export default function ProblemesAddition() {
     {
       id: 'anniversaire',
       title: 'Les invités d\'Emma',
-      story: 'Pour son anniversaire, Emma a invité 12 filles de sa classe et 8 garçons. Combien d\'enfants vont venir à la fête ?',
-      first: 12,
-      second: 8,
-      result: 20,
+      story: 'Emma organise une grande fête d\'anniversaire. Sa maman a préparé des invitations : 512 pour les filles de l\'école et 348 pour les garçons. Quel est le nombre total d\'invitations préparées ?',
+      first: 512,
+      second: 348,
+      result: 860,
       item: '🎉',
       color1: 'text-pink-600',
       color2: 'text-blue-600'
+    },
+    {
+      id: 'magasin',
+      title: 'Les jouets du magasin',
+      story: 'Dans un grand magasin de jouets, le rayon poupées compte 347 poupées classiques. Le gérant vient de recevoir 285 poupées de plus que ce qu\'il y avait déjà. Combien de nouvelles poupées a-t-il reçues ?',
+      first: 347,
+      second: 285,
+      result: 632,
+      item: '🎎',
+      color1: 'text-pink-600',
+      color2: 'text-purple-600'
+    },
+    {
+      id: 'ferme',
+      title: 'Les graines du fermier',
+      story: 'Un fermier expérimenté prépare ses semis pour le printemps. Il a déjà planté 458 graines de tournesol hier matin. Aujourd\'hui, il souhaite planter 367 graines supplémentaires dans un autre champ. Au final, combien de graines de tournesol aura-t-il plantées en tout ?',
+      first: 458,
+      second: 367,
+      result: 825,
+      item: '🌻',
+      color1: 'text-yellow-600',
+      color2: 'text-green-600'
     }
   ];
 
   // 20 Exercices progressifs CE1 : simple → nombres à 2-3 chiffres avec retenues → jusqu'à 1000+
   const exercises = [
-    // NIVEAU 1 : Additions simples (1-20)
+    // NIVEAU 1 : Problèmes de réunion simples (nombres 1-20)
     {
-      story: 'Léa range ses autocollants. Elle a 8 autocollants d\'animaux et 7 autocollants de fleurs. Combien d\'autocollants a-t-elle ?',
-      answer: 15,
-      visual: '🌟',
-      first: 8,
-      second: 7,
-      item: '🌟',
+      story: 'Léo a 5 billes. Son ami lui en donne 3. Combien de billes a Léo en tout ?',
+      question: 'Combien de billes a Léo en tout ?',
+      answer: 8,
+      visual: '⚪',
+      first: 5,
+      second: 3,
+      item: '⚪',
       color1: 'text-blue-600',
-      color2: 'text-pink-600'
+      color2: 'text-green-600'
     },
     {
-      story: 'Dans son pot à crayons, Nina compte 9 crayons bleus et 8 crayons rouges. Combien de crayons y a-t-il ?',
-      answer: 17,
-      visual: '✏️',
-      first: 9,
-      second: 8,
-      item: '✏️',
+      story: 'Dans un champ, il y a 8 vaches et 6 moutons. Combien y a-t-il d\'animaux au total ?',
+      question: 'Combien y a-t-il d\'animaux au total ?',
+      answer: 14,
+      visual: '🐄',
+      first: 8,
+      second: 6,
+      item: '🐄',
+      color1: 'text-brown-600',
+      color2: 'text-gray-600'
+    },
+    
+    // NIVEAU 2 : Problèmes de transformation (nombres 1-30)
+    {
+      story: 'Julie a 7 pommes. Sa maman lui en donne 4 de plus. Combien de pommes Julie a-t-elle maintenant ?',
+      question: 'Combien de pommes Julie a-t-elle maintenant ?',
+      answer: 11,
+      visual: '🍎',
+      first: 7,
+      second: 4,
+      item: '🍎',
+      color1: 'text-red-600',
+      color2: 'text-green-600'
+    },
+    {
+      story: 'Tom avait 12 cartes. Il en achète 9 nouvelles. Combien Tom a-t-il de cartes maintenant ?',
+      question: 'Combien Tom a-t-il de cartes maintenant ?',
+      answer: 21,
+      visual: '🎴',
+      first: 12,
+      second: 9,
+      item: '🎴',
+      color1: 'text-blue-600',
+      color2: 'text-purple-600'
+    },
+    
+    // NIVEAU 3 : Problèmes avec données inutiles (nombres 20-80)
+    {
+      story: 'Max a 10 ans. Il a acheté 25 cahiers et 18 stylos. Combien d\'articles a-t-il achetés en tout ?',
+      question: 'Combien d\'articles a-t-il achetés en tout ?',
+      answer: 43,
+      visual: '📝',
+      first: 25,
+      second: 18,
+      item: '📝',
       color1: 'text-blue-600',
       color2: 'text-red-600'
     },
-    
-    // NIVEAU 2 : Additions avec nombres jusqu'à 50
     {
-      story: 'Tom collectionne les cartes. Il a 23 cartes de football et 18 cartes de basketball. Combien de cartes a-t-il ?',
-      answer: 41,
-      visual: '🎴',
-      first: 23,
-      second: 18,
-      item: '🎴',
-      color1: 'text-green-600',
-      color2: 'text-orange-600'
-    },
-    {
-      story: 'Maman a acheté des fruits. Elle a 27 pommes et 16 poires pour la semaine. Combien de fruits a-t-elle ?',
-      answer: 43,
-      visual: '🍎',
-      first: 27,
-      second: 16,
-      item: '🍎',
-      color1: 'text-red-600',
-      color2: 'text-yellow-600'
-    },
-    {
-      story: 'Dans la classe de CE1, il y a 34 livres de mathématiques et 29 livres de français. Combien de livres y a-t-il ?',
+      story: 'Emma mesure 1m20. Elle range sa collection : 34 livres de contes et 29 livres de poésie. Combien de livres a-t-elle ?',
+      question: 'Combien de livres a-t-elle ?',
       answer: 63,
       visual: '📚',
       first: 34,
       second: 29,
       item: '📚',
-      color1: 'text-blue-600',
-      color2: 'text-green-600'
-    },
-    
-    // NIVEAU 3 : Additions avec retenues (50-100)
-    {
-      story: 'Julie collectionne les billes. Elle a 38 billes colorées et 27 billes transparentes. Combien de billes a-t-elle ?',
-      answer: 65,
-      visual: '⚪',
-      first: 38,
-      second: 27,
-      item: '⚪',
-      color1: 'text-purple-600',
-      color2: 'text-gray-400'
-    },
-    {
-      story: 'Papa plante des fleurs. Il met 47 tulipes dans le jardin du devant et 36 tulipes dans le jardin de derrière. Combien de tulipes a-t-il plantées ?',
-      answer: 83,
-      visual: '🌷',
-      first: 47,
-      second: 36,
-      item: '🌷',
-      color1: 'text-red-600',
-      color2: 'text-yellow-600'
-    },
-    {
-      story: 'Dans la bibliothèque, il y a 59 livres d\'aventure et 28 livres de science. Combien de livres y a-t-il ?',
-      answer: 87,
-      visual: '📖',
-      first: 59,
-      second: 28,
-      item: '📖',
-      color1: 'text-orange-600',
-      color2: 'text-blue-600'
-    },
-    
-    // NIVEAU 4 : Nombres plus grands (100-200)
-    {
-      story: 'Sophie compte ses autocollants. Elle a 68 autocollants de princesses et 45 autocollants d\'animaux. Combien d\'autocollants a-t-elle ?',
-      answer: 113,
-      visual: '🌟',
-      first: 68,
-      second: 45,
-      item: '🌟',
-      color1: 'text-pink-600',
-      color2: 'text-green-600'
-    },
-    {
-      story: 'Lucas compte ses LEGO. Il a 76 pièces rouges et 58 pièces bleues. Combien de pièces a-t-il en tout ?',
-      answer: 134,
-      visual: '🧱',
-      first: 76,
-      second: 58,
-      item: '🧱',
-      color1: 'text-red-600',
-      color2: 'text-blue-600'
-    },
-    
-    // NIVEAU 5 : Additions complexes (200-500)
-    {
-      story: 'Marie fait un puzzle géant. Elle a déjà posé 87 pièces le matin et 96 pièces l\'après-midi. Combien de pièces a-t-elle posées ?',
-      answer: 183,
-      visual: '🧩',
-      first: 87,
-      second: 96,
-      item: '🧩',
-      color1: 'text-blue-600',
-      color2: 'text-green-600'
-    },
-    {
-      story: 'Dans la ferme de grand-père, il y a 128 poules et 97 canards. Combien d\'oiseaux y a-t-il ?',
-      answer: 225,
-      visual: '🐔',
-      first: 128,
-      second: 97,
-      item: '🐔',
-      color1: 'text-yellow-600',
-      color2: 'text-orange-600'
-    },
-    {
-      story: 'Antoine collectionne les cartes. Il a 156 cartes dans sa première boîte et 178 cartes dans sa deuxième boîte. Combien de cartes a-t-il ?',
-      answer: 334,
-      visual: '🎮',
-      first: 156,
-      second: 178,
-      item: '🎮',
-      color1: 'text-purple-600',
-      color2: 'text-blue-600'
-    },
-    
-    // NIVEAU 6 : Grandes additions (500-1000)
-    {
-      story: 'Emma dessine des pixels sur son ordinateur. Elle en a colorié 234 le matin et 289 l\'après-midi. Combien de pixels a-t-elle coloriés ?',
-      answer: 523,
-      visual: '🎨',
-      first: 234,
-      second: 289,
-      item: '🎨',
-      color1: 'text-pink-600',
+      color1: 'text-green-600',
       color2: 'text-purple-600'
     },
+    
+    // NIVEAU 4 : Problèmes de comparaison (nombres 30-150)
     {
-      story: 'Dans sa collection, Léo a 367 coquillages de la mer du Nord et 258 coquillages de la Méditerranée. Combien de coquillages a-t-il ?',
-      answer: 625,
-      visual: '🐚',
-      first: 367,
-      second: 258,
-      item: '🐚',
-      color1: 'text-blue-600',
-      color2: 'text-cyan-600'
-    },
-    {
-      story: 'Hugo compte les pages qu\'il a lues. Il a lu 428 pages en janvier et 345 pages en février. Combien de pages a-t-il lues ?',
-      answer: 773,
-      visual: '📚',
-      first: 428,
-      second: 345,
-      item: '📚',
-      color1: 'text-green-600',
+      story: 'Léa a 45 poupées. Tom a 28 poupées de plus que Léa. Combien de poupées Tom a-t-il ?',
+      question: 'Combien de poupées Tom a-t-il ?',
+      answer: 73,
+      visual: '🎎',
+      first: 45,
+      second: 28,
+      item: '🎎',
+      color1: 'text-pink-600',
       color2: 'text-blue-600'
     },
-    
-    // NIVEAU 7 : Très grandes additions (1000+)
     {
-      story: 'Dans le jeu vidéo de Maman, elle a collecté 456 pièces d\'or dans le premier niveau et 567 pièces dans le second niveau. Combien de pièces a-t-elle ?',
-      answer: 1023,
-      visual: '🪙',
-      first: 456,
-      second: 567,
-      item: '🪙',
+      story: 'Sophie collectionne les autocollants. Elle en a 67. Sa sœur en a 49 de plus. Combien d\'autocollants sa sœur a-t-elle ?',
+      question: 'Combien d\'autocollants sa sœur a-t-elle ?',
+      answer: 116,
+      visual: '🌟',
+      first: 67,
+      second: 49,
+      item: '🌟',
       color1: 'text-yellow-600',
-      color2: 'text-amber-600'
+      color2: 'text-purple-600'
     },
+    
+    // NIVEAU 5 : Problèmes complexes avec grands nombres (100-400)
     {
-      story: 'Paul construit une grande tour. Il utilise 678 blocs rouges et 445 blocs verts. Combien de blocs utilise-t-il en tout ?',
-      answer: 1123,
-      visual: '🏗️',
-      first: 678,
-      second: 445,
-      item: '🏗️',
-      color1: 'text-red-600',
+      story: 'Dans une grande bibliothèque, l\'étage des enfants compte 156 livres d\'histoires et 178 livres documentaires. Quel est le nombre total de livres à l\'étage des enfants ?',
+      question: 'Quel est le nombre total de livres à l\'étage des enfants ?',
+      answer: 334,
+      visual: '📖',
+      first: 156,
+      second: 178,
+      item: '📖',
+      color1: 'text-blue-600',
       color2: 'text-green-600'
     },
     {
-      story: 'Zoé compte les photos dans sa famille. Il y a 589 photos de vacances et 634 photos d\'anniversaires. Combien de photos y a-t-il ?',
-      answer: 1223,
-      visual: '📷',
-      first: 589,
-      second: 634,
-      item: '📷',
-      color1: 'text-blue-600',
-      color2: 'text-pink-600'
+      story: 'Un fermier élève des animaux. Il possède 187 moutons dans le pré du nord et 146 moutons dans le pré du sud. Combien de moutons possède-t-il en totalité ?',
+      question: 'Combien de moutons possède-t-il en totalité ?',
+      answer: 333,
+      visual: '🐑',
+      first: 187,
+      second: 146,
+      item: '🐑',
+      color1: 'text-gray-600',
+      color2: 'text-white'
     },
+    
+    // NIVEAU 6 : Problèmes très complexes avec contexte élaboré (200-800)
     {
-      story: 'Thomas compte ses points dans le jeu. Il a marqué 734 points hier et 789 points aujourd\'hui. Combien de points a-t-il en tout ?',
-      answer: 1523,
-      visual: '🎯',
-      first: 734,
-      second: 789,
-      item: '🎯',
-      color1: 'text-orange-600',
-      color2: 'text-red-600'
+      story: 'Une école organise une collecte de jouets pour Noël. Les élèves de maternelle ont apporté 245 jouets, les élèves de CP ont apporté 189 jouets, et les élèves de CE1 ont ajouté 178 jouets de plus que les CP. Combien de jouets les élèves de CE1 ont-ils apportés ?',
+      question: 'Combien de jouets les élèves de CE1 ont-ils apportés ?',
+      answer: 367,
+      visual: '🧸',
+      first: 189,
+      second: 178,
+      item: '🧸',
+      color1: 'text-red-600',
+      color2: 'text-blue-600'
+    },
+    
+    // NIVEAU 7 : Problèmes à données multiples et contexte riche (300-900)
+    {
+      story: 'Un magasin de sport reçoit une livraison. Le matin, 278 ballons sont livrés. L\'après-midi, le camion apporte 156 ballons supplémentaires. Le soir, un dernier camion livre encore 89 ballons de plus que la livraison de l\'après-midi. Combien de ballons le dernier camion a-t-il livrés ?',
+      question: 'Combien de ballons le dernier camion a-t-il livrés ?',
+      answer: 245,
+      visual: '⚽',
+      first: 156,
+      second: 89,
+      item: '⚽',
+      color1: 'text-green-600',
+      color2: 'text-orange-600'
+    },
+    
+    // NIVEAU 8 : Problèmes de synthèse avec calculs imbriqués (400-1000)
+    {
+      story: 'Une pâtisserie prépare des gâteaux pour une fête. Le chef pâtissier fait 328 petits fours le matin. Son apprenti en prépare 245 l\'après-midi. En fin de journée, ils décident de faire ensemble 127 petits fours de plus que ce que l\'apprenti avait préparé. Combien de petits fours ont-ils faits ensemble en fin de journée ?',
+      question: 'Combien de petits fours ont-ils faits ensemble en fin de journée ?',
+      answer: 372,
+      visual: '🧁',
+      first: 245,
+      second: 127,
+      item: '🧁',
+      color1: 'text-pink-600',
+      color2: 'text-yellow-600'
+    },
+    
+    // NIVEAU 9 : Problèmes de niveau avancé avec contexte professionnel (500-1000)
+    {
+      story: 'Dans une usine de fabrication de puzzles, la machine A produit 456 pièces par heure. La machine B, plus performante, produit 189 pièces de plus par heure que la machine A. Combien de pièces la machine B produit-elle par heure ?',
+      question: 'Combien de pièces la machine B produit-elle par heure ?',
+      answer: 645,
+      visual: '🧩',
+      first: 456,
+      second: 189,
+      item: '🧩',
+      color1: 'text-blue-600',
+      color2: 'text-purple-600'
     }
   ];
 
@@ -367,55 +347,103 @@ export default function ProblemesAddition() {
   const getPersonalizedFeedback = (exerciseIndex: number, isCorrect: boolean) => {
     const exercise = exercises[exerciseIndex];
     const icon = exercise.visual;
+    const story = exercise.story.toLowerCase();
+    
+    // Analyser l'énoncé pour extraire le contexte
+    let subject = '';
+    let objectType = '';
+    
+    if (story.includes('billes')) {
+      subject = story.includes('léo') ? 'Léo' : 'l\'enfant';
+      objectType = 'billes';
+    } else if (story.includes('vaches') && story.includes('moutons')) {
+      subject = '';
+      objectType = 'animaux';
+    } else if (story.includes('pommes')) {
+      subject = story.includes('julie') ? 'Julie' : story.includes('maman') ? 'Maman' : 'la personne';
+      objectType = 'pommes';
+    } else if (story.includes('autocollants')) {
+      subject = story.includes('marie') ? 'Marie' : 'l\'enfant';
+      objectType = 'autocollants';
+    } else if (story.includes('livres')) {
+      subject = '';
+      objectType = 'livres';
+    } else if (story.includes('voitures') || story.includes('camions')) {
+      subject = story.includes('tom') ? 'Tom' : 'l\'enfant';
+      objectType = story.includes('camions') ? 'véhicules' : 'voitures';
+    } else if (story.includes('crayons')) {
+      subject = story.includes('julie') ? 'Julie' : story.includes('emma') ? 'Emma' : 'l\'enfant';
+      objectType = 'crayons';
+    } else if (story.includes('cookies') || story.includes('gâteaux')) {
+      subject = 'Maman';
+      objectType = story.includes('cookies') ? 'cookies' : 'gâteaux';
+    } else if (story.includes('fleurs') || story.includes('tulipes')) {
+      subject = 'Papa';
+      objectType = 'fleurs';
+    } else if (story.includes('élèves') || story.includes('enfants')) {
+      subject = '';
+      objectType = 'élèves';
+    } else if (story.includes('jouets') || story.includes('peluches') || story.includes('poupées')) {
+      subject = story.includes('sophie') ? 'Sophie' : 'l\'enfant';
+      objectType = 'jouets';
+    } else if (story.includes('cartes')) {
+      subject = story.includes('lucas') ? 'Lucas' : 'l\'enfant';
+      objectType = 'cartes';
+    } else if (story.includes('photos')) {
+      subject = story.includes('zoé') ? 'Zoé' : 'l\'enfant';
+      objectType = 'photos';
+    } else if (story.includes('badges')) {
+      subject = story.includes('thomas') ? 'Thomas' : 'l\'enfant';
+      objectType = 'badges';
+    } else {
+      // Fallback générique
+      subject = '';
+      objectType = 'objets';
+    }
     
     if (isCorrect) {
-             const successMessages = [
-        `Bravo ! ${icon} Léa a exactement ${exercise.answer} autocollants dans sa collection !`,
-        `Parfait ! ${icon} Nina a bien ${exercise.answer} crayons colorés dans son pot !`,
-        `Excellent ! ${icon} Tom a ${exercise.answer} voitures dans sa collection !`,
-        `Super ! ${icon} Maman a ${exercise.answer} pommes délicieuses !`,
-        `Bravo ! ${icon} Il y a précisément ${exercise.answer} élèves dans la classe de CE1 !`,
-        `Formidable ! ${icon} Julie a ${exercise.answer} billes dans sa trousse !`,
-        `Magnifique ! ${icon} Papa a planté ${exercise.answer} tulipes dans le jardin !`,
-        `Excellent ! ${icon} Il y a ${exercise.answer} livres sur l'étagère !`,
-        `Parfait ! ${icon} Sophie a ${exercise.answer} jouets dans sa chambre !`,
-        `Super ! ${icon} Lucas a ${exercise.answer} cartes de jeu !`,
-        `Merveilleux ! ${icon} Marie a posé ${exercise.answer} pièces de puzzle !`,
-        `Fantastique ! ${icon} Les enfants ont planté ${exercise.answer} graines !`,
-        `Génial ! ${icon} Antoine a ${exercise.answer} capsules dans sa collection !`,
-        `Bravo ! ${icon} Emma a dessiné ${exercise.answer} étoiles magnifiques !`,
-        `Excellent ! ${icon} Léo a ${exercise.answer} coquillages de la plage !`,
-        `Parfait ! ${icon} Hugo a ${exercise.answer} timbres dans son album !`,
-        `Délicieux ! ${icon} Maman a préparé ${exercise.answer} gâteaux savoureux !`,
-        `Formidable ! ${icon} Paul a ${exercise.answer} blocs de construction !`,
-        `Super ! ${icon} Zoé a ${exercise.answer} photos dans son album !`,
-        `Fantastique ! ${icon} Thomas a ${exercise.answer} badges sur son sac !`
+      const minecraftEncouragements = [
+        'Succès débloqué !', 
+        'Achievement Get !', 
+        'Mission accomplie !', 
+        'Bloc placé avec succès !',
+        'Craft réussi !', 
+        'Niveau terminé !', 
+        'Objectif atteint !',
+        'Quête complétée !',
+        'Trésor trouvé !',
+        'Construction terminée !'
       ];
-      return successMessages[exerciseIndex] || `Bravo ! ${icon} Tu as trouvé ${exercise.answer} !`;
+      
+      const minecraftCompliments = [
+        'Tu es un vrai constructeur !',
+        'Tes compétences progressent !',
+        'Tu maîtrises l\'art du calcul !',
+        'Tu es prêt pour le niveau suivant !',
+        'Tes outils mathématiques sont affûtés !',
+        'Tu explores bien les nombres !',
+        'Ta stratégie est excellente !',
+        'Tu collectes les bonnes réponses !',
+        'Tes bases sont solides !',
+        'Tu becomes un expert !'
+      ];
+      
+      const encouragement = minecraftEncouragements[exerciseIndex % minecraftEncouragements.length];
+      const compliment = minecraftCompliments[exerciseIndex % minecraftCompliments.length];
+      
+      let baseMessage = '';
+      if (subject && objectType) {
+        baseMessage = `${subject} a bien ${exercise.answer} ${objectType} !`;
+      } else if (objectType) {
+        baseMessage = `Il y a exactement ${exercise.answer} ${objectType} !`;
+      } else {
+        baseMessage = `Tu as trouvé ${exercise.answer} !`;
+      }
+      
+      return `🎉 ${encouragement} ${icon} ${baseMessage} ${compliment}`;
     } else {
-             const correctionMessages = [
-        `${icon} Léa a : ${exercise.first} autocollants d'animaux + ${exercise.second} autocollants de fleurs = ${exercise.answer} autocollants !`,
-        `${icon} Nina a : ${exercise.first} crayons bleus + ${exercise.second} crayons rouges = ${exercise.answer} crayons !`,
-        `${icon} Tom a : ${exercise.first} voitures rouges + ${exercise.second} voitures bleues = ${exercise.answer} voitures !`,
-        `${icon} Maman a : ${exercise.first} pommes vertes + ${exercise.second} pommes rouges = ${exercise.answer} pommes !`,
-        `${icon} Dans la classe : ${exercise.first} filles + ${exercise.second} garçons = ${exercise.answer} élèves !`,
-        `${icon} Julie a : ${exercise.first} billes transparentes + ${exercise.second} billes colorées = ${exercise.answer} billes !`,
-        `${icon} Papa a planté : ${exercise.first} tulipes jaunes + ${exercise.second} tulipes roses = ${exercise.answer} tulipes !`,
-        `${icon} Dans la bibliothèque : ${exercise.first} livres sur les animaux + ${exercise.second} livres sur les plantes = ${exercise.answer} livres !`,
-        `${icon} Sophie a : ${exercise.first} peluches + ${exercise.second} poupées = ${exercise.answer} jouets !`,
-        `${icon} Lucas a : ${exercise.first} cartes bleues + ${exercise.second} cartes rouges = ${exercise.answer} cartes !`,
-        `${icon} Marie a posé : ${exercise.first} pièces bleues + ${exercise.second} pièces vertes = ${exercise.answer} pièces !`,
-        `${icon} Les enfants ont planté : ${exercise.first} graines de radis + ${exercise.second} graines de carottes = ${exercise.answer} graines !`,
-        `${icon} Antoine a : ${exercise.first} capsules de sodas + ${exercise.second} capsules d'eau = ${exercise.answer} capsules !`,
-        `${icon} Emma a dessiné : ${exercise.first} étoiles jaunes + ${exercise.second} étoile argentée = ${exercise.answer} étoiles !`,
-        `${icon} Léo a : ${exercise.first} coquillages blancs + ${exercise.second} coquillages roses = ${exercise.answer} coquillages !`,
-        `${icon} Hugo a : ${exercise.first} timbres français + ${exercise.second} timbres étrangers = ${exercise.answer} timbres !`,
-        `${icon} Maman a fait : ${exercise.first} gâteaux au chocolat + ${exercise.second} gâteaux à la vanille = ${exercise.answer} gâteaux !`,
-        `${icon} Paul a : ${exercise.first} blocs rouges + ${exercise.second} blocs verts = ${exercise.answer} blocs !`,
-        `${icon} Zoé a : ${exercise.first} photos de vacances + ${exercise.second} photos d'anniversaire = ${exercise.answer} photos !`,
-        `${icon} Thomas a : ${exercise.first} badges de sports + ${exercise.second} badges de musique = ${exercise.answer} badges !`
-      ];
-     return correctionMessages[exerciseIndex] || `${icon} La réponse était ${exercise.answer} !`;
+      // Pour les corrections, rester simple et utiliser les nombres de l'exercice
+      return `${icon} ${exercise.first} + ${exercise.second} = ${exercise.answer}`;
     }
   };
 
@@ -573,16 +601,20 @@ export default function ProblemesAddition() {
 
     // Fonction pour faire défiler vers un élément par ID (pour compatibilité)
   const scrollToElement = (elementId: string) => {
-    setTimeout(() => {
-      const element = document.getElementById(elementId);
-      if (element) {
+    const element = document.getElementById(elementId);
+    if (element) {
+      const rect = element.getBoundingClientRect();
+      const isAlreadyVisible = rect.top >= 0 && rect.bottom <= window.innerHeight;
+      
+      // Ne pas scroller si l'élément est déjà visible
+      if (!isAlreadyVisible) {
         element.scrollIntoView({ 
           behavior: 'smooth', 
-          block: 'center',
+          block: 'start',
           inline: 'nearest' 
         });
       }
-    }, 300);
+    }
   };
 
   // Fonction pour expliquer le chapitre dans le cours avec Sam
@@ -623,6 +655,10 @@ export default function ProblemesAddition() {
       await playAudio("Regarde bien cette section ! Tu peux cliquer sur l'icône pour voir une animation !");
       if (stopSignalRef.current) return;
       
+      // Scroll vers la zone d'animation pour montrer où les animations apparaîtront
+      scrollToElement('animation-section');
+      await wait(1000);
+      
       await wait(2000);
       if (stopSignalRef.current) return;
       
@@ -638,6 +674,10 @@ export default function ProblemesAddition() {
       await playAudio("Voici ma méthode de construction ! N'oublie pas de tester l'animation !");
       if (stopSignalRef.current) return;
       
+      // Scroll vers la zone d'animation pour montrer où se déroulera l'animation de la méthode
+      scrollToElement('animation-section');
+      await wait(1000);
+      
       await wait(2000);
       if (stopSignalRef.current) return;
       
@@ -652,6 +692,10 @@ export default function ProblemesAddition() {
       
       await playAudio("Ici tu trouveras 9 exemples avec des animations pour bien comprendre !");
       if (stopSignalRef.current) return;
+      
+      // Scroll vers la zone d'animation pour montrer où se dérouleront les exemples animés
+      scrollToElement('animation-section');
+      await wait(1000);
       
       await wait(2000);
       if (stopSignalRef.current) return;
@@ -866,6 +910,10 @@ export default function ProblemesAddition() {
       await playAudio("Si tu te trompes, je t'aiderai avec une animation pour comprendre ! En avant, jeune aventurier !");
       if (stopSignalRef.current) return;
       
+      // Scroll vers la zone d'animation pour montrer où apparaîtront les animations d'aide
+      scrollToElement('animation-section');
+      await wait(1000);
+      
     } catch (error) {
       console.error('Erreur dans explainExercisesWithSam:', error);
     } finally {
@@ -946,6 +994,9 @@ export default function ProblemesAddition() {
       // Illuminer quelques exemples pendant l'explication  
       setHighlightedExamples([0, 2, 4]); // Illuminer bonbons, cour, marché
       await playAudio("Tu peux choisir celui que tu préfères pour voir l'animation détaillée !");
+      
+      // Scroll vers la zone d'animation pour montrer où les animations détaillées apparaîtront
+      scrollToElement('animation-section');
       await wait(1000);
 
       if (stopSignalRef.current) return;
@@ -975,11 +1026,14 @@ export default function ProblemesAddition() {
     const example = problemExamples[index];
     setCurrentExample(index);
 
-    try {
-      // Scroll vers la zone d'animation
-      scrollToElement('animation-section');
-      await wait(500);
+    // Attendre un court instant pour que l'interface se mette à jour
+    await wait(300);
+    
+    // Scroll vers la zone d'animation maintenant que l'exemple est affiché
+    scrollToElement('animation-section');
+    await wait(500);
 
+    try {
       // Lecture du problème
       setHighlightedElement('story');
       await playAudio(example.story);
@@ -1017,9 +1071,12 @@ export default function ProblemesAddition() {
 
       if (stopSignalRef.current) return;
 
-      // Calcul
+      // Calcul - D'abord annoncer l'addition
       setAnimatingStep('calculation');
       await playAudio(`Pour trouver le total, je fais l'addition : ${example.first} plus ${example.second} égale ${example.result}.`);
+      
+      // MAINTENANT scroller vers l'addition posée qui s'affiche
+      scrollToElement('animation-section');
       await wait(800);
 
       if (stopSignalRef.current) return;
@@ -1046,10 +1103,57 @@ export default function ProblemesAddition() {
     
     if (correct) {
       setScore(score + 1);
-      // Passer automatiquement au suivant après 2 secondes
+      
+      // Vocal d'encouragement Minecraft
+      setTimeout(() => {
+        const minecraftVocalEncouragements = [
+          'Succès débloqué ! Achievement Get !',
+          'Mission accomplie ! Tu es un vrai constructeur !',
+          'Craft réussi ! Tes compétences progressent !',
+          'Niveau terminé ! Tu es prêt pour le suivant !',
+          'Objectif atteint ! Tu maîtrises l\'art du calcul !',
+          'Quête complétée ! Tu explores bien les nombres !',
+          'Trésor trouvé ! Ta stratégie est excellente !',
+          'Construction terminée ! Tes bases sont solides !',
+          'Bloc placé avec succès ! Tu collectes les bonnes réponses !',
+          'Achievement débloqué ! Tu deviens un expert !'
+        ];
+        
+        const encouragement = minecraftVocalEncouragements[currentExercise % minecraftVocalEncouragements.length];
+        
+        const utterance = new SpeechSynthesisUtterance(encouragement);
+        utterance.lang = 'fr-FR';
+        utterance.rate = 1.0;
+        utterance.pitch = 1.2; // Voix plus enjouée
+        utterance.volume = 1.0;
+        
+        const voices = speechSynthesis.getVoices();
+        const frenchVoice = voices.find(voice => 
+          voice.lang === 'fr-FR' && voice.localService === true
+        );
+        
+        if (frenchVoice) {
+          utterance.voice = frenchVoice;
+        }
+        
+        speechSynthesis.speak(utterance);
+      }, 200);
+      
+      // Scroll vers le message de félicitations
+      setTimeout(() => {
+        const correctionElement = document.getElementById('exercise-correction');
+        if (correctionElement) {
+          correctionElement.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'center' 
+          });
+        }
+      }, 300);
+      
+      // Passer automatiquement au suivant après 3 secondes (plus long pour laisser le temps au vocal)
       setTimeout(() => {
         nextExercise();
-      }, 2000);
+      }, 3000);
     } else {
       // Déclencher la correction vocale automatique et l'animation visuelle
       setShowExerciseAnimation(true);
@@ -1172,6 +1276,9 @@ export default function ProblemesAddition() {
       
       setExerciseAnimationStep('show-calculation');
       await quickAudio(`${first} plus ${second} égale ${result}`);
+      
+      // Scroll vers la zone d'animation de l'exercice pour voir l'addition posée
+      scrollToElement('exercise-correction');
       await wait(700);
       
       setExerciseAnimationStep('show-result');
@@ -1293,6 +1400,223 @@ export default function ProblemesAddition() {
         {item}
       </div>
     ));
+  };
+
+  // Fonction officielle pour rendre une addition posée (adaptée du code CE1)
+  const renderPostedAddition = (exampleData: any, isAnimated = false, showHelperBox = false, animationStep?: string) => {
+    const example = {
+      num1: exampleData.first,
+      num2: exampleData.second,
+      result: exampleData.result || exampleData.answer, // Gérer les deux cas : problèmes (result) et exercices (answer)
+      hasCarry: ((exampleData.first % 10) + (exampleData.second % 10)) >= 10 || 
+                (Math.floor(exampleData.first / 10) % 10 + Math.floor(exampleData.second / 10) % 10 + (((exampleData.first % 10) + (exampleData.second % 10)) >= 10 ? 1 : 0)) >= 10
+    };
+    
+    // États simulés pour l'animation
+    const calculationStep = animationStep === 'group1' ? 'setup' :
+                           animationStep === 'group2' ? 'setup' :
+                           animationStep === 'calculation' ? 'units' :
+                           animationStep === 'result' ? 'result' :
+                           animationStep === 'show-calculation' ? 'tens' :
+                           animationStep === 'show-result' ? 'result' :
+                           animationStep === 'show-groups' ? 'hundreds' : null;
+
+    // Calcul des retenues
+    const unitsSum = (example.num1 % 10) + (example.num2 % 10);
+    const carryToTens = unitsSum >= 10 ? 1 : 0;
+    const tensSum = Math.floor(example.num1 / 10) % 10 + Math.floor(example.num2 / 10) % 10 + carryToTens;
+    const carryToHundreds = tensSum >= 10 ? 1 : 0;
+    
+    const carryValues = {
+      toTens: carryToTens,
+      toHundreds: carryToHundreds
+    };
+    
+    const showingCarry = calculationStep === 'result' && example.hasCarry;
+    
+    const partialResults = calculationStep === 'result' ? {
+      units: (unitsSum % 10).toString(),
+      tens: (tensSum % 10).toString(),
+      hundreds: Math.floor(example.num1 / 100) % 10 + Math.floor(example.num2 / 100) % 10 + carryToHundreds > 0 ? 
+               (Math.floor(example.num1 / 100) % 10 + Math.floor(example.num2 / 100) % 10 + carryToHundreds).toString() : null
+    } : { units: null, tens: null, hundreds: null };
+
+    // Déterminer le nombre de chiffres maximum
+    const maxDigits = Math.max(example.num1.toString().length, example.num2.toString().length, example.result.toString().length);
+    const num1Str = example.num1.toString().padStart(maxDigits, ' ');
+    const num2Str = example.num2.toString().padStart(maxDigits, ' ');
+    const resultStr = example.result.toString().padStart(maxDigits, ' ');
+    
+    // Séparer les chiffres (unités, dizaines, centaines)
+    const num1Units = num1Str[num1Str.length - 1];
+    const num1Tens = num1Str[num1Str.length - 2] === ' ' ? '' : num1Str[num1Str.length - 2];
+    const num1Hundreds = maxDigits >= 3 ? (num1Str[num1Str.length - 3] === ' ' ? '' : num1Str[num1Str.length - 3]) : '';
+    
+    const num2Units = num2Str[num2Str.length - 1];
+    const num2Tens = num2Str[num2Str.length - 2] === ' ' ? '' : num2Str[num2Str.length - 2];
+    const num2Hundreds = maxDigits >= 3 ? (num2Str[num2Str.length - 3] === ' ' ? '' : num2Str[num2Str.length - 3]) : '';
+    
+    const resultUnits = resultStr[resultStr.length - 1];
+    const resultTens = resultStr[resultStr.length - 2] === ' ' ? '' : resultStr[resultStr.length - 2];
+    const resultHundreds = maxDigits >= 3 ? (resultStr[resultStr.length - 3] === ' ' ? '' : resultStr[resultStr.length - 3]) : '';
+    
+    return (
+      <div className={`bg-gradient-to-br from-white to-blue-50 p-8 rounded-xl shadow-lg border-2 transition-all duration-500 border-gray-200`}>
+        <div className="flex justify-center">
+          <div className="space-y-4">
+            {/* Tableau des colonnes C, D et U (ou seulement D et U) */}
+            <div className="flex justify-center mb-4">
+              <div className={`grid gap-4 sm:gap-6 font-bold text-sm sm:text-base ${maxDigits >= 3 ? 'grid-cols-3' : 'grid-cols-2'}`}>
+                {maxDigits >= 3 && (
+                  <div className={`text-center p-2 rounded-lg transition-all duration-500 ${
+                    calculationStep === 'hundreds' ? 'bg-purple-200 text-purple-800 animate-column-highlight' : 'bg-gray-100 text-gray-600'
+                  }`}>
+                    C
+                  </div>
+                )}
+                <div className={`text-center p-2 rounded-lg transition-all duration-500 ${
+                  calculationStep === 'tens' ? 'bg-orange-200 text-orange-800 animate-column-highlight' : 'bg-gray-100 text-gray-600'
+                }`}>
+                  D
+                </div>
+                <div className={`text-center p-2 rounded-lg transition-all duration-500 ${
+                  calculationStep === 'units' ? 'bg-blue-200 text-blue-800 animate-column-highlight' : 'bg-gray-100 text-gray-600'
+                }`}>
+                  U
+                </div>
+              </div>
+            </div>
+
+            {/* Retenues si nécessaire */}
+            {example.hasCarry && showingCarry && (
+              <div className="flex justify-center">
+                <div className={`grid gap-8 ${maxDigits >= 3 ? 'grid-cols-3' : 'grid-cols-2'}`}>
+                  {maxDigits >= 3 && (
+                    <div className="text-center text-red-500 text-lg">
+                      {carryValues.toHundreds > 0 && (
+                        <sup className="bg-red-100 px-2 py-1 rounded-full border-2 border-red-300 animate-carry-bounce">
+                          {carryValues.toHundreds}
+                        </sup>
+                      )}
+                    </div>
+                  )}
+                  <div className="text-center text-red-500 text-lg">
+                    {carryValues.toTens > 0 && (
+                      <sup className="bg-red-100 px-2 py-1 rounded-full border-2 border-red-300 animate-carry-bounce">
+                        {carryValues.toTens}
+                      </sup>
+                    )}
+                  </div>
+                  <div className="text-center"></div>
+                </div>
+              </div>
+            )}
+            
+            {/* Premier nombre */}
+            <div className="flex justify-center">
+              <div className={`grid gap-2 sm:gap-6 font-mono text-base sm:text-2xl ${maxDigits >= 3 ? 'grid-cols-3' : 'grid-cols-2'}`}>
+                {maxDigits >= 3 && (
+                  <div className={`text-center p-3 rounded-lg transition-all duration-500 ${
+                    calculationStep === 'hundreds' ? 'bg-purple-100 text-purple-700 animate-column-highlight' : 
+                    calculationStep === 'setup' ? 'text-blue-600 font-bold' : 'text-gray-700'
+                  } ${num1Hundreds ? 'border-2 border-dashed border-purple-300' : ''}`}>
+                    {num1Hundreds || ''}
+                  </div>
+                )}
+                <div className={`text-center p-3 rounded-lg transition-all duration-500 ${
+                  calculationStep === 'tens' ? 'bg-orange-100 text-orange-700 animate-column-highlight' : 
+                  calculationStep === 'setup' ? 'text-blue-600 font-bold' : 'text-gray-700'
+                } ${num1Tens ? 'border-2 border-dashed border-orange-300' : ''}`}>
+                  {num1Tens || ''}
+                </div>
+                <div className={`text-center p-3 rounded-lg transition-all duration-500 ${
+                  calculationStep === 'units' ? 'bg-blue-100 text-blue-700 animate-column-highlight' : 
+                  calculationStep === 'setup' ? 'text-blue-600 font-bold' : 'text-gray-700'
+                } border-2 border-dashed border-blue-300`}>
+                  {num1Units}
+                </div>
+              </div>
+            </div>
+            
+            {/* Deuxième nombre avec signe + */}
+            <div className="flex justify-center">
+              <div className="relative">
+                <div className={`grid gap-2 sm:gap-6 font-mono text-base sm:text-2xl ${maxDigits >= 3 ? 'grid-cols-3' : 'grid-cols-2'}`}>
+                  {maxDigits >= 3 && (
+                    <div className={`text-center p-3 rounded-lg transition-all duration-500 ${
+                      calculationStep === 'hundreds' ? 'bg-purple-100 text-purple-700 animate-column-highlight' : 
+                      calculationStep === 'setup' ? 'text-green-600 font-bold' : 'text-gray-700'
+                    } ${num2Hundreds ? 'border-2 border-dashed border-purple-300' : ''}`}>
+                      {num2Hundreds || ''}
+                    </div>
+                  )}
+                  <div className={`text-center p-3 rounded-lg transition-all duration-500 relative ${
+                    calculationStep === 'tens' ? 'bg-orange-100 text-orange-700 animate-column-highlight' : 
+                    calculationStep === 'setup' ? 'text-green-600 font-bold' : 'text-gray-700'
+                  } ${num2Tens ? 'border-2 border-dashed border-orange-300' : ''}`}>
+                    {num2Tens || ''}
+                  </div>
+                  <div className={`text-center p-3 rounded-lg transition-all duration-500 ${
+                    calculationStep === 'units' ? 'bg-blue-100 text-blue-700 animate-column-highlight' : 
+                    calculationStep === 'setup' ? 'text-green-600 font-bold' : 'text-gray-700'
+                  } border-2 border-dashed border-blue-300`}>
+                    {num2Units}
+                  </div>
+                </div>
+                {/* Signe + positionné à gauche sans affecter l'alignement */}
+                <div className="absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-8 text-3xl font-mono text-green-600 font-bold">
+                  +
+                </div>
+              </div>
+            </div>
+            
+            {/* Ligne de séparation animée */}
+            <div className="flex justify-center">
+              <div className={`border-t-4 my-3 transition-all duration-700 ${
+                calculationStep === 'result' ? 'border-purple-500 shadow-lg animate-pulse' : 'border-purple-400'
+              }`} style={{ width: maxDigits >= 3 ? '11rem' : '7.5rem' }}></div>
+            </div>
+            
+            {/* Résultat avec animations progressives */}
+            <div className="flex justify-center">
+              <div className={`grid gap-4 sm:gap-8 font-mono text-lg sm:text-3xl font-bold ${maxDigits >= 3 ? 'grid-cols-3' : 'grid-cols-2'}`}>
+                {maxDigits >= 3 && (
+                  <div className={`text-center p-3 rounded-lg transition-all duration-1000 ${
+                    partialResults.hundreds || calculationStep === 'result' ? 'bg-purple-100 text-purple-700 animate-result-reveal' : 'text-gray-400'
+                  } ${resultHundreds ? 'border-2 border-dashed border-purple-300' : ''}`}>
+                    {partialResults.hundreds || (calculationStep === 'result' ? resultHundreds : '?')}
+                  </div>
+                )}
+                <div className={`text-center p-3 rounded-lg transition-all duration-1000 ${
+                  partialResults.tens || calculationStep === 'result' ? 'bg-purple-100 text-purple-700 animate-result-reveal' : 'text-gray-400'
+                } ${resultTens ? 'border-2 border-dashed border-purple-300' : ''}`}>
+                  {partialResults.tens || (calculationStep === 'result' ? resultTens : '?')}
+                </div>
+                <div className={`text-center p-3 rounded-lg transition-all duration-1000 border-2 border-dashed border-purple-300 ${
+                  partialResults.units || calculationStep === 'result' ? 'bg-purple-100 text-purple-700 animate-result-reveal' : 'text-gray-400'
+                }`}>
+                  {partialResults.units || (calculationStep === 'result' ? resultUnits : '?')}
+                </div>
+              </div>
+            </div>
+
+            {/* Explications textuelles animées */}
+            {isAnimated && calculationStep === 'result' && (
+              <div className="mt-6 text-center">
+                <div className="bg-purple-100 text-purple-800 p-3 rounded-lg animate-fade-in font-medium">
+                  🟣 <strong>Résultat final</strong> : {example.result} ! Tu as réussi !
+                </div>
+                {showingCarry && (
+                  <div className="bg-red-100 text-red-800 p-3 rounded-lg animate-bounce font-medium mt-2">
+                    ⚠️ <strong>Retenue</strong> : regarde le calcul à côté !
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
   };
 
   return (
@@ -1626,19 +1950,20 @@ export default function ProblemesAddition() {
               </div>
             </div>
 
-            {/* Zone d'animation */}
-            {currentExample !== null && (
-              <div 
-                id="animation-section"
-                className="bg-white rounded-xl shadow-lg p-6"
-              >
-                <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">
-                  🎬 Animation du problème
-                </h2>
-                
-                {(() => {
-                  const example = problemExamples[currentExample];
-                  return (
+            {/* Zone d'animation - toujours présente pour éviter les tremblements */}
+            <div 
+              id="animation-section"
+              className={`bg-white rounded-xl shadow-lg transition-all duration-300 ${
+                currentExample !== null ? 'opacity-100 p-6' : 'opacity-0 p-0 h-4 overflow-hidden'
+              }`}
+            >
+              <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">
+                🎬 Animation du problème
+              </h2>
+              
+              {currentExample !== null && (() => {
+                const example = problemExamples[currentExample];
+                return (
                     <div className="space-y-6">
                       {/* Histoire */}
                       <div className={`p-4 rounded-lg text-center ${
@@ -1658,54 +1983,61 @@ export default function ProblemesAddition() {
                         </div>
                       )}
 
-                      {/* Animation des objets */}
-                      <div className="flex justify-center items-center space-x-8">
-                        {/* Premier groupe */}
-                        {(animatingStep === 'group1' || animatingStep === 'group2' || animatingStep === 'calculation' || animatingStep === 'result') && (
-                          <div className={`p-4 rounded-lg ${animatingStep === 'group1' ? 'bg-red-100 ring-2 ring-red-400' : 'bg-gray-100'}`}>
-                            <div className="text-center mb-2">
-                              <span className="font-bold text-gray-800">{example.first}</span>
-                            </div>
-                            <div className="grid grid-cols-3 gap-2">
-                              {renderObjects(example.first, example.item, example.color1)}
-                            </div>
-                          </div>
-                        )}
-
-                        {/* Signe + */}
-                        {(animatingStep === 'group2' || animatingStep === 'calculation' || animatingStep === 'result') && (
-                          <div className="text-4xl font-bold text-gray-700">+</div>
-                        )}
-
-                        {/* Deuxième groupe */}
-                        {(animatingStep === 'group2' || animatingStep === 'calculation' || animatingStep === 'result') && (
-                          <div className={`p-4 rounded-lg ${animatingStep === 'group2' ? 'bg-blue-100 ring-2 ring-blue-400' : 'bg-gray-100'}`}>
-                            <div className="text-center mb-2">
-                              <span className="font-bold text-gray-800">{example.second}</span>
-                            </div>
-                            <div className="grid grid-cols-3 gap-2">
-                              {renderObjects(example.second, example.item, example.color2)}
-                            </div>
-                          </div>
-                        )}
-
-                        {/* Signe = et résultat */}
-                        {(animatingStep === 'calculation' || animatingStep === 'result') && (
-                          <>
-                            <div className="text-4xl font-bold text-gray-700">=</div>
-                            <div className={`p-4 rounded-lg ${animatingStep === 'result' ? 'bg-green-100 ring-2 ring-green-400 animate-pulse' : 'bg-gray-100'}`}>
+                      {/* Animation des objets ou addition posée */}
+                      {example.first <= 9 && example.second <= 9 ? (
+                        // Affichage avec objets pour les petits nombres
+                        <div className="flex justify-center items-center space-x-8">
+                          {/* Premier groupe */}
+                          {(animatingStep === 'group1' || animatingStep === 'group2' || animatingStep === 'calculation' || animatingStep === 'result') && (
+                            <div className={`p-4 rounded-lg ${animatingStep === 'group1' ? 'bg-red-100 ring-2 ring-red-400' : 'bg-gray-100'}`}>
                               <div className="text-center mb-2">
-                                <span className="font-bold text-2xl text-gray-800">{example.result}</span>
+                                <span className="font-bold text-gray-800">{example.first}</span>
                               </div>
-                              {animatingStep === 'result' && (
-                                <div className="grid grid-cols-4 gap-2">
-                                  {renderObjects(example.result, example.item, 'text-green-600')}
-                                </div>
-                              )}
+                              <div className="grid grid-cols-3 gap-2">
+                                {renderObjects(example.first, example.item, example.color1)}
+                              </div>
                             </div>
-                          </>
-                        )}
-                      </div>
+                          )}
+
+                          {/* Signe + */}
+                          {(animatingStep === 'group2' || animatingStep === 'calculation' || animatingStep === 'result') && (
+                            <div className="text-4xl font-bold text-gray-700">+</div>
+                          )}
+
+                          {/* Deuxième groupe */}
+                          {(animatingStep === 'group2' || animatingStep === 'calculation' || animatingStep === 'result') && (
+                            <div className={`p-4 rounded-lg ${animatingStep === 'group2' ? 'bg-blue-100 ring-2 ring-blue-400' : 'bg-gray-100'}`}>
+                              <div className="text-center mb-2">
+                                <span className="font-bold text-gray-800">{example.second}</span>
+                              </div>
+                              <div className="grid grid-cols-3 gap-2">
+                                {renderObjects(example.second, example.item, example.color2)}
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Signe = et résultat */}
+                          {(animatingStep === 'calculation' || animatingStep === 'result') && (
+                            <>
+                              <div className="text-4xl font-bold text-gray-700">=</div>
+                              <div className={`p-4 rounded-lg ${animatingStep === 'result' ? 'bg-green-100 ring-2 ring-green-400 animate-pulse' : 'bg-gray-100'}`}>
+                                <div className="text-center mb-2">
+                                  <span className="font-bold text-2xl text-gray-800">{example.result}</span>
+                                </div>
+                                {animatingStep === 'result' && (
+                                  <div className="grid grid-cols-4 gap-2">
+                                    {renderObjects(example.result, example.item, 'text-green-600')}
+                                  </div>
+                                )}
+                              </div>
+                            </>
+                          )}
+                        </div>
+                      ) : (
+                        // Addition posée avec fonction officielle - seulement aux bonnes étapes
+                        (animatingStep === 'calculation' || animatingStep === 'result') && 
+                        renderPostedAddition(example, true, false, animatingStep || undefined)
+                      )}
 
                       {/* Calcul écrit */}
                       {(animatingStep === 'calculation' || animatingStep === 'result') && (
@@ -1715,11 +2047,25 @@ export default function ProblemesAddition() {
                           </div>
                         </div>
                       )}
+
+                      {/* Phrase de réponse finale */}
+                      {animatingStep === 'result' && (
+                        <div className="text-center p-4 mt-4 bg-green-100 border-2 border-green-300 rounded-lg animate-fade-in">
+                          <div className="text-lg font-bold text-green-800">
+                            🎉 <strong>Réponse :</strong> {example.story.includes('cookies') ? 'Maman' : 
+                                                         example.story.includes('fleurs') ? 'Le jardinier' :
+                                                         example.story.includes('livres') ? 'La maîtresse' :
+                                                         example.story.includes('billes') ? 'Paul' :
+                                                         example.story.includes('invités') ? 'Emma' :
+                                                         example.story.includes('chats') ? 'Le fermier' :
+                                                         example.story.includes('crayons') ? 'Sophie' : 'Il'} a {example.result} {example.item} en tout !
+                          </div>
+                        </div>
+                      )}
                     </div>
                   );
                 })()}
-              </div>
-            )}
+            </div>
           </div>
         ) : (
           /* Section Exercices */
@@ -1896,16 +2242,16 @@ export default function ProblemesAddition() {
                               </div>
                             )}
 
-                            {/* Animation des objets avec représentation adaptée */}
+                            {/* Animation des objets ou addition posée avec fonction officielle */}
                             {(exerciseAnimationStep === 'show-groups' || exerciseAnimationStep === 'show-calculation' || exerciseAnimationStep === 'show-result') && (
-                              <div className="flex justify-center items-center space-x-6">
-                                {/* Premier groupe */}
-                                <div className="p-3 rounded-lg bg-red-100 ring-2 ring-red-400">
-                                  <div className="text-center mb-2">
-                                    <span className="font-bold text-red-800">{exercise.first}</span>
-                                  </div>
-                                  {exercise.first <= 12 ? (
-                                    /* Petits nombres : affichage direct */
+                              exercise.first <= 9 && exercise.second <= 9 ? (
+                                // Affichage avec objets pour les petits nombres
+                                <div className="flex justify-center items-center space-x-6">
+                                  {/* Premier groupe */}
+                                  <div className="p-3 rounded-lg bg-red-100 ring-2 ring-red-400">
+                                    <div className="text-center mb-2">
+                                      <span className="font-bold text-red-800">{exercise.first}</span>
+                                    </div>
                                     <div className="grid grid-cols-4 gap-1 max-w-32">
                                       {Array.from({ length: exercise.first }, (_, i) => (
                                         <div
@@ -1917,55 +2263,15 @@ export default function ProblemesAddition() {
                                         </div>
                                       ))}
                                     </div>
-                                  ) : (
-                                    /* Grands nombres : représentation dizaines + unités */
-                                    <div className="space-y-2">
-                                      {Math.floor(exercise.first / 10) > 0 && (
-                                        <div className="text-center">
-                                          <div className="text-xs text-gray-600 mb-1">Dizaines</div>
-                                          <div className="flex justify-center space-x-1">
-                                            {Array.from({ length: Math.floor(exercise.first / 10) }, (_, i) => (
-                                              <div
-                                                key={i}
-                                                className="w-6 h-8 bg-red-400 rounded animate-pulse border border-red-600"
-                                                style={{ animationDelay: `${i * 200}ms` }}
-                                                title="10"
-                                              >
-                                                <div className="text-xs text-white text-center leading-8 font-bold">10</div>
-                                              </div>
-                                            ))}
-                                          </div>
-                                        </div>
-                                      )}
-                                      {exercise.first % 10 > 0 && (
-                                        <div className="text-center">
-                                          <div className="text-xs text-gray-600 mb-1">Unités</div>
-                                          <div className="flex justify-center space-x-1">
-                                            {Array.from({ length: exercise.first % 10 }, (_, i) => (
-                                              <div
-                                                key={i}
-                                                className={`text-sm ${exercise.color1} animate-bounce`}
-                                                style={{ animationDelay: `${i * 100}ms` }}
-                                              >
-                                                {exercise.item}
-                                              </div>
-                                            ))}
-                                          </div>
-                                        </div>
-                                      )}
-                                    </div>
-                                  )}
-                                </div>
-
-                                <div className="text-3xl font-bold text-gray-700">+</div>
-
-                                {/* Deuxième groupe */}
-                                <div className="p-3 rounded-lg bg-blue-100 ring-2 ring-blue-400">
-                                  <div className="text-center mb-2">
-                                    <span className="font-bold text-blue-800">{exercise.second}</span>
                                   </div>
-                                  {exercise.second <= 12 ? (
-                                    /* Petits nombres : affichage direct */
+
+                                  <div className="text-3xl font-bold text-gray-700">+</div>
+
+                                  {/* Deuxième groupe */}
+                                  <div className="p-3 rounded-lg bg-blue-100 ring-2 ring-blue-400">
+                                    <div className="text-center mb-2">
+                                      <span className="font-bold text-blue-800">{exercise.second}</span>
+                                    </div>
                                     <div className="grid grid-cols-4 gap-1 max-w-32">
                                       {Array.from({ length: exercise.second }, (_, i) => (
                                         <div
@@ -1977,68 +2283,51 @@ export default function ProblemesAddition() {
                                         </div>
                                       ))}
                                     </div>
-                                  ) : (
-                                    /* Grands nombres : représentation dizaines + unités */
-                                    <div className="space-y-2">
-                                      {Math.floor(exercise.second / 10) > 0 && (
-                                        <div className="text-center">
-                                          <div className="text-xs text-gray-600 mb-1">Dizaines</div>
-                                          <div className="flex justify-center space-x-1">
-                                            {Array.from({ length: Math.floor(exercise.second / 10) }, (_, i) => (
-                                              <div
-                                                key={i}
-                                                className="w-6 h-8 bg-blue-400 rounded animate-pulse border border-blue-600"
-                                                style={{ animationDelay: `${i * 200}ms` }}
-                                                title="10"
-                                              >
-                                                <div className="text-xs text-white text-center leading-8 font-bold">10</div>
-                                              </div>
-                                            ))}
-                                          </div>
+                                  </div>
+
+                                  {/* Signe = et résultat pour petits nombres */}
+                                  {exerciseAnimationStep === 'show-result' && (
+                                    <>
+                                      <div className="text-3xl font-bold text-gray-700">=</div>
+                                      <div className="p-3 rounded-lg bg-green-100 ring-2 ring-green-400">
+                                        <div className="text-center mb-2">
+                                          <span className="font-bold text-green-800">{exercise.answer}</span>
                                         </div>
-                                      )}
-                                      {exercise.second % 10 > 0 && (
-                                        <div className="text-center">
-                                          <div className="text-xs text-gray-600 mb-1">Unités</div>
-                                          <div className="flex justify-center space-x-1">
-                                            {Array.from({ length: exercise.second % 10 }, (_, i) => (
-                                              <div
-                                                key={i}
-                                                className={`text-sm ${exercise.color2} animate-bounce`}
-                                                style={{ animationDelay: `${i * 100}ms` }}
-                                              >
-                                                {exercise.item}
-                                              </div>
-                                            ))}
-                                          </div>
+                                        <div className="grid grid-cols-4 gap-1 max-w-32">
+                                          {Array.from({ length: exercise.answer }, (_, i) => (
+                                            <div
+                                              key={i}
+                                              className={`text-xl text-green-600 animate-bounce`}
+                                              style={{ animationDelay: `${i * 100}ms` }}
+                                            >
+                                              {exercise.item}
+                                            </div>
+                                          ))}
                                         </div>
-                                      )}
-                                    </div>
+                                      </div>
+                                    </>
                                   )}
                                 </div>
-                              </div>
+                              ) : (
+                                // Addition posée avec fonction officielle - correction exercices (seulement à partir du calcul)
+                                (exerciseAnimationStep === 'show-calculation' || exerciseAnimationStep === 'show-result') &&
+                                renderPostedAddition(exercise, true, false, exerciseAnimationStep || undefined)
+                              )
                             )}
 
-                            {/* Calcul écrit */}
-                            {(exerciseAnimationStep === 'show-calculation' || exerciseAnimationStep === 'show-result') && (
-                              <div className="text-center p-4 bg-purple-100 rounded-lg">
-                                <div className="text-2xl font-bold text-purple-800">
-                                  {exerciseAnimationStep === 'show-result' ? 
-                                    `${exercise.first} + ${exercise.second} = ${exercise.answer}` :
-                                    `${exercise.first} + ${exercise.second} = ?`
-                                  }
-                                </div>
-                              </div>
-                            )}
-
-                            {/* Résultat final */}
+                            {/* Phrase de réponse finale systématique pour les corrections */}
                             {exerciseAnimationStep === 'show-result' && (
-                              <div className="text-center p-4 bg-green-100 rounded-lg ring-2 ring-green-400 animate-pulse">
-                                <div className="text-3xl font-bold text-green-800 mb-2">
-                                  {exercise.first} + {exercise.second} = {exercise.answer}
-                                </div>
-                                <div className="text-lg text-green-700">
-                                  La réponse est {exercise.answer} !
+                              <div className="text-center p-4 mt-4 bg-green-100 border-2 border-green-300 rounded-lg animate-fade-in">
+                                <div className="text-lg font-bold text-green-800">
+                                  🎉 <strong>Réponse :</strong> {exercise.question.includes('Hugo') ? 'Hugo' : 
+                                                               exercise.question.includes('Maman') ? 'Maman' :
+                                                               exercise.question.includes('Paul') ? 'Paul' :
+                                                               exercise.question.includes('Zoé') ? 'Zoé' :
+                                                               exercise.question.includes('Thomas') ? 'Thomas' : 'Il'} a {exercise.answer} {exercise.question.includes('pages') ? 'pages' :
+                                                                                                                                                                                      exercise.question.includes('pièces') ? 'pièces d\'or' :
+                                                                                                                                                                                      exercise.question.includes('cubes') ? 'cubes' :
+                                                                                                                                                                                      exercise.question.includes('photos') ? 'photos' :
+                                                                                                                                                                                      exercise.question.includes('points') ? 'points' : 'éléments'} en tout !
                                 </div>
                               </div>
                             )}

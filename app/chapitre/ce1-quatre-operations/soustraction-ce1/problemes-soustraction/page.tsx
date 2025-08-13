@@ -43,7 +43,7 @@ export default function ProblemesSoustraction() {
   const examplesSectionRef = useRef<HTMLDivElement>(null);
   const exerciseTabRef = useRef<HTMLButtonElement>(null);
 
-  // Données des problèmes avec animations - NIVEAU CE1 (nombres plus petits, contextes familiers)
+  // Données des problèmes avec animations - NIVEAU CE1 (soustractions, contextes familiers)
   const problemExamples = [
     {
       id: 'bonbons',
@@ -92,10 +92,10 @@ export default function ProblemesSoustraction() {
     {
       id: 'cuisine',
       title: 'Les cookies de Maman',
-      story: 'Maman avait préparé 12 cookies. La famille en a mangé 5. Combien de cookies reste-t-il ?',
-      first: 12,
-      second: 5,
-      result: 7,
+      story: 'Maman avait préparé 47 cookies. La famille en a mangé 35. Combien de cookies reste-t-il ?',
+      first: 47,
+      second: 35,
+      result: 12,
       item: '🍪',
       color1: 'text-amber-700',
       color2: 'text-gray-400'
@@ -103,10 +103,10 @@ export default function ProblemesSoustraction() {
     {
       id: 'jardin',
       title: 'Les fleurs du jardin',
-      story: 'Dans le jardin, il y avait 14 tulipes. Le vent en a cassé 6. Combien de tulipes sont encore debout ?',
-      first: 14,
-      second: 6,
-      result: 8,
+      story: 'Dans le jardin, il y avait 248 tulipes. Le vent en a cassé 116. Combien de tulipes sont encore debout ?',
+      first: 248,
+      second: 116,
+      result: 132,
       item: '🌷',
       color1: 'text-red-600',
       color2: 'text-gray-400'
@@ -114,10 +114,10 @@ export default function ProblemesSoustraction() {
     {
       id: 'bibliotheque',
       title: 'Les livres de la classe',
-      story: 'Sur l\'étagère de la classe, il y avait 16 livres. La maîtresse en a pris 7 pour la lecture. Combien en reste-t-il ?',
-      first: 16,
-      second: 7,
-      result: 9,
+      story: 'Sur l\'étagère de la classe, il y avait 329 livres. La maîtresse en a pris 187 pour la lecture. Combien en reste-t-il ?',
+      first: 329,
+      second: 187,
+      result: 142,
       item: '📚',
       color1: 'text-purple-600',
       color2: 'text-gray-400'
@@ -125,10 +125,10 @@ export default function ProblemesSoustraction() {
     {
       id: 'recreation',
       title: 'Les billes de Paul',
-      story: 'Paul avait 19 billes dans son sac. Il en a perdu 8 à la récréation. Combien de billes lui reste-t-il ?',
-      first: 19,
-      second: 8,
-      result: 11,
+      story: 'Paul collectionne les billes. Il avait 411 billes rares dans sa collection, mais il en a échangé 378 contre d\'autres modèles. Combien de billes rares lui reste-t-il ?',
+      first: 411,
+      second: 378,
+      result: 33,
       item: '⚪',
       color1: 'text-blue-600',
       color2: 'text-gray-400'
@@ -136,19 +136,63 @@ export default function ProblemesSoustraction() {
     {
       id: 'anniversaire',
       title: 'Les invités d\'Emma',
-      story: 'Pour son anniversaire, Emma avait prévu 20 enfants. 8 enfants n\'ont pas pu venir. Combien d\'enfants sont venus à la fête ?',
-      first: 20,
-      second: 8,
-      result: 12,
+      story: 'Pour son anniversaire, Emma avait commandé 512 ballons. Le vent en a fait s\'envoler 348. Combien de ballons reste-t-il pour la fête ?',
+      first: 512,
+      second: 348,
+      result: 164,
       item: '🎉',
       color1: 'text-pink-600',
+      color2: 'text-gray-400'
+    },
+    {
+      id: 'chats',
+      title: 'Les chats de la ferme',
+      story: 'Dans la grande ferme, il y avait 35 chats. L\'hiver, 28 chats sont partis chercher un abri plus chaud. Combien de chats sont restés ?',
+      first: 35,
+      second: 28,
+      result: 7,
+      item: '🐱',
+      color1: 'text-gray-800',
+      color2: 'text-gray-400'
+    },
+    {
+      id: 'crayons',
+      title: 'Les crayons de couleur',
+      story: 'Dans l\'école, il y avait 46 crayons de couleur neufs. Les élèves en ont usé 37 pendant l\'année. Combien de crayons neufs reste-t-il ?',
+      first: 46,
+      second: 37,
+      result: 9,
+      item: '✏️',
+      color1: 'text-red-600',
+      color2: 'text-gray-400'
+    },
+    {
+      id: 'jouets_magasin',
+      title: 'Les jouets du magasin',
+      story: 'Dans le magasin, il y avait 347 jouets en stock. Pendant les fêtes, 285 jouets ont été vendus. Combien de jouets restent-ils en stock ?',
+      first: 347,
+      second: 285,
+      result: 62,
+      item: '🧸',
+      color1: 'text-orange-600',
+      color2: 'text-gray-400'
+    },
+    {
+      id: 'graines',
+      title: 'Les graines du fermier',
+      story: 'Le fermier avait acheté 458 graines pour son potager. En plantant, il a utilisé 367 graines dans ses champs. Combien de graines lui reste-t-il pour plus tard ?',
+      first: 458,
+      second: 367,
+      result: 91,
+      item: '🌱',
+      color1: 'text-green-600',
       color2: 'text-gray-400'
     }
   ];
 
-  // 20 Exercices progressifs CE1 : simple → nombres à 2-3 chiffres avec retenues → jusqu'à 1000+
+  // 15 Exercices progressifs CE1 : soustractions variées avec progression pédagogique
   const exercises = [
-    // NIVEAU 1 : Soustractions simples (1-20)
+    // NIVEAU 1 : Soustractions simples - Problèmes de réunion inversés (transformation - état final)
     {
       story: 'Léa avait 15 autocollants. Elle en a donné 7 à sa sœur. Combien d\'autocollants lui reste-t-il ?',
       answer: 8,
@@ -170,259 +214,197 @@ export default function ProblemesSoustraction() {
       color2: 'text-red-600'
     },
     
-    // NIVEAU 2 : Additions avec nombres jusqu'à 50
+    // NIVEAU 2 : Soustractions avec nombres jusqu'à 50 - Problèmes de transformation
     {
-      story: 'Tom collectionne les cartes. Il a 23 cartes de football et 18 cartes de basketball. Combien de cartes a-t-il ?',
-      answer: 41,
+      story: 'Tom collectionne les cartes. Il avait 41 cartes dans sa collection. Il en a échangé 18 contre d\'autres modèles. Combien de cartes lui reste-t-il ?',
+      answer: 23,
       visual: '🎴',
-      first: 23,
+      first: 41,
       second: 18,
       item: '🎴',
       color1: 'text-green-600',
       color2: 'text-orange-600'
     },
     {
-      story: 'Maman a acheté des fruits. Elle a 27 pommes et 16 poires pour la semaine. Combien de fruits a-t-elle ?',
-      answer: 43,
+      story: 'Maman avait acheté 43 fruits pour la semaine. La famille en a déjà mangé 16. Combien de fruits reste-t-il ?',
+      answer: 27,
       visual: '🍎',
-      first: 27,
+      first: 43,
       second: 16,
       item: '🍎',
       color1: 'text-red-600',
       color2: 'text-yellow-600'
     },
     {
-      story: 'Dans la classe de CE1, il y a 34 livres de mathématiques et 29 livres de français. Combien de livres y a-t-il ?',
-      answer: 63,
+      story: 'Dans la bibliothèque de CE1, il y avait 63 livres. La maîtresse en a retiré 29 pour les ranger ailleurs. Combien de livres reste-t-il ?',
+      answer: 34,
       visual: '📚',
-      first: 34,
+      first: 63,
       second: 29,
       item: '📚',
       color1: 'text-blue-600',
       color2: 'text-green-600'
     },
     
-    // NIVEAU 3 : Additions avec retenues (50-100)
+    // NIVEAU 3 : Soustractions avec retenues (50-100) - Problèmes avec données inutiles
     {
-      story: 'Julie collectionne les billes. Elle a 38 billes colorées et 27 billes transparentes. Combien de billes a-t-elle ?',
-      answer: 65,
+      story: 'Julie a 12 ans et collectionne les billes. Elle avait 65 billes dans sa boîte. En jouant, elle en a perdu 27. Combien de billes lui reste-t-il ?',
+      answer: 38,
       visual: '⚪',
-      first: 38,
+      first: 65,
       second: 27,
       item: '⚪',
       color1: 'text-purple-600',
       color2: 'text-gray-400'
     },
     {
-      story: 'Papa plante des fleurs. Il met 47 tulipes dans le jardin du devant et 36 tulipes dans le jardin de derrière. Combien de tulipes a-t-il plantées ?',
-      answer: 83,
+      story: 'Papa jardine depuis le matin. Il avait planté 83 tulipes dans son jardin. Une tempête en a abîmé 36. Combien de tulipes sont encore belles ?',
+      answer: 47,
       visual: '🌷',
-      first: 47,
+      first: 83,
       second: 36,
       item: '🌷',
       color1: 'text-red-600',
       color2: 'text-yellow-600'
     },
     {
-      story: 'Dans la bibliothèque, il y a 59 livres d\'aventure et 28 livres de science. Combien de livres y a-t-il ?',
-      answer: 87,
+      story: 'La bibliothèque municipale possédait 87 livres pour enfants. Elle en a prêté 28 à une école. Combien de livres reste-t-il sur les étagères ?',
+      answer: 59,
       visual: '📖',
-      first: 59,
+      first: 87,
       second: 28,
       item: '📖',
       color1: 'text-orange-600',
       color2: 'text-blue-600'
     },
     
-    // NIVEAU 4 : Nombres plus grands (100-200)
+    // NIVEAU 4 : Soustractions avec nombres plus grands (100-200) - Problèmes de comparaison
     {
-      story: 'Sophie compte ses autocollants. Elle a 68 autocollants de princesses et 45 autocollants d\'animaux. Combien d\'autocollants a-t-elle ?',
-      answer: 113,
+      story: 'Sophie collectionne les autocollants. Elle en avait 113 dans son album. Elle en a donné 45 à ses amies. Combien d\'autocollants garde-t-elle ?',
+      answer: 68,
       visual: '🌟',
-      first: 68,
+      first: 113,
       second: 45,
       item: '🌟',
       color1: 'text-pink-600',
       color2: 'text-green-600'
     },
     {
-      story: 'Lucas compte ses LEGO. Il a 76 pièces rouges et 58 pièces bleues. Combien de pièces a-t-il en tout ?',
-      answer: 134,
+      story: 'Lucas joue avec ses LEGO. Il avait construit une tour avec 134 pièces. Elle s\'est écroulée et 58 pièces se sont cassées. Combien de pièces peut-il encore utiliser ?',
+      answer: 76,
       visual: '🧱',
-      first: 76,
+      first: 134,
       second: 58,
       item: '🧱',
       color1: 'text-red-600',
       color2: 'text-blue-600'
     },
     
-    // NIVEAU 5 : Additions complexes (200-500)
+    // NIVEAU 5 : Soustractions complexes (200-500) - Problèmes multi-étapes avec contexte riche
     {
-      story: 'Marie fait un puzzle géant. Elle a déjà posé 87 pièces le matin et 96 pièces l\'après-midi. Combien de pièces a-t-elle posées ?',
-      answer: 183,
+      story: 'Marie travaille sur un puzzle de 500 pièces. Elle avait déjà placé 183 pièces hier. Aujourd\'hui, elle en a enlevé 96 qui étaient mal placées. Combien de pièces bien placées reste-t-il ?',
+      answer: 87,
       visual: '🧩',
-      first: 87,
+      first: 183,
       second: 96,
       item: '🧩',
       color1: 'text-blue-600',
       color2: 'text-green-600'
     },
     {
-      story: 'Dans la ferme de grand-père, il y a 128 poules et 97 canards. Combien d\'oiseaux y a-t-il ?',
-      answer: 225,
+      story: 'Dans la ferme de grand-père, il y avait 225 animaux au total. L\'hiver, 97 animaux sont partis dans d\'autres fermes. Combien d\'animaux restent-ils pour l\'hiver ?',
+      answer: 128,
       visual: '🐔',
-      first: 128,
+      first: 225,
       second: 97,
       item: '🐔',
       color1: 'text-yellow-600',
       color2: 'text-orange-600'
     },
     {
-      story: 'Antoine collectionne les cartes. Il a 156 cartes dans sa première boîte et 178 cartes dans sa deuxième boîte. Combien de cartes a-t-il ?',
-      answer: 334,
+      story: 'Antoine range sa collection de cartes. Il avait 334 cartes en tout. Il en a vendu 178 à un ami collectionneur. Combien de cartes garde-t-il dans sa collection ?',
+      answer: 156,
       visual: '🎮',
-      first: 156,
+      first: 334,
       second: 178,
       item: '🎮',
       color1: 'text-purple-600',
       color2: 'text-blue-600'
     },
     
-    // NIVEAU 6 : Grandes soustractions (500-1000)
+    // NIVEAU 6 : Grandes soustractions (500-1000) - Situations complexes
     {
-      story: 'Emma dessine des pixels sur son ordinateur. Elle en a colorié 234 le matin et 289 l\'après-midi. Combien de pixels a-t-elle coloriés ?',
-      answer: 523,
+      story: 'Emma travaille sur un projet artistique. Elle avait dessiné 523 pixels colorés. Un bug informatique en a effacé 289. Combien de pixels colorés lui reste-t-il ?',
+      answer: 234,
       visual: '🎨',
-      first: 234,
+      first: 523,
       second: 289,
       item: '🎨',
       color1: 'text-pink-600',
       color2: 'text-purple-600'
     },
     {
-      story: 'Dans sa collection, Léo a 367 coquillages de la mer du Nord et 258 coquillages de la Méditerranée. Combien de coquillages a-t-il ?',
-      answer: 625,
+      story: 'Léo organise sa collection de coquillages. Il en avait 625 dans ses boîtes. Il en a offert 258 au musée de la ville. Combien de coquillages garde-t-il chez lui ?',
+      answer: 367,
       visual: '🐚',
-      first: 367,
+      first: 625,
       second: 258,
       item: '🐚',
       color1: 'text-blue-600',
       color2: 'text-cyan-600'
-    },
-    {
-      story: 'Hugo compte les pages qu\'il a lues. Il a lu 428 pages en janvier et 345 pages en février. Combien de pages a-t-il lues ?',
-      answer: 773,
-      visual: '📚',
-      first: 428,
-      second: 345,
-      item: '📚',
-      color1: 'text-green-600',
-      color2: 'text-blue-600'
-    },
-    
-    // NIVEAU 7 : Très grandes soustractions (1000+)
-    {
-      story: 'Dans le jeu vidéo de Maman, elle a collecté 456 pièces d\'or dans le premier niveau et 567 pièces dans le second niveau. Combien de pièces a-t-elle ?',
-      answer: 1023,
-      visual: '🪙',
-      first: 456,
-      second: 567,
-      item: '🪙',
-      color1: 'text-yellow-600',
-      color2: 'text-amber-600'
-    },
-    {
-      story: 'Paul construit une grande tour. Il utilise 678 blocs rouges et 445 blocs verts. Combien de blocs utilise-t-il en tout ?',
-      answer: 1123,
-      visual: '🏗️',
-      first: 678,
-      second: 445,
-      item: '🏗️',
-      color1: 'text-red-600',
-      color2: 'text-green-600'
-    },
-    {
-      story: 'Zoé compte les photos dans sa famille. Il y a 589 photos de vacances et 634 photos d\'anniversaires. Combien de photos y a-t-il ?',
-      answer: 1223,
-      visual: '📷',
-      first: 589,
-      second: 634,
-      item: '📷',
-      color1: 'text-blue-600',
-      color2: 'text-pink-600'
-    },
-    {
-      story: 'Thomas compte ses points dans le jeu. Il a marqué 734 points hier et 789 points aujourd\'hui. Combien de points a-t-il en tout ?',
-      answer: 1523,
-      visual: '🎯',
-      first: 734,
-      second: 789,
-      item: '🎯',
-      color1: 'text-orange-600',
-      color2: 'text-red-600'
     }
   ];
 
-  // Fonction pour générer un message de correction personnalisé
+  // Fonction pour générer un message de correction personnalisé pour les soustractions
   const getPersonalizedFeedback = (exerciseIndex: number, isCorrect: boolean) => {
     const exercise = exercises[exerciseIndex];
     const icon = exercise.visual;
     
     if (isCorrect) {
-             const successMessages = [
-        `Bravo ! ${icon} Léa a exactement ${exercise.answer} autocollants dans sa collection !`,
-        `Parfait ! ${icon} Nina a bien ${exercise.answer} crayons colorés dans son pot !`,
-        `Excellent ! ${icon} Tom a ${exercise.answer} voitures dans sa collection !`,
-        `Super ! ${icon} Maman a ${exercise.answer} pommes délicieuses !`,
-        `Bravo ! ${icon} Il y a précisément ${exercise.answer} élèves dans la classe de CE1 !`,
-        `Formidable ! ${icon} Julie a ${exercise.answer} billes dans sa trousse !`,
-        `Magnifique ! ${icon} Papa a planté ${exercise.answer} tulipes dans le jardin !`,
-        `Excellent ! ${icon} Il y a ${exercise.answer} livres sur l'étagère !`,
-        `Parfait ! ${icon} Sophie a ${exercise.answer} jouets dans sa chambre !`,
-        `Super ! ${icon} Lucas a ${exercise.answer} cartes de jeu !`,
-        `Merveilleux ! ${icon} Marie a posé ${exercise.answer} pièces de puzzle !`,
-        `Fantastique ! ${icon} Les enfants ont planté ${exercise.answer} graines !`,
-        `Génial ! ${icon} Antoine a ${exercise.answer} capsules dans sa collection !`,
-        `Bravo ! ${icon} Emma a dessiné ${exercise.answer} étoiles magnifiques !`,
-        `Excellent ! ${icon} Léo a ${exercise.answer} coquillages de la plage !`,
-        `Parfait ! ${icon} Hugo a ${exercise.answer} timbres dans son album !`,
-        `Délicieux ! ${icon} Maman a préparé ${exercise.answer} gâteaux savoureux !`,
-        `Formidable ! ${icon} Paul a ${exercise.answer} blocs de construction !`,
-        `Super ! ${icon} Zoé a ${exercise.answer} photos dans son album !`,
-        `Fantastique ! ${icon} Thomas a ${exercise.answer} badges sur son sac !`
+      const successMessages = [
+        `Bravo ! ${icon} Léa a exactement ${exercise.answer} autocollants qui lui restent !`,
+        `Parfait ! ${icon} Nina a bien ${exercise.answer} crayons intacts dans son pot !`,
+        `Excellent ! ${icon} Tom garde ${exercise.answer} cartes dans sa collection !`,
+        `Super ! ${icon} Il reste ${exercise.answer} fruits délicieux à manger !`,
+        `Bravo ! ${icon} Il reste exactement ${exercise.answer} livres sur l'étagère !`,
+        `Formidable ! ${icon} Julie a encore ${exercise.answer} billes pour jouer !`,
+        `Magnifique ! ${icon} Il reste ${exercise.answer} tulipes debout dans le jardin !`,
+        `Excellent ! ${icon} Il reste ${exercise.answer} livres disponibles !`,
+        `Parfait ! ${icon} Sophie garde ${exercise.answer} autocollants précieux !`,
+        `Super ! ${icon} Lucas a encore ${exercise.answer} pièces utilisables !`,
+        `Merveilleux ! ${icon} Marie a ${exercise.answer} pièces bien placées !`,
+        `Fantastique ! ${icon} Il reste ${exercise.answer} animaux pour l'hiver !`,
+        `Génial ! ${icon} Antoine garde ${exercise.answer} cartes dans sa collection !`,
+        `Bravo ! ${icon} Emma a sauvegardé ${exercise.answer} pixels !`,
+        `Excellent ! ${icon} Léo garde ${exercise.answer} coquillages chez lui !`
       ];
-      return successMessages[exerciseIndex] || `Bravo ! ${icon} Tu as trouvé ${exercise.answer} !`;
+      return successMessages[exerciseIndex] || `Bravo ! ${icon} Il reste ${exercise.answer} !`;
     } else {
-             const correctionMessages = [
-        `${icon} Léa a : ${exercise.first} autocollants d'animaux + ${exercise.second} autocollants de fleurs = ${exercise.answer} autocollants !`,
-        `${icon} Nina a : ${exercise.first} crayons bleus + ${exercise.second} crayons rouges = ${exercise.answer} crayons !`,
-        `${icon} Tom a : ${exercise.first} voitures rouges + ${exercise.second} voitures bleues = ${exercise.answer} voitures !`,
-        `${icon} Maman a : ${exercise.first} pommes vertes + ${exercise.second} pommes rouges = ${exercise.answer} pommes !`,
-        `${icon} Dans la classe : ${exercise.first} filles + ${exercise.second} garçons = ${exercise.answer} élèves !`,
-        `${icon} Julie a : ${exercise.first} billes transparentes + ${exercise.second} billes colorées = ${exercise.answer} billes !`,
-        `${icon} Papa a planté : ${exercise.first} tulipes jaunes + ${exercise.second} tulipes roses = ${exercise.answer} tulipes !`,
-        `${icon} Dans la bibliothèque : ${exercise.first} livres sur les animaux + ${exercise.second} livres sur les plantes = ${exercise.answer} livres !`,
-        `${icon} Sophie a : ${exercise.first} peluches + ${exercise.second} poupées = ${exercise.answer} jouets !`,
-        `${icon} Lucas a : ${exercise.first} cartes bleues + ${exercise.second} cartes rouges = ${exercise.answer} cartes !`,
-        `${icon} Marie a posé : ${exercise.first} pièces bleues + ${exercise.second} pièces vertes = ${exercise.answer} pièces !`,
-        `${icon} Les enfants ont planté : ${exercise.first} graines de radis + ${exercise.second} graines de carottes = ${exercise.answer} graines !`,
-        `${icon} Antoine a : ${exercise.first} capsules de sodas + ${exercise.second} capsules d'eau = ${exercise.answer} capsules !`,
-        `${icon} Emma a dessiné : ${exercise.first} étoiles jaunes + ${exercise.second} étoile argentée = ${exercise.answer} étoiles !`,
-        `${icon} Léo a : ${exercise.first} coquillages blancs + ${exercise.second} coquillages roses = ${exercise.answer} coquillages !`,
-        `${icon} Hugo a : ${exercise.first} timbres français + ${exercise.second} timbres étrangers = ${exercise.answer} timbres !`,
-        `${icon} Maman a fait : ${exercise.first} gâteaux au chocolat + ${exercise.second} gâteaux à la vanille = ${exercise.answer} gâteaux !`,
-        `${icon} Paul a : ${exercise.first} blocs rouges + ${exercise.second} blocs verts = ${exercise.answer} blocs !`,
-        `${icon} Zoé a : ${exercise.first} photos de vacances + ${exercise.second} photos d'anniversaire = ${exercise.answer} photos !`,
-        `${icon} Thomas a : ${exercise.first} badges de sports + ${exercise.second} badges de musique = ${exercise.answer} badges !`
+      const correctionMessages = [
+        `${icon} Léa avait ${exercise.first} autocollants - ${exercise.second} donnés = ${exercise.answer} qui restent !`,
+        `${icon} Nina avait ${exercise.first} crayons - ${exercise.second} cassés = ${exercise.answer} intacts !`,
+        `${icon} Tom avait ${exercise.first} cartes - ${exercise.second} échangées = ${exercise.answer} gardées !`,
+        `${icon} Il y avait ${exercise.first} fruits - ${exercise.second} mangés = ${exercise.answer} qui restent !`,
+        `${icon} Il y avait ${exercise.first} livres - ${exercise.second} retirés = ${exercise.answer} sur l'étagère !`,
+        `${icon} Julie avait ${exercise.first} billes - ${exercise.second} perdues = ${exercise.answer} qui restent !`,
+        `${icon} Il y avait ${exercise.first} tulipes - ${exercise.second} abîmées = ${exercise.answer} encore belles !`,
+        `${icon} Il y avait ${exercise.first} livres - ${exercise.second} prêtés = ${exercise.answer} sur les étagères !`,
+        `${icon} Sophie avait ${exercise.first} autocollants - ${exercise.second} donnés = ${exercise.answer} gardés !`,
+        `${icon} Lucas avait ${exercise.first} pièces - ${exercise.second} cassées = ${exercise.answer} utilisables !`,
+        `${icon} Marie avait ${exercise.first} pièces - ${exercise.second} mal placées = ${exercise.answer} bien placées !`,
+        `${icon} Il y avait ${exercise.first} animaux - ${exercise.second} partis = ${exercise.answer} qui restent !`,
+        `${icon} Antoine avait ${exercise.first} cartes - ${exercise.second} vendues = ${exercise.answer} gardées !`,
+        `${icon} Emma avait ${exercise.first} pixels - ${exercise.second} effacés = ${exercise.answer} sauvés !`,
+        `${icon} Léo avait ${exercise.first} coquillages - ${exercise.second} offerts = ${exercise.answer} gardés !`
       ];
-     return correctionMessages[exerciseIndex] || `${icon} La réponse était ${exercise.answer} !`;
+      return correctionMessages[exerciseIndex] || `${icon} Il y avait ${exercise.first} - ${exercise.second} = ${exercise.answer} !`;
     }
   };
 
-  // Fonction pour mettre en évidence les nombres dans un texte
+  // Fonction pour mettre en évidence les nombres dans un texte (pour soustractions)
   const highlightNumbers = (text: string, isExplicitHighlight = false) => {
-    // Remplace les nombres et signes mathématiques par des spans colorés (SANS les tirets -)
-    return text.split(/(\d+|\+|=)/).map((part, index) => {
+    // Remplace les nombres et signes mathématiques par des spans colorés (avec - et =)
+    return text.split(/(\d+|\-|=)/).map((part, index) => {
       // Si c'est un nombre
       if (/^\d+$/.test(part)) {
         const className = isExplicitHighlight 
@@ -437,11 +419,11 @@ export default function ProblemesSoustraction() {
           </span>
         );
       }
-      // Si c'est un signe mathématique (+ ou = seulement, PAS -)
-      if (/^[\+\=]$/.test(part)) {
+      // Si c'est un signe mathématique (- ou = pour soustraction)
+      if (/^[\-\=]$/.test(part)) {
         const className = isExplicitHighlight
-          ? "bg-orange-300 text-orange-900 px-2 py-1 rounded-lg font-black text-xl mx-1 shadow-lg ring-2 ring-orange-400 animate-pulse"
-          : "bg-orange-200 text-orange-800 px-1.5 py-0.5 rounded-md font-bold mx-0.5 shadow-sm";
+          ? "bg-red-300 text-red-900 px-2 py-1 rounded-lg font-black text-xl mx-1 shadow-lg ring-2 ring-red-400 animate-pulse"
+          : "bg-red-200 text-red-800 px-1.5 py-0.5 rounded-md font-bold mx-0.5 shadow-sm";
         return (
           <span 
             key={index} 
@@ -1112,54 +1094,36 @@ export default function ProblemesSoustraction() {
         let context = '';
         
         if (story.includes('autocollant')) {
-          context = `Il y a ${first} autocollants et ${second} autocollants`;
+          context = `Il y avait ${first} autocollants, ${second} ont été donnés`;
         } else if (story.includes('crayon')) {
-          context = `Il y a ${first} crayons et ${second} crayons`;
-        } else if (story.includes('voiture')) {
-          context = `Il y a ${first} voitures et ${second} voitures`;
-        } else if (story.includes('pomme')) {
-          context = `Il y a ${first} pommes et ${second} pommes`;
-        } else if (story.includes('fille') || story.includes('garçon') || story.includes('élève')) {
-          context = `Il y a ${first} enfants et ${second} enfants`;
-        } else if (story.includes('bille')) {
-          context = `Il y a ${first} billes et ${second} billes`;
-        } else if (story.includes('tulipe') || story.includes('fleur')) {
-          context = `Il y a ${first} tulipes et ${second} tulipes`;
-        } else if (story.includes('livre')) {
-          context = `Il y a ${first} livres et ${second} livres`;
-        } else if (story.includes('peluche') || story.includes('poupée') || story.includes('jouet')) {
-          context = `Il y a ${first} jouets et ${second} jouets`;
+          context = `Il y avait ${first} crayons, ${second} se sont cassés`;
         } else if (story.includes('carte')) {
-          context = `Il y a ${first} cartes et ${second} cartes`;
+          context = `Il y avait ${first} cartes, ${second} ont été échangées`;
+        } else if (story.includes('fruit')) {
+          context = `Il y avait ${first} fruits, ${second} ont été mangés`;
+        } else if (story.includes('livre')) {
+          context = `Il y avait ${first} livres, ${second} ont été retirés`;
+        } else if (story.includes('bille')) {
+          context = `Il y avait ${first} billes, ${second} ont été perdues`;
+        } else if (story.includes('tulipe') || story.includes('fleur')) {
+          context = `Il y avait ${first} tulipes, ${second} ont été abîmées`;
         } else if (story.includes('pièce') || story.includes('puzzle')) {
-          context = `Il y a ${first} pièces et ${second} pièces`;
-        } else if (story.includes('graine')) {
-          context = `Il y a ${first} graines et ${second} graines`;
-        } else if (story.includes('capsule')) {
-          context = `Il y a ${first} capsules et ${second} capsules`;
-        } else if (story.includes('étoile')) {
-          context = `Il y a ${first} étoiles et ${second} étoiles`;
+          context = `Il y avait ${first} pièces, ${second} étaient mal placées`;
+        } else if (story.includes('animal')) {
+          context = `Il y avait ${first} animaux, ${second} sont partis`;
+        } else if (story.includes('pixel')) {
+          context = `Il y avait ${first} pixels, ${second} ont été effacés`;
         } else if (story.includes('coquillage')) {
-          context = `Il y a ${first} coquillages et ${second} coquillages`;
-        } else if (story.includes('timbre')) {
-          context = `Il y a ${first} timbres et ${second} timbres`;
-        } else if (story.includes('gâteau')) {
-          context = `Il y a ${first} gâteaux et ${second} gâteaux`;
-        } else if (story.includes('bloc')) {
-          context = `Il y a ${first} blocs et ${second} blocs`;
-        } else if (story.includes('photo')) {
-          context = `Il y a ${first} photos et ${second} photos`;
-        } else if (story.includes('badge')) {
-          context = `Il y a ${first} badges et ${second} badges`;
+          context = `Il y avait ${first} coquillages, ${second} ont été offerts`;
         } else if (story.includes('bonbon')) {
-          context = `Il y a ${first} bonbons et ${second} bonbons`;
+          context = `Il y avait ${first} bonbons, ${second} ont été mangés`;
         } else if (story.includes('chat') || story.includes('chaton')) {
-          context = `Il y a ${first} chatons et ${second} chatons`;
+          context = `Il y avait ${first} chats, ${second} sont partis`;
         } else if (story.includes('cookie')) {
-          context = `Il y a ${first} cookies et ${second} cookies`;
+          context = `Il y avait ${first} cookies, ${second} ont été mangés`;
         } else {
-          // Fallback générique
-          context = `Les nombres sont ${first} et ${second}`;
+          // Fallback générique pour soustraction
+          context = `Il y avait ${first}, on en enlève ${second}`;
         }
         
         return context;
@@ -1171,7 +1135,7 @@ export default function ProblemesSoustraction() {
       await wait(700);
       
       setExerciseAnimationStep('show-calculation');
-      await quickAudio(`${first} plus ${second} égale ${result}`);
+      await quickAudio(`${first} moins ${second} égale ${result}`);
       await wait(700);
       
       setExerciseAnimationStep('show-result');
@@ -1293,6 +1257,204 @@ export default function ProblemesSoustraction() {
         {item}
       </div>
     ));
+  };
+
+  // Fonction officielle pour rendre une soustraction posée (adaptée du code CE1)
+  const renderPostedSubtraction = (exampleData: any, isAnimated = false, showHelperBox = false, animationStep?: string) => {
+    const example = {
+      num1: exampleData.first,
+      num2: exampleData.second,
+      result: exampleData.result,
+      hasBorrow: ((exampleData.first % 10) < (exampleData.second % 10)) || 
+                 (Math.floor((exampleData.first % 100) / 10) - ((exampleData.first % 10) < (exampleData.second % 10) ? 1 : 0)) < Math.floor((exampleData.second % 100) / 10)
+    };
+    
+    // États simulés pour l'animation
+    const calculationStep = animationStep === 'group1' ? 'setup' :
+                           animationStep === 'group2' ? 'setup' :
+                           animationStep === 'calculation' ? 'units' :
+                           animationStep === 'result' ? 'result' :
+                           animationStep === 'show-calculation' ? 'tens' :
+                           animationStep === 'show-result' ? 'result' :
+                           animationStep === 'show-groups' ? 'hundreds' : null;
+
+    // Calcul des emprunts
+    const needsBorrowFromTens = (example.num1 % 10) < (example.num2 % 10);
+    const adjustedTens = Math.floor((example.num1 % 100) / 10) - (needsBorrowFromTens ? 1 : 0);
+    const needsBorrowFromHundreds = adjustedTens < Math.floor((example.num2 % 100) / 10);
+    
+    const borrowValues = {
+      fromTens: needsBorrowFromTens ? 1 : 0,
+      fromHundreds: needsBorrowFromHundreds ? 1 : 0
+    };
+    
+    const showingBorrow = calculationStep === 'result' && example.hasBorrow;
+    
+    const partialResults = calculationStep === 'result'
+      ? { 
+          units: ((example.num1 % 10) + (needsBorrowFromTens ? 10 : 0) - (example.num2 % 10)).toString(),
+          tens: (adjustedTens + (needsBorrowFromHundreds ? 10 : 0) - Math.floor((example.num2 % 100) / 10)).toString(),
+          hundreds: example.num1 >= 100 ? (Math.floor(example.num1 / 100) - (needsBorrowFromHundreds ? 1 : 0) - Math.floor(example.num2 / 100)).toString() : null
+        }
+      : { units: null, tens: null, hundreds: null };
+
+    // Déterminer le nombre de chiffres maximum
+    const maxDigits = Math.max(example.num1.toString().length, example.num2.toString().length, example.result.toString().length);
+    const num1Str = example.num1.toString().padStart(maxDigits, ' ');
+    const num2Str = example.num2.toString().padStart(maxDigits, ' ');
+    const resultStr = example.result.toString().padStart(maxDigits, ' ');
+    
+    // Séparer les chiffres (unités, dizaines, centaines)
+    const num1Units = num1Str[num1Str.length - 1];
+    const num1Tens = num1Str[num1Str.length - 2] === ' ' ? '' : num1Str[num1Str.length - 2];
+    const num1Hundreds = maxDigits >= 3 ? (num1Str[num1Str.length - 3] === ' ' ? '' : num1Str[num1Str.length - 3]) : '';
+    
+    const num2Units = num2Str[num2Str.length - 1];
+    const num2Tens = num2Str[num2Str.length - 2] === ' ' ? '' : num2Str[num2Str.length - 2];
+    const num2Hundreds = maxDigits >= 3 ? (num2Str[num2Str.length - 3] === ' ' ? '' : num2Str[num2Str.length - 3]) : '';
+    
+    const resultUnits = resultStr[resultStr.length - 1];
+    const resultTens = resultStr[resultStr.length - 2] === ' ' ? '' : resultStr[resultStr.length - 2];
+    const resultHundreds = maxDigits >= 3 ? (resultStr[resultStr.length - 3] === ' ' ? '' : resultStr[resultStr.length - 3]) : '';
+    
+    return (
+      <div className={`bg-gradient-to-br from-white to-red-50 p-8 rounded-xl shadow-lg border-2 transition-all duration-500 border-gray-200`}>
+        <div className="flex justify-center">
+          <div className="space-y-4">
+            {/* Tableau des colonnes C, D et U (ou seulement D et U) */}
+            <div className="flex justify-center mb-4">
+              <div className={`grid gap-4 sm:gap-6 font-bold text-sm sm:text-base ${maxDigits >= 3 ? 'grid-cols-3' : 'grid-cols-2'}`}>
+                {maxDigits >= 3 && (
+                  <div className={`text-center p-2 rounded-lg transition-all duration-500 bg-gray-100 text-gray-600`}>
+                    C
+                  </div>
+                )}
+                <div className={`text-center p-2 rounded-lg transition-all duration-500 bg-gray-100 text-gray-600`}>
+                  D
+                </div>
+                <div className={`text-center p-2 rounded-lg transition-all duration-500 bg-gray-100 text-gray-600`}>
+                  U
+                </div>
+              </div>
+            </div>
+
+            {/* Emprunts visuels si nécessaire */}
+            {example.hasBorrow && showingBorrow && (
+              <div className="flex justify-center">
+                <div className={`grid gap-8 ${maxDigits >= 3 ? 'grid-cols-3' : 'grid-cols-2'}`}>
+                  {maxDigits >= 3 && (
+                    <div className="text-center text-blue-500 text-lg relative">
+                      {borrowValues.fromHundreds > 0 && (
+                        <div className="relative">
+                          <span className="text-gray-400 line-through text-sm">{Math.floor(example.num1 / 100)}</span>
+                          <br/>
+                          <span className="text-blue-600 font-bold animate-bounce">{Math.floor(example.num1 / 100) - 1}</span>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                  <div className="text-center text-blue-500 text-lg relative">
+                    {borrowValues.fromTens > 0 && (
+                      <div className="relative">
+                        <span className="text-gray-400 line-through text-sm">{Math.floor((example.num1 % 100) / 10)}</span>
+                        <br/>
+                        <span className="text-blue-600 font-bold animate-bounce">{Math.floor((example.num1 % 100) / 10) - 1}</span>
+                      </div>
+                    )}
+                  </div>
+                  <div className="text-center text-green-500 text-lg relative">
+                    {borrowValues.fromTens > 0 && (
+                      <div className="relative">
+                        <span className="text-gray-400 line-through text-sm">{example.num1 % 10}</span>
+                        <br/>
+                        <span className="text-green-600 font-bold animate-bounce">{(example.num1 % 10) + 10}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+            
+            {/* Premier nombre */}
+            <div className="flex justify-center">
+              <div className={`grid gap-2 sm:gap-6 font-mono text-base sm:text-2xl ${maxDigits >= 3 ? 'grid-cols-3' : 'grid-cols-2'}`}>
+                {maxDigits >= 3 && (
+                  <div className={`text-center p-3 rounded-lg transition-all duration-500 text-gray-700 ${num1Hundreds ? 'border-2 border-dashed border-purple-300' : ''}`}>
+                    {num1Hundreds || ''}
+                  </div>
+                )}
+                <div className={`text-center p-3 rounded-lg transition-all duration-500 text-gray-700 ${num1Tens ? 'border-2 border-dashed border-orange-300' : ''}`}>
+                  {num1Tens || ''}
+                </div>
+                <div className={`text-center p-3 rounded-lg transition-all duration-500 text-gray-700 border-2 border-dashed border-blue-300`}>
+                  {num1Units}
+                </div>
+              </div>
+            </div>
+            
+            {/* Deuxième nombre avec signe - */}
+            <div className="flex justify-center">
+              <div className="relative">
+                <div className={`grid gap-2 sm:gap-6 font-mono text-base sm:text-2xl ${maxDigits >= 3 ? 'grid-cols-3' : 'grid-cols-2'}`}>
+                  {maxDigits >= 3 && (
+                    <div className={`text-center p-3 rounded-lg transition-all duration-500 text-gray-700 ${num2Hundreds ? 'border-2 border-dashed border-purple-300' : ''}`}>
+                      {num2Hundreds || ''}
+                    </div>
+                  )}
+                  <div className={`text-center p-3 rounded-lg transition-all duration-500 text-gray-700 ${num2Tens ? 'border-2 border-dashed border-orange-300' : ''}`}>
+                    {num2Tens || ''}
+                  </div>
+                  <div className={`text-center p-3 rounded-lg transition-all duration-500 text-gray-700 border-2 border-dashed border-blue-300`}>
+                    {num2Units}
+                  </div>
+                </div>
+                {/* Signe - positionné à gauche sans affecter l'alignement */}
+                <div className="absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-8 text-3xl font-mono text-red-600 font-bold">
+                  -
+                </div>
+              </div>
+            </div>
+            
+            {/* Ligne de séparation animée */}
+            <div className="flex justify-center">
+              <div className={`border-t-4 my-3 transition-all duration-700 border-purple-400`} style={{ width: maxDigits >= 3 ? '11rem' : '7.5rem' }}></div>
+            </div>
+            
+            {/* Résultat avec animations progressives */}
+            <div className="flex justify-center">
+              <div className={`grid gap-4 sm:gap-8 font-mono text-lg sm:text-3xl font-bold ${maxDigits >= 3 ? 'grid-cols-3' : 'grid-cols-2'}`}>
+                {maxDigits >= 3 && (
+                  <div className={`text-center p-3 rounded-lg transition-all duration-1000 ${
+                    partialResults.hundreds || calculationStep === 'result' ? 'bg-purple-100 text-purple-700 animate-result-reveal' : 'text-gray-400'
+                  } ${resultHundreds ? 'border-2 border-dashed border-purple-300' : ''}`}>
+                    {partialResults.hundreds || (calculationStep === 'result' ? resultHundreds : '?')}
+                  </div>
+                )}
+                <div className={`text-center p-3 rounded-lg transition-all duration-1000 ${
+                  partialResults.tens || calculationStep === 'result' ? 'bg-purple-100 text-purple-700 animate-result-reveal' : 'text-gray-400'
+                } ${resultTens ? 'border-2 border-dashed border-purple-300' : ''}`}>
+                  {partialResults.tens || (calculationStep === 'result' ? resultTens : '?')}
+                </div>
+                <div className={`text-center p-3 rounded-lg transition-all duration-1000 border-2 border-dashed border-purple-300 ${
+                  partialResults.units || calculationStep === 'result' ? 'bg-purple-100 text-purple-700 animate-result-reveal' : 'text-gray-400'
+                }`}>
+                  {partialResults.units || (calculationStep === 'result' ? resultUnits : '?')}
+                </div>
+              </div>
+            </div>
+
+            {/* Phrase de réponse finale */}
+            {calculationStep === 'result' && (
+              <div className="mt-6 text-center">
+                <div className="bg-green-100 text-green-800 p-4 rounded-lg animate-fade-in font-medium">
+                  🎉 <strong>Réponse finale</strong> : Il reste exactement {example.result} ! Parfait ! 🎉
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
   };
 
   return (
@@ -1559,14 +1721,14 @@ export default function ProblemesSoustraction() {
                 <div className="p-4 bg-gray-50 rounded-lg">
                   <p className="text-lg font-semibold text-gray-800 mb-3">Exemple d'histoire :</p>
                   <div className="text-lg text-gray-700 p-3 bg-white rounded border">
-                    {highlightNumbers("Marie a 3 bonbons rouges et 4 bonbons bleus. Combien a-t-elle de bonbons en tout ?", highlightNumbersInStory)}
+                    {highlightNumbers("Marie avait 12 bonbons. Elle en a mangé 5. Combien lui reste-t-il de bonbons ?", highlightNumbersInStory)}
                   </div>
                 </div>
                 
                 {highlightNumbersInStory && (
                   <div className="text-center p-4 bg-yellow-50 border-2 border-yellow-200 rounded-lg">
                     <p className="text-lg text-yellow-800 font-semibold">
-                      🎯 Voyez comme les nombres <span className="bg-yellow-300 px-2 py-1 rounded font-black">3</span> et <span className="bg-yellow-300 px-2 py-1 rounded font-black">4</span> ressortent bien !
+                      🎯 Voyez comme les nombres <span className="bg-yellow-300 px-2 py-1 rounded font-black">12</span> et <span className="bg-yellow-300 px-2 py-1 rounded font-black">5</span> ressortent bien !
                     </p>
                   </div>
                 )}
@@ -1658,52 +1820,63 @@ export default function ProblemesSoustraction() {
                         </div>
                       )}
 
-                      {/* Animation des objets */}
-                      <div className="flex justify-center items-center space-x-8">
-                        {/* Premier groupe */}
-                        {(animatingStep === 'group1' || animatingStep === 'group2' || animatingStep === 'calculation' || animatingStep === 'result') && (
-                          <div className={`p-4 rounded-lg ${animatingStep === 'group1' ? 'bg-red-100 ring-2 ring-red-400' : 'bg-gray-100'}`}>
-                            <div className="text-center mb-2">
-                              <span className="font-bold text-gray-800">{example.first}</span>
-                            </div>
-                            <div className="grid grid-cols-3 gap-2">
-                              {renderObjects(example.first, example.item, example.color1)}
-                            </div>
+                      {/* Animation des objets ou soustraction posée selon la taille */}
+                      <div className="flex justify-center items-center">
+                        {example.first > 20 || example.second > 20 ? (
+                          /* Grands nombres : utiliser la soustraction posée - seulement aux bonnes étapes */
+                          <div className="w-full max-w-2xl">
+                            {(animatingStep === 'calculation' || animatingStep === 'result') && 
+                             renderPostedSubtraction(example, true, false, animatingStep || undefined)}
                           </div>
-                        )}
-
-                        {/* Signe + */}
-                        {(animatingStep === 'group2' || animatingStep === 'calculation' || animatingStep === 'result') && (
-                          <div className="text-4xl font-bold text-gray-700">+</div>
-                        )}
-
-                        {/* Deuxième groupe */}
-                        {(animatingStep === 'group2' || animatingStep === 'calculation' || animatingStep === 'result') && (
-                          <div className={`p-4 rounded-lg ${animatingStep === 'group2' ? 'bg-blue-100 ring-2 ring-blue-400' : 'bg-gray-100'}`}>
-                            <div className="text-center mb-2">
-                              <span className="font-bold text-gray-800">{example.second}</span>
-                            </div>
-                            <div className="grid grid-cols-3 gap-2">
-                              {renderObjects(example.second, example.item, example.color2)}
-                            </div>
-                          </div>
-                        )}
-
-                        {/* Signe = et résultat */}
-                        {(animatingStep === 'calculation' || animatingStep === 'result') && (
-                          <>
-                            <div className="text-4xl font-bold text-gray-700">=</div>
-                            <div className={`p-4 rounded-lg ${animatingStep === 'result' ? 'bg-green-100 ring-2 ring-green-400 animate-pulse' : 'bg-gray-100'}`}>
-                              <div className="text-center mb-2">
-                                <span className="font-bold text-2xl text-gray-800">{example.result}</span>
-                              </div>
-                              {animatingStep === 'result' && (
-                                <div className="grid grid-cols-4 gap-2">
-                                  {renderObjects(example.result, example.item, 'text-green-600')}
+                        ) : (
+                          /* Petits nombres : affichage avec objets */
+                          <div className="space-x-8 flex items-center">
+                            {/* Premier groupe */}
+                            {(animatingStep === 'group1' || animatingStep === 'group2' || animatingStep === 'calculation' || animatingStep === 'result') && (
+                              <div className={`p-4 rounded-lg ${animatingStep === 'group1' ? 'bg-red-100 ring-2 ring-red-400' : 'bg-gray-100'}`}>
+                                <div className="text-center mb-2">
+                                  <span className="font-bold text-gray-800">{example.first}</span>
                                 </div>
-                              )}
-                            </div>
-                          </>
+                                <div className="grid grid-cols-3 gap-2">
+                                  {renderObjects(example.first, example.item, example.color1)}
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Signe - */}
+                            {(animatingStep === 'group2' || animatingStep === 'calculation' || animatingStep === 'result') && (
+                              <div className="text-4xl font-bold text-red-700">-</div>
+                            )}
+
+                            {/* Deuxième groupe */}
+                            {(animatingStep === 'group2' || animatingStep === 'calculation' || animatingStep === 'result') && (
+                              <div className={`p-4 rounded-lg ${animatingStep === 'group2' ? 'bg-blue-100 ring-2 ring-blue-400' : 'bg-gray-100'}`}>
+                                <div className="text-center mb-2">
+                                  <span className="font-bold text-gray-800">{example.second}</span>
+                                </div>
+                                <div className="grid grid-cols-3 gap-2">
+                                  {renderObjects(example.second, example.item, example.color2)}
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Signe = et résultat */}
+                            {(animatingStep === 'calculation' || animatingStep === 'result') && (
+                              <>
+                                <div className="text-4xl font-bold text-gray-700">=</div>
+                                <div className={`p-4 rounded-lg ${animatingStep === 'result' ? 'bg-green-100 ring-2 ring-green-400 animate-pulse' : 'bg-gray-100'}`}>
+                                  <div className="text-center mb-2">
+                                    <span className="font-bold text-2xl text-gray-800">{example.result}</span>
+                                  </div>
+                                  {animatingStep === 'result' && (
+                                    <div className="grid grid-cols-4 gap-2">
+                                      {renderObjects(example.result, example.item, 'text-green-600')}
+                                    </div>
+                                  )}
+                                </div>
+                              </>
+                            )}
+                          </div>
                         )}
                       </div>
 
@@ -1711,7 +1884,7 @@ export default function ProblemesSoustraction() {
                       {(animatingStep === 'calculation' || animatingStep === 'result') && (
                         <div className="text-center p-4 bg-purple-100 rounded-lg">
                           <div className="text-2xl font-bold text-purple-800">
-                            {highlightNumbers(`${example.first} + ${example.second} = ${example.result}`)}
+                            {highlightNumbers(`${example.first} - ${example.second} = ${example.result}`)}
                           </div>
                         </div>
                       )}
@@ -1896,126 +2069,57 @@ export default function ProblemesSoustraction() {
                               </div>
                             )}
 
-                            {/* Animation des objets avec représentation adaptée */}
+                            {/* Animation avec soustraction posée pour les grands nombres */}
                             {(exerciseAnimationStep === 'show-groups' || exerciseAnimationStep === 'show-calculation' || exerciseAnimationStep === 'show-result') && (
-                              <div className="flex justify-center items-center space-x-6">
-                                {/* Premier groupe */}
-                                <div className="p-3 rounded-lg bg-red-100 ring-2 ring-red-400">
-                                  <div className="text-center mb-2">
-                                    <span className="font-bold text-red-800">{exercise.first}</span>
+                              <div className="space-y-6">
+                                {exercise.first > 20 || exercise.second > 20 ? (
+                                  /* Grands nombres : utiliser la soustraction posée - seulement au bon moment */
+                                  <div className="flex justify-center">
+                                    {(exerciseAnimationStep === 'show-calculation' || exerciseAnimationStep === 'show-result') &&
+                                     renderPostedSubtraction(exercise, true, false, exerciseAnimationStep || undefined)}
                                   </div>
-                                  {exercise.first <= 12 ? (
-                                    /* Petits nombres : affichage direct */
-                                    <div className="grid grid-cols-4 gap-1 max-w-32">
-                                      {Array.from({ length: exercise.first }, (_, i) => (
-                                        <div
-                                          key={i}
-                                          className={`text-xl ${exercise.color1} animate-bounce`}
-                                          style={{ animationDelay: `${i * 100}ms` }}
-                                        >
-                                          {exercise.item}
-                                        </div>
-                                      ))}
-                                    </div>
-                                  ) : (
-                                    /* Grands nombres : représentation dizaines + unités */
-                                    <div className="space-y-2">
-                                      {Math.floor(exercise.first / 10) > 0 && (
-                                        <div className="text-center">
-                                          <div className="text-xs text-gray-600 mb-1">Dizaines</div>
-                                          <div className="flex justify-center space-x-1">
-                                            {Array.from({ length: Math.floor(exercise.first / 10) }, (_, i) => (
-                                              <div
-                                                key={i}
-                                                className="w-6 h-8 bg-red-400 rounded animate-pulse border border-red-600"
-                                                style={{ animationDelay: `${i * 200}ms` }}
-                                                title="10"
-                                              >
-                                                <div className="text-xs text-white text-center leading-8 font-bold">10</div>
-                                              </div>
-                                            ))}
+                                ) : (
+                                  /* Petits nombres : affichage avec objets */
+                                  <div className="flex justify-center items-center space-x-6">
+                                    {/* Premier groupe */}
+                                    <div className="p-3 rounded-lg bg-red-100 ring-2 ring-red-400">
+                                      <div className="text-center mb-2">
+                                        <span className="font-bold text-red-800">{exercise.first}</span>
+                                      </div>
+                                      <div className="grid grid-cols-4 gap-1 max-w-32">
+                                        {Array.from({ length: exercise.first }, (_, i) => (
+                                          <div
+                                            key={i}
+                                            className={`text-xl ${exercise.color1} animate-bounce`}
+                                            style={{ animationDelay: `${i * 100}ms` }}
+                                          >
+                                            {exercise.item}
                                           </div>
-                                        </div>
-                                      )}
-                                      {exercise.first % 10 > 0 && (
-                                        <div className="text-center">
-                                          <div className="text-xs text-gray-600 mb-1">Unités</div>
-                                          <div className="flex justify-center space-x-1">
-                                            {Array.from({ length: exercise.first % 10 }, (_, i) => (
-                                              <div
-                                                key={i}
-                                                className={`text-sm ${exercise.color1} animate-bounce`}
-                                                style={{ animationDelay: `${i * 100}ms` }}
-                                              >
-                                                {exercise.item}
-                                              </div>
-                                            ))}
-                                          </div>
-                                        </div>
-                                      )}
+                                        ))}
+                                      </div>
                                     </div>
-                                  )}
-                                </div>
 
-                                <div className="text-3xl font-bold text-gray-700">+</div>
+                                    <div className="text-3xl font-bold text-red-700">-</div>
 
-                                {/* Deuxième groupe */}
-                                <div className="p-3 rounded-lg bg-blue-100 ring-2 ring-blue-400">
-                                  <div className="text-center mb-2">
-                                    <span className="font-bold text-blue-800">{exercise.second}</span>
+                                    {/* Deuxième groupe */}
+                                    <div className="p-3 rounded-lg bg-blue-100 ring-2 ring-blue-400">
+                                      <div className="text-center mb-2">
+                                        <span className="font-bold text-blue-800">{exercise.second}</span>
+                                      </div>
+                                      <div className="grid grid-cols-4 gap-1 max-w-32">
+                                        {Array.from({ length: exercise.second }, (_, i) => (
+                                          <div
+                                            key={i}
+                                            className={`text-xl ${exercise.color2} animate-bounce`}
+                                            style={{ animationDelay: `${i * 100}ms` }}
+                                          >
+                                            {exercise.item}
+                                          </div>
+                                        ))}
+                                      </div>
+                                    </div>
                                   </div>
-                                  {exercise.second <= 12 ? (
-                                    /* Petits nombres : affichage direct */
-                                    <div className="grid grid-cols-4 gap-1 max-w-32">
-                                      {Array.from({ length: exercise.second }, (_, i) => (
-                                        <div
-                                          key={i}
-                                          className={`text-xl ${exercise.color2} animate-bounce`}
-                                          style={{ animationDelay: `${i * 100}ms` }}
-                                        >
-                                          {exercise.item}
-                                        </div>
-                                      ))}
-                                    </div>
-                                  ) : (
-                                    /* Grands nombres : représentation dizaines + unités */
-                                    <div className="space-y-2">
-                                      {Math.floor(exercise.second / 10) > 0 && (
-                                        <div className="text-center">
-                                          <div className="text-xs text-gray-600 mb-1">Dizaines</div>
-                                          <div className="flex justify-center space-x-1">
-                                            {Array.from({ length: Math.floor(exercise.second / 10) }, (_, i) => (
-                                              <div
-                                                key={i}
-                                                className="w-6 h-8 bg-blue-400 rounded animate-pulse border border-blue-600"
-                                                style={{ animationDelay: `${i * 200}ms` }}
-                                                title="10"
-                                              >
-                                                <div className="text-xs text-white text-center leading-8 font-bold">10</div>
-                                              </div>
-                                            ))}
-                                          </div>
-                                        </div>
-                                      )}
-                                      {exercise.second % 10 > 0 && (
-                                        <div className="text-center">
-                                          <div className="text-xs text-gray-600 mb-1">Unités</div>
-                                          <div className="flex justify-center space-x-1">
-                                            {Array.from({ length: exercise.second % 10 }, (_, i) => (
-                                              <div
-                                                key={i}
-                                                className={`text-sm ${exercise.color2} animate-bounce`}
-                                                style={{ animationDelay: `${i * 100}ms` }}
-                                              >
-                                                {exercise.item}
-                                              </div>
-                                            ))}
-                                          </div>
-                                        </div>
-                                      )}
-                                    </div>
-                                  )}
-                                </div>
+                                )}
                               </div>
                             )}
 
@@ -2024,8 +2128,8 @@ export default function ProblemesSoustraction() {
                               <div className="text-center p-4 bg-purple-100 rounded-lg">
                                 <div className="text-2xl font-bold text-purple-800">
                                   {exerciseAnimationStep === 'show-result' ? 
-                                    `${exercise.first} + ${exercise.second} = ${exercise.answer}` :
-                                    `${exercise.first} + ${exercise.second} = ?`
+                                    `${exercise.first} - ${exercise.second} = ${exercise.answer}` :
+                                    `${exercise.first} - ${exercise.second} = ?`
                                   }
                                 </div>
                               </div>
@@ -2035,7 +2139,7 @@ export default function ProblemesSoustraction() {
                             {exerciseAnimationStep === 'show-result' && (
                               <div className="text-center p-4 bg-green-100 rounded-lg ring-2 ring-green-400 animate-pulse">
                                 <div className="text-3xl font-bold text-green-800 mb-2">
-                                  {exercise.first} + {exercise.second} = {exercise.answer}
+                                  {exercise.first} - {exercise.second} = {exercise.answer}
                                 </div>
                                 <div className="text-lg text-green-700">
                                   La réponse est {exercise.answer} !
