@@ -1270,6 +1270,34 @@ export default function AdditionsJusqu20CP() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-100">
+      {/* Bouton Stop flottant */}
+      {(isPlayingVocal || isAnimationRunning) && (
+        <div className="fixed top-4 right-4 z-[60]">
+          <button
+            onClick={stopAllVocalsAndAnimations}
+            className="relative flex items-center gap-2 px-3 py-2 rounded-full shadow-2xl transition-all duration-300 bg-gradient-to-r from-red-500 to-red-600 text-white hover:from-red-600 hover:to-red-700 hover:scale-105 animate-pulse"
+            title={isPlayingVocal ? "Arrêter Sam le Pirate" : "Arrêter l'animation"}
+          >
+            {/* Image du personnage */}
+            <div className="w-8 h-8 rounded-full overflow-hidden border-2 border-white/50">
+              <img
+                src="/image/pirate-small.png"
+                alt="Sam le Pirate"
+                className="w-full h-full object-cover"
+              />
+            </div>
+            
+            {/* Texte et icône */}
+            <>
+              <span className="text-sm font-bold hidden sm:block">
+                {isPlayingVocal ? 'Stop' : 'Stop Animation'}
+              </span>
+              <div className="w-3 h-3 bg-white rounded-sm animate-pulse"></div>
+            </>
+          </button>
+        </div>
+      )}
+
       {/* Animation CSS personnalisée pour les icônes */}
       <style dangerouslySetInnerHTML={{
         __html: `
@@ -1288,20 +1316,7 @@ export default function AdditionsJusqu20CP() {
         `
       }} />
       
-      {/* Bouton flottant de Sam - visible uniquement quand Sam parle */}
-      {isPlayingVocal && (
-        <div className="fixed top-4 right-4 z-[60]">
-          <button
-            onClick={stopAllVocalsAndAnimations}
-            className="bg-red-500 hover:bg-red-600 text-white p-2 sm:p-3 rounded-full shadow-lg border-2 border-white transition-all duration-300 hover:scale-110 flex items-center justify-center min-w-[48px] min-h-[48px] sm:min-w-[56px] sm:min-h-[56px]"
-            title="Arrêter Sam"
-          >
-            <svg className="w-4 h-4 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-        </div>
-      )}
+
       
       <div className="max-w-6xl mx-auto px-4 py-8">
         {/* Header */}
