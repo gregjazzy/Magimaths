@@ -1408,24 +1408,7 @@ export default function AdditionsJusqu20CP() {
               </button>
             </div>
 
-            {/* Bouton d'explication vocal principal */}
-            <div className="text-center mb-6">
-                <button
-                onClick={explainChapter}
-                disabled={isAnimationRunning}
-                className={`px-8 py-4 rounded-xl font-bold text-xl shadow-lg transition-all transform ${
-                  isAnimationRunning 
-                    ? 'bg-gray-400 text-gray-200 cursor-not-allowed' 
-                    : 'bg-gradient-to-r from-blue-500 to-purple-500 text-white hover:shadow-xl hover:scale-105'
-                }`}
-                style={{
-                  animationDuration: !hasStarted && !isAnimationRunning ? '2s' : 'none',
-                  animationIterationCount: !hasStarted && !isAnimationRunning ? 'infinite' : 'none'
-                }}
-              >
-                {isAnimationRunning ? '⏳ Animation en cours...' : '▶️ COMMENCER !'}
-                </button>
-              </div>
+
 
             {/* Explication du concept avec animation intégrée */}
             <div 
