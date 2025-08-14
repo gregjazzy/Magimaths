@@ -49,6 +49,10 @@ export default function SoustractionRetenueCE1() {
   const [exercisesHasStarted, setExercisesHasStarted] = useState(false);
   const [exercisesImageError, setExercisesImageError] = useState(false);
   
+  // États pour l'animation vocale du texte explicatif
+  const [isExplainingText, setIsExplainingText] = useState(false);
+  const [highlightedTextPart, setHighlightedTextPart] = useState<string | null>(null);
+  
   // Refs pour gérer l'audio
   const stopSignalRef = useRef(false);
   const currentAudioRef = useRef<SpeechSynthesisUtterance | null>(null);
@@ -78,30 +82,30 @@ export default function SoustractionRetenueCE1() {
   const baseExercises = [
     // 1. Introduction retenues
     {
-      question: 'Quand fait-on un retenue ?', 
+      question: 'Quand fait-on un emprunt ?', 
       correctAnswer: 'Quand le chiffre du haut est plus petit',
       choices: ['Quand on veut', 'Quand le chiffre du haut est plus petit', 'Jamais']
     },
     
-    // 2. Démarrage avec calculs simples avec retenues
+    // 2. Démarrage avec calculs simples avec retenues - nouveaux exemples
     { 
-      question: 'Calcule : 52 - 27', 
-      correctAnswer: '25',
-      choices: ['23', '25', '27'],
-      visual: '   52\n-  27\n─────\n   ?'
+      question: 'Calcule : 64 - 29', 
+      correctAnswer: '35',
+      choices: ['33', '35', '37'],
+      visual: '   64\n-  29\n─────\n   ?'
     },
     { 
-      question: 'Calcule : 81 - 45', 
-      correctAnswer: '36',
-      choices: ['34', '36', '38'],
-      visual: '   81\n-  45\n─────\n   ?'
+      question: 'Calcule : 93 - 47', 
+      correctAnswer: '46',
+      choices: ['44', '46', '48'],
+      visual: '   93\n-  47\n─────\n   ?'
     },
     
-    // 3. Concept des retenues
+    // 3. Concept des emprunts
     { 
-      question: 'Comment fait-on un retenue ?', 
-      correctAnswer: 'On retenuee 1 à la colonne de gauche',
-      choices: ['On ajoute 10', 'On retenuee 1 à la colonne de gauche', 'On enlève 1']
+      question: 'Comment fait-on un emprunt ?', 
+      correctAnswer: 'On emprunte 1 à la colonne de gauche',
+      choices: ['On ajoute 10', 'On emprunte 1 à la colonne de gauche', 'On enlève 1']
     },
     { 
       question: 'Calcule : 205 - 47', 
@@ -116,10 +120,16 @@ export default function SoustractionRetenueCE1() {
       visual: '  305\n-  58\n─────\n   ?'
     },
     { 
-      question: 'Calcule : 245 - 76', 
-      correctAnswer: '169',
-      choices: ['165', '169', '173'],
-      visual: '  245\n-  76\n─────\n   ?'
+      question: 'Calcule : 156 - 89', 
+      correctAnswer: '67',
+      choices: ['65', '67', '69'],
+      visual: '  156\n-  89\n─────\n   ?'
+    },
+    { 
+      question: 'Calcule : 278 - 99', 
+      correctAnswer: '179',
+      choices: ['177', '179', '181'],
+      visual: '  278\n-  99\n─────\n   ?'
     },
     
     // 4. Soustractions 3 chiffres avec retenues multiples
@@ -225,6 +235,80 @@ export default function SoustractionRetenueCE1() {
     // Reset des états de synchronisation vocale
     setCurrentVocalSection(null);
     setActiveSpeakingButton(null);
+    setIsExplainingText(false);
+    setHighlightedTextPart(null);
+  };
+
+  // Fonction pour expliquer le texte avec animation vocale
+  const explainTextWithVoice = async () => {
+    if (isExplainingText) return;
+    
+    stopAllVocalsAndAnimations();
+    await wait(300);
+    stopSignalRef.current = false;
+    setIsExplainingText(true);
+    
+    try {
+      // Introduction
+      await playAudio("Je vais t'expliquer la différence entre addition et soustraction avec retenue !", true);
+      if (stopSignalRef.current) return;
+      
+      await wait(1000);
+      
+      // Expliquer l'addition avec retenue
+      setHighlightedTextPart('addition-title');
+      await playAudio("D'abord, l'addition avec retenue !", true);
+      if (stopSignalRef.current) return;
+      
+      await wait(800);
+      setHighlightedTextPart('addition-when');
+      await playAudio("Quand la somme dépasse 9", true);
+      if (stopSignalRef.current) return;
+      
+      await wait(800);
+      setHighlightedTextPart('addition-action');
+      await playAudio("On retient 1 qu'on ajoute à la colonne suivante !", true);
+      if (stopSignalRef.current) return;
+      
+      await wait(1500);
+      
+      // Expliquer la soustraction avec retenue
+      setHighlightedTextPart('soustraction-title');
+      await playAudio("Maintenant, la soustraction avec retenue !", true);
+      if (stopSignalRef.current) return;
+      
+      await wait(800);
+      setHighlightedTextPart('soustraction-when');
+      await playAudio("Quand on ne peut pas soustraire", true);
+      if (stopSignalRef.current) return;
+      
+      await wait(800);
+      setHighlightedTextPart('soustraction-action');
+      await playAudio("On emprunte 1 qu'on enlève de la colonne suivante !", true);
+      if (stopSignalRef.current) return;
+      
+      await wait(1500);
+      
+      // Résumé final
+      setHighlightedTextPart('resume-addition');
+      await playAudio("Donc en résumé : Addition, on ajoute la retenue !", true);
+      if (stopSignalRef.current) return;
+      
+      await wait(1000);
+      setHighlightedTextPart('resume-soustraction');
+      await playAudio("Soustraction, on enlève la retenue !", true);
+      if (stopSignalRef.current) return;
+      
+      await wait(1000);
+      setHighlightedTextPart(null);
+      await playAudio("C'est ça la grande différence ! Tu as compris ?", true);
+      
+    } catch (error) {
+      console.error('Erreur dans explainTextWithVoice:', error);
+    } finally {
+      setIsExplainingText(false);
+      setHighlightedTextPart(null);
+    }
   };
 
   // Fonction pour jouer l'audio avec synchronisation des boutons
@@ -316,10 +400,18 @@ export default function SoustractionRetenueCE1() {
       await wait(1000);
       if (stopSignalRef.current) return;
       
+      // Présenter le bouton d'explication bleu
+      setHighlightedElement('explain-text-button');
+      await playAudio("D'abord, tu peux cliquer sur ce bouton bleu pour écouter l'explication de la différence entre addition avec retenue et soustraction avec retenue !", true);
+      if (stopSignalRef.current) return;
+      
+      await wait(2000);
+      if (stopSignalRef.current) return;
+      
       // Présenter l'exemple principal
       setHighlightedElement('example-section');
       scrollToElement('example-section');
-      await playAudio("D'abord, voici l'exemple principal avec son animation !", true, 'main-example-button');
+      await playAudio("Maintenant, voici l'exemple principal avec son animation !", true, 'main-example-button');
       if (stopSignalRef.current) return;
       
       await wait(800);
@@ -516,11 +608,7 @@ export default function SoustractionRetenueCE1() {
       }
       if (stopSignalRef.current) return;
       
-      // Afficher le résultat des unités immédiatement
-      await wait(500);
-      const unitsResult = needsBorrowFromTens ? ((num1Units + 10) - num2Units).toString() : (num1Units - num2Units).toString();
-      setPartialResults(prev => ({ ...prev, units: unitsResult }));
-      await wait(1000);
+
       
       // Gestion de l'emprunt avec animation spéciale et illustration visuelle
       if (needsBorrowFromTens) {
@@ -537,7 +625,7 @@ export default function SoustractionRetenueCE1() {
           
           // ÉTAPE 2 : Expliquer la solution avec animation
           setBorrowStep('borrow');
-          await playAudio(`Mais j'ai une solution magique ! Je vais emprunter 1 dizaine à la colonne des dizaines ! Regarde la flèche !`, true);
+          await playAudio(`Mais j'ai une solution magique ! Je vais emprunter 1 dizaine à la colonne des dizaines !`, true);
           if (stopSignalRef.current) return;
           
           await wait(2000);
@@ -548,7 +636,7 @@ export default function SoustractionRetenueCE1() {
           
           // ÉTAPE 3 : Montrer la transformation avec illustration visuelle
           setBorrowStep('transform');
-          await playAudio(`Regarde bien ! 1 dizaine = 10 unités ! Je transforme cette dizaine en 10 petites unités ! Vois-tu les 10 petits cubes ?`, true);
+          await playAudio(`Regarde bien ! 1 dizaine = 10 unités ! Je transforme cette dizaine en 10 unités !`, true);
           if (stopSignalRef.current) return;
           
           await wait(3000);
@@ -559,7 +647,14 @@ export default function SoustractionRetenueCE1() {
           if (stopSignalRef.current) return;
           
           await wait(2000);
-          await playAudio(`Et attention ! Comme j'ai emprunté 1 dizaine, il me reste ${num1Tens - 1} dizaines au lieu de ${num1Tens} !`, true);
+          await playAudio(`Et attention ! Comme j'ai emprunté 1 dizaine, je marque moins 1 au-dessus ! Tu vois le -1 bleu ? C'est la retenue négative !`, true);
+          if (stopSignalRef.current) return;
+          
+          // Afficher le résultat des unités après l'explication
+          await wait(1000);
+          const unitsResult = ((num1Units + 10) - num2Units).toString();
+          setPartialResults(prev => ({ ...prev, units: unitsResult }));
+          await playAudio(`Et voilà ! Le résultat des unités est ${unitsResult} !`, true);
           if (stopSignalRef.current) return;
           
           // Fin de l'animation d'emprunt
@@ -567,6 +662,13 @@ export default function SoustractionRetenueCE1() {
           setShowBorrowAnimation(false);
           setBorrowStep(null);
           setBorrowFromColumn(null);
+        if (stopSignalRef.current) return;
+      } else {
+        // Cas sans emprunt : afficher le résultat des unités après l'explication
+        await wait(1000);
+        const unitsResult = (num1Units - num2Units).toString();
+        setPartialResults(prev => ({ ...prev, units: unitsResult }));
+        await playAudio(`Facile ! ${num1Units} moins ${num2Units} égale ${unitsResult} !`, true);
         if (stopSignalRef.current) return;
       }
       
@@ -622,7 +724,7 @@ export default function SoustractionRetenueCE1() {
           
           await wait(1500);
           const num1Hundreds = Math.floor(example.num1 / 100) % 10;
-          await playAudio(`Et comme j'ai emprunté 1 centaine, il me reste ${num1Hundreds - 1} centaines au lieu de ${num1Hundreds} !`, true);
+          await playAudio(`Et comme j'ai emprunté 1 centaine, je marque moins 1 au-dessus ! Encore un -1 bleu pour la retenue négative !`, true);
           if (stopSignalRef.current) return;
         }
       }
@@ -836,7 +938,7 @@ export default function SoustractionRetenueCE1() {
                         <div className="relative">
                           <span className="text-gray-400 line-through text-sm">{Math.floor(example.num1 / 100)}</span>
                           <br/>
-                          <span className="text-blue-600 font-bold animate-bounce">{Math.floor(example.num1 / 100) - 1}</span>
+                          <span className="text-blue-600 font-bold animate-bounce">-1</span>
                         </div>
                       )}
                     </div>
@@ -846,7 +948,7 @@ export default function SoustractionRetenueCE1() {
                       <div className="relative">
                         <span className="text-gray-400 line-through text-sm">{Math.floor((example.num1 % 100) / 10)}</span>
                         <br/>
-                        <span className="text-blue-600 font-bold animate-bounce">{Math.floor((example.num1 % 100) / 10) - 1}</span>
+                        <span className="text-blue-600 font-bold animate-bounce">-1</span>
                       </div>
                     )}
                   </div>
@@ -978,90 +1080,7 @@ export default function SoustractionRetenueCE1() {
             )}
           </div>
 
-          {/* Animation visuelle d'emprunt - repositionnée à gauche */}
-          {showBorrowAnimation && (
-            <div className="fixed top-20 left-4 z-20 bg-white border-4 border-blue-400 rounded-xl p-6 shadow-2xl animate-fade-in max-w-sm">
-              <div className="text-center">
-                <h3 className="text-xl font-bold text-blue-800 mb-4">
-                  🎯 Animation d'emprunt
-                </h3>
-                
-                {borrowStep === 'problem' && (
-                  <div className="space-y-3">
-                    <div className="text-lg text-red-600 font-bold">
-                      ❌ Problème détecté !
-                    </div>
-                    <div className="bg-red-50 p-3 rounded-lg">
-                      <div className="font-mono text-xl">
-                        {(currentExample !== null && subtractionExamples[currentExample]) ? subtractionExamples[currentExample].num1 % 10 : '?'} &lt; {(currentExample !== null && subtractionExamples[currentExample]) ? subtractionExamples[currentExample].num2 % 10 : '?'}
-                      </div>
-                      <div className="text-sm text-gray-600 mt-1">
-                        Je ne peux pas soustraire !
-                      </div>
-                    </div>
-                  </div>
-                )}
-                
-                {borrowStep === 'borrow' && (
-                  <div className="space-y-3">
-                    <div className="text-lg text-orange-600 font-bold">
-                      🔄 Solution : Emprunter !
-                    </div>
-                    <div className="bg-orange-50 p-3 rounded-lg">
-                      <div className="flex items-center justify-center gap-2 mb-2">
-                        <div className="text-2xl">📦</div>
-                        <div className="text-lg animate-bounce">→</div>
-                        <div className="text-lg">🔢🔢🔢🔢🔢🔢🔢🔢🔢🔢</div>
-                      </div>
-                      <div className="text-sm text-gray-600 text-center">
-                        1 dizaine = 10 unités
-                      </div>
-                    </div>
-                  </div>
-                )}
-                
-                {borrowStep === 'transform' && (
-                  <div className="space-y-3">
-                    <div className="text-lg text-green-600 font-bold">
-                      ✨ Transformation !
-                    </div>
-                    <div className="bg-green-50 p-3 rounded-lg">
-                      <div className="grid grid-cols-5 gap-1 max-w-xs mx-auto mb-2">
-                        {Array.from({ length: 10 }, (_, i) => (
-                          <div
-                            key={i}
-                            className="w-6 h-6 bg-blue-300 rounded animate-bounce text-xs flex items-center justify-center"
-                            style={{ animationDelay: `${i * 80}ms` }}
-                          >
-                            1
-                          </div>
-                        ))}
-                      </div>
-                      <div className="text-sm text-green-600 text-center">
-                        10 petites unités !
-                      </div>
-                    </div>
-                  </div>
-                )}
-                
-                {borrowStep === 'calculate' && (
-                  <div className="space-y-3">
-                    <div className="text-lg text-purple-600 font-bold">
-                      🧮 Calcul final !
-                    </div>
-                    <div className="bg-purple-50 p-3 rounded-lg">
-                      <div className="text-lg font-mono text-center mb-2">
-                        {(currentExample !== null && subtractionExamples[currentExample]) ? subtractionExamples[currentExample].num1 % 10 : '?'} + 10 - {(currentExample !== null && subtractionExamples[currentExample]) ? subtractionExamples[currentExample].num2 % 10 : '?'} = {(currentExample !== null && subtractionExamples[currentExample]) ? ((subtractionExamples[currentExample].num1 % 10) + 10) - (subtractionExamples[currentExample].num2 % 10) : '?'}
-                      </div>
-                      <div className="text-green-600 font-bold text-lg text-center">
-                        ✅ Ça marche !
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
+
 
           {/* Panneau explicatif des emprunts - Contrôlé par le paramètre showHelperBox */}
           {example.hasBorrow && showingBorrow && showHelperBox && (
@@ -1205,23 +1224,29 @@ export default function SoustractionRetenueCE1() {
       setCalculationStep('units');
       
       const unitsResult = needsBorrowFromTens ? ((num1Units + 10) - num2Units).toString() : (num1Units - num2Units).toString();
+      
+      // Gestion de la retenue des unités AVANT d'afficher le résultat
+      if (needsBorrowFromTens) {
+          await playAudio(`Attention ! ${num1Units} est plus petit que ${num2Units} ! Je dois emprunter 1 dizaine qui vaut 10 unités !`, true);
+      if (stopSignalRef.current) return;
+      
+          await wait(1000);
+          setBorrowValues(prev => ({ ...prev, fromTens: 1 }));
+          setShowingBorrow(true);
+          setCarryValues(prev => ({ ...prev, toTens: 1 }));
+          setShowingCarry(true);
+          
+          await playAudio(`Maintenant j'ai ${num1Units} plus 10 = ${num1Units + 10} unités ! Je peux faire ${num1Units + 10} moins ${num2Units} !`, true);
+          if (stopSignalRef.current) return;
+        }
+      
+      // Maintenant on peut dire le calcul et afficher le résultat
       await playAudio(`Colonne U : ${needsBorrowFromTens ? `${num1Units} plus 10` : num1Units} moins ${num2Units} égale ${unitsResult}`, true);
       if (stopSignalRef.current) return;
       
       await wait(500);
       setPartialResults(prev => ({ ...prev, units: unitsResult }));
       await wait(1000);
-      
-      // Gestion de la retenue des unités
-              if (needsBorrowFromTens) {
-          await wait(1000);
-          setBorrowValues(prev => ({ ...prev, fromTens: 1 }));
-          setShowingBorrow(true);
-          setCarryValues(prev => ({ ...prev, toTens: 1 }));
-          setShowingCarry(true);
-          await playAudio(`Attention ! ${num1Units} est plus petit que ${num2Units} ! Je dois emprunter 1 dizaine qui devient 10 unités !`, true);
-          if (stopSignalRef.current) return;
-        }
       
       // Animation des dizaines si nécessaire
       if (maxDigits >= 2) {
@@ -1420,12 +1445,12 @@ export default function SoustractionRetenueCE1() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-teal-50">
       {/* Bouton Stop flottant */}
-      {(isPlayingVocal || isAnimationRunning) && (
+      {(isPlayingVocal || isAnimationRunning || isExplainingText) && (
         <div className="fixed top-4 right-4 z-[60]">
           <button
             onClick={stopAllVocalsAndAnimations}
             className="relative flex items-center gap-2 px-3 py-2 rounded-full shadow-2xl transition-all duration-300 bg-gradient-to-r from-red-500 to-red-600 text-white hover:from-red-600 hover:to-red-700 hover:scale-105 animate-pulse"
-            title={isPlayingVocal ? "Arrêter le personnage" : "Arrêter l'animation"}
+            title={isPlayingVocal ? "Arrêter le personnage" : isExplainingText ? "Arrêter l'explication" : "Arrêter l'animation"}
           >
             {/* Image du personnage */}
             <div className="w-8 h-8 rounded-full overflow-hidden border-2 border-white/50">
@@ -1439,7 +1464,7 @@ export default function SoustractionRetenueCE1() {
             {/* Texte et icône */}
             <>
               <span className="text-sm font-bold hidden sm:block">
-                {isPlayingVocal ? 'Stop' : 'Stop Animation'}
+                {isPlayingVocal ? 'Stop' : isExplainingText ? 'Stop Explication' : 'Stop Animation'}
               </span>
               <div className="w-3 h-3 bg-white rounded-sm animate-pulse"></div>
             </>
@@ -1645,20 +1670,120 @@ export default function SoustractionRetenueCE1() {
               }`}
             >
               <div className="text-center mb-3 sm:mb-6">
-                <div className="text-3xl sm:text-6xl mb-2 sm:mb-4">📝</div>
-                <div className="flex items-center justify-center gap-1 sm:gap-3 mb-3 sm:mb-4">
+                <div className="mb-3 sm:mb-4">
                   <h2 className="text-sm sm:text-xl font-bold text-gray-900">
-                    La soustraction posée : simple et avec retenue
+                    La soustraction posée : avec retenue
                   </h2>
-                  {/* Icône d'animation pour l'introduction */}
-                  <div className="bg-gradient-to-r from-green-500 to-teal-600 text-white rounded-full w-6 h-6 sm:w-12 sm:h-12 flex items-center justify-center text-xs sm:text-xl font-bold shadow-lg hover:scale-110 cursor-pointer transition-all duration-300 ring-2 ring-green-300" 
-                       style={{animation: 'subtle-glow 2s infinite'}}>
-                    📝
+                  </div>
+
+                </div>
+
+            {/* Différence Addition vs Soustraction avec retenue */}
+            <div className="bg-blue-50 p-3 sm:p-4 md:p-6 rounded-lg border-2 border-blue-200 mt-4">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-3 sm:mb-4 gap-2">
+                <h3 className="text-base sm:text-lg font-bold text-blue-800">
+                  🎯 Retenue : Addition vs Soustraction
+                </h3>
+                {/* Bouton d'écoute */}
+                <button
+                  id="explain-text-button"
+                  onClick={explainTextWithVoice}
+                  disabled={isExplainingText}
+                  className={`flex items-center justify-center gap-1 sm:gap-2 px-3 sm:px-4 py-3 sm:py-2 rounded-lg font-bold text-sm transition-all shadow-lg border-2 min-w-[80px] sm:min-w-auto ${
+                    isExplainingText
+                      ? 'bg-gray-400 text-gray-200 cursor-not-allowed border-gray-300'
+                      : 'bg-blue-600 text-white hover:bg-blue-700 hover:scale-105 border-blue-500 active:scale-95'
+                  } ${highlightedElement === 'explain-text-button' ? 'ring-4 ring-yellow-400 animate-pulse' : ''}`}
+                >
+                  <div className="w-5 h-5 sm:w-4 sm:h-4">
+                    {isExplainingText ? (
+                      <div className="w-4 h-4 sm:w-3 sm:h-3 bg-white rounded-sm animate-pulse"></div>
+                    ) : (
+                      <Play className="w-5 h-5 sm:w-4 sm:h-4" />
+                    )}
+                  </div>
+                  <span className="text-xs sm:text-sm font-bold">
+                    {isExplainingText ? (
+                      <>
+                        <span className="hidden sm:inline">En cours...</span>
+                        <span className="sm:hidden">⏳</span>
+                      </>
+                    ) : (
+                      <>
+                        <span className="hidden sm:inline">🔊 Écouter</span>
+                        <span className="sm:hidden">🔊 Écouter</span>
+                      </>
+                    )}
+                  </span>
+                </button>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
+                {/* Addition avec retenue */}
+                <div className={`bg-green-50 p-3 sm:p-4 rounded-lg border-2 border-green-200 transition-all duration-500 ${
+                  highlightedTextPart === 'addition-title' ? 'ring-4 ring-yellow-400 scale-105' : ''
+                }`}>
+                  <div className={`text-sm sm:text-lg font-bold text-green-600 mb-2 transition-all duration-300 ${
+                    highlightedTextPart === 'addition-title' ? 'bg-yellow-200 px-2 py-1 rounded' : ''
+                  }`}>
+                    ➕ Addition avec retenue
+                  </div>
+                  <div className={`text-sm text-gray-700 mb-2 transition-all duration-300 ${
+                    highlightedTextPart === 'addition-when' ? 'bg-yellow-200 px-2 py-1 rounded font-bold' : ''
+                  }`}>
+                    Quand la somme dépasse 9 :
+                  </div>
+                  <div className="bg-white p-2 rounded border-l-4 border-green-400">
+                    <div className={`text-sm font-medium text-green-800 transition-all duration-300 ${
+                      highlightedTextPart === 'addition-action' ? 'bg-yellow-200 px-2 py-1 rounded font-bold' : ''
+                    }`}>
+                      On <span className="bg-green-200 px-1 rounded font-bold">retient 1</span> qu'on <span className="bg-yellow-200 px-1 rounded font-bold">AJOUTE</span> à la colonne suivante
+                    </div>
                   </div>
                 </div>
-                <p className="text-xs sm:text-base text-gray-600">
-                  On commence simple, puis on apprend les retenues quand on ne peut pas soustraire !
-                </p>
+
+                {/* Soustraction avec retenue */}
+                <div className={`bg-red-50 p-3 sm:p-4 rounded-lg border-2 border-red-200 transition-all duration-500 ${
+                  highlightedTextPart === 'soustraction-title' ? 'ring-4 ring-yellow-400 scale-105' : ''
+                }`}>
+                  <div className={`text-sm sm:text-lg font-bold text-red-600 mb-2 transition-all duration-300 ${
+                    highlightedTextPart === 'soustraction-title' ? 'bg-yellow-200 px-2 py-1 rounded' : ''
+                  }`}>
+                    ➖ Soustraction avec retenue
+                  </div>
+                  <div className={`text-sm text-gray-700 mb-2 transition-all duration-300 ${
+                    highlightedTextPart === 'soustraction-when' ? 'bg-yellow-200 px-2 py-1 rounded font-bold' : ''
+                  }`}>
+                    Quand on ne peut pas soustraire :
+                  </div>
+                  <div className="bg-white p-2 rounded border-l-4 border-red-400">
+                    <div className={`text-sm font-medium text-red-800 transition-all duration-300 ${
+                      highlightedTextPart === 'soustraction-action' ? 'bg-yellow-200 px-2 py-1 rounded font-bold' : ''
+                    }`}>
+                      On <span className="bg-red-200 px-1 rounded font-bold">emprunte 1</span> qu'on <span className="bg-yellow-200 px-1 rounded font-bold">ENLÈVE</span> de la colonne suivante
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Résumé */}
+              <div className="bg-blue-100 p-3 sm:p-4 rounded-lg border-2 border-blue-300 text-center mt-3 sm:mt-4">
+                <div className="text-base sm:text-lg font-bold text-blue-800 mb-2 sm:mb-3">
+                  💡 La différence principale :
+                </div>
+                <div className="text-sm sm:text-base font-bold text-blue-800 space-y-2">
+                  <div className={`transition-all duration-300 ${
+                    highlightedTextPart === 'resume-addition' ? 'bg-yellow-200 px-2 py-1 rounded scale-105' : ''
+                  }`}>
+                    Addition → on <span className="bg-green-200 px-2 py-1 rounded">AJOUTE</span> la retenue
+                  </div>
+                  <div className={`transition-all duration-300 ${
+                    highlightedTextPart === 'resume-soustraction' ? 'bg-yellow-200 px-2 py-1 rounded scale-105' : ''
+                  }`}>
+                    Soustraction → on <span className="bg-red-200 px-2 py-1 rounded">ENLÈVE</span> la retenue
+                  </div>
+                </div>
+              </div>
             </div>
 
               {/* Exemple principal animé */}
@@ -1856,7 +1981,7 @@ export default function SoustractionRetenueCE1() {
               </div>
               
               {/* Visuel si disponible */}
-              {exercises[currentExercise].visual && (
+              {exercises[currentExercise].visual && isCorrect === false && isAnimationRunning && (
                 <div className="bg-gradient-to-br from-orange-50 to-red-50 border border-orange-200 rounded-lg p-6 mb-8 flex justify-center">
                   {(() => {
                     const match = exercises[currentExercise].question.match(/Calcule : (\d+) - (\d+)/);
@@ -1866,9 +1991,9 @@ export default function SoustractionRetenueCE1() {
                       const result = parseInt(exercises[currentExercise].correctAnswer);
                       const example = { num1, num2, result, hasBorrow: true };
                       
-                      // Utiliser notre fonction renderPostedSubtraction avec animation si mauvaise réponse
-                      const isExerciseAnimated = isAnimationRunning && isCorrect === false;
-                      const showHelperInExercise = isCorrect === false; // Boîte jaune si réponse incorrecte
+                      // Utiliser notre fonction renderPostedSubtraction avec animation pour mauvaise réponse
+                      const isExerciseAnimated = true; // Toujours animé quand affiché
+                      const showHelperInExercise = false; // Pas de boîte jaune dans les exercices
                       
                       return renderPostedSubtraction(example, isExerciseAnimated, showHelperInExercise);
                     }
