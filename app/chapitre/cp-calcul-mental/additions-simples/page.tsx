@@ -6,7 +6,7 @@ import { ArrowLeft, Play, Pause, Sword, Shield, Star, Trophy, Zap, Heart, Timer,
 
 export default function AdditionsSimples() {
   // États du jeu principal
-  const [gameMode, setGameMode] = useState<'arena' | 'training' | 'boss-fight' | 'level-select' | 'duel-2players' | 'time-challenge'>('arena');
+  const [gameMode, setGameMode] = useState<'arena' | 'training' | 'training-select' | 'boss-fight' | 'level-select' | 'duel-2players' | 'duel-select' | 'time-challenge' | 'challenge-select'>('arena');
   const [currentLevel, setCurrentLevel] = useState(1);
   const [playerHP, setPlayerHP] = useState(100);
   const [bossHP, setBossHP] = useState(100);
@@ -32,6 +32,7 @@ export default function AdditionsSimples() {
   const [showCritical, setShowCritical] = useState(false);
   const [showFireworks, setShowFireworks] = useState(false);
   const [showCorrectAnswer, setShowCorrectAnswer] = useState(false);
+  const [showCorrectMessage, setShowCorrectMessage] = useState(false);
   
   // Audio et effets
   const [isPlayingVocal, setIsPlayingVocal] = useState(false);
@@ -40,6 +41,50 @@ export default function AdditionsSimples() {
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const stopSignalRef = useRef(false);
   const currentAudioRef = useRef<SpeechSynthesisUtterance | null>(null);
+  const inputRef = useRef<HTMLInputElement | null>(null);
+  
+  // Historique des questions pour éviter les répétitions
+  const [recentQuestions, setRecentQuestions] = useState<string[]>([]);
+  const [lastResult, setLastResult] = useState<number | null>(null);
+  
+  // État pour le mode entraînement avec niveaux
+  const [trainingLevel, setTrainingLevel] = useState<1 | 2 | 3 | 4>(1);
+  
+  // État pour le mode duel avec niveaux
+  const [duelLevel, setDuelLevel] = useState<1 | 2 | 3 | 4>(1);
+  
+  // État pour le mode défi temps avec niveaux
+  const [challengeLevel, setChallengeLevel] = useState<1 | 2 | 3 | 4>(1);
+  
+  // État pour l'animation Légende Numérique
+  const [showLegendAnimation, setShowLegendAnimation] = useState(false);
+  const [isLegendUnlocked, setIsLegendUnlocked] = useState(false);
+  const legendCost = 1000; // Coût en pièces pour débloquer
+  
+  // Statistiques d'entraînement par niveau
+  const [trainingStats, setTrainingStats] = useState<{
+    [key: number]: {
+      totalQuestions: number;
+      correctAnswers: number;
+      totalTime: number; // en millisecondes
+      averageTime: number; // temps moyen par bonne réponse
+      bestPercentage: number;
+      bestAverageTime: number;
+    }
+  }>({
+    1: { totalQuestions: 0, correctAnswers: 0, totalTime: 0, averageTime: 0, bestPercentage: 0, bestAverageTime: Infinity },
+    2: { totalQuestions: 0, correctAnswers: 0, totalTime: 0, averageTime: 0, bestPercentage: 0, bestAverageTime: Infinity },
+    3: { totalQuestions: 0, correctAnswers: 0, totalTime: 0, averageTime: 0, bestPercentage: 0, bestAverageTime: Infinity },
+    4: { totalQuestions: 0, correctAnswers: 0, totalTime: 0, averageTime: 0, bestPercentage: 0, bestAverageTime: Infinity }
+  });
+  
+  // États pour mesurer le temps
+  const [questionStartTime, setQuestionStartTime] = useState<number | null>(null);
+  
+  // État pour les animations de record
+  const [showRecordAnimation, setShowRecordAnimation] = useState(false);
+  const [recordType, setRecordType] = useState<'speed' | 'accuracy' | null>(null);
+  const [recordValue, setRecordValue] = useState<string>('');
 
   // États pour le mode 2 joueurs
   const [player1Score, setPlayer1Score] = useState(0);
@@ -57,6 +102,7 @@ export default function AdditionsSimples() {
   const [timePerQuestion, setTimePerQuestion] = useState(15);
   const [questionsAnswered, setQuestionsAnswered] = useState(0);
   const [challengeActive, setChallengeActive] = useState(false);
+  const [questionsInCurrentLevel, setQuestionsInCurrentLevel] = useState(0);
 
   // Système XP et progression
   const [playerXP, setPlayerXP] = useState(0);
@@ -85,13 +131,13 @@ export default function AdditionsSimples() {
       color: "from-green-400 to-emerald-500",
       bgColor: "from-green-100 to-emerald-200",
       icon: "🎓",
-      timeLimit: 15,
+      timeLimit: 8,
       maxNumber: 10,
       questionCount: 12,
       boss: {
         name: "Papa Calculette",
         avatar: "👨‍💼",
-        hp: 80,
+        hp: 200,
         attacks: ["Distraction TV", "Question Facile", "Encouragement"],
         phrases: [
           "Allez, tu peux le faire !",
@@ -108,13 +154,13 @@ export default function AdditionsSimples() {
       color: "from-blue-400 to-cyan-500",
       bgColor: "from-blue-100 to-cyan-200",
       icon: "⚔️",
-      timeLimit: 12,
+      timeLimit: 5,
       maxNumber: 20,
       questionCount: 15,
       boss: {
         name: "Maman Calculatrice",
         avatar: "👩‍🏫",
-        hp: 100,
+        hp: 200,
         attacks: ["Question Piège", "Regard Sévère", "Défi Temps"],
         phrases: [
           "Attention, c'est plus difficile !",
@@ -131,13 +177,13 @@ export default function AdditionsSimples() {
       color: "from-purple-400 to-pink-500",
       bgColor: "from-purple-100 to-pink-200",
       icon: "👑",
-      timeLimit: 8,
+      timeLimit: 3,
       maxNumber: 20,
       questionCount: 20,
       boss: {
         name: "Grand-Frère le Génie",
         avatar: "🧠",
-        hp: 150,
+        hp: 200,
         attacks: ["Calcul Mental Éclair", "Pression Temporelle", "Défi Ultime"],
         phrases: [
           "Tu crois pouvoir me battre ?",
@@ -148,31 +194,248 @@ export default function AdditionsSimples() {
     }
   ];
 
-  // Générateur de questions selon le niveau
+  // Générateur de questions selon le niveau avec aléatoire amélioré
   const generateQuestion = () => {
     const level = levels[currentLevel - 1];
-    let num1, num2;
+    let num1, num2, question, answer;
+    let attempts = 0;
+    const maxAttempts = 50;
     
-    if (level.id === 1) {
-      // Niveau facile : additions jusqu'à 10
-      num1 = Math.floor(Math.random() * 6) + 1; // 1-6
-      num2 = Math.floor(Math.random() * (10 - num1)) + 1; // pour que la somme ≤ 10
-    } else if (level.id === 2) {
-      // Niveau moyen : additions jusqu'à 20
-      num1 = Math.floor(Math.random() * 10) + 1; // 1-10
-      num2 = Math.floor(Math.random() * (20 - num1)) + 1; // pour que la somme ≤ 20
-    } else {
-      // Niveau boss : toutes additions jusqu'à 20
-      num1 = Math.floor(Math.random() * 15) + 1; // 1-15
-      num2 = Math.floor(Math.random() * 15) + 1; // 1-15
-    }
+    do {
+      if (level.id === 1) {
+        // Niveau facile : additions jusqu'à 10 avec plus de variété
+        const strategies = [
+          () => {
+            // Stratégie 1: nombres aléatoires simples
+            num1 = Math.floor(Math.random() * 8) + 1; // 1-8
+            num2 = Math.floor(Math.random() * (10 - num1)) + 1;
+          },
+          () => {
+            // Stratégie 2: un nombre plus grand + un petit
+            const big = Math.floor(Math.random() * 5) + 5; // 5-9
+            const small = Math.floor(Math.random() * (10 - big)) + 1;
+            if (Math.random() > 0.5) {
+              num1 = big; num2 = small;
+            } else {
+              num1 = small; num2 = big;
+            }
+          },
+          () => {
+            // Stratégie 3: doubles et quasi-doubles
+            const base = Math.floor(Math.random() * 5) + 1; // 1-5
+            num1 = base;
+            num2 = base + (Math.random() > 0.6 ? 1 : 0);
+          }
+        ];
+        strategies[Math.floor(Math.random() * strategies.length)]();
+      } else if (level.id === 2) {
+        // Niveau moyen : additions jusqu'à 20 avec plus de variété
+        const strategies = [
+          () => {
+            // Stratégie 1: nombres variés
+            num1 = Math.floor(Math.random() * 12) + 1; // 1-12
+            num2 = Math.floor(Math.random() * (20 - num1)) + 1;
+          },
+          () => {
+            // Stratégie 2: passage à la dizaine
+            const base = Math.floor(Math.random() * 8) + 6; // 6-13
+            num2 = Math.floor(Math.random() * (20 - base)) + 1;
+            num1 = base;
+          },
+          () => {
+            // Stratégie 3: nombres proches
+            const center = Math.floor(Math.random() * 8) + 6; // 6-13
+            num1 = center + Math.floor(Math.random() * 3) - 1; // -1, 0, +1
+            num2 = Math.max(1, Math.min(20 - num1, center + Math.floor(Math.random() * 3) - 1));
+          }
+        ];
+        strategies[Math.floor(Math.random() * strategies.length)]();
+      } else {
+        // Niveau boss : additions variées jusqu'à 20
+        const strategies = [
+          () => {
+            num1 = Math.floor(Math.random() * 15) + 1; // 1-15
+            num2 = Math.floor(Math.random() * 15) + 1; // 1-15
+          },
+          () => {
+            // Grands nombres
+            num1 = Math.floor(Math.random() * 8) + 8; // 8-15
+            num2 = Math.floor(Math.random() * 8) + 1; // 1-8
+          },
+          () => {
+            // Mélange aléatoire
+            const total = Math.floor(Math.random() * 15) + 10; // 10-24
+            num1 = Math.floor(Math.random() * (total - 2)) + 1;
+            num2 = Math.min(15, total - num1);
+          }
+        ];
+        strategies[Math.floor(Math.random() * strategies.length)]();
+      }
+      
+      question = `${num1} + ${num2}`;
+      answer = num1 + num2;
+      attempts++;
+      
+    } while (
+      attempts < maxAttempts && (
+        recentQuestions.includes(question) || // Éviter les questions récentes
+        (lastResult !== null && Math.abs(answer - lastResult) <= 1) || // Éviter les résultats consécutifs
+        answer > (level.id === 1 ? 10 : level.id === 2 ? 20 : 25) // Respecter les limites
+      )
+    );
+    
+    // Mettre à jour l'historique
+    const newRecentQuestions = [...recentQuestions, question].slice(-8); // Garder les 8 dernières
+    setRecentQuestions(newRecentQuestions);
+    setLastResult(answer);
     
     return {
-      question: `${num1} + ${num2}`,
-      answer: num1 + num2,
+      question,
+      answer,
       num1,
       num2,
       difficulty: level.difficulty
+    };
+  };
+
+  // Générateur de questions pour le mode entraînement
+  const generateTrainingQuestion = () => {
+    let num1, num2, question, answer;
+    let attempts = 0;
+    const maxAttempts = 50;
+    
+    do {
+      if (trainingLevel === 1) {
+        // Facile : additions jusqu'à 10
+        const strategies = [
+          () => {
+            num1 = Math.floor(Math.random() * 8) + 1; // 1-8
+            num2 = Math.floor(Math.random() * (10 - num1)) + 1;
+          },
+          () => {
+            const big = Math.floor(Math.random() * 5) + 5; // 5-9
+            const small = Math.floor(Math.random() * (10 - big)) + 1;
+            if (Math.random() > 0.5) {
+              num1 = big; num2 = small;
+            } else {
+              num1 = small; num2 = big;
+            }
+          },
+          () => {
+            const base = Math.floor(Math.random() * 5) + 1; // 1-5
+            num1 = base;
+            num2 = base + (Math.random() > 0.6 ? 1 : 0);
+          }
+        ];
+        strategies[Math.floor(Math.random() * strategies.length)]();
+      } else if (trainingLevel === 2) {
+        // Moyen : additions jusqu'à 20
+        const strategies = [
+          () => {
+            num1 = Math.floor(Math.random() * 12) + 1; // 1-12
+            num2 = Math.floor(Math.random() * (20 - num1)) + 1;
+          },
+          () => {
+            const base = Math.floor(Math.random() * 8) + 6; // 6-13
+            num2 = Math.floor(Math.random() * (20 - base)) + 1;
+            num1 = base;
+          },
+          () => {
+            const center = Math.floor(Math.random() * 8) + 6; // 6-13
+            num1 = center + Math.floor(Math.random() * 3) - 1;
+            num2 = Math.max(1, Math.min(20 - num1, center + Math.floor(Math.random() * 3) - 1));
+          }
+        ];
+        strategies[Math.floor(Math.random() * strategies.length)]();
+      } else if (trainingLevel === 3) {
+        // Difficile : additions jusqu'à 100
+        const strategies = [
+          () => {
+            // Additions simples avec grands nombres
+            num1 = Math.floor(Math.random() * 50) + 1; // 1-50
+            num2 = Math.floor(Math.random() * (100 - num1)) + 1;
+          },
+          () => {
+            // Dizaines + unités
+            const dizaines1 = Math.floor(Math.random() * 8) + 1; // 10-80
+            const dizaines2 = Math.floor(Math.random() * (10 - dizaines1)) + 1;
+            num1 = dizaines1 * 10 + Math.floor(Math.random() * 10);
+            num2 = dizaines2 * 10 + Math.floor(Math.random() * 10);
+          },
+          () => {
+            // Nombres proches de multiples de 10
+            const base = Math.floor(Math.random() * 9) + 1; // 10-90
+            num1 = base * 10 + Math.floor(Math.random() * 3) - 1; // ±1
+            num2 = Math.floor(Math.random() * (100 - num1)) + 1;
+          }
+        ];
+        strategies[Math.floor(Math.random() * strategies.length)]();
+      } else {
+        // King of Addition : Mix ultime jusqu'à 100
+        const strategies = [
+          () => {
+            // Additions complexes jusqu'à 100
+            num1 = Math.floor(Math.random() * 50) + 30; // 30-79
+            num2 = Math.floor(Math.random() * (100 - num1)) + 1; // Résultat ≤ 100
+          },
+          () => {
+            // Doubles et quasi-doubles difficiles
+            const base = Math.floor(Math.random() * 30) + 20; // 20-49
+            num1 = base;
+            num2 = base + Math.floor(Math.random() * 5) - 2; // base ± 2
+            if (num1 + num2 > 100) {
+              num2 = 100 - num1;
+            }
+          },
+          () => {
+            // Passages de dizaines complexes
+            num1 = Math.floor(Math.random() * 30) + 40; // 40-69
+            const unités1 = num1 % 10;
+            const besoinPassage = 10 - unités1;
+            num2 = besoinPassage + Math.floor(Math.random() * 15); // Assure passage de dizaine
+            if (num1 + num2 > 100) {
+              num2 = 100 - num1;
+            }
+          },
+          () => {
+            // Multiples de 5 et 10 difficiles
+            const multiples = [15, 25, 35, 45];
+            num1 = multiples[Math.floor(Math.random() * multiples.length)];
+            num2 = Math.floor(Math.random() * (100 - num1)) + 1;
+          },
+          () => {
+            // Additions proches de 100
+            const total = Math.floor(Math.random() * 10) + 90; // 90-99
+            num1 = Math.floor(Math.random() * (total - 10)) + 10;
+            num2 = total - num1;
+          }
+        ];
+        strategies[Math.floor(Math.random() * strategies.length)]();
+      }
+      
+      question = `${num1} + ${num2}`;
+      answer = num1 + num2;
+      attempts++;
+      
+    } while (
+      attempts < maxAttempts && (
+        recentQuestions.includes(question) ||
+        (lastResult !== null && Math.abs(answer - lastResult) <= 1) ||
+        answer > (trainingLevel === 1 ? 10 : trainingLevel === 2 ? 20 : 100)
+      )
+    );
+    
+    // Mettre à jour l'historique
+    const newRecentQuestions = [...recentQuestions, question].slice(-8);
+    setRecentQuestions(newRecentQuestions);
+    setLastResult(answer);
+    
+    return {
+      question,
+      answer,
+      num1,
+      num2,
+      level: trainingLevel
     };
   };
 
@@ -218,7 +481,9 @@ export default function AdditionsSimples() {
         setTimeLeft(timeLeft - 1);
       }, 1000);
     } else if (timeLeft === 0) {
-      if (battlePhase === 'question') {
+      if (gameMode === 'boss-fight' && battlePhase === 'question') {
+        handleTimeOut();
+      } else if (battlePhase === 'question') {
         handleTimeOut();
       } else if (gameMode === 'duel-2players' && duelPhase === 'question') {
         // Timeout en mode duel
@@ -235,7 +500,7 @@ export default function AdditionsSimples() {
             setCurrentPlayer(nextPlayer);
             setCurrentQuestion(generateDuelQuestion());
             setUserAnswer('');
-            setTimeLeft(10);
+            setTimeLeft(5);
             setDuelPhase('question');
             
             speak(`Au tour du Joueur ${nextPlayer} !`, 'normal');
@@ -265,6 +530,7 @@ export default function AdditionsSimples() {
     setCorrectAnswers(0);
     setBattlePhase('question');
     setCurrentQuestion(generateQuestion());
+    setUserAnswer(''); // Vider la zone de saisie au démarrage
     setTimeLeft(levels[levelId - 1].timeLimit);
     setIsTimerRunning(false); // Le timer ne démarre pas tout de suite
     
@@ -284,6 +550,10 @@ export default function AdditionsSimples() {
         // Démarrer le timer APRÈS les consignes
         setTimeout(() => {
           setIsTimerRunning(true);
+          // Focus automatique sur le champ de saisie
+          if (inputRef.current) {
+            inputRef.current.focus();
+          }
         }, 500); // Petit délai pour que l'élève soit prêt
       };
       
@@ -293,8 +563,20 @@ export default function AdditionsSimples() {
       // Si pas d'audio, démarrer quand même le timer après un délai
       setTimeout(() => {
         setIsTimerRunning(true);
-      }, 2000);
+        // Focus automatique sur le champ de saisie
+        if (inputRef.current) {
+          inputRef.current.focus();
+        }
+      }, 1000); // Délai réduit
     }
+    
+    // Sécurité : forcer le démarrage du timer après 3 secondes maximum
+    setTimeout(() => {
+      setIsTimerRunning(true);
+      if (inputRef.current) {
+        inputRef.current.focus();
+      }
+    }, 3000);
   };
 
   // Gestion des réponses
@@ -313,14 +595,15 @@ export default function AdditionsSimples() {
   const handleCorrectAnswer = () => {
     setIsAttacking(true);
     setCorrectAnswers(prev => prev + 1);
+    setShowCorrectMessage(true);
     
-    // Calcul des dégâts avec bonus
-    const baseAtk = 15;
-    const speedBonus = timeLeft > Math.floor(levels[currentLevel - 1].timeLimit * 0.6) ? 10 : 0;
-    const comboBonus = combo * 3;
-    const damage = baseAtk + speedBonus + comboBonus;
+    // Calcul des dégâts fixes pour exactement 10 coups
+    const damage = Math.floor(levels[currentLevel - 1].boss.hp / 10); // Dégâts constants pour 10 coups exactement
     
-    const isCritical = speedBonus > 0 || combo > 2;
+    // Critique si réponse rapide ou bon combo
+    const timeLimit = levels[currentLevel - 1].timeLimit;
+    const isQuickAnswer = timeLeft > Math.floor(timeLimit * 0.6);
+    const isCritical = isQuickAnswer || combo > 2;
     
     // Système XP amélioré
     const newStreak = streak + 1;
@@ -329,7 +612,7 @@ export default function AdditionsSimples() {
     
     const xpGained = calculateXP(
       currentLevel,
-      speedBonus,
+      isQuickAnswer ? 10 : 0,
       newStreak
     );
     
@@ -340,15 +623,16 @@ export default function AdditionsSimples() {
     setMaxCombo(Math.max(maxCombo, combo + 1));
     setPlayerCoins(playerCoins + (isCritical ? 8 : 5));
     
-    // Ajouter XP avec animation
-    addXP(xpGained + (isCritical ? 5 : 0));
+    // Ajouter XP sans animation en mode boss pour éviter la gêne
+    setPlayerXP(prev => prev + xpGained + (isCritical ? 5 : 0));
     
     setBattlePhase('result');
-    speak(isCritical ? 'COUP CRITIQUE ! Incroyable !' : 'Excellente réponse !', 'victory');
     
+    // Passage automatique ultra-rapide à la question suivante
     setTimeout(() => {
       setIsAttacking(false);
       setShowCritical(false);
+      setShowCorrectMessage(false);
       
       if (bossHP - damage <= 0) {
         handleVictory();
@@ -365,12 +649,16 @@ export default function AdditionsSimples() {
         setUserAnswer('');
         setTimeLeft(levels[currentLevel - 1].timeLimit);
         setBattlePhase('question');
-        // Petit délai pour que l'élève lise la nouvelle question
+        // Passage immédiat avec focus automatique
         setTimeout(() => {
           setIsTimerRunning(true);
-        }, 1000);
+          // Focus automatique sur le champ de saisie
+          if (inputRef.current) {
+            inputRef.current.focus();
+          }
+        }, 100);
       }
-    }, 2000);
+    }, 400);
   };
 
   const handleWrongAnswer = () => {
@@ -431,6 +719,10 @@ export default function AdditionsSimples() {
         // Petit délai pour que l'élève lise la nouvelle question
         setTimeout(() => {
           setIsTimerRunning(true);
+          // Focus automatique sur le champ de saisie
+          if (inputRef.current) {
+            inputRef.current.focus();
+          }
         }, 1000);
       }
     }, 2500);
@@ -759,31 +1051,77 @@ export default function AdditionsSimples() {
     });
   };
 
-  // Mode 2 joueurs
-  const startDuel2Players = () => {
+  // Mode 2 joueurs avec niveaux
+  const startDuel2Players = (level: 1 | 2 | 3 | 4 = 1) => {
+    setDuelLevel(level);
     setGameMode('duel-2players');
     setPlayer1Score(0);
     setPlayer2Score(0);
     setCurrentPlayer(1);
-    setQuestionsLeft(10);
+    setQuestionsLeft(24);
     setDuelPhase('question');
     setCurrentQuestion(generateDuelQuestion());
-    setTimeLeft(10);
+    setTimeLeft(5);
     setIsTimerRunning(false);
     
-    speak('Duel familial ! Joueur 1 contre Joueur 2. Que le meilleur gagne ! Joueur 1, prêt ?', 'normal');
+    const levelNames = {
+      1: 'facile - additions jusqu\'à 10',
+      2: 'moyen - additions jusqu\'à 20', 
+      3: 'difficile - additions jusqu\'à 100',
+      4: 'King of Addition - mix ultime jusqu\'à 100'
+    };
+    
+    speak(`Duel familial niveau ${levelNames[level]} ! Joueur 1 contre Joueur 2. Que le meilleur gagne ! Joueur 1, prêt ?`, 'normal');
     setTimeout(() => {
       setIsTimerRunning(true);
     }, 2000);
   };
 
   const generateDuelQuestion = () => {
-    // Questions adaptées pour le duel (niveau moyen)
-    const num1 = Math.floor(Math.random() * 10) + 1; // 1-10
-    const num2 = Math.floor(Math.random() * 10) + 1; // 1-10
+    let num1, num2, question, answer;
+    let attempts = 0;
+    const maxAttempts = 50;
+    
+    do {
+      if (duelLevel === 1) {
+        // Facile : additions jusqu'à 10
+        num1 = Math.floor(Math.random() * 8) + 1; // 1-8
+        num2 = Math.floor(Math.random() * (10 - num1)) + 1;
+      } else if (duelLevel === 2) {
+        // Moyen : additions jusqu'à 20
+        num1 = Math.floor(Math.random() * 12) + 1; // 1-12
+        num2 = Math.floor(Math.random() * (20 - num1)) + 1;
+      } else if (duelLevel === 3) {
+        // Difficile : additions jusqu'à 100
+        num1 = Math.floor(Math.random() * 50) + 1; // 1-50
+        num2 = Math.floor(Math.random() * (100 - num1)) + 1;
+      } else {
+        // King of Addition : mix ultime jusqu'à 100
+        num1 = Math.floor(Math.random() * 50) + 30; // 30-79
+        num2 = Math.floor(Math.random() * (100 - num1)) + 1;
+      }
+      
+      question = `${num1} + ${num2}`;
+      answer = num1 + num2;
+      attempts++;
+      
+    } while (
+      attempts < maxAttempts && (
+        recentQuestions.includes(question) ||
+        (lastResult !== null && Math.abs(answer - lastResult) <= 1)
+      )
+    );
+    
+    // Mettre à jour l'historique
+    setRecentQuestions(prev => {
+      const updated = [...prev, question];
+      return updated.slice(-8); // Garder les 8 dernières
+    });
+    setLastResult(answer);
+    
     return {
-      question: `${num1} + ${num2}`,
-      answer: num1 + num2,
+      question,
+      answer,
       num1,
       num2
     };
@@ -818,7 +1156,7 @@ export default function AdditionsSimples() {
         setCurrentPlayer(nextPlayer);
         setCurrentQuestion(generateDuelQuestion());
         setUserAnswer('');
-        setTimeLeft(10);
+        setTimeLeft(5);
         setDuelPhase('question');
         
         speak(`Au tour du Joueur ${nextPlayer} !`, 'normal');
@@ -843,42 +1181,112 @@ export default function AdditionsSimples() {
   };
 
   // Mode défi temps
-  const startTimeChallenge = () => {
+  const startTimeChallenge = (level: 1 | 2 | 3 | 4) => {
+    setChallengeLevel(level);
     setGameMode('time-challenge');
+    
     setTimeScore(0);
     setDifficultyLevel(1);
     setTimePerQuestion(15);
     setQuestionsAnswered(0);
+    setQuestionsInCurrentLevel(0);
     setChallengeActive(true);
     setCurrentQuestion(generateChallengeQuestion(1));
     setTimeLeft(15);
     setIsTimerRunning(false);
     
-    speak('Défi du temps ! Les questions vont devenir de plus en plus difficiles. Prêt ? C\'est parti !', 'normal');
+    const levelNames = {
+      1: 'Facile - jusqu\'à 10',
+      2: 'Moyen - jusqu\'à 20', 
+      3: 'Difficile - jusqu\'à 100',
+      4: 'King of Addition - mix ultime jusqu\'à 100'
+    };
+    
+    speak(`Défi du temps niveau ${levelNames[level]} ! Les questions vont devenir de plus en plus difficiles. Prêt ? C'est parti !`, 'normal');
     setTimeout(() => {
       setIsTimerRunning(true);
     }, 3000);
   };
 
+  // Fonction pour calculer le temps par niveau (COMMUNE à toutes les difficultés)
+  const getTimeForLevel = (level: number) => {
+    // Démarrage à 15s, -1s par niveau jusqu'à 2s
+    const time = 16 - level; // Niveau 1 = 15s, Niveau 2 = 14s, ..., Niveau 14 = 2s
+    return Math.max(time, 2); // Minimum 2 secondes
+  };
+
+  // Fonction pour déterminer combien de questions par niveau (COMMUNE à toutes les difficultés)
+  const getQuestionsPerLevel = (level: number) => {
+    const timeLimit = getTimeForLevel(level);
+    
+    if (timeLimit === 2) return 5;      // 2 secondes : 5 questions
+    if (timeLimit === 3 || timeLimit === 4) return 2;  // 3s et 4s : 2 questions
+    return 1;                           // Autres niveaux : 1 question
+  };
+
   const generateChallengeQuestion = (level: number) => {
     let num1, num2;
     
-    if (level <= 3) {
-      // Niveau 1-3: jusqu'à 10
-      num1 = Math.floor(Math.random() * 5) + 1;
-      num2 = Math.floor(Math.random() * 5) + 1;
-    } else if (level <= 6) {
-      // Niveau 4-6: jusqu'à 15
-      num1 = Math.floor(Math.random() * 8) + 1;
-      num2 = Math.floor(Math.random() * 8) + 1;
-    } else if (level <= 10) {
-      // Niveau 7-10: jusqu'à 20
-      num1 = Math.floor(Math.random() * 10) + 1;
-      num2 = Math.floor(Math.random() * 10) + 1;
+    // Utilise challengeLevel pour définir les limites, et level pour la progression de difficulté
+    let maxNum;
+    if (challengeLevel === 1) {
+      maxNum = 10; // Facile: jusqu'à 10
+    } else if (challengeLevel === 2) {
+      maxNum = 20; // Moyen: jusqu'à 20  
+    } else if (challengeLevel === 3) {
+      maxNum = 100; // Difficile: jusqu'à 100
     } else {
-      // Niveau 11+: jusqu'à 30 (limite CP)
-      num1 = Math.floor(Math.random() * 15) + 1;
-      num2 = Math.floor(Math.random() * 15) + 1;
+      maxNum = 100; // King of Addition: mix ultime jusqu'à 100
+    }
+    
+    // Progression selon le niveau dans le défi
+    if (level <= 3) {
+      // Niveaux 1-3: nombres plus petits
+      const limit = Math.min(maxNum, challengeLevel === 1 ? 5 : challengeLevel === 2 ? 10 : 30);
+      num1 = Math.floor(Math.random() * limit) + 1;
+      num2 = Math.floor(Math.random() * limit) + 1;
+    } else if (level <= 6) {
+      // Niveaux 4-6: nombres moyens
+      const limit = Math.min(maxNum, challengeLevel === 1 ? 8 : challengeLevel === 2 ? 15 : 50);
+      num1 = Math.floor(Math.random() * limit) + 1;
+      num2 = Math.floor(Math.random() * limit) + 1;
+    } else if (level <= 10) {
+      // Niveaux 7-10: nombres plus grands
+      const limit = Math.min(maxNum, challengeLevel === 1 ? 10 : challengeLevel === 2 ? 20 : 75);
+      num1 = Math.floor(Math.random() * limit) + 1;
+      num2 = Math.floor(Math.random() * limit) + 1;
+    } else {
+      // Niveaux 11+: utilise toute la gamme
+      if (challengeLevel === 4) {
+        // King of Addition: stratégies avancées
+        const strategies = [
+          () => {
+            num1 = Math.floor(Math.random() * 30) + 20;
+            num2 = Math.floor(Math.random() * 30) + 20;
+          },
+          () => {
+            const base = Math.floor(Math.random() * 20) + 5;
+            num1 = base;
+            num2 = base;
+          },
+          () => {
+            num1 = Math.floor(Math.random() * 40) + 15;
+            num2 = Math.floor(Math.random() * 40) + 15;
+            if (num1 + num2 > 100) {
+              num1 = Math.floor(num1 / 2);
+              num2 = Math.floor(num2 / 2);
+            }
+          }
+        ];
+        strategies[Math.floor(Math.random() * strategies.length)]();
+      } else {
+        num1 = Math.floor(Math.random() * maxNum) + 1;
+        num2 = Math.floor(Math.random() * maxNum) + 1;
+        if (num1 + num2 > maxNum) {
+          num1 = Math.floor(num1 / 2);
+          num2 = Math.floor(num2 / 2);
+        }
+      }
     }
     
     return {
@@ -904,20 +1312,41 @@ export default function AdditionsSimples() {
       setTimeScore(prev => prev + points);
       speak('Correct ! Points gagnés !', 'victory');
       
-      // Augmenter la difficulté et réduire le temps
-      const newLevel = difficultyLevel + 1;
-      setDifficultyLevel(newLevel);
-      const newTimeLimit = Math.max(5, 15 - Math.floor(newLevel / 2));
-      setTimePerQuestion(newTimeLimit);
+      // Incrémenter le nombre de questions réussies dans ce niveau
+      const newQuestionsInLevel = questionsInCurrentLevel + 1;
+      setQuestionsInCurrentLevel(newQuestionsInLevel);
       
-      setTimeout(() => {
-        setCurrentQuestion(generateChallengeQuestion(newLevel));
-        setUserAnswer('');
-        setTimeLeft(newTimeLimit);
+      const questionsNeeded = getQuestionsPerLevel(difficultyLevel);
+      
+      // Vérifier si on doit passer au niveau suivant
+      if (newQuestionsInLevel >= questionsNeeded) {
+        // Passer au niveau suivant
+        const newLevel = difficultyLevel + 1;
+        setDifficultyLevel(newLevel);
+        setQuestionsInCurrentLevel(0);
+        const newTimeLimit = getTimeForLevel(newLevel);
+        setTimePerQuestion(newTimeLimit);
+        
         setTimeout(() => {
-          setIsTimerRunning(true);
-        }, 1000);
-      }, 1500);
+          setCurrentQuestion(generateChallengeQuestion(newLevel));
+          setUserAnswer('');
+          setTimeLeft(newTimeLimit);
+          setTimeout(() => {
+            setIsTimerRunning(true);
+          }, 1000);
+        }, 1500);
+      } else {
+        // Rester au même niveau, prochaine question
+        const currentTimeLimit = getTimeForLevel(difficultyLevel);
+        setTimeout(() => {
+          setCurrentQuestion(generateChallengeQuestion(difficultyLevel));
+          setUserAnswer('');
+          setTimeLeft(currentTimeLimit);
+          setTimeout(() => {
+            setIsTimerRunning(true);
+          }, 1000);
+        }, 1500);
+      }
       
     } else {
       // Fin du défi
@@ -943,36 +1372,142 @@ export default function AdditionsSimples() {
     }
   };
 
-  // Mode entraînement libre
-  const startTraining = () => {
+  // Mode entraînement libre avec niveaux
+  const startTraining = (level: 1 | 2 | 3 | 4 = 1) => {
+    setTrainingLevel(level);
     setGameMode('training');
-    setCurrentQuestion(generateQuestion());
-    speak('Mode entraînement ! Prends ton temps pour t\'améliorer sans pression.');
+    setCorrectAnswers(0);
+    setTotalQuestions(0);
+    
+    // Générer la première question après avoir défini le niveau
+    setTimeout(() => {
+      setCurrentQuestion(generateTrainingQuestion());
+      setQuestionStartTime(Date.now()); // Démarrer le chrono
+    }, 100);
+    
+    const levelNames = {
+      1: 'facile - additions jusqu\'à 10',
+      2: 'moyen - additions jusqu\'à 20', 
+      3: 'difficile - additions jusqu\'à 100',
+      4: 'King of Addition - mix ultime jusqu\'à 100'
+    };
+    
+    speak(`Mode entraînement ${levelNames[level]} ! Prends ton temps pour t'améliorer sans pression.`);
   };
 
   const handleTrainingAnswer = () => {
     const answer = parseInt(userAnswer);
+    const responseTime = questionStartTime ? Date.now() - questionStartTime : 0;
     
     if (answer === currentQuestion.answer) {
-      speak('Parfait ! Bonne réponse !', 'victory');
-      setPlayerXP(playerXP + 5);
-      setPlayerCoins(playerCoins + 2);
+      speak('CORRECT', 'victory');
+      
+      // XP et pièces seulement pour les 15 premières bonnes réponses
+      if (correctAnswers < 15) {
+        setPlayerXP(playerXP + 5);
+        setPlayerCoins(playerCoins + 2);
+      }
+      
+      // Mettre à jour les statistiques pour les bonnes réponses
+      setTrainingStats(prev => {
+        const current = prev[trainingLevel];
+        const newCorrectAnswers = current.correctAnswers + 1;
+        const newTotalTime = current.totalTime + responseTime;
+        const newAverageTime = newTotalTime / newCorrectAnswers;
+        const newTotalQuestions = current.totalQuestions + 1;
+        const newPercentage = (newCorrectAnswers / newTotalQuestions) * 100;
+        
+        // Les records ne se déclenchent qu'à partir de la 10ème bonne réponse
+        const shouldUpdateRecords = newCorrectAnswers >= 10;
+        
+        // Détecter les nouveaux records
+        let newSpeedRecord = false;
+        let newAccuracyRecord = false;
+        
+        if (shouldUpdateRecords) {
+          // Nouveau record de vitesse
+          if (newAverageTime < current.bestAverageTime) {
+            newSpeedRecord = true;
+            setRecordType('speed');
+            setRecordValue(`${(newAverageTime / 1000).toFixed(1)}s`);
+            setShowRecordAnimation(true);
+            
+            // Masquer l'animation après 4 secondes
+            setTimeout(() => setShowRecordAnimation(false), 4000);
+          }
+          
+          // Nouveau record de précision
+          if (newPercentage > current.bestPercentage) {
+            newAccuracyRecord = true;
+            if (!newSpeedRecord) { // Si pas déjà un record de vitesse
+              setRecordType('accuracy');
+              setRecordValue(`${Math.round(newPercentage)}%`);
+              setShowRecordAnimation(true);
+              
+              setTimeout(() => setShowRecordAnimation(false), 4000);
+            }
+          }
+        }
+        
+        return {
+          ...prev,
+          [trainingLevel]: {
+            ...current,
+            correctAnswers: newCorrectAnswers,
+            totalQuestions: newTotalQuestions,
+            totalTime: newTotalTime,
+            averageTime: newAverageTime,
+            bestPercentage: shouldUpdateRecords ? Math.max(current.bestPercentage, newPercentage) : current.bestPercentage,
+            bestAverageTime: shouldUpdateRecords ? Math.min(current.bestAverageTime, newAverageTime) : current.bestAverageTime
+          }
+        };
+      });
+      
       setCorrectAnswers(prev => prev + 1);
+      setTotalQuestions(prev => prev + 1);
+      
+      // Nouvelle question très rapide pour les bonnes réponses (mode endless)
+      setTimeout(() => {
+        setCurrentQuestion(generateTrainingQuestion());
+        setUserAnswer('');
+        setQuestionStartTime(Date.now()); // Redémarrer le chrono
+      }, 400);
     } else {
       setShowCorrectAnswer(true);
       speak(`Non, c'était ${currentQuestion.answer}. Continue !`, 'normal');
+      
+      // Mettre à jour les statistiques pour les mauvaises réponses
+      setTrainingStats(prev => {
+        const current = prev[trainingLevel];
+        const newTotalQuestions = current.totalQuestions + 1;
+        const newPercentage = (current.correctAnswers / newTotalQuestions) * 100;
+        
+        // Les records ne se déclenchent qu'à partir de la 10ème bonne réponse
+        const shouldUpdateRecords = current.correctAnswers >= 10;
+        
+        return {
+          ...prev,
+          [trainingLevel]: {
+            ...current,
+            totalQuestions: newTotalQuestions,
+            bestPercentage: shouldUpdateRecords ? Math.max(current.bestPercentage, newPercentage) : current.bestPercentage
+          }
+        };
+      });
+      
       setTimeout(() => {
         setShowCorrectAnswer(false);
       }, 3000);
+      
+      setTotalQuestions(prev => prev + 1);
+      
+      // Délai plus long pour les mauvaises réponses (laisser le temps de lire)
+      setTimeout(() => {
+        setCurrentQuestion(generateTrainingQuestion());
+        setUserAnswer('');
+        setQuestionStartTime(Date.now()); // Redémarrer le chrono
+      }, 3500);
     }
-    
-    setTotalQuestions(prev => prev + 1);
-    
-    // Nouvelle question après un délai
-    setTimeout(() => {
-      setCurrentQuestion(generateQuestion());
-      setUserAnswer('');
-    }, 3500);
   };
 
   return (
@@ -1069,48 +1604,46 @@ export default function AdditionsSimples() {
                 Choisis ton mode de combat et deviens le maître des additions !
               </p>
               
-                            {/* Profil du Guerrier */}
-              <div className="bg-gradient-to-r from-purple-900 to-indigo-900 rounded-xl p-6 mb-8 border-2 border-yellow-400 shadow-2xl">
-                <div className="text-center mb-4">
-                  <h3 className="text-xl font-bold text-yellow-400 mb-2">🛡️ Profil du Guerrier</h3>
-                  <div className="text-lg text-white font-medium">{playerTitle}</div>
+                            {/* Profil du Guerrier - Version Réduite */}
+              <div className="bg-gradient-to-r from-purple-900 to-indigo-900 rounded-lg p-3 mb-4 border border-yellow-400 shadow-lg">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-2">
+                    <span className="text-lg">🛡️</span>
+                    <div>
+                      <div className="text-sm font-bold text-yellow-400">{playerTitle}</div>
+                    </div>
+                  </div>
                 </div>
                 
-                <div className="grid md:grid-cols-4 gap-4">
+                <div className="grid grid-cols-4 gap-2">
                   {/* Niveau */}
-                  <div className="bg-black bg-opacity-30 rounded-lg p-4 text-center border border-yellow-500">
-                    <div className="text-2xl mb-2">⭐</div>
-                    <div className="text-yellow-400 text-sm font-bold uppercase tracking-wider">Niveau</div>
-                    <div className="text-white text-xl font-bold">{playerLevel}</div>
+                  <div className="bg-black bg-opacity-30 rounded p-2 text-center border border-yellow-500">
+                    <div className="text-yellow-400 text-xs font-bold">⭐ Niv.</div>
+                    <div className="text-white text-sm font-bold">{playerLevel}</div>
                   </div>
                   
                   {/* XP Progress */}
-                  <div className="bg-black bg-opacity-30 rounded-lg p-4 text-center border border-blue-400">
-                    <div className="text-2xl mb-2">⚡</div>
-                    <div className="text-blue-400 text-sm font-bold uppercase tracking-wider">Expérience</div>
-                    <div className="text-white text-lg font-bold">{playerXP}/{xpForNextLevel}</div>
-                    <div className="w-full bg-gray-700 rounded-full h-2 mt-2">
+                  <div className="bg-black bg-opacity-30 rounded p-2 text-center border border-blue-400">
+                    <div className="text-blue-400 text-xs font-bold">⚡ XP</div>
+                    <div className="text-white text-xs">{playerXP}/{xpForNextLevel}</div>
+                    <div className="w-full bg-gray-700 rounded-full h-1 mt-1">
                       <div 
-                        className="bg-gradient-to-r from-blue-400 to-cyan-500 h-2 rounded-full transition-all duration-500"
+                        className="bg-gradient-to-r from-blue-400 to-cyan-500 h-1 rounded-full transition-all duration-500"
                         style={{ width: `${(playerXP / xpForNextLevel) * 100}%` }}
                       ></div>
                     </div>
                   </div>
                   
                   {/* Streak */}
-                  <div className="bg-black bg-opacity-30 rounded-lg p-4 text-center border border-green-400">
-                    <div className="text-2xl mb-2">🔥</div>
-                    <div className="text-green-400 text-sm font-bold uppercase tracking-wider">Série Actuelle</div>
-                    <div className="text-white text-xl font-bold">{streak}</div>
-                    <div className="text-green-300 text-xs">Record: {maxStreak}</div>
+                  <div className="bg-black bg-opacity-30 rounded p-2 text-center border border-green-400">
+                    <div className="text-green-400 text-xs font-bold">🔥 Série</div>
+                    <div className="text-white text-sm font-bold">{streak}</div>
                   </div>
                   
                   {/* Badges */}
-                  <div className="bg-black bg-opacity-30 rounded-lg p-4 text-center border border-purple-400">
-                    <div className="text-2xl mb-2">🏆</div>
-                    <div className="text-purple-400 text-sm font-bold uppercase tracking-wider">Trophées</div>
-                    <div className="text-white text-xl font-bold">{badges.length}</div>
-                    <div className="text-purple-300 text-xs">XP Total: {totalXP}</div>
+                  <div className="bg-black bg-opacity-30 rounded p-2 text-center border border-purple-400">
+                    <div className="text-purple-400 text-xs font-bold">🏆 Badges</div>
+                    <div className="text-white text-sm font-bold">{badges.length}</div>
                   </div>
                 </div>
               </div>
@@ -1126,10 +1659,10 @@ export default function AdditionsSimples() {
                </div>
             </div>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-6">
               {/* Mode entraînement */}
               <div 
-                onClick={startTraining}
+                onClick={() => setGameMode('training-select')}
                 className={`bg-gradient-to-br from-green-600 to-emerald-700 rounded-xl p-6 cursor-pointer hover:scale-105 transition-all duration-300 shadow-2xl border border-green-400 group ${
                   currentHighlight === 'training' ? 'ring-8 ring-yellow-400 animate-pulse scale-110' : ''
                 }`}
@@ -1169,7 +1702,7 @@ export default function AdditionsSimples() {
 
               {/* Mode duel 2 joueurs */}
               <div 
-                onClick={startDuel2Players}
+                onClick={() => setGameMode('duel-select')}
                 className={`bg-gradient-to-br from-blue-600 to-cyan-700 rounded-xl p-6 cursor-pointer hover:scale-105 transition-all duration-300 shadow-2xl border border-blue-400 group ${
                   currentHighlight === 'duel' ? 'ring-8 ring-yellow-400 animate-pulse scale-110' : ''
                 }`}
@@ -1189,7 +1722,7 @@ export default function AdditionsSimples() {
 
               {/* Mode défi temps */}
               <div 
-                onClick={startTimeChallenge}
+                onClick={() => setGameMode('challenge-select')}
                 className={`bg-gradient-to-br from-yellow-600 to-orange-700 rounded-xl p-6 cursor-pointer hover:scale-105 transition-all duration-300 shadow-2xl border border-yellow-400 group ${
                   currentHighlight === 'challenge' ? 'ring-8 ring-yellow-400 animate-pulse scale-110' : ''
                 }`}
@@ -1205,6 +1738,73 @@ export default function AdditionsSimples() {
                     <span>Record</span>
                   </div>
                 </div>
+              </div>
+
+              {/* Légende Numérique - Option à débloquer */}
+              <div 
+                onClick={() => {
+                  if (playerCoins >= legendCost && !isLegendUnlocked) {
+                    setPlayerCoins(playerCoins - legendCost);
+                    setIsLegendUnlocked(true);
+                    setShowLegendAnimation(true);
+                  }
+                }}
+                className={`relative rounded-xl p-6 shadow-2xl border-2 transition-all duration-300 group ${
+                  isLegendUnlocked 
+                    ? 'bg-gradient-to-br from-yellow-300 via-yellow-400 to-yellow-600 border-yellow-200 cursor-default animate-pulse shadow-yellow-400/50 shadow-2xl' 
+                    : playerCoins >= legendCost 
+                      ? 'bg-gradient-to-br from-yellow-600/80 via-orange-600/80 to-red-600/80 border-yellow-400 cursor-pointer hover:scale-105 hover:shadow-yellow-400/60 animate-pulse shadow-yellow-400/30 shadow-xl' 
+                      : 'bg-gradient-to-br from-yellow-700/60 via-orange-700/60 to-red-700/60 border-yellow-500/70 cursor-not-allowed animate-pulse shadow-yellow-400/20 shadow-lg'
+                }`}
+              >
+                <div className="text-center">
+                  <div className={`text-5xl mb-3 ${isLegendUnlocked ? 'animate-pulse' : 'animate-pulse'}`}>
+                    👑
+                  </div>
+                  <h3 className={`text-xl font-bold mb-2 animate-pulse ${
+                    isLegendUnlocked 
+                      ? 'bg-gradient-to-r from-white to-yellow-100 bg-clip-text text-transparent drop-shadow-lg' 
+                      : 'text-yellow-100 drop-shadow-md'
+                  }`}>
+                    Légende Numérique
+                  </h3>
+                  <p className={`mb-3 text-sm animate-pulse ${
+                    isLegendUnlocked 
+                      ? 'text-yellow-50' 
+                      : 'text-yellow-200'
+                  }`}>
+                    {isLegendUnlocked ? 'Maîtrise accomplie !' : 'Ultime consécration'}
+                  </p>
+                  
+                  {!isLegendUnlocked && (
+                    <div className="flex justify-center items-center space-x-2 text-sm">
+                      <div className={`animate-pulse font-bold text-lg ${playerCoins >= legendCost ? 'text-yellow-200 drop-shadow-lg' : 'text-yellow-300 drop-shadow-md'}`}>
+                        💰 {legendCost}
+                      </div>
+                    </div>
+                  )}
+                  
+                  {isLegendUnlocked && (
+                    <div className="flex justify-center space-x-1 text-sm animate-pulse">
+                      <Crown className="w-4 h-4 text-yellow-100 drop-shadow-lg" />
+                      <span className="text-yellow-50 font-bold drop-shadow-lg">Débloqué</span>
+                    </div>
+                  )}
+                </div>
+                
+                {/* Effet de rayonnement lumineux permanent */}
+                {!isLegendUnlocked && (
+                  <div className="absolute inset-0 rounded-xl animate-pulse">
+                    <div className={`absolute inset-0 rounded-xl ${
+                      playerCoins >= legendCost 
+                        ? 'bg-gradient-to-r from-yellow-300/40 via-orange-400/40 to-red-400/40' 
+                        : 'bg-gradient-to-r from-yellow-400/25 via-orange-500/25 to-red-500/25'
+                    }`}></div>
+                  </div>
+                )}
+                
+                {/* Effet de halo doré supplémentaire */}
+                <div className="absolute -inset-1 bg-gradient-to-r from-yellow-400/10 via-orange-400/10 to-yellow-400/10 rounded-xl blur-sm animate-pulse"></div>
               </div>
             </div>
 
@@ -1296,14 +1896,421 @@ export default function AdditionsSimples() {
           </div>
         )}
 
+        {/* Sélection niveau d'entraînement */}
+        {gameMode === 'training-select' && (
+          <div className="space-y-8">
+            <div className="text-center">
+              <h2 className="text-3xl font-bold mb-4">🏃‍♂️ Choisis ton niveau d'entraînement</h2>
+              <p className="text-gray-300">Sélectionne la difficulté qui te convient !</p>
+            </div>
+
+            <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+              {/* Entraînement Facile */}
+              <div 
+                onClick={() => startTraining(1)}
+                className="bg-gradient-to-br from-green-600 to-emerald-700 rounded-xl p-8 cursor-pointer hover:scale-105 transition-all duration-300 shadow-2xl border border-green-400 group"
+              >
+                <div className="text-center">
+                  <div className="text-6xl mb-4 group-hover:animate-bounce">🌱</div>
+                  <h3 className="text-2xl font-bold mb-3">Facile</h3>
+                  <p className="text-green-100 mb-4 text-lg">
+                    Additions jusqu'à 10
+                  </p>
+                  <div className="flex justify-center space-x-2 text-sm mb-4">
+                    <Shield className="w-4 h-4" />
+                    <span>Débutant</span>
+                  </div>
+                  <div className="text-sm text-green-200">
+                    Parfait pour commencer !
+                  </div>
+                  {/* Stats niveau 1 */}
+                  <div className="mt-4 pt-4 border-t border-green-400">
+                    <div className="text-xs text-green-200 space-y-1">
+                      <div>📊 Précision: {trainingStats[1].totalQuestions > 0 ? `${Math.round((trainingStats[1].correctAnswers / trainingStats[1].totalQuestions) * 100)}%` : 'N/A'}</div>
+                      <div>⚡ Temps moyen: {trainingStats[1].correctAnswers > 0 ? `${(trainingStats[1].averageTime / 1000).toFixed(1)}s` : 'N/A'}</div>
+                      <div className="text-yellow-300 font-bold">
+                        {trainingStats[1].correctAnswers >= 10 ? (
+                          <>🏆 Records: {trainingStats[1].bestPercentage > 0 ? `${Math.round(trainingStats[1].bestPercentage)}%` : 'N/A'} | {trainingStats[1].bestAverageTime < Infinity ? `${(trainingStats[1].bestAverageTime / 1000).toFixed(1)}s` : 'N/A'}</>
+                        ) : (
+                          <>⏳ Fais au moins 10 réponses pour battre ton record !</>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Entraînement Moyen */}
+              <div 
+                onClick={() => startTraining(2)}
+                className="bg-gradient-to-br from-orange-600 to-yellow-600 rounded-xl p-8 cursor-pointer hover:scale-105 transition-all duration-300 shadow-2xl border border-orange-400 group"
+              >
+                <div className="text-center">
+                  <div className="text-6xl mb-4 group-hover:animate-bounce">🔥</div>
+                  <h3 className="text-2xl font-bold mb-3">Moyen</h3>
+                  <p className="text-orange-100 mb-4 text-lg">
+                    Additions jusqu'à 20
+                  </p>
+                  <div className="flex justify-center space-x-2 text-sm mb-4">
+                    <Zap className="w-4 h-4" />
+                    <span>Intermédiaire</span>
+                  </div>
+                  <div className="text-sm text-orange-200">
+                    Un bon challenge !
+                  </div>
+                  {/* Stats niveau 2 */}
+                  <div className="mt-4 pt-4 border-t border-orange-400">
+                    <div className="text-xs text-orange-200 space-y-1">
+                      <div>📊 Précision: {trainingStats[2].totalQuestions > 0 ? `${Math.round((trainingStats[2].correctAnswers / trainingStats[2].totalQuestions) * 100)}%` : 'N/A'}</div>
+                      <div>⚡ Temps moyen: {trainingStats[2].correctAnswers > 0 ? `${(trainingStats[2].averageTime / 1000).toFixed(1)}s` : 'N/A'}</div>
+                      <div className="text-yellow-300 font-bold">
+                        {trainingStats[2].correctAnswers >= 10 ? (
+                          <>🏆 Records: {trainingStats[2].bestPercentage > 0 ? `${Math.round(trainingStats[2].bestPercentage)}%` : 'N/A'} | {trainingStats[2].bestAverageTime < Infinity ? `${(trainingStats[2].bestAverageTime / 1000).toFixed(1)}s` : 'N/A'}</>
+                        ) : (
+                          <>⏳ Fais au moins 10 réponses pour battre ton record !</>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Entraînement Difficile */}
+              <div 
+                onClick={() => startTraining(3)}
+                className="bg-gradient-to-br from-purple-600 to-pink-600 rounded-xl p-8 cursor-pointer hover:scale-105 transition-all duration-300 shadow-2xl border border-purple-400 group"
+              >
+                <div className="text-center">
+                  <div className="text-6xl mb-4 group-hover:animate-bounce">🔥</div>
+                  <h3 className="text-2xl font-bold mb-3">Difficile</h3>
+                  <p className="text-purple-100 mb-4 text-lg">
+                    Additions jusqu'à 100
+                  </p>
+                  <div className="flex justify-center space-x-2 text-sm mb-4">
+                    <Crown className="w-4 h-4" />
+                    <span>Expert</span>
+                  </div>
+                  <div className="text-sm text-purple-200">
+                    Pour les champions !
+                  </div>
+                  {/* Stats niveau 3 */}
+                  <div className="mt-4 pt-4 border-t border-purple-400">
+                    <div className="text-xs text-purple-200 space-y-1">
+                      <div>📊 Précision: {trainingStats[3].totalQuestions > 0 ? `${Math.round((trainingStats[3].correctAnswers / trainingStats[3].totalQuestions) * 100)}%` : 'N/A'}</div>
+                      <div>⚡ Temps moyen: {trainingStats[3].correctAnswers > 0 ? `${(trainingStats[3].averageTime / 1000).toFixed(1)}s` : 'N/A'}</div>
+                      <div className="text-yellow-300 font-bold">
+                        {trainingStats[3].correctAnswers >= 10 ? (
+                          <>🏆 Records: {trainingStats[3].bestPercentage > 0 ? `${Math.round(trainingStats[3].bestPercentage)}%` : 'N/A'} | {trainingStats[3].bestAverageTime < Infinity ? `${(trainingStats[3].bestAverageTime / 1000).toFixed(1)}s` : 'N/A'}</>
+                        ) : (
+                          <>⏳ Fais au moins 10 réponses pour battre ton record !</>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Entraînement King of Addition */}
+              <div 
+                onClick={() => startTraining(4)}
+                className="bg-gradient-to-br from-yellow-500 via-orange-500 to-red-600 rounded-xl p-8 cursor-pointer hover:scale-105 transition-all duration-300 shadow-2xl border-2 border-yellow-400 group relative overflow-hidden"
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-yellow-400/20 to-red-500/20 animate-pulse"></div>
+                <div className="relative text-center">
+                  <div className="text-6xl mb-4 group-hover:animate-bounce">👑</div>
+                  <h3 className="text-2xl font-bold mb-3 bg-gradient-to-r from-yellow-200 to-white bg-clip-text text-transparent">
+                    King of Addition
+                  </h3>
+                  <p className="text-yellow-100 mb-4 text-lg font-semibold">
+                    Mix ultime jusqu'à 100
+                  </p>
+                  <div className="flex justify-center space-x-2 text-sm mb-4">
+                    <Crown className="w-4 h-4 text-yellow-300" />
+                    <span className="text-yellow-200">Maître Suprême</span>
+                  </div>
+                  <div className="text-sm text-yellow-200">
+                    Seuls les rois osent !
+                  </div>
+                  {/* Stats niveau 4 */}
+                  <div className="mt-4 pt-4 border-t border-yellow-400">
+                    <div className="text-xs text-yellow-200 space-y-1">
+                      <div>📊 Précision: {trainingStats[4].totalQuestions > 0 ? `${Math.round((trainingStats[4].correctAnswers / trainingStats[4].totalQuestions) * 100)}%` : 'N/A'}</div>
+                      <div>⚡ Temps moyen: {trainingStats[4].correctAnswers > 0 ? `${(trainingStats[4].averageTime / 1000).toFixed(1)}s` : 'N/A'}</div>
+                      <div className="text-yellow-300 font-bold">
+                        {trainingStats[4].correctAnswers >= 10 ? (
+                          <>🏆 Records: {trainingStats[4].bestPercentage > 0 ? `${Math.round(trainingStats[4].bestPercentage)}%` : 'N/A'} | {trainingStats[4].bestAverageTime < Infinity ? `${(trainingStats[4].bestAverageTime / 1000).toFixed(1)}s` : 'N/A'}</>
+                        ) : (
+                          <>⏳ Fais au moins 10 réponses pour devenir Roi !</>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="text-center">
+              <button
+                onClick={() => setGameMode('arena')}
+                className="bg-gray-700 hover:bg-gray-600 px-6 py-3 rounded-lg transition-colors"
+              >
+                ← Retour à l'arène
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Sélection niveau défi temps */}
+        {gameMode === 'challenge-select' && (
+          <div className="space-y-8">
+            <div className="text-center">
+              <h2 className="text-3xl font-bold mb-4">⏱️ Choisis ton niveau de défi temps</h2>
+              <p className="text-gray-300">Sélectionne la difficulté pour ta course contre la montre !</p>
+            </div>
+
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+              {/* Défi Facile */}
+              <div 
+                onClick={() => startTimeChallenge(1)}
+                className="bg-gradient-to-br from-green-600 to-emerald-700 rounded-xl p-8 cursor-pointer hover:scale-105 transition-all duration-300 shadow-2xl border border-green-400 group"
+              >
+                <div className="text-center">
+                  <div className="text-6xl mb-4 group-hover:animate-bounce">🌱</div>
+                  <h3 className="text-2xl font-bold mb-3">Facile</h3>
+                  <p className="text-green-100 mb-4 text-lg">
+                    Additions jusqu'à 10
+                  </p>
+                  <div className="flex justify-center space-x-2 text-sm mb-4">
+                    <Timer className="w-4 h-4" />
+                    <span>15-5s progression</span>
+                  </div>
+                  <div className="text-sm text-green-200">
+                    Parfait pour débuter !
+                  </div>
+                </div>
+              </div>
+
+              {/* Défi Moyen */}
+              <div 
+                onClick={() => startTimeChallenge(2)}
+                className="bg-gradient-to-br from-orange-600 to-yellow-600 rounded-xl p-8 cursor-pointer hover:scale-105 transition-all duration-300 shadow-2xl border border-orange-400 group"
+              >
+                <div className="text-center">
+                  <div className="text-6xl mb-4 group-hover:animate-bounce">🔥</div>
+                  <h3 className="text-2xl font-bold mb-3">Moyen</h3>
+                  <p className="text-orange-100 mb-4 text-lg">
+                    Additions jusqu'à 20
+                  </p>
+                  <div className="flex justify-center space-x-2 text-sm mb-4">
+                    <Zap className="w-4 h-4" />
+                    <span>Temps décroissant</span>
+                  </div>
+                  <div className="text-sm text-orange-200">
+                    Un bon challenge !
+                  </div>
+                </div>
+              </div>
+
+              {/* Défi Difficile */}
+              <div 
+                onClick={() => startTimeChallenge(3)}
+                className="bg-gradient-to-br from-purple-600 to-pink-600 rounded-xl p-8 cursor-pointer hover:scale-105 transition-all duration-300 shadow-2xl border border-purple-400 group"
+              >
+                <div className="text-center">
+                  <div className="text-6xl mb-4 group-hover:animate-bounce">💎</div>
+                  <h3 className="text-2xl font-bold mb-3">Difficile</h3>
+                  <p className="text-purple-100 mb-4 text-lg">
+                    Additions jusqu'à 100
+                  </p>
+                  <div className="flex justify-center space-x-2 text-sm mb-4">
+                    <Crown className="w-4 h-4" />
+                    <span>Jusqu'à 2s</span>
+                  </div>
+                  <div className="text-sm text-purple-200">
+                    Pour les experts !
+                  </div>
+                </div>
+              </div>
+
+              {/* Défi King of Addition */}
+              <div 
+                onClick={() => startTimeChallenge(4)}
+                className="bg-gradient-to-br from-yellow-500 via-orange-500 to-red-600 rounded-xl p-8 cursor-pointer hover:scale-105 transition-all duration-300 shadow-2xl border-2 border-yellow-400 group relative overflow-hidden"
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-yellow-400/20 to-red-500/20 animate-pulse"></div>
+                <div className="relative text-center">
+                  <div className="text-6xl mb-4 group-hover:animate-bounce">👑</div>
+                  <h3 className="text-2xl font-bold mb-3 bg-gradient-to-r from-yellow-200 to-orange-300 bg-clip-text text-transparent">
+                    King of Addition
+                  </h3>
+                  <p className="text-yellow-100 mb-4 text-lg font-semibold">
+                    Mix ultime jusqu'à 100
+                  </p>
+                  <div className="flex justify-center space-x-2 text-sm mb-4">
+                    <Crown className="w-4 h-4 text-yellow-400" />
+                    <span className="text-yellow-200">Défi Légendaire</span>
+                  </div>
+                  <div className="text-sm text-yellow-200 font-bold">
+                    🏆 Ultimate Speed Challenge
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="text-center">
+              <button
+                onClick={() => setGameMode('arena')}
+                className="bg-gray-700 hover:bg-gray-600 px-6 py-3 rounded-lg transition-colors"
+              >
+                ← Retour à l'arène
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Sélection niveau duel */}
+        {gameMode === 'duel-select' && (
+          <div className="space-y-8">
+            <div className="text-center">
+              <h2 className="text-3xl font-bold mb-4">👥 Choisis ton niveau de duel</h2>
+              <p className="text-gray-300 mb-6">
+                Sélectionne la difficulté pour affronter ton adversaire !
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+              {/* Duel Facile */}
+              <div 
+                onClick={() => startDuel2Players(1)}
+                className="bg-gradient-to-br from-green-600 to-emerald-700 rounded-xl p-8 cursor-pointer hover:scale-105 transition-all duration-300 shadow-2xl border border-green-400 group"
+              >
+                <div className="text-center">
+                  <div className="text-6xl mb-4 group-hover:animate-bounce">🌱</div>
+                  <h3 className="text-2xl font-bold mb-3">Facile</h3>
+                  <p className="text-green-100 mb-4 text-lg">
+                    Additions jusqu'à 10
+                  </p>
+                  <div className="flex justify-center space-x-2 text-sm mb-4">
+                    <Shield className="w-4 h-4" />
+                    <span>Débutant</span>
+                  </div>
+                  <div className="text-sm text-green-200">
+                    Parfait pour commencer !
+                  </div>
+                </div>
+              </div>
+
+              {/* Duel Moyen */}
+              <div 
+                onClick={() => startDuel2Players(2)}
+                className="bg-gradient-to-br from-blue-600 to-cyan-700 rounded-xl p-8 cursor-pointer hover:scale-105 transition-all duration-300 shadow-2xl border border-blue-400 group"
+              >
+                <div className="text-center">
+                  <div className="text-6xl mb-4 group-hover:animate-bounce">🔥</div>
+                  <h3 className="text-2xl font-bold mb-3">Moyen</h3>
+                  <p className="text-blue-100 mb-4 text-lg">
+                    Additions jusqu'à 20
+                  </p>
+                  <div className="flex justify-center space-x-2 text-sm mb-4">
+                    <Zap className="w-4 h-4" />
+                    <span>Intermédiaire</span>
+                  </div>
+                  <div className="text-sm text-blue-200">
+                    Challenge équilibré !
+                  </div>
+                </div>
+              </div>
+
+              {/* Duel Difficile */}
+              <div 
+                onClick={() => startDuel2Players(3)}
+                className="bg-gradient-to-br from-purple-600 to-pink-600 rounded-xl p-8 cursor-pointer hover:scale-105 transition-all duration-300 shadow-2xl border border-purple-400 group"
+              >
+                <div className="text-center">
+                  <div className="text-6xl mb-4 group-hover:animate-bounce">🔥</div>
+                  <h3 className="text-2xl font-bold mb-3">Difficile</h3>
+                  <p className="text-purple-100 mb-4 text-lg">
+                    Additions jusqu'à 100
+                  </p>
+                  <div className="flex justify-center space-x-2 text-sm mb-4">
+                    <Crown className="w-4 h-4" />
+                    <span>Expert</span>
+                  </div>
+                  <div className="text-sm text-purple-200">
+                    Pour les champions !
+                  </div>
+                </div>
+              </div>
+
+              {/* Duel King of Addition */}
+              <div 
+                onClick={() => startDuel2Players(4)}
+                className="bg-gradient-to-br from-yellow-500 via-orange-500 to-red-600 rounded-xl p-8 cursor-pointer hover:scale-105 transition-all duration-300 shadow-2xl border-2 border-yellow-400 group relative overflow-hidden"
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-yellow-400/20 to-red-500/20 animate-pulse"></div>
+                <div className="relative text-center">
+                  <div className="text-6xl mb-4 group-hover:animate-bounce">👑</div>
+                  <h3 className="text-2xl font-bold mb-3 bg-gradient-to-r from-yellow-200 to-white bg-clip-text text-transparent">
+                    King of Addition
+                  </h3>
+                  <p className="text-yellow-100 mb-4 text-lg font-semibold">
+                    Mix ultime jusqu'à 100
+                  </p>
+                  <div className="flex justify-center space-x-2 text-sm mb-4">
+                    <Crown className="w-4 h-4 text-yellow-300" />
+                    <span className="text-yellow-200">Maître Suprême</span>
+                  </div>
+                  <div className="text-sm text-yellow-200">
+                    Seuls les rois osent !
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="text-center">
+              <button
+                onClick={() => setGameMode('arena')}
+                className="bg-gray-700 hover:bg-gray-600 px-6 py-3 rounded-lg transition-colors"
+              >
+                ← Retour à l'arène
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* Mode entraînement */}
         {gameMode === 'training' && (
           <div className="space-y-8">
             <div className="text-center">
-              <h2 className="text-3xl font-bold mb-4">🏃‍♂️ Mode Entraînement</h2>
-              <p className="text-gray-300">Prends ton temps et améliore-toi !</p>
+              <h2 className="text-3xl font-bold mb-4">
+                {trainingLevel === 1 ? '🌱' : trainingLevel === 2 ? '🔥' : trainingLevel === 3 ? '🔥' : '👑'} Mode Entraînement {trainingLevel === 1 ? 'Facile' : trainingLevel === 2 ? 'Moyen' : trainingLevel === 3 ? 'Difficile' : 'King of Addition'}
+              </h2>
+              <p className="text-gray-300">
+                {trainingLevel === 1 ? 'Additions jusqu\'à 10 - Prends ton temps !' : 
+                 trainingLevel === 2 ? 'Additions jusqu\'à 20 - Challenge intermédiaire !' :
+                 trainingLevel === 3 ? 'Additions jusqu\'à 100 - Défi expert !' :
+                 'Mix ultime jusqu\'à 100 - Seuls les rois osent !'}
+              </p>
               <div className="mt-4 text-lg">
                 <span className="text-green-400">✅ {correctAnswers}</span> / <span className="text-gray-400">{totalQuestions} questions</span>
+                {totalQuestions > 0 && (
+                  <span className="text-blue-400 ml-4">
+                    📊 {Math.round((correctAnswers / totalQuestions) * 100)}%
+                  </span>
+                )}
+              </div>
+              
+              {/* Indicateur XP */}
+              <div className="mt-3 text-sm">
+                {correctAnswers < 15 ? (
+                  <span className="bg-blue-600 text-white px-3 py-1 rounded-full">
+                    ⚡ XP : {15 - correctAnswers} réponses restantes
+                  </span>
+                ) : (
+                  <span className="bg-gray-600 text-white px-3 py-1 rounded-full">
+                    🎯 Mode Entraînement Libre - Plus d'XP
+                  </span>
+                )}
               </div>
             </div>
 
@@ -1359,6 +2366,31 @@ export default function AdditionsSimples() {
                 )}
               </div>
             </div>
+            
+            {/* Statistiques simplifiées en bas */}
+            {correctAnswers > 0 && (
+              <div className="max-w-2xl mx-auto mt-6">
+                <div className="bg-gradient-to-r from-gray-800 to-gray-900 rounded-xl p-3 border border-gray-600">
+                  <div className="text-center text-sm">
+                    <div className="text-blue-400 mb-2">
+                      ⚡ Temps moyen: <span className="text-white font-bold">{(trainingStats[trainingLevel].averageTime / 1000).toFixed(1)}s</span>
+                    </div>
+                    
+                    {trainingStats[trainingLevel].correctAnswers >= 10 ? (
+                      <div className="text-yellow-400">
+                        🏆 Record: <span className="text-white font-bold">
+                          {trainingStats[trainingLevel].bestAverageTime < Infinity ? `${(trainingStats[trainingLevel].bestAverageTime / 1000).toFixed(1)}s` : 'N/A'}
+                        </span>
+                      </div>
+                    ) : (
+                      <div className="text-orange-300 text-xs">
+                        Records disponibles à partir de 10 réponses correctes
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         )}
 
@@ -1425,6 +2457,7 @@ export default function AdditionsSimples() {
                   </div>
                   
                   <input
+                    ref={inputRef}
                     type="number"
                     value={userAnswer}
                     onChange={(e) => setUserAnswer(e.target.value)}
@@ -1445,7 +2478,16 @@ export default function AdditionsSimples() {
                 </div>
               )}
 
-              {battlePhase === 'result' && isAttacking && (
+              {battlePhase === 'result' && showCorrectMessage && (
+                <div className="space-y-3">
+                  <div className="text-6xl">✅</div>
+                  <div className="text-4xl font-bold text-green-600">
+                    CORRECT !
+                  </div>
+                </div>
+              )}
+
+              {battlePhase === 'result' && isAttacking && !showCorrectMessage && (
                 <div className="space-y-6">
                   <div className="text-7xl animate-bounce">⚔️</div>
                   <div className="text-4xl font-bold text-green-600">
@@ -1570,7 +2612,9 @@ export default function AdditionsSimples() {
           <div className="space-y-6">
             {/* Tableau de scores */}
             <div className="bg-gradient-to-r from-blue-800 to-cyan-800 rounded-xl p-6 text-white">
-              <h2 className="text-2xl font-bold text-center mb-4">🏆 Duel Familial - Additions</h2>
+              <h2 className="text-2xl font-bold text-center mb-4">
+                🏆 Duel Familial - {duelLevel === 1 ? '🌱 Facile' : duelLevel === 2 ? '🔥 Moyen' : duelLevel === 3 ? '🔥 Difficile' : '👑 King of Addition'}
+              </h2>
               <div className="grid grid-cols-3 gap-4 text-center">
                 <div className={`p-4 rounded-lg ${currentPlayer === 1 ? 'bg-blue-600 ring-4 ring-yellow-400' : 'bg-blue-700'}`}>
                   <div className="text-3xl mb-2">👤</div>
@@ -1675,7 +2719,9 @@ export default function AdditionsSimples() {
           <div className="space-y-6">
             {/* Tableau de scores temps */}
             <div className="bg-gradient-to-r from-yellow-800 to-orange-800 rounded-xl p-6 text-white">
-              <h2 className="text-2xl font-bold text-center mb-4">⏱️ Défi du Temps - Additions</h2>
+              <h2 className="text-2xl font-bold text-center mb-4">
+                ⏱️ Défi du Temps - {challengeLevel === 1 ? 'Facile (jusqu\'à 10)' : challengeLevel === 2 ? 'Moyen (jusqu\'à 20)' : challengeLevel === 3 ? 'Difficile (jusqu\'à 100)' : 'King of Addition (mix ultime)'}
+              </h2>
               <div className="grid grid-cols-4 gap-4 text-center">
                 <div className="bg-yellow-700 p-4 rounded-lg">
                   <div className="text-2xl mb-1">🎯</div>
@@ -1706,7 +2752,9 @@ export default function AdditionsSimples() {
             {challengeActive && (
               <div className="max-w-2xl mx-auto">
                 <div className="bg-gradient-to-br from-yellow-600 to-orange-700 rounded-xl p-8 text-center shadow-2xl text-white">
-                  <div className="text-lg mb-2">Niveau {difficultyLevel}</div>
+                  <div className="text-lg mb-2">
+                    Niveau {difficultyLevel} - Question {questionsInCurrentLevel + 1}/{getQuestionsPerLevel(difficultyLevel)}
+                  </div>
                   
                   <div className="flex justify-center items-center space-x-4 mb-4">
                     <Timer className="w-6 h-6 text-yellow-300" />
@@ -1763,7 +2811,7 @@ export default function AdditionsSimples() {
 
                   <div className="space-x-4">
                     <button
-                      onClick={startTimeChallenge}
+                      onClick={() => setGameMode('challenge-select')}
                       className="bg-green-500 text-white px-8 py-4 rounded-lg font-bold hover:bg-green-400 transition-colors shadow-xl"
                     >
                       🔄 Nouveau Défi
@@ -1830,6 +2878,106 @@ export default function AdditionsSimples() {
         />
       ))}
 
+      {/* Animation de Nouveau Record */}
+      {showRecordAnimation && (
+        <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 animate-fadeIn">
+          <div className="relative">
+            {/* Feux d'artifice en arrière-plan */}
+            <div className="absolute inset-0 pointer-events-none">
+              {[...Array(20)].map((_, i) => (
+                <div
+                  key={i}
+                  className="absolute animate-ping"
+                  style={{
+                    left: `${Math.random() * 100}%`,
+                    top: `${Math.random() * 100}%`,
+                    animationDelay: `${Math.random() * 2}s`,
+                    animationDuration: `${1 + Math.random()}s`
+                  }}
+                >
+                  <div className={`w-3 h-3 rounded-full ${
+                    recordType === 'speed' ? 'bg-yellow-400' : 'bg-green-400'
+                  }`}></div>
+                </div>
+              ))}
+            </div>
+            
+            {/* Contenu principal */}
+            <div className="bg-gradient-to-br from-purple-600 via-pink-600 to-red-600 rounded-3xl p-8 text-center shadow-2xl border-4 border-yellow-400 animate-pulse relative overflow-hidden max-w-md mx-4">
+              {/* Effet brillant */}
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-20 animate-bounce"></div>
+              
+              {/* Icône principale */}
+              <div className="text-8xl mb-4 animate-bounce">
+                {recordType === 'speed' ? '⚡' : '🎯'}
+              </div>
+              
+              {/* Titre principal */}
+              <div className="text-3xl font-bold text-white mb-2 animate-pulse">
+                🏆 NOUVEAU RECORD ! 🏆
+              </div>
+              
+              {/* Type de record */}
+              <div className="text-xl font-bold text-yellow-200 mb-4">
+                {recordType === 'speed' ? '⚡ VITESSE ÉCLAIR ⚡' : '🎯 PRÉCISION PARFAITE 🎯'}
+              </div>
+              
+              {/* Valeur du record */}
+              <div className="text-5xl font-bold text-yellow-400 mb-4 animate-bounce">
+                {recordValue}
+              </div>
+              
+              {/* Messages motivants */}
+              <div className="text-lg text-white mb-4">
+                {recordType === 'speed' ? (
+                  <div>
+                    <div className="mb-2">🚀 Tu deviens un ninja du calcul !</div>
+                    <div className="text-yellow-200">Plus rapide que jamais !</div>
+                  </div>
+                ) : (
+                  <div>
+                    <div className="mb-2">🎯 Précision de maître !</div>
+                    <div className="text-yellow-200">Tu vises dans le mille !</div>
+                  </div>
+                )}
+              </div>
+              
+              {/* Étoiles scintillantes */}
+              <div className="flex justify-center space-x-2 text-2xl">
+                {[...Array(5)].map((_, i) => (
+                  <div
+                    key={i}
+                    className="animate-ping text-yellow-400"
+                    style={{ animationDelay: `${i * 0.2}s` }}
+                  >
+                    ⭐
+                  </div>
+                ))}
+              </div>
+              
+              {/* Badge niveau */}
+              <div className="mt-4 bg-black bg-opacity-50 rounded-full px-4 py-2 inline-block">
+                <span className="text-sm font-bold text-white">
+                  {trainingLevel === 1 ? '🌱 NIVEAU FACILE' : 
+                   trainingLevel === 2 ? '🔥 NIVEAU MOYEN' : 
+                   '👑 NIVEAU DIFFICILE'}
+                </span>
+              </div>
+              
+              {/* Bouton continuer */}
+              <div className="mt-6">
+                <button
+                  onClick={() => setShowRecordAnimation(false)}
+                  className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-6 py-3 rounded-xl font-bold hover:scale-105 transition-all shadow-lg border-2 border-green-300"
+                >
+                  🚀 CONTINUER L'AVENTURE !
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* CSS personnalisé pour les animations */}
       <style jsx>{`
         @keyframes sparkle {
@@ -1842,6 +2990,11 @@ export default function AdditionsSimples() {
           50% { transform: translateY(-20px); }
         }
         
+        @keyframes fadeIn {
+          0% { opacity: 0; transform: scale(0.8); }
+          100% { opacity: 1; transform: scale(1); }
+        }
+        
         .sparkle {
           animation: sparkle 2s ease-in-out infinite;
         }
@@ -1849,7 +3002,66 @@ export default function AdditionsSimples() {
         .float {
           animation: float 3s ease-in-out infinite;
         }
+        
+        .animate-fadeIn {
+          animation: fadeIn 0.5s ease-out;
+        }
       `}</style>
+
+      {/* Animation Légende Numérique */}
+      {showLegendAnimation && (
+        <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50 animate-fadeIn">
+          <div className="bg-gradient-to-br from-yellow-400 via-orange-500 to-red-600 rounded-3xl p-12 text-center max-w-2xl mx-4 shadow-2xl border-4 border-yellow-300 relative overflow-hidden">
+            {/* Effet de particules dorées */}
+            <div className="absolute inset-0">
+              {[...Array(20)].map((_, i) => (
+                <div
+                  key={i}
+                  className="absolute w-2 h-2 bg-yellow-300 rounded-full animate-pulse"
+                  style={{
+                    top: `${Math.random() * 100}%`,
+                    left: `${Math.random() * 100}%`,
+                    animationDelay: `${Math.random() * 2}s`,
+                    animationDuration: `${1 + Math.random()}s`
+                  }}
+                />
+              ))}
+            </div>
+            
+            <div className="relative z-10">
+              <div className="text-8xl mb-6 animate-bounce">👑</div>
+              <h1 className="text-4xl font-black mb-4 bg-gradient-to-r from-yellow-100 to-white bg-clip-text text-transparent">
+                ASCENSION LÉGENDAIRE !
+              </h1>
+              
+              <div className="space-y-4 text-xl text-yellow-100 mb-8">
+                <p className="animate-pulse">Les additions n'ont plus de mystères pour toi !</p>
+                <p className="animate-pulse" style={{animationDelay: '0.5s'}}>Tu as forgé ton esprit dans le feu des calculs.</p>
+                <p className="animate-pulse" style={{animationDelay: '1s'}}>Ton talent illumine le royaume des nombres.</p>
+              </div>
+              
+              <div className="text-5xl font-black mb-8 bg-gradient-to-r from-yellow-200 via-orange-300 to-red-400 bg-clip-text text-transparent animate-pulse">
+                Tu es devenu... une LÉGENDE NUMÉRIQUE !
+              </div>
+              
+              <div className="flex justify-center space-x-4 mb-6">
+                {[...Array(5)].map((_, i) => (
+                  <div key={i} className="text-4xl animate-bounce" style={{animationDelay: `${i * 0.2}s`}}>
+                    ⭐
+                  </div>
+                ))}
+              </div>
+              
+              <button
+                onClick={() => setShowLegendAnimation(false)}
+                className="bg-gradient-to-r from-yellow-600 to-orange-700 text-white px-8 py-4 rounded-xl font-bold text-xl hover:from-yellow-500 hover:to-orange-600 transition-all duration-300 shadow-xl border-2 border-yellow-300"
+              >
+                🌟 Continuer mon voyage légendaire
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 } 
