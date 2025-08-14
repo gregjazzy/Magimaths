@@ -285,49 +285,86 @@ export default function SoustractionPoseeCE1() {
     setSamSizeExpanded(true);
     
     try {
-      await playAudio("Bonjour ! Découvrons ensemble la soustraction posée sans retenue !", true);
+      await playAudio("Bienvenue dans le cours de soustraction posée ! Je vais tout t'expliquer !", true);
       if (stopSignalRef.current) return;
       
       await wait(1000);
+      
+      // Présenter l'introduction
+      setHighlightedElement('intro-section');
+      scrollToElement('intro-section');
+      await playAudio("D'abord, découvrons ce qu'est la soustraction posée !", true);
       if (stopSignalRef.current) return;
+      
+      await wait(1200);
       
       // Présenter l'exemple principal
       setHighlightedElement('example-section');
       scrollToElement('example-section');
-      await playAudio("D'abord, voici l'exemple principal avec son animation !", true);
+      await playAudio("Voici l'exemple principal pour bien comprendre la méthode !", true);
       if (stopSignalRef.current) return;
       
-      await wait(800);
-      if (stopSignalRef.current) return;
+      await wait(1000);
       
       // Mettre en évidence le bouton d'animation principal
-      await playAudio("Clique sur le bouton rouge pour voir comment faire !", true);
+      const exampleButton = document.querySelector('#example-section button');
+      if (exampleButton) {
+        exampleButton.classList.add('ring-4', 'ring-yellow-400', 'animate-pulse');
+      }
+      await playAudio("Clique sur ce bouton rouge pour voir l'animation complète étape par étape !", true);
       if (stopSignalRef.current) return;
       
-      await wait(1500);
-      if (stopSignalRef.current) return;
+      await wait(2000);
+      
+      // Retirer la surbrillance
+      if (exampleButton) {
+        exampleButton.classList.remove('ring-4', 'ring-yellow-400', 'animate-pulse');
+      }
       
       // Présenter la section des autres exemples
       setHighlightedElement('examples-section');
       scrollToElement('examples-section');
-      await playAudio("Ensuite, tu trouveras d'autres exemples à 2 et 3 chiffres !", true);
+      await playAudio("Ensuite, voici plein d'autres exemples pour t'entraîner !", true);
       if (stopSignalRef.current) return;
       
-      await wait(800);
-      if (stopSignalRef.current) return;
+      await wait(1000);
       
       // Mettre en évidence les cartes d'exemples
-      setHighlightedElement('example-0');
-      await playAudio("Chaque carte rouge a son animation ! Clique sur les cartes pour les voir !", true);
+      const exampleCards = document.querySelectorAll('#examples-section .bg-gradient-to-br');
+      exampleCards.forEach(card => {
+        card.classList.add('ring-4', 'ring-yellow-400', 'animate-pulse');
+      });
+      await playAudio("Chaque carte rouge a sa propre animation ! Clique sur celles qui t'intéressent !", true);
       if (stopSignalRef.current) return;
       
-      await wait(1500);
+      await wait(2000);
+      
+      // Retirer la surbrillance des cartes
+      exampleCards.forEach(card => {
+        card.classList.remove('ring-4', 'ring-yellow-400', 'animate-pulse');
+      });
+      
+      // Présenter le guide pratique
+      scrollToElement('guide-section');
+      await playAudio("Et voici le guide pratique avec les étapes importantes !", true);
       if (stopSignalRef.current) return;
       
-      // Présenter la section exercices - scroller vers le haut pour voir l'onglet
+      await wait(1000);
+      
+      await playAudio("Maintenant tu connais toute la méthode ! Tu peux explorer les exemples ou passer aux exercices !", true);
+      if (stopSignalRef.current) return;
+      
+      await wait(1000);
+      
+      // Faire scroller vers l'onglet exercices et l'illuminer
       setHighlightedElement('exercise_tab');
       window.scrollTo({ top: 0, behavior: 'smooth' });
-      await playAudio("Et pour finir, tu pourras t'entraîner avec les exercices ! N'oublie pas : on commence toujours par les unités !", true);
+      await playAudio("Regarde ! L'onglet exercices t'attend juste ici pour t'entraîner !", true);
+      if (stopSignalRef.current) return;
+      
+      await wait(2000);
+      
+      await playAudio("Clique dessus quand tu veux commencer les exercices ! Bon apprentissage !", true);
       if (stopSignalRef.current) return;
       
     } catch (error) {
@@ -339,7 +376,7 @@ export default function SoustractionPoseeCE1() {
     }
   };
 
-  // Fonction pour expliquer un exemple spécifique avec animations interactives
+  // Fonction pour présenter la section exercices spécifiquement
   const explainExercisesWithSam = async () => {
     if (exercisesIsPlayingVocal) return;
     
@@ -379,39 +416,69 @@ export default function SoustractionPoseeCE1() {
     const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
     
     try {
-      await speak("Salut ! Je vais t'expliquer comment faire les exercices de soustraction posée !");
+      // S'assurer qu'on est déjà dans la section exercices
+      if (!showExercises) {
+        setShowExercises(true);
+        await wait(500);
+      }
+      
+      await speak("Bienvenue dans la section exercices de soustraction posée !");
       if (stopSignalRef.current) return;
 
-      await speak("D'abord, clique sur l'onglet Exercices pour voir les questions !");
-      if (stopSignalRef.current) return;
-
-      // Basculer vers l'onglet exercices
-      setShowExercises(true);
-      await wait(1000); // Attendre que l'onglet se charge
+      await wait(800);
+      
+      // Présenter le header avec le score
+      await speak("Ici tu peux voir ton exercice actuel et ton score !", 'exercises-header');
       if (stopSignalRef.current) return;
       
-      await speak("Parfait ! Maintenant tu vois la première question !", 'exercises-header');
+      await wait(1000);
+      
+      // Présenter la question
+      await speak("Voici la question de soustraction posée que tu dois résoudre !");
       if (stopSignalRef.current) return;
       
+      await wait(800);
+      
+      // Présenter le bouton écouter
       await speak("Tu peux écouter l'énoncé en cliquant sur ce bouton bleu !", 'listen-button');
       if (stopSignalRef.current) return;
       
-      await speak("Ensuite, écris ta réponse dans cette case !", 'answer-input');
+      await wait(1000);
+      
+      // Présenter la zone de réponse
+      await speak("Tape ta réponse ici dans cette case !", 'answer-input');
       if (stopSignalRef.current) return;
       
-      await speak("Quand tu es sûr de ta réponse, clique sur Valider !", 'validate-button');
+      await wait(1000);
+      
+      // Présenter le bouton valider
+      await speak("Puis clique sur Valider pour vérifier ta réponse !", 'validate-button');
       if (stopSignalRef.current) return;
       
-      await speak("Si c'est correct, tu passes automatiquement à l'exercice suivant !");
+      await wait(1200);
+      
+      await speak("Si ta réponse est correcte, tu passeras automatiquement à l'exercice suivant !");
       if (stopSignalRef.current) return;
       
-      await speak("Si c'est faux, je te montre l'animation pour t'expliquer la bonne méthode !");
+      await wait(1000);
+      
+      await speak("Si tu te trompes, je te montrerai une animation pour t'expliquer la bonne méthode !");
       if (stopSignalRef.current) return;
       
-      await speak("Puis tu pourras cliquer sur Exercice suivant pour continuer !", 'next-button');
+      await wait(1000);
+      
+      // Présenter le score en haut
+      await speak("Ton score s'affiche ici ! Essaie d'avoir le maximum de points !", 'score-display');
       if (stopSignalRef.current) return;
       
-      await speak("Ton score s'affiche ici en haut à droite ! Allez, c'est parti !", 'score-display');
+      await wait(1000);
+      
+      await speak("N'oublie pas : pour la soustraction posée, on commence toujours par les unités à droite !");
+      if (stopSignalRef.current) return;
+      
+      await wait(800);
+      
+      await speak("Allez, à toi de jouer maintenant ! Bonne chance !");
       
     } catch (error) {
       console.error('Erreur lors de l\'explication des exercices:', error);
@@ -1010,12 +1077,12 @@ export default function SoustractionPoseeCE1() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-red-50 to-orange-50">
       {/* Bouton Stop flottant */}
-      {(isPlayingVocal || isAnimationRunning) && (
+      {(isPlayingVocal || isAnimationRunning || exercisesIsPlayingVocal) && (
         <div className="fixed top-4 right-4 z-[60]">
           <button
             onClick={stopAllVocalsAndAnimations}
             className="relative flex items-center gap-2 px-3 py-2 rounded-full shadow-2xl transition-all duration-300 bg-gradient-to-r from-red-500 to-red-600 text-white hover:from-red-600 hover:to-red-700 hover:scale-105 animate-pulse"
-            title={isPlayingVocal ? "Arrêter le personnage" : "Arrêter l'animation"}
+            title={(isPlayingVocal || exercisesIsPlayingVocal) ? "Arrêter le personnage" : "Arrêter l'animation"}
           >
             {/* Image du personnage */}
             <div className="w-8 h-8 rounded-full overflow-hidden border-2 border-white/50">
@@ -1029,7 +1096,7 @@ export default function SoustractionPoseeCE1() {
             {/* Texte et icône */}
             <>
               <span className="text-sm font-bold hidden sm:block">
-                {isPlayingVocal ? 'Stop' : 'Stop Animation'}
+                {(isPlayingVocal || exercisesIsPlayingVocal) ? 'Stop' : 'Stop Animation'}
               </span>
               <div className="w-3 h-3 bg-white rounded-sm animate-pulse"></div>
             </>
@@ -1072,50 +1139,7 @@ export default function SoustractionPoseeCE1() {
         </div>
       </div>
 
-        {/* Image du personnage Minecraft avec bouton DÉMARRER */}
-        <div className="flex items-center justify-center gap-2 sm:gap-4 p-2 sm:p-4 mb-3 sm:mb-6">
-          {/* Image du personnage */}
-          <div className={`relative transition-all duration-500 border-2 border-red-300 rounded-full bg-gradient-to-br from-red-100 to-orange-100 ${
-            exercisesIsPlayingVocal
-                ? 'w-14 sm:w-24 h-14 sm:h-24' // When speaking - plus petit sur mobile
-                : 'w-12 sm:w-20 h-12 sm:h-20' // Normal size
-          }`}>
-            {!exercisesImageError ? (
-              <img 
-                src="/image/Minecraftstyle.png" 
-                alt="Personnage Minecraft" 
-                className="w-full h-full object-cover rounded-full"
-                onError={() => setExercisesImageError(true)}
-              />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center text-lg sm:text-2xl rounded-full bg-gradient-to-br from-red-200 to-orange-200">
-                🧱
-              </div>
-            )}
-            
-            {exercisesIsPlayingVocal && (
-              <div className="absolute -top-1 -right-1 w-3 h-3 sm:w-4 sm:h-4 bg-red-500 rounded-full animate-pulse">
-                <svg className="w-full h-full text-white" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12 2C13.1 2 14 2.9 14 4V12C14 13.1 13.1 14 12 14C10.9 14 10 13.1 10 12V4C10 2.9 10.9 2 12 2M19 11C19 15.4 15.4 19 11 19V21H13V23H11V21H9V23H7V21H9V19C4.6 19 1 15.4 1 11H3C3 14.3 5.7 17 9 17V15C7.3 15 6 13.7 6 12V11H4V9H6V8C6 6.3 7.3 5 9 5V7C8.4 7 8 7.4 8 8V12C8 12.6 8.4 13 9 13V11H11V13C11.6 13 12 12.6 12 12V8C12 7.4 11.6 7 11 7V5C12.7 5 14 6.3 14 8V9H16V11H14V12C14 13.7 12.7 15 11 15V17C14.3 17 17 14.3 17 11H19Z"/>
-                </svg>
-              </div>
-            )}
-          </div>
 
-          {/* Bouton DÉMARRER avec le personnage */}
-          <button
-            onClick={explainExercisesWithSam}
-            disabled={exercisesIsPlayingVocal}
-            className={`px-2 sm:px-4 py-1 sm:py-2 rounded-lg font-bold text-xs sm:text-base shadow-lg transition-all ${
-              exercisesIsPlayingVocal
-                ? 'bg-gray-400 text-gray-200 cursor-not-allowed'
-                : 'bg-gradient-to-r from-red-500 to-orange-500 text-white hover:shadow-xl hover:scale-105'
-            } ${!exercisesHasStarted && !exercisesIsPlayingVocal ? 'animate-pulse' : ''}`}
-          >
-            <Play className="w-3 h-3 sm:w-5 sm:h-5 inline-block mr-1 sm:mr-2" />
-            {exercisesIsPlayingVocal ? 'Le personnage explique...' : 'DÉMARRER'}
-          </button>
-        </div>
 
         {/* Navigation Tabs */}
         <div className="flex justify-center space-x-4 mb-8">
@@ -1150,6 +1174,45 @@ export default function SoustractionPoseeCE1() {
         {!showExercises ? (
           /* COURS */
           <div className="space-y-8">
+            {/* Bouton DÉMARRER pour le cours avec personnage Minecraft */}
+            <div className="flex items-center justify-center gap-2 sm:gap-4 p-2 sm:p-4 mb-3 sm:mb-6">
+              {/* Image du personnage pour le cours */}
+              <div className={`relative transition-all duration-500 border-2 border-green-300 rounded-full bg-gradient-to-br from-green-100 to-emerald-100 ${
+                isPlayingVocal
+                    ? 'w-14 sm:w-24 h-14 sm:h-24' // When speaking - plus petit sur mobile
+                    : 'w-12 sm:w-20 h-12 sm:h-20' // Normal size
+              }`}>
+                {!imageError ? (
+                  <img 
+                    src="/image/Minecraftstyle.png" 
+                    alt="Personnage Minecraft" 
+                    className="w-full h-full object-cover rounded-full"
+                    onError={() => setImageError(true)}
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-green-600 text-lg font-bold rounded-full">
+                    <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M12 2C13.1 2 14 2.9 14 4V12C14 13.1 13.1 14 12 14C10.9 14 10 13.1 10 12V4C10 2.9 10.9 2 12 2M19 11C19 15.4 15.4 19 11 19V21H13V23H11V21H9V23H7V21H9V19C4.6 19 1 15.4 1 11H3C3 14.3 5.7 17 9 17V15C7.3 15 6 13.7 6 12V11H4V9H6V8C6 6.3 7.3 5 9 5V7C8.4 7 8 7.4 8 8V12C8 12.6 8.4 13 9 13V11H11V13C11.6 13 12 12.6 12 12V8C12 7.4 11.6 7 11 7V5C12.7 5 14 6.3 14 8V9H16V11H14V12C14 13.7 12.7 15 11 15V17C14.3 17 17 14.3 17 11H19Z"/>
+                    </svg>
+                  </div>
+                )}
+              </div>
+
+              {/* Bouton DÉMARRER pour le cours */}
+              <button
+                onClick={explainChapterWithSam}
+                disabled={isPlayingVocal}
+                className={`px-2 sm:px-4 py-1 sm:py-2 rounded-lg font-bold text-xs sm:text-base shadow-lg transition-all ${
+                  isPlayingVocal
+                    ? 'bg-gray-400 text-gray-200 cursor-not-allowed'
+                    : 'bg-gradient-to-r from-green-500 to-emerald-500 text-white hover:shadow-xl hover:scale-105'
+                } ${!hasStarted && !isPlayingVocal ? 'animate-pulse' : ''}`}
+              >
+                <Play className="w-3 h-3 sm:w-5 sm:h-5 inline-block mr-1 sm:mr-2" />
+                {isPlayingVocal ? 'Sam explique le cours...' : 'DÉMARRER LE COURS'}
+              </button>
+            </div>
+
             {/* Introduction */}
             <div 
               id="intro-section"
@@ -1313,6 +1376,51 @@ export default function SoustractionPoseeCE1() {
               highlightedElement === 'exercises-section' ? 'scale-105' : ''
             }`}
           >
+
+            {/* Bouton DÉMARRER pour les exercices avec personnage Minecraft */}
+            <div className="flex items-center justify-center gap-2 sm:gap-4 p-2 sm:p-4 mb-3 sm:mb-6">
+              {/* Image du personnage pour les exercices */}
+              <div className={`relative transition-all duration-500 border-2 border-red-300 rounded-full bg-gradient-to-br from-red-100 to-orange-100 ${
+                exercisesIsPlayingVocal
+                    ? 'w-14 sm:w-24 h-14 sm:h-24' // When speaking - plus petit sur mobile
+                    : 'w-12 sm:w-20 h-12 sm:h-20' // Normal size
+              }`}>
+                {!exercisesImageError ? (
+                  <img 
+                    src="/image/Minecraftstyle.png" 
+                    alt="Personnage Minecraft" 
+                    className="w-full h-full object-cover rounded-full"
+                    onError={() => setExercisesImageError(true)}
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-lg sm:text-2xl rounded-full bg-gradient-to-br from-red-200 to-orange-200">
+                    🧱
+                  </div>
+                )}
+                
+                {exercisesIsPlayingVocal && (
+                  <div className="absolute -top-1 -right-1 w-3 h-3 sm:w-4 sm:h-4 bg-red-500 rounded-full animate-pulse">
+                    <svg className="w-full h-full text-white" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12 2C13.1 2 14 2.9 14 4V12C14 13.1 13.1 14 12 14C10.9 14 10 13.1 10 12V4C10 2.9 10.9 2 12 2M19 11C19 15.4 15.4 19 11 19V21H13V23H11V21H9V23H7V21H9V19C4.6 19 1 15.4 1 11H3C3 14.3 5.7 17 9 17V15C7.3 15 6 13.7 6 12V11H4V9H6V8C6 6.3 7.3 5 9 5V7C8.4 7 8 7.4 8 8V12C8 12.6 8.4 13 9 13V11H11V13C11.6 13 12 12.6 12 12V8C12 7.4 11.6 7 11 7V5C12.7 5 14 6.3 14 8V9H16V11H14V12C14 13.7 12.7 15 11 15V17C14.3 17 17 14.3 17 11H19Z"/>
+                    </svg>
+                  </div>
+                )}
+              </div>
+
+              {/* Bouton DÉMARRER pour les exercices */}
+              <button
+                onClick={explainExercisesWithSam}
+                disabled={exercisesIsPlayingVocal}
+                className={`px-2 sm:px-4 py-1 sm:py-2 rounded-lg font-bold text-xs sm:text-base shadow-lg transition-all ${
+                  exercisesIsPlayingVocal
+                    ? 'bg-gray-400 text-gray-200 cursor-not-allowed'
+                    : 'bg-gradient-to-r from-red-500 to-orange-500 text-white hover:shadow-xl hover:scale-105'
+                } ${!exercisesHasStarted && !exercisesIsPlayingVocal ? 'animate-pulse' : ''}`}
+              >
+                <Play className="w-3 h-3 sm:w-5 sm:h-5 inline-block mr-1 sm:mr-2" />
+                {exercisesIsPlayingVocal ? 'Le personnage explique...' : 'DÉMARRER LES EXERCICES'}
+              </button>
+            </div>
 
             {/* Header exercices */}
             <div 
