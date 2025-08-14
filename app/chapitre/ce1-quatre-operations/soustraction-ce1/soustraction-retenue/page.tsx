@@ -57,15 +57,15 @@ export default function SoustractionRetenueCE1() {
   const stopSignalRef = useRef(false);
   const currentAudioRef = useRef<SpeechSynthesisUtterance | null>(null);
 
-  // Exemples de soustractions posées avec retenue
+  // Exemples de soustractions posées avec retenue (limités à 2 chiffres)
   const subtractionExamples = [
     { num1: 52, num2: 27, result: 25, hasBorrow: true, description: 'avec retenue' },
     { num1: 81, num2: 45, result: 36, hasBorrow: true, description: 'avec retenue' },
     { num1: 73, num2: 38, result: 35, hasBorrow: true, description: 'avec retenue' },
-    { num1: 125, num2: 67, result: 58, hasBorrow: true, description: 'avec retenue' },
-    { num1: 234, num2: 156, result: 78, hasBorrow: true, description: 'avec retenue' },
-    { num1: 321, num2: 174, result: 147, hasBorrow: true, description: 'à 3 chiffres avec retenue' },
-    { num1: 412, num2: 268, result: 144, hasBorrow: true, description: 'à 3 chiffres avec retenue' }
+    { num1: 91, num2: 67, result: 24, hasBorrow: true, description: 'avec retenue' },
+    { num1: 84, num2: 56, result: 28, hasBorrow: true, description: 'avec retenue' },
+    { num1: 71, num2: 34, result: 37, hasBorrow: true, description: 'avec retenue' },
+    { num1: 62, num2: 48, result: 14, hasBorrow: true, description: 'avec retenue' }
   ];
 
   // Exercices progressifs
@@ -108,80 +108,80 @@ export default function SoustractionRetenueCE1() {
       choices: ['On ajoute 10', 'On emprunte 1 à la colonne de gauche', 'On enlève 1']
     },
     { 
-      question: 'Calcule : 205 - 47', 
-      correctAnswer: '158',
-      choices: ['154', '158', '162'],
-      visual: '  205\n-  47\n─────\n   ?'
+      question: 'Calcule : 85 - 47', 
+      correctAnswer: '38',
+      choices: ['36', '38', '40'],
+      visual: '   85\n-  47\n─────\n   ?'
     },
     { 
-      question: 'Calcule : 305 - 58', 
-      correctAnswer: '247',
-      choices: ['243', '247', '251'],
-      visual: '  305\n-  58\n─────\n   ?'
+      question: 'Calcule : 95 - 58', 
+      correctAnswer: '37',
+      choices: ['35', '37', '39'],
+      visual: '   95\n-  58\n─────\n   ?'
     },
     { 
-      question: 'Calcule : 156 - 89', 
-      correctAnswer: '67',
-      choices: ['65', '67', '69'],
-      visual: '  156\n-  89\n─────\n   ?'
+      question: 'Calcule : 56 - 39', 
+      correctAnswer: '17',
+      choices: ['15', '17', '19'],
+      visual: '   56\n-  39\n─────\n   ?'
     },
     { 
-      question: 'Calcule : 278 - 99', 
-      correctAnswer: '179',
-      choices: ['177', '179', '181'],
-      visual: '  278\n-  99\n─────\n   ?'
-    },
-    
-    // 4. Soustractions 3 chiffres avec retenues multiples
-    { 
-      question: 'Calcule : 365 - 197', 
-      correctAnswer: '168',
-      choices: ['164', '168', '172'],
-      visual: '  365\n- 197\n─────\n   ?'
-    },
-    { 
-      question: 'Calcule : 514 - 185', 
-      correctAnswer: '329',
-      choices: ['325', '329', '333'],
-      visual: '  514\n- 185\n─────\n   ?'
-    },
-    { 
-      question: 'Calcule : 424 - 278', 
-      correctAnswer: '146',
-      choices: ['142', '146', '150'],
-      visual: '  424\n- 278\n─────\n   ?'
-    },
-    { 
-      question: 'Calcule : 655 - 258', 
-      correctAnswer: '397',
-      choices: ['393', '397', '401'],
-      visual: '  655\n- 258\n─────\n   ?'
-    },
-    { 
-      question: 'Calcule : 856 - 367', 
-      correctAnswer: '489',
-      choices: ['485', '489', '493'],
-      visual: '  856\n- 367\n─────\n   ?'
-    },
-    { 
-      question: 'Calcule : 874 - 296', 
-      correctAnswer: '578',
-      choices: ['574', '578', '582'],
-      visual: '  874\n- 296\n─────\n   ?'
+      question: 'Calcule : 78 - 49', 
+      correctAnswer: '29',
+      choices: ['27', '29', '31'],
+      visual: '   78\n-  49\n─────\n   ?'
     },
     
-    // 5. Exercices complexes avec retenues
+    // 4. Soustractions variées à 2 chiffres avec retenues
     { 
-      question: 'Calcule : 145 - 56', 
-      correctAnswer: '89',
-      choices: ['85', '89', '93'],
-      visual: '  145\n-  56\n─────\n   ?'
+      question: 'Calcule : 65 - 37', 
+      correctAnswer: '28',
+      choices: ['26', '28', '30'],
+      visual: '   65\n-  37\n─────\n   ?'
     },
     { 
-      question: 'Calcule : 679 - 485', 
-      correctAnswer: '194',
-      choices: ['190', '194', '198'],
-      visual: '  679\n- 485\n─────\n   ?'
+      question: 'Calcule : 74 - 58', 
+      correctAnswer: '16',
+      choices: ['14', '16', '18'],
+      visual: '   74\n-  58\n─────\n   ?'
+    },
+    { 
+      question: 'Calcule : 83 - 47', 
+      correctAnswer: '36',
+      choices: ['34', '36', '38'],
+      visual: '   83\n-  47\n─────\n   ?'
+    },
+    { 
+      question: 'Calcule : 91 - 65', 
+      correctAnswer: '26',
+      choices: ['24', '26', '28'],
+      visual: '   91\n-  65\n─────\n   ?'
+    },
+    { 
+      question: 'Calcule : 86 - 67', 
+      correctAnswer: '19',
+      choices: ['17', '19', '21'],
+      visual: '   86\n-  67\n─────\n   ?'
+    },
+    { 
+      question: 'Calcule : 74 - 56', 
+      correctAnswer: '18',
+      choices: ['16', '18', '20'],
+      visual: '   74\n-  56\n─────\n   ?'
+    },
+    
+    // 5. Exercices complexes avec retenues à 2 chiffres
+    { 
+      question: 'Calcule : 76 - 56', 
+      correctAnswer: '20',
+      choices: ['18', '20', '22'],
+      visual: '   76\n-  56\n─────\n   ?'
+    },
+    { 
+      question: 'Calcule : 89 - 75', 
+      correctAnswer: '14',
+      choices: ['12', '14', '16'],
+      visual: '   89\n-  75\n─────\n   ?'
     },
     { 
       question: 'Que fait-on avec la retenue ?', 
@@ -191,10 +191,10 @@ export default function SoustractionRetenueCE1() {
     
     // 6. Défis finaux
     { 
-      question: 'Calcule : 758 - 397', 
-      correctAnswer: '361',
-      choices: ['357', '361', '365'],
-      visual: '  758\n- 397\n─────\n   ?'
+      question: 'Calcule : 84 - 39', 
+      correctAnswer: '45',
+      choices: ['43', '45', '47'],
+      visual: '   84\n-  39\n─────\n   ?'
     },
     { 
       question: 'La soustraction avec retenue nous aide à...', 

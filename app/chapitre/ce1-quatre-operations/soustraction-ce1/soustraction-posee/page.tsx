@@ -42,15 +42,15 @@ export default function SoustractionPoseeCE1() {
   const stopSignalRef = useRef(false);
   const currentAudioRef = useRef<SpeechSynthesisUtterance | null>(null);
 
-  // Exemples de soustractions posées
+  // Exemples de soustractions posées (limités à 2 chiffres)
   const subtractionExamples = [
     { num1: 37, num2: 14, result: 23, hasBorrow: false, description: 'sans retenue' },
     { num1: 77, num2: 35, result: 42, hasBorrow: false, description: 'sans retenue' },
-    { num1: 77, num2: 26, result: 51, hasBorrow: false, description: 'sans retenue' },
-    { num1: 286, num2: 52, result: 234, hasBorrow: false, description: '3 chiffres - 2 chiffres sans retenue' },
-    { num1: 357, num2: 126, result: 231, hasBorrow: false, description: 'à 3 chiffres sans retenue' },
-    { num1: 553, num2: 241, result: 312, hasBorrow: false, description: 'à 3 chiffres sans retenue' },
-    { num1: 268, num2: 145, result: 123, hasBorrow: false, description: 'à 3 chiffres sans retenue' }
+    { num1: 89, num2: 26, result: 63, hasBorrow: false, description: 'sans retenue' },
+    { num1: 86, num2: 52, result: 34, hasBorrow: false, description: 'sans retenue' },
+    { num1: 95, num2: 34, result: 61, hasBorrow: false, description: 'sans retenue' },
+    { num1: 78, num2: 41, result: 37, hasBorrow: false, description: 'sans retenue' },
+    { num1: 68, num2: 45, result: 23, hasBorrow: false, description: 'sans retenue' }
   ];
 
   // Exercices progressifs
@@ -86,94 +86,94 @@ export default function SoustractionPoseeCE1() {
       visual: '   77\n-  35\n─────\n   ?'
     },
     
-    // 3. Passage rapide aux 3 chiffres - 2 chiffres
+    // 3. Calculs intermédiaires à 2 chiffres
     { 
-      question: 'Pour les nombres à 3 chiffres, combien de colonnes ?', 
-      correctAnswer: '3 colonnes',
-      choices: ['2 colonnes', '4 colonnes', '3 colonnes']
+      question: 'Dans quelle colonne commence-t-on toujours ?', 
+      correctAnswer: 'Les unités',
+      choices: ['Les dizaines', 'Par le milieu', 'Les unités']
     },
     { 
-      question: 'Calcule : 178 - 36', 
-      correctAnswer: '142',
-      choices: ['142', '140', '144'],
-      visual: '  178\n-  36\n─────\n   ?'
+      question: 'Calcule : 79 - 36', 
+      correctAnswer: '43',
+      choices: ['43', '41', '45'],
+      visual: '   79\n-  36\n─────\n   ?'
     },
     { 
-      question: 'Calcule : 286 - 52', 
-      correctAnswer: '234',
-      choices: ['234', '230', '236'],
-      visual: '  286\n-  52\n─────\n   ?'
+      question: 'Calcule : 86 - 52', 
+      correctAnswer: '34',
+      choices: ['34', '30', '36'],
+      visual: '   86\n-  52\n─────\n   ?'
     },
     { 
-      question: 'Calcule : 368 - 43', 
-      correctAnswer: '325',
-      choices: ['323', '325', '327'],
-      visual: '  368\n-  43\n─────\n   ?'
+      question: 'Calcule : 68 - 43', 
+      correctAnswer: '25',
+      choices: ['23', '25', '27'],
+      visual: '   68\n-  43\n─────\n   ?'
     },
     
-    // 4. Montée vers les 3 chiffres - 3 chiffres (niveau avancé)
+    // 4. Exercices variés à 2 chiffres
     { 
-      question: 'Calcule : 268 - 145', 
-      correctAnswer: '123',
-      choices: ['123', '125', '121'],
-      visual: '  268\n- 145\n─────\n   ?'
+      question: 'Calcule : 69 - 45', 
+      correctAnswer: '24',
+      choices: ['24', '26', '22'],
+      visual: '   69\n-  45\n─────\n   ?'
     },
     { 
-      question: 'Calcule : 367 - 154', 
-      correctAnswer: '213',
-      choices: ['211', '213', '215'],
-      visual: '  367\n- 154\n─────\n   ?'
+      question: 'Calcule : 87 - 54', 
+      correctAnswer: '33',
+      choices: ['31', '33', '35'],
+      visual: '   87\n-  54\n─────\n   ?'
     },
     { 
-      question: 'Calcule : 357 - 126', 
-      correctAnswer: '231',
-      choices: ['229', '231', '233'],
-      visual: '  357\n- 126\n─────\n   ?'
+      question: 'Calcule : 95 - 26', 
+      correctAnswer: '69',
+      choices: ['67', '69', '71'],
+      visual: '   95\n-  26\n─────\n   ?'
     },
     { 
-      question: 'Calcule : 553 - 241', 
-      correctAnswer: '312',
-      choices: ['312', '310', '314'],
-      visual: '  553\n- 241\n─────\n   ?'
+      question: 'Calcule : 76 - 41', 
+      correctAnswer: '35',
+      choices: ['35', '33', '37'],
+      visual: '   76\n-  41\n─────\n   ?'
     },
     { 
-      question: 'Calcule : 777 - 321', 
-      correctAnswer: '456',
-      choices: ['456', '454', '458'],
-      visual: '  777\n- 321\n─────\n   ?'
+      question: 'Calcule : 97 - 32', 
+      correctAnswer: '65',
+      choices: ['65', '63', '67'],
+      visual: '   97\n-  32\n─────\n   ?'
     },
     { 
-      question: 'Calcule : 687 - 164', 
-      correctAnswer: '523',
-      choices: ['521', '523', '525'],
-      visual: '  687\n- 164\n─────\n   ?'
+      question: 'Calcule : 87 - 64', 
+      correctAnswer: '23',
+      choices: ['21', '23', '25'],
+      visual: '   87\n-  64\n─────\n   ?'
     },
     
     // 5. Exercices de fin plus complexes
     { 
-      question: 'Calcule : 89 - 25', 
-      correctAnswer: '64',
-      choices: ['62', '64', '66'],
-      visual: '   89\n-  25\n─────\n   ?'
+      question: 'Calcule : 89 - 26', 
+      correctAnswer: '63',
+      choices: ['61', '63', '65'],
+      visual: '   89\n-  26\n─────\n   ?'
     },
     { 
-      question: 'Calcule : 698 - 281', 
-      correctAnswer: '417',
-      choices: ['417', '415', '419'],
-      visual: '  698\n- 281\n─────\n   ?'
+      question: 'Calcule : 98 - 81', 
+      correctAnswer: '17',
+      choices: ['17', '15', '19'],
+      visual: '   98\n-  81\n─────\n   ?'
     },
     { 
       question: 'Par quelle colonne commence-t-on toujours ?', 
       correctAnswer: 'Les unités (à droite)',
-      choices: ['Les dizaines (à gauche)', 'Les unités (à droite)', 'Les centaines (à gauche)']
+      choices: ['Les dizaines (à gauche)', 'Les unités (à droite)', 'N\'importe laquelle']
     },
     
     // 6. Défi final
     { 
-      question: 'Calcule : 878 - 243', 
-      correctAnswer: '635',
-      choices: ['635', '633', '637'],
-      visual: '  878\n- 243\n─────\n   ?'
+      question: 'Calcule : 79 - 43', 
+      correctAnswer: '36',
+      choices: ['36', '34', '38'],
+      visual: '   79\n-  43\n─────\n   ?'
     },
     { 
       question: 'La soustraction posée sans retenue nous aide à...', 
