@@ -197,7 +197,10 @@ export default function AdditionsSimples() {
   // Générateur de questions selon le niveau avec aléatoire amélioré
   const generateQuestion = () => {
     const level = levels[currentLevel - 1];
-    let num1, num2, question, answer;
+    let num1: number = 1;
+    let num2: number = 1;
+    let question: string;
+    let answer: number;
     let attempts = 0;
     const maxAttempts = 50;
     
@@ -300,7 +303,10 @@ export default function AdditionsSimples() {
 
   // Générateur de questions pour le mode entraînement
   const generateTrainingQuestion = () => {
-    let num1, num2, question, answer;
+    let num1: number = 1;
+    let num2: number = 1;
+    let question: string;
+    let answer: number;
     let attempts = 0;
     const maxAttempts = 50;
     
@@ -1078,7 +1084,10 @@ export default function AdditionsSimples() {
   };
 
   const generateDuelQuestion = () => {
-    let num1, num2, question, answer;
+    let num1: number = 1;
+    let num2: number = 1;
+    let question: string;
+    let answer: number;
     let attempts = 0;
     const maxAttempts = 50;
     
@@ -1225,7 +1234,8 @@ export default function AdditionsSimples() {
   };
 
   const generateChallengeQuestion = (level: number) => {
-    let num1, num2;
+    let num1: number = 1;
+    let num2: number = 1;
     
     // Utilise challengeLevel pour définir les limites, et level pour la progression de difficulté
     let maxNum;
@@ -2562,7 +2572,7 @@ export default function AdditionsSimples() {
                       ⚔️ Revanche !
                     </button>
                     <button
-                      onClick={startTraining}
+                      onClick={() => startTraining()}
                       className="bg-green-500 text-white px-8 py-4 rounded-lg font-bold hover:bg-green-400 transition-colors shadow-xl"
                     >
                       🏃‍♂️ S'entraîner
@@ -2669,7 +2679,7 @@ export default function AdditionsSimples() {
 
                   <div className="space-x-4">
                     <button
-                      onClick={startDuel2Players}
+                      onClick={() => startDuel2Players()}
                       className="bg-green-500 text-white px-8 py-4 rounded-lg font-bold hover:bg-green-400 transition-colors shadow-xl"
                     >
                       🔄 Revanche !
