@@ -1038,32 +1038,34 @@ export default function SoustractionsSimples() {
         </div>
       )}
 
-      {/* En-tête pirate */}
-      <div className="bg-black bg-opacity-60 backdrop-blur-sm border-b border-cyan-500">
-        <div className="max-w-6xl mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
+      {/* En-tête pirate responsive */}
+      <div className="bg-black bg-opacity-60 backdrop-blur-sm border-b border-cyan-500 relative z-10">
+        <div className="max-w-6xl mx-auto px-2 sm:px-4 py-2 sm:py-4">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-0">
+            <div className="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-4 w-full sm:w-auto">
               <Link 
                 href="/chapitre/cp-calcul-mental"
-                className="flex items-center px-4 py-2 bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors"
+                className="flex items-center px-3 sm:px-4 py-2 bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors min-h-[44px] w-full sm:w-auto justify-center sm:justify-start"
               >
-                <ArrowLeft className="w-5 h-5 mr-2" />
-                Retour au port
+                <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+                <span className="hidden sm:inline">Retour au port</span>
+                <span className="sm:hidden">Retour</span>
               </Link>
               
-              <div>
-                <h1 className="text-2xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
-                  🏴‍☠️ L'Odyssée des Soustractions
+              <div className="text-center sm:text-left">
+                <h1 className="text-lg sm:text-2xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
+                  <span className="hidden sm:inline">🏴‍☠️ L'Odyssée des Soustractions</span>
+                  <span className="sm:hidden">⚓ Soustractions</span>
                 </h1>
-                <p className="text-gray-300">Conquiers les Sept Mers avec tes canons mathématiques !</p>
+                <p className="text-xs sm:text-sm text-gray-300 hidden sm:block">Conquiers les Sept Mers avec tes canons mathématiques !</p>
               </div>
             </div>
 
             <button
               onClick={() => setSoundEnabled(!soundEnabled)}
-              className={`p-2 rounded-lg transition-colors ${soundEnabled ? 'bg-cyan-600' : 'bg-gray-600'}`}
+              className={`p-2 rounded-lg transition-colors min-h-[44px] ${soundEnabled ? 'bg-cyan-600' : 'bg-gray-600'}`}
             >
-              <Volume2 className="w-5 h-5" />
+              <Volume2 className="w-4 h-4 sm:w-5 sm:h-5" />
             </button>
           </div>
         </div>
@@ -1086,20 +1088,20 @@ export default function SoustractionsSimples() {
               <div className="mb-8">
                 <button
                   onClick={startInteractivePresentation}
-                  className="bg-gradient-to-r from-yellow-500 to-orange-600 text-white px-8 py-4 rounded-xl font-bold text-xl shadow-2xl hover:scale-110 transition-all duration-300 animate-pulse border-4 border-yellow-300"
+                  className="bg-gradient-to-r from-yellow-500 to-orange-600 text-white px-8 py-4 rounded-xl font-bold text-xl shadow-xl hover:scale-110 transition-all duration-300 animate-pulse border-4 border-yellow-300"
                 >
                   🗺️ Découvrir les Modes de Jeu !
                 </button>
               </div>
               
               {/* Profil du Pirate */}
-              <div className="bg-gradient-to-r from-gray-900 to-blue-900 rounded-xl p-6 mb-8 border-2 border-cyan-400 shadow-2xl">
+              <div className="bg-gradient-to-r from-gray-900 to-blue-900 rounded-xl p-6 mb-8 border-2 border-cyan-400 shadow-xl">
                 <div className="text-center mb-4">
                   <h3 className="text-xl font-bold text-cyan-400 mb-2">🏴‍☠️ Profil du Pirate</h3>
                   <div className="text-lg text-white font-medium">Rang: {pirateRank}</div>
                 </div>
                 
-                <div className="grid md:grid-cols-4 gap-4">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4">
                   {/* Trésors */}
                   <div className="bg-black bg-opacity-30 rounded-lg p-4 text-center border border-yellow-500">
                     <div className="text-2xl mb-2">💰</div>
@@ -1133,18 +1135,18 @@ export default function SoustractionsSimples() {
               </div>
             </div>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-6">
               {/* Entraînement en mer calme */}
               <div 
                 onClick={() => setGameMode('training-select')}
-                className={`bg-gradient-to-br from-teal-600 to-cyan-700 rounded-xl p-6 cursor-pointer hover:scale-105 transition-all duration-300 shadow-2xl border border-cyan-400 group ${
+                className={`bg-gradient-to-br from-teal-600 to-cyan-700 rounded-xl min-h-[120px] sm:min-h-[140px] p-3 sm:p-6 cursor-pointer hover:scale-105 transition-all duration-300 shadow-xl border border-cyan-400 group ${
                   currentHighlight === 'training' ? 'ring-8 ring-yellow-400 animate-pulse scale-110' : ''
                 }`}
               >
                 <div className="text-center">
-                  <div className="text-5xl mb-3 group-hover:animate-bounce">🌊</div>
-                  <h3 className="text-xl font-bold mb-2">Mer Calme</h3>
-                  <p className="text-cyan-100 mb-3 text-sm">
+                  <div className="text-3xl sm:text-5xl mb-2 sm:mb-3 group-hover:animate-bounce">🌊</div>
+                  <h3 className="text-base sm:text-xl font-bold mb-1 sm:mb-2">Mer Calme</h3>
+                  <p className="text-cyan-100 mb-2 sm:mb-3 text-xs sm:text-sm hidden sm:block">
                     Sans danger !
                   </p>
                   <div className="flex justify-center space-x-1 text-sm">
@@ -1157,14 +1159,14 @@ export default function SoustractionsSimples() {
               {/* Navigation vers les îles hostiles */}
               <div 
                 onClick={() => setGameMode('island-select')}
-                className={`bg-gradient-to-br from-red-600 to-orange-700 rounded-xl p-6 cursor-pointer hover:scale-105 transition-all duration-300 shadow-2xl border border-red-400 group ${
+                className={`bg-gradient-to-br from-red-600 to-orange-700 rounded-xl min-h-[120px] sm:min-h-[140px] p-3 sm:p-6 cursor-pointer hover:scale-105 transition-all duration-300 shadow-xl border border-red-400 group ${
                   currentHighlight === 'boss' ? 'ring-8 ring-yellow-400 animate-pulse scale-110' : ''
                 }`}
               >
                 <div className="text-center">
-                  <div className="text-5xl mb-3 group-hover:animate-pulse">🏴‍☠️</div>
-                  <h3 className="text-xl font-bold mb-2">Îles Hostiles</h3>
-                  <p className="text-red-100 mb-3 text-sm">
+                  <div className="text-3xl sm:text-5xl mb-2 sm:mb-3 group-hover:animate-pulse">🏴‍☠️</div>
+                  <h3 className="text-base sm:text-xl font-bold mb-1 sm:mb-2">Îles Hostiles</h3>
+                  <p className="text-red-100 mb-2 sm:mb-3 text-xs sm:text-sm hidden sm:block">
                     Pirates légendaires !
                   </p>
                   <div className="flex justify-center space-x-1 text-sm">
@@ -1177,14 +1179,14 @@ export default function SoustractionsSimples() {
               {/* Mode duel 2 pirates */}
               <div 
                 onClick={() => setGameMode('duel-select')}
-                className={`bg-gradient-to-br from-blue-600 to-indigo-700 rounded-xl p-6 cursor-pointer hover:scale-105 transition-all duration-300 shadow-2xl border border-blue-400 group ${
+                className={`bg-gradient-to-br from-blue-600 to-indigo-700 rounded-xl min-h-[120px] sm:min-h-[140px] p-3 sm:p-6 cursor-pointer hover:scale-105 transition-all duration-300 shadow-xl border border-blue-400 group ${
                   currentHighlight === 'duel' ? 'ring-8 ring-yellow-400 animate-pulse scale-110' : ''
                 }`}
               >
                 <div className="text-center">
-                  <div className="text-5xl mb-3 group-hover:animate-bounce">⚔️</div>
-                  <h3 className="text-xl font-bold mb-2">Duel Pirates</h3>
-                  <p className="text-blue-100 mb-3 text-sm">
+                  <div className="text-3xl sm:text-5xl mb-2 sm:mb-3 group-hover:animate-bounce">⚔️</div>
+                  <h3 className="text-base sm:text-xl font-bold mb-1 sm:mb-2">Duel Pirates</h3>
+                  <p className="text-blue-100 mb-2 sm:mb-3 text-xs sm:text-sm hidden sm:block">
                     Combat familial !
                   </p>
                   <div className="flex justify-center space-x-1 text-sm">
@@ -1197,14 +1199,14 @@ export default function SoustractionsSimples() {
               {/* Mode défi temps */}
               <div 
                 onClick={() => setGameMode('challenge-select')}
-                className={`bg-gradient-to-br from-yellow-600 to-amber-700 rounded-xl p-6 cursor-pointer hover:scale-105 transition-all duration-300 shadow-2xl border border-yellow-400 group ${
+                className={`bg-gradient-to-br from-yellow-600 to-amber-700 rounded-xl min-h-[120px] sm:min-h-[140px] p-3 sm:p-6 cursor-pointer hover:scale-105 transition-all duration-300 shadow-xl border border-yellow-400 group ${
                   currentHighlight === 'challenge' ? 'ring-8 ring-yellow-400 animate-pulse scale-110' : ''
                 }`}
               >
                 <div className="text-center">
-                  <div className="text-5xl mb-3 group-hover:animate-spin">⏰</div>
-                  <h3 className="text-xl font-bold mb-2">Défi Mers</h3>
-                  <p className="text-yellow-100 mb-3 text-sm">
+                  <div className="text-3xl sm:text-5xl mb-2 sm:mb-3 group-hover:animate-spin">⏰</div>
+                  <h3 className="text-base sm:text-xl font-bold mb-1 sm:mb-2">Défi Mers</h3>
+                  <p className="text-yellow-100 mb-2 sm:mb-3 text-xs sm:text-sm hidden sm:block">
                     Course doubloons !
                   </p>
                   <div className="flex justify-center space-x-1 text-sm">
@@ -1223,9 +1225,9 @@ export default function SoustractionsSimples() {
                     setShowLegendAnimation(true);
                   }
                 }}
-                className={`relative rounded-xl p-6 shadow-2xl border-2 transition-all duration-300 group ${
+                className={`relative rounded-xl p-6 shadow-xl border-2 transition-all duration-300 group ${
                   isLegendUnlocked 
-                    ? 'bg-gradient-to-br from-cyan-300 via-teal-400 to-blue-600 border-cyan-200 cursor-default animate-pulse shadow-cyan-400/50 shadow-2xl' 
+                    ? 'bg-gradient-to-br from-cyan-300 via-teal-400 to-blue-600 border-cyan-200 cursor-default animate-pulse shadow-cyan-400/50 shadow-xl' 
                     : doubloons >= legendCost 
                       ? 'bg-gradient-to-br from-cyan-600/80 via-teal-600/80 to-blue-600/80 border-cyan-400 cursor-pointer hover:scale-105 hover:shadow-cyan-400/60 animate-pulse shadow-cyan-400/30 shadow-xl' 
                       : 'bg-gradient-to-br from-cyan-700/60 via-teal-700/60 to-blue-700/60 border-cyan-500/70 cursor-not-allowed animate-pulse shadow-cyan-400/20 shadow-lg'
@@ -1324,7 +1326,7 @@ export default function SoustractionsSimples() {
                 <div 
                   key={island.id}
                   onClick={() => startNavalBattle(island.id)}
-                  className={`bg-gradient-to-br ${island.color} rounded-xl p-6 cursor-pointer hover:scale-105 transition-all duration-300 shadow-2xl border-2 border-white border-opacity-20 group`}
+                  className={`bg-gradient-to-br ${island.color} rounded-xl p-6 cursor-pointer hover:scale-105 transition-all duration-300 shadow-xl border-2 border-white border-opacity-20 group`}
                 >
                   <div className="text-center text-white">
                     <div className="text-4xl mb-3 group-hover:animate-bounce">{island.icon}</div>
@@ -1383,19 +1385,19 @@ export default function SoustractionsSimples() {
               {/* Entraînement Facile */}
               <div 
                 onClick={() => { setTrainingLevel(1); setGameMode('training'); }}
-                className="bg-gradient-to-br from-teal-600 to-cyan-700 rounded-xl p-3 sm:p-6 md:p-8 cursor-pointer hover:scale-105 transition-all duration-300 shadow-2xl border border-cyan-400 group"
+                className="bg-gradient-to-br from-teal-600 to-cyan-700 rounded-xl p-3 sm:p-6 md:p-8 cursor-pointer hover:scale-105 transition-all duration-300 shadow-xl border border-cyan-400 group min-h-[140px] sm:min-h-[180px] md:min-h-[220px]"
               >
                 <div className="text-center">
                   <div className="text-3xl sm:text-5xl md:text-6xl mb-2 sm:mb-3 md:mb-4 group-hover:animate-bounce">🐠</div>
                   <h3 className="text-lg sm:text-xl md:text-2xl font-bold mb-1 sm:mb-2 md:mb-3">Eaux Calmes</h3>
-                  <p className="text-cyan-100 mb-4 text-lg">
+                  <p className="text-cyan-100 mb-2 sm:mb-4 text-sm sm:text-base md:text-lg hidden sm:block">
                     Soustractions jusqu'à 10
                   </p>
-                  <div className="flex justify-center space-x-2 text-sm mb-4">
-                    <Anchor className="w-4 h-4" />
+                  <div className="flex justify-center space-x-1 sm:space-x-2 text-xs sm:text-sm mb-2 sm:mb-4">
+                    <Anchor className="w-3 h-3 sm:w-4 sm:h-4" />
                     <span>Débutant</span>
                   </div>
-                  <div className="text-sm text-cyan-200">
+                  <div className="text-xs sm:text-sm text-cyan-200 hidden sm:block">
                     Parfait pour débuter !
                   </div>
                 </div>
@@ -1404,19 +1406,19 @@ export default function SoustractionsSimples() {
               {/* Entraînement Moyen */}
               <div 
                 onClick={() => { setTrainingLevel(2); setGameMode('training'); }}
-                className="bg-gradient-to-br from-blue-600 to-indigo-700 rounded-xl p-3 sm:p-6 md:p-8 cursor-pointer hover:scale-105 transition-all duration-300 shadow-2xl border border-blue-400 group"
+                className="bg-gradient-to-br from-blue-600 to-indigo-700 rounded-xl p-3 sm:p-6 md:p-8 cursor-pointer hover:scale-105 transition-all duration-300 shadow-xl border border-blue-400 group min-h-[140px] sm:min-h-[180px] md:min-h-[220px]"
               >
                 <div className="text-center">
                   <div className="text-3xl sm:text-5xl md:text-6xl mb-2 sm:mb-3 md:mb-4 group-hover:animate-bounce">🐟</div>
                   <h3 className="text-lg sm:text-xl md:text-2xl font-bold mb-1 sm:mb-2 md:mb-3">Eaux Profondes</h3>
-                  <p className="text-blue-100 mb-4 text-lg">
+                  <p className="text-blue-100 mb-2 sm:mb-4 text-sm sm:text-base md:text-lg hidden sm:block">
                     Soustractions jusqu'à 20
                   </p>
-                  <div className="flex justify-center space-x-2 text-sm mb-4">
-                    <Zap className="w-4 h-4" />
+                  <div className="flex justify-center space-x-1 sm:space-x-2 text-xs sm:text-sm mb-2 sm:mb-4">
+                    <Zap className="w-3 h-3 sm:w-4 sm:h-4" />
                     <span>Intermédiaire</span>
                   </div>
-                  <div className="text-sm text-blue-200">
+                  <div className="text-xs sm:text-sm text-blue-200 hidden sm:block">
                     Un bon défi !
                   </div>
                 </div>
@@ -1425,7 +1427,7 @@ export default function SoustractionsSimples() {
               {/* Entraînement Difficile */}
               <div 
                 onClick={() => { setTrainingLevel(3); setGameMode('training'); }}
-                className="bg-gradient-to-br from-purple-600 to-violet-600 rounded-xl p-3 sm:p-6 md:p-8 cursor-pointer hover:scale-105 transition-all duration-300 shadow-2xl border border-purple-400 group"
+                className="bg-gradient-to-br from-purple-600 to-violet-600 rounded-xl p-3 sm:p-6 md:p-8 cursor-pointer hover:scale-105 transition-all duration-300 shadow-xl border border-purple-400 group min-h-[140px] sm:min-h-[180px] md:min-h-[220px]"
               >
                 <div className="text-center">
                   <div className="text-3xl sm:text-5xl md:text-6xl mb-2 sm:mb-3 md:mb-4 group-hover:animate-bounce">🦈</div>
@@ -1446,7 +1448,7 @@ export default function SoustractionsSimples() {
               {/* Entraînement King of Subtraction */}
               <div 
                 onClick={() => { setTrainingLevel(4); setGameMode('training'); }}
-                className="bg-gradient-to-br from-cyan-500 via-teal-500 to-blue-600 rounded-xl p-3 sm:p-6 md:p-8 cursor-pointer hover:scale-105 transition-all duration-300 shadow-2xl border-2 border-cyan-400 group relative overflow-hidden"
+                className="bg-gradient-to-br from-cyan-500 via-teal-500 to-blue-600 rounded-xl p-3 sm:p-6 md:p-8 cursor-pointer hover:scale-105 transition-all duration-300 shadow-xl border-2 border-cyan-400 group relative overflow-hidden"
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-cyan-400/20 to-blue-500/20 animate-pulse"></div>
                 <div className="relative text-center">
@@ -1491,7 +1493,7 @@ export default function SoustractionsSimples() {
               {/* Défi Facile */}
               <div 
                 onClick={() => { setChallengeLevel(1); /* fonction startTimeChallenge à créer */ }}
-                className="bg-gradient-to-br from-teal-600 to-cyan-700 rounded-xl p-3 sm:p-6 md:p-8 cursor-pointer hover:scale-105 transition-all duration-300 shadow-2xl border border-cyan-400 group"
+                className="bg-gradient-to-br from-teal-600 to-cyan-700 rounded-xl p-3 sm:p-6 md:p-8 cursor-pointer hover:scale-105 transition-all duration-300 shadow-xl border border-cyan-400 group min-h-[140px] sm:min-h-[180px] md:min-h-[220px]"
               >
                 <div className="text-center">
                   <div className="text-3xl sm:text-5xl md:text-6xl mb-2 sm:mb-3 md:mb-4 group-hover:animate-bounce">🐠</div>
@@ -1512,7 +1514,7 @@ export default function SoustractionsSimples() {
               {/* Défi Moyen */}
               <div 
                 onClick={() => { setChallengeLevel(2); /* fonction startTimeChallenge à créer */ }}
-                className="bg-gradient-to-br from-blue-600 to-indigo-700 rounded-xl p-3 sm:p-6 md:p-8 cursor-pointer hover:scale-105 transition-all duration-300 shadow-2xl border border-blue-400 group"
+                className="bg-gradient-to-br from-blue-600 to-indigo-700 rounded-xl p-3 sm:p-6 md:p-8 cursor-pointer hover:scale-105 transition-all duration-300 shadow-xl border border-blue-400 group min-h-[140px] sm:min-h-[180px] md:min-h-[220px]"
               >
                 <div className="text-center">
                   <div className="text-3xl sm:text-5xl md:text-6xl mb-2 sm:mb-3 md:mb-4 group-hover:animate-bounce">🐟</div>
@@ -1533,7 +1535,7 @@ export default function SoustractionsSimples() {
               {/* Défi Difficile */}
               <div 
                 onClick={() => { setChallengeLevel(3); /* fonction startTimeChallenge à créer */ }}
-                className="bg-gradient-to-br from-purple-600 to-violet-600 rounded-xl p-3 sm:p-6 md:p-8 cursor-pointer hover:scale-105 transition-all duration-300 shadow-2xl border border-purple-400 group"
+                className="bg-gradient-to-br from-purple-600 to-violet-600 rounded-xl p-3 sm:p-6 md:p-8 cursor-pointer hover:scale-105 transition-all duration-300 shadow-xl border border-purple-400 group min-h-[140px] sm:min-h-[180px] md:min-h-[220px]"
               >
                 <div className="text-center">
                   <div className="text-3xl sm:text-5xl md:text-6xl mb-2 sm:mb-3 md:mb-4 group-hover:animate-bounce">🦈</div>
@@ -1554,7 +1556,7 @@ export default function SoustractionsSimples() {
               {/* Défi King of Subtraction */}
               <div 
                 onClick={() => { setChallengeLevel(4); /* fonction startTimeChallenge à créer */ }}
-                className="bg-gradient-to-br from-cyan-500 via-teal-500 to-blue-600 rounded-xl p-3 sm:p-6 md:p-8 cursor-pointer hover:scale-105 transition-all duration-300 shadow-2xl border-2 border-cyan-400 group relative overflow-hidden"
+                className="bg-gradient-to-br from-cyan-500 via-teal-500 to-blue-600 rounded-xl p-3 sm:p-6 md:p-8 cursor-pointer hover:scale-105 transition-all duration-300 shadow-xl border-2 border-cyan-400 group relative overflow-hidden"
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-cyan-400/20 to-blue-500/20 animate-pulse"></div>
                 <div className="relative text-center">
@@ -1601,7 +1603,7 @@ export default function SoustractionsSimples() {
               {/* Duel Facile */}
               <div 
                 onClick={() => { setDuelLevel(1); /* fonction startDuel2Players à créer */ }}
-                className="bg-gradient-to-br from-teal-600 to-cyan-700 rounded-xl p-3 sm:p-6 md:p-8 cursor-pointer hover:scale-105 transition-all duration-300 shadow-2xl border border-cyan-400 group"
+                className="bg-gradient-to-br from-teal-600 to-cyan-700 rounded-xl p-3 sm:p-6 md:p-8 cursor-pointer hover:scale-105 transition-all duration-300 shadow-xl border border-cyan-400 group min-h-[140px] sm:min-h-[180px] md:min-h-[220px]"
               >
                 <div className="text-center">
                   <div className="text-3xl sm:text-5xl md:text-6xl mb-2 sm:mb-3 md:mb-4 group-hover:animate-bounce">🐠</div>
@@ -1622,7 +1624,7 @@ export default function SoustractionsSimples() {
               {/* Duel Moyen */}
               <div 
                 onClick={() => { setDuelLevel(2); /* fonction startDuel2Players à créer */ }}
-                className="bg-gradient-to-br from-blue-600 to-indigo-700 rounded-xl p-3 sm:p-6 md:p-8 cursor-pointer hover:scale-105 transition-all duration-300 shadow-2xl border border-blue-400 group"
+                className="bg-gradient-to-br from-blue-600 to-indigo-700 rounded-xl p-3 sm:p-6 md:p-8 cursor-pointer hover:scale-105 transition-all duration-300 shadow-xl border border-blue-400 group min-h-[140px] sm:min-h-[180px] md:min-h-[220px]"
               >
                 <div className="text-center">
                   <div className="text-3xl sm:text-5xl md:text-6xl mb-2 sm:mb-3 md:mb-4 group-hover:animate-bounce">🐟</div>
@@ -1643,7 +1645,7 @@ export default function SoustractionsSimples() {
               {/* Duel Difficile */}
               <div 
                 onClick={() => { setDuelLevel(3); /* fonction startDuel2Players à créer */ }}
-                className="bg-gradient-to-br from-purple-600 to-violet-600 rounded-xl p-3 sm:p-6 md:p-8 cursor-pointer hover:scale-105 transition-all duration-300 shadow-2xl border border-purple-400 group"
+                className="bg-gradient-to-br from-purple-600 to-violet-600 rounded-xl p-3 sm:p-6 md:p-8 cursor-pointer hover:scale-105 transition-all duration-300 shadow-xl border border-purple-400 group min-h-[140px] sm:min-h-[180px] md:min-h-[220px]"
               >
                 <div className="text-center">
                   <div className="text-3xl sm:text-5xl md:text-6xl mb-2 sm:mb-3 md:mb-4 group-hover:animate-bounce">🦈</div>
@@ -1664,7 +1666,7 @@ export default function SoustractionsSimples() {
               {/* Duel King of Subtraction */}
               <div 
                 onClick={() => { setDuelLevel(4); /* fonction startDuel2Players à créer */ }}
-                className="bg-gradient-to-br from-cyan-500 via-teal-500 to-blue-600 rounded-xl p-3 sm:p-6 md:p-8 cursor-pointer hover:scale-105 transition-all duration-300 shadow-2xl border-2 border-cyan-400 group relative overflow-hidden"
+                className="bg-gradient-to-br from-cyan-500 via-teal-500 to-blue-600 rounded-xl p-3 sm:p-6 md:p-8 cursor-pointer hover:scale-105 transition-all duration-300 shadow-xl border-2 border-cyan-400 group relative overflow-hidden"
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-cyan-400/20 to-blue-500/20 animate-pulse"></div>
                 <div className="relative text-center">
@@ -1709,10 +1711,10 @@ export default function SoustractionsSimples() {
             </div>
 
             <div className="max-w-2xl mx-auto">
-              <div className="bg-gradient-to-br from-teal-600 to-cyan-700 rounded-xl p-8 text-center shadow-2xl">
+              <div className="bg-gradient-to-br from-teal-600 to-cyan-700 rounded-xl p-4 sm:p-8 text-center shadow-xl">
                 {!showCorrectAnswer ? (
                   <>
-                    <div className="text-5xl font-bold mb-6 text-white animate-pulse">
+                    <div className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6 text-white animate-pulse">
                       {currentQuestion?.question} = ?
                     </div>
                     
@@ -1721,23 +1723,25 @@ export default function SoustractionsSimples() {
                       value={userAnswer}
                       onChange={(e) => setUserAnswer(e.target.value)}
                       onKeyPress={(e) => e.key === 'Enter' && handleTrainingShot()}
-                      className="text-center text-3xl font-bold border-2 border-white rounded-lg px-4 py-3 w-40 text-gray-800 bg-white shadow-lg"
+                      className="text-center text-2xl sm:text-3xl font-bold border-2 border-white rounded-lg px-3 sm:px-4 py-3 w-32 sm:w-40 text-gray-800 bg-white shadow-lg min-h-[60px] touch-manipulation"
                       placeholder="?"
                       autoFocus
                     />
                     
-                    <div className="mt-6 space-x-4">
+                    <div className="mt-4 sm:mt-6 flex flex-col sm:flex-row gap-3 sm:gap-4">
                       <button
                         onClick={handleTrainingShot}
-                        className="bg-white text-teal-700 px-8 py-4 rounded-lg font-bold hover:bg-gray-100 transition-colors shadow-lg"
+                        className="bg-white text-teal-700 px-6 sm:px-8 py-3 sm:py-4 rounded-lg font-bold hover:bg-gray-100 transition-colors shadow-lg min-h-[56px] touch-manipulation"
                       >
-                        💥 Tirer le Canon
+                        <span className="hidden sm:inline">💥 Tirer le Canon</span>
+                        <span className="sm:hidden">🚢 TIRER</span>
                       </button>
                       <button
                         onClick={() => setGameMode('ship')}
-                        className="bg-gray-700 text-white px-8 py-4 rounded-lg font-bold hover:bg-gray-600 transition-colors shadow-lg"
+                        className="bg-gray-700 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-lg font-bold hover:bg-gray-600 transition-colors shadow-lg min-h-[56px] touch-manipulation"
                       >
-                        ⚓ Retour au Navire
+                        <span className="hidden sm:inline">⚓ Retour au Navire</span>
+                        <span className="sm:hidden">⚓ Retour</span>
                       </button>
                     </div>
                   </>
@@ -1807,21 +1811,21 @@ export default function SoustractionsSimples() {
               </div>
             </div>
 
-            {/* Zone de combat naval */}
-            <div className={`bg-gradient-to-br ${pirateIslands[currentIsland - 1].bgColor} rounded-xl p-8 text-center shadow-2xl border border-cyan-400`}>
+            {/* Zone de combat naval responsive */}
+            <div className={`bg-gradient-to-br ${pirateIslands[currentIsland - 1].bgColor} rounded-xl p-4 sm:p-8 text-center shadow-xl border border-cyan-400`}>
               
               {battlePhase === 'question' && (
-                <div className="space-y-6">
+                <div className="space-y-4 sm:space-y-6">
                   {/* Timer avec effet de vague */}
-                  <div className="flex justify-center items-center space-x-4">
-                    <Timer className="w-6 h-6 text-orange-400" />
-                    <div className={`text-3xl font-bold ${timeLeft <= 3 ? 'text-red-400 animate-bounce' : 'text-orange-400'}`}>
+                  <div className="flex justify-center items-center space-x-3 sm:space-x-4">
+                    <Timer className="w-5 h-5 sm:w-6 sm:h-6 text-orange-400" />
+                    <div className={`text-2xl sm:text-3xl font-bold ${timeLeft <= 3 ? 'text-red-400 animate-bounce' : 'text-orange-400'}`}>
                       {timeLeft}s
                     </div>
                   </div>
 
-                  {/* Question de soustraction */}
-                  <div className="text-6xl font-bold mb-6 text-gray-800 animate-pulse">
+                  {/* Question de soustraction responsive */}
+                  <div className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6 text-gray-800 animate-pulse">
                     {currentQuestion?.question} = ?
                   </div>
                   
@@ -1830,17 +1834,18 @@ export default function SoustractionsSimples() {
                     value={userAnswer}
                     onChange={(e) => setUserAnswer(e.target.value)}
                     onKeyPress={(e) => e.key === 'Enter' && fireCannon()}
-                    className="text-center text-4xl font-bold border-4 border-gray-800 rounded-lg px-4 py-3 w-48 text-gray-800 bg-white shadow-xl"
+                    className="text-center text-2xl sm:text-3xl md:text-4xl font-bold border-4 border-gray-800 rounded-lg px-3 sm:px-4 py-3 w-32 sm:w-40 md:w-48 text-gray-800 bg-white shadow-xl min-h-[60px] touch-manipulation"
                     placeholder="?"
                     autoFocus
                   />
                   
-                  <div className="mt-6">
+                  <div className="mt-4 sm:mt-6">
                     <button
                       onClick={fireCannon}
-                      className="bg-gradient-to-r from-orange-500 to-red-600 text-white px-10 py-5 rounded-lg font-bold hover:scale-105 transition-all text-2xl shadow-xl"
+                      className="bg-gradient-to-r from-orange-500 to-red-600 text-white px-6 sm:px-10 py-4 sm:py-5 rounded-lg font-bold hover:scale-105 transition-all text-lg sm:text-2xl shadow-xl min-h-[56px] min-w-[120px] touch-manipulation"
                     >
-                      💥 CANON ! FEU !
+                      <span className="hidden sm:inline">💥 CANON ! FEU !</span>
+                      <span className="sm:hidden">🚢 TIRER</span>
                     </button>
                   </div>
                 </div>
@@ -1998,7 +2003,7 @@ export default function SoustractionsSimples() {
 
             {duelPhase === 'question' && (
               <div className="max-w-2xl mx-auto">
-                <div className={`bg-gradient-to-br ${currentPlayer === 1 ? 'from-blue-600 to-blue-700' : 'from-indigo-600 to-indigo-700'} rounded-xl p-8 text-center shadow-2xl text-white`}>
+                <div className={`bg-gradient-to-br ${currentPlayer === 1 ? 'from-blue-600 to-blue-700' : 'from-indigo-600 to-indigo-700'} rounded-xl p-8 text-center shadow-xl text-white`}>
                   <div className="text-lg mb-2">Au tour du Pirate {currentPlayer}</div>
                   
                   <div className="flex justify-center items-center space-x-4 mb-4">
@@ -2036,7 +2041,7 @@ export default function SoustractionsSimples() {
 
             {duelPhase === 'final' && (
               <div className="max-w-2xl mx-auto">
-                <div className="bg-gradient-to-br from-yellow-500 to-orange-600 rounded-xl p-8 text-center shadow-2xl text-white">
+                <div className="bg-gradient-to-br from-yellow-500 to-orange-600 rounded-xl p-8 text-center shadow-xl text-white">
                   <div className="text-7xl mb-4">🏆</div>
                   <div className="text-3xl font-bold mb-4">
                     {player1Score > player2Score ? 'Victoire du Pirate 1 !' : 
@@ -2106,7 +2111,7 @@ export default function SoustractionsSimples() {
 
             {challengeActive && (
               <div className="max-w-2xl mx-auto">
-                <div className="bg-gradient-to-br from-yellow-600 to-amber-700 rounded-xl p-8 text-center shadow-2xl text-white">
+                <div className="bg-gradient-to-br from-yellow-600 to-amber-700 rounded-xl p-8 text-center shadow-xl text-white">
                   <div className="text-lg mb-2">Niveau Mer {difficultyLevel}</div>
                   
                   <div className="flex justify-center items-center space-x-4 mb-4">
@@ -2144,7 +2149,7 @@ export default function SoustractionsSimples() {
 
             {!challengeActive && (
               <div className="max-w-2xl mx-auto">
-                <div className="bg-gradient-to-br from-purple-600 to-pink-700 rounded-xl p-8 text-center shadow-2xl text-white">
+                <div className="bg-gradient-to-br from-purple-600 to-pink-700 rounded-xl p-8 text-center shadow-xl text-white">
                   <div className="text-7xl mb-4">⏰</div>
                   <div className="text-3xl font-bold mb-4">
                     {timeScore > bestScore ? 'NOUVEAU RECORD PIRATE !' : 'Aventure Terminée !'}
@@ -2186,7 +2191,7 @@ export default function SoustractionsSimples() {
       {/* Animation Légende Marine */}
       {showLegendAnimation && (
         <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50 animate-fadeIn">
-          <div className="bg-gradient-to-br from-cyan-400 via-teal-500 to-blue-600 rounded-3xl p-12 text-center max-w-2xl mx-4 shadow-2xl border-4 border-cyan-300 relative overflow-hidden">
+          <div className="bg-gradient-to-br from-cyan-400 via-teal-500 to-blue-600 rounded-3xl p-12 text-center max-w-2xl mx-4 shadow-xl border-4 border-cyan-300 relative overflow-hidden">
             {/* Effet de vagues marines */}
             <div className="absolute inset-0">
               {[...Array(20)].map((_, i) => (
