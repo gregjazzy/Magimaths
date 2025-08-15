@@ -1545,53 +1545,56 @@ export default function AdditionsSimples() {
         </div>
       )}
 
-      {/* En-tête */}
-      <div className="bg-black bg-opacity-50 backdrop-blur-sm border-b border-purple-500">
-        <div className="max-w-6xl mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
+      {/* En-tête simplifié */}
+      <div className="bg-black bg-opacity-50 backdrop-blur-sm border-b border-purple-500 relative z-10">
+        <div className="max-w-6xl mx-auto px-2 sm:px-4 py-2 sm:py-4">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-0">
+            <div className="flex items-center space-x-2 sm:space-x-4 w-full sm:w-auto">
               <Link 
                 href="/chapitre/cp-calcul-mental"
-                className="flex items-center px-4 py-2 bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors"
+                className="flex items-center px-3 sm:px-4 py-2 bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors text-sm sm:text-base min-h-[44px] border border-gray-600"
+                title="Retour au calcul mental CP"
               >
-                <ArrowLeft className="w-5 h-5 mr-2" />
-                Retour
+                <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" />
+                <span className="hidden sm:inline">Retour</span>
+                <span className="sm:hidden">CP</span>
               </Link>
               
-              <div>
-                <h1 className="text-2xl font-bold bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent">
-                  ⚔️ L'Arène des Additions
+              <div className="flex-1">
+                <h1 className="text-lg sm:text-2xl font-bold bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent">
+                  <span className="hidden sm:inline">🏆 L'Arène des Additions</span>
+                  <span className="sm:hidden">➕ Additions</span>
                 </h1>
-                <p className="text-gray-300">Défie les Boss de la famille !</p>
+                <p className="text-gray-300 text-xs sm:text-sm hidden sm:block">Défie les Boss de la famille !</p>
               </div>
             </div>
 
             {/* Stats du joueur */}
-            <div className="flex items-center space-x-6">
-              <div className="text-center">
-                <div className="text-yellow-400 font-bold">{playerTitle}</div>
-                <div className="text-sm text-gray-300">XP: {playerXP}</div>
+            <div className="flex items-center space-x-2 sm:space-x-6 w-full sm:w-auto justify-between sm:justify-end">
+              <div className="text-center text-xs sm:text-sm">
+                <div className="text-yellow-400 font-bold text-xs sm:text-base">{playerTitle}</div>
+                <div className="text-xs text-gray-300">XP: {playerXP}</div>
               </div>
-              <div className="text-center">
-                <div className="text-yellow-400 font-bold">💰 {playerCoins}</div>
-                <div className="text-sm text-gray-300">Pièces</div>
+              <div className="text-center text-xs sm:text-sm">
+                <div className="text-yellow-400 font-bold text-xs sm:text-base">💰 {playerCoins}</div>
+                <div className="text-xs text-gray-300">Pièces</div>
               </div>
-              <div className="text-center">
-                <div className="text-red-400 font-bold">🔥 {maxCombo}</div>
-                <div className="text-sm text-gray-300">Record combo</div>
+              <div className="text-center text-xs sm:text-sm">
+                <div className="text-red-400 font-bold text-xs sm:text-base">🔥 {maxCombo}</div>
+                <div className="text-xs text-gray-300">Record</div>
               </div>
               <button
                 onClick={() => setSoundEnabled(!soundEnabled)}
-                className={`p-2 rounded-lg transition-colors ${soundEnabled ? 'bg-green-600' : 'bg-gray-600'}`}
+                className={`p-2 rounded-lg transition-colors ${soundEnabled ? 'bg-green-600' : 'bg-gray-600'} min-w-[44px] min-h-[44px]`}
               >
-                <Volume2 className="w-5 h-5" />
+                <Volume2 className="w-4 h-4 sm:w-5 sm:h-5" />
               </button>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto px-4 py-8">
+      <div className="max-w-6xl mx-auto px-2 sm:px-4 py-4 sm:py-8">
         
         {/* Menu principal de l'arène */}
         {gameMode === 'arena' && (
@@ -1603,50 +1606,7 @@ export default function AdditionsSimples() {
               <p className="text-xl text-gray-300 mb-6">
                 Choisis ton mode de combat et deviens le maître des additions !
               </p>
-              
-                            {/* Profil du Guerrier - Version Réduite */}
-              <div className="bg-gradient-to-r from-purple-900 to-indigo-900 rounded-lg p-3 mb-4 border border-yellow-400 shadow-lg">
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center gap-2">
-                    <span className="text-lg">🛡️</span>
-                    <div>
-                      <div className="text-sm font-bold text-yellow-400">{playerTitle}</div>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="grid grid-cols-4 gap-2">
-                  {/* Niveau */}
-                  <div className="bg-black bg-opacity-30 rounded p-2 text-center border border-yellow-500">
-                    <div className="text-yellow-400 text-xs font-bold">⭐ Niv.</div>
-                    <div className="text-white text-sm font-bold">{playerLevel}</div>
-                  </div>
-                  
-                  {/* XP Progress */}
-                  <div className="bg-black bg-opacity-30 rounded p-2 text-center border border-blue-400">
-                    <div className="text-blue-400 text-xs font-bold">⚡ XP</div>
-                    <div className="text-white text-xs">{playerXP}/{xpForNextLevel}</div>
-                    <div className="w-full bg-gray-700 rounded-full h-1 mt-1">
-                      <div 
-                        className="bg-gradient-to-r from-blue-400 to-cyan-500 h-1 rounded-full transition-all duration-500"
-                        style={{ width: `${(playerXP / xpForNextLevel) * 100}%` }}
-                      ></div>
-                    </div>
-                  </div>
-                  
-                  {/* Streak */}
-                  <div className="bg-black bg-opacity-30 rounded p-2 text-center border border-green-400">
-                    <div className="text-green-400 text-xs font-bold">🔥 Série</div>
-                    <div className="text-white text-sm font-bold">{streak}</div>
-                  </div>
-                  
-                  {/* Badges */}
-                  <div className="bg-black bg-opacity-30 rounded p-2 text-center border border-purple-400">
-                    <div className="text-purple-400 text-xs font-bold">🏆 Badges</div>
-                    <div className="text-white text-sm font-bold">{badges.length}</div>
-                  </div>
-                </div>
-              </div>
+
                
                {/* Bouton d'accueil interactif */}
                <div className="mb-8">
@@ -1659,18 +1619,18 @@ export default function AdditionsSimples() {
                </div>
             </div>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-6">
               {/* Mode entraînement */}
               <div 
                 onClick={() => setGameMode('training-select')}
-                className={`bg-gradient-to-br from-green-600 to-emerald-700 rounded-xl p-6 cursor-pointer hover:scale-105 transition-all duration-300 shadow-2xl border border-green-400 group ${
+                className={`bg-gradient-to-br from-green-600 to-emerald-700 rounded-xl p-3 sm:p-6 cursor-pointer hover:scale-105 transition-all duration-300 shadow-2xl border border-green-400 group min-h-[120px] sm:min-h-[140px] ${
                   currentHighlight === 'training' ? 'ring-8 ring-yellow-400 animate-pulse scale-110' : ''
                 }`}
               >
                 <div className="text-center">
-                  <div className="text-5xl mb-3 group-hover:animate-bounce">🏃‍♂️</div>
-                  <h3 className="text-xl font-bold mb-2">Entraînement</h3>
-                  <p className="text-green-100 mb-3 text-sm">
+                  <div className="text-3xl sm:text-5xl mb-2 sm:mb-3 group-hover:animate-bounce">🏃‍♂️</div>
+                  <h3 className="text-sm sm:text-xl font-bold mb-1 sm:mb-2">Entraînement</h3>
+                  <p className="text-green-100 mb-2 sm:mb-3 text-xs sm:text-sm hidden sm:block">
                     Sans pression !
                   </p>
                   <div className="flex justify-center space-x-1 text-sm">
@@ -1683,14 +1643,14 @@ export default function AdditionsSimples() {
               {/* Mode combat de boss */}
               <div 
                 onClick={() => setGameMode('level-select')}
-                className={`bg-gradient-to-br from-red-600 to-purple-700 rounded-xl p-6 cursor-pointer hover:scale-105 transition-all duration-300 shadow-2xl border border-red-400 group ${
+                className={`bg-gradient-to-br from-red-600 to-purple-700 rounded-xl p-3 sm:p-6 cursor-pointer hover:scale-105 transition-all duration-300 shadow-2xl border border-red-400 group min-h-[120px] sm:min-h-[140px] ${
                   currentHighlight === 'boss' ? 'ring-8 ring-yellow-400 animate-pulse scale-110' : ''
                 }`}
               >
                 <div className="text-center">
-                  <div className="text-5xl mb-3 group-hover:animate-pulse">⚔️</div>
-                  <h3 className="text-xl font-bold mb-2">Combat Boss</h3>
-                  <p className="text-red-100 mb-3 text-sm">
+                  <div className="text-3xl sm:text-5xl mb-2 sm:mb-3 group-hover:animate-pulse">⚔️</div>
+                  <h3 className="text-sm sm:text-xl font-bold mb-1 sm:mb-2">Combat Boss</h3>
+                  <p className="text-red-100 mb-2 sm:mb-3 text-xs sm:text-sm hidden sm:block">
                     Famille à battre !
                   </p>
                   <div className="flex justify-center space-x-1 text-sm">
@@ -1703,14 +1663,14 @@ export default function AdditionsSimples() {
               {/* Mode duel 2 joueurs */}
               <div 
                 onClick={() => setGameMode('duel-select')}
-                className={`bg-gradient-to-br from-blue-600 to-cyan-700 rounded-xl p-6 cursor-pointer hover:scale-105 transition-all duration-300 shadow-2xl border border-blue-400 group ${
+                className={`bg-gradient-to-br from-blue-600 to-cyan-700 rounded-xl p-3 sm:p-6 cursor-pointer hover:scale-105 transition-all duration-300 shadow-2xl border border-blue-400 group min-h-[120px] sm:min-h-[140px] ${
                   currentHighlight === 'duel' ? 'ring-8 ring-yellow-400 animate-pulse scale-110' : ''
                 }`}
               >
                 <div className="text-center">
-                  <div className="text-5xl mb-3 group-hover:animate-bounce">👥</div>
-                  <h3 className="text-xl font-bold mb-2">Duel 2 Joueurs</h3>
-                  <p className="text-blue-100 mb-3 text-sm">
+                  <div className="text-3xl sm:text-5xl mb-2 sm:mb-3 group-hover:animate-bounce">👥</div>
+                  <h3 className="text-sm sm:text-xl font-bold mb-1 sm:mb-2">Duel 2 Joueurs</h3>
+                  <p className="text-blue-100 mb-2 sm:mb-3 text-xs sm:text-sm hidden sm:block">
                     Défie ta famille !
                   </p>
                   <div className="flex justify-center space-x-1 text-sm">
@@ -1723,14 +1683,14 @@ export default function AdditionsSimples() {
               {/* Mode défi temps */}
               <div 
                 onClick={() => setGameMode('challenge-select')}
-                className={`bg-gradient-to-br from-yellow-600 to-orange-700 rounded-xl p-6 cursor-pointer hover:scale-105 transition-all duration-300 shadow-2xl border border-yellow-400 group ${
+                className={`bg-gradient-to-br from-yellow-600 to-orange-700 rounded-xl p-3 sm:p-6 cursor-pointer hover:scale-105 transition-all duration-300 shadow-2xl border border-yellow-400 group min-h-[120px] sm:min-h-[140px] ${
                   currentHighlight === 'challenge' ? 'ring-8 ring-yellow-400 animate-pulse scale-110' : ''
                 }`}
               >
                 <div className="text-center">
-                  <div className="text-5xl mb-3 group-hover:animate-spin">⏱️</div>
-                  <h3 className="text-xl font-bold mb-2">Défi Temps</h3>
-                  <p className="text-yellow-100 mb-3 text-sm">
+                  <div className="text-3xl sm:text-5xl mb-2 sm:mb-3 group-hover:animate-spin">⏱️</div>
+                  <h3 className="text-sm sm:text-xl font-bold mb-1 sm:mb-2">Défi Temps</h3>
+                  <p className="text-yellow-100 mb-2 sm:mb-3 text-xs sm:text-sm hidden sm:block">
                     Course au score !
                   </p>
                   <div className="flex justify-center space-x-1 text-sm">
@@ -1845,30 +1805,30 @@ export default function AdditionsSimples() {
               <p className="text-gray-300">Chaque boss a ses propres techniques de combat !</p>
             </div>
 
-            <div className="grid md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
               {levels.map((level) => (
                 <div 
                   key={level.id}
                   onClick={() => startBossFight(level.id)}
-                  className={`bg-gradient-to-br ${level.color} rounded-xl p-6 cursor-pointer hover:scale-105 transition-all duration-300 shadow-2xl border-2 border-white border-opacity-20 group`}
+                  className={`bg-gradient-to-br ${level.color} rounded-xl p-3 sm:p-6 md:p-8 cursor-pointer hover:scale-105 transition-all duration-300 shadow-xl border-2 border-white border-opacity-20 group min-h-[140px] sm:min-h-[180px] md:min-h-[220px]`}
                 >
                   <div className="text-center text-white">
-                    <div className="text-4xl mb-3 group-hover:animate-bounce">{level.icon}</div>
-                    <h3 className="text-xl font-bold mb-2">{level.name}</h3>
-                    <div className="text-sm opacity-90 mb-2">{level.difficulty}</div>
-                    <p className="text-sm opacity-75 mb-4">{level.description}</p>
+                    <div className="text-3xl sm:text-5xl md:text-6xl mb-2 sm:mb-3 md:mb-4 group-hover:animate-bounce">{level.icon}</div>
+                    <h3 className="text-lg sm:text-xl md:text-2xl font-bold mb-1 sm:mb-2 md:mb-3">{level.name}</h3>
+                    <div className="text-xs sm:text-sm opacity-90 mb-1 sm:mb-2">{level.difficulty}</div>
+                    <p className="text-xs sm:text-sm opacity-75 mb-2 sm:mb-4 hidden sm:block">{level.description}</p>
                     
                     {/* Boss info */}
-                    <div className="bg-black bg-opacity-30 rounded-lg p-4 mb-4">
-                      <div className="text-3xl mb-2">{level.boss.avatar}</div>
-                      <div className="font-bold">{level.boss.name}</div>
-                      <div className="text-sm opacity-75">HP: {level.boss.hp}</div>
+                    <div className="bg-black bg-opacity-30 rounded-lg p-2 sm:p-3 md:p-4 mb-2 sm:mb-4 hidden sm:block">
+                      <div className="text-xl sm:text-2xl md:text-3xl mb-1 sm:mb-2">{level.boss.avatar}</div>
+                      <div className="text-xs sm:text-sm md:text-base font-bold">{level.boss.name}</div>
+                      <div className="text-xs sm:text-sm opacity-75">HP: {level.boss.hp}</div>
                     </div>
 
                     {/* Détails du niveau */}
-                    <div className="space-y-2 text-sm">
+                    <div className="space-y-1 text-xs sm:text-sm hidden sm:block">
                       <div className="flex justify-between">
-                        <span>Temps limite:</span>
+                        <span>Temps:</span>
                         <span>{level.timeLimit}s</span>
                       </div>
                       <div className="flex justify-between">
@@ -1876,7 +1836,7 @@ export default function AdditionsSimples() {
                         <span>{level.questionCount}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span>Max nombre:</span>
+                        <span>Max:</span>
                         <span>{level.maxNumber}</span>
                       </div>
                     </div>
@@ -1904,23 +1864,23 @@ export default function AdditionsSimples() {
               <p className="text-gray-300">Sélectionne la difficulté qui te convient !</p>
             </div>
 
-            <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 max-w-4xl mx-auto">
               {/* Entraînement Facile */}
               <div 
                 onClick={() => startTraining(1)}
-                className="bg-gradient-to-br from-green-600 to-emerald-700 rounded-xl p-8 cursor-pointer hover:scale-105 transition-all duration-300 shadow-2xl border border-green-400 group"
+                className="bg-gradient-to-br from-green-600 to-emerald-700 rounded-lg p-3 sm:p-6 md:p-8 cursor-pointer hover:scale-105 transition-all duration-300 shadow-xl border border-green-400 group min-h-[160px] sm:min-h-[200px] md:min-h-[240px]"
               >
                 <div className="text-center">
-                  <div className="text-6xl mb-4 group-hover:animate-bounce">🌱</div>
-                  <h3 className="text-2xl font-bold mb-3">Facile</h3>
-                  <p className="text-green-100 mb-4 text-lg">
+                  <div className="text-3xl sm:text-5xl md:text-6xl mb-2 sm:mb-3 md:mb-4 group-hover:animate-bounce">🌱</div>
+                  <h3 className="text-base sm:text-xl md:text-2xl font-bold mb-1 sm:mb-2 md:mb-3">Facile</h3>
+                  <p className="text-green-100 mb-2 sm:mb-3 md:mb-4 text-sm sm:text-base md:text-lg hidden sm:block">
                     Additions jusqu'à 10
                   </p>
-                  <div className="flex justify-center space-x-2 text-sm mb-4">
-                    <Shield className="w-4 h-4" />
+                  <div className="flex justify-center space-x-1 sm:space-x-2 text-xs sm:text-sm mb-2 sm:mb-4">
+                    <Shield className="w-3 h-3 sm:w-4 sm:h-4" />
                     <span>Débutant</span>
                   </div>
-                  <div className="text-sm text-green-200">
+                  <div className="text-xs sm:text-sm text-green-200 hidden sm:block">
                     Parfait pour commencer !
                   </div>
                   {/* Stats niveau 1 */}
@@ -1943,19 +1903,19 @@ export default function AdditionsSimples() {
               {/* Entraînement Moyen */}
               <div 
                 onClick={() => startTraining(2)}
-                className="bg-gradient-to-br from-orange-600 to-yellow-600 rounded-xl p-8 cursor-pointer hover:scale-105 transition-all duration-300 shadow-2xl border border-orange-400 group"
+                className="bg-gradient-to-br from-orange-600 to-yellow-600 rounded-lg p-3 sm:p-6 md:p-8 cursor-pointer hover:scale-105 transition-all duration-300 shadow-xl border border-orange-400 group min-h-[160px] sm:min-h-[200px] md:min-h-[240px]"
               >
                 <div className="text-center">
-                  <div className="text-6xl mb-4 group-hover:animate-bounce">🔥</div>
-                  <h3 className="text-2xl font-bold mb-3">Moyen</h3>
-                  <p className="text-orange-100 mb-4 text-lg">
+                  <div className="text-3xl sm:text-5xl md:text-6xl mb-2 sm:mb-3 md:mb-4 group-hover:animate-bounce">🔥</div>
+                  <h3 className="text-base sm:text-xl md:text-2xl font-bold mb-1 sm:mb-2 md:mb-3">Moyen</h3>
+                  <p className="text-orange-100 mb-2 sm:mb-3 md:mb-4 text-sm sm:text-base md:text-lg hidden sm:block">
                     Additions jusqu'à 20
                   </p>
-                  <div className="flex justify-center space-x-2 text-sm mb-4">
-                    <Zap className="w-4 h-4" />
+                  <div className="flex justify-center space-x-1 sm:space-x-2 text-xs sm:text-sm mb-2 sm:mb-4">
+                    <Zap className="w-3 h-3 sm:w-4 sm:h-4" />
                     <span>Intermédiaire</span>
                   </div>
-                  <div className="text-sm text-orange-200">
+                  <div className="text-xs sm:text-sm text-orange-200 hidden sm:block">
                     Un bon challenge !
                   </div>
                   {/* Stats niveau 2 */}
@@ -1978,19 +1938,19 @@ export default function AdditionsSimples() {
               {/* Entraînement Difficile */}
               <div 
                 onClick={() => startTraining(3)}
-                className="bg-gradient-to-br from-purple-600 to-pink-600 rounded-xl p-8 cursor-pointer hover:scale-105 transition-all duration-300 shadow-2xl border border-purple-400 group"
+                className="bg-gradient-to-br from-purple-600 to-pink-600 rounded-lg p-3 sm:p-6 md:p-8 cursor-pointer hover:scale-105 transition-all duration-300 shadow-xl border border-purple-400 group min-h-[160px] sm:min-h-[200px] md:min-h-[240px]"
               >
                 <div className="text-center">
-                  <div className="text-6xl mb-4 group-hover:animate-bounce">🔥</div>
-                  <h3 className="text-2xl font-bold mb-3">Difficile</h3>
-                  <p className="text-purple-100 mb-4 text-lg">
+                  <div className="text-3xl sm:text-5xl md:text-6xl mb-2 sm:mb-3 md:mb-4 group-hover:animate-bounce">🔥</div>
+                  <h3 className="text-base sm:text-xl md:text-2xl font-bold mb-1 sm:mb-2 md:mb-3">Difficile</h3>
+                  <p className="text-purple-100 mb-2 sm:mb-3 md:mb-4 text-sm sm:text-base md:text-lg hidden sm:block">
                     Additions jusqu'à 100
                   </p>
-                  <div className="flex justify-center space-x-2 text-sm mb-4">
-                    <Crown className="w-4 h-4" />
+                  <div className="flex justify-center space-x-1 sm:space-x-2 text-xs sm:text-sm mb-2 sm:mb-4">
+                    <Crown className="w-3 h-3 sm:w-4 sm:h-4" />
                     <span>Expert</span>
                   </div>
-                  <div className="text-sm text-purple-200">
+                  <div className="text-xs sm:text-sm text-purple-200 hidden sm:block">
                     Pour les champions !
                   </div>
                   {/* Stats niveau 3 */}
@@ -2013,22 +1973,26 @@ export default function AdditionsSimples() {
               {/* Entraînement King of Addition */}
               <div 
                 onClick={() => startTraining(4)}
-                className="bg-gradient-to-br from-yellow-500 via-orange-500 to-red-600 rounded-xl p-8 cursor-pointer hover:scale-105 transition-all duration-300 shadow-2xl border-2 border-yellow-400 group relative overflow-hidden"
+                className="bg-gradient-to-br from-yellow-500 via-orange-500 to-red-600 rounded-lg p-3 sm:p-6 md:p-8 cursor-pointer hover:scale-105 transition-all duration-300 shadow-xl border-2 border-yellow-400 group relative overflow-hidden min-h-[160px] sm:min-h-[200px] md:min-h-[240px]"
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-yellow-400/20 to-red-500/20 animate-pulse"></div>
                 <div className="relative text-center">
-                  <div className="text-6xl mb-4 group-hover:animate-bounce">👑</div>
-                  <h3 className="text-2xl font-bold mb-3 bg-gradient-to-r from-yellow-200 to-white bg-clip-text text-transparent">
-                    King of Addition
+                  <div className="text-3xl sm:text-5xl md:text-6xl mb-2 sm:mb-3 md:mb-4 group-hover:animate-bounce">👑</div>
+                  <h3 className="text-sm sm:text-lg md:text-2xl font-bold mb-1 sm:mb-2 md:mb-3 bg-gradient-to-r from-yellow-200 to-white bg-clip-text text-transparent">
+                    <span className="hidden sm:inline">King of Addition</span>
+                    <span className="sm:hidden">King</span>
                   </h3>
-                  <p className="text-yellow-100 mb-4 text-lg font-semibold">
+                  <p className="text-yellow-100 mb-2 sm:mb-3 md:mb-4 text-xs sm:text-base md:text-lg font-semibold hidden sm:block">
                     Mix ultime jusqu'à 100
                   </p>
-                  <div className="flex justify-center space-x-2 text-sm mb-4">
-                    <Crown className="w-4 h-4 text-yellow-300" />
-                    <span className="text-yellow-200">Maître Suprême</span>
+                  <div className="flex justify-center space-x-1 sm:space-x-2 text-xs sm:text-sm mb-2 sm:mb-4">
+                    <Crown className="w-3 h-3 sm:w-4 sm:h-4 text-yellow-300" />
+                    <span className="text-yellow-200">
+                      <span className="hidden sm:inline">Maître Suprême</span>
+                      <span className="sm:hidden">Maître</span>
+                    </span>
                   </div>
-                  <div className="text-sm text-yellow-200">
+                  <div className="text-xs sm:text-sm text-yellow-200 hidden sm:block">
                     Seuls les rois osent !
                   </div>
                   {/* Stats niveau 4 */}
@@ -2068,23 +2032,23 @@ export default function AdditionsSimples() {
               <p className="text-gray-300">Sélectionne la difficulté pour ta course contre la montre !</p>
             </div>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6 max-w-6xl mx-auto">
               {/* Défi Facile */}
               <div 
                 onClick={() => startTimeChallenge(1)}
-                className="bg-gradient-to-br from-green-600 to-emerald-700 rounded-xl p-8 cursor-pointer hover:scale-105 transition-all duration-300 shadow-2xl border border-green-400 group"
+                className="bg-gradient-to-br from-green-600 to-emerald-700 rounded-lg p-3 sm:p-6 md:p-8 cursor-pointer hover:scale-105 transition-all duration-300 shadow-xl border border-green-400 group min-h-[140px] sm:min-h-[180px] md:min-h-[220px]"
               >
                 <div className="text-center">
-                  <div className="text-6xl mb-4 group-hover:animate-bounce">🌱</div>
-                  <h3 className="text-2xl font-bold mb-3">Facile</h3>
-                  <p className="text-green-100 mb-4 text-lg">
+                  <div className="text-3xl sm:text-5xl md:text-6xl mb-2 sm:mb-3 md:mb-4 group-hover:animate-bounce">🌱</div>
+                  <h3 className="text-base sm:text-xl md:text-2xl font-bold mb-1 sm:mb-2 md:mb-3">Facile</h3>
+                  <p className="text-green-100 mb-2 sm:mb-3 md:mb-4 text-sm sm:text-base md:text-lg hidden sm:block">
                     Additions jusqu'à 10
                   </p>
-                  <div className="flex justify-center space-x-2 text-sm mb-4">
-                    <Timer className="w-4 h-4" />
-                    <span>15-5s progression</span>
+                  <div className="flex justify-center space-x-1 sm:space-x-2 text-xs sm:text-sm mb-2 sm:mb-4">
+                    <Timer className="w-3 h-3 sm:w-4 sm:h-4" />
+                    <span>15-5s</span>
                   </div>
-                  <div className="text-sm text-green-200">
+                  <div className="text-xs sm:text-sm text-green-200 hidden sm:block">
                     Parfait pour débuter !
                   </div>
                 </div>
@@ -2093,19 +2057,19 @@ export default function AdditionsSimples() {
               {/* Défi Moyen */}
               <div 
                 onClick={() => startTimeChallenge(2)}
-                className="bg-gradient-to-br from-orange-600 to-yellow-600 rounded-xl p-8 cursor-pointer hover:scale-105 transition-all duration-300 shadow-2xl border border-orange-400 group"
+                className="bg-gradient-to-br from-orange-600 to-yellow-600 rounded-lg p-3 sm:p-6 md:p-8 cursor-pointer hover:scale-105 transition-all duration-300 shadow-xl border border-orange-400 group min-h-[140px] sm:min-h-[180px] md:min-h-[220px]"
               >
                 <div className="text-center">
-                  <div className="text-6xl mb-4 group-hover:animate-bounce">🔥</div>
-                  <h3 className="text-2xl font-bold mb-3">Moyen</h3>
-                  <p className="text-orange-100 mb-4 text-lg">
+                  <div className="text-3xl sm:text-5xl md:text-6xl mb-2 sm:mb-3 md:mb-4 group-hover:animate-bounce">🔥</div>
+                  <h3 className="text-base sm:text-xl md:text-2xl font-bold mb-1 sm:mb-2 md:mb-3">Moyen</h3>
+                  <p className="text-orange-100 mb-2 sm:mb-3 md:mb-4 text-sm sm:text-base md:text-lg hidden sm:block">
                     Additions jusqu'à 20
                   </p>
-                  <div className="flex justify-center space-x-2 text-sm mb-4">
-                    <Zap className="w-4 h-4" />
+                  <div className="flex justify-center space-x-1 sm:space-x-2 text-xs sm:text-sm mb-2 sm:mb-4">
+                    <Zap className="w-3 h-3 sm:w-4 sm:h-4" />
                     <span>Temps décroissant</span>
                   </div>
-                  <div className="text-sm text-orange-200">
+                  <div className="text-xs sm:text-sm text-orange-200 hidden sm:block">
                     Un bon challenge !
                   </div>
                 </div>
@@ -2114,19 +2078,19 @@ export default function AdditionsSimples() {
               {/* Défi Difficile */}
               <div 
                 onClick={() => startTimeChallenge(3)}
-                className="bg-gradient-to-br from-purple-600 to-pink-600 rounded-xl p-8 cursor-pointer hover:scale-105 transition-all duration-300 shadow-2xl border border-purple-400 group"
+                className="bg-gradient-to-br from-purple-600 to-pink-600 rounded-lg p-3 sm:p-6 md:p-8 cursor-pointer hover:scale-105 transition-all duration-300 shadow-xl border border-purple-400 group min-h-[140px] sm:min-h-[180px] md:min-h-[220px]"
               >
                 <div className="text-center">
-                  <div className="text-6xl mb-4 group-hover:animate-bounce">💎</div>
-                  <h3 className="text-2xl font-bold mb-3">Difficile</h3>
-                  <p className="text-purple-100 mb-4 text-lg">
+                  <div className="text-3xl sm:text-5xl md:text-6xl mb-2 sm:mb-3 md:mb-4 group-hover:animate-bounce">💎</div>
+                  <h3 className="text-base sm:text-xl md:text-2xl font-bold mb-1 sm:mb-2 md:mb-3">Difficile</h3>
+                  <p className="text-purple-100 mb-2 sm:mb-3 md:mb-4 text-sm sm:text-base md:text-lg hidden sm:block">
                     Additions jusqu'à 100
                   </p>
-                  <div className="flex justify-center space-x-2 text-sm mb-4">
-                    <Crown className="w-4 h-4" />
+                  <div className="flex justify-center space-x-1 sm:space-x-2 text-xs sm:text-sm mb-2 sm:mb-4">
+                    <Crown className="w-3 h-3 sm:w-4 sm:h-4" />
                     <span>Jusqu'à 2s</span>
                   </div>
-                  <div className="text-sm text-purple-200">
+                  <div className="text-xs sm:text-sm text-purple-200 hidden sm:block">
                     Pour les experts !
                   </div>
                 </div>
@@ -2135,22 +2099,26 @@ export default function AdditionsSimples() {
               {/* Défi King of Addition */}
               <div 
                 onClick={() => startTimeChallenge(4)}
-                className="bg-gradient-to-br from-yellow-500 via-orange-500 to-red-600 rounded-xl p-8 cursor-pointer hover:scale-105 transition-all duration-300 shadow-2xl border-2 border-yellow-400 group relative overflow-hidden"
+                className="bg-gradient-to-br from-yellow-500 via-orange-500 to-red-600 rounded-lg p-3 sm:p-6 md:p-8 cursor-pointer hover:scale-105 transition-all duration-300 shadow-xl border-2 border-yellow-400 group relative overflow-hidden min-h-[140px] sm:min-h-[180px] md:min-h-[220px]"
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-yellow-400/20 to-red-500/20 animate-pulse"></div>
                 <div className="relative text-center">
-                  <div className="text-6xl mb-4 group-hover:animate-bounce">👑</div>
-                  <h3 className="text-2xl font-bold mb-3 bg-gradient-to-r from-yellow-200 to-orange-300 bg-clip-text text-transparent">
-                    King of Addition
+                  <div className="text-3xl sm:text-5xl md:text-6xl mb-2 sm:mb-3 md:mb-4 group-hover:animate-bounce">👑</div>
+                  <h3 className="text-sm sm:text-lg md:text-2xl font-bold mb-1 sm:mb-2 md:mb-3 bg-gradient-to-r from-yellow-200 to-orange-300 bg-clip-text text-transparent">
+                    <span className="hidden sm:inline">King of Addition</span>
+                    <span className="sm:hidden">King</span>
                   </h3>
-                  <p className="text-yellow-100 mb-4 text-lg font-semibold">
+                  <p className="text-yellow-100 mb-2 sm:mb-3 md:mb-4 text-xs sm:text-base md:text-lg font-semibold hidden sm:block">
                     Mix ultime jusqu'à 100
                   </p>
-                  <div className="flex justify-center space-x-2 text-sm mb-4">
-                    <Crown className="w-4 h-4 text-yellow-400" />
-                    <span className="text-yellow-200">Défi Légendaire</span>
+                  <div className="flex justify-center space-x-1 sm:space-x-2 text-xs sm:text-sm mb-2 sm:mb-4">
+                    <Crown className="w-3 h-3 sm:w-4 sm:h-4 text-yellow-400" />
+                    <span className="text-yellow-200">
+                      <span className="hidden sm:inline">Défi Légendaire</span>
+                      <span className="sm:hidden">Légendaire</span>
+                    </span>
                   </div>
-                  <div className="text-sm text-yellow-200 font-bold">
+                  <div className="text-xs sm:text-sm text-yellow-200 font-bold hidden sm:block">
                     🏆 Ultimate Speed Challenge
                   </div>
                 </div>
@@ -2178,23 +2146,23 @@ export default function AdditionsSimples() {
               </p>
             </div>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6 max-w-6xl mx-auto">
               {/* Duel Facile */}
               <div 
                 onClick={() => startDuel2Players(1)}
-                className="bg-gradient-to-br from-green-600 to-emerald-700 rounded-xl p-8 cursor-pointer hover:scale-105 transition-all duration-300 shadow-2xl border border-green-400 group"
+                className="bg-gradient-to-br from-green-600 to-emerald-700 rounded-xl p-3 sm:p-6 md:p-8 cursor-pointer hover:scale-105 transition-all duration-300 shadow-2xl border border-green-400 group min-h-[140px] sm:min-h-[180px] md:min-h-[220px]"
               >
                 <div className="text-center">
-                  <div className="text-6xl mb-4 group-hover:animate-bounce">🌱</div>
-                  <h3 className="text-2xl font-bold mb-3">Facile</h3>
-                  <p className="text-green-100 mb-4 text-lg">
+                  <div className="text-3xl sm:text-5xl md:text-6xl mb-2 sm:mb-3 md:mb-4 group-hover:animate-bounce">🌱</div>
+                  <h3 className="text-lg sm:text-xl md:text-2xl font-bold mb-1 sm:mb-2 md:mb-3">Facile</h3>
+                  <p className="text-green-100 mb-2 sm:mb-3 md:mb-4 text-sm sm:text-base md:text-lg hidden sm:block">
                     Additions jusqu'à 10
                   </p>
-                  <div className="flex justify-center space-x-2 text-sm mb-4">
-                    <Shield className="w-4 h-4" />
+                  <div className="flex justify-center space-x-2 text-xs sm:text-sm mb-2 sm:mb-4">
+                    <Shield className="w-3 h-3 sm:w-4 sm:h-4" />
                     <span>Débutant</span>
                   </div>
-                  <div className="text-sm text-green-200">
+                  <div className="text-xs sm:text-sm text-green-200 hidden sm:block">
                     Parfait pour commencer !
                   </div>
                 </div>
@@ -2203,19 +2171,19 @@ export default function AdditionsSimples() {
               {/* Duel Moyen */}
               <div 
                 onClick={() => startDuel2Players(2)}
-                className="bg-gradient-to-br from-blue-600 to-cyan-700 rounded-xl p-8 cursor-pointer hover:scale-105 transition-all duration-300 shadow-2xl border border-blue-400 group"
+                className="bg-gradient-to-br from-blue-600 to-cyan-700 rounded-xl p-3 sm:p-6 md:p-8 cursor-pointer hover:scale-105 transition-all duration-300 shadow-2xl border border-blue-400 group min-h-[140px] sm:min-h-[180px] md:min-h-[220px]"
               >
                 <div className="text-center">
-                  <div className="text-6xl mb-4 group-hover:animate-bounce">🔥</div>
-                  <h3 className="text-2xl font-bold mb-3">Moyen</h3>
-                  <p className="text-blue-100 mb-4 text-lg">
+                  <div className="text-3xl sm:text-5xl md:text-6xl mb-2 sm:mb-3 md:mb-4 group-hover:animate-bounce">🔥</div>
+                  <h3 className="text-lg sm:text-xl md:text-2xl font-bold mb-1 sm:mb-2 md:mb-3">Moyen</h3>
+                  <p className="text-blue-100 mb-2 sm:mb-3 md:mb-4 text-sm sm:text-base md:text-lg hidden sm:block">
                     Additions jusqu'à 20
                   </p>
-                  <div className="flex justify-center space-x-2 text-sm mb-4">
-                    <Zap className="w-4 h-4" />
+                  <div className="flex justify-center space-x-2 text-xs sm:text-sm mb-2 sm:mb-4">
+                    <Zap className="w-3 h-3 sm:w-4 sm:h-4" />
                     <span>Intermédiaire</span>
                   </div>
-                  <div className="text-sm text-blue-200">
+                  <div className="text-xs sm:text-sm text-blue-200 hidden sm:block">
                     Challenge équilibré !
                   </div>
                 </div>
@@ -2224,19 +2192,19 @@ export default function AdditionsSimples() {
               {/* Duel Difficile */}
               <div 
                 onClick={() => startDuel2Players(3)}
-                className="bg-gradient-to-br from-purple-600 to-pink-600 rounded-xl p-8 cursor-pointer hover:scale-105 transition-all duration-300 shadow-2xl border border-purple-400 group"
+                className="bg-gradient-to-br from-purple-600 to-pink-600 rounded-xl p-3 sm:p-6 md:p-8 cursor-pointer hover:scale-105 transition-all duration-300 shadow-2xl border border-purple-400 group min-h-[140px] sm:min-h-[180px] md:min-h-[220px]"
               >
                 <div className="text-center">
-                  <div className="text-6xl mb-4 group-hover:animate-bounce">🔥</div>
-                  <h3 className="text-2xl font-bold mb-3">Difficile</h3>
-                  <p className="text-purple-100 mb-4 text-lg">
+                  <div className="text-3xl sm:text-5xl md:text-6xl mb-2 sm:mb-3 md:mb-4 group-hover:animate-bounce">🔥</div>
+                  <h3 className="text-lg sm:text-xl md:text-2xl font-bold mb-1 sm:mb-2 md:mb-3">Difficile</h3>
+                  <p className="text-purple-100 mb-2 sm:mb-3 md:mb-4 text-sm sm:text-base md:text-lg hidden sm:block">
                     Additions jusqu'à 100
                   </p>
-                  <div className="flex justify-center space-x-2 text-sm mb-4">
-                    <Crown className="w-4 h-4" />
+                  <div className="flex justify-center space-x-2 text-xs sm:text-sm mb-2 sm:mb-4">
+                    <Crown className="w-3 h-3 sm:w-4 sm:h-4" />
                     <span>Expert</span>
                   </div>
-                  <div className="text-sm text-purple-200">
+                  <div className="text-xs sm:text-sm text-purple-200 hidden sm:block">
                     Pour les champions !
                   </div>
                 </div>
@@ -2245,20 +2213,24 @@ export default function AdditionsSimples() {
               {/* Duel King of Addition */}
               <div 
                 onClick={() => startDuel2Players(4)}
-                className="bg-gradient-to-br from-yellow-500 via-orange-500 to-red-600 rounded-xl p-8 cursor-pointer hover:scale-105 transition-all duration-300 shadow-2xl border-2 border-yellow-400 group relative overflow-hidden"
+                className="bg-gradient-to-br from-yellow-500 via-orange-500 to-red-600 rounded-xl p-3 sm:p-6 md:p-8 cursor-pointer hover:scale-105 transition-all duration-300 shadow-2xl border-2 border-yellow-400 group relative overflow-hidden min-h-[140px] sm:min-h-[180px] md:min-h-[220px]"
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-yellow-400/20 to-red-500/20 animate-pulse"></div>
                 <div className="relative text-center">
-                  <div className="text-6xl mb-4 group-hover:animate-bounce">👑</div>
-                  <h3 className="text-2xl font-bold mb-3 bg-gradient-to-r from-yellow-200 to-white bg-clip-text text-transparent">
-                    King of Addition
+                  <div className="text-3xl sm:text-5xl md:text-6xl mb-2 sm:mb-3 md:mb-4 group-hover:animate-bounce">👑</div>
+                  <h3 className="text-sm sm:text-lg md:text-2xl font-bold mb-1 sm:mb-2 md:mb-3 bg-gradient-to-r from-yellow-200 to-white bg-clip-text text-transparent">
+                    <span className="hidden sm:inline">King of Addition</span>
+                    <span className="sm:hidden">King</span>
                   </h3>
-                  <p className="text-yellow-100 mb-4 text-lg font-semibold">
+                  <p className="text-yellow-100 mb-2 sm:mb-3 md:mb-4 text-xs sm:text-base md:text-lg font-semibold hidden sm:block">
                     Mix ultime jusqu'à 100
                   </p>
-                  <div className="flex justify-center space-x-2 text-sm mb-4">
-                    <Crown className="w-4 h-4 text-yellow-300" />
-                    <span className="text-yellow-200">Maître Suprême</span>
+                  <div className="flex justify-center space-x-2 text-xs sm:text-sm mb-2 sm:mb-4">
+                    <Crown className="w-3 h-3 sm:w-4 sm:h-4 text-yellow-300" />
+                    <span className="text-yellow-200">
+                      <span className="hidden sm:inline">Maître Suprême</span>
+                      <span className="sm:hidden">Maître</span>
+                    </span>
                   </div>
                   <div className="text-sm text-yellow-200">
                     Seuls les rois osent !
@@ -2315,10 +2287,10 @@ export default function AdditionsSimples() {
             </div>
 
             <div className="max-w-2xl mx-auto">
-              <div className="bg-gradient-to-br from-green-600 to-emerald-700 rounded-xl p-8 text-center shadow-2xl">
+              <div className="bg-gradient-to-br from-green-600 to-emerald-700 rounded-xl p-4 sm:p-8 text-center shadow-2xl">
                 {!showCorrectAnswer ? (
                   <>
-                    <div className="text-5xl font-bold mb-6 text-white animate-pulse">
+                    <div className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6 text-white animate-pulse">
                       {currentQuestion?.question} = ?
                     </div>
                     
@@ -2327,21 +2299,21 @@ export default function AdditionsSimples() {
                       value={userAnswer}
                       onChange={(e) => setUserAnswer(e.target.value)}
                       onKeyPress={(e) => e.key === 'Enter' && handleTrainingAnswer()}
-                      className="text-center text-3xl font-bold border-2 border-white rounded-lg px-4 py-3 w-40 text-gray-800 bg-white shadow-lg"
+                      className="text-center text-2xl sm:text-3xl font-bold border-2 border-white rounded-lg px-3 sm:px-4 py-2 sm:py-3 w-32 sm:w-40 text-gray-800 bg-white shadow-lg min-h-[60px]"
                       placeholder="?"
                       autoFocus
                     />
                     
-                    <div className="mt-6 space-x-4">
+                    <div className="mt-6 flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
                       <button
                         onClick={handleTrainingAnswer}
-                        className="bg-white text-green-700 px-8 py-4 rounded-lg font-bold hover:bg-gray-100 transition-colors shadow-lg"
+                        className="bg-white text-green-700 px-6 sm:px-8 py-3 sm:py-4 rounded-lg font-bold hover:bg-gray-100 transition-colors shadow-lg min-h-[56px] touch-manipulation"
                       >
                         ✅ Valider
                       </button>
                       <button
                         onClick={() => setGameMode('arena')}
-                        className="bg-gray-700 text-white px-8 py-4 rounded-lg font-bold hover:bg-gray-600 transition-colors shadow-lg"
+                        className="bg-gray-700 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-lg font-bold hover:bg-gray-600 transition-colors shadow-lg min-h-[56px] touch-manipulation"
                       >
                         🏠 Retour
                       </button>
@@ -2398,9 +2370,9 @@ export default function AdditionsSimples() {
         {gameMode === 'boss-fight' && (
           <div className="space-y-6">
             {/* Barres de vie */}
-            <div className="grid md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-6">
               {/* Joueur */}
-              <div className="bg-blue-800 rounded-lg p-4 border border-blue-400">
+              <div className="bg-blue-800 rounded-lg p-3 sm:p-4 border border-blue-400">
                 <div className="flex items-center justify-between mb-2">
                   <span className="font-bold">🧙‍♂️ {playerTitle}</span>
                   <span>{playerHP}/100 HP</span>
@@ -2424,7 +2396,7 @@ export default function AdditionsSimples() {
               </div>
 
               {/* Boss */}
-              <div className="bg-red-800 rounded-lg p-4 border border-red-400">
+              <div className="bg-red-800 rounded-lg p-3 sm:p-4 border border-red-400">
                 <div className="flex items-center justify-between mb-2">
                   <span className="font-bold">{levels[currentLevel - 1].boss.avatar} {levels[currentLevel - 1].boss.name}</span>
                   <span>{bossHP}/{levels[currentLevel - 1].boss.hp} HP</span>
@@ -2439,7 +2411,7 @@ export default function AdditionsSimples() {
             </div>
 
             {/* Zone de combat */}
-            <div className={`bg-gradient-to-br ${levels[currentLevel - 1].bgColor} rounded-xl p-8 text-center shadow-2xl border border-purple-400`}>
+            <div className={`bg-gradient-to-br ${levels[currentLevel - 1].bgColor} rounded-xl p-4 sm:p-8 text-center shadow-2xl border border-purple-400`}>
               
               {battlePhase === 'question' && (
                 <div className="space-y-6">
@@ -2452,7 +2424,7 @@ export default function AdditionsSimples() {
                   </div>
 
                   {/* Question */}
-                  <div className="text-6xl font-bold mb-6 text-gray-800 animate-pulse">
+                  <div className="text-3xl sm:text-5xl md:text-6xl font-bold mb-4 sm:mb-6 text-gray-800 animate-pulse">
                     {currentQuestion?.question} = ?
                   </div>
                   
@@ -2462,7 +2434,7 @@ export default function AdditionsSimples() {
                     value={userAnswer}
                     onChange={(e) => setUserAnswer(e.target.value)}
                     onKeyPress={(e) => e.key === 'Enter' && handleAnswer()}
-                    className="text-center text-4xl font-bold border-4 border-gray-800 rounded-lg px-4 py-3 w-48 text-gray-800 bg-white shadow-xl"
+                    className="text-center text-2xl sm:text-3xl md:text-4xl font-bold border-4 border-gray-800 rounded-lg px-3 sm:px-4 py-2 sm:py-3 w-32 sm:w-40 md:w-48 text-gray-800 bg-white shadow-xl min-h-[60px]"
                     placeholder="?"
                     autoFocus
                   />
@@ -2470,9 +2442,10 @@ export default function AdditionsSimples() {
                   <div className="mt-6">
                     <button
                       onClick={handleAnswer}
-                      className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-10 py-5 rounded-lg font-bold hover:scale-105 transition-all text-2xl shadow-xl"
+                      className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-6 sm:px-10 py-4 sm:py-5 rounded-lg font-bold hover:scale-105 transition-all text-lg sm:text-2xl shadow-xl min-h-[56px] min-w-[120px] touch-manipulation"
                     >
-                      ⚔️ ATTAQUER !
+                      <span className="hidden sm:inline">⚔️ ATTAQUER !</span>
+                      <span className="sm:hidden">⚔️ VALIDER</span>
                     </button>
                   </div>
                 </div>
@@ -2641,17 +2614,17 @@ export default function AdditionsSimples() {
 
             {duelPhase === 'question' && (
               <div className="max-w-2xl mx-auto">
-                <div className={`bg-gradient-to-br ${currentPlayer === 1 ? 'from-blue-600 to-blue-700' : 'from-cyan-600 to-cyan-700'} rounded-xl p-8 text-center shadow-2xl text-white`}>
-                  <div className="text-lg mb-2">Au tour du Joueur {currentPlayer}</div>
+                <div className={`bg-gradient-to-br ${currentPlayer === 1 ? 'from-blue-600 to-blue-700' : 'from-cyan-600 to-cyan-700'} rounded-xl p-4 sm:p-8 text-center shadow-2xl text-white`}>
+                  <div className="text-sm sm:text-lg mb-2">Au tour du Joueur {currentPlayer}</div>
                   
                   <div className="flex justify-center items-center space-x-4 mb-4">
-                    <Timer className="w-6 h-6 text-yellow-400" />
-                    <div className={`text-3xl font-bold ${timeLeft <= 3 ? 'text-red-400 animate-bounce' : 'text-yellow-400'}`}>
+                    <Timer className="w-5 h-5 sm:w-6 sm:h-6 text-yellow-400" />
+                    <div className={`text-2xl sm:text-3xl font-bold ${timeLeft <= 3 ? 'text-red-400 animate-bounce' : 'text-yellow-400'}`}>
                       {timeLeft}s
                     </div>
                   </div>
 
-                  <div className="text-5xl font-bold mb-6 animate-pulse">
+                  <div className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6 animate-pulse">
                     {currentQuestion?.question} = ?
                   </div>
                   
@@ -2660,7 +2633,7 @@ export default function AdditionsSimples() {
                     value={userAnswer}
                     onChange={(e) => setUserAnswer(e.target.value)}
                     onKeyPress={(e) => e.key === 'Enter' && handleDuelAnswer()}
-                    className="text-center text-3xl font-bold border-2 border-white rounded-lg px-4 py-3 w-40 text-gray-800 bg-white shadow-lg"
+                    className="text-center text-2xl sm:text-3xl font-bold border-2 border-white rounded-lg px-3 sm:px-4 py-2 sm:py-3 w-32 sm:w-40 text-gray-800 bg-white shadow-lg min-h-[60px]"
                     placeholder="?"
                     autoFocus
                   />
@@ -2668,7 +2641,7 @@ export default function AdditionsSimples() {
                   <div className="mt-6">
                     <button
                       onClick={handleDuelAnswer}
-                      className="bg-white text-blue-700 px-8 py-4 rounded-lg font-bold hover:bg-gray-100 transition-colors shadow-lg"
+                      className="bg-white text-blue-700 px-6 sm:px-8 py-3 sm:py-4 rounded-lg font-bold hover:bg-gray-100 transition-colors shadow-lg min-h-[56px] touch-manipulation"
                     >
                       ✅ Valider
                     </button>

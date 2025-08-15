@@ -6,7 +6,7 @@ import { ArrowLeft, Play, Pause, Sword, Shield, Star, Trophy, Zap, Heart, Timer,
 
 export default function SoustractionsSimples() {
   // États du jeu pirate
-  const [gameMode, setGameMode] = useState<'ship' | 'training' | 'battle' | 'island-select' | 'duel-2players' | 'time-challenge'>('ship');
+  const [gameMode, setGameMode] = useState<'ship' | 'training' | 'training-select' | 'battle' | 'island-select' | 'duel-2players' | 'duel-select' | 'time-challenge' | 'challenge-select'>('ship');
   const [currentIsland, setCurrentIsland] = useState(1);
   const [playerHP, setPlayerHP] = useState(100);
   const [pirateHP, setPirateHP] = useState(100);
@@ -63,6 +63,27 @@ export default function SoustractionsSimples() {
   const [showPresentation, setShowPresentation] = useState(false);
   const [currentHighlight, setCurrentHighlight] = useState('');
   const [presentationStep, setPresentationStep] = useState(0);
+
+  // Historique des questions pour éviter les répétitions
+  const [recentQuestions, setRecentQuestions] = useState<string[]>([]);
+  const [lastResult, setLastResult] = useState<number | null>(null);
+  
+  // État pour le mode entraînement avec niveaux
+  const [trainingLevel, setTrainingLevel] = useState<1 | 2 | 3 | 4>(1);
+  
+  // État pour le mode duel avec niveaux
+  const [duelLevel, setDuelLevel] = useState<1 | 2 | 3 | 4>(1);
+  
+  // État pour le mode défi temps avec niveaux
+  const [challengeLevel, setChallengeLevel] = useState<1 | 2 | 3 | 4>(1);
+  
+  // États pour la Légende Marine
+  const [showLegendAnimation, setShowLegendAnimation] = useState(false);
+  const [isLegendUnlocked, setIsLegendUnlocked] = useState(false);
+  const legendCost = 1000; // Coût en doublons pour débloquer
+  
+  // État pour les questions par niveau dans le défi temps
+  const [questionsInCurrentLevel, setQuestionsInCurrentLevel] = useState(0);
 
   // Configuration des îles pirates (niveaux)
   const pirateIslands = [
@@ -165,6 +186,198 @@ export default function SoustractionsSimples() {
       num1,
       num2,
       difficulty: island.difficulty
+    };
+  };
+
+  // Générateur de questions d'entraînement avec anti-répétition
+  const generateTrainingQuestion = () => {
+    let num1, num2, question, answer;
+    let attempts = 0;
+    const maxAttempts = 50;
+    
+    do {
+      if (trainingLevel === 1) {
+        // Facile: soustractions jusqu'à 10
+        const strategies = [
+          () => {
+            num1 = Math.floor(Math.random() * 6) + 4; // 4-9
+            num2 = Math.floor(Math.random() * (num1 - 1)) + 1; // 1 à num1-1
+          },
+          () => {
+            num1 = Math.floor(Math.random() * 4) + 6; // 6-9
+            num2 = Math.floor(Math.random() * 4) + 1; // 1-4
+          },
+          () => {
+            num1 = 10;
+            num2 = Math.floor(Math.random() * 5) + 1; // 1-5
+          }
+        ];
+        strategies[Math.floor(Math.random() * strategies.length)]();
+      } else if (trainingLevel === 2) {
+        // Moyen: soustractions jusqu'à 20
+        const strategies = [
+          () => {
+            num1 = Math.floor(Math.random() * 10) + 10; // 10-19
+            num2 = Math.floor(Math.random() * 9) + 1; // 1-9
+          },
+          () => {
+            num1 = Math.floor(Math.random() * 8) + 12; // 12-19
+            num2 = Math.floor(Math.random() * (num1 - 10)) + 1; // garder résultat > 10
+          },
+          () => {
+            num1 = 20;
+            num2 = Math.floor(Math.random() * 10) + 1; // 1-10
+          }
+        ];
+        strategies[Math.floor(Math.random() * strategies.length)]();
+      } else if (trainingLevel === 3) {
+        // Difficile: soustractions jusqu'à 30 (CP avancé)
+        const strategies = [
+          () => {
+            num1 = Math.floor(Math.random() * 15) + 15; // 15-29
+            num2 = Math.floor(Math.random() * 10) + 1; // 1-10
+          },
+          () => {
+            num1 = Math.floor(Math.random() * 20) + 10; // 10-29
+            num2 = Math.floor(Math.random() * (Math.min(num1 - 5, 15))) + 1; // résultat ≥ 5
+          }
+        ];
+        strategies[Math.floor(Math.random() * strategies.length)]();
+      } else {
+        // King of Subtraction: mix ultime CP
+        const strategies = [
+          () => {
+            num1 = Math.floor(Math.random() * 20) + 10; // 10-29
+            num2 = Math.floor(Math.random() * 8) + 1; // 1-8
+          },
+          () => {
+            num1 = Math.floor(Math.random() * 10) + 20; // 20-29
+            num2 = Math.floor(Math.random() * 12) + 3; // 3-14
+          },
+          () => {
+            // Soustractions avec résultat rond
+            num1 = (Math.floor(Math.random() * 3) + 2) * 10; // 20, 30
+            num2 = Math.floor(Math.random() * 8) + 1; // 1-8
+          }
+        ];
+        strategies[Math.floor(Math.random() * strategies.length)]();
+      }
+      
+      // S'assurer que num1 > num2 (pas de résultats négatifs en CP)
+      if (num1 <= num2) {
+        num1 = num2 + Math.floor(Math.random() * 5) + 1;
+      }
+      
+      question = `${num1} - ${num2}`;
+      answer = num1 - num2;
+      attempts++;
+      
+    } while (
+      attempts < maxAttempts && (
+        recentQuestions.includes(question) ||
+        (lastResult !== null && Math.abs(answer - lastResult) <= 1) ||
+        answer > (trainingLevel === 1 ? 9 : trainingLevel === 2 ? 19 : 29) ||
+        answer < 1 // Éviter les résultats négatifs ou nuls
+      )
+    );
+    
+    // Mettre à jour l'historique
+    const newRecentQuestions = [...recentQuestions, question].slice(-8);
+    setRecentQuestions(newRecentQuestions);
+    setLastResult(answer);
+    
+    return {
+      question,
+      answer,
+      num1,
+      num2
+    };
+  };
+
+  // Fonction pour calculer le temps par niveau (COMMUNE à toutes les difficultés)
+  const getTimeForLevel = (level: number) => {
+    // Démarrage à 15s, -1s par niveau jusqu'à 2s
+    const time = 16 - level; // Niveau 1 = 15s, Niveau 2 = 14s, ..., Niveau 14 = 2s
+    return Math.max(time, 2); // Minimum 2 secondes
+  };
+
+  // Fonction pour déterminer combien de questions par niveau (COMMUNE à toutes les difficultés)
+  const getQuestionsPerLevel = (level: number) => {
+    const timeLimit = getTimeForLevel(level);
+    
+    if (timeLimit === 2) return 5;      // 2 secondes : 5 questions
+    if (timeLimit === 3 || timeLimit === 4) return 2;  // 3s et 4s : 2 questions
+    return 1;                           // Autres niveaux : 1 question
+  };
+
+  // Générateur de questions pour le défi temps
+  const generateChallengeQuestion = (level: number) => {
+    let num1, num2;
+    
+    // Utilise challengeLevel pour définir les limites, et level pour la progression de difficulté
+    let maxNum;
+    if (challengeLevel === 1) {
+      maxNum = 10; // Facile: jusqu'à 10
+    } else if (challengeLevel === 2) {
+      maxNum = 20; // Moyen: jusqu'à 20  
+    } else if (challengeLevel === 3) {
+      maxNum = 30; // Difficile: jusqu'à 30 (CP)
+    } else {
+      maxNum = 30; // King of Subtraction: mix ultime jusqu'à 30
+    }
+    
+    // Progression selon le niveau dans le défi
+    if (level <= 3) {
+      // Niveaux 1-3: nombres plus petits
+      const limit = Math.min(maxNum, challengeLevel === 1 ? 6 : challengeLevel === 2 ? 12 : 18);
+      num1 = Math.floor(Math.random() * limit) + (challengeLevel === 1 ? 3 : 5);
+      num2 = Math.floor(Math.random() * (num1 - 1)) + 1;
+    } else if (level <= 6) {
+      // Niveaux 4-6: nombres moyens
+      const limit = Math.min(maxNum, challengeLevel === 1 ? 8 : challengeLevel === 2 ? 16 : 24);
+      num1 = Math.floor(Math.random() * limit) + (challengeLevel === 1 ? 4 : 6);
+      num2 = Math.floor(Math.random() * (num1 - 2)) + 1;
+    } else if (level <= 10) {
+      // Niveaux 7-10: nombres plus grands
+      const limit = Math.min(maxNum, challengeLevel === 1 ? 10 : challengeLevel === 2 ? 20 : 28);
+      num1 = Math.floor(Math.random() * limit) + (challengeLevel === 1 ? 5 : 8);
+      num2 = Math.floor(Math.random() * (num1 - 3)) + 1;
+    } else {
+      // Niveaux 11+: utilise toute la gamme
+      if (challengeLevel === 4) {
+        // King of Subtraction: stratégies avancées
+        const strategies = [
+          () => {
+            num1 = Math.floor(Math.random() * 15) + 15; // 15-29
+            num2 = Math.floor(Math.random() * 8) + 1; // 1-8
+          },
+          () => {
+            num1 = (Math.floor(Math.random() * 2) + 2) * 10; // 20 ou 30
+            num2 = Math.floor(Math.random() * 12) + 1; // 1-12
+          },
+          () => {
+            num1 = Math.floor(Math.random() * 20) + 10; // 10-29
+            num2 = Math.floor(Math.random() * 6) + 1; // 1-6
+          }
+        ];
+        strategies[Math.floor(Math.random() * strategies.length)]();
+      } else {
+        num1 = Math.floor(Math.random() * maxNum) + 5;
+        num2 = Math.floor(Math.random() * (num1 - 3)) + 1;
+      }
+    }
+    
+    // S'assurer que num1 > num2 et résultat > 0
+    if (num1 <= num2) {
+      num1 = num2 + Math.floor(Math.random() * 5) + 1;
+    }
+    
+    return {
+      question: `${num1} - ${num2}`,
+      answer: num1 - num2,
+      num1,
+      num2,
+      level
     };
   };
 
@@ -559,35 +772,7 @@ export default function SoustractionsSimples() {
     }, 3000);
   };
 
-  const generateChallengeQuestion = (level: number) => {
-    let num1, num2;
-    
-    if (level <= 3) {
-      // Niveau 1-3: jusqu'à 10
-      num1 = Math.floor(Math.random() * 8) + 3; // 3-10
-      num2 = Math.floor(Math.random() * num1) + 1; // 1 à num1
-    } else if (level <= 6) {
-      // Niveau 4-6: jusqu'à 15
-      num1 = Math.floor(Math.random() * 10) + 6; // 6-15
-      num2 = Math.floor(Math.random() * num1) + 1; // 1 à num1
-    } else if (level <= 10) {
-      // Niveau 7-10: jusqu'à 20
-      num1 = Math.floor(Math.random() * 12) + 9; // 9-20
-      num2 = Math.floor(Math.random() * num1) + 1; // 1 à num1
-    } else {
-      // Niveau 11+: jusqu'à 30 (limite CP)
-      num1 = Math.floor(Math.random() * 15) + 16; // 16-30
-      num2 = Math.floor(Math.random() * num1) + 1; // 1 à num1
-    }
-    
-    return {
-      question: `${num1} - ${num2}`,
-      answer: num1 - num2,
-      num1,
-      num2,
-      level
-    };
-  };
+
 
   const handleChallengeAnswer = () => {
     const answer = parseInt(userAnswer);
@@ -943,10 +1128,10 @@ export default function SoustractionsSimples() {
               </div>
             </div>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-6">
               {/* Entraînement en mer calme */}
               <div 
-                onClick={startTraining}
+                onClick={() => setGameMode('training-select')}
                 className={`bg-gradient-to-br from-teal-600 to-cyan-700 rounded-xl p-6 cursor-pointer hover:scale-105 transition-all duration-300 shadow-2xl border border-cyan-400 group ${
                   currentHighlight === 'training' ? 'ring-8 ring-yellow-400 animate-pulse scale-110' : ''
                 }`}
@@ -986,7 +1171,7 @@ export default function SoustractionsSimples() {
 
               {/* Mode duel 2 pirates */}
               <div 
-                onClick={startDuel2Players}
+                onClick={() => setGameMode('duel-select')}
                 className={`bg-gradient-to-br from-blue-600 to-indigo-700 rounded-xl p-6 cursor-pointer hover:scale-105 transition-all duration-300 shadow-2xl border border-blue-400 group ${
                   currentHighlight === 'duel' ? 'ring-8 ring-yellow-400 animate-pulse scale-110' : ''
                 }`}
@@ -1006,7 +1191,7 @@ export default function SoustractionsSimples() {
 
               {/* Mode défi temps */}
               <div 
-                onClick={startTimeChallenge}
+                onClick={() => setGameMode('challenge-select')}
                 className={`bg-gradient-to-br from-yellow-600 to-amber-700 rounded-xl p-6 cursor-pointer hover:scale-105 transition-all duration-300 shadow-2xl border border-yellow-400 group ${
                   currentHighlight === 'challenge' ? 'ring-8 ring-yellow-400 animate-pulse scale-110' : ''
                 }`}
@@ -1022,6 +1207,73 @@ export default function SoustractionsSimples() {
                     <span>Record</span>
                   </div>
                 </div>
+              </div>
+
+              {/* Légende Marine - Option à débloquer */}
+              <div 
+                onClick={() => {
+                  if (doubloons >= legendCost && !isLegendUnlocked) {
+                    setDoubloons(doubloons - legendCost);
+                    setIsLegendUnlocked(true);
+                    setShowLegendAnimation(true);
+                  }
+                }}
+                className={`relative rounded-xl p-6 shadow-2xl border-2 transition-all duration-300 group ${
+                  isLegendUnlocked 
+                    ? 'bg-gradient-to-br from-cyan-300 via-teal-400 to-blue-600 border-cyan-200 cursor-default animate-pulse shadow-cyan-400/50 shadow-2xl' 
+                    : doubloons >= legendCost 
+                      ? 'bg-gradient-to-br from-cyan-600/80 via-teal-600/80 to-blue-600/80 border-cyan-400 cursor-pointer hover:scale-105 hover:shadow-cyan-400/60 animate-pulse shadow-cyan-400/30 shadow-xl' 
+                      : 'bg-gradient-to-br from-cyan-700/60 via-teal-700/60 to-blue-700/60 border-cyan-500/70 cursor-not-allowed animate-pulse shadow-cyan-400/20 shadow-lg'
+                }`}
+              >
+                <div className="text-center">
+                  <div className={`text-5xl mb-3 animate-pulse`}>
+                    🔱
+                  </div>
+                  <h3 className={`text-xl font-bold mb-2 animate-pulse ${
+                    isLegendUnlocked 
+                      ? 'bg-gradient-to-r from-white to-cyan-100 bg-clip-text text-transparent drop-shadow-lg' 
+                      : 'text-cyan-100 drop-shadow-md'
+                  }`}>
+                    Légende Marine
+                  </h3>
+                  <p className={`mb-3 text-sm animate-pulse ${
+                    isLegendUnlocked 
+                      ? 'text-cyan-50' 
+                      : 'text-cyan-200'
+                  }`}>
+                    {isLegendUnlocked ? 'Maîtrise des océans !' : 'Royaume des abysses'}
+                  </p>
+                  
+                  {!isLegendUnlocked && (
+                    <div className="flex justify-center items-center space-x-2 text-sm">
+                      <div className={`animate-pulse font-bold text-lg ${doubloons >= legendCost ? 'text-cyan-200 drop-shadow-lg' : 'text-cyan-300 drop-shadow-md'}`}>
+                        🪙 {legendCost}
+                      </div>
+                    </div>
+                  )}
+                  
+                  {isLegendUnlocked && (
+                    <div className="flex justify-center space-x-1 text-sm animate-pulse">
+                      <Crown className="w-4 h-4 text-cyan-100 drop-shadow-lg" />
+                      <span className="text-cyan-50 font-bold drop-shadow-lg">Débloqué</span>
+                    </div>
+                  )}
+                </div>
+                
+                {/* Effet de rayonnement lumineux permanent */}
+                {!isLegendUnlocked && (
+                  <div className="absolute inset-0 rounded-xl animate-pulse">
+                    <div className={`absolute inset-0 rounded-xl ${
+                      doubloons >= legendCost 
+                        ? 'bg-gradient-to-r from-cyan-300/40 via-teal-400/40 to-blue-400/40' 
+                        : 'bg-gradient-to-r from-cyan-400/25 via-teal-500/25 to-blue-500/25'
+                    }`}></div>
+                  </div>
+                )}
+                
+                {/* Effet de halo marin supplémentaire */}
+                <div className="absolute -inset-1 bg-gradient-to-r from-cyan-400/10 via-teal-400/10 to-cyan-400/10 rounded-xl blur-sm animate-pulse"></div>
               </div>
             </div>
 
@@ -1101,6 +1353,332 @@ export default function SoustractionsSimples() {
                   </div>
                 </div>
               ))}
+            </div>
+
+            <div className="text-center">
+              <button
+                onClick={() => setGameMode('ship')}
+                className="bg-gray-700 hover:bg-gray-600 px-6 py-3 rounded-lg transition-colors"
+              >
+                ⚓ Retour au navire
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Sélection niveau d'entraînement */}
+        {gameMode === 'training-select' && (
+          <div className="space-y-8">
+            <div className="text-center">
+              <h2 className="text-3xl font-bold mb-4">🌊 Choisis tes eaux d'entraînement</h2>
+              <p className="text-gray-300">Sélectionne la profondeur qui te convient !</p>
+            </div>
+
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6 max-w-6xl mx-auto">
+              {/* Entraînement Facile */}
+              <div 
+                onClick={() => { setTrainingLevel(1); setGameMode('training'); }}
+                className="bg-gradient-to-br from-teal-600 to-cyan-700 rounded-xl p-3 sm:p-6 md:p-8 cursor-pointer hover:scale-105 transition-all duration-300 shadow-2xl border border-cyan-400 group"
+              >
+                <div className="text-center">
+                  <div className="text-3xl sm:text-5xl md:text-6xl mb-2 sm:mb-3 md:mb-4 group-hover:animate-bounce">🐠</div>
+                  <h3 className="text-lg sm:text-xl md:text-2xl font-bold mb-1 sm:mb-2 md:mb-3">Eaux Calmes</h3>
+                  <p className="text-cyan-100 mb-4 text-lg">
+                    Soustractions jusqu'à 10
+                  </p>
+                  <div className="flex justify-center space-x-2 text-sm mb-4">
+                    <Anchor className="w-4 h-4" />
+                    <span>Débutant</span>
+                  </div>
+                  <div className="text-sm text-cyan-200">
+                    Parfait pour débuter !
+                  </div>
+                </div>
+              </div>
+
+              {/* Entraînement Moyen */}
+              <div 
+                onClick={() => { setTrainingLevel(2); setGameMode('training'); }}
+                className="bg-gradient-to-br from-blue-600 to-indigo-700 rounded-xl p-3 sm:p-6 md:p-8 cursor-pointer hover:scale-105 transition-all duration-300 shadow-2xl border border-blue-400 group"
+              >
+                <div className="text-center">
+                  <div className="text-3xl sm:text-5xl md:text-6xl mb-2 sm:mb-3 md:mb-4 group-hover:animate-bounce">🐟</div>
+                  <h3 className="text-lg sm:text-xl md:text-2xl font-bold mb-1 sm:mb-2 md:mb-3">Eaux Profondes</h3>
+                  <p className="text-blue-100 mb-4 text-lg">
+                    Soustractions jusqu'à 20
+                  </p>
+                  <div className="flex justify-center space-x-2 text-sm mb-4">
+                    <Zap className="w-4 h-4" />
+                    <span>Intermédiaire</span>
+                  </div>
+                  <div className="text-sm text-blue-200">
+                    Un bon défi !
+                  </div>
+                </div>
+              </div>
+
+              {/* Entraînement Difficile */}
+              <div 
+                onClick={() => { setTrainingLevel(3); setGameMode('training'); }}
+                className="bg-gradient-to-br from-purple-600 to-violet-600 rounded-xl p-3 sm:p-6 md:p-8 cursor-pointer hover:scale-105 transition-all duration-300 shadow-2xl border border-purple-400 group"
+              >
+                <div className="text-center">
+                  <div className="text-3xl sm:text-5xl md:text-6xl mb-2 sm:mb-3 md:mb-4 group-hover:animate-bounce">🦈</div>
+                  <h3 className="text-lg sm:text-xl md:text-2xl font-bold mb-1 sm:mb-2 md:mb-3">Eaux Hostiles</h3>
+                  <p className="text-purple-100 mb-4 text-lg">
+                    Soustractions jusqu'à 30
+                  </p>
+                  <div className="flex justify-center space-x-2 text-sm mb-4">
+                    <Crown className="w-4 h-4" />
+                    <span>Expert</span>
+                  </div>
+                  <div className="text-sm text-purple-200">
+                    Pour les corsaires !
+                  </div>
+                </div>
+              </div>
+
+              {/* Entraînement King of Subtraction */}
+              <div 
+                onClick={() => { setTrainingLevel(4); setGameMode('training'); }}
+                className="bg-gradient-to-br from-cyan-500 via-teal-500 to-blue-600 rounded-xl p-3 sm:p-6 md:p-8 cursor-pointer hover:scale-105 transition-all duration-300 shadow-2xl border-2 border-cyan-400 group relative overflow-hidden"
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-cyan-400/20 to-blue-500/20 animate-pulse"></div>
+                <div className="relative text-center">
+                  <div className="text-3xl sm:text-5xl md:text-6xl mb-2 sm:mb-3 md:mb-4 group-hover:animate-bounce">🐋</div>
+                  <h3 className="text-2xl font-bold mb-3 bg-gradient-to-r from-cyan-200 to-blue-300 bg-clip-text text-transparent">
+                    Roi des Abysses
+                  </h3>
+                  <p className="text-cyan-100 mb-4 text-lg font-semibold">
+                    Mix ultime jusqu'à 30
+                  </p>
+                  <div className="flex justify-center space-x-2 text-sm mb-4">
+                    <Crown className="w-4 h-4 text-cyan-400" />
+                    <span className="text-cyan-200">Légende Marine</span>
+                  </div>
+                  <div className="text-sm text-cyan-200 font-bold">
+                    🔱 Maître des Océans
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="text-center">
+              <button
+                onClick={() => setGameMode('ship')}
+                className="bg-gray-700 hover:bg-gray-600 px-6 py-3 rounded-lg transition-colors"
+              >
+                ⚓ Retour au navire
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Sélection niveau défi temps */}
+        {gameMode === 'challenge-select' && (
+          <div className="space-y-8">
+            <div className="text-center">
+              <h2 className="text-3xl font-bold mb-4">⏱️ Choisis ton défi des mers</h2>
+              <p className="text-gray-300">Sélectionne la difficulté pour ta navigation contre le temps !</p>
+            </div>
+
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6 max-w-6xl mx-auto">
+              {/* Défi Facile */}
+              <div 
+                onClick={() => { setChallengeLevel(1); /* fonction startTimeChallenge à créer */ }}
+                className="bg-gradient-to-br from-teal-600 to-cyan-700 rounded-xl p-3 sm:p-6 md:p-8 cursor-pointer hover:scale-105 transition-all duration-300 shadow-2xl border border-cyan-400 group"
+              >
+                <div className="text-center">
+                  <div className="text-3xl sm:text-5xl md:text-6xl mb-2 sm:mb-3 md:mb-4 group-hover:animate-bounce">🐠</div>
+                  <h3 className="text-lg sm:text-xl md:text-2xl font-bold mb-1 sm:mb-2 md:mb-3">Eaux Calmes</h3>
+                  <p className="text-cyan-100 mb-4 text-lg">
+                    Soustractions jusqu'à 10
+                  </p>
+                  <div className="flex justify-center space-x-2 text-sm mb-4">
+                    <Timer className="w-4 h-4" />
+                    <span>15-5s progression</span>
+                  </div>
+                  <div className="text-sm text-cyan-200">
+                    Navigation tranquille !
+                  </div>
+                </div>
+              </div>
+
+              {/* Défi Moyen */}
+              <div 
+                onClick={() => { setChallengeLevel(2); /* fonction startTimeChallenge à créer */ }}
+                className="bg-gradient-to-br from-blue-600 to-indigo-700 rounded-xl p-3 sm:p-6 md:p-8 cursor-pointer hover:scale-105 transition-all duration-300 shadow-2xl border border-blue-400 group"
+              >
+                <div className="text-center">
+                  <div className="text-3xl sm:text-5xl md:text-6xl mb-2 sm:mb-3 md:mb-4 group-hover:animate-bounce">🐟</div>
+                  <h3 className="text-lg sm:text-xl md:text-2xl font-bold mb-1 sm:mb-2 md:mb-3">Eaux Profondes</h3>
+                  <p className="text-blue-100 mb-4 text-lg">
+                    Soustractions jusqu'à 20
+                  </p>
+                  <div className="flex justify-center space-x-2 text-sm mb-4">
+                    <Zap className="w-4 h-4" />
+                    <span>Temps décroissant</span>
+                  </div>
+                  <div className="text-sm text-blue-200">
+                    Course stimulante !
+                  </div>
+                </div>
+              </div>
+
+              {/* Défi Difficile */}
+              <div 
+                onClick={() => { setChallengeLevel(3); /* fonction startTimeChallenge à créer */ }}
+                className="bg-gradient-to-br from-purple-600 to-violet-600 rounded-xl p-3 sm:p-6 md:p-8 cursor-pointer hover:scale-105 transition-all duration-300 shadow-2xl border border-purple-400 group"
+              >
+                <div className="text-center">
+                  <div className="text-3xl sm:text-5xl md:text-6xl mb-2 sm:mb-3 md:mb-4 group-hover:animate-bounce">🦈</div>
+                  <h3 className="text-lg sm:text-xl md:text-2xl font-bold mb-1 sm:mb-2 md:mb-3">Eaux Hostiles</h3>
+                  <p className="text-purple-100 mb-4 text-lg">
+                    Soustractions jusqu'à 30
+                  </p>
+                  <div className="flex justify-center space-x-2 text-sm mb-4">
+                    <Crown className="w-4 h-4" />
+                    <span>Jusqu'à 2s</span>
+                  </div>
+                  <div className="text-sm text-purple-200">
+                    Pour les corsaires !
+                  </div>
+                </div>
+              </div>
+
+              {/* Défi King of Subtraction */}
+              <div 
+                onClick={() => { setChallengeLevel(4); /* fonction startTimeChallenge à créer */ }}
+                className="bg-gradient-to-br from-cyan-500 via-teal-500 to-blue-600 rounded-xl p-3 sm:p-6 md:p-8 cursor-pointer hover:scale-105 transition-all duration-300 shadow-2xl border-2 border-cyan-400 group relative overflow-hidden"
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-cyan-400/20 to-blue-500/20 animate-pulse"></div>
+                <div className="relative text-center">
+                  <div className="text-3xl sm:text-5xl md:text-6xl mb-2 sm:mb-3 md:mb-4 group-hover:animate-bounce">🐋</div>
+                  <h3 className="text-2xl font-bold mb-3 bg-gradient-to-r from-cyan-200 to-blue-300 bg-clip-text text-transparent">
+                    Roi des Abysses
+                  </h3>
+                  <p className="text-cyan-100 mb-4 text-lg font-semibold">
+                    Mix ultime jusqu'à 30
+                  </p>
+                  <div className="flex justify-center space-x-2 text-sm mb-4">
+                    <Crown className="w-4 h-4 text-cyan-400" />
+                    <span className="text-cyan-200">Défi Légendaire</span>
+                  </div>
+                  <div className="text-sm text-cyan-200 font-bold">
+                    🔱 Ultimate Sea Challenge
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="text-center">
+              <button
+                onClick={() => setGameMode('ship')}
+                className="bg-gray-700 hover:bg-gray-600 px-6 py-3 rounded-lg transition-colors"
+              >
+                ⚓ Retour au navire
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Sélection niveau duel */}
+        {gameMode === 'duel-select' && (
+          <div className="space-y-8">
+            <div className="text-center">
+              <h2 className="text-3xl font-bold mb-4">⚔️ Choisis ton niveau de duel pirate</h2>
+              <p className="text-gray-300 mb-6">
+                Sélectionne la difficulté pour affronter ton adversaire en mer !
+              </p>
+            </div>
+
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6 max-w-6xl mx-auto">
+              {/* Duel Facile */}
+              <div 
+                onClick={() => { setDuelLevel(1); /* fonction startDuel2Players à créer */ }}
+                className="bg-gradient-to-br from-teal-600 to-cyan-700 rounded-xl p-3 sm:p-6 md:p-8 cursor-pointer hover:scale-105 transition-all duration-300 shadow-2xl border border-cyan-400 group"
+              >
+                <div className="text-center">
+                  <div className="text-3xl sm:text-5xl md:text-6xl mb-2 sm:mb-3 md:mb-4 group-hover:animate-bounce">🐠</div>
+                  <h3 className="text-lg sm:text-xl md:text-2xl font-bold mb-1 sm:mb-2 md:mb-3">Eaux Calmes</h3>
+                  <p className="text-cyan-100 mb-4 text-lg">
+                    Soustractions jusqu'à 10
+                  </p>
+                  <div className="flex justify-center space-x-2 text-sm mb-4">
+                    <Anchor className="w-4 h-4" />
+                    <span>Débutant</span>
+                  </div>
+                  <div className="text-sm text-cyan-200">
+                    Duel amical !
+                  </div>
+                </div>
+              </div>
+
+              {/* Duel Moyen */}
+              <div 
+                onClick={() => { setDuelLevel(2); /* fonction startDuel2Players à créer */ }}
+                className="bg-gradient-to-br from-blue-600 to-indigo-700 rounded-xl p-3 sm:p-6 md:p-8 cursor-pointer hover:scale-105 transition-all duration-300 shadow-2xl border border-blue-400 group"
+              >
+                <div className="text-center">
+                  <div className="text-3xl sm:text-5xl md:text-6xl mb-2 sm:mb-3 md:mb-4 group-hover:animate-bounce">🐟</div>
+                  <h3 className="text-lg sm:text-xl md:text-2xl font-bold mb-1 sm:mb-2 md:mb-3">Eaux Profondes</h3>
+                  <p className="text-blue-100 mb-4 text-lg">
+                    Soustractions jusqu'à 20
+                  </p>
+                  <div className="flex justify-center space-x-2 text-sm mb-4">
+                    <Zap className="w-4 h-4" />
+                    <span>Intermédiaire</span>
+                  </div>
+                  <div className="text-sm text-blue-200">
+                    Combat équilibré !
+                  </div>
+                </div>
+              </div>
+
+              {/* Duel Difficile */}
+              <div 
+                onClick={() => { setDuelLevel(3); /* fonction startDuel2Players à créer */ }}
+                className="bg-gradient-to-br from-purple-600 to-violet-600 rounded-xl p-3 sm:p-6 md:p-8 cursor-pointer hover:scale-105 transition-all duration-300 shadow-2xl border border-purple-400 group"
+              >
+                <div className="text-center">
+                  <div className="text-3xl sm:text-5xl md:text-6xl mb-2 sm:mb-3 md:mb-4 group-hover:animate-bounce">🦈</div>
+                  <h3 className="text-lg sm:text-xl md:text-2xl font-bold mb-1 sm:mb-2 md:mb-3">Eaux Hostiles</h3>
+                  <p className="text-purple-100 mb-4 text-lg">
+                    Soustractions jusqu'à 30
+                  </p>
+                  <div className="flex justify-center space-x-2 text-sm mb-4">
+                    <Crown className="w-4 h-4" />
+                    <span>Expert</span>
+                  </div>
+                  <div className="text-sm text-purple-200">
+                    Bataille épique !
+                  </div>
+                </div>
+              </div>
+
+              {/* Duel King of Subtraction */}
+              <div 
+                onClick={() => { setDuelLevel(4); /* fonction startDuel2Players à créer */ }}
+                className="bg-gradient-to-br from-cyan-500 via-teal-500 to-blue-600 rounded-xl p-3 sm:p-6 md:p-8 cursor-pointer hover:scale-105 transition-all duration-300 shadow-2xl border-2 border-cyan-400 group relative overflow-hidden"
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-cyan-400/20 to-blue-500/20 animate-pulse"></div>
+                <div className="relative text-center">
+                  <div className="text-3xl sm:text-5xl md:text-6xl mb-2 sm:mb-3 md:mb-4 group-hover:animate-bounce">🐋</div>
+                  <h3 className="text-2xl font-bold mb-3 bg-gradient-to-r from-cyan-200 to-blue-300 bg-clip-text text-transparent">
+                    Roi des Abysses
+                  </h3>
+                  <p className="text-cyan-100 mb-4 text-lg font-semibold">
+                    Mix ultime jusqu'à 30
+                  </p>
+                  <div className="flex justify-center space-x-2 text-sm mb-4">
+                    <Crown className="w-4 h-4 text-cyan-400" />
+                    <span className="text-cyan-200">Légende Marine</span>
+                  </div>
+                  <div className="text-sm text-cyan-200 font-bold">
+                    🔱 Duel Légendaire
+                  </div>
+                </div>
+              </div>
             </div>
 
             <div className="text-center">
@@ -1599,6 +2177,61 @@ export default function SoustractionsSimples() {
           </div>
         )}
       </div>
+
+      {/* Animation Légende Marine */}
+      {showLegendAnimation && (
+        <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50 animate-fadeIn">
+          <div className="bg-gradient-to-br from-cyan-400 via-teal-500 to-blue-600 rounded-3xl p-12 text-center max-w-2xl mx-4 shadow-2xl border-4 border-cyan-300 relative overflow-hidden">
+            {/* Effet de vagues marines */}
+            <div className="absolute inset-0">
+              {[...Array(20)].map((_, i) => (
+                <div
+                  key={i}
+                  className="absolute w-2 h-2 bg-cyan-300 rounded-full animate-pulse"
+                  style={{
+                    top: `${Math.random() * 100}%`,
+                    left: `${Math.random() * 100}%`,
+                    animationDelay: `${Math.random() * 2}s`,
+                    animationDuration: `${1 + Math.random()}s`
+                  }}
+                />
+              ))}
+            </div>
+            
+            <div className="relative z-10">
+              <div className="text-8xl mb-6 animate-bounce">🔱</div>
+              <h1 className="text-4xl font-black mb-4 bg-gradient-to-r from-white to-cyan-100 bg-clip-text text-transparent">
+                ASCENSION LÉGENDAIRE !
+              </h1>
+              
+              <div className="space-y-4 text-xl text-cyan-100 mb-8">
+                <p className="animate-pulse">Les soustractions n'ont plus de secrets pour toi !</p>
+                <p className="animate-pulse" style={{animationDelay: '0.5s'}}>Tu as navigué à travers tous les océans mathématiques.</p>
+                <p className="animate-pulse" style={{animationDelay: '1s'}}>Ton savoir illumine les profondeurs marines.</p>
+              </div>
+              
+              <div className="text-5xl font-black mb-8 bg-gradient-to-r from-cyan-200 via-teal-300 to-blue-400 bg-clip-text text-transparent animate-pulse">
+                Tu es devenu... une LÉGENDE MARINE !
+              </div>
+              
+              <div className="flex justify-center space-x-4 mb-6">
+                {[...Array(5)].map((_, i) => (
+                  <div key={i} className="text-4xl animate-bounce" style={{animationDelay: `${i * 0.2}s`}}>
+                    🌊
+                  </div>
+                ))}
+              </div>
+              
+              <button
+                onClick={() => setShowLegendAnimation(false)}
+                className="bg-gradient-to-r from-cyan-600 to-teal-700 text-white px-8 py-4 rounded-xl font-bold text-xl hover:from-cyan-500 hover:to-teal-600 transition-all duration-300 shadow-xl border-2 border-cyan-300"
+              >
+                🌊 Continuer ma légende marine
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 } 
