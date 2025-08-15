@@ -24,16 +24,7 @@ const sections = [
     color: 'from-purple-500 to-violet-500',
     verified: true
   },
-  {
-    id: 'decompositions',
-    title: 'Décompositions additives jusqu\'à 10',
-    description: 'Savoir que 5 = 2+3 = 1+4... Toutes les façons de faire un nombre',
-    icon: '🧩',
-    duration: '10 min',
-    xp: 12,
-    color: 'from-orange-500 to-red-500',
-    verified: true
-  },
+
   {
     id: 'decompositions-20',
     title: 'Décompositions additives jusqu\'à 20',

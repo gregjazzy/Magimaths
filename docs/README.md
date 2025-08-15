@@ -33,7 +33,7 @@ Documentation sur l'implémentation des voix naturelles et TTS.
 
 | Solution | Description | Statut | Fichier de référence |
 |----------|-------------|---------|---------------------|
-| **Gestion Vocale** | Évite conflits et persistence | ✅ Prêt | `ordonner-comparer/page.tsx` |
+| **Gestion Vocale** | Évite conflits et persistence | ✅ Prêt | `ordonner-comparer/paage.tsx` |
 | **Navigation Robuste** | Persistance boutons UI | ✅ Prêt | `reconnaissance/page.tsx` |
 | **Animations Synchronisées** | Vocal + animations | ✅ Prêt | Multiples chapitres |
 
