@@ -164,7 +164,8 @@ export default function SoustractionsSimples() {
   // Générateur de questions de soustraction selon l'île
   const generateQuestion = () => {
     const island = pirateIslands[currentIsland - 1];
-    let num1, num2;
+    let num1: number = 1;
+    let num2: number = 1;
     
     if (island.id === 1) {
       // Île facile : soustractions jusqu'à 10
@@ -191,7 +192,10 @@ export default function SoustractionsSimples() {
 
   // Générateur de questions d'entraînement avec anti-répétition
   const generateTrainingQuestion = () => {
-    let num1, num2, question, answer;
+    let num1: number = 1;
+    let num2: number = 1;
+    let question: string;
+    let answer: number;
     let attempts = 0;
     const maxAttempts = 50;
     
@@ -312,7 +316,8 @@ export default function SoustractionsSimples() {
 
   // Générateur de questions pour le défi temps
   const generateChallengeQuestion = (level: number) => {
-    let num1, num2;
+    let num1: number = 1;
+    let num2: number = 1;
     
     // Utilise challengeLevel pour définir les limites, et level pour la progression de difficulté
     let maxNum;
