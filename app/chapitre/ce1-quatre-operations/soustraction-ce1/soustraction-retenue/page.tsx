@@ -394,57 +394,51 @@ export default function SoustractionRetenueCE1() {
     setSamSizeExpanded(true);
     
     try {
-      await playAudio("Bonjour ! Découvrons ensemble la soustraction posée avec retenue !", true);
+      playAudio("Bonjour ! Découvrons ensemble la soustraction posée avec retenue !", true);
+      await wait(3000);
       if (stopSignalRef.current) return;
       
+      // Présenter le bouton d'explication bleu avec animation PENDANT l'audio
+      playAudio("D'abord, tu peux cliquer sur ce bouton bleu pour écouter l'explication de la différence entre addition avec retenue et soustraction avec retenue !", true);
       await wait(1000);
-      if (stopSignalRef.current) return;
-      
-      // Présenter le bouton d'explication bleu
       setHighlightedElement('explain-text-button');
-      await playAudio("D'abord, tu peux cliquer sur ce bouton bleu pour écouter l'explication de la différence entre addition avec retenue et soustraction avec retenue !", true);
+      await wait(4000);
       if (stopSignalRef.current) return;
       
-      await wait(2000);
-      if (stopSignalRef.current) return;
-      
-      // Présenter l'exemple principal
+      // Présenter l'exemple principal avec scroll et animation PENDANT l'audio
+      playAudio("Maintenant, voici l'exemple principal avec son animation !", true, 'main-example-button');
+      await wait(1000);
       setHighlightedElement('example-section');
       scrollToElement('example-section');
-      await playAudio("Maintenant, voici l'exemple principal avec son animation !", true, 'main-example-button');
+      await wait(2500);
       if (stopSignalRef.current) return;
       
-      await wait(800);
+      // Mettre en évidence le bouton d'animation principal PENDANT l'audio
+      playAudio("Clique sur le bouton vert pour voir comment faire !", true, 'main-example-button');
+      await wait(3000);
       if (stopSignalRef.current) return;
       
-      // Mettre en évidence le bouton d'animation principal
-      await playAudio("Clique sur le bouton vert pour voir comment faire !", true, 'main-example-button');
-      if (stopSignalRef.current) return;
-      
-      await wait(1500);
-      if (stopSignalRef.current) return;
-      
-      // Présenter la section des autres exemples
+      // Présenter la section des autres exemples avec scroll et animation PENDANT l'audio
+      playAudio("Ensuite, tu trouveras d'autres exemples à 2 et 3 chiffres !", true);
+      await wait(1000);
       setHighlightedElement('examples-section');
       scrollToElement('examples-section');
-      await playAudio("Ensuite, tu trouveras d'autres exemples à 2 et 3 chiffres !", true);
+      await wait(2500);
       if (stopSignalRef.current) return;
       
-      await wait(800);
-      if (stopSignalRef.current) return;
-      
-      // Mettre en évidence les cartes d'exemples
+      // Mettre en évidence les cartes d'exemples PENDANT l'audio
+      playAudio("Chaque carte verte a son animation ! Clique sur les cartes pour les voir !", true, 'examples-buttons');
+      await wait(1000);
       setHighlightedElement('example-0');
-      await playAudio("Chaque carte verte a son animation ! Clique sur les cartes pour les voir !", true, 'examples-buttons');
+      await wait(3000);
       if (stopSignalRef.current) return;
       
-      await wait(1500);
-      if (stopSignalRef.current) return;
-      
-      // Présenter la section exercices - scroller vers le haut pour voir l'onglet
+      // Présenter la section exercices avec scroll PENDANT l'audio
+      playAudio("Et pour finir, tu pourras t'entraîner avec les exercices ! N'oublie pas : on commence toujours par les unités !", true);
+      await wait(1000);
       setHighlightedElement('exercise_tab');
       window.scrollTo({ top: 0, behavior: 'smooth' });
-      await playAudio("Et pour finir, tu pourras t'entraîner avec les exercices ! N'oublie pas : on commence toujours par les unités !", true);
+      await wait(4000);
       if (stopSignalRef.current) return;
       
     } catch (error) {
@@ -505,10 +499,12 @@ export default function SoustractionRetenueCE1() {
     const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
     
     try {
-      await speak("Salut ! Je vais t'expliquer comment faire les exercices de soustraction avec retenues !");
+      speak("Salut ! Je vais t'expliquer comment faire les exercices de soustraction avec retenues !");
+      await wait(3500);
       if (stopSignalRef.current) return;
 
-      await speak("D'abord, clique sur l'onglet Exercices pour voir les questions !");
+      speak("D'abord, clique sur l'onglet Exercices pour voir les questions !");
+      await wait(3000);
       if (stopSignalRef.current) return;
 
       // Basculer vers l'onglet exercices
@@ -516,28 +512,36 @@ export default function SoustractionRetenueCE1() {
       await wait(1000); // Attendre que l'onglet se charge
       if (stopSignalRef.current) return;
       
-      await speak("Parfait ! Maintenant tu vois la première question !", 'exercises-header');
+      speak("Parfait ! Maintenant tu vois la première question !", 'exercises-header');
+      await wait(3000);
       if (stopSignalRef.current) return;
       
-      await speak("Tu peux écouter l'énoncé en cliquant sur ce bouton bleu !", 'listen-button', 'listen-button');
+      speak("Tu peux écouter l'énoncé en cliquant sur ce bouton bleu !", 'listen-button', 'listen-button');
+      await wait(3500);
       if (stopSignalRef.current) return;
       
-      await speak("Ensuite, écris ta réponse dans cette case !", 'answer-input', 'answer-input');
+      speak("Ensuite, écris ta réponse dans cette case !", 'answer-input', 'answer-input');
+      await wait(3000);
       if (stopSignalRef.current) return;
       
-      await speak("Quand tu es sûr de ta réponse, clique sur Valider !", 'validate-button', 'validate-button');
+      speak("Quand tu es sûr de ta réponse, clique sur Valider !", 'validate-button', 'validate-button');
+      await wait(3500);
       if (stopSignalRef.current) return;
       
-      await speak("Si c'est correct, tu passes automatiquement à l'exercice suivant !");
+      speak("Si c'est correct, tu passes automatiquement à l'exercice suivant !");
+      await wait(3500);
       if (stopSignalRef.current) return;
       
-      await speak("Si c'est faux, je te montre l'animation pour t'expliquer la bonne méthode !");
+      speak("Si c'est faux, je te montre l'animation pour t'expliquer la bonne méthode !");
+      await wait(4000);
       if (stopSignalRef.current) return;
       
-      await speak("Puis tu pourras cliquer sur Exercice suivant pour continuer !", 'next-button', 'next-button');
+      speak("Puis tu pourras cliquer sur Exercice suivant pour continuer !", 'next-button', 'next-button');
+      await wait(3500);
       if (stopSignalRef.current) return;
       
-      await speak("Ton score s'affiche ici en haut à droite ! Allez, c'est parti !", 'score-display');
+      speak("Ton score s'affiche ici en haut à droite ! Allez, c'est parti !", 'score-display');
+      await wait(3500);
       
     } catch (error) {
       console.error('Erreur lors de l\'explication des exercices:', error);

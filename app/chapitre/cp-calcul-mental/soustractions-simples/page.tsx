@@ -234,42 +234,35 @@ export default function SoustractionsSimples() {
           }
         ];
         strategies[Math.floor(Math.random() * strategies.length)]();
-      } else if (trainingLevel === 3) {
-        // Difficile: soustractions jusqu'à 30 (CP avancé)
-        const strategies = [
-          () => {
-            num1 = Math.floor(Math.random() * 15) + 15; // 15-29
-            num2 = Math.floor(Math.random() * 10) + 1; // 1-10
-          },
-          () => {
-            num1 = Math.floor(Math.random() * 20) + 10; // 10-29
-            num2 = Math.floor(Math.random() * (Math.min(num1 - 5, 15))) + 1; // résultat ≥ 5
-          }
-        ];
-        strategies[Math.floor(Math.random() * strategies.length)]();
       } else {
         // King of Subtraction: mix ultime CP
         const strategies = [
           () => {
-            num1 = Math.floor(Math.random() * 20) + 10; // 10-29
+            num1 = Math.floor(Math.random() * 11) + 10; // 10-20
             num2 = Math.floor(Math.random() * 8) + 1; // 1-8
           },
           () => {
-            num1 = Math.floor(Math.random() * 10) + 20; // 20-29
-            num2 = Math.floor(Math.random() * 12) + 3; // 3-14
+            num1 = Math.floor(Math.random() * 6) + 15; // 15-20
+            num2 = Math.floor(Math.random() * 10) + 3; // 3-12
           },
           () => {
-            // Soustractions avec résultat rond
-            num1 = (Math.floor(Math.random() * 3) + 2) * 10; // 20, 30
+            // Soustractions avec résultat rond - max 20
+            num1 = 20; // toujours 20 (le maximum autorisé)
             num2 = Math.floor(Math.random() * 8) + 1; // 1-8
           }
         ];
         strategies[Math.floor(Math.random() * strategies.length)]();
       }
       
-      // S'assurer que num1 > num2 (pas de résultats négatifs en CP)
+      // S'assurer que num1 > num2 (pas de résultats négatifs en CP), mais num1 ≤ 20
       if (num1 <= num2) {
-        num1 = num2 + Math.floor(Math.random() * 5) + 1;
+        num1 = Math.min(20, num2 + Math.floor(Math.random() * 5) + 1);
+      }
+      
+      // S'assurer que num1 ne dépasse jamais 20
+      if (num1 > 20) {
+        num1 = 20;
+        num2 = Math.floor(Math.random() * (num1 - 1)) + 1;
       }
       
       question = `${num1} - ${num2}`;
@@ -280,7 +273,7 @@ export default function SoustractionsSimples() {
       attempts < maxAttempts && (
         recentQuestions.includes(question) ||
         (lastResult !== null && Math.abs(answer - lastResult) <= 1) ||
-        answer > (trainingLevel === 1 ? 9 : trainingLevel === 2 ? 19 : 29) ||
+        answer > (trainingLevel === 1 ? 9 : 19) ||
         answer < 1 // Éviter les résultats négatifs ou nuls
       )
     );
@@ -325,43 +318,41 @@ export default function SoustractionsSimples() {
       maxNum = 10; // Facile: jusqu'à 10
     } else if (challengeLevel === 2) {
       maxNum = 20; // Moyen: jusqu'à 20  
-    } else if (challengeLevel === 3) {
-      maxNum = 30; // Difficile: jusqu'à 30 (CP)
     } else {
-      maxNum = 30; // King of Subtraction: mix ultime jusqu'à 30
+      maxNum = 20; // King of Subtraction: mix ultime CP
     }
     
     // Progression selon le niveau dans le défi
     if (level <= 3) {
       // Niveaux 1-3: nombres plus petits
-      const limit = Math.min(maxNum, challengeLevel === 1 ? 6 : challengeLevel === 2 ? 12 : 18);
+      const limit = Math.min(maxNum, challengeLevel === 1 ? 6 : 12);
       num1 = Math.floor(Math.random() * limit) + (challengeLevel === 1 ? 3 : 5);
       num2 = Math.floor(Math.random() * (num1 - 1)) + 1;
     } else if (level <= 6) {
-      // Niveaux 4-6: nombres moyens
-      const limit = Math.min(maxNum, challengeLevel === 1 ? 8 : challengeLevel === 2 ? 16 : 24);
+      // Niveaux 4-6: nombres moyens - max 20
+      const limit = Math.min(maxNum, challengeLevel === 1 ? 8 : 16);
       num1 = Math.floor(Math.random() * limit) + (challengeLevel === 1 ? 4 : 6);
       num2 = Math.floor(Math.random() * (num1 - 2)) + 1;
     } else if (level <= 10) {
-      // Niveaux 7-10: nombres plus grands
-      const limit = Math.min(maxNum, challengeLevel === 1 ? 10 : challengeLevel === 2 ? 20 : 28);
+      // Niveaux 7-10: nombres plus grands - max 20
+      const limit = Math.min(maxNum, challengeLevel === 1 ? 10 : 20);
       num1 = Math.floor(Math.random() * limit) + (challengeLevel === 1 ? 5 : 8);
       num2 = Math.floor(Math.random() * (num1 - 3)) + 1;
     } else {
       // Niveaux 11+: utilise toute la gamme
       if (challengeLevel === 4) {
-        // King of Subtraction: stratégies avancées
+        // King of Subtraction: stratégies avancées - max 20
         const strategies = [
           () => {
-            num1 = Math.floor(Math.random() * 15) + 15; // 15-29
+            num1 = Math.floor(Math.random() * 6) + 15; // 15-20
             num2 = Math.floor(Math.random() * 8) + 1; // 1-8
           },
           () => {
-            num1 = (Math.floor(Math.random() * 2) + 2) * 10; // 20 ou 30
+            num1 = 20; // toujours 20 (maximum autorisé)
             num2 = Math.floor(Math.random() * 12) + 1; // 1-12
           },
           () => {
-            num1 = Math.floor(Math.random() * 20) + 10; // 10-29
+            num1 = Math.floor(Math.random() * 11) + 10; // 10-20
             num2 = Math.floor(Math.random() * 6) + 1; // 1-6
           }
         ];
@@ -372,9 +363,15 @@ export default function SoustractionsSimples() {
       }
     }
     
-    // S'assurer que num1 > num2 et résultat > 0
+    // S'assurer que num1 > num2 et résultat > 0, mais num1 ≤ 20
     if (num1 <= num2) {
-      num1 = num2 + Math.floor(Math.random() * 5) + 1;
+      num1 = Math.min(20, num2 + Math.floor(Math.random() * 5) + 1);
+    }
+    
+    // S'assurer que num1 ne dépasse jamais 20
+    if (num1 > 20) {
+      num1 = 20;
+      num2 = Math.floor(Math.random() * (num1 - 1)) + 1;
     }
     
     return {
@@ -668,11 +665,28 @@ export default function SoustractionsSimples() {
     setTreasuresFound(0);
   };
 
-  // Charger le meilleur score au démarrage
+  // Charger les données sauvegardées au démarrage
   useEffect(() => {
     const savedBestScore = localStorage.getItem('bestScore-soustractions');
+    const savedTreasures = localStorage.getItem('treasures-soustractions');
+    const savedDoubloons = localStorage.getItem('doubloons-soustractions');
+    const savedRank = localStorage.getItem('pirateRank-soustractions');
+    const savedMaxCombo = localStorage.getItem('maxCannonCombo-soustractions');
+    
     if (savedBestScore) {
       setBestScore(parseInt(savedBestScore));
+    }
+    if (savedTreasures) {
+      setTreasures(parseInt(savedTreasures));
+    }
+    if (savedDoubloons) {
+      setDoubloons(parseInt(savedDoubloons));
+    }
+    if (savedRank) {
+      setPirateRank(savedRank);
+    }
+    if (savedMaxCombo) {
+      setMaxCannonCombo(parseInt(savedMaxCombo));
     }
   }, []);
 
@@ -695,9 +709,23 @@ export default function SoustractionsSimples() {
   };
 
   const generateDuelQuestion = () => {
-    // Questions adaptées pour le duel (niveau moyen)
-    const num1 = Math.floor(Math.random() * 10) + 5; // 5-15
-    const num2 = Math.floor(Math.random() * num1) + 1; // 1 à num1
+    // Questions adaptées selon le niveau de duel choisi - max 20
+    let num1, num2;
+    
+    if (duelLevel === 1) {
+      // Facile: soustractions jusqu'à 10
+      num1 = Math.floor(Math.random() * 8) + 3; // 3-10
+      num2 = Math.floor(Math.random() * num1) + 1; // 1 à num1
+    } else if (duelLevel === 2) {
+      // Moyen: soustractions jusqu'à 15
+      num1 = Math.floor(Math.random() * 11) + 5; // 5-15
+      num2 = Math.floor(Math.random() * num1) + 1; // 1 à num1
+    } else {
+      // King of Subtraction: mix avancé CP
+      num1 = Math.floor(Math.random() * 16) + 5; // 5-20
+      num2 = Math.floor(Math.random() * num1) + 1; // 1 à num1
+    }
+    
     return {
       question: `${num1} - ${num2}`,
       answer: num1 - num2,
@@ -1038,35 +1066,51 @@ export default function SoustractionsSimples() {
         </div>
       )}
 
-      {/* En-tête pirate responsive */}
-      <div className="bg-black bg-opacity-60 backdrop-blur-sm border-b border-cyan-500 relative z-10">
+      {/* En-tête simplifié */}
+      <div className="bg-black bg-opacity-50 backdrop-blur-sm border-b border-purple-500 relative z-10">
         <div className="max-w-6xl mx-auto px-2 sm:px-4 py-2 sm:py-4">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-0">
-            <div className="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-4 w-full sm:w-auto">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-0">
+            <div className="flex items-center space-x-2 sm:space-x-4 w-full sm:w-auto">
               <Link 
                 href="/chapitre/cp-calcul-mental"
-                className="flex items-center px-3 sm:px-4 py-2 bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors min-h-[44px] w-full sm:w-auto justify-center sm:justify-start"
+                className="flex items-center px-3 sm:px-4 py-2 bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors text-sm sm:text-base min-h-[44px] border border-gray-600"
+                title="Retour au calcul mental CP"
               >
-                <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
-                <span className="hidden sm:inline">Retour au port</span>
-                <span className="sm:hidden">Retour</span>
+                <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" />
+                <span className="hidden sm:inline">Retour</span>
+                <span className="sm:hidden">CP</span>
               </Link>
               
-              <div className="text-center sm:text-left">
+              <div className="flex-1">
                 <h1 className="text-lg sm:text-2xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
-                  <span className="hidden sm:inline">🏴‍☠️ L'Odyssée des Soustractions</span>
-                  <span className="sm:hidden">⚓ Soustractions</span>
+                  <span className="hidden sm:inline">⚓ L'Odyssée des Soustractions</span>
+                  <span className="sm:hidden">➖ Soustractions</span>
                 </h1>
-                <p className="text-xs sm:text-sm text-gray-300 hidden sm:block">Conquiers les Sept Mers avec tes canons mathématiques !</p>
+                <p className="text-gray-300 text-xs sm:text-sm hidden sm:block">Conquiers les Sept Mers avec tes canons mathématiques !</p>
               </div>
             </div>
 
-            <button
-              onClick={() => setSoundEnabled(!soundEnabled)}
-              className={`p-2 rounded-lg transition-colors min-h-[44px] ${soundEnabled ? 'bg-cyan-600' : 'bg-gray-600'}`}
-            >
-              <Volume2 className="w-4 h-4 sm:w-5 sm:h-5" />
-            </button>
+            {/* Stats du joueur */}
+            <div className="flex items-center space-x-2 sm:space-x-6 w-full sm:w-auto justify-between sm:justify-end">
+              <div className="text-center text-xs sm:text-sm">
+                <div className="text-cyan-400 font-bold text-xs sm:text-base">{pirateRank}</div>
+                <div className="text-xs text-gray-300">XP: {treasures}</div>
+              </div>
+              <div className="text-center text-xs sm:text-sm">
+                <div className="text-yellow-400 font-bold text-xs sm:text-base">💰 {doubloons}</div>
+                <div className="text-xs text-gray-300">Pièces</div>
+              </div>
+              <div className="text-center text-xs sm:text-sm">
+                <div className="text-red-400 font-bold text-xs sm:text-base">🔥 {maxCannonCombo}</div>
+                <div className="text-xs text-gray-300">Record</div>
+              </div>
+              <button
+                onClick={() => setSoundEnabled(!soundEnabled)}
+                className={`p-2 rounded-lg transition-colors ${soundEnabled ? 'bg-green-600' : 'bg-gray-600'} min-w-[44px] min-h-[44px]`}
+              >
+                <Volume2 className="w-4 h-4 sm:w-5 sm:h-5" />
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -1075,63 +1119,26 @@ export default function SoustractionsSimples() {
         
         {/* Pont du navire principal */}
         {gameMode === 'ship' && (
-          <div className="space-y-8">
+          <div className="space-y-4 sm:space-y-8">
             <div className="text-center">
-              <h2 className="text-4xl font-bold mb-4 bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
-                ⚓ Bienvenue à bord, Moussaillon !
+              <h2 className="text-2xl sm:text-4xl font-bold mb-2 sm:mb-4 bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
+                <span className="hidden sm:inline">⚓ Bienvenue à bord, Moussaillon !</span>
+                <span className="sm:hidden">⚓ Ahoy Moussaillon !</span>
               </h2>
-              <p className="text-xl text-gray-300 mb-6">
-                Choisis ta destination et pars à l'aventure sur les mers des soustractions !
+              <p className="text-sm sm:text-xl text-gray-300 mb-3 sm:mb-6 px-2">
+                <span className="hidden sm:inline">Choisis ta destination et pars à l'aventure sur les mers des soustractions !</span>
+                <span className="sm:hidden">Choisis ton aventure maritime !</span>
               </p>
               
               {/* Bouton d'accueil interactif */}
-              <div className="mb-8">
+              <div className="mb-4 sm:mb-8">
                 <button
                   onClick={startInteractivePresentation}
-                  className="bg-gradient-to-r from-yellow-500 to-orange-600 text-white px-8 py-4 rounded-xl font-bold text-xl shadow-xl hover:scale-110 transition-all duration-300 animate-pulse border-4 border-yellow-300"
+                  className="bg-gradient-to-r from-yellow-500 to-orange-600 text-white px-4 sm:px-8 py-3 sm:py-4 rounded-xl font-bold text-base sm:text-xl shadow-xl hover:scale-110 transition-all duration-300 animate-pulse border-2 sm:border-4 border-yellow-300"
                 >
-                  🗺️ Découvrir les Modes de Jeu !
+                  <span className="hidden sm:inline">🗺️ Découvrir les Modes de Jeu !</span>
+                  <span className="sm:hidden">🗺️ Découvrir</span>
                 </button>
-              </div>
-              
-              {/* Profil du Pirate */}
-              <div className="bg-gradient-to-r from-gray-900 to-blue-900 rounded-xl p-6 mb-8 border-2 border-cyan-400 shadow-xl">
-                <div className="text-center mb-4">
-                  <h3 className="text-xl font-bold text-cyan-400 mb-2">🏴‍☠️ Profil du Pirate</h3>
-                  <div className="text-lg text-white font-medium">Rang: {pirateRank}</div>
-                </div>
-                
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4">
-                  {/* Trésors */}
-                  <div className="bg-black bg-opacity-30 rounded-lg p-4 text-center border border-yellow-500">
-                    <div className="text-2xl mb-2">💰</div>
-                    <div className="text-yellow-400 text-sm font-bold uppercase tracking-wider">Trésors</div>
-                    <div className="text-white text-xl font-bold">{treasures}</div>
-                  </div>
-                  
-                  {/* Doublons */}
-                  <div className="bg-black bg-opacity-30 rounded-lg p-4 text-center border border-orange-400">
-                    <div className="text-2xl mb-2">🪙</div>
-                    <div className="text-orange-400 text-sm font-bold uppercase tracking-wider">Doublons</div>
-                    <div className="text-white text-xl font-bold">{doubloons}</div>
-                  </div>
-                  
-                  {/* Combo */}
-                  <div className="bg-black bg-opacity-30 rounded-lg p-4 text-center border border-red-400">
-                    <div className="text-2xl mb-2">💥</div>
-                    <div className="text-red-400 text-sm font-bold uppercase tracking-wider">Meilleur Combo</div>
-                    <div className="text-white text-xl font-bold">{maxCannonCombo}</div>
-                    <div className="text-red-300 text-xs">Tirs consécutifs</div>
-                  </div>
-                  
-                  {/* Navigation */}
-                  <div className="bg-black bg-opacity-30 rounded-lg p-4 text-center border border-cyan-400">
-                    <div className="text-2xl mb-2">🧭</div>
-                    <div className="text-cyan-400 text-sm font-bold uppercase tracking-wider">Navigation</div>
-                    <div className="text-white text-xl font-bold">{cannonCombo}</div>
-                    <div className="text-cyan-300 text-xs">Série actuelle</div>
-                  </div>
-                </div>
               </div>
             </div>
 
@@ -1321,29 +1328,29 @@ export default function SoustractionsSimples() {
               <p className="text-gray-300">Chaque île cache un pirate légendaire à défier !</p>
             </div>
 
-            <div className="grid md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-6">
               {pirateIslands.map((island) => (
                 <div 
                   key={island.id}
                   onClick={() => startNavalBattle(island.id)}
-                  className={`bg-gradient-to-br ${island.color} rounded-xl p-6 cursor-pointer hover:scale-105 transition-all duration-300 shadow-xl border-2 border-white border-opacity-20 group`}
+                  className={`bg-gradient-to-br ${island.color} rounded-xl p-3 sm:p-6 md:p-8 cursor-pointer hover:scale-105 transition-all duration-300 shadow-xl border-2 border-white border-opacity-20 group min-h-[140px] sm:min-h-[180px] md:min-h-[220px]`}
                 >
                   <div className="text-center text-white">
-                    <div className="text-4xl mb-3 group-hover:animate-bounce">{island.icon}</div>
-                    <h3 className="text-xl font-bold mb-2">{island.name}</h3>
-                    <div className="text-sm opacity-90 mb-2">{island.difficulty}</div>
-                    <p className="text-sm opacity-75 mb-4">{island.description}</p>
+                    <div className="text-3xl sm:text-4xl md:text-5xl mb-2 sm:mb-3 group-hover:animate-bounce">{island.icon}</div>
+                    <h3 className="text-lg sm:text-xl md:text-2xl font-bold mb-1 sm:mb-2">{island.name}</h3>
+                    <div className="text-xs sm:text-sm opacity-90 mb-1 sm:mb-2">{island.difficulty}</div>
+                    <p className="text-xs sm:text-sm opacity-75 mb-3 sm:mb-4 hidden sm:block">{island.description}</p>
                     
                     {/* Boss pirate info */}
-                    <div className="bg-black bg-opacity-40 rounded-lg p-4 mb-4">
-                      <div className="text-3xl mb-2">{island.boss.avatar}</div>
-                      <div className="font-bold">{island.boss.name}</div>
-                      <div className="text-sm opacity-75">Navire: {island.boss.ship}</div>
-                      <div className="text-sm opacity-75">HP: {island.boss.hp}</div>
+                    <div className="bg-black bg-opacity-40 rounded-lg p-2 sm:p-3 md:p-4 mb-3 sm:mb-4 hidden sm:block">
+                      <div className="text-2xl sm:text-3xl mb-1 sm:mb-2">{island.boss.avatar}</div>
+                      <div className="font-bold text-sm sm:text-base">{island.boss.name}</div>
+                      <div className="text-xs sm:text-sm opacity-75">Navire: {island.boss.ship}</div>
+                      <div className="text-xs sm:text-sm opacity-75">HP: {island.boss.hp}</div>
                     </div>
 
                     {/* Détails de navigation */}
-                    <div className="space-y-2 text-sm">
+                    <div className="space-y-1 sm:space-y-2 text-xs sm:text-sm">
                       <div className="flex justify-between">
                         <span>Temps de tir:</span>
                         <span>{island.timeLimit}s</span>
@@ -1381,10 +1388,18 @@ export default function SoustractionsSimples() {
               <p className="text-gray-300">Sélectionne la profondeur qui te convient !</p>
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6 max-w-6xl mx-auto">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-6 max-w-6xl mx-auto">
               {/* Entraînement Facile */}
               <div 
-                onClick={() => { setTrainingLevel(1); setGameMode('training'); }}
+                onClick={() => { 
+                  setTrainingLevel(1); 
+                  setGameMode('training');
+                  setCurrentQuestion(generateTrainingQuestion());
+                  setUserAnswer('');
+                  setTreasuresFound(0);
+                  setQuestionsAnswered(0);
+                  setShowCorrectAnswer(false);
+                }}
                 className="bg-gradient-to-br from-teal-600 to-cyan-700 rounded-xl p-3 sm:p-6 md:p-8 cursor-pointer hover:scale-105 transition-all duration-300 shadow-xl border border-cyan-400 group min-h-[140px] sm:min-h-[180px] md:min-h-[220px]"
               >
                 <div className="text-center">
@@ -1405,7 +1420,15 @@ export default function SoustractionsSimples() {
 
               {/* Entraînement Moyen */}
               <div 
-                onClick={() => { setTrainingLevel(2); setGameMode('training'); }}
+                onClick={() => { 
+                  setTrainingLevel(2); 
+                  setGameMode('training');
+                  setCurrentQuestion(generateTrainingQuestion());
+                  setUserAnswer('');
+                  setTreasuresFound(0);
+                  setQuestionsAnswered(0);
+                  setShowCorrectAnswer(false);
+                }}
                 className="bg-gradient-to-br from-blue-600 to-indigo-700 rounded-xl p-3 sm:p-6 md:p-8 cursor-pointer hover:scale-105 transition-all duration-300 shadow-xl border border-blue-400 group min-h-[140px] sm:min-h-[180px] md:min-h-[220px]"
               >
                 <div className="text-center">
@@ -1424,46 +1447,35 @@ export default function SoustractionsSimples() {
                 </div>
               </div>
 
-              {/* Entraînement Difficile */}
-              <div 
-                onClick={() => { setTrainingLevel(3); setGameMode('training'); }}
-                className="bg-gradient-to-br from-purple-600 to-violet-600 rounded-xl p-3 sm:p-6 md:p-8 cursor-pointer hover:scale-105 transition-all duration-300 shadow-xl border border-purple-400 group min-h-[140px] sm:min-h-[180px] md:min-h-[220px]"
-              >
-                <div className="text-center">
-                  <div className="text-3xl sm:text-5xl md:text-6xl mb-2 sm:mb-3 md:mb-4 group-hover:animate-bounce">🦈</div>
-                  <h3 className="text-lg sm:text-xl md:text-2xl font-bold mb-1 sm:mb-2 md:mb-3">Eaux Hostiles</h3>
-                  <p className="text-purple-100 mb-4 text-lg">
-                    Soustractions jusqu'à 30
-                  </p>
-                  <div className="flex justify-center space-x-2 text-sm mb-4">
-                    <Crown className="w-4 h-4" />
-                    <span>Expert</span>
-                  </div>
-                  <div className="text-sm text-purple-200">
-                    Pour les corsaires !
-                  </div>
-                </div>
-              </div>
-
               {/* Entraînement King of Subtraction */}
               <div 
-                onClick={() => { setTrainingLevel(4); setGameMode('training'); }}
-                className="bg-gradient-to-br from-cyan-500 via-teal-500 to-blue-600 rounded-xl p-3 sm:p-6 md:p-8 cursor-pointer hover:scale-105 transition-all duration-300 shadow-xl border-2 border-cyan-400 group relative overflow-hidden"
+                onClick={() => { 
+                  setTrainingLevel(4); 
+                  setGameMode('training');
+                  setCurrentQuestion(generateTrainingQuestion());
+                  setUserAnswer('');
+                  setTreasuresFound(0);
+                  setQuestionsAnswered(0);
+                  setShowCorrectAnswer(false);
+                }}
+                className="bg-gradient-to-br from-cyan-500 via-teal-500 to-blue-600 rounded-xl p-3 sm:p-6 md:p-8 cursor-pointer hover:scale-105 transition-all duration-300 shadow-xl border-2 border-cyan-400 group relative overflow-hidden min-h-[140px] sm:min-h-[180px] md:min-h-[220px]"
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-cyan-400/20 to-blue-500/20 animate-pulse"></div>
                 <div className="relative text-center">
                   <div className="text-3xl sm:text-5xl md:text-6xl mb-2 sm:mb-3 md:mb-4 group-hover:animate-bounce">🐋</div>
-                  <h3 className="text-2xl font-bold mb-3 bg-gradient-to-r from-cyan-200 to-blue-300 bg-clip-text text-transparent">
-                    Roi des Abysses
+                  <h3 className="text-base sm:text-xl md:text-2xl font-bold mb-1 sm:mb-2 md:mb-3 bg-gradient-to-r from-cyan-200 to-blue-300 bg-clip-text text-transparent">
+                    <span className="hidden sm:inline">Roi des Abysses</span>
+                    <span className="sm:hidden">Roi</span>
                   </h3>
-                  <p className="text-cyan-100 mb-4 text-lg font-semibold">
-                    Mix ultime jusqu'à 30
+                  <p className="text-cyan-100 mb-2 sm:mb-4 text-sm sm:text-base md:text-lg font-semibold hidden sm:block">
+                    Mix ultime CP
                   </p>
-                  <div className="flex justify-center space-x-2 text-sm mb-4">
-                    <Crown className="w-4 h-4 text-cyan-400" />
-                    <span className="text-cyan-200">Légende Marine</span>
+                  <div className="flex justify-center space-x-1 sm:space-x-2 text-xs sm:text-sm mb-2 sm:mb-4">
+                    <Crown className="w-3 h-3 sm:w-4 sm:h-4 text-cyan-400" />
+                    <span className="text-cyan-200 hidden sm:inline">Légende Marine</span>
+                    <span className="text-cyan-200 sm:hidden">Légende</span>
                   </div>
-                  <div className="text-sm text-cyan-200 font-bold">
+                  <div className="text-xs sm:text-sm text-cyan-200 font-bold hidden sm:block">
                     🔱 Maître des Océans
                   </div>
                 </div>
@@ -1489,10 +1501,20 @@ export default function SoustractionsSimples() {
               <p className="text-gray-300">Sélectionne la difficulté pour ta navigation contre le temps !</p>
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6 max-w-6xl mx-auto">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-6 max-w-6xl mx-auto">
               {/* Défi Facile */}
               <div 
-                onClick={() => { setChallengeLevel(1); /* fonction startTimeChallenge à créer */ }}
+                onClick={() => { 
+                  setChallengeLevel(1); 
+                  setGameMode('time-challenge');
+                  setTimeScore(0);
+                  setChallengeQuestionsAnswered(0);
+                  setChallengeActive(true);
+                  setCurrentQuestion(generateChallengeQuestion(1));
+                  setUserAnswer('');
+                  setTimeLeft(15);
+                  setIsTimerRunning(true);
+                }}
                 className="bg-gradient-to-br from-teal-600 to-cyan-700 rounded-xl p-3 sm:p-6 md:p-8 cursor-pointer hover:scale-105 transition-all duration-300 shadow-xl border border-cyan-400 group min-h-[140px] sm:min-h-[180px] md:min-h-[220px]"
               >
                 <div className="text-center">
@@ -1513,7 +1535,17 @@ export default function SoustractionsSimples() {
 
               {/* Défi Moyen */}
               <div 
-                onClick={() => { setChallengeLevel(2); /* fonction startTimeChallenge à créer */ }}
+                onClick={() => { 
+                  setChallengeLevel(2); 
+                  setGameMode('time-challenge');
+                  setTimeScore(0);
+                  setChallengeQuestionsAnswered(0);
+                  setChallengeActive(true);
+                  setCurrentQuestion(generateChallengeQuestion(1));
+                  setUserAnswer('');
+                  setTimeLeft(12);
+                  setIsTimerRunning(true);
+                }}
                 className="bg-gradient-to-br from-blue-600 to-indigo-700 rounded-xl p-3 sm:p-6 md:p-8 cursor-pointer hover:scale-105 transition-all duration-300 shadow-xl border border-blue-400 group min-h-[140px] sm:min-h-[180px] md:min-h-[220px]"
               >
                 <div className="text-center">
@@ -1532,31 +1564,20 @@ export default function SoustractionsSimples() {
                 </div>
               </div>
 
-              {/* Défi Difficile */}
-              <div 
-                onClick={() => { setChallengeLevel(3); /* fonction startTimeChallenge à créer */ }}
-                className="bg-gradient-to-br from-purple-600 to-violet-600 rounded-xl p-3 sm:p-6 md:p-8 cursor-pointer hover:scale-105 transition-all duration-300 shadow-xl border border-purple-400 group min-h-[140px] sm:min-h-[180px] md:min-h-[220px]"
-              >
-                <div className="text-center">
-                  <div className="text-3xl sm:text-5xl md:text-6xl mb-2 sm:mb-3 md:mb-4 group-hover:animate-bounce">🦈</div>
-                  <h3 className="text-lg sm:text-xl md:text-2xl font-bold mb-1 sm:mb-2 md:mb-3">Eaux Hostiles</h3>
-                  <p className="text-purple-100 mb-4 text-lg">
-                    Soustractions jusqu'à 30
-                  </p>
-                  <div className="flex justify-center space-x-2 text-sm mb-4">
-                    <Crown className="w-4 h-4" />
-                    <span>Jusqu'à 2s</span>
-                  </div>
-                  <div className="text-sm text-purple-200">
-                    Pour les corsaires !
-                  </div>
-                </div>
-              </div>
-
               {/* Défi King of Subtraction */}
               <div 
-                onClick={() => { setChallengeLevel(4); /* fonction startTimeChallenge à créer */ }}
-                className="bg-gradient-to-br from-cyan-500 via-teal-500 to-blue-600 rounded-xl p-3 sm:p-6 md:p-8 cursor-pointer hover:scale-105 transition-all duration-300 shadow-xl border-2 border-cyan-400 group relative overflow-hidden"
+                onClick={() => { 
+                  setChallengeLevel(4); 
+                  setGameMode('time-challenge');
+                  setTimeScore(0);
+                  setChallengeQuestionsAnswered(0);
+                  setChallengeActive(true);
+                  setCurrentQuestion(generateChallengeQuestion(1));
+                  setUserAnswer('');
+                  setTimeLeft(5);
+                  setIsTimerRunning(true);
+                }}
+                className="bg-gradient-to-br from-cyan-500 via-teal-500 to-blue-600 rounded-xl p-3 sm:p-6 md:p-8 cursor-pointer hover:scale-105 transition-all duration-300 shadow-xl border-2 border-cyan-400 group relative overflow-hidden min-h-[140px] sm:min-h-[180px] md:min-h-[220px]"
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-cyan-400/20 to-blue-500/20 animate-pulse"></div>
                 <div className="relative text-center">
@@ -1565,7 +1586,7 @@ export default function SoustractionsSimples() {
                     Roi des Abysses
                   </h3>
                   <p className="text-cyan-100 mb-4 text-lg font-semibold">
-                    Mix ultime jusqu'à 30
+                    Mix ultime CP
                   </p>
                   <div className="flex justify-center space-x-2 text-sm mb-4">
                     <Crown className="w-4 h-4 text-cyan-400" />
@@ -1599,10 +1620,10 @@ export default function SoustractionsSimples() {
               </p>
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6 max-w-6xl mx-auto">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-6 max-w-6xl mx-auto">
               {/* Duel Facile */}
               <div 
-                onClick={() => { setDuelLevel(1); /* fonction startDuel2Players à créer */ }}
+                onClick={() => { setDuelLevel(1); startDuel2Players(); }}
                 className="bg-gradient-to-br from-teal-600 to-cyan-700 rounded-xl p-3 sm:p-6 md:p-8 cursor-pointer hover:scale-105 transition-all duration-300 shadow-xl border border-cyan-400 group min-h-[140px] sm:min-h-[180px] md:min-h-[220px]"
               >
                 <div className="text-center">
@@ -1623,7 +1644,7 @@ export default function SoustractionsSimples() {
 
               {/* Duel Moyen */}
               <div 
-                onClick={() => { setDuelLevel(2); /* fonction startDuel2Players à créer */ }}
+                onClick={() => { setDuelLevel(2); startDuel2Players(); }}
                 className="bg-gradient-to-br from-blue-600 to-indigo-700 rounded-xl p-3 sm:p-6 md:p-8 cursor-pointer hover:scale-105 transition-all duration-300 shadow-xl border border-blue-400 group min-h-[140px] sm:min-h-[180px] md:min-h-[220px]"
               >
                 <div className="text-center">
@@ -1642,31 +1663,10 @@ export default function SoustractionsSimples() {
                 </div>
               </div>
 
-              {/* Duel Difficile */}
-              <div 
-                onClick={() => { setDuelLevel(3); /* fonction startDuel2Players à créer */ }}
-                className="bg-gradient-to-br from-purple-600 to-violet-600 rounded-xl p-3 sm:p-6 md:p-8 cursor-pointer hover:scale-105 transition-all duration-300 shadow-xl border border-purple-400 group min-h-[140px] sm:min-h-[180px] md:min-h-[220px]"
-              >
-                <div className="text-center">
-                  <div className="text-3xl sm:text-5xl md:text-6xl mb-2 sm:mb-3 md:mb-4 group-hover:animate-bounce">🦈</div>
-                  <h3 className="text-lg sm:text-xl md:text-2xl font-bold mb-1 sm:mb-2 md:mb-3">Eaux Hostiles</h3>
-                  <p className="text-purple-100 mb-4 text-lg">
-                    Soustractions jusqu'à 30
-                  </p>
-                  <div className="flex justify-center space-x-2 text-sm mb-4">
-                    <Crown className="w-4 h-4" />
-                    <span>Expert</span>
-                  </div>
-                  <div className="text-sm text-purple-200">
-                    Bataille épique !
-                  </div>
-                </div>
-              </div>
-
               {/* Duel King of Subtraction */}
               <div 
-                onClick={() => { setDuelLevel(4); /* fonction startDuel2Players à créer */ }}
-                className="bg-gradient-to-br from-cyan-500 via-teal-500 to-blue-600 rounded-xl p-3 sm:p-6 md:p-8 cursor-pointer hover:scale-105 transition-all duration-300 shadow-xl border-2 border-cyan-400 group relative overflow-hidden"
+                onClick={() => { setDuelLevel(4); startDuel2Players(); }}
+                className="bg-gradient-to-br from-cyan-500 via-teal-500 to-blue-600 rounded-xl p-3 sm:p-6 md:p-8 cursor-pointer hover:scale-105 transition-all duration-300 shadow-xl border-2 border-cyan-400 group relative overflow-hidden min-h-[140px] sm:min-h-[180px] md:min-h-[220px]"
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-cyan-400/20 to-blue-500/20 animate-pulse"></div>
                 <div className="relative text-center">
@@ -1675,7 +1675,7 @@ export default function SoustractionsSimples() {
                     Roi des Abysses
                   </h3>
                   <p className="text-cyan-100 mb-4 text-lg font-semibold">
-                    Mix ultime jusqu'à 30
+                    Mix ultime CP
                   </p>
                   <div className="flex justify-center space-x-2 text-sm mb-4">
                     <Crown className="w-4 h-4 text-cyan-400" />
@@ -1974,46 +1974,46 @@ export default function SoustractionsSimples() {
         {/* Mode duel 2 pirates */}
         {gameMode === 'duel-2players' && (
           <div className="space-y-6">
-            {/* Tableau de scores pirates */}
-            <div className="bg-gradient-to-r from-blue-800 to-indigo-800 rounded-xl p-6 text-white">
-              <h2 className="text-2xl font-bold text-center mb-4">⚔️ Duel de Pirates - Soustractions</h2>
-              <div className="grid grid-cols-3 gap-4 text-center">
-                <div className={`p-4 rounded-lg ${currentPlayer === 1 ? 'bg-blue-600 ring-4 ring-yellow-400' : 'bg-blue-700'}`}>
-                  <div className="text-3xl mb-2">🏴‍☠️</div>
-                  <div className="font-bold">Pirate 1</div>
-                  <div className="text-2xl font-bold">{player1Score}</div>
-                  <div className="text-sm">Victoires: {player1Wins}</div>
+            {/* Tableau de scores pirates responsive */}
+            <div className="bg-gradient-to-r from-blue-800 to-indigo-800 rounded-xl p-4 sm:p-6 text-white">
+              <h2 className="text-lg sm:text-2xl font-bold text-center mb-3 sm:mb-4">⚔️ Duel de Pirates - Soustractions</h2>
+              <div className="grid grid-cols-3 gap-2 sm:gap-4 text-center">
+                <div className={`p-2 sm:p-4 rounded-lg ${currentPlayer === 1 ? 'bg-blue-600 ring-4 ring-yellow-400' : 'bg-blue-700'}`}>
+                  <div className="text-xl sm:text-3xl mb-1 sm:mb-2">🏴‍☠️</div>
+                  <div className="font-bold text-sm sm:text-base">Pirate 1</div>
+                  <div className="text-lg sm:text-2xl font-bold">{player1Score}</div>
+                  <div className="text-xs sm:text-sm">Victoires: {player1Wins}</div>
                 </div>
                 
                 <div className="flex items-center justify-center">
                   <div className="text-center">
-                    <div className="text-lg font-bold">Questions restantes</div>
-                    <div className="text-3xl font-bold text-yellow-400">{questionsLeft}</div>
+                    <div className="text-sm sm:text-lg font-bold">Questions restantes</div>
+                    <div className="text-2xl sm:text-3xl font-bold text-yellow-400">{questionsLeft}</div>
                   </div>
                 </div>
                 
-                <div className={`p-4 rounded-lg ${currentPlayer === 2 ? 'bg-indigo-600 ring-4 ring-yellow-400' : 'bg-indigo-700'}`}>
-                  <div className="text-3xl mb-2">🏴‍☠️</div>
-                  <div className="font-bold">Pirate 2</div>
-                  <div className="text-2xl font-bold">{player2Score}</div>
-                  <div className="text-sm">Victoires: {player2Wins}</div>
+                <div className={`p-2 sm:p-4 rounded-lg ${currentPlayer === 2 ? 'bg-indigo-600 ring-4 ring-yellow-400' : 'bg-indigo-700'}`}>
+                  <div className="text-xl sm:text-3xl mb-1 sm:mb-2">🏴‍☠️</div>
+                  <div className="font-bold text-sm sm:text-base">Pirate 2</div>
+                  <div className="text-lg sm:text-2xl font-bold">{player2Score}</div>
+                  <div className="text-xs sm:text-sm">Victoires: {player2Wins}</div>
                 </div>
               </div>
             </div>
 
             {duelPhase === 'question' && (
               <div className="max-w-2xl mx-auto">
-                <div className={`bg-gradient-to-br ${currentPlayer === 1 ? 'from-blue-600 to-blue-700' : 'from-indigo-600 to-indigo-700'} rounded-xl p-8 text-center shadow-xl text-white`}>
-                  <div className="text-lg mb-2">Au tour du Pirate {currentPlayer}</div>
+                <div className={`bg-gradient-to-br ${currentPlayer === 1 ? 'from-blue-600 to-blue-700' : 'from-indigo-600 to-indigo-700'} rounded-xl p-4 sm:p-8 text-center shadow-xl text-white`}>
+                  <div className="text-sm sm:text-lg mb-2">Au tour du Pirate {currentPlayer}</div>
                   
-                  <div className="flex justify-center items-center space-x-4 mb-4">
-                    <Timer className="w-6 h-6 text-yellow-400" />
-                    <div className={`text-3xl font-bold ${timeLeft <= 3 ? 'text-red-400 animate-bounce' : 'text-yellow-400'}`}>
+                  <div className="flex justify-center items-center space-x-3 sm:space-x-4 mb-3 sm:mb-4">
+                    <Timer className="w-5 h-5 sm:w-6 sm:h-6 text-yellow-400" />
+                    <div className={`text-2xl sm:text-3xl font-bold ${timeLeft <= 3 ? 'text-red-400 animate-bounce' : 'text-yellow-400'}`}>
                       {timeLeft}s
                     </div>
                   </div>
 
-                  <div className="text-5xl font-bold mb-6 animate-pulse">
+                  <div className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6 animate-pulse">
                     {currentQuestion?.question} = ?
                   </div>
                   
@@ -2022,17 +2022,18 @@ export default function SoustractionsSimples() {
                     value={userAnswer}
                     onChange={(e) => setUserAnswer(e.target.value)}
                     onKeyPress={(e) => e.key === 'Enter' && handleDuelAnswer()}
-                    className="text-center text-3xl font-bold border-2 border-white rounded-lg px-4 py-3 w-40 text-gray-800 bg-white shadow-lg"
+                    className="text-center text-2xl sm:text-3xl font-bold border-2 border-white rounded-lg px-3 sm:px-4 py-3 w-32 sm:w-40 text-gray-800 bg-white shadow-lg min-h-[60px] touch-manipulation"
                     placeholder="?"
                     autoFocus
                   />
                   
-                  <div className="mt-6">
+                  <div className="mt-4 sm:mt-6">
                     <button
                       onClick={handleDuelAnswer}
-                      className="bg-white text-blue-700 px-8 py-4 rounded-lg font-bold hover:bg-gray-100 transition-colors shadow-lg"
+                      className="bg-white text-blue-700 px-6 sm:px-8 py-3 sm:py-4 rounded-lg font-bold hover:bg-gray-100 transition-colors shadow-lg min-h-[56px] touch-manipulation"
                     >
-                      🎯 Tirer !
+                      <span className="hidden sm:inline">🎯 Tirer Canon !</span>
+                      <span className="sm:hidden">🚢 TIRER</span>
                     </button>
                   </div>
                 </div>
@@ -2079,49 +2080,49 @@ export default function SoustractionsSimples() {
         {/* Mode défi temps pirate */}
         {gameMode === 'time-challenge' && (
           <div className="space-y-6">
-            {/* Tableau de scores temps */}
-            <div className="bg-gradient-to-r from-yellow-800 to-amber-800 rounded-xl p-6 text-white">
-              <h2 className="text-2xl font-bold text-center mb-4">⏰ Défi des Sept Mers - Soustractions</h2>
-              <div className="grid grid-cols-4 gap-4 text-center">
-                <div className="bg-yellow-700 p-4 rounded-lg">
-                  <div className="text-2xl mb-1">💰</div>
-                  <div className="font-bold">Doubloons</div>
-                  <div className="text-xl font-bold">{timeScore}</div>
+            {/* Tableau de scores temps responsive */}
+            <div className="bg-gradient-to-r from-yellow-800 to-amber-800 rounded-xl p-4 sm:p-6 text-white">
+              <h2 className="text-lg sm:text-2xl font-bold text-center mb-3 sm:mb-4">⏰ Défi des Sept Mers - Soustractions</h2>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4 text-center">
+                <div className="bg-yellow-700 p-2 sm:p-4 rounded-lg">
+                  <div className="text-lg sm:text-2xl mb-1">💰</div>
+                  <div className="font-bold text-xs sm:text-base">Doubloons</div>
+                  <div className="text-lg sm:text-xl font-bold">{timeScore}</div>
                 </div>
                 
-                <div className="bg-amber-700 p-4 rounded-lg">
-                  <div className="text-2xl mb-1">🏆</div>
-                  <div className="font-bold">Record</div>
-                  <div className="text-xl font-bold">{bestScore}</div>
+                <div className="bg-amber-700 p-2 sm:p-4 rounded-lg">
+                  <div className="text-lg sm:text-2xl mb-1">🏆</div>
+                  <div className="font-bold text-xs sm:text-base">Record</div>
+                  <div className="text-lg sm:text-xl font-bold">{bestScore}</div>
                 </div>
                 
-                <div className="bg-orange-700 p-4 rounded-lg">
-                  <div className="text-2xl mb-1">🌊</div>
-                  <div className="font-bold">Niveau Mer</div>
-                  <div className="text-xl font-bold">{difficultyLevel}</div>
+                <div className="bg-orange-700 p-2 sm:p-4 rounded-lg">
+                  <div className="text-lg sm:text-2xl mb-1">🌊</div>
+                  <div className="font-bold text-xs sm:text-base">Niveau Mer</div>
+                  <div className="text-lg sm:text-xl font-bold">{difficultyLevel}</div>
                 </div>
                 
-                <div className="bg-red-700 p-4 rounded-lg">
-                  <div className="text-2xl mb-1">🎯</div>
-                  <div className="font-bold">Tirs</div>
-                  <div className="text-xl font-bold">{challengeQuestionsAnswered}</div>
+                <div className="bg-red-700 p-2 sm:p-4 rounded-lg">
+                  <div className="text-lg sm:text-2xl mb-1">🎯</div>
+                  <div className="font-bold text-xs sm:text-base">Tirs</div>
+                  <div className="text-lg sm:text-xl font-bold">{challengeQuestionsAnswered}</div>
                 </div>
               </div>
             </div>
 
             {challengeActive && (
               <div className="max-w-2xl mx-auto">
-                <div className="bg-gradient-to-br from-yellow-600 to-amber-700 rounded-xl p-8 text-center shadow-xl text-white">
-                  <div className="text-lg mb-2">Niveau Mer {difficultyLevel}</div>
+                <div className="bg-gradient-to-br from-yellow-600 to-amber-700 rounded-xl p-4 sm:p-8 text-center shadow-xl text-white">
+                  <div className="text-sm sm:text-lg mb-2">Niveau Mer {difficultyLevel}</div>
                   
-                  <div className="flex justify-center items-center space-x-4 mb-4">
-                    <Timer className="w-6 h-6 text-yellow-300" />
-                    <div className={`text-3xl font-bold ${timeLeft <= 2 ? 'text-red-300 animate-bounce' : 'text-yellow-300'}`}>
+                  <div className="flex justify-center items-center space-x-3 sm:space-x-4 mb-3 sm:mb-4">
+                    <Timer className="w-5 h-5 sm:w-6 sm:h-6 text-yellow-300" />
+                    <div className={`text-2xl sm:text-3xl font-bold ${timeLeft <= 2 ? 'text-red-300 animate-bounce' : 'text-yellow-300'}`}>
                       {timeLeft}s
                     </div>
                   </div>
 
-                  <div className="text-5xl font-bold mb-6 animate-pulse">
+                  <div className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6 animate-pulse">
                     {currentQuestion?.question} = ?
                   </div>
                   
@@ -2130,17 +2131,18 @@ export default function SoustractionsSimples() {
                     value={userAnswer}
                     onChange={(e) => setUserAnswer(e.target.value)}
                     onKeyPress={(e) => e.key === 'Enter' && handleChallengeAnswer()}
-                    className="text-center text-3xl font-bold border-2 border-white rounded-lg px-4 py-3 w-40 text-gray-800 bg-white shadow-lg"
+                    className="text-center text-2xl sm:text-3xl font-bold border-2 border-white rounded-lg px-3 sm:px-4 py-3 w-32 sm:w-40 text-gray-800 bg-white shadow-lg min-h-[60px] touch-manipulation"
                     placeholder="?"
                     autoFocus
                   />
                   
-                  <div className="mt-6">
+                  <div className="mt-4 sm:mt-6">
                     <button
                       onClick={handleChallengeAnswer}
-                      className="bg-white text-amber-700 px-8 py-4 rounded-lg font-bold hover:bg-gray-100 transition-colors shadow-lg"
+                      className="bg-white text-amber-700 px-6 sm:px-8 py-3 sm:py-4 rounded-lg font-bold hover:bg-gray-100 transition-colors shadow-lg min-h-[56px] touch-manipulation"
                     >
-                      💥 Tirer Canon !
+                      <span className="hidden sm:inline">💥 Tirer Canon !</span>
+                      <span className="sm:hidden">🚢 TIRER</span>
                     </button>
                   </div>
                 </div>

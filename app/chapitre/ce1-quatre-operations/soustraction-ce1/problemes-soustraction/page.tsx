@@ -403,8 +403,8 @@ export default function ProblemesSoustraction() {
 
   // Fonction pour mettre en évidence les nombres dans un texte (pour soustractions)
   const highlightNumbers = (text: string, isExplicitHighlight = false) => {
-    // Remplace les nombres et signes mathématiques par des spans colorés (avec - et =)
-    return text.split(/(\d+|\-|=)/).map((part, index) => {
+    // Remplace SEULEMENT les nombres par des spans colorés (pas les signes mathématiques)
+    return text.split(/(\d+)/).map((part, index) => {
       // Si c'est un nombre
       if (/^\d+$/.test(part)) {
         const className = isExplicitHighlight 
@@ -419,20 +419,7 @@ export default function ProblemesSoustraction() {
           </span>
         );
       }
-      // Si c'est un signe mathématique (- ou = pour soustraction)
-      if (/^[\-\=]$/.test(part)) {
-        const className = isExplicitHighlight
-          ? "bg-red-300 text-red-900 px-2 py-1 rounded-lg font-black text-xl mx-1 shadow-lg ring-2 ring-red-400 animate-pulse"
-          : "bg-red-200 text-red-800 px-1.5 py-0.5 rounded-md font-bold mx-0.5 shadow-sm";
-        return (
-          <span 
-            key={index} 
-            className={className}
-          >
-            {part}
-          </span>
-        );
-      }
+      // Tout le reste (y compris les signes - et =) reste en texte normal
       return part;
     });
   };
@@ -581,68 +568,58 @@ export default function ProblemesSoustraction() {
     
     try {
       // Introduction et objectif
-      await playAudio("Salut, aventurier ! Bienvenue dans le monde des problèmes de soustraction !");
+      playAudio("Salut, aventurier ! Bienvenue dans le monde des problèmes de soustraction !"); // Sans await
+      await wait(2000);
       if (stopSignalRef.current) return;
       
-      await wait(1000);
+      playAudio("Aujourd'hui, tu vas apprendre à enlever et soustraire les nombres comme un vrai explorateur !");
+      await wait(3000);
       if (stopSignalRef.current) return;
       
-      await playAudio("Aujourd'hui, tu vas apprendre à enlever et soustraire les nombres comme un vrai explorateur !");
-      if (stopSignalRef.current) return;
+      // Présentation de la première section avec scroll immédiat
+      playAudio("D'abord, nous allons voir ce qu'est un problème de soustraction...");
+      await wait(1000); // Laisser le temps au texte de commencer
       
-      await wait(1200);
-      if (stopSignalRef.current) return;
-      
-      // Présentation de la première section
-      await playAudio("D'abord, nous allons voir ce qu'est un problème de soustraction...");
-      if (stopSignalRef.current) return;
-      
-      // Scroll vers l'introduction et surbrillance
+      // Scroll vers l'introduction et surbrillance PENDANT l'audio
       scrollToSection(introSectionRef);
       setHighlightedElement('intro');
-      await wait(500);
+      await wait(2000); // Attendre que la section soit visible
       
-      await playAudio("Regarde bien cette section ! Tu peux cliquer sur l'icône pour voir une animation !");
+      playAudio("Regarde bien cette section ! Tu peux cliquer sur l'icône pour voir une animation !");
+      await wait(3000);
       if (stopSignalRef.current) return;
       
-      await wait(2000);
-      if (stopSignalRef.current) return;
+      // Présentation de la méthode avec scroll immédiat
+      playAudio("Ensuite, nous verrons la méthode en 3 étapes...");
+      await wait(1000);
       
-      // Présentation de la méthode
-      await playAudio("Ensuite, nous verrons la méthode en 3 étapes...");
-      if (stopSignalRef.current) return;
-      
-      // Scroll vers la méthode et surbrillance
+      // Scroll vers la méthode et surbrillance PENDANT l'audio
       scrollToSection(methodSectionRef);
       setHighlightedElement('method');
-      await wait(500);
-      
-      await playAudio("Voici ma méthode de construction ! N'oublie pas de tester l'animation !");
-      if (stopSignalRef.current) return;
-      
       await wait(2000);
+      
+      playAudio("Voici ma méthode de construction ! N'oublie pas de tester l'animation !");
+      await wait(3000);
       if (stopSignalRef.current) return;
       
-      // Présentation des exemples
-      await playAudio("Et enfin, nous pratiquerons avec plein d'exemples...");
-      if (stopSignalRef.current) return;
+      // Présentation des exemples avec scroll immédiat
+      playAudio("Et enfin, nous pratiquerons avec plein d'exemples...");
+      await wait(1000);
       
-      // Scroll vers les exemples et surbrillance
+      // Scroll vers les exemples et surbrillance PENDANT l'audio
       scrollToSection(examplesSectionRef);
       setHighlightedElement('examples');
-      await wait(500);
-      
-      await playAudio("Ici tu trouveras 9 exemples avec des animations pour bien comprendre !");
-      if (stopSignalRef.current) return;
-      
       await wait(2000);
+      
+      playAudio("Ici tu trouveras 9 exemples avec des animations pour bien comprendre !");
+      await wait(3000);
       if (stopSignalRef.current) return;
       
-      // Mention de la section exercices
-      await playAudio("Quand tu seras prêt, tu pourras aussi aller à la section exercices...");
-      if (stopSignalRef.current) return;
+      // Mention de la section exercices avec scroll immédiat
+      playAudio("Quand tu seras prêt, tu pourras aussi aller à la section exercices...");
+      await wait(1000);
       
-      // Scroll vers l'onglet exercices et surbrillance
+      // Scroll vers l'onglet exercices et surbrillance PENDANT l'audio
       setHighlightedElement(null);
       setHighlightExerciseButton(true);
       if (exerciseTabRef.current) {
@@ -651,16 +628,15 @@ export default function ProblemesSoustraction() {
           block: 'center' 
         });
       }
-      await wait(500);
+      await wait(2000);
       
-      await playAudio("Là-bas, 20 problèmes t'attendent pour tester tes nouvelles compétences !");
-      if (stopSignalRef.current) return;
-      
-      await wait(1500);
+      playAudio("Là-bas, 15 problèmes t'attendent pour tester tes nouvelles compétences !");
+      await wait(3000);
       if (stopSignalRef.current) return;
       
       // Encouragement final
-      await playAudio("Bon courage, jeune aventurier ! Ta quête commence maintenant !");
+      playAudio("Bon courage, jeune aventurier ! Ta quête commence maintenant !");
+      await wait(3000);
       if (stopSignalRef.current) return;
       
     } catch (error) {
@@ -808,44 +784,38 @@ export default function ProblemesSoustraction() {
     setHighlightExerciseButton(true);
     
     try {
-      await playAudio("Salut, aventurier ! C'est l'heure de t'entraîner avec les exercices !");
+      playAudio("Salut, aventurier ! C'est l'heure de t'entraîner avec les exercices !"); // Sans await
+      await wait(3000);
       if (stopSignalRef.current) return;
       
-      await wait(1000);
+      playAudio("Tu vas résoudre 15 problèmes de soustraction différents, c'est parti pour l'aventure !");
+      await wait(3000);
       if (stopSignalRef.current) return;
       
-      await playAudio("Tu vas résoudre 20 problèmes de soustraction différents, c'est parti pour l'aventure !");
-      if (stopSignalRef.current) return;
-      
-      await wait(1200);
-      if (stopSignalRef.current) return;
-      
-      // Mettre en évidence le bouton "Lire l'énoncé"
+      // Mettre en évidence le bouton "Lire l'énoncé" PENDANT l'audio
+      playAudio("Pour chaque exercice, tu peux lire l'énoncé en cliquant sur le bouton 'Lire l'énoncé' !");
+      await wait(1000); // Délai avant surbrillance
       setHighlightedElement('read-story-button');
-      await playAudio("Pour chaque exercice, tu peux lire l'énoncé en cliquant sur le bouton 'Lire l'énoncé' !");
+      await wait(2500); // Temps pour voir la surbrillance
       if (stopSignalRef.current) return;
       
-      await wait(1500);
-      if (stopSignalRef.current) return;
-      
-      // Mettre en évidence la zone de réponse
-      setHighlightedElement('answer-input');
-      await playAudio("Ensuite, tu saisis ta réponse dans la zone de réponse !");
-      if (stopSignalRef.current) return;
-      
-      await wait(1200);
-      if (stopSignalRef.current) return;
-      
-      // Mettre en évidence le bouton Vérifier
-      setHighlightedElement('validate-button');
-      await playAudio("Et pour finir, tu appuies sur le bouton 'Vérifier' pour vérifier ta réponse !");
-      if (stopSignalRef.current) return;
-      
+      // Mettre en évidence la zone de réponse PENDANT l'audio
+      playAudio("Ensuite, tu saisis ta réponse dans la zone de réponse !");
       await wait(1000);
+      setHighlightedElement('answer-input');
+      await wait(2000);
       if (stopSignalRef.current) return;
       
+      // Mettre en évidence le bouton Vérifier PENDANT l'audio
+      playAudio("Et pour finir, tu appuies sur le bouton 'Vérifier' pour vérifier ta réponse !");
+      await wait(1000);
+      setHighlightedElement('validate-button');
+      await wait(3000);
+      if (stopSignalRef.current) return;
+      
+      playAudio("Si tu te trompes, je t'aiderai avec une animation pour comprendre ! En avant, jeune aventurier !");
       setHighlightedElement(null);
-      await playAudio("Si tu te trompes, je t'aiderai avec une animation pour comprendre ! En avant, jeune aventurier !");
+      await wait(4000);
       if (stopSignalRef.current) return;
       
     } catch (error) {
@@ -1492,10 +1462,10 @@ export default function ProblemesSoustraction() {
           </Link>
           
           <div className="text-center">
-            <h1 className="text-4xl font-bold text-gray-800 mb-2">
+            <h1 className="text-2xl sm:text-4xl font-bold text-gray-800 mb-2">
               ➖ Problèmes de soustraction
             </h1>
-            <p className="text-lg text-gray-600">
+            <p className="text-base sm:text-lg text-gray-600">
               Apprendre à résoudre des problèmes de soustraction - Niveau CE1
             </p>
           </div>
@@ -1625,7 +1595,7 @@ export default function ProblemesSoustraction() {
                 <div className="p-1 sm:p-2 bg-orange-100 rounded-lg">
                   <Book className="w-4 h-4 sm:w-6 sm:h-6 text-orange-600" />
                 </div>
-                <h2 className="text-base sm:text-2xl font-bold text-gray-800">Qu'est-ce qu'un problème de soustraction ?</h2>
+                <h2 className="text-sm sm:text-2xl font-bold text-gray-800">Qu'est-ce qu'un problème de soustraction ?</h2>
                 {/* Icône d'animation pour l'introduction */}
                 <div className={`bg-gradient-to-r from-orange-500 to-red-600 text-white rounded-full w-6 h-6 sm:w-12 sm:h-12 flex items-center justify-center text-xs sm:text-xl font-bold shadow-lg hover:scale-110 cursor-pointer transition-all duration-300 ring-2 ring-orange-300 ${
                   highlightedElement === 'intro' ? 'ring-4 ring-yellow-400 animate-bounce scale-110' : ''
@@ -1652,7 +1622,7 @@ export default function ProblemesSoustraction() {
                 <div className="p-1 sm:p-2 bg-purple-100 rounded-lg">
                   <Target className="w-4 h-4 sm:w-6 sm:h-6 text-purple-600" />
                 </div>
-                <h2 className="text-base sm:text-2xl font-bold text-gray-800">Ma méthode en 3 étapes</h2>
+                <h2 className="text-sm sm:text-2xl font-bold text-gray-800">Ma méthode en 3 étapes</h2>
                 {/* Bouton d'animation pour la méthode */}
                 <button 
                   onClick={() => readSectionMethod()}
@@ -1677,7 +1647,7 @@ export default function ProblemesSoustraction() {
                   >
                     1
                   </div>
-                  <p className="text-lg text-gray-800">Je lis le problème et je comprends l'histoire</p>
+                  <p className="text-sm sm:text-lg text-gray-800">Je lis le problème et je comprends l'histoire</p>
                 </div>
                 
                 <div className={`flex items-center gap-4 p-4 rounded-lg transition-all ${
@@ -1690,7 +1660,7 @@ export default function ProblemesSoustraction() {
                   >
                     2
                   </div>
-                  <p className="text-lg text-gray-800">Je trouve les nombres pour la soustraction</p>
+                  <p className="text-sm sm:text-lg text-gray-800">Je trouve les nombres pour la soustraction</p>
                 </div>
                 
                 <div className={`flex items-center gap-4 p-4 rounded-lg transition-all ${
@@ -1703,7 +1673,7 @@ export default function ProblemesSoustraction() {
                   >
                     3
                   </div>
-                  <p className="text-lg text-gray-800">J'écris la soustraction et je calcule</p>
+                  <p className="text-sm sm:text-lg text-gray-800">J'écris la soustraction et je calcule</p>
                 </div>
               </div>
             </div>
@@ -1714,20 +1684,20 @@ export default function ProblemesSoustraction() {
                 <div className="p-1 sm:p-2 bg-yellow-100 rounded-lg">
                   <span className="text-lg sm:text-2xl">✏️</span>
                 </div>
-                <h2 className="text-base sm:text-2xl font-bold text-gray-800">Démonstration : souligner les nombres</h2>
+                <h2 className="text-sm sm:text-2xl font-bold text-gray-800">Démonstration : souligner les nombres</h2>
               </div>
               
               <div className="space-y-4">
                 <div className="p-4 bg-gray-50 rounded-lg">
-                  <p className="text-lg font-semibold text-gray-800 mb-3">Exemple d'histoire :</p>
-                  <div className="text-lg text-gray-700 p-3 bg-white rounded border">
+                  <p className="text-base sm:text-lg font-semibold text-gray-800 mb-3">Exemple d'histoire :</p>
+                  <div className="text-sm sm:text-lg text-gray-700 p-3 bg-white rounded border">
                     {highlightNumbers("Marie avait 12 bonbons. Elle en a mangé 5. Combien lui reste-t-il de bonbons ?", highlightNumbersInStory)}
                   </div>
                 </div>
                 
                 {highlightNumbersInStory && (
                   <div className="text-center p-4 bg-yellow-50 border-2 border-yellow-200 rounded-lg">
-                    <p className="text-lg text-yellow-800 font-semibold">
+                    <p className="text-sm sm:text-lg text-yellow-800 font-semibold">
                       🎯 Voyez comme les nombres <span className="bg-yellow-300 px-2 py-1 rounded font-black">12</span> et <span className="bg-yellow-300 px-2 py-1 rounded font-black">5</span> ressortent bien !
                     </p>
                   </div>
@@ -1744,7 +1714,7 @@ export default function ProblemesSoustraction() {
               }`}
             >
               <div className="flex items-center justify-center gap-1 sm:gap-3 mb-3 sm:mb-6">
-                <h2 className="text-base sm:text-2xl font-bold text-gray-800">
+                <h2 className="text-sm sm:text-2xl font-bold text-gray-800">
                   🎯 Choisis un problème à résoudre ensemble !
                 </h2>
                 {/* Icône d'animation pour les exemples */}
@@ -1771,11 +1741,11 @@ export default function ProblemesSoustraction() {
                   >
                     <div className="text-center">
                       <div className="text-4xl mb-2">{example.item}</div>
-                      <h3 className="font-bold text-lg text-gray-800 mb-2">{example.title}</h3>
-                      <div className="text-sm text-gray-600 mb-4">
+                      <h3 className="font-bold text-sm sm:text-lg text-gray-800 mb-2">{example.title}</h3>
+                      <div className="text-xs sm:text-sm text-gray-600 mb-4">
                         {example.story}
                       </div>
-                      <div className={`px-3 py-1 rounded-lg text-sm transition-all ${
+                      <div className={`px-3 py-1 rounded-lg text-xs sm:text-sm transition-all ${
                         highlightedExamples.includes(index) 
                           ? 'bg-orange-500 text-white animate-bounce shadow-lg ring-2 ring-orange-300' 
                           : 'bg-blue-500 text-white hover:bg-blue-600'
@@ -1794,7 +1764,7 @@ export default function ProblemesSoustraction() {
                 id="animation-section"
                 className="bg-white rounded-xl shadow-lg p-6"
               >
-                <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">
+                <h2 className="text-lg sm:text-2xl font-bold text-gray-800 mb-6 text-center">
                   🎬 Animation du problème
                 </h2>
                 

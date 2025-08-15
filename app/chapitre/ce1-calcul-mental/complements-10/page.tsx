@@ -51,6 +51,34 @@ export default function ComplementsA10Page() {
   const [animationStep, setAnimationStep] = useState(0);
   const [showCompletionModal, setShowCompletionModal] = useState(false);
   const [finalScore, setFinalScore] = useState(0);
+  
+  // Système de scoring light pour complément à 10
+  const [totalXP, setTotalXP] = useState(0);
+  const [totalStars, setTotalStars] = useState(0);
+  const [perfectRounds, setPerfectRounds] = useState(0);
+  const [bestStreak, setBestStreak] = useState(0);
+  const [currentStreak, setCurrentStreak] = useState(0);
+
+  // Charger les données sauvegardées au démarrage
+  useEffect(() => {
+    const savedXP = localStorage.getItem('complement10-totalXP');
+    const savedStars = localStorage.getItem('complement10-totalStars');
+    const savedPerfectRounds = localStorage.getItem('complement10-perfectRounds');
+    const savedBestStreak = localStorage.getItem('complement10-bestStreak');
+    
+    if (savedXP) setTotalXP(parseInt(savedXP));
+    if (savedStars) setTotalStars(parseInt(savedStars));
+    if (savedPerfectRounds) setPerfectRounds(parseInt(savedPerfectRounds));
+    if (savedBestStreak) setBestStreak(parseInt(savedBestStreak));
+  }, []);
+
+  // Fonction pour sauvegarder les stats
+  const saveStats = (xp: number, stars: number, perfect: number, streak: number) => {
+    localStorage.setItem('complement10-totalXP', xp.toString());
+    localStorage.setItem('complement10-totalStars', stars.toString());
+    localStorage.setItem('complement10-perfectRounds', perfect.toString());
+    localStorage.setItem('complement10-bestStreak', streak.toString());
+  };
 
   // Fonction pour mélanger un tableau
   const shuffleArray = (array: any[]) => {
@@ -86,14 +114,31 @@ export default function ComplementsA10Page() {
     setIsCorrect(correct);
     
     let newScore = score;
+    let newCurrentStreak = currentStreak;
+    
     if (correct && !answeredCorrectly.has(currentExercise)) {
       newScore = score + 1;
       setScore(newScore);
+      
+      // Gérer le streak (série de bonnes réponses)
+      newCurrentStreak = currentStreak + 1;
+      setCurrentStreak(newCurrentStreak);
+      
+      // Récompenses pour les bonnes réponses
+      const newXP = totalXP + 2; // +2 XP par bonne réponse
+      const newStars = totalStars + 1; // +1 étoile par bonne réponse
+      setTotalXP(newXP);
+      setTotalStars(newStars);
+      
       setAnsweredCorrectly(prev => {
         const newSet = new Set(prev);
         newSet.add(currentExercise);
         return newSet;
       });
+    } else if (!correct) {
+      // Réinitialiser le streak si mauvaise réponse
+      setCurrentStreak(0);
+      newCurrentStreak = 0;
     }
 
     // Si bonne réponse → passage automatique après 1.5s
@@ -104,11 +149,37 @@ export default function ComplementsA10Page() {
           setUserAnswer('');
           setIsCorrect(null);
         } else {
-          // Dernière question, calculer le score final et sauvegarder
+          // Dernière question, calculer les récompenses finales
           setFinalScore(newScore);
+          
+          // Vérifier si c'est un round parfait (10/10)
+          let newPerfectRounds = perfectRounds;
+          if (newScore === complementExercises.length) {
+            newPerfectRounds = perfectRounds + 1;
+            setPerfectRounds(newPerfectRounds);
+            // Bonus pour round parfait
+            const perfectBonus = 10;
+            setTotalXP(totalXP + 2 + perfectBonus); // +2 de la bonne réponse + 10 bonus
+          }
+          
+          // Mettre à jour le meilleur streak si nécessaire
+          let newBestStreak = bestStreak;
+          if (newCurrentStreak > bestStreak) {
+            newBestStreak = newCurrentStreak;
+            setBestStreak(newBestStreak);
+          }
+          
+          // Sauvegarder les stats
+          saveStats(
+            totalXP + (newScore === complementExercises.length ? 12 : 2),
+            totalStars + 1,
+            newPerfectRounds,
+            newBestStreak
+          );
+          
           setShowCompletionModal(true);
           
-          // Sauvegarder les progrès
+          // Sauvegarder les progrès (ancien système)
           const maxScore = complementExercises.length;
           saveProgress(newScore, maxScore);
         }
@@ -193,6 +264,7 @@ export default function ComplementsA10Page() {
     setAnsweredCorrectly(new Set());
     setShowCompletionModal(false);
     setFinalScore(0);
+    setCurrentStreak(0); // Réinitialiser le streak
     // Réinitialiser l'animation
     setSelectedNumber(null);
     setAnimationStep(0);
@@ -308,9 +380,25 @@ export default function ComplementsA10Page() {
                     <div className={`text-xl font-bold mb-2 ${result.color}`}>
                       Score final : {finalScore}/{complementExercises.length} ({percentage}%)
                     </div>
-                    <div className={`text-lg font-bold ${result.color} flex items-center justify-center`}>
-                      <Target className="w-5 h-5 mr-2" />
-                      +{xpEarned} XP gagnés !
+                    <div className="space-y-2">
+                      <div className={`text-lg font-bold ${result.color} flex items-center justify-center`}>
+                        <Target className="w-5 h-5 mr-2" />
+                        +{xpEarned} XP gagnés !
+                      </div>
+                      <div className="text-sm text-gray-600">
+                        ⭐ +{finalScore} étoiles • Total XP: {totalXP}
+                      </div>
+                      {finalScore === complementExercises.length && (
+                        <div className="text-sm font-bold text-green-600">
+                          🎯 Round parfait ! +10 XP bonus !
+                        </div>
+                      )}
+                      {currentStreak > 1 && (
+                        <div className="text-sm font-bold text-purple-600">
+                          🔥 Série de {currentStreak} ! 
+                          {currentStreak === bestStreak && " Nouveau record !"}
+                        </div>
+                      )}
                     </div>
                   </div>
                   <div className="flex gap-3 justify-center">
@@ -345,13 +433,35 @@ export default function ComplementsA10Page() {
             <span className="text-sm sm:text-base">Retour au calcul mental</span>
           </Link>
           
-          <div className="bg-white rounded-xl p-4 sm:p-6 shadow-lg text-center">
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-2 sm:mb-4">
-              🔟 Compléments à 10
-            </h1>
-            <p className="text-gray-600 text-base sm:text-lg">
-              Apprends les compléments pour faire 10 !
-            </p>
+          <div className="bg-white rounded-xl p-4 sm:p-6 shadow-lg">
+            <div className="text-center mb-4">
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-2">
+                🔟 Compléments à 10
+              </h1>
+              <p className="text-gray-600 text-base sm:text-lg">
+                Apprends les compléments pour faire 10 !
+              </p>
+            </div>
+            
+            {/* Statistiques en version light */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4 mt-4 pt-4 border-t border-gray-200">
+              <div className="text-center">
+                <div className="text-blue-600 font-bold text-lg sm:text-xl">{totalXP}</div>
+                <div className="text-xs sm:text-sm text-gray-500">XP Total</div>
+              </div>
+              <div className="text-center">
+                <div className="text-yellow-500 font-bold text-lg sm:text-xl">⭐ {totalStars}</div>
+                <div className="text-xs sm:text-sm text-gray-500">Étoiles</div>
+              </div>
+              <div className="text-center">
+                <div className="text-green-600 font-bold text-lg sm:text-xl">{perfectRounds}</div>
+                <div className="text-xs sm:text-sm text-gray-500">Parfait 10/10</div>
+              </div>
+              <div className="text-center">
+                <div className="text-purple-600 font-bold text-lg sm:text-xl">🔥 {bestStreak}</div>
+                <div className="text-xs sm:text-sm text-gray-500">Record</div>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -581,6 +691,11 @@ export default function ComplementsA10Page() {
                 <div className="text-lg font-bold text-blue-600">
                   Score : {score}/{complementExercises.length}
                 </div>
+                {currentStreak > 0 && (
+                  <div className="text-sm font-bold text-purple-600 mt-1">
+                    🔥 Série : {currentStreak} bonnes réponses !
+                  </div>
+                )}
               </div>
             </div>
 

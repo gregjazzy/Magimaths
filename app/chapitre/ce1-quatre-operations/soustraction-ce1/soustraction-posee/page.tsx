@@ -285,86 +285,82 @@ export default function SoustractionPoseeCE1() {
     setSamSizeExpanded(true);
     
     try {
-      await playAudio("Bienvenue dans le cours de soustraction posée ! Je vais tout t'expliquer !", true);
+      playAudio("Bienvenue dans le cours de soustraction posée ! Je vais tout t'expliquer !", true);
+      await wait(3000);
       if (stopSignalRef.current) return;
       
+      // Présenter l'introduction avec animation PENDANT l'audio
+      playAudio("D'abord, découvrons ce qu'est la soustraction posée !", true);
       await wait(1000);
-      
-      // Présenter l'introduction
       setHighlightedElement('intro-section');
       scrollToElement('intro-section');
-      await playAudio("D'abord, découvrons ce qu'est la soustraction posée !", true);
+      await wait(2500);
       if (stopSignalRef.current) return;
       
-      await wait(1200);
-      
-      // Présenter l'exemple principal
+      // Présenter l'exemple principal avec animation PENDANT l'audio
+      playAudio("Voici l'exemple principal pour bien comprendre la méthode !", true);
+      await wait(1000);
       setHighlightedElement('example-section');
       scrollToElement('example-section');
-      await playAudio("Voici l'exemple principal pour bien comprendre la méthode !", true);
+      await wait(2000);
       if (stopSignalRef.current) return;
       
+      // Mettre en évidence le bouton d'animation principal PENDANT l'audio
+      playAudio("Clique sur ce bouton rouge pour voir l'animation complète étape par étape !", true);
       await wait(1000);
-      
-      // Mettre en évidence le bouton d'animation principal
       const exampleButton = document.querySelector('#example-section button');
       if (exampleButton) {
         exampleButton.classList.add('ring-4', 'ring-yellow-400', 'animate-pulse');
       }
-      await playAudio("Clique sur ce bouton rouge pour voir l'animation complète étape par étape !", true);
-      if (stopSignalRef.current) return;
-      
-      await wait(2000);
+      await wait(3000);
       
       // Retirer la surbrillance
       if (exampleButton) {
         exampleButton.classList.remove('ring-4', 'ring-yellow-400', 'animate-pulse');
       }
       
-      // Présenter la section des autres exemples
+      // Présenter la section des autres exemples avec animation PENDANT l'audio
+      playAudio("Ensuite, voici plein d'autres exemples pour t'entraîner !", true);
+      await wait(1000);
       setHighlightedElement('examples-section');
       scrollToElement('examples-section');
-      await playAudio("Ensuite, voici plein d'autres exemples pour t'entraîner !", true);
+      await wait(2000);
       if (stopSignalRef.current) return;
       
+      // Mettre en évidence les cartes d'exemples PENDANT l'audio
+      playAudio("Chaque carte rouge a sa propre animation ! Clique sur celles qui t'intéressent !", true);
       await wait(1000);
-      
-      // Mettre en évidence les cartes d'exemples
       const exampleCards = document.querySelectorAll('#examples-section .bg-gradient-to-br');
       exampleCards.forEach(card => {
         card.classList.add('ring-4', 'ring-yellow-400', 'animate-pulse');
       });
-      await playAudio("Chaque carte rouge a sa propre animation ! Clique sur celles qui t'intéressent !", true);
-      if (stopSignalRef.current) return;
-      
-      await wait(2000);
+      await wait(3000);
       
       // Retirer la surbrillance des cartes
       exampleCards.forEach(card => {
         card.classList.remove('ring-4', 'ring-yellow-400', 'animate-pulse');
       });
       
-      // Présenter le guide pratique
+      // Présenter le guide pratique avec scroll PENDANT l'audio
+      playAudio("Et voici le guide pratique avec les étapes importantes !", true);
+      await wait(1000);
       scrollToElement('guide-section');
-      await playAudio("Et voici le guide pratique avec les étapes importantes !", true);
+      await wait(2500);
       if (stopSignalRef.current) return;
       
-      await wait(1000);
-      
-      await playAudio("Maintenant tu connais toute la méthode ! Tu peux explorer les exemples ou passer aux exercices !", true);
+      playAudio("Maintenant tu connais toute la méthode ! Tu peux explorer les exemples ou passer aux exercices !", true);
+      await wait(3500);
       if (stopSignalRef.current) return;
       
+      // Faire scroller vers l'onglet exercices et l'illuminer PENDANT l'audio
+      playAudio("Regarde ! L'onglet exercices t'attend juste ici pour t'entraîner !", true);
       await wait(1000);
-      
-      // Faire scroller vers l'onglet exercices et l'illuminer
       setHighlightedElement('exercise_tab');
       window.scrollTo({ top: 0, behavior: 'smooth' });
-      await playAudio("Regarde ! L'onglet exercices t'attend juste ici pour t'entraîner !", true);
-      if (stopSignalRef.current) return;
+      await wait(2500);
       
-      await wait(2000);
-      
-      await playAudio("Clique dessus quand tu veux commencer les exercices ! Bon apprentissage !", true);
+      playAudio("Clique dessus quand tu veux commencer les exercices ! Bon apprentissage !", true);
+      await wait(3000);
       if (stopSignalRef.current) return;
       
     } catch (error) {
@@ -422,63 +418,55 @@ export default function SoustractionPoseeCE1() {
         await wait(500);
       }
       
-      await speak("Bienvenue dans la section exercices de soustraction posée !");
+      // Parler sans await pour ne pas bloquer les animations
+      speak("Bienvenue dans la section exercices de soustraction posée !");
+      await wait(3000);
       if (stopSignalRef.current) return;
 
-      await wait(800);
-      
-      // Présenter le header avec le score
-      await speak("Ici tu peux voir ton exercice actuel et ton score !", 'exercises-header');
+      // Présenter le header avec animation PENDANT l'audio
+      speak("Ici tu peux voir ton exercice actuel et ton score !", 'exercises-header');
+      await wait(3000);
       if (stopSignalRef.current) return;
       
-      await wait(1000);
-      
-      // Présenter la question
-      await speak("Voici la question de soustraction posée que tu dois résoudre !");
+      // Présenter la question avec animation PENDANT l'audio
+      speak("Voici la question de soustraction posée que tu dois résoudre !");
+      await wait(3000);
       if (stopSignalRef.current) return;
       
-      await wait(800);
-      
-      // Présenter le bouton écouter
-      await speak("Tu peux écouter l'énoncé en cliquant sur ce bouton bleu !", 'listen-button');
+      // Présenter le bouton écouter avec animation PENDANT l'audio
+      speak("Tu peux écouter l'énoncé en cliquant sur ce bouton bleu !", 'listen-button');
+      await wait(3500);
       if (stopSignalRef.current) return;
       
-      await wait(1000);
-      
-      // Présenter la zone de réponse
-      await speak("Tape ta réponse ici dans cette case !", 'answer-input');
+      // Présenter la zone de réponse avec animation PENDANT l'audio
+      speak("Tape ta réponse ici dans cette case !", 'answer-input');
+      await wait(3000);
       if (stopSignalRef.current) return;
       
-      await wait(1000);
-      
-      // Présenter le bouton valider
-      await speak("Puis clique sur Valider pour vérifier ta réponse !", 'validate-button');
+      // Présenter le bouton valider avec animation PENDANT l'audio
+      speak("Puis clique sur Valider pour vérifier ta réponse !", 'validate-button');
+      await wait(3500);
       if (stopSignalRef.current) return;
       
-      await wait(1200);
-      
-      await speak("Si ta réponse est correcte, tu passeras automatiquement à l'exercice suivant !");
+      speak("Si ta réponse est correcte, tu passeras automatiquement à l'exercice suivant !");
+      await wait(3500);
       if (stopSignalRef.current) return;
       
-      await wait(1000);
-      
-      await speak("Si tu te trompes, je te montrerai une animation pour t'expliquer la bonne méthode !");
+      speak("Si tu te trompes, je te montrerai une animation pour t'expliquer la bonne méthode !");
+      await wait(3500);
       if (stopSignalRef.current) return;
       
-      await wait(1000);
-      
-      // Présenter le score en haut
-      await speak("Ton score s'affiche ici ! Essaie d'avoir le maximum de points !", 'score-display');
+      // Présenter le score en haut avec animation PENDANT l'audio
+      speak("Ton score s'affiche ici ! Essaie d'avoir le maximum de points !", 'score-display');
+      await wait(3500);
       if (stopSignalRef.current) return;
       
-      await wait(1000);
-      
-      await speak("N'oublie pas : pour la soustraction posée, on commence toujours par les unités à droite !");
+      speak("N'oublie pas : pour la soustraction posée, on commence toujours par les unités à droite !");
+      await wait(4000);
       if (stopSignalRef.current) return;
       
-      await wait(800);
-      
-      await speak("Allez, à toi de jouer maintenant ! Bonne chance !");
+      speak("Allez, à toi de jouer maintenant ! Bonne chance !");
+      await wait(3000);
       
     } catch (error) {
       console.error('Erreur lors de l\'explication des exercices:', error);

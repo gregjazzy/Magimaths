@@ -6,7 +6,7 @@ import { ArrowLeft, Play, Pause, Sword, Shield, Star, Trophy, Zap, Heart, Timer,
 
 export default function ComplementsA10() {
   // États de la station spatiale
-  const [gameMode, setGameMode] = useState<'station' | 'training' | 'mission' | 'planet-select' | 'duel-2players' | 'time-challenge'>('station');
+  const [gameMode, setGameMode] = useState<'station' | 'training' | 'mission' | 'planet-select' | 'duel-2players'>('station');
   const [currentPlanet, setCurrentPlanet] = useState(1);
   const [shipShield, setShipShield] = useState(100);
   const [alienShield, setAlienShield] = useState(100);
@@ -51,13 +51,7 @@ export default function ComplementsA10() {
   const [player2Wins, setPlayer2Wins] = useState(0);
   const [spaceDuelPhase, setSpaceDuelPhase] = useState<'question' | 'result' | 'final'>('question');
 
-  // États pour le défi temps spatial
-  const [timeScore, setTimeScore] = useState(0);
-  const [bestScore, setBestScore] = useState(0);
-  const [difficultyLevel, setDifficultyLevel] = useState(1);
-  const [timePerQuestion, setTimePerQuestion] = useState(15);
-  const [challengeLaserShots, setChallengeLaserShots] = useState(0);
-  const [challengeActive, setChallengeActive] = useState(false);
+
 
   // États pour la présentation interactive
   const [showPresentation, setShowPresentation] = useState(false);
@@ -68,8 +62,8 @@ export default function ComplementsA10() {
   const alienPlanets = [
     {
       id: 1,
-      name: "Planète Novice",
-      description: "Premier trimestre CP - Compléments simples",
+      name: "Planète Famille",
+      description: "Compléments à 10 - Niveau Facile",
       difficulty: "🚀 Cadet",
       color: "from-blue-400 to-cyan-500",
       bgColor: "from-blue-100 to-cyan-200",
@@ -77,7 +71,7 @@ export default function ComplementsA10() {
       timeLimit: 15,
       equationsToWin: 12,
       boss: {
-        name: "Commandant Papa de l'Espace",
+        name: "Papa Astronaute",
         avatar: "👨‍🚀",
         shield: 80,
         ship: "🛸",
@@ -91,8 +85,8 @@ export default function ComplementsA10() {
     },
     {
       id: 2,
-      name: "Galaxie des Mystères",
-      description: "Premier semestre CP - Compléments avancés",
+      name: "Galaxie Expert",
+      description: "Compléments à 10 - Niveau Difficile",
       difficulty: "🌟 Pilote",
       color: "from-purple-400 to-indigo-500",
       bgColor: "from-purple-100 to-indigo-200",
@@ -100,7 +94,7 @@ export default function ComplementsA10() {
       timeLimit: 12,
       equationsToWin: 15,
       boss: {
-        name: "Capitaine Maman des Étoiles",
+        name: "Maman Commandante",
         avatar: "👩‍🚀",
         shield: 120,
         ship: "🚀",
@@ -109,29 +103,6 @@ export default function ComplementsA10() {
           "Tes calculs doivent être parfaits !",
           "L'espace ne pardonne pas les erreurs !",
           "Concentre-toi, jeune astronaute !"
-        ]
-      }
-    },
-    {
-      id: 3,
-      name: "Nébuleuse du Chaos",
-      description: "Fin d'année CP - Mission impossible",
-      difficulty: "💫 COMMANDANT",
-      color: "from-red-400 to-orange-500",
-      bgColor: "from-red-100 to-orange-200",
-      icon: "🌠",
-      timeLimit: 8,
-      equationsToWin: 20,
-      boss: {
-        name: "Alien Frère Suprême",
-        avatar: "👽",
-        shield: 150,
-        ship: "🛸",
-        attacks: ["Rayon Désintégrateur", "Trou Noir Mental", "Invasion Cérébrale"],
-        phrases: [
-          "Tes calculs terrestres sont pathétiques !",
-          "Mon cerveau alien est supérieur !",
-          "Tu ne vaincras jamais l'empire galactique !"
         ]
       }
     }
@@ -238,15 +209,13 @@ export default function ComplementsA10() {
             }, 1500);
           }
         }, 2000);
-      } else if (gameMode === 'time-challenge' && challengeActive) {
-        handleChallengeTimeout();
       }
     }
     
     return () => {
       if (timerRef.current) clearTimeout(timerRef.current);
     };
-  }, [timeLeft, isTimerRunning, missionPhase, gameMode, spaceDuelPhase, challengeActive]);
+  }, [timeLeft, isTimerRunning, missionPhase, gameMode, spaceDuelPhase]);
 
   // Démarrer une mission spatiale
   const startSpaceMission = (planetId: number) => {
@@ -453,12 +422,7 @@ export default function ComplementsA10() {
   };
 
   // Charger le meilleur score au démarrage
-  useEffect(() => {
-    const savedBestScore = localStorage.getItem('bestScore-complements-10');
-    if (savedBestScore) {
-      setBestScore(parseInt(savedBestScore));
-    }
-  }, []);
+
 
   // Mode duel 2 astronautes
   const startDuel2Players = () => {
@@ -542,102 +506,11 @@ export default function ComplementsA10() {
     }
   };
 
-  // Mode défi temps spatial
-  const startTimeChallenge = () => {
-    setGameMode('time-challenge');
-    setTimeScore(0);
-    setDifficultyLevel(1);
-    setTimePerQuestion(15);
-    setChallengeLaserShots(0);
-    setChallengeActive(true);
-    setCurrentEquation(generateChallengeEquation(1));
-    setTimeLeft(15);
-    setIsTimerRunning(false);
-    
-    speak('Mission Galaxie Infinie ! Les équations vont devenir de plus en plus complexes. Prêt commandant ?', 'normal');
-    setTimeout(() => {
-      setIsTimerRunning(true);
-    }, 3000);
-  };
 
-  const generateChallengeEquation = (level: number) => {
-    let num1;
-    
-    if (level <= 3) {
-      // Niveau 1-3: simples
-      num1 = Math.floor(Math.random() * 6) + 2; // 2-7
-    } else if (level <= 6) {
-      // Niveau 4-6: moyens
-      num1 = Math.floor(Math.random() * 8) + 1; // 1-8
-    } else if (level <= 10) {
-      // Niveau 7-10: difficiles
-      num1 = Math.floor(Math.random() * 9) + 1; // 1-9
-    } else {
-      // Niveau 11+: très difficiles
-      num1 = Math.floor(Math.random() * 9) + 1; // 1-9
-    }
-    
-    const answer = 10 - num1;
-    return {
-      question: `? + ${num1} = 10`,
-      answer,
-      complement: num1,
-      level
-    };
-  };
 
-  const handleChallengeAnswer = () => {
-    const answer = parseInt(userAnswer);
-    setIsTimerRunning(false);
-    setChallengeLaserShots(prev => prev + 1);
-    
-    if (answer === currentEquation.answer) {
-      // Calculer le score basé sur rapidité et difficulté
-      const timeBonus = Math.max(0, timeLeft * 10);
-      const difficultyBonus = difficultyLevel * 50;
-      const points = 100 + timeBonus + difficultyBonus;
-      
-      setTimeScore(prev => prev + points);
-      speak('Parfait ! Cristaux d\'énergie gagnés !', 'victory');
-      
-      // Augmenter la difficulté et réduire le temps
-      const newLevel = difficultyLevel + 1;
-      setDifficultyLevel(newLevel);
-      const newTimeLimit = Math.max(5, 15 - Math.floor(newLevel / 2));
-      setTimePerQuestion(newTimeLimit);
-      
-      setTimeout(() => {
-        setCurrentEquation(generateChallengeEquation(newLevel));
-        setUserAnswer('');
-        setTimeLeft(newTimeLimit);
-        setTimeout(() => {
-          setIsTimerRunning(true);
-        }, 1000);
-      }, 1500);
-      
-    } else {
-      // Fin du défi
-      finishChallenge();
-    }
-  };
 
-  const handleChallengeTimeout = () => {
-    finishChallenge();
-  };
 
-  const finishChallenge = () => {
-    setChallengeActive(false);
-    setIsTimerRunning(false);
-    
-    // Vérifier si c'est un nouveau record
-    if (timeScore > bestScore) {
-      setBestScore(timeScore);
-      localStorage.setItem('bestScore-complements-10', timeScore.toString());
-      speak(`Nouveau record galactique ! ${timeScore} cristaux ! Tu es un commandant légendaire !`, 'victory');
-    } else {
-      speak(`Mission terminée ! Score: ${timeScore} cristaux. Record à battre: ${bestScore}`, 'normal');
-    }
-  };
+
 
   // Fonction pour arrêter toutes les animations et vocaux
   const stopAllVocalsAndAnimations = () => {
@@ -675,11 +548,10 @@ export default function ComplementsA10() {
 
   const presentModes = async () => {
     const steps = [
-      { highlight: 'training', text: 'Voici le Simulateur ! Un environnement sécurisé pour t\'entraîner aux équations cosmiques !' },
-      { highlight: 'boss', text: 'Voilà les Missions Galaxie ! Combats les aliens envahisseurs Papa, Maman, ou ton Frère dans l\'espace !' },
-      { highlight: 'duel', text: 'Puis le Duel Spatial ! Affrontez-vous à deux astronautes dans un combat à 10 équations !' },
-      { highlight: 'challenge', text: 'Et enfin, la Galaxie Infinie ! Une mission sans fin avec des équations de plus en plus difficiles !' },
-      { highlight: '', text: 'Alors commandant, quelle mission spatiale choisirez-vous pour commencer votre exploration ?' }
+      { highlight: 'training', text: 'Voici le Simulateur ! Un environnement sécurisé pour t\'entraîner aux compléments de 10 !' },
+      { highlight: 'boss', text: 'Voilà les Missions Galaxie ! Combats Papa ou Maman astronaute !' },
+      { highlight: 'duel', text: 'Et enfin le Duel Spatial ! Affrontez-vous à deux astronautes dans un combat de compléments !' },
+      { highlight: '', text: 'Alors commandant, quelle mission spatiale choisirez-vous pour commencer ?' }
     ];
 
     for (let i = 0; i < steps.length; i++) {
@@ -844,31 +716,49 @@ export default function ComplementsA10() {
 
       {/* Console de commande spatiale */}
       <div className="bg-black bg-opacity-70 backdrop-blur-sm border-b border-blue-500">
-        <div className="max-w-6xl mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
+        <div className="max-w-6xl mx-auto px-2 sm:px-4 py-2 sm:py-4">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-0">
+            <div className="flex items-center space-x-2 sm:space-x-4 w-full sm:w-auto">
               <Link 
                 href="/chapitre/cp-calcul-mental"
-                className="flex items-center px-4 py-2 bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors"
+                className="flex items-center px-3 sm:px-4 py-2 bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors text-sm sm:text-base min-h-[44px] border border-gray-600"
+                title="Retour au calcul mental CP"
               >
-                <ArrowLeft className="w-5 h-5 mr-2" />
-                Retour à la base
+                <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" />
+                <span className="hidden sm:inline">Retour</span>
+                <span className="sm:hidden">CP</span>
               </Link>
               
-              <div>
-                <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-cyan-500 bg-clip-text text-transparent">
-                  🚀 Mission Compléments Spatiaux
+              <div className="flex-1">
+                <h1 className="text-lg sm:text-2xl font-bold bg-gradient-to-r from-blue-400 to-cyan-500 bg-clip-text text-transparent">
+                  <span className="hidden sm:inline">🚀 Mission Compléments Spatiaux</span>
+                  <span className="sm:hidden">🚀 Compléments</span>
                 </h1>
-                <p className="text-gray-300">Sauve la galaxie avec tes compléments à 10 !</p>
+                <p className="text-gray-300 text-xs sm:text-sm hidden sm:block">Sauve la galaxie avec tes compléments à 10 !</p>
               </div>
             </div>
 
-            <button
-              onClick={() => setSoundEnabled(!soundEnabled)}
-              className={`p-2 rounded-lg transition-colors ${soundEnabled ? 'bg-blue-600' : 'bg-gray-600'}`}
-            >
-              <Volume2 className="w-5 h-5" />
-            </button>
+            {/* Stats du joueur */}
+            <div className="flex items-center space-x-2 sm:space-x-6 w-full sm:w-auto justify-between sm:justify-end">
+              <div className="text-center text-xs sm:text-sm">
+                <div className="text-cyan-400 font-bold text-xs sm:text-base">{astronautRank}</div>
+                <div className="text-xs text-gray-300">⭐ {stardust}</div>
+              </div>
+              <div className="text-center text-xs sm:text-sm">
+                <div className="text-blue-400 font-bold text-xs sm:text-base">⚡ {cosmicEnergy}</div>
+                <div className="text-xs text-gray-300">Énergie</div>
+              </div>
+              <div className="text-center text-xs sm:text-sm">
+                <div className="text-orange-400 font-bold text-xs sm:text-base">🔥 {maxLaserCombo}</div>
+                <div className="text-xs text-gray-300">Record</div>
+              </div>
+              <button
+                onClick={() => setSoundEnabled(!soundEnabled)}
+                className={`p-2 rounded-lg transition-colors ${soundEnabled ? 'bg-blue-600' : 'bg-gray-600'} min-w-[44px] min-h-[44px]`}
+              >
+                <Volume2 className="w-4 h-4 sm:w-5 sm:h-5" />
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -879,11 +769,13 @@ export default function ComplementsA10() {
         {gameMode === 'station' && (
           <div className="space-y-8">
             <div className="text-center">
-              <h2 className="text-4xl font-bold mb-4 bg-gradient-to-r from-blue-400 to-cyan-500 bg-clip-text text-transparent">
-                🛸 Bienvenue à bord, Astronaute !
+              <h2 className="text-2xl sm:text-4xl font-bold mb-2 sm:mb-4 bg-gradient-to-r from-blue-400 to-cyan-500 bg-clip-text text-transparent">
+                <span className="hidden sm:inline">🛸 Bienvenue à bord, Astronaute !</span>
+                <span className="sm:hidden">🛸 Mission Spatiale</span>
               </h2>
-              <p className="text-xl text-gray-300 mb-6">
-                Choisis ta mission et pars explorer les galaxies des compléments !
+              <p className="text-sm sm:text-xl text-gray-300 mb-4 sm:mb-6 px-2 sm:px-0">
+                <span className="hidden sm:inline">Choisis ta mission et pars explorer les galaxies des compléments !</span>
+                <span className="sm:hidden">Choisis ta mission !</span>
               </p>
               
               {/* Bouton d'accueil interactif */}
@@ -896,64 +788,27 @@ export default function ComplementsA10() {
                 </button>
               </div>
               
-              {/* Profil de l'Astronaute */}
-              <div className="bg-gradient-to-r from-gray-900 to-blue-900 rounded-xl p-6 mb-8 border-2 border-cyan-400 shadow-2xl">
-                <div className="text-center mb-4">
-                  <h3 className="text-xl font-bold text-cyan-400 mb-2">👨‍🚀 Profil de l'Astronaute</h3>
-                  <div className="text-lg text-white font-medium">Grade: {astronautRank}</div>
-                </div>
-                
-                <div className="grid md:grid-cols-4 gap-4">
-                  {/* Poussière d'étoiles */}
-                  <div className="bg-black bg-opacity-30 rounded-lg p-4 text-center border border-yellow-500">
-                    <div className="text-2xl mb-2">⭐</div>
-                    <div className="text-yellow-400 text-sm font-bold uppercase tracking-wider">Poussière Stellaire</div>
-                    <div className="text-white text-xl font-bold">{stardust}</div>
-                  </div>
-                  
-                  {/* Énergie Cosmique */}
-                  <div className="bg-black bg-opacity-30 rounded-lg p-4 text-center border border-cyan-400">
-                    <div className="text-2xl mb-2">⚡</div>
-                    <div className="text-cyan-400 text-sm font-bold uppercase tracking-wider">Énergie Cosmique</div>
-                    <div className="text-white text-xl font-bold">{cosmicEnergy}</div>
-                  </div>
-                  
-                  {/* Combo Laser */}
-                  <div className="bg-black bg-opacity-30 rounded-lg p-4 text-center border border-orange-400">
-                    <div className="text-2xl mb-2">🔥</div>
-                    <div className="text-orange-400 text-sm font-bold uppercase tracking-wider">Meilleur Combo</div>
-                    <div className="text-white text-xl font-bold">{maxLaserCombo}</div>
-                    <div className="text-orange-300 text-xs">Tirs laser</div>
-                  </div>
-                  
-                  {/* Navigation */}
-                  <div className="bg-black bg-opacity-30 rounded-lg p-4 text-center border border-blue-400">
-                    <div className="text-2xl mb-2">🛸</div>
-                    <div className="text-blue-400 text-sm font-bold uppercase tracking-wider">Vol Spatial</div>
-                    <div className="text-white text-xl font-bold">{laserCombo}</div>
-                    <div className="text-blue-300 text-xs">Série actuelle</div>
-                  </div>
-                </div>
-              </div>
+
             </div>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 sm:gap-6">
               {/* Simulateur d'entraînement */}
               <div 
                 onClick={startTraining}
-                className={`bg-gradient-to-br from-blue-600 to-cyan-700 rounded-xl p-6 cursor-pointer hover:scale-105 transition-all duration-300 shadow-2xl border border-blue-400 group ${
+                className={`bg-gradient-to-br from-blue-600 to-cyan-700 rounded-xl p-3 sm:p-6 cursor-pointer hover:scale-105 transition-all duration-300 shadow-2xl border border-blue-400 group min-h-[120px] sm:min-h-[140px] ${
                   currentHighlight === 'training' ? 'ring-8 ring-yellow-400 animate-pulse scale-110' : ''
                 }`}
               >
                 <div className="text-center">
-                  <div className="text-5xl mb-3 group-hover:animate-bounce">🛰️</div>
-                  <h3 className="text-xl font-bold mb-2">Simulateur</h3>
-                  <p className="text-blue-100 mb-3 text-sm">
+                  <div className="text-3xl sm:text-5xl mb-2 sm:mb-3 group-hover:animate-bounce">🛰️</div>
+                  <h3 className="text-base sm:text-xl font-bold mb-1 sm:mb-2">Simulateur</h3>
+                  <p className="text-blue-100 mb-2 sm:mb-3 text-xs sm:text-sm hidden sm:block">
                     Environnement sûr !
                   </p>
-                  <div className="flex justify-center space-x-1 text-sm">
-                    <Rocket className="w-4 h-4" />
-                    <span>Sans aliens</span>
+                  <div className="flex justify-center space-x-1 text-xs sm:text-sm">
+                    <Rocket className="w-3 h-3 sm:w-4 sm:h-4" />
+                    <span className="hidden sm:inline">Sans aliens</span>
+                    <span className="sm:hidden">Sûr</span>
                   </div>
                 </div>
               </div>
@@ -961,19 +816,20 @@ export default function ComplementsA10() {
               {/* Missions galaxie */}
               <div 
                 onClick={() => setGameMode('planet-select')}
-                className={`bg-gradient-to-br from-purple-600 to-indigo-700 rounded-xl p-6 cursor-pointer hover:scale-105 transition-all duration-300 shadow-2xl border border-purple-400 group ${
+                className={`bg-gradient-to-br from-purple-600 to-indigo-700 rounded-xl p-3 sm:p-6 cursor-pointer hover:scale-105 transition-all duration-300 shadow-2xl border border-purple-400 group min-h-[120px] sm:min-h-[140px] ${
                   currentHighlight === 'boss' ? 'ring-8 ring-yellow-400 animate-pulse scale-110' : ''
                 }`}
               >
                 <div className="text-center">
-                  <div className="text-5xl mb-3 group-hover:animate-pulse">👽</div>
-                  <h3 className="text-xl font-bold mb-2">Missions Galaxie</h3>
-                  <p className="text-purple-100 mb-3 text-sm">
+                  <div className="text-3xl sm:text-5xl mb-2 sm:mb-3 group-hover:animate-pulse">👽</div>
+                  <h3 className="text-base sm:text-xl font-bold mb-1 sm:mb-2">Missions Galaxie</h3>
+                  <p className="text-purple-100 mb-2 sm:mb-3 text-xs sm:text-sm hidden sm:block">
                     Aliens envahisseurs !
                   </p>
-                  <div className="flex justify-center space-x-1 text-sm">
-                    <Zap className="w-4 h-4" />
-                    <span>Épique</span>
+                  <div className="flex justify-center space-x-1 text-xs sm:text-sm">
+                    <Zap className="w-3 h-3 sm:w-4 sm:h-4" />
+                    <span className="hidden sm:inline">Épique</span>
+                    <span className="sm:hidden">👽</span>
                   </div>
                 </div>
               </div>
@@ -981,67 +837,50 @@ export default function ComplementsA10() {
               {/* Mode duel 2 astronautes */}
               <div 
                 onClick={startDuel2Players}
-                className={`bg-gradient-to-br from-green-600 to-teal-700 rounded-xl p-6 cursor-pointer hover:scale-105 transition-all duration-300 shadow-2xl border border-green-400 group ${
+                className={`bg-gradient-to-br from-green-600 to-teal-700 rounded-xl p-3 sm:p-6 cursor-pointer hover:scale-105 transition-all duration-300 shadow-2xl border border-green-400 group min-h-[120px] sm:min-h-[140px] ${
                   currentHighlight === 'duel' ? 'ring-8 ring-yellow-400 animate-pulse scale-110' : ''
                 }`}
               >
                 <div className="text-center">
-                  <div className="text-5xl mb-3 group-hover:animate-bounce">🚀</div>
-                  <h3 className="text-xl font-bold mb-2">Duel Spatial</h3>
-                  <p className="text-green-100 mb-3 text-sm">
+                  <div className="text-3xl sm:text-5xl mb-2 sm:mb-3 group-hover:animate-bounce">🚀</div>
+                  <h3 className="text-base sm:text-xl font-bold mb-1 sm:mb-2">Duel Spatial</h3>
+                  <p className="text-green-100 mb-2 sm:mb-3 text-xs sm:text-sm hidden sm:block">
                     Famille astronautes !
                   </p>
-                  <div className="flex justify-center space-x-1 text-sm">
-                    <Crown className="w-4 h-4" />
-                    <span>Versus</span>
+                  <div className="flex justify-center space-x-1 text-xs sm:text-sm">
+                    <Crown className="w-3 h-3 sm:w-4 sm:h-4" />
+                    <span className="hidden sm:inline">Versus</span>
+                    <span className="sm:hidden">VS</span>
                   </div>
                 </div>
               </div>
 
-              {/* Mode défi temps */}
-              <div 
-                onClick={startTimeChallenge}
-                className={`bg-gradient-to-br from-yellow-600 to-orange-700 rounded-xl p-6 cursor-pointer hover:scale-105 transition-all duration-300 shadow-2xl border border-yellow-400 group ${
-                  currentHighlight === 'challenge' ? 'ring-8 ring-yellow-400 animate-pulse scale-110' : ''
-                }`}
-              >
-                <div className="text-center">
-                  <div className="text-5xl mb-3 group-hover:animate-spin">🌌</div>
-                  <h3 className="text-xl font-bold mb-2">Galaxie Infinie</h3>
-                  <p className="text-yellow-100 mb-3 text-sm">
-                    Course cristaux !
-                  </p>
-                  <div className="flex justify-center space-x-1 text-sm">
-                    <Target className="w-4 h-4" />
-                    <span>Record</span>
-                  </div>
-                </div>
-              </div>
+
             </div>
 
             {/* Protocoles spatiaux */}
-            <div className="bg-gradient-to-r from-gray-800 to-blue-800 rounded-xl p-6 border border-blue-400">
-              <h3 className="text-xl font-bold mb-4 text-center">🛸 Protocoles de Combat Spatial</h3>
-              <div className="grid md:grid-cols-4 gap-4 text-sm">
+            <div className="bg-gradient-to-r from-gray-800 to-blue-800 rounded-xl p-4 sm:p-6 border border-blue-400">
+              <h3 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4 text-center">🛸 Protocoles de Combat Spatial</h3>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4 text-xs sm:text-sm">
                 <div className="text-center">
-                  <div className="text-2xl mb-2">⚡</div>
-                  <div className="font-bold">Tir Rapide</div>
-                  <div className="text-gray-300">Plus tu calcules vite, plus tes lasers font mal !</div>
+                  <div className="text-xl sm:text-2xl mb-1 sm:mb-2">⚡</div>
+                  <div className="font-bold text-xs sm:text-sm">Tir Rapide</div>
+                  <div className="text-gray-300 text-xs hidden sm:block">Plus tu calcules vite, plus tes lasers font mal !</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl mb-2">🔥</div>
-                  <div className="font-bold">Combo Laser</div>
-                  <div className="text-gray-300">Enchaîne les tirs pour percer les boucliers !</div>
+                  <div className="text-xl sm:text-2xl mb-1 sm:mb-2">🔥</div>
+                  <div className="font-bold text-xs sm:text-sm">Combo Laser</div>
+                  <div className="text-gray-300 text-xs hidden sm:block">Enchaîne les tirs pour percer les boucliers !</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl mb-2">⭐</div>
-                  <div className="font-bold">Butin Spatial</div>
-                  <div className="text-gray-300">Collecte étoiles et énergie cosmique !</div>
+                  <div className="text-xl sm:text-2xl mb-1 sm:mb-2">⭐</div>
+                  <div className="font-bold text-xs sm:text-sm">Butin Spatial</div>
+                  <div className="text-gray-300 text-xs hidden sm:block">Collecte étoiles et énergie cosmique !</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl mb-2">🎖️</div>
-                  <div className="font-bold">Grades</div>
-                  <div className="text-gray-300">Monte en grade jusqu'à devenir légende !</div>
+                  <div className="text-xl sm:text-2xl mb-1 sm:mb-2">🎖️</div>
+                  <div className="font-bold text-xs sm:text-sm">Grades</div>
+                  <div className="text-gray-300 text-xs hidden sm:block">Monte en grade jusqu'à devenir légende !</div>
                 </div>
               </div>
             </div>
@@ -1056,29 +895,29 @@ export default function ComplementsA10() {
               <p className="text-gray-300">Chaque planète cache un alien redoutable à vaincre !</p>
             </div>
 
-            <div className="grid md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
               {alienPlanets.map((planet) => (
                 <div 
                   key={planet.id}
                   onClick={() => startSpaceMission(planet.id)}
-                  className={`bg-gradient-to-br ${planet.color} rounded-xl p-6 cursor-pointer hover:scale-105 transition-all duration-300 shadow-2xl border-2 border-white border-opacity-20 group`}
+                  className={`bg-gradient-to-br ${planet.color} rounded-xl p-3 sm:p-6 md:p-8 cursor-pointer hover:scale-105 transition-all duration-300 shadow-xl border-2 border-white border-opacity-20 group min-h-[140px] sm:min-h-[180px] md:min-h-[220px]`}
                 >
                   <div className="text-center text-white">
-                    <div className="text-4xl mb-3 group-hover:animate-bounce">{planet.icon}</div>
-                    <h3 className="text-xl font-bold mb-2">{planet.name}</h3>
-                    <div className="text-sm opacity-90 mb-2">{planet.difficulty}</div>
-                    <p className="text-sm opacity-75 mb-4">{planet.description}</p>
+                    <div className="text-3xl sm:text-4xl md:text-5xl mb-2 sm:mb-3 group-hover:animate-bounce">{planet.icon}</div>
+                    <h3 className="text-lg sm:text-xl md:text-2xl font-bold mb-1 sm:mb-2">{planet.name}</h3>
+                    <div className="text-xs sm:text-sm opacity-90 mb-1 sm:mb-2">{planet.difficulty}</div>
+                    <p className="text-xs sm:text-sm opacity-75 mb-3 sm:mb-4 hidden sm:block">{planet.description}</p>
                     
                     {/* Boss alien info */}
-                    <div className="bg-black bg-opacity-40 rounded-lg p-4 mb-4">
-                      <div className="text-3xl mb-2">{planet.boss.avatar}</div>
-                      <div className="font-bold">{planet.boss.name}</div>
-                      <div className="text-sm opacity-75">Vaisseau: {planet.boss.ship}</div>
-                      <div className="text-sm opacity-75">Bouclier: {planet.boss.shield}</div>
+                    <div className="bg-black bg-opacity-40 rounded-lg p-2 sm:p-3 md:p-4 mb-3 sm:mb-4 hidden sm:block">
+                      <div className="text-2xl sm:text-3xl mb-1 sm:mb-2">{planet.boss.avatar}</div>
+                      <div className="font-bold text-sm sm:text-base">{planet.boss.name}</div>
+                      <div className="text-xs sm:text-sm opacity-75">Vaisseau: {planet.boss.ship}</div>
+                      <div className="text-xs sm:text-sm opacity-75">Bouclier: {planet.boss.shield}</div>
                     </div>
 
                     {/* Détails de mission */}
-                    <div className="space-y-2 text-sm">
+                    <div className="space-y-1 sm:space-y-2 text-xs sm:text-sm">
                       <div className="flex justify-between">
                         <span>Temps de calcul:</span>
                         <span>{planet.timeLimit}s</span>
@@ -1369,46 +1208,46 @@ export default function ComplementsA10() {
         {gameMode === 'duel-2players' && (
           <div className="space-y-6">
             {/* Tableau de scores spatiaux */}
-            <div className="bg-gradient-to-r from-green-800 to-teal-800 rounded-xl p-6 text-white">
-              <h2 className="text-2xl font-bold text-center mb-4">🚀 Duel Spatial - Compléments à 10</h2>
-              <div className="grid grid-cols-3 gap-4 text-center">
-                <div className={`p-4 rounded-lg ${currentPlayer === 1 ? 'bg-green-600 ring-4 ring-yellow-400' : 'bg-green-700'}`}>
-                  <div className="text-3xl mb-2">👨‍🚀</div>
-                  <div className="font-bold">Astronaute 1</div>
-                  <div className="text-2xl font-bold">{player1Score}</div>
-                  <div className="text-sm">Victoires: {player1Wins}</div>
+            <div className="bg-gradient-to-r from-green-800 to-teal-800 rounded-xl p-4 sm:p-6 text-white">
+              <h2 className="text-lg sm:text-2xl font-bold text-center mb-3 sm:mb-4">🚀 Duel Spatial - Compléments à 10</h2>
+              <div className="grid grid-cols-3 gap-2 sm:gap-4 text-center">
+                <div className={`p-2 sm:p-4 rounded-lg ${currentPlayer === 1 ? 'bg-green-600 ring-4 ring-yellow-400' : 'bg-green-700'}`}>
+                  <div className="text-xl sm:text-3xl mb-1 sm:mb-2">👨‍🚀</div>
+                  <div className="font-bold text-sm sm:text-base">Astronaute 1</div>
+                  <div className="text-lg sm:text-2xl font-bold">{player1Score}</div>
+                  <div className="text-xs sm:text-sm">Victoires: {player1Wins}</div>
                 </div>
                 
                 <div className="flex items-center justify-center">
                   <div className="text-center">
-                    <div className="text-lg font-bold">Équations restantes</div>
-                    <div className="text-3xl font-bold text-yellow-400">{questionsLeft}</div>
+                    <div className="text-sm sm:text-lg font-bold">Équations restantes</div>
+                    <div className="text-2xl sm:text-3xl font-bold text-yellow-400">{questionsLeft}</div>
                   </div>
                 </div>
                 
-                <div className={`p-4 rounded-lg ${currentPlayer === 2 ? 'bg-teal-600 ring-4 ring-yellow-400' : 'bg-teal-700'}`}>
-                  <div className="text-3xl mb-2">👩‍🚀</div>
-                  <div className="font-bold">Astronaute 2</div>
-                  <div className="text-2xl font-bold">{player2Score}</div>
-                  <div className="text-sm">Victoires: {player2Wins}</div>
+                <div className={`p-2 sm:p-4 rounded-lg ${currentPlayer === 2 ? 'bg-teal-600 ring-4 ring-yellow-400' : 'bg-teal-700'}`}>
+                  <div className="text-xl sm:text-3xl mb-1 sm:mb-2">👩‍🚀</div>
+                  <div className="font-bold text-sm sm:text-base">Astronaute 2</div>
+                  <div className="text-lg sm:text-2xl font-bold">{player2Score}</div>
+                  <div className="text-xs sm:text-sm">Victoires: {player2Wins}</div>
                 </div>
               </div>
             </div>
 
             {spaceDuelPhase === 'question' && (
               <div className="max-w-2xl mx-auto">
-                <div className={`bg-gradient-to-br ${currentPlayer === 1 ? 'from-green-600 to-green-700' : 'from-teal-600 to-teal-700'} rounded-xl p-8 text-center shadow-2xl text-white`}>
-                  <div className="text-lg mb-2">Au tour de l'Astronaute {currentPlayer}</div>
+                <div className={`bg-gradient-to-br ${currentPlayer === 1 ? 'from-green-600 to-green-700' : 'from-teal-600 to-teal-700'} rounded-xl p-4 sm:p-8 text-center shadow-2xl text-white`}>
+                  <div className="text-sm sm:text-lg mb-2">Au tour de l'Astronaute {currentPlayer}</div>
                   
-                  <div className="flex justify-center items-center space-x-4 mb-4">
-                    <Timer className="w-6 h-6 text-yellow-400" />
-                    <div className={`text-3xl font-bold ${timeLeft <= 3 ? 'text-red-400 animate-bounce' : 'text-yellow-400'}`}>
+                  <div className="flex justify-center items-center space-x-2 sm:space-x-4 mb-4">
+                    <Timer className="w-5 h-5 sm:w-6 sm:h-6 text-yellow-400" />
+                    <div className={`text-2xl sm:text-3xl font-bold ${timeLeft <= 3 ? 'text-red-400 animate-bounce' : 'text-yellow-400'}`}>
                       {timeLeft}s
                     </div>
                   </div>
 
-                  <div className="text-5xl font-bold mb-6 animate-pulse">
-                    {currentEquation?.question} = ?
+                  <div className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6 animate-pulse">
+                    {currentEquation?.question}
                   </div>
                   
                   <input
@@ -1416,17 +1255,18 @@ export default function ComplementsA10() {
                     value={userAnswer}
                     onChange={(e) => setUserAnswer(e.target.value)}
                     onKeyPress={(e) => e.key === 'Enter' && handleDuelAnswer()}
-                    className="text-center text-3xl font-bold border-2 border-white rounded-lg px-4 py-3 w-40 text-gray-800 bg-white shadow-lg"
+                    className="text-center text-2xl sm:text-3xl font-bold border-2 border-white rounded-lg px-3 sm:px-4 py-3 w-32 sm:w-40 text-gray-800 bg-white shadow-lg min-h-[60px] touch-manipulation"
                     placeholder="?"
                     autoFocus
                   />
                   
-                  <div className="mt-6">
+                  <div className="mt-4 sm:mt-6">
                     <button
                       onClick={handleDuelAnswer}
-                      className="bg-white text-green-700 px-8 py-4 rounded-lg font-bold hover:bg-gray-100 transition-colors shadow-lg"
+                      className="bg-white text-green-700 px-6 sm:px-8 py-3 sm:py-4 rounded-lg font-bold hover:bg-gray-100 transition-colors shadow-lg min-h-[56px] touch-manipulation"
                     >
-                      🌟 Tirer Laser !
+                      <span className="hidden sm:inline">🌟 Tirer Laser !</span>
+                      <span className="sm:hidden">🚀 TIRER</span>
                     </button>
                   </div>
                 </div>
@@ -1470,116 +1310,7 @@ export default function ComplementsA10() {
           </div>
         )}
 
-        {/* Mode défi temps spatial */}
-        {gameMode === 'time-challenge' && (
-          <div className="space-y-6">
-            {/* Tableau de scores temps */}
-            <div className="bg-gradient-to-r from-yellow-800 to-orange-800 rounded-xl p-6 text-white">
-              <h2 className="text-2xl font-bold text-center mb-4">🌌 Mission Galaxie Infinie - Compléments à 10</h2>
-              <div className="grid grid-cols-4 gap-4 text-center">
-                <div className="bg-yellow-700 p-4 rounded-lg">
-                  <div className="text-2xl mb-1">⚡</div>
-                  <div className="font-bold">Énergie</div>
-                  <div className="text-xl font-bold">{timeScore}</div>
-                </div>
-                
-                <div className="bg-orange-700 p-4 rounded-lg">
-                  <div className="text-2xl mb-1">🏆</div>
-                  <div className="font-bold">Record</div>
-                  <div className="text-xl font-bold">{bestScore}</div>
-                </div>
-                
-                <div className="bg-red-700 p-4 rounded-lg">
-                  <div className="text-2xl mb-1">🌌</div>
-                  <div className="font-bold">Secteur</div>
-                  <div className="text-xl font-bold">{difficultyLevel}</div>
-                </div>
-                
-                <div className="bg-purple-700 p-4 rounded-lg">
-                  <div className="text-2xl mb-1">🎯</div>
-                  <div className="font-bold">Tirs</div>
-                  <div className="text-xl font-bold">{challengeLaserShots}</div>
-                </div>
-              </div>
-            </div>
 
-            {challengeActive && (
-              <div className="max-w-2xl mx-auto">
-                <div className="bg-gradient-to-br from-yellow-600 to-orange-700 rounded-xl p-8 text-center shadow-2xl text-white">
-                  <div className="text-lg mb-2">Secteur Galactique {difficultyLevel}</div>
-                  
-                  <div className="flex justify-center items-center space-x-4 mb-4">
-                    <Timer className="w-6 h-6 text-yellow-300" />
-                    <div className={`text-3xl font-bold ${timeLeft <= 2 ? 'text-red-300 animate-bounce' : 'text-yellow-300'}`}>
-                      {timeLeft}s
-                    </div>
-                  </div>
-
-                  <div className="text-5xl font-bold mb-6 animate-pulse">
-                    {currentEquation?.question} = ?
-                  </div>
-                  
-                  <input
-                    type="number"
-                    value={userAnswer}
-                    onChange={(e) => setUserAnswer(e.target.value)}
-                    onKeyPress={(e) => e.key === 'Enter' && handleChallengeAnswer()}
-                    className="text-center text-3xl font-bold border-2 border-white rounded-lg px-4 py-3 w-40 text-gray-800 bg-white shadow-lg"
-                    placeholder="?"
-                    autoFocus
-                  />
-                  
-                  <div className="mt-6">
-                    <button
-                      onClick={handleChallengeAnswer}
-                      className="bg-white text-orange-700 px-8 py-4 rounded-lg font-bold hover:bg-gray-100 transition-colors shadow-lg"
-                    >
-                      🚀 Tirer Hyper-Laser !
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {!challengeActive && (
-              <div className="max-w-2xl mx-auto">
-                <div className="bg-gradient-to-br from-purple-600 to-pink-700 rounded-xl p-8 text-center shadow-2xl text-white">
-                  <div className="text-7xl mb-4">🌌</div>
-                  <div className="text-3xl font-bold mb-4">
-                    {timeScore > bestScore ? 'NOUVEAU RECORD GALACTIQUE !' : 'Mission Terminée !'}
-                  </div>
-                  
-                  <div className="bg-white bg-opacity-20 rounded-lg p-4 mb-6">
-                    <div className="text-lg font-bold mb-2">Rapport de Mission</div>
-                    <div className="text-xl mb-2">Énergie collectée: {timeScore}</div>
-                    <div className="text-lg">Secteur atteint: {difficultyLevel}</div>
-                    <div className="text-lg">Tirs réussis: {challengeLaserShots}</div>
-                    {timeScore > bestScore && (
-                      <div className="text-yellow-300 font-bold mt-2 animate-pulse">
-                        🎉 Record de commandant battu ! 🎉
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="space-x-4">
-                    <button
-                      onClick={startTimeChallenge}
-                      className="bg-green-500 text-white px-8 py-4 rounded-lg font-bold hover:bg-green-400 transition-colors shadow-xl"
-                    >
-                      🔄 Nouvelle Mission
-                    </button>
-                    <button
-                      onClick={() => setGameMode('station')}
-                      className="bg-gray-700 text-white px-8 py-4 rounded-lg font-bold hover:bg-gray-600 transition-colors shadow-xl"
-                    >
-                      🛰️ Retour Station
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-        )}
       </div>
     </div>
   );
