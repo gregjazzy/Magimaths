@@ -12,6 +12,18 @@ interface Exercise {
   method: string;
   icon: string;
   visual?: string;
+  additionSteps?: string[];
+  item?: string;
+  groups?: number;
+  itemsPerGroup?: number;
+  totalObjects?: number;
+  wrongChoices?: Array<{
+    groups: number;
+    itemsPerGroup: number;
+    text?: string;
+    visual?: string;
+    explanation?: string;
+  }>;
 }
 
 export default function SensMultiplicationCE1() {
@@ -260,7 +272,6 @@ export default function SensMultiplicationCE1() {
         method: 'addition',
         icon: '➕',
         visual: '🌟🌟🌟  🌟🌟🌟  🌟🌟🌟  🌟🌟🌟',
-        visualExplanation: '4 groupes de 3 étoiles',
         additionSteps: ['3', '3 + 3', '3 + 3 + 3', '3 + 3 + 3 + 3'],
         item: '🌟',
         groups: 4,
@@ -273,7 +284,7 @@ export default function SensMultiplicationCE1() {
         method: 'addition',
         icon: '➕',
         visual: '🍎🍎🍎🍎🍎  🍎🍎🍎🍎🍎  🍎🍎🍎🍎🍎',
-        visualExplanation: '3 groupes de 5 pommes',
+
         additionSteps: ['5', '5 + 5', '5 + 5 + 5'],
         item: '🍎',
         groups: 3,
@@ -286,7 +297,7 @@ export default function SensMultiplicationCE1() {
         method: 'addition',
         icon: '➕',
         visual: '🔵🔵🔵🔵🔵🔵🔵  🔵🔵🔵🔵🔵🔵🔵',
-        visualExplanation: '2 groupes de 7 cercles',
+
         additionSteps: ['7', '7 + 7'],
         item: '🔵',
         groups: 2,
@@ -299,7 +310,7 @@ export default function SensMultiplicationCE1() {
         method: 'addition',
         icon: '➕',
         visual: '⭐⭐⭐⭐  ⭐⭐⭐⭐  ⭐⭐⭐⭐  ⭐⭐⭐⭐  ⭐⭐⭐⭐',
-        visualExplanation: '5 groupes de 4 étoiles',
+
         additionSteps: ['4', '4 + 4', '4 + 4 + 4', '4 + 4 + 4 + 4', '4 + 4 + 4 + 4 + 4'],
         item: '⭐',
         groups: 5,
@@ -312,7 +323,7 @@ export default function SensMultiplicationCE1() {
         method: 'addition',
         icon: '➕',
         visual: '🌸🌸  🌸🌸  🌸🌸  🌸🌸  🌸🌸  🌸🌸',
-        visualExplanation: '6 groupes de 2 fleurs',
+
         additionSteps: ['2', '2 + 2', '2 + 2 + 2', '2 + 2 + 2 + 2', '2 + 2 + 2 + 2 + 2', '2 + 2 + 2 + 2 + 2 + 2'],
         item: '🌸',
         groups: 6,
@@ -328,14 +339,14 @@ export default function SensMultiplicationCE1() {
         method: 'groupes',
         icon: '⚖️',
         visual: '🟡🟡🟡🟡  🟡🟡🟡🟡  🟡🟡🟡🟡',
-        visualExplanation: '12 objets organisés en 3 groupes égaux de 4',
+
         item: '🟡',
         totalObjects: 12,
         groups: 3,
         itemsPerGroup: 4,
         wrongChoices: [
-          { text: '2 groupes de 5 objets', visual: '🟡🟡🟡🟡🟡  🟡🟡', explanation: 'Il reste 2 objets non groupés' },
-          { text: '5 groupes de 3 objets', visual: '🟡🟡🟡🟡🟡🟡🟡🟡🟡🟡🟡🟡🟡🟡🟡', explanation: 'Il faudrait 15 objets pour 5 groupes de 3' }
+          { groups: 2, itemsPerGroup: 5, text: '2 groupes de 5 objets', visual: '🟡🟡🟡🟡🟡  🟡🟡', explanation: 'Il reste 2 objets non groupés' },
+          { groups: 5, itemsPerGroup: 3, text: '5 groupes de 3 objets', visual: '🟡🟡🟡🟡🟡🟡🟡🟡🟡🟡🟡🟡🟡🟡🟡', explanation: 'Il faudrait 15 objets pour 5 groupes de 3' }
         ]
       },
       { 
@@ -345,7 +356,7 @@ export default function SensMultiplicationCE1() {
         method: 'groupes',
         icon: '⚖️',
         visual: '🔴🔴🔴  🔴🔴🔴  🔴🔴🔴',
-        visualExplanation: 'Chaque groupe a exactement 3 objets',
+
         item: '🔴',
         groups: 3,
         itemsPerGroup: 3
@@ -357,7 +368,7 @@ export default function SensMultiplicationCE1() {
         method: 'groupes',
         icon: '⚖️',
         visual: '⚽⚽⚽  ⚽⚽⚽  ⚽⚽⚽  ⚽⚽⚽  ⚽⚽⚽',
-        visualExplanation: '15 billes organisées en 5 groupes égaux de 3',
+
         item: '⚽',
         totalObjects: 15,
         groups: 5,
@@ -370,7 +381,7 @@ export default function SensMultiplicationCE1() {
         method: 'groupes',
         icon: '⚖️',
         visual: '🟢🟢🟢🟢🟢  🟢🟢🟢🟢🟢  🟢🟢🟢🟢🟢  🟢🟢🟢🟢🟢',
-        visualExplanation: '4 groupes de 5 objets = 20 objets au total',
+
         item: '🟢',
         groups: 4,
         itemsPerGroup: 5
@@ -382,7 +393,7 @@ export default function SensMultiplicationCE1() {
         method: 'groupes',
         icon: '⚖️',
         visual: '🔸🔸  🔸🔸  🔸🔸',
-        visualExplanation: 'Tous les groupes ont exactement 2 objets',
+
         item: '🔸',
         groups: 3,
         itemsPerGroup: 2
@@ -397,7 +408,8 @@ export default function SensMultiplicationCE1() {
   const [methodProgress, setMethodProgress] = useState({
     sens: { completed: 0, total: 6 },
     addition: { completed: 0, total: 5 },
-    groupes: { completed: 0, total: 5 }
+    groupes: { completed: 0, total: 5 },
+    synthese: { completed: 0, total: 4 }
   });
 
   // Exercices actuels basés sur la méthode sélectionnée
@@ -1091,10 +1103,7 @@ export default function SensMultiplicationCE1() {
         scrollToElementSmooth('visual-illustration');
         await wait(1500);
         
-        if (currentExercise.visualExplanation) {
-          await speak(currentExercise.visualExplanation);
-          await wait(2000);
-        }
+
         
         if (currentExercise.additionSteps) {
           await speak("Voici le résultat final de l'addition :");
@@ -1117,10 +1126,7 @@ export default function SensMultiplicationCE1() {
         scrollToElementSmooth('visual-illustration');
         await wait(1500);
         
-        if (currentExercise.visualExplanation) {
-          await speak(currentExercise.visualExplanation);
-          await wait(2000);
-        }
+
         
         if (currentExercise.groups && currentExercise.itemsPerGroup) {
           await speak(`On fait ${currentExercise.groups} groupes de ${currentExercise.itemsPerGroup} objets chacun.`);
@@ -1541,7 +1547,7 @@ export default function SensMultiplicationCE1() {
               <div className="text-center mb-4 sm:mb-6">
                 <button
                   id="explain-text-button"
-                  onClick={() => explainText('Definition')}
+                  onClick={() => explainText()}
                   disabled={isExplainingText || isPlayingVocal}
                   className={`px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-semibold text-sm sm:text-base transition-all ${
                     isExplainingText || isPlayingVocal
@@ -2446,18 +2452,14 @@ export default function SensMultiplicationCE1() {
                                     {currentExercise.visual}
                                   </pre>
                                 </div>
-                                {currentExercise.visualExplanation && (
-                                  <p className="text-sm text-green-700 text-center">
-                                    {currentExercise.visualExplanation}
-                                  </p>
-                                )}
+
                                 
                                 {/* Animation étape par étape pour addition répétée */}
                                 {currentMethodBlock === 'addition' && currentExercise.additionSteps && (
                                   <div className="mt-3 p-2 bg-white rounded border">
                                     <p className="text-xs text-gray-600 mb-2">Étapes de l'addition :</p>
                                     <div className="flex flex-wrap gap-2 justify-center">
-                                      {currentExercise.additionSteps.map((step, index) => (
+                                      {currentExercise.additionSteps.map((step: string, index: number) => (
                                         <span 
                                           key={index}
                                           id={`addition-step-${index}`}
