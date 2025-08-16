@@ -156,8 +156,8 @@ export const chaptersData: Chapter[] = [
   },
   {
     id: 'ce1-quatre-operations',
-    title: 'Les quatre opérations',
-    description: 'Addition, soustraction, multiplication et division (sens)',
+    title: 'Les trois opérations',
+    description: 'Addition, soustraction et multiplication (sens)',
     classLevel: 'CE1',
     category: 'numeracy',
     difficulty: 'beginner',

@@ -10,113 +10,116 @@ const tablesData = {
     name: "Table de 2",
     icon: "✌️",
     color: "green",
-    trick: "On compte de 2 en 2 ! 2, 4, 6, 8, 10, 12, 14, 16, 18, 20",
-    pattern: "Les nombres pairs : 2, 4, 6, 8...",
+    trick: "Multiplier par 2, c'est comme doubler ! Tu peux compter de 2 en 2 : 2, 4, 6, 8, 10...",
+    pattern: "Tous les résultats sont des nombres pairs (qui finissent par 0, 2, 4, 6, 8)",
+    realLifeExample: "2 chaussettes par pied, 2 roues par vélo, 2 yeux par personne...",
     multiplications: [
-      { operation: "2 × 1", result: 2, visual: "🟢🟢", explanation: "2" },
-      { operation: "2 × 2", result: 4, visual: "🟢🟢 🟢🟢", explanation: "2 + 2 = 4" },
-      { operation: "2 × 3", result: 6, visual: "🟢🟢 🟢🟢 🟢🟢", explanation: "4 + 2 = 6" },
-      { operation: "2 × 4", result: 8, visual: "8", explanation: "Tu vois ? +2 à chaque fois !" },
-      { operation: "2 × 5", result: 10, visual: "10", explanation: "Facile !" },
-      { operation: "2 × 6", result: 12, visual: "12", explanation: "Tu maîtrises !" },
-      { operation: "2 × 7", result: 14, visual: "14", explanation: "Parfait !" },
-      { operation: "2 × 8", result: 16, visual: "16", explanation: "Génial !" },
-      { operation: "2 × 9", result: 18, visual: "18", explanation: "Super !" },
-      { operation: "2 × 10", result: 20, visual: "20", explanation: "Bravo !" }
+      { operation: "2 × 1", result: 2, visual: "👟👟", explanation: "1 paire de chaussures = 2 chaussures" },
+      { operation: "2 × 2", result: 4, visual: "👟👟 👟👟", explanation: "2 paires = 4 chaussures" },
+      { operation: "2 × 3", result: 6, visual: "👟👟 👟👟 👟👟", explanation: "3 paires = 6 chaussures" },
+      { operation: "2 × 4", result: 8, visual: "🚲🚲🚲🚲", explanation: "4 vélos = 8 roues (2 roues par vélo)" },
+      { operation: "2 × 5", result: 10, visual: "👥👥👥👥👥", explanation: "5 personnes = 10 yeux (2 yeux par personne)" },
+      { operation: "2 × 6", result: 12, visual: "🥚🥚🥚🥚🥚🥚", explanation: "6 boîtes de 2 œufs = 12 œufs" },
+      { operation: "2 × 7", result: 14, visual: "✋✋✋✋✋✋✋", explanation: "7 mains = 14 doigts (sans les pouces !)" },
+      { operation: "2 × 8", result: 16, visual: "🐾🐾🐾🐾🐾🐾🐾🐾", explanation: "8 chats = 16 pattes avant" },
+      { operation: "2 × 9", result: 18, visual: "👂👂👂👂👂👂👂👂👂", explanation: "9 personnes = 18 oreilles" },
+      { operation: "2 × 10", result: 20, visual: "🦶🦶🦶🦶🦶🦶🦶🦶🦶🦶", explanation: "10 personnes = 20 pieds" }
     ]
   },
   table5: {
     name: "Table de 5",
     icon: "🖐️",
     color: "blue",
-    trick: "Ça finit toujours par 5 ou 0 ! Et on compte avec ses doigts : 5, 10, 15, 20...",
-    pattern: "Les résultats finissent par 5 ou 0",
+    trick: "Multiplier par 5, c'est compter avec ses doigts ! Tous les résultats finissent par 5 ou 0.",
+    pattern: "Les résultats alternent : 5, 10, 15, 20, 25, 30... Toujours 5 ou 0 à la fin !",
+    realLifeExample: "5 doigts par main, 5 centimes dans une pièce, 5 jours d'école par semaine...",
     multiplications: [
-      { operation: "5 × 1", result: 5, visual: "🖐️", explanation: "1 main = 5" },
-      { operation: "5 × 2", result: 10, visual: "🖐️🖐️", explanation: "2 mains = 10" },
-      { operation: "5 × 3", result: 15, visual: "🖐️🖐️🖐️", explanation: "3 mains = 15" },
-      { operation: "5 × 4", result: 20, visual: "20", explanation: "Tu vois ? +5 à chaque fois !" },
-      { operation: "5 × 5", result: 25, visual: "25", explanation: "Toujours 5 ou 0 à la fin !" },
-      { operation: "5 × 6", result: 30, visual: "30", explanation: "Facile !" },
-      { operation: "5 × 7", result: 35, visual: "35", explanation: "Tu maîtrises !" },
-      { operation: "5 × 8", result: 40, visual: "40", explanation: "Parfait !" },
-      { operation: "5 × 9", result: 45, visual: "45", explanation: "Génial !" },
-      { operation: "5 × 10", result: 50, visual: "50", explanation: "Bravo !" }
+      { operation: "5 × 1", result: 5, visual: "🖐️", explanation: "1 main = 5 doigts" },
+      { operation: "5 × 2", result: 10, visual: "🖐️🖐️", explanation: "2 mains = 10 doigts" },
+      { operation: "5 × 3", result: 15, visual: "🖐️🖐️🖐️", explanation: "3 mains = 15 doigts" },
+      { operation: "5 × 4", result: 20, visual: "🖐️🖐️🖐️🖐️", explanation: "4 mains = 20 doigts" },
+      { operation: "5 × 5", result: 25, visual: "🪙🪙🪙🪙🪙", explanation: "5 pièces de 5 centimes = 25 centimes" },
+      { operation: "5 × 6", result: 30, visual: "⭐⭐⭐⭐⭐⭐", explanation: "6 étoiles à 5 branches = 30 branches" },
+      { operation: "5 × 7", result: 35, visual: "📚📚📚📚📚📚📚", explanation: "7 semaines d'école = 35 jours" },
+      { operation: "5 × 8", result: 40, visual: "🦶🦶🦶🦶🦶🦶🦶🦶", explanation: "8 pieds = 40 orteils (5 par pied)" },
+      { operation: "5 × 9", result: 45, visual: "🌟🌟🌟🌟🌟🌟🌟🌟🌟", explanation: "9 étoiles à 5 branches = 45 branches" },
+      { operation: "5 × 10", result: 50, visual: "👥👥👥👥👥👥👥👥👥👥", explanation: "10 personnes = 50 doigts" }
     ]
   },
   table10: {
     name: "Table de 10",
     icon: "🔟",
     color: "indigo",
-    trick: "Super facile ! On ajoute juste un 0 à la fin du nombre !",
-    pattern: "Tous les résultats finissent par 0",
+    trick: "La plus facile ! Multiplier par 10, c'est ajouter un zéro à la fin du nombre !",
+    pattern: "Tous les résultats finissent par 0 : 10, 20, 30, 40, 50...",
+    realLifeExample: "10 doigts, 10 orteils, 10 centimes dans 1 euro, 10 dans une dizaine...",
     multiplications: [
-      { operation: "10 × 1", result: 10, visual: "1 → 10", explanation: "1 avec un 0 = 10" },
-      { operation: "10 × 2", result: 20, visual: "2 → 20", explanation: "2 avec un 0 = 20" },
-      { operation: "10 × 3", result: 30, visual: "3 → 30", explanation: "Tu vois le pattern !" },
-      { operation: "10 × 4", result: 40, visual: "4 → 40", explanation: "Facile !" },
-      { operation: "10 × 5", result: 50, visual: "5 → 50", explanation: "Bravo !" },
-      { operation: "10 × 6", result: 60, visual: "6 → 60", explanation: "Parfait !" },
-      { operation: "10 × 7", result: 70, visual: "7 → 70", explanation: "Génial !" },
-      { operation: "10 × 8", result: 80, visual: "8 → 80", explanation: "Super !" },
-      { operation: "10 × 9", result: 90, visual: "9 → 90", explanation: "Excellent !" },
-      { operation: "10 × 10", result: 100, visual: "10 → 100", explanation: "Champion !" }
+      { operation: "10 × 1", result: 10, visual: "🪙", explanation: "1 pièce de 10 centimes = 10 centimes" },
+      { operation: "10 × 2", result: 20, visual: "🪙🪙", explanation: "2 pièces de 10 centimes = 20 centimes" },
+      { operation: "10 × 3", result: 30, visual: "🪙🪙🪙", explanation: "3 pièces de 10 centimes = 30 centimes" },
+      { operation: "10 × 4", result: 40, visual: "🦶🦶🦶🦶", explanation: "4 personnes = 40 orteils (10 par personne)" },
+      { operation: "10 × 5", result: 50, visual: "👥👥👥👥👥", explanation: "5 personnes = 50 doigts (10 par personne)" },
+      { operation: "10 × 6", result: 60, visual: "🥚🥚🥚🥚🥚🥚", explanation: "6 boîtes de 10 œufs = 60 œufs" },
+      { operation: "10 × 7", result: 70, visual: "📦📦📦📦📦📦📦", explanation: "7 paquets de 10 bonbons = 70 bonbons" },
+      { operation: "10 × 8", result: 80, visual: "🖍️🖍️🖍️🖍️🖍️🖍️🖍️🖍️", explanation: "8 boîtes de 10 crayons = 80 crayons" },
+      { operation: "10 × 9", result: 90, visual: "🎈🎈🎈🎈🎈🎈🎈🎈🎈", explanation: "9 paquets de 10 ballons = 90 ballons" },
+      { operation: "10 × 10", result: 100, visual: "💯", explanation: "10 dizaines = 100 ! Un nombre rond parfait !" }
     ]
   }
 };
 
-// Exercices pour chaque table (15 questions randomisées)
+// Exercices pour chaque table (15 questions variées)
 const exercisesData = {
   table2: [
-    { question: "2 × 7", answer: 14 },
-    { question: "2 × 3", answer: 6 },
-    { question: "2 × 9", answer: 18 },
-    { question: "2 × 5", answer: 10 },
-    { question: "2 × 1", answer: 2 },
-    { question: "2 × 8", answer: 16 },
-    { question: "2 × 4", answer: 8 },
-    { question: "2 × 10", answer: 20 },
-    { question: "2 × 2", answer: 4 },
-    { question: "2 × 6", answer: 12 },
-    { question: "2 × 3", answer: 6 },
-    { question: "2 × 9", answer: 18 },
-    { question: "2 × 7", answer: 14 },
-    { question: "2 × 5", answer: 10 },
-    { question: "2 × 8", answer: 16 }
+    { question: "2 × 3", answer: 6, context: "3 paires de chaussettes = ? chaussettes" },
+    { question: "2 × 5", answer: 10, context: "5 vélos = ? roues" },
+    { question: "2 × 4", answer: 8, context: "4 personnes = ? yeux" },
+    { question: "2 × 7", answer: 14, context: "7 chats = ? oreilles" },
+    { question: "2 × 2", answer: 4, context: "2 paires de gants = ? gants" },
+    { question: "2 × 6", answer: 12, context: "6 boîtes de 2 œufs = ? œufs" },
+    { question: "2 × 8", answer: 16, context: "8 chiens = ? pattes avant" },
+    { question: "2 × 1", answer: 2, context: "1 paire de lunettes = ? verres" },
+    { question: "2 × 9", answer: 18, context: "9 personnes = ? oreilles" },
+    { question: "2 × 10", answer: 20, context: "10 personnes = ? pieds" },
+    { question: "4 × 2", answer: 8, context: "4 fois 2 bonbons = ? bonbons" },
+    { question: "6 × 2", answer: 12, context: "6 fois 2 billes = ? billes" },
+    { question: "3 × 2", answer: 6, context: "3 fois 2 crayons = ? crayons" },
+    { question: "8 × 2", answer: 16, context: "8 fois 2 euros = ? euros" },
+    { question: "5 × 2", answer: 10, context: "5 fois 2 pommes = ? pommes" }
   ],
   table5: [
-    { question: "5 × 4", answer: 20 },
-    { question: "5 × 7", answer: 35 },
-    { question: "5 × 2", answer: 10 },
-    { question: "5 × 9", answer: 45 },
-    { question: "5 × 6", answer: 30 },
-    { question: "5 × 1", answer: 5 },
-    { question: "5 × 8", answer: 40 },
-    { question: "5 × 3", answer: 15 },
-    { question: "5 × 10", answer: 50 },
-    { question: "5 × 5", answer: 25 },
-    { question: "5 × 2", answer: 10 },
-    { question: "5 × 8", answer: 40 },
-    { question: "5 × 6", answer: 30 },
-    { question: "5 × 4", answer: 20 },
-    { question: "5 × 9", answer: 45 }
+    { question: "5 × 2", answer: 10, context: "2 mains = ? doigts" },
+    { question: "5 × 4", answer: 20, context: "4 mains = ? doigts" },
+    { question: "5 × 3", answer: 15, context: "3 étoiles à 5 branches = ? branches" },
+    { question: "5 × 6", answer: 30, context: "6 semaines d'école = ? jours" },
+    { question: "5 × 1", answer: 5, context: "1 pièce de 5 centimes = ? centimes" },
+    { question: "5 × 8", answer: 40, context: "8 pieds = ? orteils" },
+    { question: "5 × 5", answer: 25, context: "5 pièces de 5 centimes = ? centimes" },
+    { question: "5 × 7", answer: 35, context: "7 semaines d'école = ? jours" },
+    { question: "5 × 9", answer: 45, context: "9 étoiles à 5 branches = ? branches" },
+    { question: "5 × 10", answer: 50, context: "10 personnes = ? doigts" },
+    { question: "3 × 5", answer: 15, context: "3 fois 5 bonbons = ? bonbons" },
+    { question: "6 × 5", answer: 30, context: "6 fois 5 euros = ? euros" },
+    { question: "4 × 5", answer: 20, context: "4 fois 5 billes = ? billes" },
+    { question: "8 × 5", answer: 40, context: "8 fois 5 centimes = ? centimes" },
+    { question: "2 × 5", answer: 10, context: "2 fois 5 crayons = ? crayons" }
   ],
   table10: [
-    { question: "10 × 6", answer: 60 },
-    { question: "10 × 3", answer: 30 },
-    { question: "10 × 9", answer: 90 },
-    { question: "10 × 1", answer: 10 },
-    { question: "10 × 7", answer: 70 },
-    { question: "10 × 4", answer: 40 },
-    { question: "10 × 8", answer: 80 },
-    { question: "10 × 2", answer: 20 },
-    { question: "10 × 10", answer: 100 },
-    { question: "10 × 5", answer: 50 },
-    { question: "10 × 3", answer: 30 },
-    { question: "10 × 8", answer: 80 },
-    { question: "10 × 6", answer: 60 },
-    { question: "10 × 9", answer: 90 },
-    { question: "10 × 7", answer: 70 }
+    { question: "10 × 2", answer: 20, context: "2 pièces de 10 centimes = ? centimes" },
+    { question: "10 × 5", answer: 50, context: "5 personnes = ? doigts" },
+    { question: "10 × 3", answer: 30, context: "3 pièces de 10 centimes = ? centimes" },
+    { question: "10 × 7", answer: 70, context: "7 paquets de 10 bonbons = ? bonbons" },
+    { question: "10 × 1", answer: 10, context: "1 paquet de 10 crayons = ? crayons" },
+    { question: "10 × 4", answer: 40, context: "4 personnes = ? orteils" },
+    { question: "10 × 8", answer: 80, context: "8 boîtes de 10 œufs = ? œufs" },
+    { question: "10 × 6", answer: 60, context: "6 boîtes de 10 billes = ? billes" },
+    { question: "10 × 9", answer: 90, context: "9 paquets de 10 ballons = ? ballons" },
+    { question: "10 × 10", answer: 100, context: "10 dizaines = ? unités" },
+    { question: "3 × 10", answer: 30, context: "3 fois 10 euros = ? euros" },
+    { question: "5 × 10", answer: 50, context: "5 fois 10 bonbons = ? bonbons" },
+    { question: "7 × 10", answer: 70, context: "7 fois 10 centimes = ? centimes" },
+    { question: "4 × 10", answer: 40, context: "4 fois 10 billes = ? billes" },
+    { question: "6 × 10", answer: 60, context: "6 fois 10 crayons = ? crayons" }
   ]
 };
 
@@ -237,8 +240,15 @@ function TableAnimation({
             <Lightbulb className="w-5 h-5 text-yellow-600 mr-2" />
             <span className="font-bold text-yellow-800">Astuce !</span>
           </div>
-          <p className="text-yellow-800 text-sm">{table.trick}</p>
-          <p className="text-yellow-700 text-xs mt-2 italic">{table.pattern}</p>
+          <p className="text-yellow-800 text-sm mb-2">{table.trick}</p>
+          <p className="text-yellow-700 text-xs mb-2 italic">{table.pattern}</p>
+          {table.realLifeExample && (
+            <div className="bg-yellow-50 p-2 rounded mt-2">
+              <p className="text-yellow-800 text-xs">
+                <span className="font-semibold">🌍 Dans la vraie vie :</span> {table.realLifeExample}
+              </p>
+            </div>
+          )}
         </div>
 
         <button
@@ -390,9 +400,14 @@ function TableExercises({
       </div>
 
       <div className="text-center mb-8">
-        <h3 className="text-3xl font-bold text-gray-800 mb-4">
+        <h3 className="text-3xl font-bold text-gray-800 mb-2">
           {currentExercise.question} = ?
         </h3>
+        {currentExercise.context && (
+          <p className="text-lg text-blue-600 mb-4 italic">
+            💡 {currentExercise.context}
+          </p>
+        )}
       </div>
 
       <div 
