@@ -49,16 +49,6 @@ export default function CE1QuatreOperations() {
       xp: 25,
       color: 'from-blue-500 to-cyan-500',
       verified: true
-    },
-    {
-      id: 'division-ce1',
-      title: 'Division',
-      description: 'Découverte de la division : partage équitable (sens)',
-      icon: '➗',
-      duration: '20 min',
-      xp: 25,
-      color: 'from-orange-500 to-red-500',
-      verified: true
     }
   ];
 
@@ -127,10 +117,10 @@ export default function CE1QuatreOperations() {
           
           <div className="bg-white rounded-xl p-6 shadow-lg text-center">
             <h1 className="text-4xl font-bold text-gray-900 mb-4">
-              🔢 Les quatre opérations - CE1
+              🔢 Les trois opérations - CE1
             </h1>
             <p className="text-lg text-gray-600 mb-6">
-              Découvre les quatre opérations de base avec le sens et des calculs simples !
+              Découvre les trois opérations de base avec le sens et des calculs simples !
             </p>
             <div className="text-xl mb-6">
               <span className="bg-blue-200 px-4 py-2 rounded-full font-bold text-gray-800">
@@ -147,7 +137,7 @@ export default function CE1QuatreOperations() {
             <div>
               <h2 className="text-2xl font-bold mb-2">Objectif du chapitre</h2>
               <p className="text-lg">
-                À la fin de ce chapitre, tu auras découvert les 4 opérations et tu sauras faire des calculs simples !
+                À la fin de ce chapitre, tu auras découvert les 3 opérations et tu sauras faire des calculs simples !
               </p>
             </div>
           </div>
@@ -239,9 +229,9 @@ export default function CE1QuatreOperations() {
             <div className="text-4xl mb-3">🌟</div>
             <h3 className="text-xl font-bold mb-2">Bravo petit calculateur !</h3>
             <p className="text-lg">
-              {completedSections.length === 0 && "Commence ton aventure avec les quatre opérations !"}
+              {completedSections.length === 0 && "Commence ton aventure avec les trois opérations !"}
               {completedSections.length > 0 && completedSections.length < sections.length && "Continue, tu deviens un as du calcul !"}
-              {completedSections.length === sections.length && "Félicitations ! Tu maîtrises les quatre opérations !"}
+              {completedSections.length === sections.length && "Félicitations ! Tu maîtrises les trois opérations !"}
             </p>
           </div>
         </div>

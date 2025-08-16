@@ -24,74 +24,15 @@ const sections = [
     color: 'from-pink-500 to-rose-500',
     verified: true
   },
-  {
-    id: 'groupes-egaux',
-    title: 'Groupes égaux',
-    description: 'Faire des groupes qui ont le même nombre d\'objets',
-    icon: '👥',
-    duration: '10 min',
-    xp: 18,
-    color: 'from-blue-500 to-cyan-500',
-    verified: true
-  },
-  {
-    id: 'addition-repetee',
-    title: 'Addition répétée',
-    description: 'Additionner le même nombre plusieurs fois',
-    icon: '🔄',
-    duration: '12 min',
-    xp: 20,
-    color: 'from-purple-500 to-violet-500',
-    verified: true
-  },
+
   {
     id: 'table-2',
-    title: 'Table de 2',
-    description: 'Apprendre à compter de 2 en 2',
-    icon: '2️⃣',
-    duration: '15 min',
-    xp: 25,
+    title: 'Tables de multiplication CE1',
+    description: 'Apprendre les tables de 2, 5 et 10 avec des astuces',
+    icon: '🔢',
+    duration: '20 min',
+    xp: 35,
     color: 'from-green-500 to-emerald-500',
-    verified: true
-  },
-  {
-    id: 'table-3',
-    title: 'Table de 3',
-    description: 'Apprendre à compter de 3 en 3',
-    icon: '3️⃣',
-    duration: '16 min',
-    xp: 27,
-    color: 'from-teal-500 to-cyan-500',
-    verified: true
-  },
-  {
-    id: 'table-4',
-    title: 'Table de 4',
-    description: 'Apprendre à compter de 4 en 4',
-    icon: '4️⃣',
-    duration: '17 min',
-    xp: 28,
-    color: 'from-orange-500 to-red-500',
-    verified: true
-  },
-  {
-    id: 'table-5',
-    title: 'Table de 5',
-    description: 'Apprendre à compter de 5 en 5',
-    icon: '5️⃣',
-    duration: '15 min',
-    xp: 25,
-    color: 'from-yellow-500 to-orange-500',
-    verified: true
-  },
-  {
-    id: 'table-10',
-    title: 'Table de 10',
-    description: 'Apprendre à compter de 10 en 10',
-    icon: '🔟',
-    duration: '12 min',
-    xp: 22,
-    color: 'from-indigo-500 to-blue-500',
     verified: true
   },
   {
@@ -233,110 +174,112 @@ export default function CE1MultiplicationPage() {
           </div>
         </div>
 
-        {/* Introduction ludique */}
-        <div className="bg-gradient-to-r from-purple-400 to-pink-500 rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 text-white">
-          <div className="flex flex-col sm:flex-row items-center justify-center text-center sm:text-left space-y-3 sm:space-y-0 sm:space-x-4">
-            <div className="text-4xl sm:text-6xl">✖️</div>
-            <div>
-              <h2 className="text-lg sm:text-2xl font-bold mb-2">Programme français CE1 - Multiplications</h2>
-              <p className="text-sm sm:text-lg">
-                Comprendre la multiplication, tables de 2, 5 et 10, résoudre des problèmes !
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Exercices - grille simple style CE1 */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-          {sections.map((section) => (
-            <div key={section.id} className="bg-white rounded-xl p-4 sm:p-6 shadow-lg hover:shadow-xl transition-all transform hover:scale-105 relative">
-              {/* Badge de statut vérifié */}
-              {section.verified && (
-                <div className="absolute top-2 sm:top-3 right-2 sm:right-3 bg-green-500 text-white px-2 py-1 rounded-full text-xs font-bold flex items-center">
-                  ✓ Vérifié
+        <div className="space-y-8">
+            {/* Introduction ludique */}
+            <div className="bg-gradient-to-r from-purple-400 to-pink-500 rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 text-white">
+              <div className="flex flex-col sm:flex-row items-center justify-center text-center sm:text-left space-y-3 sm:space-y-0 sm:space-x-4">
+                <div className="text-4xl sm:text-6xl">✖️</div>
+                <div>
+                  <h2 className="text-lg sm:text-2xl font-bold mb-2">Programme français CE1 - Multiplications</h2>
+                  <p className="text-sm sm:text-lg">
+                    Comprendre la multiplication, tables de 2, 5 et 10, résoudre des problèmes !
+                  </p>
                 </div>
-              )}
-              
-              <div className="text-center mb-3 sm:mb-4">
-                <div className="text-4xl sm:text-5xl mb-2 sm:mb-3">{section.icon}</div>
-                <h3 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900 px-2">{section.title}</h3>
               </div>
-              
-              <div className="text-center mb-4 sm:mb-6">
-                <p className="text-gray-600 text-sm sm:text-base lg:text-lg px-2">{section.description}</p>
-                <div className="flex flex-wrap justify-center items-center gap-2 sm:gap-4 mt-3 text-xs sm:text-sm text-gray-500">
-                  <div className="flex items-center space-x-1">
-                    <Clock className="w-3 h-3 sm:w-4 sm:h-4" />
-                    <span>{section.duration}</span>
-                  </div>
-                  <div className="flex items-center space-x-1">
-                    <Trophy className="w-3 h-3 sm:w-4 sm:h-4" />
-                    <span>{section.xp} XP</span>
-                  </div>
-                  {completedSections.includes(section.id) && (
-                    <div className="flex items-center space-x-1 text-green-600">
-                      <span className="text-xs font-medium">✅ Terminé</span>
+            </div>
+
+            {/* Sections du cours */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+              {sections.map((section) => (
+                <div key={section.id} className="bg-white rounded-xl p-4 sm:p-6 shadow-lg hover:shadow-xl transition-all transform hover:scale-105 relative">
+                  {/* Badge de statut vérifié */}
+                  {section.verified && (
+                    <div className="absolute top-2 sm:top-3 right-2 sm:right-3 bg-green-500 text-white px-2 py-1 rounded-full text-xs font-bold flex items-center">
+                      ✓ Vérifié
                     </div>
                   )}
+                  
+                  <div className="text-center mb-3 sm:mb-4">
+                    <div className="text-4xl sm:text-5xl mb-2 sm:mb-3">{section.icon}</div>
+                    <h3 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900 px-2">{section.title}</h3>
+                  </div>
+                  
+                  <div className="text-center mb-4 sm:mb-6">
+                    <p className="text-gray-600 text-sm sm:text-base lg:text-lg px-2">{section.description}</p>
+                    <div className="flex flex-wrap justify-center items-center gap-2 sm:gap-4 mt-3 text-xs sm:text-sm text-gray-500">
+                      <div className="flex items-center space-x-1">
+                        <Clock className="w-3 h-3 sm:w-4 sm:h-4" />
+                        <span>{section.duration}</span>
+                      </div>
+                      <div className="flex items-center space-x-1">
+                        <Trophy className="w-3 h-3 sm:w-4 sm:h-4" />
+                        <span>{section.xp} XP</span>
+                      </div>
+                      {completedSections.includes(section.id) && (
+                        <div className="flex items-center space-x-1 text-green-600">
+                          <span className="text-xs font-medium">✅ Terminé</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  
+                  <Link 
+                    href={getSectionPath(section.id)}
+                    className={`block w-full bg-gradient-to-r ${section.color} text-white text-center py-3 px-4 sm:px-6 rounded-lg font-bold text-base sm:text-lg hover:opacity-90 transition-opacity`}
+                  >
+                    <Play className="inline w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+                    {completedSections.includes(section.id) ? 'Refaire' : 'Commencer !'}
+                  </Link>
+                </div>
+              ))}
+            </div>
+
+            {/* Progression */}
+            <div className="bg-white rounded-xl p-4 sm:p-6 shadow-lg">
+              <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-4 text-center">
+                📊 Ta progression
+              </h3>
+              <div className="flex justify-center gap-4 sm:gap-8">
+                <div className="text-center">
+                  <div className="text-2xl sm:text-3xl font-bold text-green-600">{completedSections.length}</div>
+                  <div className="text-xs sm:text-sm text-gray-600">Sections<br className="sm:hidden" /> terminées</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl sm:text-3xl font-bold text-blue-600">{sections.length}</div>
+                  <div className="text-xs sm:text-sm text-gray-600">Sections<br className="sm:hidden" /> au total</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl sm:text-3xl font-bold text-yellow-600">{xpEarned}</div>
+                  <div className="text-xs sm:text-sm text-gray-600">Points<br className="sm:hidden" /> d'expérience</div>
                 </div>
               </div>
               
-              <Link 
-                href={getSectionPath(section.id)}
-                className={`block w-full bg-gradient-to-r ${section.color} text-white text-center py-3 px-4 sm:px-6 rounded-lg font-bold text-base sm:text-lg hover:opacity-90 transition-opacity`}
-              >
-                <Play className="inline w-4 h-4 sm:w-5 sm:h-5 mr-2" />
-                {completedSections.includes(section.id) ? 'Refaire' : 'Commencer !'}
-              </Link>
+              {/* Barre de progression */}
+              <div className="mt-4">
+                <div className="bg-gray-200 rounded-full h-3">
+                  <div 
+                    className="bg-gradient-to-r from-purple-400 to-pink-500 h-3 rounded-full transition-all duration-500"
+                    style={{ width: `${(completedSections.length / sections.length) * 100}%` }}
+                  ></div>
+                </div>
+                <p className="text-center text-sm text-gray-600 mt-2">
+                  {Math.round((completedSections.length / sections.length) * 100)}% terminé
+                </p>
+              </div>
             </div>
-          ))}
-        </div>
 
-        {/* Progression */}
-        <div className="mt-6 sm:mt-8 bg-white rounded-xl p-4 sm:p-6 shadow-lg">
-          <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-4 text-center">
-            📊 Ta progression
-          </h3>
-          <div className="flex justify-center gap-4 sm:gap-8">
-            <div className="text-center">
-              <div className="text-2xl sm:text-3xl font-bold text-green-600">{completedSections.length}</div>
-              <div className="text-xs sm:text-sm text-gray-600">Sections<br className="sm:hidden" /> terminées</div>
+            {/* Encouragements */}
+            <div className="mt-6 sm:mt-8 text-center">
+              <div className="bg-gradient-to-r from-purple-400 to-pink-400 rounded-xl p-4 sm:p-6 text-white">
+                <div className="text-3xl sm:text-4xl mb-3">🌟</div>
+                <h3 className="text-lg sm:text-xl font-bold mb-2">Bravo magicien des multiplications !</h3>
+                <p className="text-sm sm:text-base lg:text-lg px-2">
+                  {completedSections.length === 0 && "Prêt à découvrir la magie de la multiplication ?"}
+                  {completedSections.length > 0 && completedSections.length < sections.length && "Continue, tu deviens de plus en plus fort !"}
+                  {completedSections.length === sections.length && "Félicitations ! Tu maîtrises les multiplications !"}
+                </p>
+              </div>
             </div>
-            <div className="text-center">
-              <div className="text-2xl sm:text-3xl font-bold text-blue-600">{sections.length}</div>
-              <div className="text-xs sm:text-sm text-gray-600">Sections<br className="sm:hidden" /> au total</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl sm:text-3xl font-bold text-yellow-600">{xpEarned}</div>
-              <div className="text-xs sm:text-sm text-gray-600">Points<br className="sm:hidden" /> d'expérience</div>
-            </div>
-          </div>
-          
-          {/* Barre de progression */}
-          <div className="mt-4">
-            <div className="bg-gray-200 rounded-full h-3">
-              <div 
-                className="bg-gradient-to-r from-purple-400 to-pink-500 h-3 rounded-full transition-all duration-500"
-                style={{ width: `${(completedSections.length / sections.length) * 100}%` }}
-              ></div>
-            </div>
-            <p className="text-center text-sm text-gray-600 mt-2">
-              {Math.round((completedSections.length / sections.length) * 100)}% terminé
-            </p>
-          </div>
-        </div>
-
-        {/* Encouragements */}
-        <div className="mt-6 sm:mt-8 text-center">
-          <div className="bg-gradient-to-r from-purple-400 to-pink-400 rounded-xl p-4 sm:p-6 text-white">
-            <div className="text-3xl sm:text-4xl mb-3">🌟</div>
-            <h3 className="text-lg sm:text-xl font-bold mb-2">Bravo magicien des multiplications !</h3>
-            <p className="text-sm sm:text-base lg:text-lg px-2">
-              {completedSections.length === 0 && "Prêt à découvrir la magie de la multiplication ?"}
-              {completedSections.length > 0 && completedSections.length < sections.length && "Continue, tu deviens de plus en plus fort !"}
-              {completedSections.length === sections.length && "Félicitations ! Tu maîtrises les multiplications !"}
-            </p>
-          </div>
         </div>
       </div>
     </div>
