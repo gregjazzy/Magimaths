@@ -35,16 +35,6 @@ const sections = [
     verified: true
   },
   {
-    id: 'soustractions-20',
-    title: 'Soustractions jusqu\'à 20',
-    description: 'Soustractions plus grandes en comptant à rebours',
-    icon: '⬇️',
-    duration: '15 min',
-    xp: 18,
-    color: 'from-yellow-500 to-orange-500',
-        verified: true
-  },
-  {
     id: 'problemes',
     title: 'Problèmes de soustraction',
     description: 'Résoudre des petits problèmes de la vie quotidienne',

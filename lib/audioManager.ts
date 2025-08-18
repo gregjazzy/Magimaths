@@ -482,7 +482,7 @@ export const AVAILABLE_AUDIOS = {
   },
   'cp-soustractions-simples': {
     'sens-soustraction': ['course-intro', 'course-explanation', 'course-practice', 'course-final', 'exercise-intro'],
-    'soustractions-20': ['course-intro', 'course-explanation', 'course-practice', 'exercise-intro'],
+
     'techniques': ['course-intro', 'course-explanation', 'course-practice', 'exercise-intro'],
     'problemes': ['course-intro', 'course-explanation', 'course-practice', 'exercise-intro']
   }

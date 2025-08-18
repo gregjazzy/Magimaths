@@ -108,12 +108,6 @@ const VOCAL_TEXTS = {
       'course-final': "Maintenant, clique sur l'onglet Exercices pour t'entraîner à comprendre la soustraction !",
       'exercise-intro': "Super ! Tu es dans les exercices sur le sens de la soustraction ! Tu vas découvrir 18 exercices variés !"
     },
-    'soustractions-20': {
-      'course-intro': "Salut ! Aujourd'hui, nous allons maîtriser les soustractions jusqu'à 20 !",
-      'course-explanation': "Il y a 4 stratégies super efficaces : compter à rebours, décomposition, passer par 10, ou utiliser les doubles !",
-      'course-practice': "Maintenant, clique sur l'onglet Exercices pour devenir un champion des soustractions !",
-      'exercise-intro': "Super ! Tu es dans les exercices de soustractions jusqu'à 20 ! Tu vas résoudre 20 soustractions variées !"
-    },
     'techniques': {
       'course-intro': "Salut ! Aujourd'hui, nous allons découvrir les techniques avancées de soustraction !",
       'course-explanation': "Il existe plein d'astuces pour soustraire plus facilement : la ligne numérique, les bonds, la décomposition !",

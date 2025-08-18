@@ -1914,34 +1914,7 @@ export default function ProblemesSoustraction() {
               </button>
             </div>
 
-            {/* Instructions pour les exercices */}
-            <div className="bg-blue-50 border-2 border-blue-200 rounded-xl shadow-lg p-4 sm:p-6">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="p-2 bg-blue-100 rounded-lg">
-                  <span className="text-2xl">🎯</span>
-                </div>
-                <h2 className="text-xl sm:text-2xl font-bold text-blue-800">Comment bien réussir tes exercices ?</h2>
-              </div>
-              
-              <div className="space-y-3 text-sm sm:text-base text-blue-700">
-                <div className="flex items-start gap-3">
-                  <span className="text-lg">📖</span>
-                  <p><strong>1. Lis bien l'histoire</strong> de chaque problème pour comprendre la situation.</p>
-                </div>
-                <div className="flex items-start gap-3">
-                  <span className="text-lg">🔍</span>
-                  <p><strong>2. Trouve les deux nombres</strong> importants dans l'histoire pour la soustraction.</p>
-                </div>
-                <div className="flex items-start gap-3">
-                  <span className="text-lg">✏️</span>
-                  <p><strong>3. Tape ta réponse</strong> dans la case avec le point d'interrogation.</p>
-                </div>
-                <div className="flex items-start gap-3">
-                  <span className="text-lg">✨</span>
-                  <p><strong>4. Si tu te trompes</strong>, Steve t'aidera avec une animation pour comprendre !</p>
-                </div>
-              </div>
-            </div>
+
 
             <div className="bg-white rounded-xl shadow-lg p-6">
               <div className="flex justify-between items-center mb-6">

@@ -53,7 +53,6 @@ const chapters = [
     sections: [
       { id: 'sens-soustraction', title: 'Le sens de la soustraction', completed: false },
       { id: 'soustractions-10', title: 'Soustractions jusqu\'à 10', completed: false },
-      { id: 'soustractions-20', title: 'Soustractions jusqu\'à 20', completed: false },
       { id: 'techniques', title: 'Techniques de calcul', completed: false },
       { id: 'problemes', title: 'Problèmes de soustraction', completed: false }
     ],
