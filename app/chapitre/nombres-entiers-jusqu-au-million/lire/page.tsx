@@ -151,136 +151,154 @@ export default function LireNombresEntiersPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-100 to-pink-100">
-      <div className="max-w-6xl mx-auto px-4 py-8">
-        <Link href="/chapitre/nombres-entiers-jusqu-au-million" className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors mb-6">
-          <ArrowLeft className="w-5 h-5" />
-          <span>Retour</span>
+      <div className="max-w-6xl mx-auto px-3 sm:px-4 py-4 sm:py-8">
+        <Link href="/chapitre/nombres-entiers-jusqu-au-million" className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors mb-4 sm:mb-6">
+          <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />
+          <span className="text-sm sm:text-base">Retour</span>
         </Link>
 
         {/* Titre */}
-        <div className="text-center mb-8">
-          <h1 className="text-5xl font-bold text-gray-900 mb-4">
+        <div className="text-center mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold text-gray-900 mb-3 sm:mb-4 px-2">
             🎯 Comprendre les nombres jusqu'au MILLION !
           </h1>
         </div>
 
         {/* Explication de la méthode */}
-        <div className="bg-gradient-to-r from-yellow-100 to-orange-100 rounded-3xl p-6 mb-8 border-2 border-yellow-300">
-          <h2 className="text-2xl font-bold text-center mb-4 text-gray-900">
+        <div className="bg-gradient-to-r from-yellow-100 to-orange-100 rounded-2xl sm:rounded-3xl p-4 sm:p-6 mb-6 sm:mb-8 border-2 border-yellow-300">
+          <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-center mb-3 sm:mb-4 text-gray-900">
             💡 La méthode pour placer les chiffres
           </h2>
-          <div className="text-lg text-gray-800 space-y-2">
-            <p className="text-center">
+          <div className="text-sm sm:text-base lg:text-lg text-gray-800 space-y-2 sm:space-y-3">
+            <p className="text-center px-2">
               <strong>📝 Étape 1 :</strong> On commence toujours par le chiffre de la <span className="text-purple-600 font-bold">fin</span> (à droite)
             </p>
-            <p className="text-center">
+            <p className="text-center px-2">
               <strong>👉 Étape 2 :</strong> On place ce chiffre dans les <span className="text-purple-600 font-bold">unités</span>
             </p>
-            <p className="text-center">
+            <p className="text-center px-2">
               <strong>🔄 Étape 3 :</strong> On continue vers la <span className="text-purple-600 font-bold">gauche</span> : dizaines, centaines, etc.
             </p>
-            <div className="text-center mt-4">
-              <p className="text-lg font-bold text-gray-800 mb-2">
+            <div className="text-center mt-3 sm:mt-4">
+              <p className="text-sm sm:text-base lg:text-lg font-bold text-gray-800 mb-2 px-2">
                 Exemple avec le nombre <span className="text-purple-600">2674</span> :
               </p>
-              <div className="inline-flex items-center space-x-2 text-2xl">
+              <div className="flex flex-wrap justify-center items-center gap-1 sm:gap-2 text-sm sm:text-base lg:text-xl px-2">
                 <span>4</span>
                 <span className="text-purple-600">→</span>
-                <span>unités</span>
-                <span className="text-gray-400">|</span>
+                <span className="text-xs sm:text-sm lg:text-base">unités</span>
+                <span className="text-gray-400 hidden sm:inline">|</span>
                 <span>7</span>
                 <span className="text-purple-600">→</span>
-                <span>dizaines</span>
-                <span className="text-gray-400">|</span>
+                <span className="text-xs sm:text-sm lg:text-base">dizaines</span>
+                <span className="text-gray-400 hidden sm:inline">|</span>
                 <span>6</span>
                 <span className="text-purple-600">→</span>
-                <span>centaines</span>
-                <span className="text-gray-400">|</span>
+                <span className="text-xs sm:text-sm lg:text-base">centaines</span>
+                <span className="text-gray-400 hidden sm:inline">|</span>
                 <span>2</span>
                 <span className="text-purple-600">→</span>
-                <span>milliers</span>
+                <span className="text-xs sm:text-sm lg:text-base">milliers</span>
               </div>
             </div>
           </div>
         </div>
 
         {/* Tableau magique des positions */}
-        <div className="bg-white rounded-3xl p-8 shadow-xl mb-8">
-          <h2 className="text-3xl font-bold text-center mb-6 text-gray-900">
+        <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 shadow-xl mb-6 sm:mb-8">
+          <h2 className="text-lg sm:text-xl lg:text-2xl xl:text-3xl font-bold text-center mb-4 sm:mb-6 text-gray-900 px-2">
             📊 Le tableau magique des positions
           </h2>
 
-          <div className="overflow-x-auto">
-            <table className="w-full border-collapse">
-              <thead>
-                <tr className="bg-gradient-to-r from-purple-600 to-pink-600 text-white">
-                  {positions.map((pos, i) => (
-                    <th key={i} className="p-4 text-sm font-bold border border-purple-400 first:rounded-tl-lg last:rounded-tr-lg">
-                      {pos}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                <tr className="text-center">
-                  {positionValues.map((value, i) => {
-                    const colors = ['bg-red-200', 'bg-orange-200', 'bg-yellow-200', 'bg-green-200', 'bg-blue-200', 'bg-indigo-200', 'bg-purple-200'];
-                    return (
-                      <td key={i} className={`p-4 text-lg font-bold border border-gray-300 ${colors[i]}`}>
-                        {value}
-                      </td>
-                    );
-                  })}
-                </tr>
-              </tbody>
-            </table>
+          <div className="overflow-x-auto -mx-2 sm:mx-0">
+            <div className="min-w-max px-2 sm:px-0">
+              <table className="w-full border-collapse text-xs sm:text-sm lg:text-base">
+                <thead>
+                  <tr className="bg-gradient-to-r from-purple-600 to-pink-600 text-white">
+                    {positions.map((pos, i) => (
+                      <th key={i} className="p-2 sm:p-3 lg:p-4 text-xs sm:text-sm lg:text-base font-bold border border-purple-400 first:rounded-tl-lg last:rounded-tr-lg min-w-[60px] sm:min-w-[80px]">
+                        <div className="break-words leading-tight">
+                          {pos.split(' ').map((word, idx) => (
+                            <div key={idx} className="block sm:inline">
+                              {word}{idx < pos.split(' ').length - 1 && <span className="hidden sm:inline"> </span>}
+                            </div>
+                          ))}
+                        </div>
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr className="text-center">
+                    {positionValues.map((value, i) => {
+                      const colors = ['bg-red-200', 'bg-orange-200', 'bg-yellow-200', 'bg-green-200', 'bg-blue-200', 'bg-indigo-200', 'bg-purple-200'];
+                      return (
+                        <td key={i} className={`p-2 sm:p-3 lg:p-4 text-xs sm:text-sm lg:text-lg font-bold border border-gray-300 ${colors[i]} min-w-[60px] sm:min-w-[80px]`}>
+                          <div className="break-all leading-tight">
+                            {value.length > 4 ? (
+                              <div>
+                                <div className="block sm:hidden text-[10px]">{value.slice(0, 3)}...</div>
+                                <div className="hidden sm:block">{value}</div>
+                              </div>
+                            ) : (
+                              value
+                            )}
+                          </div>
+                        </td>
+                      );
+                    })}
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
 
         {/* Section interactive */}
-        <div className="bg-white rounded-3xl p-8 shadow-xl mb-8 relative">
-          <h2 className="text-3xl font-bold text-center mb-6 text-gray-900">
+        <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 shadow-xl mb-6 sm:mb-8 relative">
+          <h2 className="text-lg sm:text-xl lg:text-2xl xl:text-3xl font-bold text-center mb-4 sm:mb-6 text-gray-900 px-2">
             🎮 Choisis un nombre et regarde la magie !
           </h2>
           
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 mb-4 sm:mb-6">
             {numbers.map((num) => (
               <button
                 key={num.value}
                 onClick={() => setSelectedNumber(num.value)}
-                className={`p-4 rounded-xl border-3 transition-all transform hover:scale-105 ${
+                className={`p-3 sm:p-4 rounded-lg sm:rounded-xl border-2 sm:border-3 transition-all transform hover:scale-105 ${
                   selectedNumber === num.value 
                     ? 'bg-gradient-to-r from-blue-500 to-purple-500 text-white border-blue-500 shadow-lg' 
                     : 'bg-white border-gray-300 hover:border-blue-300 text-gray-900'
                 }`}
               >
-                <div className="text-lg font-bold">{num.label}</div>
-                <div className="text-sm opacity-75">{num.reading}</div>
+                <div className="text-base sm:text-lg font-bold">{num.label}</div>
+                <div className="text-xs sm:text-sm opacity-75 leading-tight mt-1">{num.reading}</div>
               </button>
             ))}
           </div>
 
           {/* Bouton animation */}
-          <div className="text-center mb-6">
+          <div className="text-center mb-4 sm:mb-6">
             <button 
               onClick={animateNumber}
               disabled={isAnimating}
-              className={`px-8 py-3 rounded-xl font-bold text-lg transition-all transform hover:scale-105 shadow-lg ${
+              className={`px-6 sm:px-8 py-3 rounded-lg sm:rounded-xl font-bold text-sm sm:text-base lg:text-lg transition-all transform hover:scale-105 shadow-lg ${
                 isAnimating 
                   ? 'bg-gray-400 cursor-not-allowed' 
                   : 'bg-gradient-to-r from-orange-500 to-red-500 text-white hover:from-orange-600 hover:to-red-600'
               }`}
             >
-              {isAnimating ? <Pause className="w-5 h-5 inline mr-2" /> : <Play className="w-5 h-5 inline mr-2" />}
-              {isAnimating ? 'Animation en cours...' : 'Voir l\'animation !'}
+              {isAnimating ? <Pause className="w-4 h-4 sm:w-5 sm:h-5 inline mr-2" /> : <Play className="w-4 h-4 sm:w-5 sm:h-5 inline mr-2" />}
+              <span className="hidden sm:inline">{isAnimating ? 'Animation en cours...' : 'Voir l\'animation !'}</span>
+              <span className="sm:hidden">{isAnimating ? 'En cours...' : 'Animation !'}</span>
             </button>
             {isAnimating && (
-              <div className="mt-4 p-3 bg-blue-100 border border-blue-300 rounded-lg">
-                <p className="text-sm font-bold text-blue-800">
+              <div className="mt-3 sm:mt-4 p-3 bg-blue-100 border border-blue-300 rounded-lg mx-2 sm:mx-0">
+                <p className="text-xs sm:text-sm font-bold text-blue-800">
                   👀 Regarde bien : chaque chiffre se déplace vers sa position !
                 </p>
                 {animatingDigit && (
-                  <p className="text-xs text-blue-600 mt-1">
+                  <p className="text-xs text-blue-600 mt-1 leading-tight">
                     Le chiffre <span className="font-bold text-red-600">{animatingDigit.digit}</span> se place dans les {' '}
                     <span className="font-bold">
                       {animatingDigit.to === 6 ? 'UNITÉS' : 
@@ -409,19 +427,19 @@ export default function LireNombresEntiersPage() {
         </div>
 
         {/* Section d'exercices */}
-        <div className="bg-white rounded-3xl p-8 shadow-xl mb-8">
-          <h2 className="text-3xl font-bold text-center mb-6 text-gray-900">
+        <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 shadow-xl mb-6 sm:mb-8">
+          <h2 className="text-lg sm:text-xl lg:text-2xl xl:text-3xl font-bold text-center mb-4 sm:mb-6 text-gray-900 px-2">
             🎯 Série d'exercices - Lecture des nombres
           </h2>
           
           {!showExercises ? (
             <div className="text-center">
-              <p className="text-lg text-gray-600 mb-6">
+              <p className="text-sm sm:text-base lg:text-lg text-gray-600 mb-4 sm:mb-6 px-2">
                 Maintenant que tu as compris la méthode, entraîne-toi avec 20 exercices !
               </p>
               <button 
                 onClick={() => setShowExercises(true)}
-                className="bg-gradient-to-r from-green-500 to-blue-500 text-white px-8 py-4 rounded-xl font-bold text-lg hover:from-green-600 hover:to-blue-600 transition-all transform hover:scale-105 shadow-lg"
+                className="bg-gradient-to-r from-green-500 to-blue-500 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-lg sm:rounded-xl font-bold text-sm sm:text-base lg:text-lg hover:from-green-600 hover:to-blue-600 transition-all transform hover:scale-105 shadow-lg"
               >
                 🚀 Commencer les exercices !
               </button>
@@ -429,40 +447,40 @@ export default function LireNombresEntiersPage() {
           ) : (
             <div>
               {/* Rappel des règles d'orthographe */}
-              <div className="bg-blue-50 border-l-4 border-blue-500 p-6 mb-6 rounded-r-lg">
-                <h3 className="text-lg font-bold text-blue-800 mb-4 flex items-center">
+              <div className="bg-blue-50 border-l-4 border-blue-500 p-3 sm:p-4 lg:p-6 mb-4 sm:mb-6 rounded-r-lg">
+                <h3 className="text-sm sm:text-base lg:text-lg font-bold text-blue-800 mb-3 sm:mb-4 flex items-center">
                   📝 Rappel des règles d'orthographe
                 </h3>
-                <div className="grid md:grid-cols-2 gap-4 text-sm">
-                  <div className="space-y-2">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4 text-xs sm:text-sm">
+                  <div className="space-y-2 sm:space-y-3">
                     <div className="flex items-start space-x-2">
-                      <span className="text-green-600 font-bold">✓</span>
-                      <div>
+                      <span className="text-green-600 font-bold text-sm">✓</span>
+                      <div className="flex-1">
                         <strong className="text-gray-900">MILLE</strong> <span className="text-gray-800">est invariable</span><br/>
-                        <span className="text-gray-800">Ex: deux mille, trois mille</span>
+                        <span className="text-gray-700 text-xs">Ex: deux mille, trois mille</span>
                       </div>
                     </div>
                     <div className="flex items-start space-x-2">
-                      <span className="text-green-600 font-bold">✓</span>
-                      <div>
+                      <span className="text-green-600 font-bold text-sm">✓</span>
+                      <div className="flex-1">
                         <strong className="text-gray-900">CENT</strong> <span className="text-gray-800">prend un "s" seulement s'il est multiplié et en fin de nombre</span><br/>
-                        <span className="text-gray-800">Ex: deux cents, mais deux cent un</span>
+                        <span className="text-gray-700 text-xs">Ex: deux cents, mais deux cent un</span>
                       </div>
                     </div>
                   </div>
-                  <div className="space-y-2">
+                  <div className="space-y-2 sm:space-y-3">
                     <div className="flex items-start space-x-2">
-                      <span className="text-green-600 font-bold">✓</span>
-                      <div>
+                      <span className="text-green-600 font-bold text-sm">✓</span>
+                      <div className="flex-1">
                         <strong className="text-gray-900">MILLION</strong> <span className="text-gray-800">prend un "s" au pluriel</span><br/>
-                        <span className="text-gray-800">Ex: deux millions, trois millions</span>
+                        <span className="text-gray-700 text-xs">Ex: deux millions, trois millions</span>
                       </div>
                     </div>
                     <div className="flex items-start space-x-2">
-                      <span className="text-green-600 font-bold">✓</span>
-                      <div>
+                      <span className="text-green-600 font-bold text-sm">✓</span>
+                      <div className="flex-1">
                         <strong className="text-gray-900">VINGT</strong> <span className="text-gray-800">prend un "s" dans "quatre-vingts" seulement</span><br/>
-                        <span className="text-gray-800">Ex: quatre-vingts, mais quatre-vingt-un</span>
+                        <span className="text-gray-700 text-xs">Ex: quatre-vingts, mais quatre-vingt-un</span>
                       </div>
                     </div>
                   </div>
@@ -485,22 +503,22 @@ export default function LireNombresEntiersPage() {
 
               {currentExercise < exercises.length ? (
                 <div className="text-center">
-                  <div className="bg-gray-50 p-6 rounded-2xl mb-6">
-                    <h3 className="text-2xl font-bold text-gray-900 mb-4">
+                  <div className="bg-gray-50 p-4 sm:p-6 rounded-xl sm:rounded-2xl mb-4 sm:mb-6">
+                    <h3 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900 mb-3 sm:mb-4 px-2">
                       Comment se lit ce nombre ?
                     </h3>
-                    <div className="text-5xl font-bold text-purple-600 mb-4">
+                    <div className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold text-purple-600 mb-3 sm:mb-4 break-all">
                       {formatNumber(exercises[currentExercise].number)}
                     </div>
                   </div>
 
-                  <div className="mb-6">
+                  <div className="mb-4 sm:mb-6">
                     <input
                       type="text"
                       value={userAnswer}
                       onChange={(e) => setUserAnswer(e.target.value)}
                       placeholder="Écris comment se lit ce nombre..."
-                      className="w-full p-4 border-2 border-gray-300 rounded-xl text-lg focus:border-purple-500 focus:outline-none text-gray-900 placeholder-gray-600 bg-white"
+                      className="w-full p-3 sm:p-4 border-2 border-gray-300 rounded-lg sm:rounded-xl text-sm sm:text-base lg:text-lg focus:border-purple-500 focus:outline-none text-gray-900 placeholder-gray-600 bg-white"
                       disabled={isCorrect !== null}
                     />
                   </div>
@@ -574,14 +592,14 @@ export default function LireNombresEntiersPage() {
         </div>
 
         {/* Bouton final */}
-        <div className="text-center">
+        <div className="text-center px-2">
           <Link 
             href="/chapitre/nombres-entiers-jusqu-au-million/ecrire"
-            className="inline-flex items-center space-x-3 bg-gradient-to-r from-green-500 to-blue-500 text-white px-8 py-4 rounded-2xl font-bold text-xl hover:from-green-600 hover:to-blue-600 transition-all transform hover:scale-105 shadow-lg"
+            className="inline-flex items-center space-x-2 sm:space-x-3 bg-gradient-to-r from-green-500 to-blue-500 text-white px-4 sm:px-6 lg:px-8 py-3 sm:py-4 rounded-xl sm:rounded-2xl font-bold text-sm sm:text-base lg:text-lg xl:text-xl hover:from-green-600 hover:to-blue-600 transition-all transform hover:scale-105 shadow-lg"
           >
-            <span className="text-2xl">🎉</span>
-            <span>Maintenant j'apprends à écrire !</span>
-            <span className="text-2xl">✏️</span>
+            <span className="text-lg sm:text-xl lg:text-2xl">🎉</span>
+            <span className="text-center leading-tight">Maintenant j'apprends à écrire !</span>
+            <span className="text-lg sm:text-xl lg:text-2xl">✏️</span>
           </Link>
         </div>
             </div>
