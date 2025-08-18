@@ -35,6 +35,16 @@ const sections = [
     verified: true
   },
   {
+    id: 'soustractions-20',
+    title: 'Soustractions jusqu\'à 20',
+    description: 'Maîtriser les soustractions avec des nombres plus grands',
+    icon: '🎯',
+    duration: '15 min',
+    xp: 18,
+    color: 'from-purple-500 to-pink-500',
+    verified: true
+  },
+  {
     id: 'problemes',
     title: 'Problèmes de soustraction',
     description: 'Résoudre des petits problèmes de la vie quotidienne',
