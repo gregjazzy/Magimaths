@@ -12,7 +12,8 @@ Quand l'utilisateur changeait d'onglet (Cours → Exercices), les vocaux du cour
 ### 📝 Exemple Concret
 ```typescript
 const explainChapterGoal = async () => {
-  await playAudioSequence("Bienvenue dans..."); // ← User clique "Exercices" ICI
+  await playAudio
+  ioSequence("Bienvenue dans..."); // ← User clique "Exercices" ICI
   await wait(1200);                              // ← Fonction continue...
   await playAudioSequence("Regarde ces nombres"); // ← Continue...
   await wait(2000);                              // ← Continue...

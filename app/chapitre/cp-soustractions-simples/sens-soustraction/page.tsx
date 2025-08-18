@@ -628,30 +628,30 @@ export default function SensSoustraction() {
                     </div>
                     
                     <div className="space-y-3 sm:space-y-4">
-                      <h3 className="text-xl sm:text-3xl font-bold text-gray-800 mb-3 sm:mb-4">
+                      <h3 className="text-lg sm:text-2xl font-bold text-gray-800 mb-3 sm:mb-4">
                         🎯 Le symbole magique de la soustraction !
                       </h3>
                       
                       <div className="bg-white/80 rounded-xl p-4 sm:p-6 border border-red-100">
-                        <p className="text-base sm:text-xl text-gray-700 leading-relaxed">
+                        <p className="text-sm sm:text-lg text-gray-700 leading-relaxed">
                           Ce petit trait horizontal nous dit : <br/>
-                          <span className="inline-flex items-center gap-1 sm:gap-2 mt-2 px-3 sm:px-6 py-2 sm:py-3 bg-gradient-to-r from-red-100 to-pink-100 rounded-full text-sm sm:text-lg">
-                            <span className="text-lg sm:text-2xl">✨</span>
+                          <span className="inline-flex items-center gap-1 sm:gap-2 mt-2 px-3 sm:px-4 py-2 sm:py-3 bg-gradient-to-r from-red-100 to-pink-100 rounded-full text-xs sm:text-base">
+                            <span className="text-sm sm:text-xl">✨</span>
                             <span className="font-bold text-red-600">« Enlève-moi quelque chose ! »</span>
-                            <span className="text-lg sm:text-2xl">✨</span>
+                            <span className="text-sm sm:text-xl">✨</span>
                           </span>
                         </p>
                       </div>
                       
-                      <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 mt-4 sm:mt-6">
-                        <div className="bg-red-100 px-3 sm:px-5 py-2 sm:py-3 rounded-full">
-                          <span className="text-red-700 font-semibold text-sm sm:text-lg">👋 Enlever</span>
+                      <div className="flex flex-col sm:flex-row justify-center gap-2 sm:gap-4 mt-4 sm:mt-6">
+                        <div className="bg-red-100 px-2 sm:px-4 py-1 sm:py-2 rounded-full">
+                          <span className="text-red-700 font-semibold text-xs sm:text-base">👋 Enlever</span>
                         </div>
-                        <div className="bg-pink-100 px-3 sm:px-5 py-2 sm:py-3 rounded-full">
-                          <span className="text-pink-700 font-semibold text-sm sm:text-lg">🚀 Retirer</span>
+                        <div className="bg-pink-100 px-2 sm:px-4 py-1 sm:py-2 rounded-full">
+                          <span className="text-pink-700 font-semibold text-xs sm:text-base">🚀 Retirer</span>
                         </div>
-                        <div className="bg-orange-100 px-3 sm:px-5 py-2 sm:py-3 rounded-full">
-                          <span className="text-orange-700 font-semibold text-sm sm:text-lg">💨 Faire partir</span>
+                        <div className="bg-orange-100 px-2 sm:px-4 py-1 sm:py-2 rounded-full">
+                          <span className="text-orange-700 font-semibold text-xs sm:text-base">💨 Faire partir</span>
                         </div>
                       </div>
                     </div>
@@ -677,53 +677,53 @@ export default function SensSoustraction() {
               </div>
 
               <div className="space-y-4 sm:space-y-6">
-                <div className="bg-gradient-to-r from-orange-50 to-yellow-50 rounded-xl p-4 sm:p-6 border-2 border-orange-100">
-                  <h3 className="text-xl sm:text-2xl font-bold text-orange-800 mb-4 flex items-center gap-2">
-                    <span className="text-3xl">⚖️</span>
+                <div className="bg-gradient-to-r from-orange-50 to-yellow-50 rounded-xl p-3 sm:p-4 border-2 border-orange-100">
+                  <h3 className="text-lg sm:text-xl font-bold text-orange-800 mb-4 flex items-center gap-2">
+                    <span className="text-2xl">⚖️</span>
                     Regarde comme c'est magique !
                         </h3>
                   
                   {/* Démonstration avec les mêmes objets */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                     {/* Addition */}
-                    <div className="bg-white rounded-lg p-4 sm:p-5 border-2 border-green-200">
-                      <h4 className="text-base sm:text-lg font-bold text-green-700 mb-3 text-center">
+                    <div className="bg-white rounded-lg p-3 sm:p-4 border-2 border-green-200">
+                      <h4 className="text-sm sm:text-base font-bold text-green-700 mb-3 text-center">
                         ➕ ADDITION : J'ajoute
                       </h4>
                       <div className="text-center space-y-3">
                         <div className="flex justify-center items-center gap-2">
-                          <span className="text-2xl sm:text-3xl">🍎🍎</span>
-                          <span className="text-green-600 font-bold text-xl sm:text-2xl">+</span>
-                          <span className="text-2xl sm:text-3xl">🍎</span>
-                          <span className="text-gray-600 font-bold text-xl sm:text-2xl">=</span>
-                          <span className="text-2xl sm:text-3xl">🍎🍎🍎</span>
+                          <span className="text-xl sm:text-2xl">🍎🍎</span>
+                          <span className="text-green-600 font-bold">+</span>
+                          <span className="text-xl sm:text-2xl">🍎</span>
+                          <span className="text-gray-600 font-bold">=</span>
+                          <span className="text-xl sm:text-2xl">🍎🍎🍎</span>
                         </div>
-                        <p className="text-sm sm:text-base text-green-700 font-medium">
+                        <p className="text-xs sm:text-sm text-green-700 font-medium">
                           2 + 1 = 3
                         </p>
-                        <p className="text-sm sm:text-base text-green-600">
+                        <p className="text-xs sm:text-sm text-green-600">
                           J'ai plus qu'avant !
                         </p>
                       </div>
                     </div>
                     
                     {/* Soustraction */}
-                    <div className="bg-white rounded-lg p-4 sm:p-5 border-2 border-red-200">
-                      <h4 className="text-base sm:text-lg font-bold text-red-700 mb-3 text-center">
+                    <div className="bg-white rounded-lg p-3 sm:p-4 border-2 border-red-200">
+                      <h4 className="text-sm sm:text-base font-bold text-red-700 mb-3 text-center">
                         ➖ SOUSTRACTION : J'enlève
                       </h4>
                       <div className="text-center space-y-3">
                         <div className="flex justify-center items-center gap-2">
-                          <span className="text-2xl sm:text-3xl">🍎🍎🍎</span>
-                          <span className="text-red-600 font-bold text-xl sm:text-2xl">-</span>
-                          <span className="text-2xl sm:text-3xl opacity-50 line-through">🍎</span>
-                          <span className="text-gray-600 font-bold text-xl sm:text-2xl">=</span>
-                          <span className="text-2xl sm:text-3xl">🍎🍎</span>
+                          <span className="text-xl sm:text-2xl">🍎🍎🍎</span>
+                          <span className="text-red-600 font-bold">-</span>
+                          <span className="text-xl sm:text-2xl opacity-50 line-through">🍎</span>
+                          <span className="text-gray-600 font-bold">=</span>
+                          <span className="text-xl sm:text-2xl">🍎🍎</span>
                         </div>
-                        <p className="text-sm sm:text-base text-red-700 font-medium">
+                        <p className="text-xs sm:text-sm text-red-700 font-medium">
                           3 - 1 = 2
                         </p>
-                        <p className="text-sm sm:text-base text-red-600">
+                        <p className="text-xs sm:text-sm text-red-600">
                           J'ai moins qu'avant !
                         </p>
                       </div>
@@ -731,16 +731,16 @@ export default function SensSoustraction() {
                   </div>
                   
                   {/* Message clé */}
-                  <div className="mt-4 bg-gradient-to-r from-purple-100 to-pink-100 rounded-lg p-4 sm:p-6 border border-purple-200">
+                  <div className="mt-4 bg-gradient-to-r from-purple-100 to-pink-100 rounded-lg p-3 sm:p-4 border border-purple-200">
                     <div className="text-center">
-                      <p className="text-base sm:text-lg font-bold text-purple-800 mb-3">
-                        <span className="text-xl sm:text-2xl">🎯</span> Tu vois la différence ?
+                      <p className="text-sm sm:text-base font-bold text-purple-800 mb-2">
+                        <span className="text-lg">🎯</span> Tu vois la différence ?
                       </p>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 text-sm sm:text-base">
-                        <div className="bg-green-100 rounded-lg p-3 sm:p-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs sm:text-sm">
+                        <div className="bg-green-100 rounded-lg p-2">
                           <span className="font-bold text-green-800">➕ Ajouter = Plus</span>
                         </div>
-                        <div className="bg-red-100 rounded-lg p-3 sm:p-4">
+                        <div className="bg-red-100 rounded-lg p-2">
                           <span className="font-bold text-red-800">➖ Enlever = Moins</span>
                         </div>
                       </div>

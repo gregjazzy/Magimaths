@@ -464,6 +464,19 @@ export default function AdditionsJusqua100() {
     setAnimatedObjects([]);
     setCorrectionNumbers(null);
     setCountingIndex(-1);
+
+    // Nettoyer tous les styles inline ajoutés par les animations
+    try {
+      const elementsWithIds = document.querySelectorAll('[id]');
+      elementsWithIds.forEach(element => {
+        if (element instanceof HTMLElement) {
+          element.style.cssText = '';
+        }
+      });
+      console.log('🧹 Styles inline nettoyés');
+    } catch (error) {
+      console.warn('Erreur lors du nettoyage des styles:', error);
+    }
   };
 
   // Fonction pour jouer l'audio avec voix féminine française
@@ -570,21 +583,42 @@ export default function AdditionsJusqua100() {
     });
   };
 
-  // Fonction pour faire défiler vers une section
-  const scrollToSection = (elementId: string) => {
-    setTimeout(() => {
-      const element = document.getElementById(elementId);
-      if (element) {
-        element.scrollIntoView({ 
-          behavior: 'smooth', 
-          block: 'center',
-          inline: 'nearest' 
-        });
+  // Fonction pour faire défiler vers une section avec animation améliorée
+  const scrollToSection = (elementId: string, highlight: boolean = true) => {
+    const element = document.getElementById(elementId);
+    if (element) {
+      // Scroll fluide vers l'élément
+      element.scrollIntoView({ 
+        behavior: 'smooth', 
+        block: 'center',
+        inline: 'nearest' 
+      });
+      
+      if (highlight) {
+        // Sauvegarder le style original
+        const originalStyle = element.style.cssText;
+        const originalClasses = element.className;
+        
+        // Animation de surbrillance avec style inline
+        element.style.cssText = `
+          ${originalStyle}
+          box-shadow: 0 0 0 4px rgba(251, 191, 36, 0.6), 0 0 20px rgba(251, 191, 36, 0.4);
+          transform: scale(1.02);
+          transition: all 0.5s ease;
+          border-radius: 12px;
+          background: linear-gradient(45deg, rgba(251, 191, 36, 0.1), rgba(59, 130, 246, 0.1));
+        `;
+        
+        // Retirer l'animation après 3 secondes
+        setTimeout(() => {
+          element.style.cssText = originalStyle;
+          element.className = originalClasses;
+        }, 3000);
       }
-    }, 300);
+    }
   };
 
-  // Fonction pour scroller vers le bouton Suivant
+  // Fonction pour scroller vers le bouton Suivant avec animation
   const scrollToNextButton = () => {
     if (nextButtonRef.current) {
       nextButtonRef.current.scrollIntoView({
@@ -592,6 +626,44 @@ export default function AdditionsJusqua100() {
         block: 'end',
         inline: 'nearest'
       });
+      
+      // Animation de pulsation pour attirer l'attention
+      nextButtonRef.current.classList.add('animate-pulse', 'ring-4', 'ring-green-400', 'ring-opacity-75');
+      
+      setTimeout(() => {
+        if (nextButtonRef.current) {
+          nextButtonRef.current.classList.remove('animate-pulse', 'ring-4', 'ring-green-400', 'ring-opacity-75');
+        }
+      }, 4000);
+    }
+  };
+
+  // Fonction pour animer un bouton spécifique avec style inline
+  const animateButton = (buttonId: string, duration: number = 3000) => {
+    const button = document.getElementById(buttonId);
+    if (button) {
+      // Sauvegarder le style original
+      const originalStyle = button.style.cssText;
+      const originalClasses = button.className;
+      
+      // Appliquer l'animation avec style inline pour garantir la visibilité
+      button.style.cssText = `
+        ${originalStyle}
+        animation: pulse 1s infinite;
+        box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.5);
+        transform: scale(1.05);
+        transition: all 0.3s ease;
+        border: 2px solid #3B82F6;
+      `;
+      
+      // Ajouter aussi les classes pour double sécurité
+      button.classList.add('animate-pulse', 'ring-4', 'ring-blue-400', 'ring-opacity-75');
+      
+      setTimeout(() => {
+        // Restaurer le style original
+        button.style.cssText = originalStyle;
+        button.className = originalClasses;
+      }, duration);
     }
   };
 
@@ -808,55 +880,74 @@ export default function AdditionsJusqua100() {
     setHasStarted(true);
 
     try {
-      // Introduction
+      // Introduction avec animation améliorée
       setHighlightedElement('intro');
-      scrollToSection('intro-section');
+      scrollToSection('intro-section', true);
       await playAudio("Bonjour ! Aujourd'hui, nous allons apprendre les additions jusqu'à 100 ! C'est un cours très important qui va te rendre super fort en calcul !");
-      await wait(500);
+      await wait(1000);
 
       if (stopSignalRef.current) return;
 
-      // Les techniques
+      // Les techniques avec animation des boutons
       setHighlightedElement('techniques');
-      scrollToSection('techniques-section');
+      scrollToSection('techniques-section', true);
       await playAudio("Je vais te montrer 4 techniques extraordinaires pour additionner facilement tous les nombres jusqu'à 100 !");
-      await wait(500);
+      await wait(1000);
+      
+      if (stopSignalRef.current) return;
+      
+      // Animation des boutons de technique un par un avec scroll et surbrillance
+      const techniqueData = [
+        { id: 'technique-sans-retenue', step: 'sans-retenue', name: 'Addition sans retenue' },
+        { id: 'technique-avec-retenue', step: 'bond-10', name: 'Bond de 10' },
+        { id: 'technique-decomposition', step: 'calcul-mental', name: 'Calcul mental' },
+        { id: 'technique-complement', step: 'complement-10', name: 'Complément à 10' }
+      ];
+      
+      for (let i = 0; i < techniqueData.length; i++) {
+        if (stopSignalRef.current) return;
+        
+        const technique = techniqueData[i];
+        
+        // Scroll vers la technique et animation
+        scrollToSection(technique.id, true);
+        await wait(500);
+        
+        // Animation de l'étape
+        setAnimatingStep(technique.step);
+        animateButton(technique.id, 3000);
+        
+        await playAudio(`${technique.name} !`);
+        await wait(1500);
+        
+        // Nettoyer l'animation
+        setAnimatingStep(null);
+      }
 
       if (stopSignalRef.current) return;
 
-      // Première technique : sans retenue
-      setAnimatingStep('sans-retenue');
-      await playAudio("Première technique : l'addition sans retenue ! C'est la plus simple et tu vas l'adorer !");
-      await wait(800);
-
-      if (stopSignalRef.current) return;
-
-      // Deuxième technique : bond de 10
-      setAnimatingStep('bond-10');
-      await playAudio("Deuxième technique : compter par bond de 10 ! Comme un kangourou qui saute !");
-      await wait(800);
-
-      if (stopSignalRef.current) return;
-
-      // Troisième technique : calcul mental
-      setAnimatingStep('calcul-mental');
-      await playAudio("Troisième technique : le calcul mental rapide ! Pour impressionner tout le monde avec ta vitesse !");
-      await wait(800);
-
-      if (stopSignalRef.current) return;
-
-      // Quatrième technique : complément à 10
-      setAnimatingStep('complement-10');
-      await playAudio("Quatrième technique : le complément à 10 ! Une astuce de champion pour calculer super vite !");
-      await wait(800);
-
-      if (stopSignalRef.current) return;
-
-      // Transition vers les exemples
+      // Transition vers les exemples avec animation
       setHighlightedElement('examples');
-      scrollToSection('examples-section');
-      await playAudio("Maintenant, choisis une technique et je te montre comment elle fonctionne avec de belles animations !");
-      await wait(500);
+      scrollToSection('examples-section', true);
+      await playAudio("Maintenant, essaie ces techniques avec les exemples ci-dessous en cliquant sur 'Voir l'animation' !");
+      await wait(1000);
+      
+      if (stopSignalRef.current) return;
+      
+      // Animation des boutons "Voir l'animation" un par un
+      for (let i = 0; i < additionTechniques.length; i++) {
+        if (stopSignalRef.current) return;
+        animateButton(`animation-button-${i}`, 2000);
+        await wait(500);
+      }
+      
+      await wait(1000);
+      if (stopSignalRef.current) return;
+      
+      // Animation du bouton "Commencer les exercices"
+      animateButton('start-exercises-btn', 3000);
+      await playAudio("Quand tu es prêt, clique sur le bouton 'Commencer les exercices' pour t'entraîner !");
+      await wait(1000);
 
     } finally {
       setHighlightedElement(null);
@@ -1382,27 +1473,42 @@ export default function AdditionsJusqua100() {
       await wait(1000);
       if (stopSignalRef.current) return;
       
-      // Mettre en surbrillance le bouton "Écouter l'énoncé"
+      // Scroll vers la zone d'exercice et animation du bouton "Écouter l'énoncé"
+      scrollToSection('exercise-area', true);
+      await wait(800);
+      
+      // Mettre en surbrillance et animer le bouton "Écouter l'énoncé"
       setHighlightedElement('listen-question-button');
-      await playAudio("Pour lire l'énoncé appuie sur écouter l'énoncé");
+      animateButton('listen-question-button', 3000);
+      await playAudio("Pour écouter l'énoncé de l'exercice, clique sur ce bouton bleu !");
       if (stopSignalRef.current) return;
       await wait(1500);
       setHighlightedElement(null);
       
       if (stopSignalRef.current) return;
       
-      // Mettre en surbrillance la zone de réponse
+      // Scroll et animation de la zone de réponse
+      scrollToSection('answer-zone', true);
+      await wait(500);
       setHighlightedElement('answer-zone');
-      await playAudio("Écris le résultat de l'addition dans la case, puis clique sur valider");
+      animateButton('answer-input', 3000);
+      await playAudio("Écris ta réponse dans cette case, puis clique sur le bouton Valider !");
+      if (stopSignalRef.current) return;
+      
+      await wait(1000);
+      animateButton('validate-btn', 3000);
+      await playAudio("N'oublie pas de cliquer sur Valider quand tu as fini !");
       if (stopSignalRef.current) return;
       
       await wait(1500);
       setHighlightedElement(null);
       if (stopSignalRef.current) return;
       
-      // Mettre en surbrillance Sam lui-même pour les explications
+      // Scroll vers Sam et animation
+      scrollToSection('sam-pirate-section', true);
+      await wait(500);
       setHighlightedElement('sam-pirate');
-      await playAudio("Si tu te trompes, je t'expliquerai la bonne réponse !");
+      await playAudio("Si tu te trompes, ne t'inquiète pas ! Je t'expliquerai la bonne méthode étape par étape !");
       if (stopSignalRef.current) return;
       await wait(1500);
       setHighlightedElement(null);
@@ -1658,16 +1764,25 @@ export default function AdditionsJusqua100() {
         `
       }} />
       
-      {/* Bouton Stop flottant - visible uniquement quand Sam parle */}
-      {isPlayingVocal && (
+      {/* Bouton Stop flottant - visible quand Sam parle ou pendant les animations */}
+      {(isPlayingVocal || isAnimationRunning) && (
         <div className="fixed top-4 right-4 z-[60]">
           <button
             onClick={stopAllVocalsAndAnimations}
-            className="bg-red-500 hover:bg-red-600 text-white rounded-lg px-4 py-2 shadow-lg transition-all duration-200 flex items-center space-x-2"
+            className="bg-red-500 hover:bg-red-600 text-white rounded-lg px-4 py-2 shadow-lg transition-all duration-200 flex items-center space-x-2 animate-pulse"
             title="Arrêter l'animation"
           >
-            <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center">
-              <span className="text-red-500 text-sm font-bold">🧙‍♂️</span>
+            <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center overflow-hidden">
+              {!imageError ? (
+                <img
+                  src="/image/pirate-small.png"
+                  alt="Sam le Pirate"
+                  className="w-full h-full object-cover rounded-full"
+                  onError={() => setImageError(true)}
+                />
+              ) : (
+                <span className="text-red-500 text-sm font-bold">🏴‍☠️</span>
+              )}
             </div>
             <span className="font-semibold text-sm">Stop ||</span>
           </button>
@@ -1712,6 +1827,7 @@ export default function AdditionsJusqua100() {
             📚 Cours
           </button>
           <button
+            id="start-exercises-btn"
             onClick={() => {
               stopAllVocalsAndAnimations();
               setShowExercises(true);
@@ -1763,16 +1879,16 @@ export default function AdditionsJusqua100() {
 
               {/* Bouton DÉMARRER avec Sam */}
               <button
-                onClick={explainChapterWithSam}
-                disabled={isPlayingVocal}
+                onClick={explainChapter}
+                disabled={isPlayingVocal || isAnimationRunning}
                 className={`px-3 sm:px-6 py-2 sm:py-3 rounded-lg font-bold text-sm sm:text-lg shadow-lg transition-all ${
-                  isPlayingVocal
+                  isPlayingVocal || isAnimationRunning
                     ? 'bg-gray-400 text-gray-200 cursor-not-allowed'
                     : 'bg-gradient-to-r from-indigo-500 to-blue-500 text-white hover:shadow-xl hover:scale-105'
                 } ${!hasStarted && !isPlayingVocal ? 'animate-pulse' : ''}`}
               >
                 <Play className="w-3 h-3 sm:w-5 sm:h-5 inline-block mr-1 sm:mr-2" />
-                {isPlayingVocal ? 'Sam explique...' : 'DÉMARRER'}
+                {isPlayingVocal || isAnimationRunning ? 'Sam explique...' : 'DÉMARRER'}
               </button>
             </div>
 
@@ -1822,33 +1938,45 @@ export default function AdditionsJusqua100() {
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className={`p-4 rounded-lg text-center transition-all duration-500 ${
-                  animatingStep === 'sans-retenue' ? 'bg-green-100 ring-2 ring-green-400 scale-105' : 'bg-gray-100'
-                }`}>
+                <div 
+                  id="technique-sans-retenue"
+                  className={`p-4 rounded-lg text-center transition-all duration-500 ${
+                    animatingStep === 'sans-retenue' ? 'bg-green-100 ring-2 ring-green-400 scale-105' : 'bg-gray-100'
+                  }`}
+                >
                   <div className="text-3xl mb-2">✨</div>
                   <h4 className="font-bold text-green-800">Sans retenue</h4>
                   <p className="text-sm text-green-700">La plus simple !</p>
                 </div>
                 
-                <div className={`p-4 rounded-lg text-center transition-all duration-500 ${
-                  animatingStep === 'bond-10' ? 'bg-orange-100 ring-2 ring-orange-400 scale-105' : 'bg-gray-100'
-                }`}>
+                <div 
+                  id="technique-avec-retenue"
+                  className={`p-4 rounded-lg text-center transition-all duration-500 ${
+                    animatingStep === 'bond-10' ? 'bg-orange-100 ring-2 ring-orange-400 scale-105' : 'bg-gray-100'
+                  }`}
+                >
                   <div className="text-3xl mb-2">🦘</div>
                   <h4 className="font-bold text-orange-800">Bond de 10</h4>
                   <p className="text-sm text-orange-700">La sauteuse !</p>
                 </div>
 
-                <div className={`p-4 rounded-lg text-center transition-all duration-500 ${
-                  animatingStep === 'calcul-mental' ? 'bg-purple-100 ring-2 ring-purple-400 scale-105' : 'bg-gray-100'
-                }`}>
+                <div 
+                  id="technique-decomposition"
+                  className={`p-4 rounded-lg text-center transition-all duration-500 ${
+                    animatingStep === 'calcul-mental' ? 'bg-purple-100 ring-2 ring-purple-400 scale-105' : 'bg-gray-100'
+                  }`}
+                >
                   <div className="text-3xl mb-2">🧠</div>
                   <h4 className="font-bold text-purple-800">Calcul mental</h4>
                   <p className="text-sm text-purple-700">La rapide !</p>
                 </div>
 
-                <div className={`p-4 rounded-lg text-center transition-all duration-500 ${
-                  animatingStep === 'complement-10' ? 'bg-blue-100 ring-2 ring-blue-400 scale-105' : 'bg-gray-100'
-                }`}>
+                <div 
+                  id="technique-complement"
+                  className={`p-4 rounded-lg text-center transition-all duration-500 ${
+                    animatingStep === 'complement-10' ? 'bg-blue-100 ring-2 ring-blue-400 scale-105' : 'bg-gray-100'
+                  }`}
+                >
                   <div className="text-3xl mb-2">🎯</div>
                   <h4 className="font-bold text-blue-800">Complément à 10</h4>
                   <p className="text-sm text-blue-700">L'astucieuse !</p>
@@ -1878,6 +2006,7 @@ export default function AdditionsJusqua100() {
                 {additionTechniques.map((technique, index) => (
                   <div 
                     key={index}
+                    id={`example-technique-${index}`}
                     className={`bg-gradient-to-br from-blue-200 to-indigo-200 rounded-lg p-6 transition-all duration-300 ${
                       isAnimationRunning 
                         ? 'opacity-50 cursor-not-allowed' 
@@ -1892,11 +2021,14 @@ export default function AdditionsJusqua100() {
                       <div className="text-lg font-mono bg-white px-3 py-1 rounded mb-3 text-gray-900 shadow-sm">
                         {technique.examples[0].calculation}
                       </div>
-                      <button className={`px-3 py-1 rounded-lg text-sm transition-colors shadow-md ${
-                        isAnimationRunning 
-                          ? 'bg-gray-400 text-gray-200' 
-                          : 'bg-blue-600 text-white hover:bg-blue-700'
-                      }`}>
+                      <button 
+                        id={`animation-button-${index}`}
+                        className={`px-3 py-1 rounded-lg text-sm transition-colors shadow-md ${
+                          isAnimationRunning 
+                            ? 'bg-gray-400 text-gray-200' 
+                            : 'bg-blue-600 text-white hover:bg-blue-700'
+                        }`}
+                      >
                         {isAnimationRunning ? '⏳ Attendez...' : '▶️ Voir l\'animation'}
                       </button>
                     </div>
@@ -2975,9 +3107,9 @@ export default function AdditionsJusqua100() {
           </div>
         ) : (
           /* EXERCICES - RESPONSIVE MOBILE OPTIMISÉ */
-          <div className="pb-20 sm:pb-8">
+          <div id="exercise-area" className="pb-20 sm:pb-8">
             {/* Introduction de Sam le Pirate - toujours visible */}
-            <div className="mb-6 sm:mb-4 mt-4">
+            <div id="sam-pirate-section" className="mb-6 sm:mb-4 mt-4">
               {/* JSX pour l'introduction de Sam le Pirate dans les exercices */}
               <div className="flex justify-center p-0 sm:p-1 mt-0 sm:mt-2">
                 <div className="flex items-center gap-1 sm:gap-2">
@@ -3186,6 +3318,7 @@ export default function AdditionsJusqua100() {
                   {/* Input parfaitement centré */}
                   <div className="flex justify-center">
                     <input
+                      id="answer-input"
                       type="number"
                       value={userAnswer}
                       onChange={(e) => setUserAnswer(e.target.value)}
@@ -3208,6 +3341,7 @@ export default function AdditionsJusqua100() {
                 {isCorrect === null && (
                   <div className="text-center">
                     <button
+                      id="validate-btn"
                       onClick={handleAnswerSubmit}
                       disabled={!userAnswer.trim() || isPlayingVocal}
                       className={`px-6 py-3 rounded-lg font-bold text-lg transition-all ${

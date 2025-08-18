@@ -1,0 +1,175 @@
+{
+  "id": "ce1-calcul-mental-complements-10",
+  "title": "🎯 Compléments à 10",
+  "description": "Apprends les compléments pour faire 10 !",
+  "level": "CE1",
+  "theme": {
+    "primary": "blue",
+    "secondary": "cyan",
+    "accent": "blue",
+    "gradient": "from-blue-400 to-cyan-400",
+    "bgGradient": "from-blue-50 to-cyan-50",
+    "characterBg": "from-blue-100 to-cyan-100",
+    "boxBg": "bg-blue-50",
+    "buttonColors": {
+      "course": "bg-blue-500 hover:bg-blue-600",
+      "exercises": "bg-cyan-500 hover:bg-cyan-600"
+    },
+    "animationButtons": {
+      "gradient": "from-blue-500 to-cyan-500",
+      "ring": "ring-blue-300"
+    }
+  },
+  "character": {
+    "name": "minecraft",
+    "image": "/image/Minecraftstyle.png",
+    "expressions": ["Super !", "Génial !", "Fantastique !", "Incroyable !"]
+  },
+  "backLink": "/chapitre/ce1-calcul-mental",
+  "backText": "Retour au calcul mental",
+  "course": {
+    "introduction": {
+      "title": "🧩 Qu'est-ce qu'un complément à 10 ?",
+      "content": "Un complément à 10, c'est ce qu'il faut ajouter pour arriver à 10 ! Par exemple, si tu as 7, le complément de 7 à 10 est 3 !"
+    },
+    "method": {
+      "title": "🎯 Ma méthode pour trouver les compléments",
+      "steps": [
+        {
+          "number": 1,
+          "title": "Je regarde le nombre de départ",
+          "description": "Je dois bien observer le nombre dont je cherche le complément.",
+          "color": "blue"
+        },
+        {
+          "number": 2,
+          "title": "Je compte jusqu'à 10",
+          "description": "Je compte combien il faut ajouter pour arriver à 10.",
+          "color": "green"
+        },
+        {
+          "number": 3,
+          "title": "Je vérifie avec mes doigts",
+          "description": "Je peux utiliser mes doigts pour vérifier que ça fait bien 10.",
+          "color": "purple"
+        }
+      ]
+    },
+    "demonstration": {
+      "title": "Démonstration : 7 + ? = 10",
+      "example": {
+        "story": "Si j'ai 7 objets et que je veux en avoir 10, combien dois-je en ajouter ?",
+        "numbers": [7, 3]
+      }
+    },
+    "examples": [
+      {
+        "id": "complement-1",
+        "title": "1 + 9 = 10",
+        "story": "Le complément de 1 à 10 est 9",
+        "first": 1,
+        "second": 9,
+        "result": 10,
+        "item": "🔵",
+        "color1": "text-blue-600",
+        "color2": "text-cyan-600"
+      },
+      {
+        "id": "complement-2",
+        "title": "2 + 8 = 10",
+        "story": "Le complément de 2 à 10 est 8",
+        "first": 2,
+        "second": 8,
+        "result": 10,
+        "item": "🔵",
+        "color1": "text-blue-600",
+        "color2": "text-cyan-600"
+      },
+      {
+        "id": "complement-3",
+        "title": "3 + 7 = 10",
+        "story": "Le complément de 3 à 10 est 7",
+        "first": 3,
+        "second": 7,
+        "result": 10,
+        "item": "🔵",
+        "color1": "text-blue-600",
+        "color2": "text-cyan-600"
+      },
+      {
+        "id": "complement-4",
+        "title": "4 + 6 = 10",
+        "story": "Le complément de 4 à 10 est 6",
+        "first": 4,
+        "second": 6,
+        "result": 10,
+        "item": "🔵",
+        "color1": "text-blue-600",
+        "color2": "text-cyan-600"
+      },
+      {
+        "id": "complement-5",
+        "title": "5 + 5 = 10",
+        "story": "Le complément de 5 à 10 est 5",
+        "first": 5,
+        "second": 5,
+        "result": 10,
+        "item": "🔵",
+        "color1": "text-blue-600",
+        "color2": "text-cyan-600"
+      }
+    ]
+  },
+  "exercises": [
+    {
+      "story": "Trouve le complément de 2 à 10",
+      "visual": "🎯",
+      "answer": 8
+    },
+    {
+      "story": "Trouve le complément de 3 à 10",
+      "visual": "🎯",
+      "answer": 7
+    },
+    {
+      "story": "Trouve le complément de 1 à 10",
+      "visual": "🎯",
+      "answer": 9
+    },
+    {
+      "story": "Trouve le complément de 4 à 10",
+      "visual": "🎯",
+      "answer": 6
+    },
+    {
+      "story": "Trouve le complément de 5 à 10",
+      "visual": "🎯",
+      "answer": 5
+    },
+    {
+      "story": "Trouve le complément de 6 à 10",
+      "visual": "🎯",
+      "answer": 4
+    },
+    {
+      "story": "Trouve le complément de 7 à 10",
+      "visual": "🎯",
+      "answer": 3
+    },
+    {
+      "story": "Trouve le complément de 8 à 10",
+      "visual": "🎯",
+      "answer": 2
+    },
+    {
+      "story": "Trouve le complément de 9 à 10",
+      "visual": "🎯",
+      "answer": 1
+    },
+    {
+      "story": "Trouve le complément de 0 à 10",
+      "visual": "🎯",
+      "answer": 10
+    }
+  ]
+}

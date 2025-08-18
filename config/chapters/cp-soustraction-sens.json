@@ -1,0 +1,67 @@
+{
+  "id": "cp-soustractions-simples-sens-soustraction",
+  "title": "Le sens de la soustraction",
+  "description": "Découvre ce que veut dire enlever avec Sam le Pirate !",
+  "level": "CP",
+  "character": {
+    "name": "sam-pirate",
+    "image": "/image/pirate-small.png",
+    "expressions": ["Mille sabords", "Tonnerre de Brest", "Par Neptune", "Sacré matelot"]
+  },
+  "course": {
+    "animations": [
+      {
+        "id": "minus-sign",
+        "title": "Le signe moins (-)",
+        "description": "Découvre le symbole magique de la soustraction",
+        "icon": "➖"
+      },
+      {
+        "id": "balloons-demo",
+        "title": "Les ballons qui s'envolent",
+        "description": "Vois comment 4 ballons deviennent 2 ballons",
+        "icon": "🎈"
+      },
+      {
+        "id": "simulator",
+        "title": "Simulateur interactif",
+        "description": "21 exemples animés de 0 à 5",
+        "icon": "🎮"
+      },
+      {
+        "id": "addition-comparison",
+        "title": "Addition vs Soustraction",
+        "description": "Compare ajouter et enlever avec des pommes",
+        "icon": "⚖️"
+      }
+    ]
+  },
+  "exercises": {
+    "types": [
+      {
+        "id": "manipulation",
+        "title": "Manipulation",
+        "description": "Enlève des ballons avec tes doigts",
+        "icon": "🖐️"
+      },
+      {
+        "id": "visual-problems",
+        "title": "Problèmes visuels",
+        "description": "Résous avec des images et des histoires",
+        "icon": "👀"
+      },
+      {
+        "id": "calculation",
+        "title": "Calculs simples",
+        "description": "Écris la réponse de 3-1, 4-2...",
+        "icon": "✏️"
+      },
+      {
+        "id": "word-problems",
+        "title": "Problèmes en mots",
+        "description": "Lis l'histoire et trouve la réponse",
+        "icon": "📖"
+      }
+    ]
+  }
+}

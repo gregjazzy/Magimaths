@@ -1,0 +1,66 @@
+{
+  "id": "ce1-quatre-operations-addition-ce1-addition-posee",
+  "title": "Addition posée",
+  "description": "Maîtrise la technique de l'addition en colonnes avec Steve !",
+  "level": "CE1",
+  "character": {
+    "name": "minecraft",
+    "image": "/image/Minecraftstyle.png"
+  },
+  "course": {
+    "animations": [
+      {
+        "id": "column-setup",
+        "title": "Poser en colonnes",
+        "description": "Aligne les chiffres unités sous unités",
+        "icon": "📐"
+      },
+      {
+        "id": "step-by-step",
+        "title": "Calcul étape par étape",
+        "description": "Commence par les unités, puis les dizaines",
+        "icon": "👣"
+      },
+      {
+        "id": "carry-demo",
+        "title": "Gestion des retenues",
+        "description": "Que faire quand ça dépasse 9",
+        "icon": "🔄"
+      },
+      {
+        "id": "verification",
+        "title": "Vérification",
+        "description": "Comment vérifier que c'est juste",
+        "icon": "✅"
+      }
+    ]
+  },
+  "exercises": {
+    "types": [
+      {
+        "id": "alignment",
+        "title": "Alignement",
+        "description": "Place les chiffres au bon endroit",
+        "icon": "📏"
+      },
+      {
+        "id": "simple-addition",
+        "title": "Additions simples",
+        "description": "23 + 14 sans retenue",
+        "icon": "➕"
+      },
+      {
+        "id": "with-carry",
+        "title": "Avec retenue",
+        "description": "27 + 15 avec retenue",
+        "icon": "🔢"
+      },
+      {
+        "id": "three-digits",
+        "title": "3 chiffres",
+        "description": "142 + 36 pour les experts",
+        "icon": "💯"
+      }
+    ]
+  }
+}

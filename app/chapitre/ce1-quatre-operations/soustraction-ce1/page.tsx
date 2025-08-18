@@ -9,6 +9,33 @@ export default function CE1SoustractionPage() {
 
   const subChapters = [
     {
+      id: 'soustractions-10',
+      title: 'Soustractions jusqu\'à 10',
+      description: 'Apprends les premières soustractions avec des objets !',
+      icon: '🔢',
+      estimatedTime: 20,
+      difficulty: 'Débutant',
+      href: '/chapitre/ce1-quatre-operations/soustraction-ce1/soustractions-10'
+    },
+    {
+      id: 'soustractions-20',
+      title: 'Soustractions jusqu\'à 20',
+      description: 'Découvre les soustractions avec les nombres jusqu\'à 20 !',
+      icon: '🧮',
+      estimatedTime: 25,
+      difficulty: 'Débutant',
+      href: '/chapitre/ce1-quatre-operations/soustraction-ce1/soustractions-20'
+    },
+    {
+      id: 'soustractions-100',
+      title: 'Soustractions jusqu\'à 100 - Calcul mental',
+      description: 'Maîtrise les techniques de calcul mental pour les soustractions !',
+      icon: '🧠',
+      estimatedTime: 30,
+      difficulty: 'Intermédiaire',
+      href: '/chapitre/ce1-quatre-operations/soustraction-ce1/soustractions-100'
+    },
+    {
       id: 'soustraction-posee',
       title: 'Soustraction posée',
       description: 'Maîtrise la technique de la soustraction en colonnes !',

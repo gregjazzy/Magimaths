@@ -1,0 +1,22 @@
+{
+  "timestamp": "2025-08-16T14:45:28.225Z",
+  "bundle": {
+    "totalChunks": 4,
+    "totalSizeKB": "6178.85",
+    "largestChunkKB": "5883.82"
+  },
+  "components": {
+    "lazyComponents": 2,
+    "loadingComponents": 2,
+    "dynamicImports": 2
+  },
+  "setup": {
+    "setupScore": 6,
+    "maxScore": 6,
+    "percentage": 100
+  },
+  "recommendations": [
+    "Optimiser les gros chunks (>200KB)",
+    "Ajouter plus d'imports dynamiques"
+  ]
+}

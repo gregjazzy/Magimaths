@@ -1,0 +1,276 @@
+{
+  "id": "ce1-soustractions-100-mental",
+  "title": "Soustractions jusqu'à 100 - Calcul mental",
+  "description": "Maîtrise les techniques de calcul mental pour les soustractions !",
+  "level": "CE1",
+  "character": {
+    "name": "minecraft",
+    "image": "/image/Minecraftstyle.png",
+    "expressions": ["Génial !", "Tu calcules comme un pro !", "Incroyable calcul mental !"]
+  },
+  "theme": {
+    "primary": "from-blue-400 to-purple-500",
+    "secondary": "from-blue-50 to-purple-50",
+    "accent": "blue-500",
+    "text": "blue-800",
+    "gradient": "from-blue-400 to-purple-500",
+    "bgGradient": "from-blue-50 to-purple-50",
+    "characterBg": "bg-gradient-to-br from-blue-100 to-purple-100",
+    "boxBg": "bg-white",
+    "buttonColors": {
+      "course": "bg-gradient-to-r from-blue-500 to-purple-600",
+      "exercises": "bg-gradient-to-r from-purple-500 to-blue-600"
+    },
+    "animationButtons": {
+      "gradient": "from-blue-400 to-purple-500",
+      "ring": "ring-blue-400"
+    }
+  },
+  "course": {
+    "title": "Calcul mental jusqu'à 100",
+    "description": "Découvre les techniques pour calculer dans ta tête !",
+
+    "method": {
+      "title": "Les 4 techniques de calcul mental",
+      "steps": [
+        {
+          "number": 1,
+          "title": "Décomposition",
+          "description": "Pour 73 - 28, je décompose 28 : 73 - 20 = 53, puis 53 - 8 = 45",
+          "color": "blue",
+          "icon": "🧩"
+        },
+        {
+          "number": 2,
+          "title": "Arrondir et compenser",
+          "description": "Pour 84 - 39, j'arrondis à 40 : 84 - 40 = 44, puis 44 + 1 = 45",
+          "color": "green",
+          "icon": "💯"
+        },
+        {
+          "number": 3,
+          "title": "Complément à 10",
+          "description": "Pour 32 - 7, je fais 32 - 2 = 30, puis 30 - 5 = 25",
+          "color": "purple",
+          "icon": "🎯"
+        },
+        {
+          "number": 4,
+          "title": "Addition inverse",
+          "description": "Pour 50 - 23, je cherche 23 + ? = 50, donc 23 + 27 = 50",
+          "color": "red",
+          "icon": "🔄"
+        }
+      ]
+    },
+    "examples": [
+      {
+        "id": "example-1",
+        "item": "🧩",
+        "title": "Décomposition",
+        "story": "Lisa calcule 73 - 28 : elle décompose 28 en 20 + 8, puis fait 73 - 20 = 53, et 53 - 8 = 45"
+      },
+      {
+        "id": "example-2",
+        "item": "💯",
+        "title": "Arrondir et compenser",
+        "story": "Max calcule 84 - 39 : il arrondit 39 à 40, fait 84 - 40 = 44, puis ajoute 1 pour compenser"
+      },
+      {
+        "id": "example-3",
+        "item": "🎯",
+        "title": "Complément à 10",
+        "story": "Tom calcule 32 - 7 : il retire d'abord 2 pour faire 30, puis retire les 5 qui restent"
+      },
+      {
+        "id": "example-4",
+        "item": "🔄",
+        "title": "Addition inverse",
+        "story": "Emma calcule 50 - 23 : elle se demande '23 + combien = 50 ?' et trouve 27"
+      }
+    ],
+    "animations": [
+      {
+        "id": "decomposition",
+        "title": "Décomposition",
+        "description": "73 - 28 : je décompose 28 en 20 + 8, puis 73 - 20 = 53, et 53 - 8 = 45",
+        "icon": "🧩",
+        "duration": 5000
+      },
+      {
+        "id": "arrondir-compenser",
+        "title": "Arrondir et compenser",
+        "description": "84 - 39 : j'arrondis 39 à 40, puis 84 - 40 = 44, et j'ajoute 1 = 45",
+        "icon": "💯",
+        "duration": 4500
+      },
+      {
+        "id": "complement-10",
+        "title": "Complément à 10",
+        "description": "32 - 7 : je fais d'abord 32 - 2 = 30, puis 30 - 5 = 25",
+        "icon": "🎯",
+        "duration": 4000
+      },
+      {
+        "id": "addition-inverse",
+        "title": "Addition inverse",
+        "description": "50 - 23 : je cherche 23 + ? = 50, donc 23 + 27 = 50",
+        "icon": "🔄",
+        "duration": 4500
+      }
+    ]
+  },
+  "problems": [
+    {
+      "id": "complement-dizaine-1",
+      "title": "Complément à la dizaine",
+      "story": "Tom a 45 billes. Il en perd 17 au jeu. Combien lui en reste-t-il ?",
+      "first": 45,
+      "second": 17,
+      "result": 28,
+      "item": "billes",
+      "color1": "bg-blue-400",
+      "color2": "bg-red-400",
+      "technique": "45 - 17 : Je fais 45 - 15 = 30 (pour arriver à la dizaine), puis 30 - 2 = 28"
+    },
+    {
+      "id": "decomposition-1",
+      "title": "Décomposition",
+      "story": "Lisa a 73 cartes. Elle en donne 28 à son frère. Combien lui en reste-t-il ?",
+      "first": 73,
+      "second": 28,
+      "result": 45,
+      "item": "cartes",
+      "color1": "bg-green-400",
+      "color2": "bg-yellow-400",
+      "technique": "73 - 28 : Je décompose 28 = 20 + 8 → 73 - 20 = 53, puis 53 - 8 = 45"
+    },
+    {
+      "id": "arrondir-compenser-1",
+      "title": "Arrondir et compenser",
+      "story": "Max a 84 autocollants. Il en colle 39 dans son album. Combien lui en reste-t-il ?",
+      "first": 84,
+      "second": 39,
+      "result": 45,
+      "item": "autocollants",
+      "color1": "bg-purple-400",
+      "color2": "bg-pink-400",
+      "technique": "84 - 39 : Je fais 84 - 40 = 44 (plus facile), puis 44 + 1 = 45"
+    },
+    {
+      "id": "soustraction-parties-1",
+      "title": "Soustraction par parties",
+      "story": "Emma a 62 perles. Elle en utilise 35 pour un collier. Combien lui en reste-t-il ?",
+      "first": 62,
+      "second": 35,
+      "result": 27,
+      "item": "perles",
+      "color1": "bg-indigo-400",
+      "color2": "bg-cyan-400",
+      "technique": "62 - 35 : Je fais 62 - 30 = 32, puis 32 - 5 = 27"
+    },
+    {
+      "id": "complement-dizaine-2",
+      "title": "Complément à la dizaine",
+      "story": "Paul a 56 jetons. Il en perd 23 au jeu. Combien lui en reste-t-il ?",
+      "first": 56,
+      "second": 23,
+      "result": 33,
+      "item": "jetons",
+      "color1": "bg-teal-400",
+      "color2": "bg-emerald-400",
+      "technique": "56 - 23 : Je fais 56 - 20 = 36, puis 36 - 3 = 33"
+    },
+    {
+      "id": "decomposition-2",
+      "title": "Décomposition",
+      "story": "Sophie a 91 images. Elle en offre 47 à sa sœur. Combien lui en reste-t-il ?",
+      "first": 91,
+      "second": 47,
+      "result": 44,
+      "item": "images",
+      "color1": "bg-lime-400",
+      "color2": "bg-amber-400",
+      "technique": "91 - 47 : Je décompose 47 = 40 + 7 → 91 - 40 = 51, puis 51 - 7 = 44"
+    },
+    {
+      "id": "arrondir-compenser-2",
+      "title": "Arrondir et compenser",
+      "story": "Léo a 65 cubes. Il en utilise 39 pour construire. Combien lui en reste-t-il ?",
+      "first": 65,
+      "second": 39,
+      "result": 26,
+      "item": "cubes",
+      "color1": "bg-rose-400",
+      "color2": "bg-violet-400",
+      "technique": "65 - 39 : Je fais 65 - 40 = 25, puis 25 + 1 = 26"
+    },
+    {
+      "id": "soustraction-parties-2",
+      "title": "Soustraction par parties",
+      "story": "Clara a 83 stickers. Elle en colle 56 sur ses cahiers. Combien lui en reste-t-il ?",
+      "first": 83,
+      "second": 56,
+      "result": 27,
+      "item": "stickers",
+      "color1": "bg-orange-400",
+      "color2": "bg-red-400",
+      "technique": "83 - 56 : Je fais 83 - 50 = 33, puis 33 - 6 = 27"
+    }
+  ],
+  "exercises": [
+    {
+      "story": "Marie a 56 bonbons. Elle en mange 23. Combien lui en reste-t-il ?",
+      "visual": "🍬",
+      "answer": 33,
+      "technique": "Décomposition : 56 - 20 = 36, puis 36 - 3 = 33"
+    },
+    {
+      "story": "Pierre a 74 timbres. Il en donne 28. Combien lui en reste-t-il ?",
+      "visual": "📮",
+      "answer": 46,
+      "technique": "Complément : 74 - 30 = 44, puis 44 + 2 = 46"
+    },
+    {
+      "story": "Julie a 91 crayons. Elle en perd 47. Combien lui en reste-t-il ?",
+      "visual": "✏️",
+      "answer": 44,
+      "technique": "Décomposition : 91 - 40 = 51, puis 51 - 7 = 44"
+    },
+    {
+      "story": "Thomas a 65 billes. Il en offre 39. Combien lui en reste-t-il ?",
+      "visual": "⚽",
+      "answer": 26,
+      "technique": "Complément : 65 - 40 = 25, puis 25 + 1 = 26"
+    },
+    {
+      "story": "Anna a 83 cartes. Elle en perd 56. Combien lui en reste-t-il ?",
+      "visual": "🃏",
+      "answer": 27,
+      "technique": "Décomposition : 83 - 50 = 33, puis 33 - 6 = 27"
+    },
+    {
+      "story": "Lucas a 72 jetons. Il en donne 45. Combien lui en reste-t-il ?",
+      "visual": "🪙",
+      "answer": 27,
+      "technique": "Décomposition : 72 - 40 = 32, puis 32 - 5 = 27"
+    },
+    {
+      "story": "Zoé a 94 autocollants. Elle en colle 67. Combien lui en reste-t-il ?",
+      "visual": "⭐",
+      "answer": 27,
+      "technique": "Décomposition : 94 - 60 = 34, puis 34 - 7 = 27"
+    },
+    {
+      "story": "Hugo a 58 cubes. Il en utilise 29. Combien lui en reste-t-il ?",
+      "visual": "🧱",
+      "answer": 29,
+      "technique": "Complément : 58 - 30 = 28, puis 28 + 1 = 29"
+    }
+  ],
+  "backLink": "/chapitre/ce1-quatre-operations/soustraction-ce1",
+  "navigation": {
+    "backUrl": "/chapitre/ce1-quatre-operations/soustraction-ce1",
+    "backLabel": "Retour aux soustractions CE1"
+  }
+}

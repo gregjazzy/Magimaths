@@ -2,6 +2,8 @@ import type { Metadata, Viewport } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
 import { AnalyticsProvider } from '@/lib/AnalyticsProvider'
+import { Suspense } from 'react'
+import { PageSkeleton } from '@/components/loading/LoadingSkeletons'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -56,7 +58,9 @@ export default function RootLayout({
       <body className={inter.className}>
         <AnalyticsProvider>
           <NavigationProtection />
-          {children}
+          <Suspense fallback={<PageSkeleton className="min-h-screen p-8" />}>
+            {children}
+          </Suspense>
         </AnalyticsProvider>
       </body>
     </html>

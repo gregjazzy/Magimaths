@@ -1,0 +1,236 @@
+{
+  "id": "cp-additions-simples-problemes",
+  "title": "🧮 Problèmes d'addition",
+  "description": "Apprendre à résoudre des problèmes avec des histoires",
+  "level": "CP",
+  "theme": {
+    "primary": "rose",
+    "secondary": "pink",
+    "accent": "fuchsia",
+    "gradient": "from-rose-400 via-pink-500 to-fuchsia-500",
+    "bgGradient": "from-slate-50 via-gray-50 to-slate-50",
+    "characterBg": "from-rose-100 to-pink-100",
+    "boxBg": "bg-rose-50",
+    "buttonColors": {
+      "course": "bg-pink-500 hover:bg-pink-600",
+      "exercises": "bg-rose-500 hover:bg-rose-600"
+    },
+    "animationButtons": {
+      "gradient": "from-rose-500 to-pink-500",
+      "ring": "ring-rose-300"
+    }
+  },
+  "character": {
+    "name": "sam-pirate",
+    "image": "/images/pirate-small.png",
+    "expressions": ["Mille sabords", "Tonnerre de Brest", "Par Neptune", "Sacré matelot"]
+  },
+  "backLink": "/chapitre/cp-additions-simples",
+  "backText": "Retour au chapitre",
+  "course": {
+    "introduction": {
+      "title": "🤔 Qu'est-ce qu'un problème d'addition ?",
+      "content": "Un problème d'addition, c'est une petite histoire avec des nombres. Dans cette histoire, on doit rassembler ou compter ensemble des objets pour trouver combien il y en a en tout !"
+    },
+    "method": {
+      "title": "Ma méthode en 3 étapes",
+      "steps": [
+        {
+          "number": 1,
+          "title": "Je lis le problème et je comprends l'histoire",
+          "description": "Je dois bien comprendre ce qui se passe dans l'histoire pour identifier les nombres importants.",
+          "color": "blue"
+        },
+        {
+          "number": 2,
+          "title": "Je trouve les deux nombres à additionner",
+          "description": "Je cherche dans l'histoire les quantités que je dois rassembler ou compter ensemble.",
+          "color": "green"
+        },
+        {
+          "number": 3,
+          "title": "J'écris l'addition et je calcule",
+          "description": "Je pose l'opération et je trouve le résultat pour répondre à la question.",
+          "color": "purple"
+        }
+      ]
+    },
+    "demonstration": {
+      "title": "Démonstration : souligner les nombres",
+      "example": {
+        "story": "Marie a 3 bonbons rouges et 4 bonbons bleus. Combien a-t-elle de bonbons en tout ?",
+        "numbers": [3, 4]
+      }
+    },
+    "examples": [
+      {
+        "id": "bonbons",
+        "title": "Les bonbons de Marie",
+        "story": "Marie a 3 bonbons rouges et 4 bonbons bleus. Combien a-t-elle de bonbons en tout ?",
+        "first": 3,
+        "second": 4,
+        "result": 7,
+        "item": "🍬",
+        "color1": "text-red-600",
+        "color2": "text-blue-600"
+      },
+      {
+        "id": "jouets",
+        "title": "Les voitures de Tom",
+        "story": "Tom a 5 petites voitures et 3 camions. Combien a-t-il de véhicules au total ?",
+        "first": 5,
+        "second": 3,
+        "result": 8,
+        "item": "🚗",
+        "color1": "text-orange-600",
+        "color2": "text-green-600"
+      },
+      {
+        "id": "animaux",
+        "title": "Les poissons de l'aquarium",
+        "story": "Dans l'aquarium, il y a 6 poissons rouges et 2 poissons jaunes. Combien y a-t-il de poissons ?",
+        "first": 6,
+        "second": 2,
+        "result": 8,
+        "item": "🐠",
+        "color1": "text-red-600",
+        "color2": "text-amber-600"
+      },
+      {
+        "id": "ecole",
+        "title": "La cour de récréation",
+        "story": "Pendant la récréation, Julie compte les enfants qui jouent. Elle voit 7 enfants qui jouent au ballon près du grand chêne et 5 autres enfants qui font de la corde à sauter près des bancs. Combien d'enfants s'amusent dans la cour ?",
+        "first": 7,
+        "second": 5,
+        "result": 12,
+        "item": "👦",
+        "color1": "text-blue-600",
+        "color2": "text-green-600"
+      },
+      {
+        "id": "marche",
+        "title": "Au marché avec Maman",
+        "story": "Au marché du village, Maman achète des légumes frais pour la semaine. Le gentil marchand lui donne 23 tomates bien mûres qu'elle met dans son panier d'osier, puis il ajoute 14 concombres verts et croquants. Maman veut savoir combien de légumes elle rapporte à la maison.",
+        "first": 23,
+        "second": 14,
+        "result": 37,
+        "item": "🍅",
+        "color1": "text-red-600",
+        "color2": "text-green-600"
+      },
+      {
+        "id": "boulangerie",
+        "title": "À la boulangerie",
+        "story": "Le boulanger du quartier prépare des pains pour ses clients matinaux. Dans son grand four en pierre, il fait cuire 45 baguettes dorées et croustillantes. Puis, dans son deuxième four plus petit, il ajoute 28 pains de campagne tout ronds. Le boulanger aimerait connaître le nombre total de pains qu'il a préparés ce matin.",
+        "first": 45,
+        "second": 28,
+        "result": 73,
+        "item": "🥖",
+        "color1": "text-amber-600",
+        "color2": "text-yellow-600"
+      }
+    ]
+  },
+  "exercises": [
+    {
+      "story": "Paul a 2 pommes et sa sœur lui donne 3 pommes. Combien Paul a-t-il de pommes maintenant ?",
+      "visual": "🍎",
+      "answer": 5
+    },
+    {
+      "story": "Dans le jardin, il y a 4 papillons bleus et 2 papillons jaunes. Combien y a-t-il de papillons en tout ?",
+      "visual": "🦋",
+      "answer": 6
+    },
+    {
+      "story": "Léa collectionne les coquillages. Elle en trouve 3 sur la plage le matin et 4 l'après-midi. Combien a-t-elle trouvé de coquillages ?",
+      "visual": "🐚",
+      "answer": 7
+    },
+    {
+      "story": "Dans la classe, il y a 5 garçons et 6 filles. Combien y a-t-il d'enfants dans la classe ?",
+      "visual": "👨‍🎓",
+      "answer": 11
+    },
+    {
+      "story": "Maman achète 7 oranges et 3 citrons. Combien de fruits a-t-elle achetés ?",
+      "visual": "🍊",
+      "answer": 10
+    },
+    {
+      "story": "Dans l'étang, nagent 4 canards et 5 cygnes. Combien d'oiseaux y a-t-il sur l'eau ?",
+      "visual": "🦆",
+      "answer": 9
+    },
+    {
+      "story": "Pierre a 8 billes rouges et 2 billes vertes. Combien de billes a-t-il en tout ?",
+      "visual": "⚽",
+      "answer": 10
+    },
+    {
+      "story": "Dans le panier, il y a 6 poires et 4 bananes. Combien y a-t-il de fruits dans le panier ?",
+      "visual": "🍐",
+      "answer": 10
+    },
+    {
+      "story": "Sophie dessine 3 étoiles et 7 lunes. Combien de formes a-t-elle dessinées ?",
+      "visual": "⭐",
+      "answer": 10
+    },
+    {
+      "story": "Dans la ferme, il y a 9 poules et 3 coqs. Combien y a-t-il de volailles ?",
+      "visual": "🐓",
+      "answer": 12
+    },
+    {
+      "story": "Lucas a 5 voitures bleues et 4 voitures rouges. Combien de voitures a-t-il ?",
+      "visual": "🚗",
+      "answer": 9
+    },
+    {
+      "story": "Dans le vase, il y a 6 roses et 3 tulipes. Combien de fleurs y a-t-il ?",
+      "visual": "🌹",
+      "answer": 9
+    },
+    {
+      "story": "Emma compte les nuages : 4 gros nuages blancs et 5 petits nuages gris. Combien de nuages voit-elle ?",
+      "visual": "☁️",
+      "answer": 9
+    },
+    {
+      "story": "Dans la boîte, il y a 7 crayons de couleur et 2 feutres. Combien d'outils pour dessiner y a-t-il ?",
+      "visual": "🖍️",
+      "answer": 9
+    },
+    {
+      "story": "Au zoo, Théo voit 8 singes qui jouent et 4 singes qui dorment. Combien de singes y a-t-il ?",
+      "visual": "🐒",
+      "answer": 12
+    },
+    {
+      "story": "Dans le frigo, il y a 5 yaourts à la fraise et 6 yaourts à la vanille. Combien de yaourts y a-t-il ?",
+      "visual": "🥛",
+      "answer": 11
+    },
+    {
+      "story": "Camille a planté 4 radis et 7 carottes dans son potager. Combien de légumes a-t-elle plantés ?",
+      "visual": "🥕",
+      "answer": 11
+    },
+    {
+      "story": "Dans la bibliothèque, il y a 9 livres d'histoires et 3 livres de sciences. Combien de livres y a-t-il ?",
+      "visual": "📚",
+      "answer": 12
+    },
+    {
+      "story": "Hugo collectionne les timbres. Il a 6 timbres français et 5 timbres étrangers. Combien de timbres a-t-il ?",
+      "visual": "📮",
+      "answer": 11
+    },
+    {
+      "story": "Dans le ciel, il y a 7 étoiles brillantes et 8 étoiles moins lumineuses. Combien d'étoiles y a-t-il ?",
+      "visual": "✨",
+      "answer": 15
+    }
+  ]
+}

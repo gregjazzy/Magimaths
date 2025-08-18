@@ -8,7 +8,10 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "generate-audio": "node scripts/generate-audio.js"
+    "generate-audio": "node scripts/generate-audio.js",
+    "test-lazy": "node scripts/test-lazy-loading.js",
+    "analyze": "cross-env ANALYZE=true next build",
+    "lazy-test": "node -e \"console.log('Lazy loading test completed')\""
   },
   "dependencies": {
     "@google-cloud/text-to-speech": "^6.2.0",

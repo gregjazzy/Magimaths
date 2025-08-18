@@ -9,6 +9,15 @@ export default function CE1AdditionPage() {
 
   const subChapters = [
     {
+      id: 'calcul-mental',
+      title: 'Calcul mental - Techniques',
+      description: 'Apprends les astuces pour calculer rapidement dans ta tête !',
+      icon: '🧠',
+      estimatedTime: 20,
+      difficulty: 'Débutant',
+      href: '/chapitre/ce1-quatre-operations/addition-ce1/calcul-mental'
+    },
+    {
       id: 'addition-posee',
       title: 'Addition posée',
       description: 'Maîtrise la technique de l\'addition en colonnes !',

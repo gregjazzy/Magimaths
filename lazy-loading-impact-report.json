@@ -1,0 +1,19 @@
+{
+  "timestamp": "2025-08-17T06:26:00.823Z",
+  "analysis": {
+    "totalOriginalSize": 228862,
+    "totalLazyOverhead": 3631,
+    "initialLoadAfterLazy": 29680,
+    "reductionPercentage": 87.03148622313883,
+    "heaviestPage": {
+      "name": "Additions jusqu'à 100",
+      "size": 181677,
+      "sizeKB": "177.42"
+    },
+    "pagesAnalyzed": 6
+  },
+  "recommendations": {
+    "heavyPagesCount": 1,
+    "potentialSavingsMB": 0.1899547576904297
+  }
+}

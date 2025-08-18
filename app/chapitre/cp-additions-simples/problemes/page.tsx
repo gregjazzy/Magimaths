@@ -1692,11 +1692,11 @@ export default function ProblemesAddition() {
             <span>Retour au chapitre</span>
           </Link>
           
-          <div className="text-center">
-            <h1 className="text-4xl font-bold text-gray-800 mb-2">
+          <div className="bg-white rounded-xl p-4 sm:p-6 shadow-lg text-center">
+            <h1 className="text-xl sm:text-4xl font-bold text-gray-900 mb-4">
               🧮 Problèmes d'addition
             </h1>
-            <p className="text-lg text-gray-600">
+            <p className="text-lg text-gray-600 hidden sm:block">
               Apprendre à résoudre des problèmes avec des histoires
             </p>
           </div>
@@ -1735,12 +1735,12 @@ export default function ProblemesAddition() {
 
         {/* Bouton Stop unique avec Sam - visible quand une animation est en cours */}
         {(isPlayingVocal || exercisesIsPlayingVocal || isAnimationRunning) && (
-          <div className="fixed top-20 right-4 z-10 animate-fade-in">
+          <div className="fixed top-2 sm:top-4 right-2 sm:right-4 z-50 animate-fade-in">
             <button
               onClick={stopAllVocalsAndAnimations}
-              className="flex items-center gap-2 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg shadow-lg transition-all hover:scale-105"
+              className="flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-1 sm:py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg shadow-lg transition-all hover:scale-105"
             >
-              <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
+              <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-white/20 flex items-center justify-center">
                 {!imageError && (
                   <img
                     src="/images/pirate-small.png"
@@ -1753,8 +1753,8 @@ export default function ProblemesAddition() {
                   <div className="text-sm">🏴‍☠️</div>
                 )}
               </div>
-              <span className="font-semibold text-sm">Stop</span> 
-              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+              <span className="font-semibold text-xs sm:text-sm">Stop</span> 
+              <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="currentColor" viewBox="0 0 20 20">
                 <rect x="6" y="4" width="2" height="12" />
                 <rect x="12" y="4" width="2" height="12" />
               </svg>
@@ -1764,7 +1764,7 @@ export default function ProblemesAddition() {
 
         {!showExercises ? (
           /* COURS - MOBILE OPTIMISÉ */
-          <div className="space-y-2 sm:space-y-6">
+          <div className="space-y-4 sm:space-y-6">
             {/* Image de Sam le Pirate avec bouton DÉMARRER */}
             <div className="flex items-center justify-center gap-2 sm:gap-4 p-2 sm:p-4 mb-3 sm:mb-6">
               {/* Image de Sam le Pirate */}
@@ -1872,43 +1872,43 @@ export default function ProblemesAddition() {
               </div>
               
               <div className="space-y-4">
-                <div className={`flex items-center gap-4 p-4 rounded-lg transition-all ${
+                <div className={`flex items-center gap-2 sm:gap-4 p-2 sm:p-4 rounded-lg transition-all ${
                   animatingStep === 'step1' ? 'bg-blue-100 ring-2 ring-blue-400' : 'bg-gray-100'
                 }`}>
                   <div 
-                    className="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold cursor-pointer hover:scale-110 transition-all duration-300 hover:bg-blue-600"
+                    className="w-6 h-6 sm:w-8 sm:h-8 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold cursor-pointer hover:scale-110 transition-all duration-300 hover:bg-blue-600 text-xs sm:text-base"
                     onClick={() => readMethodStep('step1')}
                     title="Cliquer pour écouter cette étape"
                   >
                     1
                   </div>
-                  <p className="text-lg text-gray-800">Je lis le problème et je comprends l'histoire</p>
+                  <p className="text-sm sm:text-lg text-gray-800">Je lis le problème et je comprends l'histoire</p>
                 </div>
                 
-                <div className={`flex items-center gap-4 p-4 rounded-lg transition-all ${
+                <div className={`flex items-center gap-2 sm:gap-4 p-2 sm:p-4 rounded-lg transition-all ${
                   animatingStep === 'step2' ? 'bg-green-100 ring-2 ring-green-400' : 'bg-gray-100'
                 }`}>
                   <div 
-                    className="w-8 h-8 bg-green-500 text-white rounded-full flex items-center justify-center font-bold cursor-pointer hover:scale-110 transition-all duration-300 hover:bg-green-600"
+                    className="w-6 h-6 sm:w-8 sm:h-8 bg-green-500 text-white rounded-full flex items-center justify-center font-bold cursor-pointer hover:scale-110 transition-all duration-300 hover:bg-green-600 text-xs sm:text-base"
                     onClick={() => readMethodStep('step2')}
                     title="Cliquer pour écouter cette étape"
                   >
                     2
                   </div>
-                  <p className="text-lg text-gray-800">Je trouve les deux nombres à additionner</p>
+                  <p className="text-sm sm:text-lg text-gray-800">Je trouve les deux nombres à additionner</p>
                 </div>
                 
-                <div className={`flex items-center gap-4 p-4 rounded-lg transition-all ${
+                <div className={`flex items-center gap-2 sm:gap-4 p-2 sm:p-4 rounded-lg transition-all ${
                   animatingStep === 'step3' ? 'bg-purple-100 ring-2 ring-purple-400' : 'bg-gray-100'
                 }`}>
                   <div 
-                    className="w-8 h-8 bg-purple-500 text-white rounded-full flex items-center justify-center font-bold cursor-pointer hover:scale-110 transition-all duration-300 hover:bg-purple-600"
+                    className="w-6 h-6 sm:w-8 sm:h-8 bg-purple-500 text-white rounded-full flex items-center justify-center font-bold cursor-pointer hover:scale-110 transition-all duration-300 hover:bg-purple-600 text-xs sm:text-base"
                     onClick={() => readMethodStep('step3')}
                     title="Cliquer pour écouter cette étape"
                   >
                     3
                   </div>
-                  <p className="text-lg text-gray-800">J'écris l'addition et je calcule</p>
+                  <p className="text-sm sm:text-lg text-gray-800">J'écris l'addition et je calcule</p>
                 </div>
               </div>
             </div>
@@ -1923,17 +1923,17 @@ export default function ProblemesAddition() {
               </div>
               
               <div className="space-y-4">
-                <div className="p-4 bg-gray-50 rounded-lg">
-                  <p className="text-lg font-semibold text-gray-800 mb-3">Exemple d'histoire :</p>
-                  <div className="text-lg text-gray-700 p-3 bg-white rounded border">
+                <div className="p-2 sm:p-4 bg-gray-50 rounded-lg">
+                  <p className="text-sm sm:text-lg font-semibold text-gray-800 mb-3">Exemple d'histoire :</p>
+                  <div className="text-sm sm:text-lg text-gray-700 p-2 sm:p-3 bg-white rounded border">
                     {highlightNumbers("Marie a 3 bonbons rouges et 4 bonbons bleus. Combien a-t-elle de bonbons en tout ?", highlightNumbersInStory)}
                   </div>
                 </div>
                 
                 {highlightNumbersInStory && (
-                  <div className="text-center p-4 bg-yellow-50 border-2 border-yellow-200 rounded-lg">
-                    <p className="text-lg text-yellow-800 font-semibold">
-                      🎯 Voyez comme les nombres <span className="bg-yellow-300 px-2 py-1 rounded font-black">3</span> et <span className="bg-yellow-300 px-2 py-1 rounded font-black">4</span> ressortent bien !
+                  <div className="text-center p-2 sm:p-4 bg-yellow-50 border-2 border-yellow-200 rounded-lg">
+                    <p className="text-sm sm:text-lg text-yellow-800 font-semibold">
+                      🎯 Voyez comme les nombres <span className="bg-yellow-300 px-1 sm:px-2 py-0.5 sm:py-1 rounded font-black text-xs sm:text-base">3</span> et <span className="bg-yellow-300 px-1 sm:px-2 py-0.5 sm:py-1 rounded font-black text-xs sm:text-base">4</span> ressortent bien !
                     </p>
                   </div>
                 )}
@@ -2128,7 +2128,7 @@ export default function ProblemesAddition() {
           </div>
         ) : (
           /* Section Exercices */
-          <div className="space-y-6">
+          <div className="space-y-5 sm:space-y-6">
             {/* Image de Sam le Pirate avec bouton DÉMARRER pour les exercices */}
             <div className="flex items-center justify-center gap-2 sm:gap-4 p-2 sm:p-4 mb-3 sm:mb-6">
               {/* Image de Sam le Pirate */}
@@ -2177,7 +2177,7 @@ export default function ProblemesAddition() {
             </div>
 
             {/* Instructions pour les exercices */}
-            <div className="bg-blue-50 border-2 border-blue-200 rounded-xl shadow-lg p-4 sm:p-6">
+            <div className="bg-blue-50 border-2 border-blue-200 rounded-xl shadow-lg p-4 sm:p-6 hidden sm:block">
               <div className="flex items-center gap-3 mb-4">
                 <div className="p-2 bg-blue-100 rounded-lg">
                   <span className="text-2xl">🎯</span>
@@ -2205,33 +2205,33 @@ export default function ProblemesAddition() {
               </div>
             </div>
 
-            <div className="bg-white rounded-xl shadow-lg p-6">
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold text-gray-800">
+            <div className="bg-white rounded-xl shadow-lg p-3 sm:p-6">
+              <div className="flex justify-between items-center mb-3 sm:mb-6">
+                <h2 className="text-lg sm:text-2xl font-bold text-gray-800">
                   Exercice {currentExercise + 1} / {exercises.length}
                 </h2>
-                <div className="text-lg font-semibold text-blue-600">
+                <div className="text-sm sm:text-lg font-semibold text-blue-600">
                   Score : {score} / {exercises.length}
                 </div>
               </div>
 
               {!showCompletionModal ? (
-                <div className="space-y-6">
+                <div className="space-y-3 sm:space-y-6">
                   {/* Icône visuelle */}
                   <div className="text-center">
-                    <div className="text-6xl mb-4">{exercises[currentExercise].visual}</div>
+                    <div className="text-4xl sm:text-6xl mb-2 sm:mb-4">{exercises[currentExercise].visual}</div>
                   </div>
 
                   {/* Énoncé du problème */}
                   <div className="p-4 bg-blue-50 rounded-lg">
-                    <div className="text-lg text-center text-gray-800 mb-4">{exercises[currentExercise].story}</div>
+                    <div className="text-sm sm:text-lg text-center text-gray-800 mb-2 sm:mb-4">{exercises[currentExercise].story}</div>
                     
                     {/* Bouton Lire l'énoncé */}
                     <div className="text-center">
                       <button
                         id="read-story-button"
                         onClick={readCurrentStory}
-                        className={`px-4 py-2 bg-green-500 text-white rounded-lg font-semibold hover:bg-green-600 transition-all ${
+                        className={`px-3 sm:px-4 py-2 sm:py-2 bg-green-500 text-white rounded-lg font-semibold hover:bg-green-600 transition-all text-sm sm:text-base ${
                           highlightedElement === 'read-story-button' ? 'ring-4 ring-yellow-400 animate-pulse bg-yellow-500' : ''
                         }`}
                       >
@@ -2252,7 +2252,7 @@ export default function ProblemesAddition() {
                       autoCorrect="off"
                       autoCapitalize="off"
                       spellCheck="false"
-                      className={`text-center text-xl font-bold border-2 border-gray-300 rounded-lg px-4 py-2 w-32 transition-all ${
+                      className={`text-center text-lg sm:text-xl font-bold border-2 border-gray-300 rounded-lg px-2 sm:px-4 py-1 sm:py-2 w-24 sm:w-32 transition-all ${
                         highlightedElement === 'answer-input' ? 'ring-4 ring-yellow-400 animate-pulse border-yellow-500' : ''
                       }`}
                       onKeyPress={(e) => e.key === 'Enter' && checkAnswer()}
@@ -2262,7 +2262,7 @@ export default function ProblemesAddition() {
                         id="validate-button"
                         onClick={checkAnswer}
                         disabled={!userAnswer}
-                        className={`bg-blue-500 text-white px-6 py-2 rounded-lg font-semibold hover:bg-blue-600 disabled:opacity-50 transition-all ${
+                        className={`bg-blue-500 text-white px-4 sm:px-6 py-2 sm:py-2 rounded-lg font-semibold hover:bg-blue-600 disabled:opacity-50 transition-all text-sm sm:text-base ${
                           highlightedElement === 'validate-button' ? 'ring-4 ring-yellow-400 animate-pulse bg-yellow-500' : ''
                         }`}
                       >

@@ -5,11 +5,8 @@ import dynamic from 'next/dynamic';
 import { ArrowLeft, BookOpen, Calculator, Target, Trophy, Brain, CheckCircle, XCircle, Lightbulb, Zap } from 'lucide-react';
 import Link from 'next/link';
 
-// Lazy loading des composants lourds
-const MotionDiv = dynamic(() => import('framer-motion').then(mod => ({ default: mod.motion.div })), {
-  ssr: false,
-  loading: () => <div className="animate-pulse bg-gray-200 h-8 rounded"></div>
-});
+// Import direct de framer-motion (déjà optimisé pour le client)
+import { motion } from 'framer-motion';
 
 // Lazy loading des sections lourdes
 const ExponentialGraphSection = lazy(() => import('./components/ExponentialGraphSection'));

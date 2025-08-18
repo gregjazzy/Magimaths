@@ -1,0 +1,70 @@
+{
+  "timestamp": "2025-08-17T06:29:23.264Z",
+  "scenarios": [
+    {
+      "name": "Actuel",
+      "chapters": 50,
+      "users": 100
+    },
+    {
+      "name": "Court terme",
+      "chapters": 200,
+      "users": 1000
+    },
+    {
+      "name": "Moyen terme",
+      "chapters": 500,
+      "users": 5000
+    },
+    {
+      "name": "Long terme",
+      "chapters": 1000,
+      "users": 10000
+    },
+    {
+      "name": "Maximum théorique",
+      "chapters": 2000,
+      "users": 50000
+    }
+  ],
+  "serverAnalysis": {
+    "concurrentUsers": 1000,
+    "avgSessionDuration": 20,
+    "pagesPerSession": 5,
+    "peakHours": 4
+  },
+  "recommendations": {
+    "frontend": [
+      "✅ Lazy loading (déjà implémenté)",
+      "✅ Code splitting par niveau/chapitre",
+      "✅ Cache navigateur (Service Worker)",
+      "✅ Compression gzip/brotli",
+      "✅ CDN pour les assets statiques"
+    ],
+    "backend": [
+      "🔄 API REST avec pagination",
+      "🔄 Cache Redis pour les chapitres populaires",
+      "🔄 Base de données optimisée (index)",
+      "🔄 Load balancer (2-3 serveurs)",
+      "🔄 Monitoring et alertes"
+    ],
+    "infrastructure": [
+      "🔄 CDN global (Cloudflare/AWS)",
+      "🔄 Auto-scaling horizontal",
+      "🔄 Backup automatique",
+      "🔄 Monitoring performances",
+      "🔄 SSL/TLS optimisé"
+    ]
+  },
+  "conclusion": {
+    "feasibleFor10kUsers": true,
+    "currentArchitectureRating": "Good foundation",
+    "requiredEvolutions": [
+      "Backend API",
+      "Database",
+      "CDN",
+      "Load balancing"
+    ],
+    "estimatedMonthlyCost": "200-500€"
+  }
+}

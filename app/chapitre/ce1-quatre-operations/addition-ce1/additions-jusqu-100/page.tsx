@@ -862,47 +862,20 @@ export default function AdditionsJusqua100CE1() {
 
   // Fonction pour s'assurer que l'animation en cours est visible - MOBILE OPTIMISÉ
   const ensureAnimationVisible = () => {
-    const isMobileScreen = window.innerWidth < 640; // sm breakpoint
-    if (!isMobileScreen) return; // Ne rien faire sur desktop
-    
-    // Sur mobile uniquement, scroll vers la section animation
+    // 🎯 SCROLL AUTOMATIQUE sur chaque étape - Fonctionne sur mobile ET desktop
     setTimeout(() => {
       const animationElement = document.getElementById('animation-section');
       if (animationElement) {
-        const rect = animationElement.getBoundingClientRect();
-        const viewportHeight = window.innerHeight;
+        // Scroll fluide vers la zone d'animation avec centrage optimal
+        animationElement.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'center',
+          inline: 'nearest'
+        });
         
-        // Calculer la zone optimale pour l'animation (partie haute de l'écran mais pas tout en haut)
-        const idealTop = viewportHeight * 0.1; // 10% du haut de l'écran
-        const idealBottom = viewportHeight * 0.8; // 80% de l'écran pour laisser de la place
-        
-        // Vérifier si l'animation est complètement visible dans la zone optimale
-        const isCompletelyVisible = rect.top >= idealTop && rect.bottom <= idealBottom;
-        const isPartiallyVisible = rect.bottom > idealTop && rect.top < idealBottom;
-        
-        // Si l'animation n'est pas optimalement positionnée, l'ajuster
-        if (!isCompletelyVisible || rect.top < 30) {
-          // Pour les longues animations, utiliser 'start' pour voir le début
-          // Pour les courtes animations, utiliser 'center'
-          const elementHeight = rect.bottom - rect.top;
-          const useStartPosition = elementHeight > viewportHeight * 0.6;
-          
-          animationElement.scrollIntoView({ 
-            behavior: 'smooth', 
-            block: useStartPosition ? 'start' : 'center',
-            inline: 'nearest' 
-          });
-          
-          // Ajouter un petit ajustement après le scroll pour optimiser la position
-          setTimeout(() => {
-            const newRect = animationElement.getBoundingClientRect();
-            if (newRect.top < 20) {
-              window.scrollBy({ top: -30, behavior: 'smooth' });
-            }
-          }, 300);
-        }
+        console.log('📍 Scroll automatique vers l\'étape d\'animation');
       }
-    }, 200); // Délai pour laisser le DOM se stabiliser après les changements d'état
+    }, 100); // Délai court pour laisser le temps aux éléments de se mettre à jour
   };
 
   // Fonction pour scroller vers le bouton Suivant - OPTIMISÉE MOBILE
@@ -1230,6 +1203,7 @@ export default function AdditionsJusqua100CE1() {
     if (hasCarry) {
       // Étape 5 : Explication de la retenue
       setCalculationStep('carry-explanation');
+      ensureAnimationVisible();
       await playAudio(`${unitsSum}, c'est plus que 10 ! Je dois décomposer : ${unitsSum} égale ${Math.floor(unitsSum / 10)} dizaine plus ${unitsSum % 10} unités.`);
       await wait(4000);
 
@@ -1237,6 +1211,7 @@ export default function AdditionsJusqua100CE1() {
 
       // Étape 6 : Animation visuelle de la retenue
       setCalculationStep('carry-visual');
+      ensureAnimationVisible();
       setShowingCarry(true);
       await playAudio(`La dizaine va glisser vers le haut pour rejoindre les dizaines. L'unité reste en bas.`);
       await wait(3500);
@@ -1251,6 +1226,7 @@ export default function AdditionsJusqua100CE1() {
 
     // Étape 7 : Calcul des dizaines
     setCalculationStep('tens');
+    ensureAnimationVisible();
     setHighlightedDigits(['tens']);
     const tensSum = Math.floor(example.num1 / 10) + Math.floor(example.num2 / 10) + (hasCarry ? 1 : 0);
     
@@ -1271,6 +1247,7 @@ export default function AdditionsJusqua100CE1() {
 
     // Étape 8 : Résultat final
     setCalculationStep('result');
+    ensureAnimationVisible();
     setHighlightedDigits([]);
     await playAudio(`Résultat final : ${tensSum}${unitsSum % 10} = ${example.result} ! Bravo, tu maîtrises la retenue !`);
     await wait(3000);
@@ -1287,6 +1264,7 @@ export default function AdditionsJusqua100CE1() {
 
     // Étape 2 : Présentation du premier nombre
     setCalculationStep('show-first');
+    ensureAnimationVisible();
     await playAudio(`D'abord, regardons ${example.num1}. Je vais le décomposer en dizaines et unités.`);
     await wait(3000);
 
@@ -1294,6 +1272,7 @@ export default function AdditionsJusqua100CE1() {
 
     // Étape 3 : Décomposition visuelle du premier nombre
     setCalculationStep('decompose-first');
+    ensureAnimationVisible();
     const tens1 = Math.floor(example.num1 / 10);
     const units1 = example.num1 % 10;
     await playAudio(`${example.num1}, c'est ${tens1} dizaine${tens1 > 1 ? 's' : ''} et ${units1} unité${units1 > 1 ? 's' : ''}. Regarde bien !`);
@@ -1303,6 +1282,7 @@ export default function AdditionsJusqua100CE1() {
 
     // Étape 4 : Présentation du deuxième nombre
     setCalculationStep('show-second');
+    ensureAnimationVisible();
     await playAudio(`Maintenant, regardons ${example.num2}. Je vais aussi le décomposer.`);
     await wait(3000);
 
@@ -1310,6 +1290,7 @@ export default function AdditionsJusqua100CE1() {
 
     // Étape 5 : Décomposition visuelle du deuxième nombre
     setCalculationStep('decompose-second');
+    ensureAnimationVisible();
     const tens2 = Math.floor(example.num2 / 10);
     const units2 = example.num2 % 10;
     await playAudio(`${example.num2}, c'est ${tens2} dizaine${tens2 > 1 ? 's' : ''} et ${units2} unité${units2 > 1 ? 's' : ''}. Tu vois la différence de couleur ?`);
@@ -1319,6 +1300,7 @@ export default function AdditionsJusqua100CE1() {
 
     // Étape 6 : Explication de la stratégie
     setCalculationStep('explain-strategy');
+    ensureAnimationVisible();
     await playAudio(`Maintenant, voici le secret : je vais additionner les dizaines ensemble, puis les unités ensemble !`);
     await wait(3000);
 

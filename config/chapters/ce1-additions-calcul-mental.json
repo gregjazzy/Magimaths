@@ -1,0 +1,216 @@
+{
+  "id": "ce1-additions-calcul-mental",
+  "title": "Techniques de calcul mental - Additions jusqu'à 100",
+  "description": "Apprends les astuces pour calculer rapidement dans ta tête !",
+  "level": "CE1",
+  "character": {
+    "name": "minecraft",
+    "image": "/image/Minecraftstyle.png",
+    "expressions": ["Super !", "Génial !", "Tu es un champion !"]
+  },
+  "theme": {
+    "primary": "from-green-400 to-blue-500",
+    "secondary": "from-green-50 to-blue-50",
+    "accent": "green-500",
+    "text": "green-800",
+    "gradient": "from-green-400 to-blue-500",
+    "bgGradient": "from-green-50 to-blue-50",
+    "characterBg": "bg-gradient-to-br from-green-100 to-blue-100",
+    "boxBg": "bg-white",
+    "buttonColors": {
+      "course": "bg-gradient-to-r from-green-500 to-blue-600",
+      "exercises": "bg-gradient-to-r from-blue-500 to-green-600"
+    },
+    "animationButtons": "bg-gradient-to-r from-green-400 to-blue-500"
+  },
+  "course": {
+    "title": "Techniques de calcul mental",
+    "description": "Découvre les astuces pour calculer vite !",
+    "introduction": {
+      "title": "Le calcul mental, c'est magique !",
+      "content": "Savais-tu qu'on peut calculer très vite dans sa tête ? Il existe des astuces géniales ! Par exemple, pour ajouter 9, on ajoute 10 puis on enlève 1. Ou encore, les doubles comme 25 + 25 = 50 sont super faciles à retenir ! Découvrons ces techniques ensemble !"
+    },
+    "animations": [
+      {
+        "id": "complement-10",
+        "title": "Compléments à 10",
+        "description": "7 + 3 = 10, donc 27 + 3 = 30",
+        "icon": "🎯",
+        "duration": 4000
+      },
+      {
+        "id": "doubles",
+        "title": "Les doubles",
+        "description": "25 + 25 = 50, facile à retenir !",
+        "icon": "👥",
+        "duration": 3500
+      },
+      {
+        "id": "ajouter-9",
+        "title": "Ajouter 9",
+        "description": "Pour +9, ajoute 10 puis enlève 1",
+        "icon": "🔢",
+        "duration": 4500
+      },
+      {
+        "id": "decomposer",
+        "title": "Décomposer",
+        "description": "34 + 28 = 34 + 20 + 8 = 54 + 8 = 62",
+        "icon": "🧩",
+        "duration": 5000
+      }
+    ]
+  },
+  "problems": [
+    {
+      "id": "complement-10-1",
+      "title": "Complément à 10",
+      "story": "Tom a 37 billes. Il en gagne 3 de plus. Combien en a-t-il maintenant ?",
+      "first": 37,
+      "second": 3,
+      "result": 40,
+      "item": "billes",
+      "color1": "bg-blue-400",
+      "color2": "bg-green-400",
+      "technique": "37 + 3 : Je sais que 7 + 3 = 10, donc 37 + 3 = 40"
+    },
+    {
+      "id": "complement-10-2",
+      "title": "Complément à 10",
+      "story": "Lisa collectionne 46 cartes. Elle en achète 4 nouvelles. Combien en a-t-elle ?",
+      "first": 46,
+      "second": 4,
+      "result": 50,
+      "item": "cartes",
+      "color1": "bg-purple-400",
+      "color2": "bg-pink-400",
+      "technique": "46 + 4 : Je sais que 6 + 4 = 10, donc 46 + 4 = 50"
+    },
+    {
+      "id": "doubles-1",
+      "title": "Les doubles",
+      "story": "Max a 25 autocollants. Son frère lui en donne autant. Combien en a-t-il ?",
+      "first": 25,
+      "second": 25,
+      "result": 50,
+      "item": "autocollants",
+      "color1": "bg-red-400",
+      "color2": "bg-red-400",
+      "technique": "25 + 25 : C'est un double ! 25 × 2 = 50"
+    },
+    {
+      "id": "doubles-2",
+      "title": "Presque un double",
+      "story": "Emma a 24 perles. Elle en trouve 25 autres. Combien en a-t-elle ?",
+      "first": 24,
+      "second": 25,
+      "result": 49,
+      "item": "perles",
+      "color1": "bg-yellow-400",
+      "color2": "bg-orange-400",
+      "technique": "24 + 25 : C'est presque 25 + 25 = 50, mais 24 + 25 = 49"
+    },
+    {
+      "id": "ajouter-9-1",
+      "title": "Ajouter 9",
+      "story": "Paul a 34 jetons. Il en gagne 9 au jeu. Combien en a-t-il maintenant ?",
+      "first": 34,
+      "second": 9,
+      "result": 43,
+      "item": "jetons",
+      "color1": "bg-indigo-400",
+      "color2": "bg-cyan-400",
+      "technique": "34 + 9 : J'ajoute 10 puis j'enlève 1 → 34 + 10 - 1 = 44 - 1 = 43"
+    },
+    {
+      "id": "ajouter-9-2",
+      "title": "Ajouter 9",
+      "story": "Sophie a 57 images. Elle en reçoit 9 de plus. Combien en a-t-elle ?",
+      "first": 57,
+      "second": 9,
+      "result": 66,
+      "item": "images",
+      "color1": "bg-teal-400",
+      "color2": "bg-emerald-400",
+      "technique": "57 + 9 : J'ajoute 10 puis j'enlève 1 → 57 + 10 - 1 = 67 - 1 = 66"
+    },
+    {
+      "id": "decomposer-1",
+      "title": "Décomposer",
+      "story": "Léo a 34 cubes. Il en construit 28 de plus. Combien en a-t-il ?",
+      "first": 34,
+      "second": 28,
+      "result": 62,
+      "item": "cubes",
+      "color1": "bg-lime-400",
+      "color2": "bg-amber-400",
+      "technique": "34 + 28 : Je décompose 28 = 20 + 8 → 34 + 20 + 8 = 54 + 8 = 62"
+    },
+    {
+      "id": "decomposer-2",
+      "title": "Décomposer",
+      "story": "Clara a 45 stickers. Elle en colle 37 nouveaux. Combien en a-t-elle ?",
+      "first": 45,
+      "second": 37,
+      "result": 82,
+      "item": "stickers",
+      "color1": "bg-rose-400",
+      "color2": "bg-violet-400",
+      "technique": "45 + 37 : Je décompose 37 = 30 + 7 → 45 + 30 + 7 = 75 + 7 = 82"
+    }
+  ],
+  "exercises": [
+    {
+      "story": "Marie a 38 bonbons. Elle en mange 3. Combien lui en reste-t-il ?",
+      "visual": "🍬",
+      "answer": 35,
+      "technique": "Complément à 10 : 38 - 3, je pense 8 - 3 = 5, donc 35"
+    },
+    {
+      "story": "Pierre collectionne 47 timbres. Il en achète 6 nouveaux. Combien en a-t-il ?",
+      "visual": "📮",
+      "answer": 53,
+      "technique": "Complément à 10 : 47 + 6, je pense 7 + 3 = 10, donc 47 + 3 = 50, puis 50 + 3 = 53"
+    },
+    {
+      "story": "Julie a 32 crayons. Elle en reçoit 32 autres. Combien en a-t-elle ?",
+      "visual": "✏️",
+      "answer": 64,
+      "technique": "Double : 32 + 32 = 32 × 2 = 64"
+    },
+    {
+      "story": "Thomas a 29 billes. Il en gagne 9 au jeu. Combien en a-t-il ?",
+      "visual": "⚽",
+      "answer": 38,
+      "technique": "Ajouter 9 : 29 + 10 - 1 = 39 - 1 = 38"
+    },
+    {
+      "story": "Anna a 26 cartes. Elle en trouve 35 autres. Combien en a-t-elle ?",
+      "visual": "🃏",
+      "answer": 61,
+      "technique": "Décomposer : 26 + 35 = 26 + 30 + 5 = 56 + 5 = 61"
+    },
+    {
+      "story": "Lucas a 43 jetons. Il en perd 8. Combien lui en reste-t-il ?",
+      "visual": "🪙",
+      "answer": 35,
+      "technique": "Enlever 8 : 43 - 8 = 43 - 10 + 2 = 33 + 2 = 35"
+    },
+    {
+      "story": "Zoé a 54 autocollants. Elle en donne 27. Combien lui en reste-t-il ?",
+      "visual": "⭐",
+      "answer": 27,
+      "technique": "Décomposer : 54 - 27 = 54 - 20 - 7 = 34 - 7 = 27"
+    },
+    {
+      "story": "Hugo a 36 cubes. Il en construit 18 de plus. Combien en a-t-il ?",
+      "visual": "🧱",
+      "answer": 54,
+      "technique": "Décomposer : 36 + 18 = 36 + 20 - 2 = 56 - 2 = 54"
+    }
+  ],
+  "navigation": {
+    "backUrl": "/chapitre/ce1-quatre-operations/addition-ce1",
+    "backLabel": "Retour aux additions CE1"
+  }
+}
