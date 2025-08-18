@@ -582,7 +582,7 @@ export default function ComplementsDixCP() {
         {/* Header */}
         <div className="mb-8">
           <Link 
-            href="/chapitre/cp-additions-simples" 
+            href="/chapitre/cp-nombres-jusqu-20" 
             onClick={stopAllVocalsAndAnimations}
             className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors mb-4"
           >

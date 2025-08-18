@@ -1637,12 +1637,12 @@ export default function Decomposition1000CE1() {
         {/* Header */}
         <div className="mb-8">
           <Link 
-            href="/chapitre/ce1-quatre-operations/addition-ce1" 
+            href="/chapitre/ce1-nombres-jusqu-1000" 
             onClick={stopAllVocalsAndAnimations}
             className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors mb-4"
           >
             <ArrowLeft className="w-4 h-4" />
-            <span>Retour à l'addition CE1</span>
+            <span>Retour aux nombres jusqu'à 1000</span>
           </Link>
           
           <div className="bg-white rounded-xl p-4 sm:p-6 shadow-lg text-center">

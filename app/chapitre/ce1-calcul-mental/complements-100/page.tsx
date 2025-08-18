@@ -1461,12 +1461,12 @@ export default function ComplementsCentCE1() {
         {/* Header */}
         <div className="mb-4 sm:mb-8">
           <Link 
-            href="/chapitre/cp-additions-simples" 
+            href="/chapitre/ce1-calcul-mental" 
              onClick={handleStopAllVocalsAndAnimations}
             className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors mb-4"
           >
             <ArrowLeft className="w-4 h-4" />
-            <span>Retour aux additions simples</span>
+            <span>Retour au calcul mental CE1</span>
           </Link>
           
           <div className="bg-white rounded-xl p-4 sm:p-6 shadow-lg text-center">
