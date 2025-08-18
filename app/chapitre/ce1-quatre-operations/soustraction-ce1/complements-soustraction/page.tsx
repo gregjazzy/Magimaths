@@ -271,7 +271,7 @@ export default function ComplementsSoustraction() {
     if (userNum === correctAnswer) {
       setIsCorrect(true);
       setScore(score + 1);
-      setAnsweredCorrectly(new Set([...answeredCorrectly, currentExercise]));
+      setAnsweredCorrectly(new Set(Array.from(answeredCorrectly).concat([currentExercise])));
       
       setTimeout(() => {
         if (currentExercise < exercises.length - 1) {

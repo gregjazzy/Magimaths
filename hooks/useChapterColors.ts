@@ -262,7 +262,7 @@ export const useChapterColors = (
     const levelKey = level.toUpperCase() as keyof typeof classColors;
     const classColor = classColors[levelKey] || classColors['CP'];
     const subjectKey = extractSubjectFromId(chapterId);
-    const subjectColor = subjectKey ? subjectColors[subjectKey] : null;
+    const subjectColor = subjectKey ? subjectColors[subjectKey as keyof typeof subjectColors] : null;
     
     // Si une couleur personnalisée est fournie
     if (customColor) {

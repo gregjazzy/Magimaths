@@ -4,11 +4,8 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, Calculator, Target, Star, CheckCircle, XCircle, Trophy, Brain, Zap, BookOpen, Eye, Play } from 'lucide-react';
 
-// Import des composants modulaires
-import { AdditionTechniques } from '@/components/exercises/AdditionTechniques';
-import { ExerciseSection } from '@/components/exercises/ExerciseSection';
-import { SamPirateIntro } from '@/components/character/SamPirateIntro';
-import { useAudioManager } from '@/components/exercises/AudioManager';
+// Import du gestionnaire audio
+import { playAudio, stopAllAudio, markUserInteraction } from '@/lib/audioManager';
 
 export default function AdditionsJusqua100CE1Optimized() {
   // États principaux consolidés
@@ -65,14 +62,20 @@ export default function AdditionsJusqua100CE1Optimized() {
   const currentAudioRef = useRef<SpeechSynthesisUtterance | null>(null);
   const nextButtonRef = useRef<HTMLButtonElement>(null);
 
-  // Hook audio manager
-  const audioManager = useAudioManager({
-    stopSignalRef,
-    currentAudioRef,
-    onAudioStart: () => setAudioState(prev => ({ ...prev, isPlayingVocal: true })),
-    onAudioEnd: () => setAudioState(prev => ({ ...prev, isPlayingVocal: false })),
-    onAudioError: () => setAudioState(prev => ({ ...prev, isPlayingVocal: false }))
-  });
+  // Gestionnaire audio simplifié
+  const speakText = async (text: string) => {
+    setAudioState(prev => ({ ...prev, isPlayingVocal: true }));
+    try {
+      await playAudio('ce1-quatre-operations', 'addition-ce1', 'intro', text);
+    } finally {
+      setAudioState(prev => ({ ...prev, isPlayingVocal: false }));
+    }
+  };
+
+  const stopAudio = () => {
+    stopAllAudio();
+    setAudioState(prev => ({ ...prev, isPlayingVocal: false }));
+  };
 
   // Données des techniques d'addition - Version condensée pour l'exemple
   const additionTechniques = [
@@ -194,7 +197,7 @@ export default function AdditionsJusqua100CE1Optimized() {
   const handlePlayEnonce = async () => {
     setPirateState(prev => ({ ...prev, isPlayingEnonce: true }));
     try {
-      await audioManager.speakText(
+      await speakText(
         "Ahoy matelot ! Nous allons explorer 6 techniques magiques pour additionner jusqu'à 100. Choisis une technique pour commencer l'aventure !"
       );
     } finally {
@@ -203,7 +206,7 @@ export default function AdditionsJusqua100CE1Optimized() {
   };
 
   const handleStopAudio = () => {
-    audioManager.stopAudio();
+    stopAudio();
     setPirateState(prev => ({ ...prev, isPlayingEnonce: false }));
   };
 
@@ -313,31 +316,152 @@ export default function AdditionsJusqua100CE1Optimized() {
 
       <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-6 space-y-8">
         {/* Introduction avec Sam le Pirate */}
-        <SamPirateIntro
-          pirateIntroStarted={pirateState.pirateIntroStarted}
-          samSizeExpanded={pirateState.samSizeExpanded}
-          imageError={pirateState.imageError}
-          isPlayingEnonce={pirateState.isPlayingEnonce}
-          onStartIntro={handleStartIntro}
-          onImageError={handleImageError}
-          onPlayEnonce={handlePlayEnonce}
-          onStopAudio={handleStopAudio}
-        />
+        <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-200">
+          <div className="flex flex-col lg:flex-row items-center gap-6">
+            {/* Image de Sam le Pirate */}
+            <div className={`flex-shrink-0 transition-all duration-500 ${pirateState.samSizeExpanded ? 'scale-110' : 'scale-100'}`}>
+              {!pirateState.imageError ? (
+                <img 
+                  src="/images/pirate-small.png" 
+                  alt="Sam le Pirate" 
+                  className="w-24 h-24 lg:w-32 lg:h-32 object-contain"
+                  onError={handleImageError}
+                />
+              ) : (
+                <div className="w-24 h-24 lg:w-32 lg:h-32 bg-blue-100 rounded-full flex items-center justify-center text-4xl">
+                  🏴‍☠️
+                </div>
+              )}
+            </div>
+
+            {/* Contenu */}
+            <div className="flex-1 text-center lg:text-left">
+              <h2 className="text-2xl font-bold text-gray-900 mb-3">
+                Ahoy matelot ! 🏴‍☠️
+              </h2>
+              <p className="text-gray-600 mb-4">
+                Je suis Sam le Pirate et je vais t'apprendre les techniques d'addition jusqu'à 100 !
+                Prêt pour l'aventure ?
+              </p>
+              
+              {!pirateState.pirateIntroStarted ? (
+                <button
+                  onClick={handleStartIntro}
+                  className="bg-gradient-to-r from-blue-500 to-purple-500 text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+                >
+                  🚀 Commencer l'aventure !
+                </button>
+              ) : (
+                <div className="flex flex-wrap gap-3 justify-center lg:justify-start">
+                  <button
+                    onClick={handlePlayEnonce}
+                    disabled={pirateState.isPlayingEnonce}
+                    className="bg-green-500 text-white font-bold py-2 px-4 rounded-lg shadow hover:bg-green-600 transition-colors disabled:opacity-50 flex items-center space-x-2"
+                  >
+                    <Play className="w-4 h-4" />
+                    <span>{pirateState.isPlayingEnonce ? 'En cours...' : 'Écouter'}</span>
+                  </button>
+                  
+                  {pirateState.isPlayingEnonce && (
+                    <button
+                      onClick={handleStopAudio}
+                      className="bg-red-500 text-white font-bold py-2 px-4 rounded-lg shadow hover:bg-red-600 transition-colors flex items-center space-x-2"
+                    >
+                      <XCircle className="w-4 h-4" />
+                      <span>Arrêter</span>
+                    </button>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
 
         {/* Techniques d'addition */}
         {gameState.hasStarted && (
           <div className="space-y-8">
-            <AdditionTechniques
-              techniques={additionTechniques}
-              selectedTechnique={techniqueState.selectedTechnique}
-              onTechniqueSelect={handleTechniqueSelect}
-              selectedExampleIndex={techniqueState.selectedExampleIndex}
-              onExampleSelect={handleExampleSelect}
-              currentTechnique={techniqueState.currentTechnique}
-              calculationStep={techniqueState.calculationStep}
-              highlightedDigits={techniqueState.highlightedDigits}
-              animatingStep={techniqueState.animatingStep}
-            />
+            {/* Techniques d'addition inline */}
+            <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-200">
+              <h3 className="text-2xl font-bold text-gray-900 mb-6 text-center">
+                🧮 Techniques d'addition
+              </h3>
+              
+              {/* Sélection des techniques */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                {additionTechniques.map((technique) => (
+                  <button
+                    key={technique.id}
+                    onClick={() => handleTechniqueSelect(technique.id)}
+                    className={`p-4 rounded-lg border-2 transition-all duration-200 ${
+                      techniqueState.selectedTechnique === technique.id
+                        ? 'border-blue-500 bg-blue-50 shadow-lg'
+                        : 'border-gray-200 hover:border-gray-300 hover:shadow-md'
+                    }`}
+                  >
+                    <div className="text-3xl mb-2">{technique.icon}</div>
+                    <h4 className="font-bold text-gray-900 mb-2">{technique.title}</h4>
+                    <p className="text-sm text-gray-600">{technique.description}</p>
+                  </button>
+                ))}
+              </div>
+
+              {/* Exemples de la technique sélectionnée */}
+              {techniqueState.selectedTechnique && (
+                <div className="border-t pt-6">
+                  {(() => {
+                    const selectedTechnique = additionTechniques.find(t => t.id === techniqueState.selectedTechnique);
+                    if (!selectedTechnique) return null;
+
+                    const currentExample = selectedTechnique.examples[techniqueState.selectedExampleIndex];
+                    
+                    return (
+                      <div>
+                        <h4 className="text-xl font-bold text-gray-900 mb-4">
+                          Exemple : {currentExample.calculation}
+                        </h4>
+                        
+                        {/* Sélection d'exemples */}
+                        <div className="flex gap-2 mb-4">
+                          {selectedTechnique.examples.map((_, index) => (
+                            <button
+                              key={index}
+                              onClick={() => handleExampleSelect(index)}
+                              className={`px-3 py-1 rounded ${
+                                techniqueState.selectedExampleIndex === index
+                                  ? 'bg-blue-500 text-white'
+                                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                              }`}
+                            >
+                              Ex. {index + 1}
+                            </button>
+                          ))}
+                        </div>
+
+                        {/* Étapes de calcul */}
+                        <div className="bg-gray-50 rounded-lg p-4">
+                          <div className="text-center mb-4">
+                            <div className="text-3xl font-bold text-blue-600">
+                              {currentExample.num1} + {currentExample.num2} = {currentExample.result}
+                            </div>
+                          </div>
+                          
+                          <div className="space-y-2">
+                            {currentExample.steps.map((step, index) => (
+                              <div key={index} className="flex items-center space-x-3">
+                                <div className="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm font-bold">
+                                  {index + 1}
+                                </div>
+                                <p className="text-gray-700">{step}</p>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })()}
+                </div>
+              )}
+            </div>
 
             {/* Bouton pour passer aux exercices */}
             {techniqueState.selectedTechnique && !gameState.showExercises && (
@@ -354,22 +478,106 @@ export default function AdditionsJusqua100CE1Optimized() {
 
             {/* Section des exercices */}
             {gameState.showExercises && (
-              <ExerciseSection
-                exercises={exercises}
-                currentExercise={gameState.currentExercise}
-                userAnswer={exerciseState.userAnswer}
-                isCorrect={exerciseState.isCorrect}
-                score={gameState.score}
-                answeredCorrectly={exerciseState.answeredCorrectly}
-                showCompletionModal={gameState.showCompletionModal}
-                finalScore={gameState.finalScore}
-                onAnswerChange={handleAnswerChange}
-                onAnswerSubmit={handleAnswerSubmit}
-                onNextExercise={handleNextExercise}
-                onRestartExercises={handleRestartExercises}
-                minecraftExpressions={minecraftExpressions}
-                correctAnswerCompliments={correctAnswerCompliments}
-              />
+              <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-200">
+                <div className="flex items-center justify-between mb-6">
+                  <h3 className="text-2xl font-bold text-gray-900">
+                    🎯 Exercices d'entraînement
+                  </h3>
+                  <div className="flex items-center space-x-4">
+                    <div className="text-sm text-gray-600">
+                      Exercice {gameState.currentExercise + 1} / {exercises.length}
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Trophy className="w-5 h-5 text-yellow-500" />
+                      <span className="font-bold text-gray-900">{gameState.score} pts</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Exercice actuel */}
+                <div className="bg-gray-50 rounded-lg p-6 mb-6">
+                  <div className="text-center mb-4">
+                    <h4 className="text-3xl font-bold text-blue-600 mb-2">
+                      {exercises[gameState.currentExercise].question}
+                    </h4>
+                    <p className="text-gray-600">
+                      💡 {exercises[gameState.currentExercise].hint}
+                    </p>
+                  </div>
+
+                  {/* Zone de réponse */}
+                  <div className="flex flex-col items-center space-y-4">
+                    <input
+                      type="number"
+                      value={exerciseState.userAnswer}
+                      onChange={(e) => handleAnswerChange(e.target.value)}
+                      placeholder="Ta réponse..."
+                      className="w-32 text-center text-2xl font-bold py-3 px-4 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none"
+                      disabled={exerciseState.isCorrect !== null}
+                    />
+
+                    {exerciseState.isCorrect === null ? (
+                      <button
+                        onClick={handleAnswerSubmit}
+                        disabled={!exerciseState.userAnswer}
+                        className="bg-blue-500 text-white font-bold py-3 px-6 rounded-lg shadow hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        Vérifier
+                      </button>
+                    ) : (
+                      <div className="text-center">
+                        {exerciseState.isCorrect ? (
+                          <div className="flex items-center space-x-2 text-green-600 mb-4">
+                            <CheckCircle className="w-8 h-8" />
+                            <span className="text-xl font-bold">
+                              {correctAnswerCompliments[Math.floor(Math.random() * correctAnswerCompliments.length)]} !
+                            </span>
+                          </div>
+                        ) : (
+                          <div className="flex items-center space-x-2 text-red-600 mb-4">
+                            <XCircle className="w-8 h-8" />
+                            <span className="text-xl font-bold">
+                              {minecraftExpressions[Math.floor(Math.random() * minecraftExpressions.length)]} !
+                            </span>
+                          </div>
+                        )}
+
+                        {gameState.currentExercise < exercises.length - 1 ? (
+                          <button
+                            onClick={handleNextExercise}
+                            className="bg-green-500 text-white font-bold py-3 px-6 rounded-lg shadow hover:bg-green-600 transition-colors"
+                          >
+                            Exercice suivant →
+                          </button>
+                        ) : (
+                          <div className="text-center">
+                            <div className="text-2xl font-bold text-green-600 mb-4">
+                              🎉 Tous les exercices terminés !
+                            </div>
+                            <div className="text-xl text-gray-700 mb-4">
+                              Score final : {gameState.score} / {exercises.length * 10} points
+                            </div>
+                            <button
+                              onClick={handleRestartExercises}
+                              className="bg-purple-500 text-white font-bold py-3 px-6 rounded-lg shadow hover:bg-purple-600 transition-colors"
+                            >
+                              🔄 Recommencer
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Progression */}
+                <div className="w-full bg-gray-200 rounded-full h-2">
+                  <div 
+                    className="bg-blue-500 h-2 rounded-full transition-all duration-300"
+                    style={{ width: `${((gameState.currentExercise + 1) / exercises.length) * 100}%` }}
+                  ></div>
+                </div>
+              </div>
             )}
           </div>
         )}

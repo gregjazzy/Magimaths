@@ -130,11 +130,9 @@ export default function TestHorizontalVerticalPage() {
                   <div className="space-y-4">
                     <ChapterCardPersonnageHorizontal 
                       config={testCardSam}
-                      transparencyLevel={transparency.level}
                     />
                     <ChapterCardPersonnageHorizontal 
                       config={testCardMinecraft}
-                      transparencyLevel={transparency.level}
                     />
                   </div>
                 </div>

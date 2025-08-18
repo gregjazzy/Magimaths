@@ -1029,7 +1029,21 @@ export default function ChapterProblemsLayout({
     }
   };
 
-  const styles = getChapterStyles();
+  const styles = getChapterStyles() || {
+    bgGradient: 'from-blue-50 to-purple-50',
+    gradient: 'from-blue-500 to-purple-500',
+    characterBg: 'bg-blue-100',
+    boxBg: 'bg-white',
+    customBoxBg: undefined,
+    buttonColors: {
+      course: 'bg-gradient-to-r from-blue-500 to-purple-500',
+      exercises: 'bg-gradient-to-r from-green-500 to-blue-500'
+    },
+    animationButtons: {
+      gradient: 'from-green-500 to-blue-500',
+      ring: 'ring-green-400'
+    }
+  };
 
   // Styles pour les animations de correction
   const animationStyles = `
@@ -1321,10 +1335,10 @@ export default function ChapterProblemsLayout({
             {/* Introduction */}
             <div 
               ref={introSectionRef}
-              className={`${styles.customBoxBg ? '' : styles.boxBg} border-2 border-gray-200 rounded-xl shadow-lg p-3 sm:p-6 transition-all duration-1000 ${
+              className={`${'customBoxBg' in styles && styles.customBoxBg ? '' : styles.boxBg} border-2 border-gray-200 rounded-xl shadow-lg p-3 sm:p-6 transition-all duration-1000 ${
                 highlightedElement === 'intro' ? 'ring-4 ring-orange-400 bg-orange-50 scale-105' : ''
               }`}
-              style={styles.customBoxBg ? { backgroundColor: styles.customBoxBg } : {}}
+              style={'customBoxBg' in styles && styles.customBoxBg ? { backgroundColor: styles.customBoxBg } : {}}
             >
               <div className="flex items-center gap-1 sm:gap-3 mb-3 sm:mb-4">
                 <div className="p-1 sm:p-2 bg-orange-100 rounded-lg">
@@ -1355,10 +1369,10 @@ export default function ChapterProblemsLayout({
             {/* Méthode en étapes */}
             <div 
               ref={methodSectionRef}
-              className={`${styles.customBoxBg ? '' : styles.boxBg} border-2 border-gray-200 rounded-xl shadow-lg p-3 sm:p-6 transition-all duration-1000 ${
+              className={`${'customBoxBg' in styles && styles.customBoxBg ? '' : styles.boxBg} border-2 border-gray-200 rounded-xl shadow-lg p-3 sm:p-6 transition-all duration-1000 ${
                 highlightedElement === 'method' ? 'ring-4 ring-purple-400 bg-purple-50 scale-105' : ''
               }`}
-              style={styles.customBoxBg ? { backgroundColor: styles.customBoxBg } : {}}
+              style={'customBoxBg' in styles && styles.customBoxBg ? { backgroundColor: styles.customBoxBg } : {}}
             >
               <div className="flex items-center gap-1 sm:gap-3 mb-3 sm:mb-6">
                 <div className="p-1 sm:p-2 bg-purple-100 rounded-lg">
