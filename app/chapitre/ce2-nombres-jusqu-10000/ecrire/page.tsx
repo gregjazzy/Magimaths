@@ -1209,29 +1209,29 @@ export default function EcrireNombresCE2Page() {
             <div id="rules-section" className={`bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 shadow-lg ${
               highlightedElement === 'rules-section' ? 'ring-4 ring-yellow-400 bg-yellow-200 scale-105 animate-pulse' : ''
             }`}>
-              <h2 className="text-lg sm:text-2xl font-bold text-center mb-3 sm:mb-4 text-gray-900">
+              <h2 className="text-base sm:text-2xl font-bold text-center mb-2 sm:mb-4 text-gray-900">
                 📝 Les règles pour écrire un nombre
               </h2>
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-3 sm:gap-4">
-                <div className="bg-red-50 rounded-lg p-3 text-center">
-                  <div className="text-2xl mb-2">1️⃣</div>
-                  <h3 className="font-bold text-red-800 mb-1">Les milliers</h3>
-                  <p className="text-sm text-red-700">Mille, deux mille, trois mille...</p>
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-2 sm:gap-4">
+                <div className="bg-red-50 rounded-lg p-2 sm:p-3 text-center">
+                  <div className="text-xl sm:text-2xl mb-1 sm:mb-2">1️⃣</div>
+                  <h3 className="font-bold text-red-800 text-sm sm:text-base mb-0.5 sm:mb-1">Les milliers</h3>
+                  <p className="text-xs sm:text-sm text-red-700">Mille, deux mille, trois mille...</p>
                 </div>
-                <div className="bg-green-50 rounded-lg p-3 text-center">
-                  <div className="text-2xl mb-2">2️⃣</div>
-                  <h3 className="font-bold text-green-800 mb-1">Les centaines</h3>
-                  <p className="text-sm text-green-700">Cent, deux cent, trois cent...</p>
+                <div className="bg-green-50 rounded-lg p-2 sm:p-3 text-center">
+                  <div className="text-xl sm:text-2xl mb-1 sm:mb-2">2️⃣</div>
+                  <h3 className="font-bold text-green-800 text-sm sm:text-base mb-0.5 sm:mb-1">Les centaines</h3>
+                  <p className="text-xs sm:text-sm text-green-700">Cent, deux cent, trois cent...</p>
                 </div>
-                <div className="bg-blue-50 rounded-lg p-3 text-center">
-                  <div className="text-2xl mb-2">3️⃣</div>
-                  <h3 className="font-bold text-blue-800 mb-1">Les dizaines</h3>
-                  <p className="text-sm text-blue-700">Vingt, trente, quarante...</p>
+                <div className="bg-blue-50 rounded-lg p-2 sm:p-3 text-center">
+                  <div className="text-xl sm:text-2xl mb-1 sm:mb-2">3️⃣</div>
+                  <h3 className="font-bold text-blue-800 text-sm sm:text-base mb-0.5 sm:mb-1">Les dizaines</h3>
+                  <p className="text-xs sm:text-sm text-blue-700">Vingt, trente, quarante...</p>
                 </div>
-                <div className="bg-purple-50 rounded-lg p-3 text-center">
-                  <div className="text-2xl mb-2">4️⃣</div>
-                  <h3 className="font-bold text-purple-800 mb-1">Les unités</h3>
-                  <p className="text-sm text-purple-700">Un, deux, trois...</p>
+                <div className="bg-purple-50 rounded-lg p-2 sm:p-3 text-center">
+                  <div className="text-xl sm:text-2xl mb-1 sm:mb-2">4️⃣</div>
+                  <h3 className="font-bold text-purple-800 text-sm sm:text-base mb-0.5 sm:mb-1">Les unités</h3>
+                  <p className="text-xs sm:text-sm text-purple-700">Un, deux, trois...</p>
                 </div>
               </div>
             </div>
@@ -1485,10 +1485,10 @@ export default function EcrireNombresCE2Page() {
             <div id="interactive-section" className={`bg-white rounded-lg sm:rounded-xl p-4 sm:p-6 shadow-lg ${
               highlightedElement === 'interactive-section' ? 'ring-4 ring-yellow-400 bg-yellow-200 scale-105 animate-pulse' : ''
             }`}>
-              <h2 className="text-lg sm:text-2xl font-bold text-center mb-4 sm:mb-6 text-gray-900">
+              <h2 className="text-base sm:text-2xl font-bold text-center mb-2 sm:mb-6 text-gray-900">
                 🎯 Atelier de glisser-déposer
               </h2>
-              <p className="text-center text-sm sm:text-base text-gray-600 mb-4 sm:mb-6">
+              <p className="text-center text-xs sm:text-base text-gray-600 mb-2 sm:mb-6">
                 Fais glisser chaque partie du nombre vers sa colonne et regarde la transformation !
               </p>
               
@@ -1595,18 +1595,18 @@ export default function EcrireNombresCE2Page() {
                           touchAction: 'none'
                         }}
                       >
-                        <div className="font-bold text-gray-700 mb-2">Milliers</div>
+                        <div className="font-bold text-gray-700 mb-1 sm:mb-2 text-sm sm:text-base">Milliers</div>
                         {draggedElements.milliers ? (
                           <>
-                            <div className="text-3xl font-bold text-red-600 mb-2">
+                            <div className="text-2xl sm:text-3xl font-bold text-red-600 mb-1 sm:mb-2">
                               {draggedElements.milliers}
                             </div>
-                            <div className="text-lg font-semibold text-red-500 bg-red-100 px-2 py-1 rounded">
+                            <div className="text-base sm:text-lg font-semibold text-red-500 bg-red-100 px-2 py-1 rounded">
                               {draggedElements.milliers}000
                             </div>
                           </>
                         ) : (
-                          <div className="text-gray-400 text-center text-sm">
+                          <div className="text-gray-400 text-center text-xs sm:text-sm">
                             Glisse ici<br/>les milliers
                           </div>
                         )}
@@ -1625,18 +1625,18 @@ export default function EcrireNombresCE2Page() {
                           touchAction: 'none'
                         }}
                       >
-                        <div className="font-bold text-gray-700 mb-2">Centaines</div>
+                        <div className="font-bold text-gray-700 mb-1 sm:mb-2 text-sm sm:text-base">Centaines</div>
                         {draggedElements.centaines ? (
                           <>
-                            <div className="text-3xl font-bold text-green-600 mb-2">
+                            <div className="text-2xl sm:text-3xl font-bold text-green-600 mb-1 sm:mb-2">
                               {draggedElements.centaines}
                             </div>
-                            <div className="text-lg font-semibold text-green-500 bg-green-100 px-2 py-1 rounded">
+                            <div className="text-base sm:text-lg font-semibold text-green-500 bg-green-100 px-2 py-1 rounded">
                               {draggedElements.centaines}00
                             </div>
                           </>
                         ) : (
-                          <div className="text-gray-400 text-center text-sm">
+                          <div className="text-gray-400 text-center text-xs sm:text-sm">
                             Glisse ici<br/>les centaines
                           </div>
                         )}
@@ -1655,18 +1655,18 @@ export default function EcrireNombresCE2Page() {
                           touchAction: 'none'
                         }}
                       >
-                        <div className="font-bold text-gray-700 mb-2">Dizaines</div>
+                        <div className="font-bold text-gray-700 mb-1 sm:mb-2 text-sm sm:text-base">Dizaines</div>
                         {draggedElements.dizaines ? (
                           <>
-                            <div className="text-3xl font-bold text-blue-600 mb-2">
+                            <div className="text-2xl sm:text-3xl font-bold text-blue-600 mb-1 sm:mb-2">
                               {draggedElements.dizaines}
                             </div>
-                            <div className="text-lg font-semibold text-blue-500 bg-blue-100 px-2 py-1 rounded">
+                            <div className="text-base sm:text-lg font-semibold text-blue-500 bg-blue-100 px-2 py-1 rounded">
                               {draggedElements.dizaines}0
                             </div>
                           </>
                         ) : (
-                          <div className="text-gray-400 text-center text-sm">
+                          <div className="text-gray-400 text-center text-xs sm:text-sm">
                             Glisse ici<br/>les dizaines
                           </div>
                         )}
@@ -1685,18 +1685,18 @@ export default function EcrireNombresCE2Page() {
                           touchAction: 'none'
                         }}
                       >
-                        <div className="font-bold text-gray-700 mb-2">Unités</div>
+                        <div className="font-bold text-gray-700 mb-1 sm:mb-2 text-sm sm:text-base">Unités</div>
                         {draggedElements.unites ? (
                           <>
-                            <div className="text-3xl font-bold text-purple-600 mb-2">
+                            <div className="text-2xl sm:text-3xl font-bold text-purple-600 mb-1 sm:mb-2">
                               {draggedElements.unites}
                             </div>
-                            <div className="text-lg font-semibold text-purple-500 bg-purple-100 px-2 py-1 rounded">
+                            <div className="text-base sm:text-lg font-semibold text-purple-500 bg-purple-100 px-2 py-1 rounded">
                               {draggedElements.unites}
                             </div>
                           </>
                         ) : (
-                          <div className="text-gray-400 text-center text-sm">
+                          <div className="text-gray-400 text-center text-xs sm:text-sm">
                             Glisse ici<br/>les unités
                           </div>
                         )}
@@ -1761,9 +1761,9 @@ export default function EcrireNombresCE2Page() {
 
 
             {/* Conseils */}
-            <div className="bg-gradient-to-r from-yellow-400 to-orange-400 rounded-xl p-6 text-white">
-              <h3 className="text-xl font-bold mb-3">💡 Astuces pour réussir</h3>
-              <ul className="space-y-2">
+            <div className="bg-gradient-to-r from-yellow-400 to-orange-400 rounded-xl p-3 sm:p-6 text-white">
+              <h3 className="text-base sm:text-xl font-bold mb-2 sm:mb-3">💡 Astuces pour réussir</h3>
+              <ul className="space-y-1 sm:space-y-2 text-xs sm:text-base">
                 <li>• Écoute bien chaque partie du nombre</li>
                 <li>• Commence par les milliers (1000, 2000, 3000...)</li>
                 <li>• Puis les centaines (100, 200, 300...)</li>
@@ -1775,14 +1775,14 @@ export default function EcrireNombresCE2Page() {
             </div>
 
             {/* Tableau de référence */}
-            <div className="bg-white rounded-xl p-6 shadow-lg">
-              <h3 className="text-xl font-bold text-center mb-6 text-gray-900">
+            <div className="bg-white rounded-xl p-3 sm:p-6 shadow-lg">
+              <h3 className="text-base sm:text-xl font-bold text-center mb-3 sm:mb-6 text-gray-900">
                 📊 Tableau de référence
               </h3>
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-3 sm:gap-6">
                 <div>
-                  <h4 className="font-bold text-red-600 mb-3 text-center md:text-left">Milliers</h4>
-                  <div className="grid grid-cols-2 md:grid-cols-1 gap-1 text-sm text-gray-800 text-center md:text-left">
+                  <h4 className="font-bold text-red-600 mb-2 sm:mb-3 text-center md:text-left text-sm sm:text-base">Milliers</h4>
+                  <div className="grid grid-cols-2 md:grid-cols-1 gap-0.5 sm:gap-1 text-xs sm:text-sm text-gray-800 text-center md:text-left">
                     <div>Mille = 1000</div>
                     <div>Deux mille = 2000</div>
                     <div>Trois mille = 3000</div>
@@ -1795,8 +1795,8 @@ export default function EcrireNombresCE2Page() {
                   </div>
                 </div>
                 <div>
-                  <h4 className="font-bold text-green-600 mb-3 text-center md:text-left">Centaines</h4>
-                  <div className="grid grid-cols-2 md:grid-cols-1 gap-1 text-sm text-gray-800 text-center md:text-left">
+                  <h4 className="font-bold text-green-600 mb-2 sm:mb-3 text-center md:text-left text-sm sm:text-base">Centaines</h4>
+                  <div className="grid grid-cols-2 md:grid-cols-1 gap-0.5 sm:gap-1 text-xs sm:text-sm text-gray-800 text-center md:text-left">
                     <div>Cent = 100</div>
                     <div>Deux cent = 200</div>
                     <div>Trois cent = 300</div>
@@ -1809,8 +1809,8 @@ export default function EcrireNombresCE2Page() {
                   </div>
                 </div>
                 <div>
-                  <h4 className="font-bold text-blue-600 mb-3 text-center md:text-left">Dizaines</h4>
-                  <div className="grid grid-cols-2 md:grid-cols-1 gap-1 text-sm text-gray-800 text-center md:text-left">
+                  <h4 className="font-bold text-blue-600 mb-2 sm:mb-3 text-center md:text-left text-sm sm:text-base">Dizaines</h4>
+                  <div className="grid grid-cols-2 md:grid-cols-1 gap-0.5 sm:gap-1 text-xs sm:text-sm text-gray-800 text-center md:text-left">
                     <div>Dix = 10</div>
                     <div>Vingt = 20</div>
                     <div>Trente = 30</div>
@@ -1823,8 +1823,8 @@ export default function EcrireNombresCE2Page() {
                   </div>
                 </div>
                 <div>
-                  <h4 className="font-bold text-purple-600 mb-3 text-center md:text-left">Unités</h4>
-                  <div className="grid grid-cols-2 md:grid-cols-1 gap-1 text-sm text-gray-800 text-center md:text-left">
+                  <h4 className="font-bold text-purple-600 mb-2 sm:mb-3 text-center md:text-left text-sm sm:text-base">Unités</h4>
+                  <div className="grid grid-cols-2 md:grid-cols-1 gap-0.5 sm:gap-1 text-xs sm:text-sm text-gray-800 text-center md:text-left">
                     <div>Un = 1</div>
                     <div>Deux = 2</div>
                     <div>Trois = 3</div>
