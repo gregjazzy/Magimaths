@@ -1884,7 +1884,7 @@ export default function Decomposition10000CE2() {
                   ) : (
                     /* Version statique quand pas d'animation */
                     <div className="mb-6">
-                      {renderDecompositionTable(47, null)}
+                      {renderDecompositionTable(376, null)}
                     </div>
                   )}
                 </div>
