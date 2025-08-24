@@ -778,64 +778,17 @@ export default function Decomposition10000CE2() {
       if (stopSignalRef.current) return;
       
       // 3. Présentation des autres exemples
-      await wait(2500);
+      await wait(1500);
       setHighlightedNumber(null);
       setShowingProcess(null);
       setDecompositionStep(null);
       setCurrentExample(null);
       setHighlightedElement(null);
-                              await playAudio("Excellent ! Maintenant tu comprends ce qu'est une décomposition !");
-      if (stopSignalRef.current) return;
       
-      await wait(1200);
-      await playAudio("Maintenant, passons aux nombres à 3 chiffres avec les centaines !");
-      if (stopSignalRef.current) return;
-      
-      await wait(1500);
-      // Montrer un exemple avec centaines (146 = 100 + 40 + 6)
-      setCurrentExample(2); // Index 2 = 146 = 100 + 40 + 6
-      const centainesExample = decompositionExamples[2];
-      setTableAnimationStep('initial');
-      
-      await playAudio(`Par exemple, ${centainesExample.number} peut se décomposer avec centaines, dizaines et unités !`);
-      if (stopSignalRef.current) return;
-      
-      await wait(1800);
-      setTableAnimationStep('table');
-      await playAudio("Je place le nombre dans le tableau : centaines, dizaines, unités !");
-      if (stopSignalRef.current) return;
-      
-      await wait(1500);
-      setTableAnimationStep('digits');
-      await playAudio(`${centainesExample.number} : 1 centaine, 4 dizaines, 6 unités !`);
-      if (stopSignalRef.current) return;
-      
-      await wait(1500);
-      setTableAnimationStep('multiplications');
-      await playAudio("Je multiplie : 1 fois 100, 4 fois 10, 6 fois 1 !");
-      if (stopSignalRef.current) return;
-      
-      await wait(1500);
-      setTableAnimationStep('addition');
-      await playAudio(`${centainesExample.number} = ${renderDecomposition(centainesExample.parts)} !`);
-      if (stopSignalRef.current) return;
-      
-      await wait(1800);
-      setDecompositionStep(null);
-      setHighlightedNumber(null);
-      setCurrentExample(null);
-      
-      await playAudio("Maintenant tu connais les 2 stratégies principales !");
-      if (stopSignalRef.current) return;
-      
-      await wait(1500);
+      // Afficher la section des exemples
       setHighlightedElement('examples-section');
       scrollToSection('examples-section');
-      await playAudio("Regarde ! Tu peux essayer avec d'autres nombres !");
-      if (stopSignalRef.current) return;
-      
-      await wait(1200);
-      await playAudio("Clique sur les exemples pour voir d'autres décompositions !");
+      await playAudio("Clique sur un exemple pour voir sa décomposition !");
       if (stopSignalRef.current) return;
       
       await wait(1000);
@@ -916,12 +869,9 @@ export default function Decomposition10000CE2() {
       
       await wait(3000);
       
-      // Réinitialiser
-      setTableAnimationStep(null);
-      setCurrentExample(null);
+      // Réinitialiser uniquement l'animation
+      setTableAnimationStep('addition');
     } finally {
-      setTableAnimationStep(null);
-      setCurrentExample(null);
       setIsAnimationRunning(false);
     }
   };
