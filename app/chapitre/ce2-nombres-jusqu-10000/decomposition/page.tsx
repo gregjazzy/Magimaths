@@ -431,19 +431,19 @@ export default function Decomposition10000CE2() {
           }`}>
             {/* En-têtes */}
             <div className="text-center bg-red-100 rounded-lg p-3 transform transition-all duration-1000 hover:scale-105">
-              <div className="text-red-800 text-[8px] sm:text-[10px] mb-0.5">milliers</div>
+              <div className="text-red-800 text-[6px] sm:text-[8px] mb-0.5">milliers</div>
               <div className="font-bold text-red-800 text-xl sm:text-2xl">M</div>
             </div>
             <div className="text-center bg-green-100 rounded-lg p-3 transform transition-all duration-1000 hover:scale-105">
-              <div className="text-green-800 text-[8px] sm:text-[10px] mb-0.5">centaines</div>
+              <div className="text-green-800 text-[6px] sm:text-[8px] mb-0.5">centaines</div>
               <div className="font-bold text-green-800 text-xl sm:text-2xl">C</div>
             </div>
             <div className="text-center bg-blue-100 rounded-lg p-3 transform transition-all duration-1000 hover:scale-105">
-              <div className="text-blue-800 text-[8px] sm:text-[10px] mb-0.5">dizaines</div>
+              <div className="text-blue-800 text-[6px] sm:text-[8px] mb-0.5">dizaines</div>
               <div className="font-bold text-blue-800 text-xl sm:text-2xl">D</div>
             </div>
             <div className="text-center bg-purple-100 rounded-lg p-3 transform transition-all duration-1000 hover:scale-105">
-              <div className="text-purple-800 text-[8px] sm:text-[10px] mb-0.5">unités</div>
+              <div className="text-purple-800 text-[6px] sm:text-[8px] mb-0.5">unités</div>
               <div className="font-bold text-purple-800 text-xl sm:text-2xl">U</div>
             </div>
 
@@ -523,19 +523,19 @@ export default function Decomposition10000CE2() {
             <div className="grid grid-cols-4 gap-4 bg-white rounded-lg p-4 shadow-lg border-2 border-purple-300">
               {/* En-têtes */}
               <div className="text-center bg-red-100 rounded-lg p-3">
-                <div className="text-red-800 text-[8px] sm:text-[10px] mb-0.5">milliers</div>
+                <div className="text-red-800 text-[6px] sm:text-[8px] mb-0.5">milliers</div>
                 <div className="font-bold text-red-800 text-xl sm:text-2xl">M</div>
               </div>
               <div className="text-center bg-green-100 rounded-lg p-3">
-                <div className="text-green-800 text-[8px] sm:text-[10px] mb-0.5">centaines</div>
+                <div className="text-green-800 text-[6px] sm:text-[8px] mb-0.5">centaines</div>
                 <div className="font-bold text-green-800 text-xl sm:text-2xl">C</div>
               </div>
               <div className="text-center bg-blue-100 rounded-lg p-3">
-                <div className="text-blue-800 text-[8px] sm:text-[10px] mb-0.5">dizaines</div>
+                <div className="text-blue-800 text-[6px] sm:text-[8px] mb-0.5">dizaines</div>
                 <div className="font-bold text-blue-800 text-xl sm:text-2xl">D</div>
               </div>
               <div className="text-center bg-purple-100 rounded-lg p-3">
-                <div className="text-purple-800 text-[8px] sm:text-[10px] mb-0.5">unités</div>
+                <div className="text-purple-800 text-[6px] sm:text-[8px] mb-0.5">unités</div>
                 <div className="font-bold text-purple-800 text-xl sm:text-2xl">U</div>
               </div>
 
