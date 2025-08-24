@@ -438,42 +438,42 @@ export default function Decomposition10000CE2() {
             animationStep === 'table' ? 'animate-bounce' : ''
           }`}>
             {/* En-têtes */}
-            <div className="text-center bg-red-100 rounded-lg p-3 transform transition-all duration-1000 hover:scale-105">
-              <div className="text-red-800 text-[6px] sm:text-[8px] mb-0.5">milliers</div>
-              <div className="font-bold text-red-800 text-xl sm:text-2xl">M</div>
+            <div className="flex flex-col items-center justify-center bg-red-100 rounded-lg p-3 transform transition-all duration-1000 hover:scale-105 min-h-[80px] sm:min-h-[100px]">
+              <div className="text-red-800 text-[6px] sm:text-[8px] mb-1">milliers</div>
+              <div className="font-bold text-red-800 text-xl sm:text-2xl flex items-center justify-center flex-1">M</div>
             </div>
-            <div className="text-center bg-green-100 rounded-lg p-3 transform transition-all duration-1000 hover:scale-105">
-              <div className="text-green-800 text-[6px] sm:text-[8px] mb-0.5">centaines</div>
-              <div className="font-bold text-green-800 text-xl sm:text-2xl">C</div>
+            <div className="flex flex-col items-center justify-center bg-green-100 rounded-lg p-3 transform transition-all duration-1000 hover:scale-105 min-h-[80px] sm:min-h-[100px]">
+              <div className="text-green-800 text-[6px] sm:text-[8px] mb-1">centaines</div>
+              <div className="font-bold text-green-800 text-xl sm:text-2xl flex items-center justify-center flex-1">C</div>
             </div>
-            <div className="text-center bg-blue-100 rounded-lg p-3 transform transition-all duration-1000 hover:scale-105">
-              <div className="text-blue-800 text-[6px] sm:text-[8px] mb-0.5">dizaines</div>
-              <div className="font-bold text-blue-800 text-xl sm:text-2xl">D</div>
+            <div className="flex flex-col items-center justify-center bg-blue-100 rounded-lg p-3 transform transition-all duration-1000 hover:scale-105 min-h-[80px] sm:min-h-[100px]">
+              <div className="text-blue-800 text-[6px] sm:text-[8px] mb-1">dizaines</div>
+              <div className="font-bold text-blue-800 text-xl sm:text-2xl flex items-center justify-center flex-1">D</div>
             </div>
-            <div className="text-center bg-purple-100 rounded-lg p-3 transform transition-all duration-1000 hover:scale-105">
-              <div className="text-purple-800 text-[6px] sm:text-[8px] mb-0.5">unités</div>
-              <div className="font-bold text-purple-800 text-xl sm:text-2xl">U</div>
+            <div className="flex flex-col items-center justify-center bg-purple-100 rounded-lg p-3 transform transition-all duration-1000 hover:scale-105 min-h-[80px] sm:min-h-[100px]">
+              <div className="text-purple-800 text-[6px] sm:text-[8px] mb-1">unités</div>
+              <div className="font-bold text-purple-800 text-xl sm:text-2xl flex items-center justify-center flex-1">U</div>
             </div>
 
             {/* Chiffres */}
             {(animationStep === 'digits' || animationStep === 'multiplications' || animationStep === 'addition') && (
               <>
-                <div className={`text-center bg-red-50 rounded-lg p-4 transition-all duration-1000 ${
+                <div className={`flex items-center justify-center bg-red-50 rounded-lg p-4 transition-all duration-1000 min-h-[80px] sm:min-h-[100px] ${
                   animationStep === 'digits' ? 'ring-4 ring-red-400 scale-110 animate-pulse' : ''
                 }`}>
                   <div className="text-2xl sm:text-4xl font-bold text-red-700">{thousands}</div>
                 </div>
-                <div className={`text-center bg-green-50 rounded-lg p-4 transition-all duration-1000 ${
+                <div className={`flex items-center justify-center bg-green-50 rounded-lg p-4 transition-all duration-1000 min-h-[80px] sm:min-h-[100px] ${
                   animationStep === 'digits' ? 'ring-4 ring-green-400 scale-110 animate-pulse' : ''
                 }`}>
                   <div className="text-2xl sm:text-4xl font-bold text-green-700">{hundreds}</div>
                 </div>
-                <div className={`text-center bg-blue-50 rounded-lg p-4 transition-all duration-1000 ${
+                <div className={`flex items-center justify-center bg-blue-50 rounded-lg p-4 transition-all duration-1000 min-h-[80px] sm:min-h-[100px] ${
                   animationStep === 'digits' ? 'ring-4 ring-blue-400 scale-110 animate-pulse' : ''
                 }`}>
                   <div className="text-2xl sm:text-4xl font-bold text-blue-700">{tens}</div>
                 </div>
-                <div className={`text-center bg-purple-50 rounded-lg p-4 transition-all duration-1000 ${
+                <div className={`flex items-center justify-center bg-purple-50 rounded-lg p-4 transition-all duration-1000 min-h-[80px] sm:min-h-[100px] ${
                   animationStep === 'digits' ? 'ring-4 ring-purple-400 scale-110 animate-pulse' : ''
                 }`}>
                   <div className="text-2xl sm:text-4xl font-bold text-purple-700">{units}</div>
@@ -530,34 +530,34 @@ export default function Decomposition10000CE2() {
           <>
             <div className="grid grid-cols-4 gap-4 bg-white rounded-lg p-4 shadow-lg border-2 border-purple-300">
               {/* En-têtes */}
-              <div className="text-center bg-red-100 rounded-lg p-3">
-                <div className="text-red-800 text-[6px] sm:text-[8px] mb-0.5">milliers</div>
-                <div className="font-bold text-red-800 text-xl sm:text-2xl">M</div>
+              <div className="flex flex-col items-center justify-center bg-red-100 rounded-lg p-3 min-h-[80px] sm:min-h-[100px]">
+                <div className="text-red-800 text-[6px] sm:text-[8px] mb-1">milliers</div>
+                <div className="font-bold text-red-800 text-xl sm:text-2xl flex items-center justify-center flex-1">M</div>
               </div>
-              <div className="text-center bg-green-100 rounded-lg p-3">
-                <div className="text-green-800 text-[6px] sm:text-[8px] mb-0.5">centaines</div>
-                <div className="font-bold text-green-800 text-xl sm:text-2xl">C</div>
+              <div className="flex flex-col items-center justify-center bg-green-100 rounded-lg p-3 min-h-[80px] sm:min-h-[100px]">
+                <div className="text-green-800 text-[6px] sm:text-[8px] mb-1">centaines</div>
+                <div className="font-bold text-green-800 text-xl sm:text-2xl flex items-center justify-center flex-1">C</div>
               </div>
-              <div className="text-center bg-blue-100 rounded-lg p-3">
-                <div className="text-blue-800 text-[6px] sm:text-[8px] mb-0.5">dizaines</div>
-                <div className="font-bold text-blue-800 text-xl sm:text-2xl">D</div>
+              <div className="flex flex-col items-center justify-center bg-blue-100 rounded-lg p-3 min-h-[80px] sm:min-h-[100px]">
+                <div className="text-blue-800 text-[6px] sm:text-[8px] mb-1">dizaines</div>
+                <div className="font-bold text-blue-800 text-xl sm:text-2xl flex items-center justify-center flex-1">D</div>
               </div>
-              <div className="text-center bg-purple-100 rounded-lg p-3">
-                <div className="text-purple-800 text-[6px] sm:text-[8px] mb-0.5">unités</div>
-                <div className="font-bold text-purple-800 text-xl sm:text-2xl">U</div>
+              <div className="flex flex-col items-center justify-center bg-purple-100 rounded-lg p-3 min-h-[80px] sm:min-h-[100px]">
+                <div className="text-purple-800 text-[6px] sm:text-[8px] mb-1">unités</div>
+                <div className="font-bold text-purple-800 text-xl sm:text-2xl flex items-center justify-center flex-1">U</div>
               </div>
 
               {/* Chiffres */}
-              <div className="text-center bg-red-50 rounded-lg p-4">
+              <div className="flex items-center justify-center bg-red-50 rounded-lg p-4 min-h-[80px] sm:min-h-[100px]">
                 <div className="text-2xl sm:text-4xl font-bold text-red-700">{thousands}</div>
               </div>
-              <div className="text-center bg-green-50 rounded-lg p-4">
+              <div className="flex items-center justify-center bg-green-50 rounded-lg p-4 min-h-[80px] sm:min-h-[100px]">
                 <div className="text-2xl sm:text-4xl font-bold text-green-700">{hundreds}</div>
               </div>
-              <div className="text-center bg-blue-50 rounded-lg p-4">
+              <div className="flex items-center justify-center bg-blue-50 rounded-lg p-4 min-h-[80px] sm:min-h-[100px]">
                 <div className="text-2xl sm:text-4xl font-bold text-blue-700">{tens}</div>
               </div>
-              <div className="text-center bg-purple-50 rounded-lg p-4">
+              <div className="flex items-center justify-center bg-purple-50 rounded-lg p-4 min-h-[80px] sm:min-h-[100px]">
                 <div className="text-2xl sm:text-4xl font-bold text-purple-700">{units}</div>
               </div>
 
