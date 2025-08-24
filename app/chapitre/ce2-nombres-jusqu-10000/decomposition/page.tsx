@@ -1933,13 +1933,7 @@ export default function Decomposition10000CE2() {
                 <div className="text-center">
                       <div className="text-lg sm:text-3xl mb-2">{example.item}</div>
                       <div className="font-bold text-lg text-gray-800 mb-2">
-                        {example.number} = {renderDecomposition(example.parts)}
-                  </div>
-                      <div className="text-xs sm:text-sm text-blue-600 font-semibold mb-1">
-                        📋 {example.strategy}
-                  </div>
-                      <div className="text-sm text-gray-600 mb-3">
-                        {example.explanation}
+                        {example.number}
                   </div>
                       <button className={`px-3 py-1 rounded-lg text-sm transition-colors ${
                         isAnimationRunning 
