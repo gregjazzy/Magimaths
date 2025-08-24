@@ -319,6 +319,8 @@ export default function LireNombresCE2Page() {
     setCurrentGameNumber(getRandomGameNumber());
     setGameAnswer(null);
     setShowGameResult(false);
+    // Scroll vers l'interface du jeu après un court délai pour laisser le temps au state de se mettre à jour
+    setTimeout(() => scrollToElement('game-interface'), 100);
   };
 
   const submitGameAnswer = async (playerAnswer: boolean) => {
@@ -1621,7 +1623,7 @@ export default function LireNombresCE2Page() {
                     </div>
                   ) : (
                     /* Interface de jeu */
-                    <div>
+                    <div id="game-interface">
                       {/* Tableau de score compact */}
                       <div className="flex justify-between items-center mb-4 bg-white rounded-lg p-2 shadow-md">
                         <div className="flex items-center gap-3">
