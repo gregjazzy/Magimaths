@@ -2094,12 +2094,9 @@ export default function Decomposition10000CE2() {
             <div className="bg-white rounded-xl shadow-lg text-center p-3 sm:p-6 md:p-8 mt-4 sm:mt-8">
               <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-1 sm:mb-6 md:mb-8 gap-2 sm:gap-4">
                 <div className="flex-1">
-                  <h3 className="text-sm sm:text-xl md:text-2xl font-bold text-gray-900">
-                  {exercises[currentExercise]?.question || "Question..."}
-              </h3>
-                  <p className="text-xs sm:text-sm text-purple-600 font-semibold mt-1">
-                    💡 Utilise la technique : {exercises[currentExercise]?.strategy}
-                  </p>
+                  <h3 className="text-base sm:text-xl md:text-2xl font-bold text-gray-900">
+                    {exercises[currentExercise]?.question || "Question..."}
+                  </h3>
                 </div>
                 {ListenQuestionButtonJSX()}
               </div>
