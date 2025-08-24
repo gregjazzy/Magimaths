@@ -554,17 +554,21 @@ export default function Decomposition10000CE2() {
               </div>
 
               {/* Multiplications */}
-              <div className="text-center bg-purple-50 rounded-lg p-2">
-                <div className="text-xs sm:text-sm text-purple-600">× 100</div>
-                <div className="text-sm sm:text-lg font-bold text-purple-800">{hundreds * 100}</div>
+              <div className="text-center bg-red-50 rounded-lg p-2">
+                <div className="text-xs sm:text-sm text-red-600">× 1000</div>
+                <div className="text-sm sm:text-lg font-bold text-red-800">{thousands * 1000}</div>
+              </div>
+              <div className="text-center bg-green-50 rounded-lg p-2">
+                <div className="text-xs sm:text-sm text-green-600">× 100</div>
+                <div className="text-sm sm:text-lg font-bold text-green-800">{hundreds * 100}</div>
               </div>
               <div className="text-center bg-blue-50 rounded-lg p-2">
                 <div className="text-xs sm:text-sm text-blue-600">× 10</div>
                 <div className="text-sm sm:text-lg font-bold text-blue-800">{tens * 10}</div>
               </div>
-              <div className="text-center bg-green-50 rounded-lg p-2">
-                <div className="text-xs sm:text-sm text-green-600">× 1</div>
-                <div className="text-sm sm:text-lg font-bold text-green-800">{units * 1}</div>
+              <div className="text-center bg-purple-50 rounded-lg p-2">
+                <div className="text-xs sm:text-sm text-purple-600">× 1</div>
+                <div className="text-sm sm:text-lg font-bold text-purple-800">{units * 1}</div>
               </div>
             </div>
 
@@ -573,7 +577,7 @@ export default function Decomposition10000CE2() {
               <div className="text-center">
                 <div className="text-sm sm:text-lg text-gray-700 mb-2">Addition :</div>
                 <div className="text-lg sm:text-2xl font-bold text-gray-800">
-                  {hundreds * 100} + {tens * 10} + {units * 1} = {number}
+                  {thousands * 1000} + {hundreds * 100} + {tens * 10} + {units * 1} = {number}
                 </div>
               </div>
             </div>
