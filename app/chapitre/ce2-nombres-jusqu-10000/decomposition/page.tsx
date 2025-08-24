@@ -81,12 +81,12 @@ export default function Decomposition10000CE2() {
   // Exemples de décompositions stratégiques (jusqu'à 1000)
   const decompositionExamples = [
     { 
-      number: 2345, 
-      parts: [2000, 300, 40, 5], 
+      number: 376, 
+      parts: [0, 300, 70, 6], 
       item: '🔴', 
-      description: 'le nombre 2345',
-      explanation: 'Décomposition complète : 2345 = 2 × 1000 + 3 × 100 + 4 × 10 + 5 × 1 = 2000 + 300 + 40 + 5',
-      strategy: 'Milliers + Centaines + Dizaines + Unités'
+      description: 'le nombre 376',
+      explanation: 'Décomposition complète : 376 = 0 × 1000 + 3 × 100 + 7 × 10 + 6 × 1 = 0 + 300 + 70 + 6',
+      strategy: 'Centaines + Dizaines + Unités'
     },
     { 
       number: 1087, 
