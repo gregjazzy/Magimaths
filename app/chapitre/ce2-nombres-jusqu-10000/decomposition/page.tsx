@@ -698,7 +698,7 @@ export default function Decomposition10000CE2() {
       await wait(1500);
       setCurrentExample(0);
       setAnimatingStep('introduction');
-      const example = decompositionExamples[0]; // 47 = 40 + 7 (Dizaines + Unités)
+      const example = decompositionExamples[0]; // 2345 = 2000 + 300 + 40 + 5 (Milliers + Centaines + Dizaines + Unités)
       
       // 1. Présentation du nombre initial
       setTableAnimationStep('initial');
