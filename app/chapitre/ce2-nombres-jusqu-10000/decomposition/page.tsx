@@ -1937,25 +1937,19 @@ export default function Decomposition10000CE2() {
                       setSamSizeExpanded(true);
                       
                       try {
-                        await playAudio("Voici les 2 stratégies principales pour décomposer les grands nombres jusqu'à 100 !");
+                        await playAudio("Voici la stratégie pour décomposer les grands nombres jusqu'à 10000 !");
                         if (stopSignalRef.current) return;
                         
                         await new Promise(resolve => setTimeout(resolve, 1200));
                         if (stopSignalRef.current) return;
                         
-                        await playAudio("Première stratégie : Dizaines plus unités ! C'est la plus importante ! Par exemple, 47 égale 40 plus 7 !");
+                        await playAudio("On utilise les milliers, centaines, dizaines et unités ! Par exemple, 3276 égale 3000 plus 200 plus 70 plus 6 !");
                         if (stopSignalRef.current) return;
                         
                         await new Promise(resolve => setTimeout(resolve, 1800));
                         if (stopSignalRef.current) return;
                         
-                        await playAudio("Deuxième stratégie : Les centaines ! Par exemple, 146 égale 100 plus 40 plus 6 !");
-                        if (stopSignalRef.current) return;
-                        
-                        await new Promise(resolve => setTimeout(resolve, 1500));
-                        if (stopSignalRef.current) return;
-                        
-                        await playAudio("Ces deux stratégies te permettront de décomposer tous les nombres jusqu'à 1000 !");
+                        await playAudio("Cette stratégie te permettra de décomposer tous les nombres jusqu'à 10000 !");
                         if (stopSignalRef.current) return;
                         
                       } catch (error) {
@@ -1970,18 +1964,12 @@ export default function Decomposition10000CE2() {
                   💡
                 </div>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-center max-w-2xl mx-auto">
+              <div className="text-center max-w-2xl mx-auto">
                 <div>
-                  <div className="text-3xl sm:text-4xl mb-3">🔢</div>
-                  <div className="font-bold text-lg">Dizaines + Unités</div>
-                  <div className="text-sm mt-2">47 = 40 + 7</div>
-                  <div className="text-xs text-gray-600 mt-1">La stratégie principale</div>
-            </div>
-                <div>
-                  <div className="text-3xl sm:text-4xl mb-3">🏢</div>
-                  <div className="font-bold text-lg">Centaines</div>
-                  <div className="text-sm mt-2">146 = 100 + 40 + 6</div>
-                  <div className="text-xs text-gray-600 mt-1">Nombres à 3 chiffres</div>
+                  <div className="text-3xl sm:text-4xl mb-3">🏰</div>
+                  <div className="font-bold text-lg">Milliers + Centaines + Dizaines + Unités</div>
+                  <div className="text-sm mt-2">3276 = 3000 + 200 + 70 + 6</div>
+                  <div className="text-xs text-gray-600 mt-1">La stratégie pour les grands nombres</div>
                 </div>
               </div>
             </div>
