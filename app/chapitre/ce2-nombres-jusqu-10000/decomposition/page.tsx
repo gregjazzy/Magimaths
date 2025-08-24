@@ -24,9 +24,10 @@ export default function Decomposition10000CE2() {
   // États pour les exercices
   const [showExercises, setShowExercises] = useState(false);
   const [currentExercise, setCurrentExercise] = useState(0);
-  const [userAnswer1, setUserAnswer1] = useState('');
-  const [userAnswer2, setUserAnswer2] = useState('');
-  const [userAnswer3, setUserAnswer3] = useState('');
+  const [userAnswer1, setUserAnswer1] = useState(''); // milliers
+  const [userAnswer2, setUserAnswer2] = useState(''); // centaines
+  const [userAnswer3, setUserAnswer3] = useState(''); // dizaines
+  const [userAnswer4, setUserAnswer4] = useState(''); // unités
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
   const [score, setScore] = useState(0);
   const [answeredCorrectly, setAnsweredCorrectly] = useState<Set<number>>(new Set());
@@ -2109,7 +2110,7 @@ export default function Decomposition10000CE2() {
                   {exercises[currentExercise].number}
                     </div>
                 <p className="text-sm sm:text-lg text-gray-700 font-semibold">
-                  Sépare ce nombre en deux parties !
+                  Décompose ce nombre
                 </p>
               </div>
               
@@ -2123,46 +2124,73 @@ export default function Decomposition10000CE2() {
                     Complète la décomposition :
                   </p>
                   
-                  {/* Équation de décomposition avec champs de saisie (2 ou 3 champs selon le nombre) */}
+                  {/* Équation de décomposition avec 4 champs pour milliers, centaines, dizaines et unités */}
                   <div className="flex items-center justify-center space-x-2 sm:space-x-4 mb-6 flex-wrap">
-                    <input
-                      type="number"
-                      value={userAnswer1}
-                      onChange={(e) => setUserAnswer1(e.target.value)}
-                      disabled={isCorrect !== null || isPlayingVocal}
-                      min="1"
-                      className="w-12 sm:w-16 h-10 sm:h-12 text-center text-lg sm:text-xl font-bold border-2 border-purple-300 rounded-lg focus:border-purple-500 focus:outline-none disabled:bg-gray-100 disabled:cursor-not-allowed"
-                      placeholder="?"
-                    />
+                    {/* Milliers */}
+                    <div className="flex flex-col items-center">
+                      <div className="text-[8px] sm:text-[10px] text-red-800 mb-0.5">milliers</div>
+                      <input
+                        type="number"
+                        value={userAnswer1}
+                        onChange={(e) => setUserAnswer1(e.target.value)}
+                        disabled={isCorrect !== null || isPlayingVocal}
+                        min="0"
+                        max="9"
+                        className="w-16 sm:w-20 h-10 sm:h-12 text-center text-lg sm:text-xl font-bold border-2 border-red-300 rounded-lg focus:border-red-500 focus:outline-none disabled:bg-gray-100 disabled:cursor-not-allowed"
+                        placeholder="M"
+                      />
+                    </div>
                     
-                    <span className="text-xl sm:text-3xl font-bold text-purple-600">+</span>
+                    <span className="text-xl sm:text-3xl font-bold text-purple-600 mt-4">+</span>
                     
-                    <input
-                      type="number"
-                      value={userAnswer2}
-                      onChange={(e) => setUserAnswer2(e.target.value)}
-                      disabled={isCorrect !== null || isPlayingVocal}
-                      min="0"
-                      className="w-12 sm:w-16 h-10 sm:h-12 text-center text-lg sm:text-xl font-bold border-2 border-purple-300 rounded-lg focus:border-purple-500 focus:outline-none disabled:bg-gray-100 disabled:cursor-not-allowed"
-                      placeholder="?"
-                    />
-                    
-                    {/* 3ème champ pour les nombres à 3 chiffres */}
-                    {exercises[currentExercise].strategy === 'Centaines + Dizaines + Unités' && (
-                      <>
-                        <span className="text-xl sm:text-3xl font-bold text-purple-600">+</span>
-                        <input
-                          type="number"
-                          value={userAnswer3}
-                          onChange={(e) => setUserAnswer3(e.target.value)}
-                          disabled={isCorrect !== null || isPlayingVocal}
-                          min="0"
-                          max="9"
-                          className="w-12 sm:w-16 h-10 sm:h-12 text-center text-lg sm:text-xl font-bold border-2 border-green-300 rounded-lg focus:border-green-500 focus:outline-none disabled:bg-gray-100 disabled:cursor-not-allowed"
-                          placeholder="?"
-                        />
-                      </>
-                    )}
+                    {/* Centaines */}
+                    <div className="flex flex-col items-center">
+                      <div className="text-[8px] sm:text-[10px] text-green-800 mb-0.5">centaines</div>
+                      <input
+                        type="number"
+                        value={userAnswer2}
+                        onChange={(e) => setUserAnswer2(e.target.value)}
+                        disabled={isCorrect !== null || isPlayingVocal}
+                        min="0"
+                        max="9"
+                        className="w-16 sm:w-20 h-10 sm:h-12 text-center text-lg sm:text-xl font-bold border-2 border-green-300 rounded-lg focus:border-green-500 focus:outline-none disabled:bg-gray-100 disabled:cursor-not-allowed"
+                        placeholder="C"
+                      />
+                    </div>
+
+                    <span className="text-xl sm:text-3xl font-bold text-purple-600 mt-4">+</span>
+
+                    {/* Dizaines */}
+                    <div className="flex flex-col items-center">
+                      <div className="text-[8px] sm:text-[10px] text-blue-800 mb-0.5">dizaines</div>
+                      <input
+                        type="number"
+                        value={userAnswer3}
+                        onChange={(e) => setUserAnswer3(e.target.value)}
+                        disabled={isCorrect !== null || isPlayingVocal}
+                        min="0"
+                        max="9"
+                        className="w-16 sm:w-20 h-10 sm:h-12 text-center text-lg sm:text-xl font-bold border-2 border-blue-300 rounded-lg focus:border-blue-500 focus:outline-none disabled:bg-gray-100 disabled:cursor-not-allowed"
+                        placeholder="D"
+                      />
+                    </div>
+
+                    <span className="text-xl sm:text-3xl font-bold text-purple-600 mt-4">+</span>
+
+                    {/* Unités */}
+                    <div className="flex flex-col items-center">
+                      <div className="text-[8px] sm:text-[10px] text-violet-800 mb-0.5">unités</div>
+                      <input
+                        type="number"
+                        value={userAnswer4}
+                        onChange={(e) => setUserAnswer4(e.target.value)}
+                        disabled={isCorrect !== null || isPlayingVocal}
+                        min="0"
+                        max="9"
+                        className="w-16 sm:w-20 h-10 sm:h-12 text-center text-lg sm:text-xl font-bold border-2 border-violet-300 rounded-lg focus:border-violet-500 focus:outline-none disabled:bg-gray-100 disabled:cursor-not-allowed"
+                        placeholder="U"
+                      />
+                    </div>
                     
                     <span className="text-xl sm:text-3xl font-bold text-purple-600">=</span>
                     
@@ -2174,7 +2202,7 @@ export default function Decomposition10000CE2() {
                   {/* Bouton pour valider */}
                   <button
                     onClick={handleValidateAnswer}
-                    disabled={isCorrect !== null || isPlayingVocal || !userAnswer1.trim() || !userAnswer2.trim() || (exercises[currentExercise].strategy === 'Centaines + Dizaines + Unités' && !userAnswer3.trim())}
+                    disabled={isCorrect !== null || isPlayingVocal || !userAnswer1.trim() || !userAnswer2.trim() || !userAnswer3.trim() || !userAnswer4.trim()}
                     className="bg-purple-500 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-bold text-sm sm:text-base hover:bg-purple-600 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed min-h-[40px] sm:min-h-[48px] shadow-lg"
                   >
                     ✅ Vérifier ma décomposition
