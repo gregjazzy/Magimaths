@@ -431,16 +431,20 @@ export default function Decomposition10000CE2() {
           }`}>
             {/* En-têtes */}
             <div className="text-center bg-red-100 rounded-lg p-3 transform transition-all duration-1000 hover:scale-105">
-              <div className="font-bold text-red-800 text-sm sm:text-lg">Milliers</div>
+              <div className="text-red-800 text-xs sm:text-sm mb-1">Milliers</div>
+              <div className="font-bold text-red-800 text-sm sm:text-lg">M</div>
             </div>
             <div className="text-center bg-green-100 rounded-lg p-3 transform transition-all duration-1000 hover:scale-105">
-              <div className="font-bold text-green-800 text-sm sm:text-lg">Centaines</div>
+              <div className="text-green-800 text-xs sm:text-sm mb-1">Centaines</div>
+              <div className="font-bold text-green-800 text-sm sm:text-lg">C</div>
             </div>
             <div className="text-center bg-blue-100 rounded-lg p-3 transform transition-all duration-1000 hover:scale-105">
-              <div className="font-bold text-blue-800 text-sm sm:text-lg">Dizaines</div>
+              <div className="text-blue-800 text-xs sm:text-sm mb-1">Dizaines</div>
+              <div className="font-bold text-blue-800 text-sm sm:text-lg">D</div>
             </div>
             <div className="text-center bg-purple-100 rounded-lg p-3 transform transition-all duration-1000 hover:scale-105">
-              <div className="font-bold text-purple-800 text-sm sm:text-lg">Unités</div>
+              <div className="text-purple-800 text-xs sm:text-sm mb-1">Unités</div>
+              <div className="font-bold text-purple-800 text-sm sm:text-lg">U</div>
             </div>
 
             {/* Chiffres */}
@@ -519,16 +523,20 @@ export default function Decomposition10000CE2() {
             <div className="grid grid-cols-4 gap-4 bg-white rounded-lg p-4 shadow-lg border-2 border-purple-300">
               {/* En-têtes */}
               <div className="text-center bg-red-100 rounded-lg p-3">
-                <div className="font-bold text-red-800 text-sm sm:text-lg">Milliers</div>
+                <div className="text-red-800 text-xs sm:text-sm mb-1">Milliers</div>
+                <div className="font-bold text-red-800 text-sm sm:text-lg">M</div>
               </div>
               <div className="text-center bg-green-100 rounded-lg p-3">
-                <div className="font-bold text-green-800 text-sm sm:text-lg">Centaines</div>
+                <div className="text-green-800 text-xs sm:text-sm mb-1">Centaines</div>
+                <div className="font-bold text-green-800 text-sm sm:text-lg">C</div>
               </div>
               <div className="text-center bg-blue-100 rounded-lg p-3">
-                <div className="font-bold text-blue-800 text-sm sm:text-lg">Dizaines</div>
+                <div className="text-blue-800 text-xs sm:text-sm mb-1">Dizaines</div>
+                <div className="font-bold text-blue-800 text-sm sm:text-lg">D</div>
               </div>
               <div className="text-center bg-purple-100 rounded-lg p-3">
-                <div className="font-bold text-purple-800 text-sm sm:text-lg">Unités</div>
+                <div className="text-purple-800 text-xs sm:text-sm mb-1">Unités</div>
+                <div className="font-bold text-purple-800 text-sm sm:text-lg">U</div>
               </div>
 
               {/* Chiffres */}
