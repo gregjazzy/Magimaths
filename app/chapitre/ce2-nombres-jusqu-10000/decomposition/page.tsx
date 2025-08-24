@@ -1794,7 +1794,7 @@ export default function Decomposition10000CE2() {
                     <div className="text-lg sm:text-2xl font-bold text-purple-600 mb-2 sm:mb-4">
                       {currentExample !== null ? 
                         `Exemple : ${decompositionExamples[currentExample].number} = ${renderDecomposition(decompositionExamples[currentExample].parts)}` 
-                        : 'Exemple : 47 = 40 + 7'
+                        : 'Exemple : 2345 = 2000 + 300 + 40 + 5'
                       }
                 </div>
               </div>
