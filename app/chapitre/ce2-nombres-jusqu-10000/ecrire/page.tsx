@@ -722,6 +722,9 @@ export default function EcrireNombresCE2Page() {
     setExampleStep(0);
     setIsAnimating(true);
     
+    // Scroll vers l'exemple en cours d'animation
+    setTimeout(() => scrollToElement(`${exampleType}-container`), 100);
+    
     const examples = {
       'deux-mille-trois-cent-quarante-cinq': {
         text: 'Deux-mille-trois-cent-quarante-cinq',
