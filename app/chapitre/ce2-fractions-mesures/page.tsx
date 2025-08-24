@@ -21,6 +21,15 @@ export default function CE2FractionsMesuresPage() {
       href: '/chapitre/ce2-fractions-bande-unite'
     },
     {
+      id: 'ce2-fractions-vocabulaire',
+      title: 'Vocabulaire des fractions',
+      description: 'Numérateur, dénominateur... Apprends tous les mots importants pour parler des fractions !',
+      icon: '📚',
+      estimatedTime: 20,
+      difficulty: 'Débutant',
+      href: '/chapitre/ce2-fractions-mesures/vocabulaire'
+    },
+    {
       id: 'ce2-mesures-longueurs',
       title: 'Mesures de longueurs',
       description: 'Mètre, centimètre, millimètre... Maîtrise toutes les unités de longueur !',
