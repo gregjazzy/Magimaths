@@ -774,11 +774,7 @@ export default function Decomposition10000CE2() {
         await wait(800);
       }
       
-                              await playAudio(`${getAudioDecomposition(example.parts)} égale ${example.number} ! C'est une décomposition !`);
-      if (stopSignalRef.current) return;
-      
-      await wait(1500);
-      await playAudio(`En mathématiques, on écrit : ${example.number} = ${renderDecomposition(example.parts)} !`);
+                              await playAudio(`Voilà la décomposition complète !`);
       if (stopSignalRef.current) return;
       
       // 3. Présentation des autres exemples
@@ -915,7 +911,7 @@ export default function Decomposition10000CE2() {
       
       // Étape 4: Afficher l'addition finale
       setTableAnimationStep('addition');
-      await playAudio(`Et j'obtiens la décomposition complète : ${getAudioDecomposition(example.parts)} égale ${example.number} !`);
+      await playAudio(`Et voilà la décomposition !`);
       if (stopSignalRef.current) return;
       
       await wait(3000);
