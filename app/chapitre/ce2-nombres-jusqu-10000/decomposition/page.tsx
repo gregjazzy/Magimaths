@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, Play, Pause } from 'lucide-react';
 
@@ -169,19 +169,30 @@ export default function Decomposition10000CE2() {
     95: [[1, 94], [2, 93], [3, 92], [4, 91], [5, 90], [6, 89], [7, 88], [8, 87], [9, 86], [10, 85], [11, 84], [12, 83], [13, 82], [14, 81], [15, 80], [16, 79], [17, 78], [18, 77], [19, 76], [20, 75], [21, 74], [22, 73], [23, 72], [24, 71], [25, 70], [26, 69], [27, 68], [28, 67], [29, 66], [30, 65], [31, 64], [32, 63], [33, 62], [34, 61], [35, 60], [36, 59], [37, 58], [38, 57], [39, 56], [40, 55], [41, 54], [42, 53], [43, 52], [44, 51], [45, 50], [46, 49], [47, 48], [48, 47], [49, 46], [50, 45], [51, 44], [52, 43], [53, 42], [54, 41], [55, 40], [56, 39], [57, 38], [58, 37], [59, 36], [60, 35], [61, 34], [62, 33], [63, 32], [64, 31], [65, 30], [66, 29], [67, 28], [68, 27], [69, 26], [70, 25], [71, 24], [72, 23], [73, 22], [74, 21], [75, 20], [76, 19], [77, 18], [78, 17], [79, 16], [80, 15], [81, 14], [82, 13], [83, 12], [84, 11], [85, 10], [86, 9], [87, 8], [88, 7], [89, 6], [90, 5], [91, 4], [92, 3], [93, 2], [94, 1]]
   };
 
-  // Exercices de décomposition stratégique (jusqu'à 1000)
-  const exercises = [
-    { question: 'Décompose 1523', number: 1523, strategy: 'Milliers + Centaines + Dizaines + Unités', correctAnswer: [1000, 500, 20, 3] },
-    { question: 'Décompose 2080', number: 2080, strategy: 'Milliers + Dizaines', correctAnswer: [2000, 0, 80, 0] },
-    { question: 'Décompose 3600', number: 3600, strategy: 'Milliers + Centaines', correctAnswer: [3000, 600, 0, 0] },
-    { question: 'Décompose 4023', number: 4023, strategy: 'Milliers + Dizaines + Unités', correctAnswer: [4000, 0, 20, 3] },
-    { question: 'Décompose 5607', number: 5607, strategy: 'Milliers + Centaines + Unités', correctAnswer: [5000, 600, 0, 7] },
-    { question: 'Décompose 6090', number: 6090, strategy: 'Milliers + Dizaines', correctAnswer: [6000, 0, 90, 0] },
-    { question: 'Décompose 7008', number: 7008, strategy: 'Milliers + Unités', correctAnswer: [7000, 0, 0, 8] },
-    { question: 'Décompose 8350', number: 8350, strategy: 'Milliers + Centaines + Dizaines', correctAnswer: [8000, 300, 50, 0] },
-    { question: 'Décompose 9082', number: 9082, strategy: 'Milliers + Dizaines + Unités', correctAnswer: [9000, 0, 80, 2] },
-    { question: 'Décompose 1765', number: 1765, strategy: 'Milliers + Centaines + Dizaines + Unités', correctAnswer: [1000, 700, 60, 5] }
-  ];
+  // Fonction pour générer un nombre aléatoire entre min et max inclus
+  const getRandomNumber = (min: number, max: number) => {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  };
+
+  // Fonction pour générer un exercice avec un nombre aléatoire
+  const generateExercise = () => {
+    const milliers = getRandomNumber(1, 9); // 1-9 pour les milliers
+    const centaines = getRandomNumber(0, 9); // 0-9 pour les centaines
+    const dizaines = getRandomNumber(0, 9); // 0-9 pour les dizaines
+    const unites = getRandomNumber(0, 9); // 0-9 pour les unités
+    
+    const number = milliers * 1000 + centaines * 100 + dizaines * 10 + unites;
+    
+    return {
+      question: `Décompose ${number}`,
+      number: number,
+      strategy: 'Milliers + Centaines + Dizaines + Unités',
+      correctAnswer: [milliers * 1000, centaines * 100, dizaines * 10, unites]
+    };
+  };
+
+  // Générer 12 exercices aléatoires uniques une seule fois
+  const exercises = useMemo(() => Array.from({ length: 12 }, () => generateExercise()), []);
 
   // Fonction pour arrêter toutes les animations et vocaux
   const stopAllVocalsAndAnimations = () => {
@@ -390,20 +401,16 @@ export default function Decomposition10000CE2() {
 
   // Fonction utilitaire pour l'affichage des réponses utilisateur
   const getUserAnswerDisplay = (exercise: any) => {
-    if (exercise.strategy === 'Centaines + Dizaines + Unités') {
-      return `${userAnswer1} + ${userAnswer2} + ${userAnswer3}`;
-    } else {
-      return `${userAnswer1} + ${userAnswer2}`;
-    }
+    return `${userAnswer1} × 1000 + ${userAnswer2} × 100 + ${userAnswer3} × 10 + ${userAnswer4} × 1`;
   };
 
   // Fonction utilitaire pour calculer la somme des réponses utilisateur
   const getUserAnswerSum = (exercise: any) => {
-    if (exercise.strategy === 'Centaines + Dizaines + Unités') {
-      return (parseInt(userAnswer1) || 0) + (parseInt(userAnswer2) || 0) + (parseInt(userAnswer3) || 0);
-    } else {
-      return (parseInt(userAnswer1) || 0) + (parseInt(userAnswer2) || 0);
-    }
+    const milliers = (parseInt(userAnswer1) || 0) * 1000;
+    const centaines = (parseInt(userAnswer2) || 0) * 100;
+    const dizaines = (parseInt(userAnswer3) || 0) * 10;
+    const unites = (parseInt(userAnswer4) || 0);
+    return milliers + centaines + dizaines + unites;
   };
 
   // Fonction pour afficher le tableau de décomposition par positions avec animation progressive
@@ -1016,44 +1023,32 @@ export default function Decomposition10000CE2() {
   const handleValidateAnswer = async () => {
     const exercise = exercises[currentExercise];
     
-    // Vérifier les champs selon la stratégie
-    if (exercise.strategy === 'Centaines + Dizaines + Unités') {
-      if (!userAnswer1.trim() || !userAnswer2.trim() || !userAnswer3.trim()) {
-        return; // Ne pas valider si les champs sont vides pour les nombres à 3 chiffres
-      }
-    } else {
-      if (!userAnswer1.trim() || !userAnswer2.trim()) {
-        return; // Ne pas valider si les champs sont vides pour les nombres à 2 chiffres
-      }
+    // Vérifier que tous les champs sont remplis
+    if (!userAnswer1.trim() || !userAnswer2.trim() || !userAnswer3.trim() || !userAnswer4.trim()) {
+      return; // Ne pas valider si les champs sont vides
     }
 
-    const num1 = parseInt(userAnswer1);
-    const num2 = parseInt(userAnswer2);
-    const num3 = exercise.strategy === 'Centaines + Dizaines + Unités' ? parseInt(userAnswer3) : 0;
-    const target = exercise.number;
+    const milliers = parseInt(userAnswer1);
+    const centaines = parseInt(userAnswer2);
+    const dizaines = parseInt(userAnswer3);
+    const unites = parseInt(userAnswer4);
     
     // Vérifier si les nombres sont valides
-    if (isNaN(num1) || isNaN(num2) || (exercise.strategy === 'Centaines + Dizaines + Unités' && isNaN(num3))) {
+    if (isNaN(milliers) || isNaN(centaines) || isNaN(dizaines) || isNaN(unites)) {
       return; // Ne pas valider si ce ne sont pas des nombres
     }
 
-    // Vérifier la décomposition selon la stratégie attendue
-    let correct = false;
-    if (exercise.strategy === 'Dizaines + Unités') {
-      // Pour la stratégie dizaines + unités, accepter toute décomposition utilisant des multiples de 10
-      // ou la décomposition canonique dizaines + unités
-      const isValidSum = (num1 + num2) === target;
-      const usesMultipleOf10 = (num1 % 10 === 0) || (num2 % 10 === 0);
-      correct = isValidSum && usesMultipleOf10;
-    } else if (exercise.strategy === 'Centaines + Dizaines + Unités') {
-      // Pour les nombres à 3 chiffres, vérifier la décomposition canonique
-      const isValidSum = (num1 + num2 + num3) === target;
-      const isCanonical = (num1 % 100 === 0) && (num2 % 10 === 0);
-      correct = isValidSum && isCanonical;
-    } else {
-      // Fallback : vérifier simplement que la somme est correcte
-      correct = isValidDecomposition(num1, num2, target);
+    // Vérifier que les nombres sont entre 0 et 9
+    if (milliers < 0 || milliers > 9 || centaines < 0 || centaines > 9 || 
+        dizaines < 0 || dizaines > 9 || unites < 0 || unites > 9) {
+      return; // Ne pas valider si les nombres ne sont pas des chiffres
     }
+
+    // Calculer la valeur totale
+    const total = milliers * 1000 + centaines * 100 + dizaines * 10 + unites;
+    
+    // Vérifier que la décomposition est correcte
+    const correct = total === exercise.number;
     setIsCorrect(correct);
     
     if (correct && !answeredCorrectly.has(currentExercise)) {
@@ -1082,6 +1077,8 @@ export default function Decomposition10000CE2() {
         }
       }, 1500);
     } else if (!correct) {
+      // Afficher la correction
+      setShowAnimatedCorrection(true);
       // Expliquer l'erreur avec Sam en utilisant les réponses de l'utilisateur
       await explainWrongAnswer();
     }
@@ -1108,6 +1105,7 @@ export default function Decomposition10000CE2() {
       setUserAnswer1('');
       setUserAnswer2('');
       setUserAnswer3('');
+      setUserAnswer4('');
       setIsCorrect(null);
     } else {
       setFinalScore(score);
@@ -2126,77 +2124,65 @@ export default function Decomposition10000CE2() {
                   
                   {/* Équation de décomposition avec 4 champs pour milliers, centaines, dizaines et unités */}
                   <div className="flex items-center justify-center space-x-2 sm:space-x-4 mb-6 flex-wrap">
-                    {/* Milliers */}
-                    <div className="flex flex-col items-center">
-                      <div className="text-[8px] sm:text-[10px] text-red-800 mb-0.5">milliers</div>
+                    {/* Premier nombre */}
+                    <div className="flex items-center">
                       <input
                         type="number"
                         value={userAnswer1}
                         onChange={(e) => setUserAnswer1(e.target.value)}
                         disabled={isCorrect !== null || isPlayingVocal}
-                        min="0"
-                        max="9"
-                        className="w-16 sm:w-20 h-10 sm:h-12 text-center text-lg sm:text-xl font-bold border-2 border-red-300 rounded-lg focus:border-red-500 focus:outline-none disabled:bg-gray-100 disabled:cursor-not-allowed"
-                        placeholder="M"
+                        className="w-24 sm:w-32 h-10 sm:h-12 text-center text-lg sm:text-xl font-bold border-2 border-purple-300 rounded-lg focus:border-purple-500 focus:outline-none disabled:bg-gray-100 disabled:cursor-not-allowed"
+                        placeholder="?"
                       />
+                      <span className="ml-1 text-sm sm:text-base text-gray-600">× 1000</span>
                     </div>
                     
-                    <span className="text-xl sm:text-3xl font-bold text-purple-600 mt-4">+</span>
+                    <span className="text-xl sm:text-3xl font-bold text-purple-600">+</span>
                     
-                    {/* Centaines */}
-                    <div className="flex flex-col items-center">
-                      <div className="text-[8px] sm:text-[10px] text-green-800 mb-0.5">centaines</div>
+                    {/* Deuxième nombre */}
+                    <div className="flex items-center">
                       <input
                         type="number"
                         value={userAnswer2}
                         onChange={(e) => setUserAnswer2(e.target.value)}
                         disabled={isCorrect !== null || isPlayingVocal}
-                        min="0"
-                        max="9"
-                        className="w-16 sm:w-20 h-10 sm:h-12 text-center text-lg sm:text-xl font-bold border-2 border-green-300 rounded-lg focus:border-green-500 focus:outline-none disabled:bg-gray-100 disabled:cursor-not-allowed"
-                        placeholder="C"
+                        className="w-24 sm:w-32 h-10 sm:h-12 text-center text-lg sm:text-xl font-bold border-2 border-purple-300 rounded-lg focus:border-purple-500 focus:outline-none disabled:bg-gray-100 disabled:cursor-not-allowed"
+                        placeholder="?"
                       />
+                      <span className="ml-1 text-sm sm:text-base text-gray-600">× 100</span>
                     </div>
 
-                    <span className="text-xl sm:text-3xl font-bold text-purple-600 mt-4">+</span>
+                    <span className="text-xl sm:text-3xl font-bold text-purple-600">+</span>
 
-                    {/* Dizaines */}
-                    <div className="flex flex-col items-center">
-                      <div className="text-[8px] sm:text-[10px] text-blue-800 mb-0.5">dizaines</div>
+                    {/* Troisième nombre */}
+                    <div className="flex items-center">
                       <input
                         type="number"
                         value={userAnswer3}
                         onChange={(e) => setUserAnswer3(e.target.value)}
                         disabled={isCorrect !== null || isPlayingVocal}
-                        min="0"
-                        max="9"
-                        className="w-16 sm:w-20 h-10 sm:h-12 text-center text-lg sm:text-xl font-bold border-2 border-blue-300 rounded-lg focus:border-blue-500 focus:outline-none disabled:bg-gray-100 disabled:cursor-not-allowed"
-                        placeholder="D"
+                        className="w-24 sm:w-32 h-10 sm:h-12 text-center text-lg sm:text-xl font-bold border-2 border-purple-300 rounded-lg focus:border-purple-500 focus:outline-none disabled:bg-gray-100 disabled:cursor-not-allowed"
+                        placeholder="?"
                       />
+                      <span className="ml-1 text-sm sm:text-base text-gray-600">× 10</span>
                     </div>
 
-                    <span className="text-xl sm:text-3xl font-bold text-purple-600 mt-4">+</span>
+                    <span className="text-xl sm:text-3xl font-bold text-purple-600">+</span>
 
-                    {/* Unités */}
-                    <div className="flex flex-col items-center">
-                      <div className="text-[8px] sm:text-[10px] text-violet-800 mb-0.5">unités</div>
+                    {/* Quatrième nombre */}
+                    <div className="flex items-center">
                       <input
                         type="number"
                         value={userAnswer4}
                         onChange={(e) => setUserAnswer4(e.target.value)}
                         disabled={isCorrect !== null || isPlayingVocal}
-                        min="0"
-                        max="9"
-                        className="w-16 sm:w-20 h-10 sm:h-12 text-center text-lg sm:text-xl font-bold border-2 border-violet-300 rounded-lg focus:border-violet-500 focus:outline-none disabled:bg-gray-100 disabled:cursor-not-allowed"
-                        placeholder="U"
+                        className="w-24 sm:w-32 h-10 sm:h-12 text-center text-lg sm:text-xl font-bold border-2 border-purple-300 rounded-lg focus:border-purple-500 focus:outline-none disabled:bg-gray-100 disabled:cursor-not-allowed"
+                        placeholder="?"
                       />
+                      <span className="ml-1 text-sm sm:text-base text-gray-600">× 1</span>
                     </div>
                     
                     <span className="text-xl sm:text-3xl font-bold text-purple-600">=</span>
-                    
-                    <div className="w-12 sm:w-16 h-10 sm:h-12 flex items-center justify-center text-lg sm:text-xl font-bold bg-purple-100 border-2 border-purple-300 rounded-lg text-purple-600">
-                      {exercises[currentExercise].number}
-                    </div>
                   </div>
                   
                   {/* Bouton pour valider */}
@@ -2252,31 +2238,27 @@ export default function Decomposition10000CE2() {
                     <div className="bg-white rounded-lg p-4 shadow-inner">
                       {/* Ligne du haut : multiplications */}
                       <div className="text-base sm:text-lg font-bold text-gray-800 mb-2">
-                        {exercises[currentExercise].strategy === 'Centaines + Dizaines + Unités' ? (
-                          <>
-                            {Math.floor(exercises[currentExercise].number / 100)} × 100 + {Math.floor((exercises[currentExercise].number % 100) / 10)} × 10 + {exercises[currentExercise].number % 10} × 1
-                          </>
-                        ) : (
-                          <>
-                            {Math.floor(exercises[currentExercise].number / 10)} × 10 + {exercises[currentExercise].number % 10} × 1
-                          </>
-                        )}
+                        {Math.floor(exercises[currentExercise].number / 1000)} × 1000 + {Math.floor((exercises[currentExercise].number % 1000) / 100)} × 100 + {Math.floor((exercises[currentExercise].number % 100) / 10)} × 10 + {exercises[currentExercise].number % 10} × 1
                       </div>
                       
                       {/* Ligne du bas : résultat */}
                       <div className="text-base sm:text-lg font-bold text-purple-600">
-                        {exercises[currentExercise].strategy === 'Centaines + Dizaines + Unités' ? (
-                          <>
-                            {Math.floor(exercises[currentExercise].number / 100) * 100} + {Math.floor((exercises[currentExercise].number % 100) / 10) * 10} + {exercises[currentExercise].number % 10} = {exercises[currentExercise].number}
-                          </>
-                        ) : (
-                          <>
-                            {Math.floor(exercises[currentExercise].number / 10) * 10} + {exercises[currentExercise].number % 10} = {exercises[currentExercise].number}
-                          </>
-                        )}
+                        {Math.floor(exercises[currentExercise].number / 1000) * 1000} + {Math.floor((exercises[currentExercise].number % 1000) / 100) * 100} + {Math.floor((exercises[currentExercise].number % 100) / 10) * 10} + {exercises[currentExercise].number % 10} = {exercises[currentExercise].number}
                       </div>
                     </div>
                   </div>
+                  
+                  {/* Bouton Suivant après une réponse incorrecte */}
+                  {!isCorrect && showAnimatedCorrection && (
+                    <div className="mt-4">
+                      <button
+                        onClick={nextExercise}
+                        className="bg-green-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-green-600 transition-colors shadow-lg"
+                      >
+                        Suivant ➡️
+                      </button>
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -2332,4 +2314,4 @@ export default function Decomposition10000CE2() {
       </div>
     </div>
   );
-} 
+}
