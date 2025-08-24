@@ -1173,7 +1173,7 @@ export default function Decomposition10000CE2() {
       
       // Mettre en surbrillance la zone de réponse
       setHighlightedElement('answer-zone');
-      await playAudio("Écris les deux nombres dans les cases pour faire la décomposition, puis clique sur vérifier");
+      await playAudio("Écris les quatre nombres dans les cases pour faire la décomposition : milliers, centaines, dizaines et unités, puis clique sur vérifier");
       if (stopSignalRef.current) return;
       
       await wait(1500);
