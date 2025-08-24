@@ -842,23 +842,19 @@ export default function Decomposition10000CE2() {
       
       // Étape 1: Afficher le tableau
       setTableAnimationStep('table');
-      await playAudio(`D'abord, je trace mon tableau centaines, dizaines, unités.`);
+      await playAudio(`D'abord, je trace mon tableau milliers, centaines, dizaines et unités.`);
       if (stopSignalRef.current) return;
       await wait(2000);
       
       // Étape 2: Afficher les chiffres
       setTableAnimationStep('digits');
-      await playAudio(`Je place les chiffres du nombre ${example.number} dans le tableau.`);
+      await playAudio(`Je place chaque chiffre dans sa colonne ! ${example.number}, c'est ${Math.floor(example.number / 1000)} milliers, ${Math.floor((example.number % 1000) / 100)} centaines, ${Math.floor((example.number % 100) / 10)} dizaines et ${example.number % 10} unités !`);
       if (stopSignalRef.current) return;
       await wait(2000);
       
       // Étape 3: Afficher les multiplications
       setTableAnimationStep('multiplications');
-      if (example.strategy === 'Centaines + Dizaines + Unités') {
-        await playAudio(`Maintenant, je calcule : centaines fois 100, dizaines fois 10, et unités fois 1.`);
-      } else {
-        await playAudio(`Maintenant, je calcule : dizaines fois 10, et unités fois 1.`);
-      }
+      await playAudio(`Maintenant, je multiplie par la valeur de chaque position ! Milliers fois 1000, centaines fois 100, dizaines fois 10, unités fois 1 !`);
       if (stopSignalRef.current) return;
       await wait(2500);
       
