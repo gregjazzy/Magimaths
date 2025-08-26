@@ -501,8 +501,7 @@ export default function CE2AdditionFractionsPage() {
         </div>
 
         {/* Personnage Minecraft avec bouton DÉMARRER selon readmeanim */}
-        <div className="bg-gradient-to-r from-green-400 to-blue-500 rounded-xl p-6 shadow-lg mb-8">
-          <div className="flex items-center justify-center gap-6 flex-wrap">
+        <div className="flex items-center justify-center gap-6 flex-wrap mb-8">
             <div id="minecraft-character" className={`relative transition-all duration-500 border-4 border-green-300 rounded-full bg-gradient-to-br from-green-100 to-emerald-100 shadow-lg ${
               isPlayingVocal
                 ? 'w-20 sm:w-24 h-20 sm:h-24' // Quand il parle - plus gros
