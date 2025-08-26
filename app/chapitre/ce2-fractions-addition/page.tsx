@@ -189,7 +189,7 @@ export default function CE2AdditionFractionsPage() {
 
       scrollToElement('method-section');
       highlightElement('method-section');
-      await playAudio("Et voici la méthode en 4 étapes pour ne jamais te tromper ! Maintenant, passe aux exercices pour t'entraîner !");
+      await playAudio("Et voici la méthode en 4 étapes pour ne jamais te tromper ! Dès que tu auras fini de regarder le cours et que tu l'auras bien compris, passe aux exercices pour t'entraîner !");
 
     } else {
       // Mode EXERCICES
@@ -249,76 +249,76 @@ export default function CE2AdditionFractionsPage() {
 
   const exercises: Exercise[] = [
     {
-      question: 'Calcule : 1/4 + 1/4 = ?',
-      fraction1: '1/4',
+      question: 'Calcule : 2/4 + 1/4 = ?',
+      fraction1: '2/4',
       fraction2: '1/4',
-      correctAnswer: '2/4',
-      hint: 'On additionne les nombres du haut : 1 + 1 = 2, le nombre du bas reste le même',
-      hasVisual: true
-    },
-    {
-      question: 'Calcule : 1/3 + 1/3 = ?',
-      fraction1: '1/3',
-      fraction2: '1/3',
-      correctAnswer: '2/3',
-      hint: 'On additionne les nombres du haut : 1 + 1 = 2, le nombre du bas reste 3',
-      hasVisual: true
-    },
-    {
-      question: 'Calcule : 1/6 + 2/6 = ?',
-      fraction1: '1/6',
-      fraction2: '2/6',
-      correctAnswer: '3/6',
-      hint: 'On additionne les nombres du haut : 1 + 2 = 3, le nombre du bas reste 6',
-      hasVisual: true
-    },
-    {
-      question: 'Calcule cette addition de fractions :',
-      mathExpression: '\\frac{1}{5} + \\frac{1}{5} = ?',
-      correctAnswer: '2/5',
-      hint: 'On additionne les numérateurs : 1 + 1 = 2, le dénominateur reste 5',
-      hasVisual: false
-    },
-    {
-      question: 'Calcule cette addition de fractions :',
-      mathExpression: '\\frac{2}{8} + \\frac{1}{8} = ?',
-      correctAnswer: '3/8',
-      hint: 'On additionne les numérateurs : 2 + 1 = 3, le dénominateur reste 8',
-      hasVisual: false
-    },
-    {
-      question: 'Calcule cette addition de fractions :',
-      mathExpression: '\\frac{1}{4} + \\frac{2}{4} = ?',
       correctAnswer: '3/4',
-      hint: 'On additionne les numérateurs : 1 + 2 = 3, le dénominateur reste 4',
+      hint: 'On additionne les nombres du haut : 2 + 1 = 3, le nombre du bas reste le même',
+      hasVisual: true
+    },
+    {
+      question: 'Calcule cette addition de fractions :',
+      mathExpression: '\\frac{5}{8} + \\frac{4}{8} = ?',
+      correctAnswer: '9/8',
+      hint: 'On additionne les numérateurs : 5 + 4 = 9, le dénominateur reste 8',
+      hasVisual: false
+    },
+    {
+      question: 'Calcule : 4/3 + 3/3 = ?',
+      fraction1: '4/3',
+      fraction2: '3/3',
+      correctAnswer: '7/3',
+      hint: 'On additionne les nombres du haut : 4 + 3 = 7, le nombre du bas reste 3',
+      hasVisual: true
+    },
+    {
+      question: 'Calcule cette addition de fractions :',
+      mathExpression: '\\frac{2}{7} + \\frac{5}{7} = ?',
+      correctAnswer: '7/7',
+      hint: 'On additionne les numérateurs : 2 + 5 = 7, le dénominateur reste 7',
       hasVisual: false
     },
     {
       question: 'Calcule cette addition de fractions :',
-      mathExpression: '\\frac{3}{6} + \\frac{1}{6} = ?',
-      correctAnswer: '4/6',
-      hint: 'On additionne les numérateurs : 3 + 1 = 4, le dénominateur reste 6',
+      mathExpression: '\\frac{6}{4} + \\frac{3}{4} = ?',
+      correctAnswer: '9/4',
+      hint: 'On additionne les numérateurs : 6 + 3 = 9, le dénominateur reste 4',
+      hasVisual: false
+    },
+    {
+      question: 'Calcule : 3/6 + 5/6 = ?',
+      fraction1: '3/6',
+      fraction2: '5/6',
+      correctAnswer: '8/6',
+      hint: 'On additionne les nombres du haut : 3 + 5 = 8, le nombre du bas reste 6',
+      hasVisual: true
+    },
+    {
+      question: 'Calcule cette addition de fractions :',
+      mathExpression: '\\frac{4}{5} + \\frac{6}{5} = ?',
+      correctAnswer: '10/5',
+      hint: 'On additionne les numérateurs : 4 + 6 = 10, le dénominateur reste 5',
       hasVisual: false
     },
     {
       question: 'Calcule cette addition de fractions :',
-      mathExpression: '\\frac{2}{5} + \\frac{2}{5} = ?',
-      correctAnswer: '4/5',
-      hint: 'On additionne les numérateurs : 2 + 2 = 4, le dénominateur reste 5',
+      mathExpression: '\\frac{3}{9} + \\frac{4}{9} = ?',
+      correctAnswer: '7/9',
+      hint: 'On additionne les numérateurs : 3 + 4 = 7, le dénominateur reste 9',
       hasVisual: false
     },
     {
       question: 'Calcule cette addition de fractions :',
-      mathExpression: '\\frac{1}{7} + \\frac{3}{7} = ?',
-      correctAnswer: '4/7',
-      hint: 'On additionne les numérateurs : 1 + 3 = 4, le dénominateur reste 7',
+      mathExpression: '\\frac{7}{6} + \\frac{2}{6} = ?',
+      correctAnswer: '9/6',
+      hint: 'On additionne les numérateurs : 7 + 2 = 9, le dénominateur reste 6',
       hasVisual: false
     },
     {
       question: 'Calcule cette addition de fractions :',
-      mathExpression: '\\frac{2}{9} + \\frac{1}{9} = ?',
-      correctAnswer: '3/9',
-      hint: 'On additionne les numérateurs : 2 + 1 = 3, le dénominateur reste 9',
+      mathExpression: '\\frac{5}{8} + \\frac{6}{8} = ?',
+      correctAnswer: '11/8',
+      hint: 'On additionne les numérateurs : 5 + 6 = 11, le dénominateur reste 8',
       hasVisual: false
     }
   ];
@@ -491,17 +491,15 @@ export default function CE2AdditionFractionsPage() {
           </Link>
           
           <div className="bg-white rounded-xl p-4 sm:p-6 shadow-lg text-center">
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-3 sm:mb-4">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900">
               🧮 Addition de fractions simples
             </h1>
-            <p className="text-base sm:text-lg text-gray-600">
-              Apprends à additionner des fractions qui ont le même dénominateur ! (Niveau CE2)
-            </p>
           </div>
         </div>
 
         {/* Personnage Minecraft avec bouton DÉMARRER selon readmeanim */}
-        <div className="flex items-center justify-center gap-6 flex-wrap mb-8">
+        <div className="mb-4 sm:mb-8">
+          <div className="flex items-center justify-center gap-6 flex-wrap">
             <div id="minecraft-character" className={`relative transition-all duration-500 border-4 border-green-300 rounded-full bg-gradient-to-br from-green-100 to-emerald-100 shadow-lg ${
               isPlayingVocal
                 ? 'w-20 sm:w-24 h-20 sm:h-24' // Quand il parle - plus gros
@@ -532,7 +530,7 @@ export default function CE2AdditionFractionsPage() {
                 explainChapter();
               }}
               disabled={isPlayingVocal}
-              className="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-4 px-8 rounded-lg text-xl shadow-lg transition-all pulse-interactive-yellow disabled:opacity-50 flex items-center justify-center"
+              className="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 sm:py-4 px-6 sm:px-8 rounded-lg text-base sm:text-xl shadow-lg transition-all pulse-interactive-yellow disabled:opacity-50 flex items-center justify-center"
             >
               🚀 DÉMARRER
             </button>
@@ -558,13 +556,13 @@ export default function CE2AdditionFractionsPage() {
         )}
 
         {/* Onglets Cours/Exercices */}
-        <div id="tab-navigation" className={`flex justify-center mb-6 sm:mb-8 ${highlightedElement === 'tab-navigation' ? 'animate-pulse bg-yellow-200 rounded-xl p-2' : ''}`}>
+        <div id="tab-navigation" className={`flex justify-center mb-3 sm:mb-6 ${highlightedElement === 'tab-navigation' ? 'animate-pulse bg-yellow-200 rounded-xl p-2' : ''}`}>
           <div className="bg-white rounded-lg p-1 shadow-md">
             <button
               id="tab-cours"
               onClick={() => setShowExercises(false)}
               disabled={isPlayingVocal}
-              className={`px-6 py-3 rounded-lg font-bold transition-all pulse-interactive ${
+              className={`px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-bold transition-all pulse-interactive text-sm sm:text-base ${
                 !showExercises 
                   ? 'bg-blue-500 text-white shadow-md' 
                   : 'text-gray-600 hover:bg-gray-100'
@@ -576,7 +574,7 @@ export default function CE2AdditionFractionsPage() {
               id="tab-exercices"
               onClick={() => setShowExercises(true)}
               disabled={isPlayingVocal}
-              className={`px-6 py-3 rounded-lg font-bold transition-all pulse-interactive ${
+              className={`px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-bold transition-all pulse-interactive text-sm sm:text-base ${
                 showExercises 
                   ? 'bg-green-500 text-white shadow-md' 
                   : 'text-gray-600 hover:bg-gray-100'
@@ -590,12 +588,6 @@ export default function CE2AdditionFractionsPage() {
         {!showExercises ? (
           /* COURS */
           <div className="space-y-8">
-            {/* Introduction */}
-            <div id="intro-section" className={`bg-gradient-to-r from-blue-400 to-green-500 rounded-xl p-6 text-white text-center ${highlightedElement === 'intro-section' ? 'animate-pulse ring-4 ring-yellow-300' : ''}`}>
-              <div className="text-6xl mb-4">🧮</div>
-              <h2 className="text-3xl font-bold mb-4">L'atelier des additions magiques !</h2>
-              <p className="text-xl">Découvre comment additionner des fractions comme un vrai maître bâtisseur !</p>
-            </div>
 
             {/* Règle principale */}
             <div id="rules-section" className={`bg-white rounded-xl p-6 shadow-lg ${highlightedElement === 'rules-section' ? 'animate-pulse ring-4 ring-yellow-300' : ''}`}>
@@ -720,49 +712,37 @@ export default function CE2AdditionFractionsPage() {
           </div>
         ) : (
           /* EXERCICES */
-          <div className="space-y-8">
+          <div className="space-y-4 sm:space-y-8">
             {/* Header exercices */}
-            <div className="bg-white rounded-xl p-6 shadow-lg">
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-2xl font-bold text-gray-900">
+            <div className="bg-white rounded-xl p-3 sm:p-6 shadow-lg">
+              <div className="flex justify-between items-center mb-2 sm:mb-4">
+                <h2 className="text-lg sm:text-2xl font-bold text-gray-900">
                   ✏️ Exercice {currentExercise + 1} sur {exercises.length}
                 </h2>
-                <button
-                  onClick={resetAll}
-                  disabled={isPlayingVocal}
-                  className="bg-gray-500 text-white px-4 py-2 rounded-lg font-bold hover:bg-gray-600 transition-colors pulse-interactive disabled:opacity-50"
-                >
-                  <RotateCcw className="inline w-4 h-4 mr-2" />
-                  Recommencer
-                </button>
+                <div className="text-base sm:text-lg font-bold text-blue-600">
+                  Score : {score}/{exercises.length}
+                </div>
               </div>
               
               {/* Barre de progression */}
-              <div id="progress-bar" className={`w-full bg-gray-200 rounded-full h-3 mb-3 ${highlightedElement === 'progress-bar' ? 'animate-pulse ring-4 ring-yellow-300' : ''}`}>
+              <div id="progress-bar" className={`w-full bg-gray-200 rounded-full h-2 sm:h-3 mb-2 sm:mb-3 ${highlightedElement === 'progress-bar' ? 'animate-pulse ring-4 ring-yellow-300' : ''}`}>
                 <div 
-                  className="bg-blue-500 h-3 rounded-full transition-all duration-500"
+                  className="bg-blue-500 h-2 sm:h-3 rounded-full transition-all duration-500"
                   style={{ width: `${((currentExercise + 1) / exercises.length) * 100}%` }}
                 ></div>
-              </div>
-              
-              {/* Score sous la barre */}
-              <div className="text-center">
-                <div className="text-lg font-bold text-blue-600">
-                  Score : {score}/{exercises.length}
-                </div>
               </div>
             </div>
 
             {/* Question */}
             <div id="question-zone" className={`bg-white rounded-xl p-6 shadow-lg ${highlightedElement === 'question-zone' ? 'animate-pulse ring-4 ring-yellow-300' : ''}`}>
               <div className="text-center mb-6">
-                 <h3 className="text-2xl font-bold text-gray-900 mb-6">
+                 <h3 className="text-lg sm:text-2xl font-bold text-gray-900 mb-6">
                    {exercises[currentExercise].hasVisual && exercises[currentExercise].fraction1 && exercises[currentExercise].fraction2 ? (
-                     <div className="flex items-center justify-center space-x-3">
+                     <div className="flex items-center justify-center space-x-2 sm:space-x-3">
                        <span>Calcule :</span>
-                       <FractionMath a={exercises[currentExercise].fraction1!.split('/')[0]} b={exercises[currentExercise].fraction1!.split('/')[1]} size="text-2xl" />
+                       <FractionMath a={exercises[currentExercise].fraction1!.split('/')[0]} b={exercises[currentExercise].fraction1!.split('/')[1]} size="text-lg sm:text-2xl" />
                        <span>+</span>
-                       <FractionMath a={exercises[currentExercise].fraction2!.split('/')[0]} b={exercises[currentExercise].fraction2!.split('/')[1]} size="text-2xl" />
+                       <FractionMath a={exercises[currentExercise].fraction2!.split('/')[0]} b={exercises[currentExercise].fraction2!.split('/')[1]} size="text-lg sm:text-2xl" />
                        <span>=</span>
                        <span>?</span>
                      </div>
@@ -817,7 +797,7 @@ export default function CE2AdditionFractionsPage() {
 
                 {/* Template de réponse fraction */}
                  <div id="answer-input" className={`flex flex-col items-center mb-6 ${highlightedElement === 'answer-input' ? 'animate-pulse ring-4 ring-yellow-300 rounded-lg p-4' : ''}`}>
-                   <div className="flex flex-col items-center bg-gray-50 rounded-lg p-6 border-2 border-gray-300">
+                   <div className="flex flex-col items-center bg-gray-50 rounded-lg p-3 sm:p-6 border-2 border-gray-300">
                      <input
                        type="text"
                        value={numerator}
@@ -831,7 +811,7 @@ export default function CE2AdditionFractionsPage() {
                        className="w-16 sm:w-20 h-12 sm:h-14 text-center text-lg sm:text-xl font-bold border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none mb-2 touch-manipulation"
                        disabled={isCorrect !== null || isPlayingVocal}
                      />
-                     <div className="w-20 sm:w-24 h-1 bg-gray-800 mb-2"></div>
+                     <div className="w-16 sm:w-24 h-1 bg-gray-800 mb-2"></div>
                      <input
                        type="text"
                        value={denominator}
@@ -860,34 +840,8 @@ export default function CE2AdditionFractionsPage() {
 
                  {/* Navigation */}
                  <div id="action-buttons" className={`flex flex-col sm:flex-row justify-center items-center gap-2 sm:gap-4 mt-4 ${highlightedElement === 'action-buttons' ? 'animate-pulse ring-4 ring-yellow-300 rounded-lg p-4' : ''}`}>
-                   {/* Bouton indice */}
-                   {!showHint && isCorrect === null && (
-              <button
-                       id="hint-button"
-                       onClick={() => setShowHint(true)}
-                       disabled={isPlayingVocal}
-                       className="bg-yellow-500 text-white px-4 py-3 sm:px-6 sm:py-3 rounded-lg font-bold hover:bg-yellow-600 transition-colors pulse-interactive w-full sm:w-auto touch-manipulation min-h-[44px] disabled:opacity-50"
-              >
-                <Lightbulb className="inline w-4 h-4 mr-2" />
-                       Aide
-              </button>
-                   )}
-              <button
-                id="reset-exercise-button"
-                onClick={resetExercise}
-                disabled={isPlayingVocal}
-                     className="bg-gray-500 text-white px-4 py-3 sm:px-6 sm:py-3 rounded-lg font-bold hover:bg-gray-600 transition-colors pulse-interactive w-full sm:w-auto touch-manipulation min-h-[44px] disabled:opacity-50"
-              >
-                Effacer
-              </button>
-                   <button
-                     id="prev-exercise-button"
-                     onClick={() => setCurrentExercise(Math.max(0, currentExercise - 1))}
-                     disabled={currentExercise === 0 || isPlayingVocal}
-                     className="bg-gray-600 text-white px-4 py-3 sm:px-6 sm:py-3 rounded-lg font-bold hover:bg-gray-700 transition-colors pulse-interactive disabled:opacity-50 w-full sm:w-auto touch-manipulation min-h-[44px]"
-                   >
-                     ← Précédent
-                   </button>
+
+
                    <button
                      id="check-next-button"
                      onClick={() => {
