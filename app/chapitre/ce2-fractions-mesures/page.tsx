@@ -12,6 +12,15 @@ export default function CE2FractionsMesuresPage() {
   // Sous-chapitres de Fractions et mesures CE2
   const subChapters = [
     {
+      id: 'ce2-fractions-comparaison',
+      title: 'Comparer des fractions',
+      description: 'Apprends à comparer des fractions entre elles et à utiliser les symboles < et > !',
+      icon: '⚖️',
+      estimatedTime: 25,
+      difficulty: 'Débutant',
+      href: '/chapitre/ce2-fractions-mesures/comparer'
+    },
+    {
       id: 'ce2-fractions-bande-unite',
       title: 'Fractions avec bandes unité',
       description: 'Découvre les fractions avec des bandes colorées ! Apprends à lire et représenter les fractions.',
