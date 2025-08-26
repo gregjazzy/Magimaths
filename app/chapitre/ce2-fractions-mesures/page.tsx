@@ -21,6 +21,15 @@ export default function CE2FractionsMesuresPage() {
       href: '/chapitre/ce2-fractions-mesures/comparer'
     },
     {
+      id: 'ce2-fractions-droite',
+      title: 'Droite graduée',
+      description: 'Place des fractions sur une droite graduée et comprends leur ordre !',
+      icon: '📏',
+      estimatedTime: 25,
+      difficulty: 'Débutant',
+      href: '/chapitre/ce2-fractions-mesures/droite'
+    },
+    {
       id: 'ce2-fractions-bande-unite',
       title: 'Fractions avec bandes unité',
       description: 'Découvre les fractions avec des bandes colorées ! Apprends à lire et représenter les fractions.',
