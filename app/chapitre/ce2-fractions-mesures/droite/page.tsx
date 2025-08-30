@@ -3,7 +3,8 @@
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
-import DroiteSection from './components/DroiteSection';
+import DroiteAnimation from './components/DroiteAnimation';
+
 import ExerciceSection from './components/ExerciceSection';
 
 // Composant pour afficher une fraction mathématique
@@ -25,6 +26,7 @@ export default function CE2DroiteGradueePage() {
   const [characterSizeExpanded, setCharacterSizeExpanded] = useState(false);
   const [highlightedElement, setHighlightedElement] = useState<string | null>(null);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [currentFraction, setCurrentFraction] = useState({ numerator: 3, denominator: 4 });
 
   const stopSignalRef = useRef(false);
   const currentAudioRef = useRef<SpeechSynthesisUtterance | null>(null);
@@ -250,7 +252,122 @@ export default function CE2DroiteGradueePage() {
 
         {/* Contenu principal */}
         <div className="space-y-4 sm:space-y-8">
-          {!showExercises ? <DroiteSection /> : <ExerciceSection />}
+          {!showExercises ? (
+            <div className="space-y-8">
+              {/* Introduction */}
+              <div id="intro-section" className={`bg-white rounded-xl p-6 shadow-lg ${
+                highlightedElement === 'intro-section' ? 'animate-pulse bg-yellow-100' : ''
+              }`}>
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="text-4xl">🎯</div>
+                  <div>
+                    <h2 className="text-2xl font-bold text-gray-900">Découvrons la droite graduée !</h2>
+                    <p className="text-gray-600">Comme une règle magique qui nous aide à placer les fractions !</p>
+                  </div>
+                </div>
+                <div className="bg-blue-50 rounded-lg p-4">
+                  <p className="text-blue-800">
+                    Imagine une règle où chaque petit trait représente une fraction. C'est comme ça qu'on va pouvoir voir où se placent les fractions entre les nombres entiers !
+                  </p>
+                </div>
+              </div>
+
+              {/* Box d'exemples */}
+              <div className="bg-purple-50 rounded-xl p-6 shadow-lg mb-6">
+                <div className="text-center mb-4">
+                  <h3 className="text-xl font-bold text-purple-800 flex items-center justify-center gap-2">
+                    <span>👀</span> Regarde avec des exemples
+                  </h3>
+                  <p className="text-purple-600 mt-2">Clique sur une fraction pour voir comment elle se place sur la droite graduée</p>
+                </div>
+                <div className="flex justify-center gap-8 mt-6 flex-wrap">
+                  {[
+                    { num: 2, den: 3 },
+                    { num: 3, den: 4 },
+                    { num: 6, den: 4 },
+                    { num: 7, den: 3 },
+                    { num: 3, den: 8 },
+                    { num: 5, den: 3 }
+                  ].map(({ num, den }) => (
+                    <button
+                      key={`${num}-${den}`}
+                      onClick={() => setCurrentFraction({ numerator: num, denominator: den })}
+                      className={`px-6 py-4 rounded-xl transition-all transform hover:scale-105 active:scale-95 ${
+                        currentFraction.numerator === num && currentFraction.denominator === den 
+                          ? 'bg-purple-500 text-white shadow-lg' 
+                          : 'bg-white hover:bg-purple-50 shadow-md hover:shadow-lg border-2 border-purple-300'
+                      }`}
+                    >
+                      <FractionMath a={num} b={den} size="text-lg" />
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Animation de la fraction sur la droite */}
+              <div id="rules-section" className={`bg-white rounded-xl p-6 shadow-lg ${
+                highlightedElement === 'rules-section' ? 'animate-pulse bg-yellow-100' : ''
+              }`}>
+                <div className="text-center mb-6">
+                  <div className="bg-purple-100 rounded-lg p-3 mb-6 inline-block shadow-sm">
+                    <h2 className="text-lg font-bold text-purple-800 border-b-2 border-purple-300 pb-1">
+                      Plaçons <FractionMath a={currentFraction.numerator} b={currentFraction.denominator} /> sur la droite graduée
+                    </h2>
+                  </div>
+                </div>
+                
+                <DroiteAnimation numerator={currentFraction.numerator} denominator={currentFraction.denominator} />
+
+                <div className="bg-blue-50 rounded-lg p-4 mt-6">
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="text-2xl">💡</div>
+                    <h4 className="font-bold text-blue-800">Comment trouver 3/4 ?</h4>
+                  </div>
+                  <ul className="space-y-2 text-blue-700">
+                    <li>1. Le 4 (dénominateur) nous dit de diviser l'unité en 4 parts égales</li>
+                    <li>2. Le 3 (numérateur) nous dit de compter 3 parts depuis 0</li>
+                    <li>3. 3/4 se trouve donc après la troisième graduation !</li>
+                  </ul>
+                </div>
+              </div>
+
+              {/* Comment ça marche */}
+              <div id="examples-section" className={`bg-white rounded-xl p-6 shadow-lg ${
+                highlightedElement === 'examples-section' ? 'animate-pulse bg-yellow-100' : ''
+              }`}>
+                <div className="text-center mb-6">
+                  <h3 className="text-xl font-bold text-blue-800">Comment ça marche ?</h3>
+                  <p className="text-blue-600">C'est comme découper une tablette de chocolat !</p>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="bg-yellow-50 rounded-lg p-4">
+                    <div className="flex items-center gap-2 mb-3">
+                      <div className="text-2xl">1️⃣</div>
+                      <h4 className="font-bold text-yellow-800">On divise en parts égales</h4>
+                    </div>
+                    <p className="text-yellow-700">
+                      Comme quand on partage une tablette de chocolat, on divise l'espace entre 0 et 1 en parts égales !
+                    </p>
+                  </div>
+
+                  <div className="bg-green-50 rounded-lg p-4">
+                    <div className="flex items-center gap-2 mb-3">
+                      <div className="text-2xl">2️⃣</div>
+                      <h4 className="font-bold text-green-800">On compte les parts</h4>
+                    </div>
+                    <p className="text-green-700">
+                      Ensuite, on compte le nombre de parts qu'on veut prendre. C'est facile !
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+
+            </div>
+          ) : (
+            <ExerciceSection />
+          )}
         </div>
       </div>
     </div>
