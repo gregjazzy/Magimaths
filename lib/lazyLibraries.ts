@@ -1,21 +1,21 @@
 import dynamic from 'next/dynamic';
 
 // Framer Motion components
-export const LazyMotion = dynamic(
-  () => import('framer-motion').then((mod) => {
-    const { motion } = mod;
-    return motion;
-  }),
-  { ssr: false }
-);
+export const LazyMotionDiv = dynamic(() => import('../components/motion/MotionWrapper').then(mod => mod.MotionDiv), {
+  ssr: false
+});
 
-export const LazyAnimatePresence = dynamic(
-  () => import('framer-motion').then((mod) => {
-    const { AnimatePresence } = mod;
-    return AnimatePresence;
-  }),
-  { ssr: false }
-);
+export const LazyMotionSpan = dynamic(() => import('../components/motion/MotionWrapper').then(mod => mod.MotionSpan), {
+  ssr: false
+});
+
+export const LazyMotionButton = dynamic(() => import('../components/motion/MotionWrapper').then(mod => mod.MotionButton), {
+  ssr: false
+});
+
+export const LazyAnimatePresence = dynamic(() => import('framer-motion').then(mod => mod.AnimatePresence), {
+  ssr: false
+});
 
 // Math components (à adapter selon vos besoins)
 export const LazyMathJax = dynamic(() => import('react-mathjax'), {
