@@ -314,7 +314,7 @@ export default function ExerciceSection() {
                 <p className="text-gray-700 mb-4">La fraction {exercises[currentExercise].numerator}/{exercises[currentExercise].denominator} signifie :</p>
                 
                 {/* Droite graduée de correction */}
-                <div className="relative h-24 mb-4">
+                <div className="relative h-28 sm:h-32 mb-4">
                   {/* Ligne principale */}
                   <div className="absolute bottom-8 left-0 right-0 h-2 bg-gray-300">
                     <div className="absolute inset-0 bg-gray-800"></div>
@@ -344,25 +344,36 @@ export default function ExerciceSection() {
 
                   {/* Point de la position correcte */}
                   <div
-                    className="absolute bottom-9 w-6 h-6 rounded-full bg-green-500 border-2 border-white shadow-lg transform -translate-x-1/2 animate-bounce"
+                    className="absolute bottom-4 sm:bottom-9 w-5 sm:w-6 h-5 sm:h-6 rounded-full bg-green-500 border-[3px] border-white shadow-xl transform -translate-x-1/2 animate-bounce"
                     style={{ 
-                      left: `${(exercises[currentExercise].numerator * 50) / exercises[currentExercise].denominator}%`
+                      left: `${(exercises[currentExercise].numerator * 50) / exercises[currentExercise].denominator}%`,
+                      zIndex: 20,
+                      filter: 'drop-shadow(0 0 3px rgba(0,0,0,0.3))'
                     }}
-                  />
+                  >
+                    <div className="absolute -top-6 left-1/2 -translate-x-1/2 bg-green-100 px-2 py-1 rounded-full text-[10px] font-bold text-green-700 whitespace-nowrap border border-green-200">
+                      Position correcte
+                    </div>
+                  </div>
 
                   {/* Point de la position de l'utilisateur */}
                   <div
-                    className="absolute bottom-9 w-6 h-6 rounded-full bg-red-500 border-2 border-white shadow-lg transform -translate-x-1/2 opacity-50"
+                    className="absolute bottom-4 sm:bottom-9 w-5 sm:w-6 h-5 sm:h-6 rounded-full bg-red-500 border-[3px] border-white shadow-xl transform -translate-x-1/2 opacity-70"
                     style={{ 
-                      left: `${selectedPosition}%`
+                      left: `${selectedPosition}%`,
+                      zIndex: 10,
+                      filter: 'drop-shadow(0 0 3px rgba(0,0,0,0.3))'
                     }}
-                  />
+                  >
+                    <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 bg-red-100 px-2 py-1 rounded-full text-[10px] font-bold text-red-700 whitespace-nowrap border border-red-200">
+                      Ta réponse
+                    </div>
+                  </div>
                 </div>
 
                 <ul className="text-gray-600 text-sm space-y-2">
                   <li>1. On divise l'unité en {exercises[currentExercise].denominator} parts égales</li>
                   <li>2. On compte {exercises[currentExercise].numerator} parts depuis 0</li>
-                  <li>3. La position correcte est donc à {((exercises[currentExercise].numerator * 50) / exercises[currentExercise].denominator).toFixed(1)}% de la largeur totale</li>
                 </ul>
               </div>
               <button

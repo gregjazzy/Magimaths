@@ -11,25 +11,82 @@ interface Exercise {
 }
 
 const exercises: Exercise[] = [
+  // Exercices simples pour commencer
   {
-    fraction1: '3/8',
-    fraction2: '5/8',
+    fraction1: '2/6',
+    fraction2: '4/6',
     correctAnswer: '<',
-    explanation: '3 est plus petit que 5, donc 3/8 < 5/8'
+    explanation: '2 est plus petit que 4, donc 2/6 < 4/6'
   },
   {
-    fraction1: '4/6',
-    fraction2: '2/6',
+    fraction1: '5/8',
+    fraction2: '3/8',
     correctAnswer: '>',
-    explanation: '4 est plus grand que 2, donc 4/6 > 2/6'
+    explanation: '5 est plus grand que 3, donc 5/8 > 3/8'
   },
   {
-    fraction1: '5/7',
-    fraction2: '5/7',
+    fraction1: '4/7',
+    fraction2: '4/7',
     correctAnswer: '=',
-    explanation: 'Les fractions sont identiques, donc 5/7 = 5/7'
+    explanation: 'Les fractions sont identiques, donc 4/7 = 4/7'
   },
-  // Ajoutez plus d'exercices ici
+  // Exercices avec des fractions plus grandes
+  {
+    fraction1: '7/9',
+    fraction2: '5/9',
+    correctAnswer: '>',
+    explanation: '7 est plus grand que 5, donc 7/9 > 5/9'
+  },
+  {
+    fraction1: '3/10',
+    fraction2: '7/10',
+    correctAnswer: '<',
+    explanation: '3 est plus petit que 7, donc 3/10 < 7/10'
+  },
+  {
+    fraction1: '6/8',
+    fraction2: '6/8',
+    correctAnswer: '=',
+    explanation: 'Les fractions sont identiques, donc 6/8 = 6/8'
+  },
+  // Exercices plus complexes
+  {
+    fraction1: '8/12',
+    fraction2: '4/12',
+    correctAnswer: '>',
+    explanation: '8 est plus grand que 4, donc 8/12 > 4/12'
+  },
+  {
+    fraction1: '5/15',
+    fraction2: '9/15',
+    correctAnswer: '<',
+    explanation: '5 est plus petit que 9, donc 5/15 < 9/15'
+  },
+  {
+    fraction1: '11/20',
+    fraction2: '7/20',
+    correctAnswer: '>',
+    explanation: '11 est plus grand que 7, donc 11/20 > 7/20'
+  },
+  // Derniers exercices
+  {
+    fraction1: '13/16',
+    fraction2: '13/16',
+    correctAnswer: '=',
+    explanation: 'Les fractions sont identiques, donc 13/16 = 13/16'
+  },
+  {
+    fraction1: '9/24',
+    fraction2: '15/24',
+    correctAnswer: '<',
+    explanation: '9 est plus petit que 15, donc 9/24 < 15/24'
+  },
+  {
+    fraction1: '17/18',
+    fraction2: '13/18',
+    correctAnswer: '>',
+    explanation: '17 est plus grand que 13, donc 17/18 > 13/18'
+  }
 ];
 
 export default function ExerciceSection() {
@@ -62,20 +119,27 @@ export default function ExerciceSection() {
       exit={{ opacity: 0 }}
       className="space-y-8"
     >
-      <div className="bg-white rounded-xl p-6 shadow-lg">
-        <div className="text-center mb-6">
-          <h2 className="text-2xl font-bold text-gray-900">
-            Compare les fractions
-          </h2>
-          <p className="text-gray-600 mt-2">
-            Exercice {currentExercise + 1} sur {exercises.length}
-          </p>
-          <div className="mt-4">
-            <div className="h-2 bg-gray-200 rounded-full">
-              <div 
-                className="h-2 bg-blue-500 rounded-full transition-all"
-                style={{ width: `${((currentExercise + 1) / exercises.length) * 100}%` }}
-              ></div>
+      <div className="bg-white rounded-xl p-4 sm:p-6 shadow-lg">
+        <div className="text-center mb-4 sm:mb-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-900">
+              Compare les fractions
+            </h2>
+            <div className="text-base sm:text-lg font-bold text-green-600">
+              Score : {score}/{exercises.length}
+            </div>
+          </div>
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-4">
+            <p className="text-gray-600 text-sm sm:text-base">
+              Exercice {currentExercise + 1} sur {exercises.length}
+            </p>
+            <div className="w-full sm:w-2/3">
+              <div className="h-2 bg-gray-200 rounded-full">
+                <div 
+                  className="h-2 bg-green-500 rounded-full transition-all"
+                  style={{ width: `${((currentExercise + 1) / exercises.length) * 100}%` }}
+                ></div>
+              </div>
             </div>
           </div>
         </div>

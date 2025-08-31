@@ -330,7 +330,9 @@ export default function DroiteAnimation({ numerator, denominator, onComplete }: 
       </div>
 
       {/* Boutons de navigation */}
-      <div className="flex gap-2 sm:gap-4">
+      <div id="animation-buttons" className="flex gap-2 sm:gap-4 relative">
+        <div className="absolute inset-0 -m-2 bg-yellow-100/50 rounded-xl"></div>
+        <div className="relative flex gap-2 sm:gap-4">
         <motion.button
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -369,6 +371,7 @@ export default function DroiteAnimation({ numerator, denominator, onComplete }: 
             ↺
           </motion.button>
         )}
+        </div>
       </div>
     </div>
   );

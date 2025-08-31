@@ -7,7 +7,7 @@ import ComparaisonSection from './components/ComparaisonSection';
 import ExerciceSection from './components/ExerciceSection';
 
 // Composant pour afficher une fraction mathématique
-export function FractionMath({a, b, size = 'text-xl'}: {a: string|number, b: string|number, size?: string}) {
+export function FractionMath({a, b, size = 'text-base sm:text-xl'}: {a: string|number, b: string|number, size?: string}) {
   return (
     <span className={`inline-block align-middle ${size} text-gray-900 font-bold`} style={{ minWidth: 24 }}>
       <span className="flex flex-col items-center" style={{lineHeight:1}}>
@@ -99,27 +99,32 @@ export default function CE2ComparaisonFractionsPage() {
 
     if (!showExercises) {
       // Mode COURS
-      await playAudio("Bienvenue dans la leçon sur la comparaison des fractions !");
+      await playAudio("Bienvenue ! On va apprendre à comparer des fractions.");
       if (stopSignalRef.current) return;
 
       scrollToElement('intro-section');
       highlightElement('intro-section');
-      await playAudio("Nous allons apprendre à comparer des fractions entre elles et à utiliser les symboles plus petit que et plus grand que.");
+      await playAudio("On utilise les symboles plus petit que et plus grand que pour comparer.");
       if (stopSignalRef.current) return;
 
-      scrollToElement('rules-section');
-      highlightElement('rules-section');
-      await playAudio("Voici les règles pour comparer des fractions qui ont le même dénominateur.");
+      scrollToElement('comparison-rules');
+      highlightElement('comparison-rules');
+      await playAudio("Voici la règle principale : quand le dénominateur est le même, on compare les numérateurs.");
       if (stopSignalRef.current) return;
 
-      scrollToElement('examples-section');
-      highlightElement('examples-section');
-      await playAudio("Regarde bien ces exemples avec leurs dessins. Les bandes colorées t'aident à comprendre !");
+      scrollToElement('comparison-example');
+      highlightElement('comparison-example');
+      await playAudio("Regarde cet exemple. On compare les numérateurs car les dénominateurs sont les mêmes.");
       if (stopSignalRef.current) return;
 
-      scrollToElement('method-section');
-      highlightElement('method-section');
-      await playAudio("Et voici la méthode en étapes pour ne jamais te tromper ! Dès que tu auras fini de regarder le cours et que tu l'auras bien compris, passe aux exercices pour t'entraîner !");
+      scrollToElement('visual-examples');
+      highlightElement('visual-examples');
+      await playAudio("Les bandes colorées t'aident à voir quelle fraction est la plus grande !");
+      if (stopSignalRef.current) return;
+
+      scrollToElement('tab-navigation');
+      highlightElement('tab-navigation');
+      await playAudio("Quand tu es prêt, passe aux exercices !");
 
     } else {
       // Mode EXERCICES

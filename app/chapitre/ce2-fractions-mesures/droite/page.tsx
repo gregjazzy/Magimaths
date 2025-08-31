@@ -101,41 +101,36 @@ export default function CE2DroiteGradueePage() {
 
     if (!showExercises) {
       // Mode COURS
-      await playAudio("Bienvenue dans la leçon sur la droite graduée !");
+      await playAudio("Bienvenue ! Choisis une fraction parmi celles-ci.");
       if (stopSignalRef.current) return;
 
-      scrollToElement('intro-section');
-      highlightElement('intro-section');
-      await playAudio("Nous allons apprendre à placer des fractions sur une droite graduée. C'est comme une règle magique qui nous aide à voir où se trouvent les fractions !");
+      scrollToElement('fraction-buttons');
+      highlightElement('fraction-buttons');
+      await playAudio("Clique sur une fraction pour voir comment elle se place.");
       if (stopSignalRef.current) return;
 
-      scrollToElement('examples-section');
-      highlightElement('examples-section');
-      await playAudio("Clique sur les différents exemples pour voir comment placer chaque fraction. Tu peux essayer avec des fractions simples comme trois quarts, ou plus grandes comme sept tiers !");
+      scrollToElement('animation-buttons');
+      highlightElement('animation-buttons');
+      await playAudio("Utilise les boutons suivant et précédent pour voir chaque étape.");
       if (stopSignalRef.current) return;
 
-      scrollToElement('rules-section');
-      highlightElement('rules-section');
-      await playAudio("Regarde bien l'animation ! Le dénominateur nous dit en combien de parts on divise, et le numérateur nous dit combien de parts on compte. Utilise les boutons suivant et précédent pour bien comprendre chaque étape.");
-      if (stopSignalRef.current) return;
-
-      scrollToElement('method-section');
-      highlightElement('method-section');
-      await playAudio("Quand tu auras bien compris comment placer les fractions, passe aux exercices pour t'entraîner !");
+      scrollToElement('tab-navigation');
+      highlightElement('tab-navigation');
+      await playAudio("Quand tu es prêt, passe aux exercices !");
 
     } else {
       // Mode EXERCICES
-      await playAudio("Parfait ! Tu es maintenant dans la partie exercices !");
+      await playAudio("C'est parti pour les exercices !");
       if (stopSignalRef.current) return;
 
       scrollToElement('progress-bar');
       highlightElement('progress-bar');
-      await playAudio("Cette barre verte montre ta progression. Il y a douze exercices à faire !");
+      await playAudio("La barre verte montre ta progression.");
       if (stopSignalRef.current) return;
 
       scrollToElement('question-zone');
       highlightElement('question-zone');
-      await playAudio("Pour chaque exercice, choisis d'abord en combien de parts tu veux diviser la droite. Ensuite, utilise les boutons moins et plus pour placer le point rouge au bon endroit. Tu peux aussi faire glisser le point directement sur la droite !");
+      await playAudio("Divise la droite en parts égales, puis place le point rouge au bon endroit. Tu peux utiliser les boutons ou glisser le point !");
     }
 
     setIsAnimating(false);
@@ -280,7 +275,7 @@ export default function CE2DroiteGradueePage() {
                   </h3>
                   <p className="text-purple-600 mt-2">Clique sur une fraction pour voir comment elle se place sur la droite graduée</p>
                 </div>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-4 mt-4 sm:mt-6">
+                <div id="fraction-buttons" className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-4 mt-4 sm:mt-6">
                   {[
                     { num: 2, den: 3 },
                     { num: 3, den: 4 },
