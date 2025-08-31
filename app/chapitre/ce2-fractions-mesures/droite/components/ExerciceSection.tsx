@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { FractionMath } from '../page';
+import { FractionMath } from './FractionMath';
 
 const exercises = [
   // Fractions simples pour commencer
