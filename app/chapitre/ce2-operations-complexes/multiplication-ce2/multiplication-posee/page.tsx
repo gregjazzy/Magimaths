@@ -14,7 +14,7 @@ export default function MultiplicationPoseeCE2() {
   const [animatingStep, setAnimatingStep] = useState<string | null>(null);
   const [currentExample, setCurrentExample] = useState<number | null>(null);
   const [highlightedDigits, setHighlightedDigits] = useState<string[]>([]);
-  const [calculationStep, setCalculationStep] = useState<'setup' | 'units' | 'tens' | 'hundreds' | 'result' | null>(null);
+  const [calculationStep, setCalculationStep] = useState<'setup' | 'units' | 'tens' | 'hundreds' | 'result' | 'carry' | null>(null);
   const [showingCarry, setShowingCarry] = useState(false);
   const [carryValues, setCarryValues] = useState<{toTens: number, toHundreds: number}>({toTens: 0, toHundreds: 0});
   const [partialResults, setPartialResults] = useState<{units: string | null, tens: string | null, hundreds: string | null}>({units: null, tens: null, hundreds: null});
