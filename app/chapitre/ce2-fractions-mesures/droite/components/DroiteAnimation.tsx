@@ -27,7 +27,7 @@ export default function DroiteAnimation({ numerator, denominator, onComplete }: 
 
   useEffect(() => {
     setStep(0);
-  }, []);
+  }, [numerator, denominator]);
 
   const nextStep = () => {
     if (step < 4) {
@@ -46,19 +46,19 @@ export default function DroiteAnimation({ numerator, denominator, onComplete }: 
   };
 
   return (
-      <div className="flex flex-col items-center space-y-6">
+      <div className="flex flex-col items-center space-y-4 sm:space-y-6">
       {/* Texte explicatif */}
       <div className="text-center">
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="text-base font-semibold grid grid-cols-2 gap-3 max-w-2xl mx-auto"
+          className="text-[11px] sm:text-base font-semibold grid grid-cols-2 gap-1 sm:gap-3 max-w-2xl mx-auto"
         >
             {step >= 0 && (
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="text-gray-600 text-base col-span-2"
+                className="text-gray-600 text-xs sm:text-base col-span-2"
               >
                 Voici notre droite graduée...
               </motion.div>
@@ -68,7 +68,7 @@ export default function DroiteAnimation({ numerator, denominator, onComplete }: 
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="bg-purple-50 rounded-xl p-3 h-full flex items-center"
+                className="bg-purple-50 rounded-lg sm:rounded-xl p-1.5 sm:p-3 h-full flex items-center"
               >
                 <div className="text-gray-700">
                   Dans <FractionMath a={numerator} b={denominator} />, le <motion.span
@@ -157,7 +157,7 @@ export default function DroiteAnimation({ numerator, denominator, onComplete }: 
       </div>
 
       {/* La droite graduée */}
-      <div className="relative w-full h-40">
+      <div className="relative w-full h-32 sm:h-40">
         {/* Ligne principale */}
         <motion.div 
           initial={{ scaleX: 0 }}
@@ -165,7 +165,7 @@ export default function DroiteAnimation({ numerator, denominator, onComplete }: 
           className="absolute left-0 right-0 top-1/2 h-1 bg-gray-800 origin-left"
         />
 
-        {/* Graduations principales (0, 1, 2) - n'apparaissent qu'à l'étape 0 */}
+        {/* Graduations principales (0, 1, 2 si nécessaire) - n'apparaissent qu'à l'étape 0 */}
         {step >= 0 && [0, 1, 2].map(num => (
           <motion.div
             key={num}
@@ -180,7 +180,7 @@ export default function DroiteAnimation({ numerator, denominator, onComplete }: 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: num * 0.5 + 0.3 }}
-              className="absolute top-[-35px] left-1/2 -translate-x-1/2 text-2xl font-bold text-gray-900"
+                              className="absolute top-[-30px] sm:top-[-35px] left-1/2 -translate-x-1/2 text-lg sm:text-2xl font-bold text-gray-900"
             >
               {num}
             </motion.div>
@@ -192,7 +192,7 @@ export default function DroiteAnimation({ numerator, denominator, onComplete }: 
         {/* Étape 1: Division en parts égales */}
         {step >= 1 && (
           <>
-            {/* Lignes de division verticales */}
+            {/* Lignes de division verticales pour la première unité */}
             {Array.from({ length: denominator + 1 }).map((_, i) => (
               <motion.div
                 key={`division-${i}`}
@@ -204,14 +204,26 @@ export default function DroiteAnimation({ numerator, denominator, onComplete }: 
               />
             ))}
             
+            {/* Lignes de division verticales pour les unités supplémentaires si la fraction est > 1 */}
+            {numerator > denominator && Array.from({ length: (Math.ceil(numerator / denominator) * denominator) + 1 - denominator }).map((_, i) => (
+              <motion.div
+                key={`division-2nd-${i}`}
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: "20px", opacity: 1 }}
+                transition={{ delay: (i + denominator + 1) * 0.3 }}
+                className="absolute top-1/2 -translate-y-1/2 w-0.5 bg-purple-500"
+                style={{ left: `${50 + (i * 50) / denominator}%` }}
+              />
+            ))}
+            
             {/* Texte "1 part" sous chaque division */}
-            {Array.from({ length: denominator }).map((_, i) => (
+            {Array.from({ length: Math.ceil(numerator / denominator) * denominator }).map((_, i) => (
               <motion.div
                 key={`part-label-${i}`}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: (i + denominator) * 0.5 }}
-                className="absolute top-12 text-sm text-gray-700"
+                className="absolute top-10 sm:top-12 text-[10px] sm:text-sm text-gray-700"
                 style={{ 
                   left: `${((i * 50) / denominator + (25 / denominator))}%`,
                   transform: 'translateX(-50%)'
@@ -224,7 +236,7 @@ export default function DroiteAnimation({ numerator, denominator, onComplete }: 
         )}
 
         {/* Étape 1: Affichage des fractions après l'explication du dénominateur */}
-        {step >= 1 && Array.from({ length: denominator }).map((_, i) => (
+        {step >= 1 && Array.from({ length: numerator > denominator ? numerator : denominator }).map((_, i) => (
           <motion.div
             key={`fraction-${i}`}
             initial={{ opacity: 0, y: -10 }}
@@ -253,21 +265,28 @@ export default function DroiteAnimation({ numerator, denominator, onComplete }: 
             />
             
             {/* Compteur qui s'incrémente */}
-            {Array.from({ length: numerator }).map((_, i) => (
-              <motion.div
-                key={`count-${i}`}
-                initial={{ opacity: 0, scale: 0 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: i * 0.5 }}
-                className="absolute top-[15px] text-green-600 font-bold text-2xl"
-                style={{ 
-                  left: `calc(${((i + 1) * 50) / denominator}% - 10px)`,
-                  transform: 'translateX(-50%)'
-                }}
-              >
-                {i + 1}
-              </motion.div>
-            ))}
+            {Array.from({ length: numerator }).map((_, i) => {
+              const isInSecondUnit = (i + 1) > denominator;
+              const adjustedLeft = isInSecondUnit 
+                ? `calc(${(((i + 1) - denominator) * 50) / denominator + 50}% - 10px)`
+                : `calc(${((i + 1) * 50) / denominator}% - 10px)`;
+              
+              return (
+                <motion.div
+                  key={`count-${i}`}
+                  initial={{ opacity: 0, scale: 0 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: i * 0.5 }}
+                  className="absolute top-[12px] sm:top-[15px] text-green-600 font-bold text-lg sm:text-2xl"
+                  style={{ 
+                    left: adjustedLeft,
+                    transform: 'translateX(-50%)'
+                  }}
+                >
+                  {i + 1}
+                </motion.div>
+              );
+            })}
           </>
         )}
 
@@ -311,19 +330,19 @@ export default function DroiteAnimation({ numerator, denominator, onComplete }: 
       </div>
 
       {/* Boutons de navigation */}
-      <div className="flex gap-4">
+      <div className="flex gap-2 sm:gap-4">
         <motion.button
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           onClick={previousStep}
           disabled={step === 0}
-          className={`px-4 py-2 rounded-lg font-bold transition-colors ${
+          className={`px-2 sm:px-4 py-1 sm:py-2 text-xs sm:text-base rounded-lg font-bold transition-colors ${
             step === 0 
               ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
               : 'bg-blue-500 text-white hover:bg-blue-600'
           }`}
         >
-          ← Précédent
+          ← Préc.
         </motion.button>
 
         <motion.button
@@ -331,13 +350,13 @@ export default function DroiteAnimation({ numerator, denominator, onComplete }: 
           animate={{ opacity: 1 }}
           onClick={nextStep}
           disabled={step === 4}
-          className={`px-4 py-2 rounded-lg font-bold transition-colors ${
+          className={`px-2 sm:px-4 py-1 sm:py-2 text-xs sm:text-base rounded-lg font-bold transition-colors ${
             step === 4
               ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
               : 'bg-green-500 text-white hover:bg-green-600'
           }`}
         >
-          Suivant →
+          Suiv. →
         </motion.button>
 
         {step > 0 && (
@@ -345,9 +364,9 @@ export default function DroiteAnimation({ numerator, denominator, onComplete }: 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             onClick={resetAnimation}
-            className="px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-colors font-bold"
+            className="px-2 sm:px-4 py-1 sm:py-2 text-xs sm:text-base bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-colors font-bold"
           >
-            ↺ Recommencer
+            ↺
           </motion.button>
         )}
       </div>

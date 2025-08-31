@@ -287,8 +287,8 @@ export const chaptersData: Chapter[] = [
   },
   {
     id: 'ce2-fractions-mesures',
-    title: 'Fractions et mesures',
-    description: 'Fractions sur bande-unité, mesures de grandeurs',
+    title: 'Fractions',
+    description: 'Découverte et manipulation des fractions',
     classLevel: 'CE2',
     category: 'numeracy',
     difficulty: 'beginner',

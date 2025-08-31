@@ -106,22 +106,22 @@ export default function CE2DroiteGradueePage() {
 
       scrollToElement('intro-section');
       highlightElement('intro-section');
-      await playAudio("Nous allons apprendre à placer des fractions sur une droite graduée pour mieux comprendre leur ordre.");
-      if (stopSignalRef.current) return;
-
-      scrollToElement('rules-section');
-      highlightElement('rules-section');
-      await playAudio("Voici comment diviser la droite et placer les fractions.");
+      await playAudio("Nous allons apprendre à placer des fractions sur une droite graduée. C'est comme une règle magique qui nous aide à voir où se trouvent les fractions !");
       if (stopSignalRef.current) return;
 
       scrollToElement('examples-section');
       highlightElement('examples-section');
-      await playAudio("Regarde bien ces exemples avec les graduations. Les marques sur la droite t'aident à comprendre !");
+      await playAudio("Clique sur les différents exemples pour voir comment placer chaque fraction. Tu peux essayer avec des fractions simples comme trois quarts, ou plus grandes comme sept tiers !");
+      if (stopSignalRef.current) return;
+
+      scrollToElement('rules-section');
+      highlightElement('rules-section');
+      await playAudio("Regarde bien l'animation ! Le dénominateur nous dit en combien de parts on divise, et le numérateur nous dit combien de parts on compte. Utilise les boutons suivant et précédent pour bien comprendre chaque étape.");
       if (stopSignalRef.current) return;
 
       scrollToElement('method-section');
       highlightElement('method-section');
-      await playAudio("Et voici la méthode pour placer les fractions ! Dès que tu auras fini de regarder le cours et que tu l'auras bien compris, passe aux exercices pour t'entraîner !");
+      await playAudio("Quand tu auras bien compris comment placer les fractions, passe aux exercices pour t'entraîner !");
 
     } else {
       // Mode EXERCICES
@@ -130,12 +130,12 @@ export default function CE2DroiteGradueePage() {
 
       scrollToElement('progress-bar');
       highlightElement('progress-bar');
-      await playAudio("Cette barre montre ta progression. Plus tu avances, plus tu deviens fort !");
+      await playAudio("Cette barre verte montre ta progression. Il y a douze exercices à faire !");
       if (stopSignalRef.current) return;
 
       scrollToElement('question-zone');
       highlightElement('question-zone');
-      await playAudio("Clique sur la droite graduée pour placer la fraction au bon endroit !");
+      await playAudio("Pour chaque exercice, choisis d'abord en combien de parts tu veux diviser la droite. Ensuite, utilise les boutons moins et plus pour placer le point rouge au bon endroit. Tu peux aussi faire glisser le point directement sur la droite !");
     }
 
     setIsAnimating(false);
@@ -149,16 +149,16 @@ export default function CE2DroiteGradueePage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-green-100">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
+      <div className="max-w-4xl mx-auto px-2 sm:px-6 lg:px-8 py-2 sm:py-8">
         {/* Header */}
-        <div className="mb-6 sm:mb-8">
-          <Link href="/chapitre/ce2-fractions-mesures" className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors mb-4 touch-manipulation">
+        <div className="mb-4 sm:mb-8">
+          <Link href="/chapitre/ce2-fractions-mesures" className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors mb-2 sm:mb-4 touch-manipulation">
             <ArrowLeft className="w-4 h-4" />
-            <span>Retour aux fractions et mesures</span>
+            <span className="text-sm sm:text-base">Retour aux fractions et mesures</span>
           </Link>
           
-          <div className="bg-white rounded-xl p-4 sm:p-6 shadow-lg text-center">
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900">
+          <div className="bg-white rounded-xl p-3 sm:p-6 shadow-lg text-center">
+            <h1 className="text-xl sm:text-3xl lg:text-4xl font-bold text-gray-900">
               📏 Droite graduée
             </h1>
           </div>
@@ -280,7 +280,7 @@ export default function CE2DroiteGradueePage() {
                   </h3>
                   <p className="text-purple-600 mt-2">Clique sur une fraction pour voir comment elle se place sur la droite graduée</p>
                 </div>
-                <div className="flex justify-center gap-8 mt-6 flex-wrap">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-4 mt-4 sm:mt-6">
                   {[
                     { num: 2, den: 3 },
                     { num: 3, den: 4 },
@@ -291,21 +291,37 @@ export default function CE2DroiteGradueePage() {
                   ].map(({ num, den }) => (
                     <button
                       key={`${num}-${den}`}
-                      onClick={() => setCurrentFraction({ numerator: num, denominator: den })}
-                      className={`px-6 py-4 rounded-xl transition-all transform hover:scale-105 active:scale-95 ${
+                      onClick={() => {
+                        setCurrentFraction({ numerator: num, denominator: den });
+                        // Scroll vers l'animation avec un petit délai pour laisser le temps au state de se mettre à jour
+                        setTimeout(() => {
+                          const animationElement = document.getElementById('animation-section');
+                          if (animationElement) {
+                            const offset = window.innerHeight * 0.1; // 10% de la hauteur de l'écran
+                            const elementPosition = animationElement.getBoundingClientRect().top;
+                            const offsetPosition = elementPosition + window.pageYOffset - offset;
+                            
+                            window.scrollTo({
+                              top: offsetPosition,
+                              behavior: 'smooth'
+                            });
+                          }
+                        }, 100);
+                      }}
+                      className={`p-2 sm:px-6 sm:py-4 rounded-xl transition-all transform hover:scale-105 active:scale-95 ${
                         currentFraction.numerator === num && currentFraction.denominator === den 
                           ? 'bg-purple-500 text-white shadow-lg' 
                           : 'bg-white hover:bg-purple-50 shadow-md hover:shadow-lg border-2 border-purple-300'
                       }`}
                     >
-                      <FractionMath a={num} b={den} size="text-lg" />
+                      <FractionMath a={num} b={den} size="text-base sm:text-lg" />
                     </button>
                   ))}
                 </div>
               </div>
 
               {/* Animation de la fraction sur la droite */}
-              <div id="rules-section" className={`bg-white rounded-xl p-6 shadow-lg ${
+              <div id="animation-section" className={`bg-white rounded-xl p-6 shadow-lg ${
                 highlightedElement === 'rules-section' ? 'animate-pulse bg-yellow-100' : ''
               }`}>
                 <div className="text-center mb-6">
@@ -340,23 +356,23 @@ export default function CE2DroiteGradueePage() {
                   <p className="text-blue-600">C'est comme découper une tablette de chocolat !</p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="bg-yellow-50 rounded-lg p-4">
-                    <div className="flex items-center gap-2 mb-3">
-                      <div className="text-2xl">1️⃣</div>
-                      <h4 className="font-bold text-yellow-800">On divise en parts égales</h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-6">
+                  <div className="bg-yellow-50 rounded-lg p-3 sm:p-4">
+                    <div className="flex items-center gap-2 mb-2 sm:mb-3">
+                      <div className="text-xl sm:text-2xl">1️⃣</div>
+                      <h4 className="font-bold text-yellow-800 text-sm sm:text-base">On divise en parts égales</h4>
                     </div>
-                    <p className="text-yellow-700">
+                    <p className="text-yellow-700 text-sm sm:text-base">
                       Comme quand on partage une tablette de chocolat, on divise l'espace entre 0 et 1 en parts égales !
                     </p>
                   </div>
 
-                  <div className="bg-green-50 rounded-lg p-4">
-                    <div className="flex items-center gap-2 mb-3">
-                      <div className="text-2xl">2️⃣</div>
-                      <h4 className="font-bold text-green-800">On compte les parts</h4>
+                  <div className="bg-green-50 rounded-lg p-3 sm:p-4">
+                    <div className="flex items-center gap-2 mb-2 sm:mb-3">
+                      <div className="text-xl sm:text-2xl">2️⃣</div>
+                      <h4 className="font-bold text-green-800 text-sm sm:text-base">On compte les parts</h4>
                     </div>
-                    <p className="text-green-700">
+                    <p className="text-green-700 text-sm sm:text-base">
                       Ensuite, on compte le nombre de parts qu'on veut prendre. C'est facile !
                     </p>
                   </div>

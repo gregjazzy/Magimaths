@@ -7,10 +7,19 @@ import Link from 'next/link'
 export default function CE2FractionsMesuresPage() {
   const [hoveredChapter, setHoveredChapter] = useState<string | null>(null)
   
-  const config = { color: '#4ecdc4', icon: '📐', name: 'Fractions et mesures' }
+  const config = { color: '#4ecdc4', icon: '📐', name: 'Fractions' }
 
-  // Sous-chapitres de Fractions et mesures CE2
+  // Sous-chapitres de Fractions CE2
   const subChapters = [
+    {
+      id: 'ce2-fractions-vocabulaire',
+      title: 'Vocabulaire des fractions',
+      description: 'Numérateur, dénominateur... Apprends tous les mots importants pour parler des fractions !',
+      icon: '📚',
+      estimatedTime: 20,
+      difficulty: 'Débutant',
+      href: '/chapitre/ce2-fractions-mesures/vocabulaire'
+    },
     {
       id: 'ce2-fractions-comparaison',
       title: 'Comparer des fractions',
@@ -30,51 +39,6 @@ export default function CE2FractionsMesuresPage() {
       href: '/chapitre/ce2-fractions-mesures/droite'
     },
     {
-      id: 'ce2-fractions-bande-unite',
-      title: 'Fractions avec bandes unité',
-      description: 'Découvre les fractions avec des bandes colorées ! Apprends à lire et représenter les fractions.',
-      icon: '📏',
-      estimatedTime: 25,
-      difficulty: 'Débutant',
-      href: '/chapitre/ce2-fractions-bande-unite'
-    },
-    {
-      id: 'ce2-fractions-vocabulaire',
-      title: 'Vocabulaire des fractions',
-      description: 'Numérateur, dénominateur... Apprends tous les mots importants pour parler des fractions !',
-      icon: '📚',
-      estimatedTime: 20,
-      difficulty: 'Débutant',
-      href: '/chapitre/ce2-fractions-mesures/vocabulaire'
-    },
-    {
-      id: 'ce2-mesures-longueurs',
-      title: 'Mesures de longueurs',
-      description: 'Mètre, centimètre, millimètre... Maîtrise toutes les unités de longueur !',
-      icon: '📐',
-      estimatedTime: 30,
-      difficulty: 'Débutant',
-      href: '#' // À implémenter plus tard
-    },
-    {
-      id: 'ce2-mesures-masses',
-      title: 'Mesures de masses',
-      description: 'Kilogramme, gramme... Apprends à peser et comparer les masses !',
-      icon: '⚖️',
-      estimatedTime: 25,
-      difficulty: 'Débutant',
-      href: '#' // À implémenter plus tard
-    },
-    {
-      id: 'ce2-mesures-contenances',
-      title: 'Mesures de contenances',
-      description: 'Litre, millilitre... Découvre les mesures de liquides !',
-      icon: '🥤',
-      estimatedTime: 25,
-      difficulty: 'Débutant',
-      href: '#' // À implémenter plus tard
-    },
-    {
       id: 'ce2-fractions-addition',
       title: 'Addition de fractions simples',
       description: 'Apprends à additionner des fractions qui ont le même dénominateur !',
@@ -82,15 +46,6 @@ export default function CE2FractionsMesuresPage() {
       estimatedTime: 25,
       difficulty: 'Débutant',
       href: '/chapitre/ce2-fractions-addition'
-    },
-    {
-      id: 'ce2-mesures-temps',
-      title: 'Mesures de temps',
-      description: 'Heures, minutes, secondes... Maîtrise le temps qui passe !',
-      icon: '⏰',
-      estimatedTime: 30,
-      difficulty: 'Intermédiaire',
-      href: '#' // À implémenter plus tard
     }
   ]
 
@@ -118,7 +73,7 @@ export default function CE2FractionsMesuresPage() {
                 </div>
                 <div>
                   <h1 className="text-3xl font-bold text-gray-900">{config.name}</h1>
-                  <p className="text-gray-600 mt-1">Fractions et mesures pour le CE2</p>
+                  <p className="text-gray-600 mt-1">Fractions pour le CE2</p>
                 </div>
               </div>
             </div>
@@ -131,9 +86,9 @@ export default function CE2FractionsMesuresPage() {
         {/* Introduction */}
         <div className="mb-8 text-center">
           <div className="bg-white/90 backdrop-blur-sm rounded-3xl p-6 shadow-xl border border-white/20">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">🎯 Explore les fractions et les mesures !</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">🎯 Explore les fractions !</h2>
             <p className="text-gray-600 text-lg">
-              Découvre le monde fascinant des fractions et des mesures. Chaque carte t'emmène dans une aventure différente !
+              Découvre le monde fascinant des fractions et apprends à les utiliser dans différentes situations !
             </p>
           </div>
         </div>
