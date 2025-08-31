@@ -1,8 +1,9 @@
 import dynamic from 'next/dynamic';
+import { ReactNode } from 'react';
 
 // Fonction utilitaire pour créer des composants lazy loadés
 export function createLazyComponent(path: string) {
-  return dynamic(() => import(path), {
+  return dynamic<{ children?: ReactNode }>(() => import(path), {
     loading: () => <div>Chargement...</div>,
     ssr: false
   });
