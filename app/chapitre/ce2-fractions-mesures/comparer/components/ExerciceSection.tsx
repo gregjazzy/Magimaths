@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { FractionMath } from '../page';
+import { FractionMath } from './FractionMath';
 import { CheckCircle, XCircle } from 'lucide-react';
 
 interface Exercise {

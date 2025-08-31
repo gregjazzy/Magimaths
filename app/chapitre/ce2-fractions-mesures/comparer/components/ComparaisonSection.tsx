@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { FractionMath } from '../page';
+import { FractionMath } from './FractionMath';
 
 export default function ComparaisonSection() {
   return (
