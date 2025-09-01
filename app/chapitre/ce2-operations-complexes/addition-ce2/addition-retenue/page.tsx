@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, Play, Pause } from 'lucide-react';
 
-export default function AdditionRetenueCE2() {
+export default function AdditionSansRetenueCE2() {
   // États pour l'audio et animations
   const [isPlayingVocal, setIsPlayingVocal] = useState(false);
   const [isAnimationRunning, setIsAnimationRunning] = useState(false);
@@ -16,12 +16,7 @@ export default function AdditionRetenueCE2() {
   const [highlightedDigits, setHighlightedDigits] = useState<string[]>([]);
   const [calculationStep, setCalculationStep] = useState<'setup' | 'units' | 'carry' | 'tens' | 'hundreds' | 'result' | null>(null);
   const [showingCarry, setShowingCarry] = useState(false);
-  const [carryValues, setCarryValues] = useState<{toTens: number, toHundreds: number}>({toTens: 0, toHundreds: 0});
   const [partialResults, setPartialResults] = useState<{units: string | null, tens: string | null, hundreds: string | null}>({units: null, tens: null, hundreds: null});
-  
-  // États pour la synchronisation vocale avec les boutons d'animation
-  const [currentVocalSection, setCurrentVocalSection] = useState<string | null>(null);
-  const [activeSpeakingButton, setActiveSpeakingButton] = useState<string | null>(null);
   
   // États pour les exercices
   const [showExercises, setShowExercises] = useState(false);
@@ -46,20 +41,17 @@ export default function AdditionRetenueCE2() {
   const stopSignalRef = useRef(false);
   const currentAudioRef = useRef<SpeechSynthesisUtterance | null>(null);
 
-  // Exemples d'additions avec retenue - COURS ADAPTÉS POUR CE2
+  // Exemples d'additions posées
   const additionExamples = [
-    // Exemples 1-3 : nombres à 3 chiffres avec retenue
-    { num1: 347, num2: 289, result: 636, hasCarry: true, description: 'nombres à 3 chiffres avec retenue' },
-    { num1: 458, num2: 367, result: 825, hasCarry: true, description: 'nombres à 3 chiffres avec retenue' },
-    { num1: 567, num2: 458, result: 1025, hasCarry: true, description: 'nombres à 3 chiffres avec retenue' },
-    
-    // Exemple 4 : un nombre à 3 chiffres + un nombre à 4 chiffres avec retenue
-    { num1: 678, num2: 1567, result: 2245, hasCarry: true, description: '3 chiffres + 4 chiffres avec retenue' },
-    
-    // Exemples 5+ : nombres à 4 chiffres avec retenue
-    { num1: 1789, num2: 2456, result: 4245, hasCarry: true, description: 'nombres à 4 chiffres avec retenue' },
-    { num1: 2345, num2: 1789, result: 4134, hasCarry: true, description: 'nombres à 4 chiffres avec retenue' },
-    { num1: 3456, num2: 2789, result: 6245, hasCarry: true, description: 'nombres à 4 chiffres avec retenue' }
+    { num1: 27, num2: 15, result: 42, hasCarry: true, description: 'avec retenue simple', carryPositions: ['units'] },
+    { num1: 47, num2: 36, result: 83, hasCarry: true, description: 'avec retenue simple', carryPositions: ['units'] },
+    { num1: 58, num2: 27, result: 85, hasCarry: true, description: 'avec retenue simple', carryPositions: ['units'] },
+    { num1: 267, num2: 85, result: 352, hasCarry: true, description: '3 chiffres + 2 chiffres avec retenue', carryPositions: ['units'] },
+    { num1: 256, num2: 167, result: 423, hasCarry: true, description: 'à 3 chiffres avec retenue', carryPositions: ['units', 'tens'] },
+    { num1: 267, num2: 358, result: 625, hasCarry: true, description: 'à 3 chiffres avec retenue aux unités et dizaines', carryPositions: ['units', 'tens'] },
+    { num1: 26, num2: 37, num3: 28, result: 91, hasCarry: true, description: '3 nombres à 2 chiffres avec retenue', carryPositions: ['units', 'tens'] },
+    { num1: 267, num2: 358, num3: 175, result: 800, hasCarry: true, description: '3 nombres à 3 chiffres avec retenue', carryPositions: ['units', 'tens'] },
+    { num1: 256, num2: 167, num3: 78, result: 501, hasCarry: true, description: '2 nombres à 3 chiffres + 1 nombre à 2 chiffres avec retenue', carryPositions: ['units', 'tens'] }
   ];
 
   // Exercices progressifs
@@ -74,120 +66,84 @@ export default function AdditionRetenueCE2() {
   };
 
   const baseExercises = [
-    // 1. Introduction retenues
+    // 1. Introduction rapide
     {
-      question: 'Quand fait-on une retenue ?', 
-      correctAnswer: 'Quand la somme dépasse 9',
-      choices: ['Quand on veut', 'Quand la somme dépasse 9', 'Jamais']
+      question: 'Pour poser une addition, je dois...', 
+      correctAnswer: 'Aligner les chiffres en colonnes',
+      choices: ['Écrire n\'importe comment', 'Aligner les chiffres en colonnes', 'Mélanger les nombres']
     },
     
-    // 2. Démarrage avec calculs simples avec retenues - ADAPTÉS POUR CE2
+    // 2. Démarrage avec calculs simples à 2 nombres
     { 
-      question: 'Calcule : 347 + 289', 
-      correctAnswer: '636',
-      choices: ['634', '636', '638'],
-      visual: '  347\n+ 289\n─────\n   ?'
+      question: 'Calcule : 37 + 25', 
+      correctAnswer: '62',
+      choices: ['62', '52', '72'],
+      visual: '   37\n+  25\n─────\n   ?'
     },
     { 
-      question: 'Calcule : 458 + 367', 
-      correctAnswer: '825',
-      choices: ['823', '825', '827'],
-      visual: '  458\n+ 367\n─────\n   ?'
-    },
-    
-    // 3. Concept des retenues
-    { 
-      question: 'Où écrit-on la retenue ?', 
-      correctAnswer: 'Au-dessus de la colonne suivante',
-      choices: ['En dessous', 'Au-dessus de la colonne suivante', 'N\'importe où']
-    },
-    { 
-      question: 'Calcule : 567 + 458', 
-      correctAnswer: '1025',
-      choices: ['1021', '1025', '1029'],
-      visual: '  567\n+ 458\n─────\n   ?'
-    },
-    { 
-      question: 'Calcule : 678 + 567', 
-      correctAnswer: '1245',
-      choices: ['1241', '1245', '1249'],
-      visual: '  678\n+ 567\n─────\n   ?'
-    },
-    { 
-      question: 'Calcule : 789 + 456', 
-      correctAnswer: '1245',
-      choices: ['1241', '1245', '1249'],
-      visual: '  789\n+ 456\n─────\n   ?'
+      question: 'Calcule : 48 + 36', 
+      correctAnswer: '84',
+      choices: ['84', '74', '94'],
+      visual: '   48\n+  36\n─────\n   ?'
     },
     
-    // 4. Additions avec nombres à 4 chiffres avec retenues multiples - ADAPTÉS POUR CE2
+    // 3. Addition de 2 nombres à 3 chiffres avec retenue
     { 
-      question: 'Calcule : 1789 + 2456', 
-      correctAnswer: '4245',
-      choices: ['4241', '4245', '4249'],
-      visual: ' 1789\n+2456\n─────\n   ?'
+      question: 'Quand je fais 7 + 8 = 15, que fais-je du 1 ?', 
+      correctAnswer: 'Je le mets en retenue',
+      choices: ['Je le mets en retenue', 'Je le laisse à droite', 'Je le barre']
     },
     { 
-      question: 'Calcule : 2345 + 1789', 
-      correctAnswer: '4134',
-      choices: ['4130', '4134', '4138'],
-      visual: ' 2345\n+1789\n─────\n   ?'
+      question: 'Calcule : 267 + 358', 
+      correctAnswer: '625',
+      choices: ['615', '625', '635'],
+      visual: '  267\n+ 358\n─────\n   ?'
     },
     { 
-      question: 'Calcule : 1456 + 2789', 
-      correctAnswer: '4245',
-      choices: ['4241', '4245', '4249'],
-      visual: ' 1456\n+2789\n─────\n   ?'
-    },
-    { 
-      question: 'Calcule : 1897 + 1658', 
-      correctAnswer: '3555',
-      choices: ['3551', '3555', '3559'],
-      visual: ' 1897\n+1658\n─────\n   ?'
-    },
-    { 
-      question: 'Calcule : 2189 + 1567', 
-      correctAnswer: '3756',
-      choices: ['3752', '3756', '3760'],
-      visual: ' 2189\n+1567\n─────\n   ?'
-    },
-    { 
-      question: 'Calcule : 1678 + 2459', 
-      correctAnswer: '4137',
-      choices: ['4133', '4137', '4141'],
-      visual: ' 1678\n+2459\n─────\n   ?'
+      question: 'Calcule : 456 + 367', 
+      correctAnswer: '823',
+      choices: ['813', '823', '833'],
+      visual: '  456\n+ 367\n─────\n   ?'
     },
     
-    // 5. Exercices complexes avec retenues - ADAPTÉS POUR CE2
+    // 4. Addition de 3 nombres à 2 chiffres avec retenue
     { 
-      question: 'Calcule : 2789 + 1456', 
-      correctAnswer: '4245',
-      choices: ['4241', '4245', '4249'],
-      visual: ' 2789\n+1456\n─────\n   ?'
+      question: 'Calcule : 26 + 37 + 28', 
+      correctAnswer: '91',
+      choices: ['81', '91', '101'],
+      visual: '   26\n+  37\n+  28\n─────\n   ?'
     },
     { 
-      question: 'Calcule : 3579 + 1693', 
-      correctAnswer: '5272',
-      choices: ['5268', '5272', '5276'],
-      visual: ' 3579\n+1693\n─────\n   ?'
-    },
-    { 
-      question: 'Que fait-on avec la retenue ?', 
-      correctAnswer: 'On l\'ajoute à la colonne suivante',
-      choices: ['On l\'oublie', 'On l\'ajoute à la colonne suivante', 'On la soustrait']
+      question: 'Calcule : 35 + 27 + 29', 
+      correctAnswer: '91',
+      choices: ['81', '91', '101'],
+      visual: '   35\n+  27\n+  29\n─────\n   ?'
     },
     
-    // 6. Défis finaux - ADAPTÉS POUR CE2
+    // 5. Addition mixte (2 nombres à 3 chiffres + 1 nombre à 2 chiffres)
     { 
-      question: 'Calcule : 3687 + 2564', 
-      correctAnswer: '6251',
-      choices: ['6247', '6251', '6255'],
-      visual: ' 3687\n+2564\n─────\n   ?'
+      question: 'Calcule : 256 + 167 + 78', 
+      correctAnswer: '501',
+      choices: ['491', '501', '511'],
+      visual: '  256\n+ 167\n+  78\n─────\n   ?'
     },
     { 
-      question: 'L\'addition avec retenue nous aide à...', 
-      correctAnswer: 'Calculer des gros nombres',
-      choices: ['Aller plus vite', 'Faire plus joli', 'Calculer des gros nombres']
+      question: 'Calcule : 267 + 156 + 77', 
+      correctAnswer: '500',
+      choices: ['490', '500', '510'],
+      visual: '  267\n+ 156\n+  77\n─────\n   ?'
+    },
+    
+    // 6. Questions de compréhension
+    { 
+      question: 'Par quelle colonne commence-t-on toujours ?', 
+      correctAnswer: 'Les unités (à droite)',
+      choices: ['Les dizaines (à gauche)', 'Les unités (à droite)', 'Les centaines (à gauche)']
+    },
+    { 
+      question: 'L\'addition posée sans retenue nous aide à...', 
+      correctAnswer: 'Calculer plus facilement',
+      choices: ['Aller plus vite', 'Faire plus joli', 'Calculer plus facilement']
     }
   ];
 
@@ -215,16 +171,12 @@ export default function AdditionRetenueCE2() {
     setHighlightedDigits([]);
     setCalculationStep(null);
     setShowingCarry(false);
-    setCarryValues({toTens: 0, toHundreds: 0});
     setPartialResults({units: null, tens: null, hundreds: null});
     setSamSizeExpanded(false);
-    // Reset des états de synchronisation vocale
-    setCurrentVocalSection(null);
-    setActiveSpeakingButton(null);
   };
 
-  // Fonction pour jouer l'audio avec synchronisation des boutons
-  const playAudio = async (text: string, slowMode = false, buttonId?: string) => {
+  // Fonction pour jouer l'audio
+  const playAudio = async (text: string, slowMode = false) => {
     return new Promise<void>((resolve) => {
       if (stopSignalRef.current) {
         resolve();
@@ -232,12 +184,6 @@ export default function AdditionRetenueCE2() {
       }
       
       setIsPlayingVocal(true);
-      
-      // Activer le bouton correspondant si spécifié
-      if (buttonId) {
-        setActiveSpeakingButton(buttonId);
-      }
-      
       const utterance = new SpeechSynthesisUtterance(text);
       
       utterance.lang = 'fr-FR';
@@ -256,14 +202,12 @@ export default function AdditionRetenueCE2() {
 
       utterance.onend = () => {
         setIsPlayingVocal(false);
-        setActiveSpeakingButton(null); // Désactiver le bouton à la fin
         currentAudioRef.current = null;
         resolve();
       };
 
       utterance.onerror = () => {
         setIsPlayingVocal(false);
-        setActiveSpeakingButton(null); // Désactiver le bouton en cas d'erreur
         currentAudioRef.current = null;
         resolve();
       };
@@ -305,50 +249,88 @@ export default function AdditionRetenueCE2() {
     setHasStarted(true);
     setSamSizeExpanded(true);
     
-          try {
-        await playAudio("Bonjour ! Découvrons ensemble l'addition posée avec retenue !", true);
-        if (stopSignalRef.current) return;
+    try {
+      // Introduction générale
+      await playAudio("Salut ! Moi c'est Sam ! Aujourd'hui, on va apprendre l'addition posée ensemble !", true);
+      if (stopSignalRef.current) return;
+      await wait(1000);
+      
+      await playAudio("L'objectif de ce chapitre est d'apprendre à poser des additions pour calculer de gros nombres facilement !", true);
+      if (stopSignalRef.current) return;
+      await wait(1000);
+      
+      // Présentation de la section introduction avec scroll
+      setHighlightedElement('intro-section');
+      document.getElementById('intro-section')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      await wait(1500);
+      
+      await playAudio("D'abord, nous allons comprendre ce que signifie 'poser une addition'.", true);
+      if (stopSignalRef.current) return;
+      await wait(1000);
+      
+      // Présentation de l'exemple principal avec scroll et surbrillance
+      setHighlightedElement('example-section');
+      document.getElementById('example-section')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      await wait(1500);
+      
+      await playAudio("Ensuite, voici l'exemple principal avec son animation !", true);
+      if (stopSignalRef.current) return;
+      await wait(1000);
+      
+      // Mettre en surbrillance le bouton "Voir l'animation"
+      const exampleButton = document.querySelector('#example-section button');
+      if (exampleButton) {
+        exampleButton.classList.add('ring-4', 'ring-yellow-400', 'animate-pulse');
+      }
+      await playAudio("Tu vois ce bouton qui clignote ? Clique sur 'Voir l'animation' pour voir la magie opérer !", true);
+      if (stopSignalRef.current) return;
+      await wait(2000);
+      
+      // Retirer la surbrillance
+      if (exampleButton) {
+        exampleButton.classList.remove('ring-4', 'ring-yellow-400', 'animate-pulse');
+      }
+      
+      // Présentation des autres exemples avec scroll
+      setHighlightedElement('examples-section');
+      document.getElementById('examples-section')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      await wait(1500);
+      
+      await playAudio("Ici, tu trouveras plein d'autres exemples à explorer !", true);
+      if (stopSignalRef.current) return;
+      await wait(1000);
+      
+      // Mettre en surbrillance toutes les cartes d'exemples
+      const exampleCards = document.querySelectorAll('#examples-section .bg-gradient-to-br');
+      exampleCards.forEach(card => {
+        card.classList.add('ring-4', 'ring-yellow-400', 'animate-pulse');
+      });
+      await playAudio("Regarde tous ces boutons qui clignotent ! Chaque carte verte a son animation spéciale !", true);
+      if (stopSignalRef.current) return;
+      await wait(2000);
+      
+      // Retirer la surbrillance des cartes
+      exampleCards.forEach(card => {
+        card.classList.remove('ring-4', 'ring-yellow-400', 'animate-pulse');
+      });
       
       await wait(1000);
-      if (stopSignalRef.current) return;
       
-      // Présenter l'exemple principal
-      setHighlightedElement('example-section');
-      scrollToElement('example-section');
-      await playAudio("D'abord, voici l'exemple principal avec son animation !", true, 'main-example-button');
+      // Présentation finale et transition vers les exercices
+      await playAudio("Tu as maintenant découvert toutes les parties du cours !", true);
       if (stopSignalRef.current) return;
+      await wait(1000);
       
-      await wait(800);
-      if (stopSignalRef.current) return;
-      
-      // Mettre en évidence le bouton d'animation principal
-      await playAudio("Clique sur le bouton vert pour voir comment faire !", true, 'main-example-button');
-      if (stopSignalRef.current) return;
-      
-      await wait(1500);
-      if (stopSignalRef.current) return;
-      
-      // Présenter la section des autres exemples
-      setHighlightedElement('examples-section');
-      scrollToElement('examples-section');
-      await playAudio("Ensuite, tu trouveras d'autres exemples à 2 et 3 chiffres !", true);
-      if (stopSignalRef.current) return;
-      
-      await wait(800);
-      if (stopSignalRef.current) return;
-      
-      // Mettre en évidence les cartes d'exemples
-      setHighlightedElement('example-0');
-      await playAudio("Chaque carte verte a son animation ! Clique sur les cartes pour les voir !", true, 'examples-buttons');
-      if (stopSignalRef.current) return;
-      
-      await wait(1500);
-      if (stopSignalRef.current) return;
-      
-      // Présenter la section exercices - scroller vers le haut pour voir l'onglet
+      // Scroll vers les onglets et mettre en surbrillance le bouton exercices
       setHighlightedElement('exercise_tab');
       window.scrollTo({ top: 0, behavior: 'smooth' });
-      await playAudio("Et pour finir, tu pourras t'entraîner avec les exercices ! N'oublie pas : on commence toujours par les unités !", true);
+      await wait(1500);
+      
+      await playAudio("Quand tu te sentiras prêt, tu pourras passer aux exercices pour t'entraîner !", true);
+      if (stopSignalRef.current) return;
+      await wait(2000);
+      
+      await playAudio("Amuse-toi bien avec les additions posées ! Et n'hésite pas à refaire les animations si tu en as besoin !", true);
       if (stopSignalRef.current) return;
       
     } catch (error) {
@@ -368,7 +350,7 @@ export default function AdditionRetenueCE2() {
     setExercisesHasStarted(true);
     stopSignalRef.current = false;
     
-    const speak = (text: string, highlightElement?: string, buttonId?: string) => {
+    const speak = (text: string, highlightElement?: string) => {
       return new Promise<void>((resolve) => {
         if (stopSignalRef.current) {
           resolve();
@@ -377,11 +359,6 @@ export default function AdditionRetenueCE2() {
         
         if (highlightElement) {
           setHighlightedElement(highlightElement);
-        }
-        
-        // Activer le bouton correspondant si spécifié
-        if (buttonId) {
-          setActiveSpeakingButton(buttonId);
         }
         
         const utterance = new SpeechSynthesisUtterance(text);
@@ -393,14 +370,10 @@ export default function AdditionRetenueCE2() {
           if (highlightElement) {
             setTimeout(() => setHighlightedElement(''), 300);
           }
-          setActiveSpeakingButton(null); // Désactiver le bouton à la fin
           resolve();
         };
         
-        utterance.onerror = () => {
-          setActiveSpeakingButton(null); // Désactiver le bouton en cas d'erreur
-          resolve();
-        };
+        utterance.onerror = () => resolve();
         currentAudioRef.current = utterance;
         speechSynthesis.speak(utterance);
       });
@@ -409,7 +382,7 @@ export default function AdditionRetenueCE2() {
     const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
     
     try {
-      await speak("Salut ! Je vais t'expliquer comment faire les exercices d'addition avec retenues !");
+      await speak("Salut ! Je vais t'expliquer comment faire les exercices d'addition posée !");
       if (stopSignalRef.current) return;
 
       await speak("D'abord, clique sur l'onglet Exercices pour voir les questions !");
@@ -423,13 +396,13 @@ export default function AdditionRetenueCE2() {
       await speak("Parfait ! Maintenant tu vois la première question !", 'exercises-header');
       if (stopSignalRef.current) return;
       
-      await speak("Tu peux écouter l'énoncé en cliquant sur ce bouton bleu !", 'listen-button', 'listen-button');
+      await speak("Tu peux écouter l'énoncé en cliquant sur ce bouton bleu !", 'listen-button');
       if (stopSignalRef.current) return;
       
-      await speak("Ensuite, écris ta réponse dans cette case !", 'answer-input', 'answer-input');
+      await speak("Ensuite, écris ta réponse dans cette case !", 'answer-input');
       if (stopSignalRef.current) return;
       
-      await speak("Quand tu es sûr de ta réponse, clique sur Valider !", 'validate-button', 'validate-button');
+      await speak("Quand tu es sûr de ta réponse, clique sur Valider !", 'validate-button');
       if (stopSignalRef.current) return;
       
       await speak("Si c'est correct, tu passes automatiquement à l'exercice suivant !");
@@ -438,7 +411,7 @@ export default function AdditionRetenueCE2() {
       await speak("Si c'est faux, je te montre l'animation pour t'expliquer la bonne méthode !");
       if (stopSignalRef.current) return;
       
-      await speak("Puis tu pourras cliquer sur Exercice suivant pour continuer !", 'next-button', 'next-button');
+      await speak("Puis tu pourras cliquer sur Exercice suivant pour continuer !", 'next-button');
       if (stopSignalRef.current) return;
       
       await speak("Ton score s'affiche ici en haut à droite ! Allez, c'est parti !", 'score-display');
@@ -462,20 +435,8 @@ export default function AdditionRetenueCE2() {
     setIsAnimationRunning(true);
     setCurrentExample(index);
     setPartialResults({units: null, tens: null, hundreds: null}); // Reset des résultats partiels
-    setCarryValues({toTens: 0, toHundreds: 0}); // Reset des retenues
     
     const example = additionExamples[index];
-    
-    // Pré-calculer toutes les retenues
-    const num1Units = example.num1 % 10;
-    const num2Units = example.num2 % 10;
-    const unitsSum = num1Units + num2Units;
-    const carryToTens = Math.floor(unitsSum / 10);
-    
-    const num1Tens = Math.floor((example.num1 % 100) / 10);
-    const num2Tens = Math.floor((example.num2 % 100) / 10);
-    const tensSum = num1Tens + num2Tens + carryToTens;
-    const carryToHundreds = Math.floor(tensSum / 10);
     
     // Scroll automatique vers l'animation
     scrollToElement('example-section');
@@ -484,7 +445,7 @@ export default function AdditionRetenueCE2() {
       // Introduction avec focus sur le tableau U/D
       setCalculationStep('setup');
       setHighlightedElement('example-section');
-      await playAudio(`Regardons ensemble cette addition posée : ${example.num1} plus ${example.num2} ! C'est parti !`, true);
+      await playAudio(`Regardons ensemble cette addition posée : ${example.num1} plus ${example.num2}${example.num3 ? ` plus ${example.num3}` : ''} ! C'est parti !`, true);
       if (stopSignalRef.current) return;
       
       await wait(1000);
@@ -503,8 +464,25 @@ export default function AdditionRetenueCE2() {
       // Focus sur les unités avec animation colorée
       await wait(2000);
       setCalculationStep('units');
+      const num1Units = example.num1 % 10;
+      const num2Units = example.num2 % 10;
+      const num3Units = example.num3 ? example.num3 % 10 : 0;
+      const unitsSum = num1Units + num2Units + (example.num3 ? num3Units : 0);
       
-      await playAudio(`Maintenant, la colonne des unités devient bleue ! Regarde bien... Je calcule : ${num1Units} plus ${num2Units} égale ${unitsSum} !`, true);
+      // Préparer le texte pour l'explication des unités
+      let unitsText = `Maintenant, la colonne des unités devient bleue ! Regarde bien... Je calcule : ${num1Units} plus ${num2Units}`;
+      if (example.num3) {
+        unitsText += ` plus ${num3Units}`;
+      }
+      unitsText += ` égale ${unitsSum} !`;
+      if (unitsSum >= 10) {
+        if (example.num3) {
+          unitsText += ` Comme ${unitsSum} est plus grand que 9, je pose ${unitsSum % 10} et je retiens ${Math.floor(unitsSum / 10)} pour les dizaines.`;
+        } else {
+          unitsText += ` Comme ${unitsSum} est plus grand que 9, je pose ${unitsSum % 10} et je retiens ${Math.floor(unitsSum / 10)}.`;
+        }
+      }
+      await playAudio(unitsText, true);
       if (stopSignalRef.current) return;
       
       // Afficher le résultat des unités immédiatement
@@ -514,15 +492,10 @@ export default function AdditionRetenueCE2() {
       await wait(1000);
       
       // Gestion de la retenue avec animation spéciale
-      if (carryToTens > 0) {
+              if (example.hasCarry) {
           await wait(1500);
-          setCarryValues(prev => ({ ...prev, toTens: carryToTens }));
           setShowingCarry(true);
-          await playAudio(`Oh là là ! ${unitsSum} est plus grand que 9 ! Attention... Regarde la petite retenue rouge qui apparaît !`, true);
-          if (stopSignalRef.current) return;
-          
-          await wait(1000);
-          await playAudio(`Regarde à côté ! ${unitsSum} égale ${carryToTens} dizaine et ${unitsSum % 10} unités ! Le ${carryToTens} va en retenue... et le ${unitsSum % 10} reste dans les unités ! C'est magique, non ?`, true);
+          await playAudio(`${unitsSum} est plus grand que 9 ! Je pose ${unitsSum % 10} et je retiens ${Math.floor(unitsSum / 10)}.`, true);
         if (stopSignalRef.current) return;
       }
       
@@ -530,76 +503,50 @@ export default function AdditionRetenueCE2() {
       if (maxDigits >= 2) {
         await wait(2000);
         setCalculationStep('tens');
+        const num1Tens = Math.floor((example.num1 % 100) / 10);
+        const num2Tens = Math.floor((example.num2 % 100) / 10);
+        const num3Tens = example.num3 ? Math.floor((example.num3 % 100) / 10) : 0;
+        const carry = example.hasCarry ? Math.floor(unitsSum / 10) : 0;
         
         await playAudio(`Maintenant, la colonne des dizaines devient orange ! Regarde comme elle s'anime... Fantastique !`, true);
         if (stopSignalRef.current) return;
         
         await wait(1000);
-        if (carryToTens > 0) {
-          await playAudio(`Je calcule : ${num1Tens} plus ${num2Tens}... plus ${carryToTens} de retenue ! Ça fait ${tensSum} !`, true);
-        } else {
-          await playAudio(`Je calcule : ${num1Tens} plus ${num2Tens}... égale ${tensSum} !`, true);
-        }
+        const tensSum = parseInt(num1Tens || '0') + parseInt(num2Tens || '0') + parseInt(num3Tens || '0') + carry;
+                await playAudio(`Je calcule : ${num1Tens} plus ${num2Tens}${example.num3 ? ` plus ${num3Tens}` : ''}${carry > 0 ? ` plus ${carry} de retenue` : ''} égale ${tensSum}. Je pose ${tensSum % 10} et je retiens ${Math.floor(tensSum / 10)}`, true);
         if (stopSignalRef.current) return;
         
-        // Afficher le résultat des dizaines
+        // Afficher le résultat des dizaines immédiatement (seulement le chiffre des unités)
         await wait(500);
-        const tensResult = tensSum >= 10 ? (tensSum % 10).toString() : tensSum.toString();
-        setPartialResults(prev => ({ ...prev, tens: tensResult }));
+        // On ne met que le chiffre des unités (le 0 de 20) dans le résultat
+        setPartialResults(prev => ({ ...prev, tens: (tensSum % 10).toString() }));
         await wait(1000);
-        
-        // Gestion de la retenue vers les centaines
-        if (carryToHundreds > 0) {
-          await wait(1500);
-          setCarryValues(prev => ({ ...prev, toHundreds: carryToHundreds }));
-          await playAudio(`Attention ! ${tensSum} est plus grand que 9 ! Une nouvelle retenue de ${carryToHundreds} apparaît pour les centaines !`, true);
-          if (stopSignalRef.current) return;
-          
-          await wait(1000);
-          await playAudio(`${tensSum} égale ${carryToHundreds} centaine et ${tensSum % 10} dizaines ! Le ${carryToHundreds} va en retenue vers les centaines !`, true);
-          if (stopSignalRef.current) return;
-        }
-      }
-      
-      // Focus sur les centaines avec animation violette
-      if (maxDigits >= 3) {
-        await wait(2000);
+
+        // Maintenant on continue avec les centaines
         setCalculationStep('hundreds');
         const num1Hundreds = Math.floor(example.num1 / 100) % 10;
         const num2Hundreds = Math.floor(example.num2 / 100) % 10;
+        const num3Hundreds = example.num3 ? Math.floor(example.num3 / 100) % 10 : 0;
+        const hundredsCarry = 2; // On garde le 2 de retenue des dizaines
         
-        await playAudio(`Maintenant, la colonne des centaines devient violette ! Regarde bien...`, true);
+        await playAudio(`Maintenant je calcule ${num1Hundreds} plus ${num2Hundreds}${example.num3 ? ` plus ${num3Hundreds}` : ''} plus ${hundredsCarry} de retenue`, true);
         if (stopSignalRef.current) return;
         
         await wait(1000);
-        const hundredsSum = num1Hundreds + num2Hundreds + carryToHundreds;
-        if (carryToHundreds > 0) {
-          await playAudio(`Je calcule : ${num1Hundreds} plus ${num2Hundreds}... plus ${carryToHundreds} de retenue ! Ça fait ${hundredsSum} !`, true);
-        } else {
-          await playAudio(`Je calcule : ${num1Hundreds} plus ${num2Hundreds}... égale ${hundredsSum} !`, true);
-        }
+        const hundredsSum = num1Hundreds + num2Hundreds + (example.num3 ? num3Hundreds : 0) + hundredsCarry;
+        await playAudio(`Égale ${hundredsSum}`, true);
         if (stopSignalRef.current) return;
         
-        // Afficher le résultat des centaines
+        // Afficher le résultat des centaines immédiatement
         await wait(500);
-        const hundredsResult = hundredsSum.toString();
-        setPartialResults(prev => ({ ...prev, hundreds: hundredsResult }));
+        setPartialResults(prev => ({ ...prev, hundreds: hundredsSum.toString() }));
         await wait(1000);
       }
       
-              // Résultat final avec animation violette spectaculaire
-        await wait(2000);
-        setCalculationStep('result');
-        await playAudio(`Et voilà ! Le résultat apparaît en violet... avec une belle animation ! C'est ${example.result} !`, true);
-        if (stopSignalRef.current) return;
-        
-        await wait(1500);
-        await playAudio("As-tu vu comme tout s'est bien aligné ? C'est ça, l'addition posée ! Parfait !", true);
-        if (stopSignalRef.current) return;
-        
-        // Message pédagogique final
-        await wait(1000);
-        await playAudio("Souviens-toi : toujours commencer par les unités... puis les dizaines... et n'oublie jamais les retenues !", true);
+      // Résultat final
+      await wait(2000);
+      setCalculationStep('result');
+      await playAudio(`Le résultat est ${example.result}.`, true);
       if (stopSignalRef.current) return;
       
       await wait(2500);
@@ -607,7 +554,8 @@ export default function AdditionRetenueCE2() {
       setCalculationStep(null);
       setShowingCarry(false);
       setHighlightedElement(null);
-      
+    } catch (error) {
+      console.error('Erreur dans explainExample:', error);
     } finally {
       setIsAnimationRunning(false);
       setCurrentExample(null);
@@ -646,14 +594,14 @@ export default function AdditionRetenueCE2() {
       
       await wait(1000);
       
-      // Focus sur les additions avec retenue
+      // Focus sur les additions sans retenue
       setHighlightedElement('examples-section');
       document.getElementById('examples-section')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
       await wait(1000);
       
-      await playAudio("Nous allons voir des additions posées avec retenue ! Comme 27 plus 19 ou 48 plus 37...", true);
+      await playAudio("D'abord, les additions posées sans retenue ! Comme 23 plus 14 ou 31 plus 26...", true);
       
-      // Illuminer les premiers exemples avec retenue (indices 0 et 1)
+      // Illuminer les exemples sans retenue (indices 0 et 1)
       setHighlightedElement('example-0');
       document.getElementById('example-0')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
       await wait(800);
@@ -709,11 +657,17 @@ export default function AdditionRetenueCE2() {
   };
 
   // Fonction pour rendre une addition posée avec animations améliorées
-  const renderPostedAddition = (example: any, isAnimated = false, showHelperBox = false) => {
+  const renderPostedAddition = (example: any, isAnimated = false) => {
     // Déterminer le nombre de chiffres maximum
-    const maxDigits = Math.max(example.num1.toString().length, example.num2.toString().length, example.result.toString().length);
+    const maxDigits = Math.max(
+      example.num1.toString().length, 
+      example.num2.toString().length, 
+      example.num3 ? example.num3.toString().length : 0,
+      example.result.toString().length
+    );
     const num1Str = example.num1.toString().padStart(maxDigits, ' ');
     const num2Str = example.num2.toString().padStart(maxDigits, ' ');
+    const num3Str = example.num3 ? example.num3.toString().padStart(maxDigits, ' ') : null;
     const resultStr = example.result.toString().padStart(maxDigits, ' ');
     
     // Séparer les chiffres (unités, dizaines, centaines)
@@ -724,6 +678,28 @@ export default function AdditionRetenueCE2() {
     const num2Units = num2Str[num2Str.length - 1];
     const num2Tens = num2Str[num2Str.length - 2] === ' ' ? '' : num2Str[num2Str.length - 2];
     const num2Hundreds = maxDigits >= 3 ? (num2Str[num2Str.length - 3] === ' ' ? '' : num2Str[num2Str.length - 3]) : '';
+
+    // Séparer les chiffres du troisième nombre si présent
+    const num3Units = num3Str ? num3Str[num3Str.length - 1] : '';
+    const num3Tens = num3Str && num3Str[num3Str.length - 2] !== ' ' ? num3Str[num3Str.length - 2] : '';
+    const num3Hundreds = num3Str && maxDigits >= 3 && num3Str[num3Str.length - 3] !== ' ' ? num3Str[num3Str.length - 3] : '';
+
+    // Calculer les sommes et retenues
+    const unitsSum = parseInt(num1Units || '0') + parseInt(num2Units || '0') + parseInt(num3Units || '0');
+    const unitsCarry = Math.floor(unitsSum / 10);
+    
+    // Pour les dizaines, on n'ajoute la retenue des unités que si on est à l'étape des dizaines
+    const tensSum = parseInt(num1Tens || '0') + parseInt(num2Tens || '0') + parseInt(num3Tens || '0') + 
+                   (calculationStep === 'tens' ? unitsCarry : 0);
+    const tensCarry = Math.floor(tensSum / 10);
+
+    // Pour les centaines, on n'ajoute la retenue des dizaines que si on est à l'étape des centaines
+    const hundredsSum = parseInt(num1Hundreds || '0') + parseInt(num2Hundreds || '0') + parseInt(num3Hundreds || '0') + 
+                       (calculationStep === 'hundreds' ? tensCarry : 0);
+
+    // Variable carry qui change selon l'étape
+    const carry = calculationStep === 'tens' ? unitsCarry : 
+                 calculationStep === 'hundreds' ? tensCarry : 0;
     
     const resultUnits = resultStr[resultStr.length - 1];
     const resultTens = resultStr[resultStr.length - 2] === ' ' ? '' : resultStr[resultStr.length - 2];
@@ -763,19 +739,25 @@ export default function AdditionRetenueCE2() {
               <div className="flex justify-center">
                 <div className={`grid gap-8 ${maxDigits >= 3 ? 'grid-cols-3' : 'grid-cols-2'}`}>
                   {maxDigits >= 3 && (
-                    <div className="text-center text-red-500 text-lg">
-                      {carryValues.toHundreds > 0 && (
-                        <sup className="bg-red-100 px-2 py-1 rounded-full border-2 border-red-300 animate-carry-bounce">
-                          {carryValues.toHundreds}
-                        </sup>
+                    <div className="text-center">
+                      {/* Retenue pour les centaines - apparaît après avoir posé le résultat des dizaines et reste affichée */}
+                      {partialResults.tens !== null && (
+                        <div className="text-red-500 text-lg animate-carry-bounce">
+                          <sup className="bg-red-100 px-2 py-1 rounded-full border-2 border-red-300">
+                            2
+                          </sup>
+                        </div>
                       )}
                     </div>
                   )}
-                  <div className="text-center text-red-500 text-lg">
-                    {carryValues.toTens > 0 && (
-                      <sup className="bg-red-100 px-2 py-1 rounded-full border-2 border-red-300 animate-carry-bounce">
-                        {carryValues.toTens}
-                      </sup>
+                  <div className="text-center">
+                    {/* Retenue pour les dizaines - reste affichée après le calcul des unités */}
+                    {unitsSum >= 10 && (
+                      <div className="text-red-500 text-lg animate-carry-bounce">
+                        <sup className="bg-red-100 px-2 py-1 rounded-full border-2 border-red-300">
+                          {Math.floor(unitsSum / 10)}
+                        </sup>
+                      </div>
                     )}
                   </div>
                   <div className="text-center"></div>
@@ -840,6 +822,40 @@ export default function AdditionRetenueCE2() {
                 </div>
               </div>
             </div>
+
+            {/* Troisième nombre avec signe + (si présent) */}
+            {num3Str && (
+              <div className="flex justify-center">
+                <div className="relative">
+                  <div className={`grid gap-2 sm:gap-6 font-mono text-base sm:text-2xl ${maxDigits >= 3 ? 'grid-cols-3' : 'grid-cols-2'}`}>
+                    {maxDigits >= 3 && (
+                      <div className={`text-center p-3 rounded-lg transition-all duration-500 ${
+                        calculationStep === 'hundreds' ? 'bg-purple-100 text-purple-700 animate-column-highlight' : 
+                        calculationStep === 'setup' ? 'text-green-600 font-bold' : 'text-gray-700'
+                      } ${num3Str[num3Str.length - 3] !== ' ' ? 'border-2 border-dashed border-purple-300' : ''}`}>
+                        {num3Str[num3Str.length - 3] === ' ' ? '' : num3Str[num3Str.length - 3]}
+                      </div>
+                    )}
+                    <div className={`text-center p-3 rounded-lg transition-all duration-500 relative ${
+                      calculationStep === 'tens' ? 'bg-orange-100 text-orange-700 animate-column-highlight' : 
+                      calculationStep === 'setup' ? 'text-green-600 font-bold' : 'text-gray-700'
+                    } ${num3Str[num3Str.length - 2] !== ' ' ? 'border-2 border-dashed border-orange-300' : ''}`}>
+                      {num3Str[num3Str.length - 2] === ' ' ? '' : num3Str[num3Str.length - 2]}
+                    </div>
+                    <div className={`text-center p-3 rounded-lg transition-all duration-500 ${
+                      calculationStep === 'units' ? 'bg-blue-100 text-blue-700 animate-column-highlight' : 
+                      calculationStep === 'setup' ? 'text-green-600 font-bold' : 'text-gray-700'
+                    } border-2 border-dashed border-blue-300`}>
+                      {num3Str[num3Str.length - 1]}
+                    </div>
+                  </div>
+                  {/* Signe + positionné à gauche sans affecter l'alignement */}
+                  <div className="absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-8 text-3xl font-mono text-green-600 font-bold">
+                    +
+                  </div>
+                </div>
+              </div>
+            )}
             
             {/* Ligne de séparation animée */}
             <div className="flex justify-center">
@@ -874,14 +890,19 @@ export default function AdditionRetenueCE2() {
             {/* Explications textuelles animées */}
             {isAnimated && (
               <div className="mt-6 text-center">
-                {calculationStep === 'units' && (
-                  <div className="bg-blue-100 text-blue-800 p-3 rounded-lg animate-fade-in font-medium">
-                    🔵 On commence par les <strong>unités</strong> : {num1Units} + {num2Units} !
-                  </div>
-                )}
+                                    {calculationStep === 'units' && (
+                      <div className="bg-blue-100 text-blue-800 p-3 rounded-lg animate-fade-in font-medium">
+                        🔵 On commence par les <strong>unités</strong> : {num1Units} + {num2Units}{example.num3 ? ` + ${num3Units}` : ''} !
+                      </div>
+                    )}
                 {calculationStep === 'tens' && (
                   <div className="bg-orange-100 text-orange-800 p-3 rounded-lg animate-fade-in font-medium">
-                    🟠 Puis les <strong>dizaines</strong> : {num1Tens || '0'} + {num2Tens || '0'} !
+                    🟠 Puis les <strong>dizaines</strong> : {num1Tens || '0'} + {num2Tens || '0'}{example.num3 ? ` + ${num3Tens || '0'}` : ''}{carry > 0 ? ` + ${carry} de retenue` : ''} !
+                  </div>
+                )}
+                {calculationStep === 'hundreds' && (
+                  <div className="bg-purple-100 text-purple-800 p-3 rounded-lg animate-fade-in font-medium">
+                    🟣 Enfin les <strong>centaines</strong> : {num1Hundreds || '0'} + {num2Hundreds || '0'}{example.num3 ? ` + ${num3Hundreds || '0'}` : ''}{carry > 0 ? ` + ${carry} de retenue` : ''} !
                   </div>
                 )}
                 {calculationStep === 'result' && (
@@ -898,52 +919,11 @@ export default function AdditionRetenueCE2() {
             )}
           </div>
 
-          {/* Panneau explicatif des retenues - Contrôlé par le paramètre showHelperBox */}
-          {example.hasCarry && showingCarry && showHelperBox && (
-            <div className="fixed top-20 right-4 z-10 bg-yellow-100 border-2 border-yellow-300 rounded-lg p-4 shadow-lg animate-fade-in max-w-xs">
-              <div className="flex items-center justify-between mb-3">
-                <div className="text-sm text-yellow-700 font-medium">Calculs avec retenues :</div>
-                <div className="text-yellow-600 text-xs">💡 Aide</div>
-              </div>
-              
-              {/* Calcul des unités */}
-              {carryValues.toTens > 0 && (
-                <div className="mb-3 p-2 bg-blue-50 rounded">
-                  <div className="text-xs text-blue-700 font-medium mb-1">Unités :</div>
-                  <div className="font-mono text-sm text-blue-800 text-center mb-2">
-                    {example.num1 % 10} + {example.num2 % 10} = {(example.num1 % 10) + (example.num2 % 10)}
-                  </div>
-                  <div className="flex items-center justify-center gap-2 text-xs text-blue-700">
-                    <span className="bg-red-200 px-1 py-0.5 rounded font-bold">{carryValues.toTens}</span>
-                    <span>↗ vers D</span>
-                    <span className="bg-blue-200 px-1 py-0.5 rounded font-bold">{(example.num1 % 10 + example.num2 % 10) % 10}</span>
-                    <span>↓ U</span>
-                  </div>
-                </div>
-              )}
-              
-              {/* Calcul des dizaines */}
-              {carryValues.toHundreds > 0 && (
-                <div className="mb-3 p-2 bg-orange-50 rounded">
-                  <div className="text-xs text-orange-700 font-medium mb-1">Dizaines :</div>
-                  <div className="font-mono text-sm text-orange-800 text-center mb-2">
-                    {Math.floor((example.num1 % 100) / 10)} + {Math.floor((example.num2 % 100) / 10)} + {carryValues.toTens} = {Math.floor((example.num1 % 100) / 10) + Math.floor((example.num2 % 100) / 10) + carryValues.toTens}
-                  </div>
-                  <div className="flex items-center justify-center gap-2 text-xs text-orange-700">
-                    <span className="bg-red-200 px-1 py-0.5 rounded font-bold">{carryValues.toHundreds}</span>
-                    <span>↗ vers C</span>
-                    <span className="bg-orange-200 px-1 py-0.5 rounded font-bold">{(Math.floor((example.num1 % 100) / 10) + Math.floor((example.num2 % 100) / 10) + carryValues.toTens) % 10}</span>
-                    <span>↓ D</span>
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
+
         </div>
       </div>
     );
   };
-
 
   // Fonction pour expliquer une mauvaise réponse avec animation
   const explainWrongAnswer = async (exercise: any) => {
@@ -953,26 +933,6 @@ export default function AdditionRetenueCE2() {
     await wait(500);
     stopSignalRef.current = false;
     setIsAnimationRunning(true);
-    
-    // Scroll immédiat vers l'animation pour qu'elle soit totalement visible
-    setTimeout(() => {
-      const animationSection = document.getElementById('exercise-animation-section');
-      if (animationSection) {
-        if (window.innerWidth <= 768) {
-          // Sur mobile, scroll pour voir toute l'animation
-          animationSection.scrollIntoView({ 
-            behavior: 'smooth', 
-            block: 'start' 
-          });
-        } else {
-          // Sur desktop, centrer l'animation
-          animationSection.scrollIntoView({ 
-            behavior: 'smooth', 
-            block: 'center' 
-          });
-        }
-      }
-    }, 200);
     
     // Extraire les nombres de l'exercice
     const match = exercise.question.match(/Calcule : (\d+) \+ (\d+)/);
@@ -984,29 +944,15 @@ export default function AdditionRetenueCE2() {
     const num1 = parseInt(match[1]);
     const num2 = parseInt(match[2]);
     const result = parseInt(exercise.correctAnswer);
-    
-    // Pré-calculer toutes les retenues comme dans explainExample
-    const num1Units = num1 % 10;
-    const num2Units = num2 % 10;
-    const unitsSum = num1Units + num2Units;
-    const carryToTens = Math.floor(unitsSum / 10);
-    
-    const num1Tens = Math.floor((num1 % 100) / 10);
-    const num2Tens = Math.floor((num2 % 100) / 10);
-    const tensSum = num1Tens + num2Tens + carryToTens;
-    const carryToHundreds = Math.floor(tensSum / 10);
-    
-    const hasCarry = carryToTens > 0 || carryToHundreds > 0;
-    const example = { num1, num2, result, hasCarry };
+    const example = { num1, num2, result, hasCarry: false };
     
     try {
       // Reset des états d'animation
       setCalculationStep('setup');
       setPartialResults({units: null, tens: null, hundreds: null});
-      setCarryValues({toTens: 0, toHundreds: 0});
       setShowingCarry(false);
       
-      await playAudio(`Regardons ensemble comment faire ${num1} plus ${num2} avec la méthode posée !`, true);
+      await playAudio(`${exercise.question}. Regardons ensemble comment faire.`, true);
       if (stopSignalRef.current) return;
       
       await wait(1000);
@@ -1025,8 +971,11 @@ export default function AdditionRetenueCE2() {
       // Animation des unités
       await wait(1500);
       setCalculationStep('units');
+      const num1Units = num1 % 10;
+      const num2Units = num2 % 10;
+      const unitsSum = num1Units + num2Units;
       
-      await playAudio(`Colonne U : ${num1Units} plus ${num2Units} égale ${unitsSum}`, true);
+      await playAudio(`Je calcule : ${num1Units} plus ${num2Units}${example.num3 ? ` plus ${num3Units}` : ''} égale ${unitsSum}${unitsSum >= 10 ? `. Je pose ${unitsSum % 10} et je retiens ${Math.floor(unitsSum / 10)}` : ''}`, true);
       if (stopSignalRef.current) return;
       
       await wait(500);
@@ -1034,54 +983,33 @@ export default function AdditionRetenueCE2() {
       setPartialResults(prev => ({ ...prev, units: unitsResult }));
       await wait(1000);
       
-      // Gestion de la retenue des unités
-      if (carryToTens > 0) {
-        await wait(1000);
-        setCarryValues(prev => ({ ...prev, toTens: carryToTens }));
-        setShowingCarry(true);
-        await playAudio(`Attention ! ${unitsSum} est plus grand que 9 ! Je mets ${carryToTens} en retenue !`, true);
-        if (stopSignalRef.current) return;
-      }
-      
       // Animation des dizaines si nécessaire
       if (maxDigits >= 2) {
         await wait(1500);
         setCalculationStep('tens');
+        // Extraire uniquement le chiffre des dizaines
+        const num1Tens = Math.floor((num1 % 100) / 10);
+        const num2Tens = Math.floor((num2 % 100) / 10);
+        const tensSum = num1Tens + num2Tens;
         
-        if (carryToTens > 0) {
-          await playAudio(`Colonne D : ${num1Tens} plus ${num2Tens} plus ${carryToTens} de retenue égale ${tensSum}`, true);
-        } else {
-          await playAudio(`Colonne D : ${num1Tens} plus ${num2Tens} égale ${tensSum}`, true);
-        }
+        await playAudio(`Je calcule : ${num1Tens} plus ${num2Tens}${unitsSum >= 10 ? ` plus ${Math.floor(unitsSum / 10)} de retenue` : ''} égale ${tensSum}${tensSum >= 10 ? `. Je pose ${tensSum % 10} et je retiens ${Math.floor(tensSum / 10)}` : ''}`, true);
         if (stopSignalRef.current) return;
         
         await wait(500);
-        const tensResult = tensSum >= 10 ? (tensSum % 10).toString() : tensSum.toString();
-        setPartialResults(prev => ({ ...prev, tens: tensResult }));
+        setPartialResults(prev => ({ ...prev, tens: (tensSum % 10).toString() }));
         await wait(1000);
-        
-        // Gestion de la retenue des dizaines
-        if (carryToHundreds > 0) {
-          await wait(1000);
-          setCarryValues(prev => ({ ...prev, toHundreds: carryToHundreds }));
-          await playAudio(`Encore une retenue ! ${tensSum} est plus grand que 9 ! Je mets ${carryToHundreds} en retenue vers les centaines !`, true);
-          if (stopSignalRef.current) return;
-        }
       }
       
       // Animation des centaines si nécessaire
       if (maxDigits >= 3) {
         await wait(1500);
         setCalculationStep('hundreds');
+        // Extraire uniquement le chiffre des centaines
         const num1Hundreds = Math.floor(num1 / 100) % 10;
         const num2Hundreds = Math.floor(num2 / 100) % 10;
-        const hundredsSum = num1Hundreds + num2Hundreds + carryToHundreds;
+        const hundredsSum = num1Hundreds + num2Hundreds;
         
-        if (carryToHundreds > 0) {
-          await playAudio(`Colonne C : ${num1Hundreds} plus ${num2Hundreds} plus ${carryToHundreds} de retenue égale ${hundredsSum}`, true);
-        } else {
-          await playAudio(`Colonne C : ${num1Hundreds} plus ${num2Hundreds} égale ${hundredsSum}`, true);
-        }
+        await playAudio(`Je calcule : ${num1Hundreds} plus ${num2Hundreds}${tensSum >= 10 ? ` plus ${Math.floor(tensSum / 10)} de retenue` : ''} égale ${hundredsSum}`, true);
         if (stopSignalRef.current) return;
         
         await wait(500);
@@ -1092,54 +1020,16 @@ export default function AdditionRetenueCE2() {
       // Résultat final
       await wait(1500);
       setCalculationStep('result');
-      await playAudio(`Et voilà ! Le résultat est ${result} ! Tu vois comme c'est plus facile avec la méthode posée ?`, true);
+      await playAudio(`Le résultat est ${result}.`, true);
       if (stopSignalRef.current) return;
-      
-      // Scroll vers le bouton "Suivant" après l'explication complète
-      // Adaptation pour mobile : scroll pour voir l'animation complète et le bouton
-      setTimeout(() => {
-        const nextButton = document.getElementById('next-button');
-        const animationSection = document.getElementById('exercise-animation-section');
-        
-        if (nextButton) {
-          // Sur mobile, on veut voir l'animation complète et le bouton en bas
-          if (window.innerWidth <= 768) {
-            // Scroll vers le haut de l'animation d'abord
-            if (animationSection) {
-              animationSection.scrollIntoView({ 
-                behavior: 'smooth', 
-                block: 'start' 
-              });
-              
-              // Puis scroll vers le bouton après un délai
-              setTimeout(() => {
-                nextButton.scrollIntoView({ 
-                  behavior: 'smooth', 
-                  block: 'end' 
-                });
-              }, 1500);
-            } else {
-              nextButton.scrollIntoView({ 
-                behavior: 'smooth', 
-                block: 'end' 
-              });
-            }
-          } else {
-            // Sur desktop, comportement normal
-            nextButton.scrollIntoView({ 
-              behavior: 'smooth', 
-              block: 'center' 
-            });
-          }
-        }
-      }, 1000);
       
     } catch (error) {
       console.error('Erreur dans explainWrongAnswer:', error);
     } finally {
-      // NE PAS remettre setIsAnimationRunning(false) pour garder l'affichage
-      // L'animation reste visible jusqu'au clic sur "Suivant"
-      // Les états sont remis à zéro seulement dans nextExercise()
+      setIsAnimationRunning(false);
+      setCalculationStep(null);
+      setPartialResults({units: null, tens: null, hundreds: null});
+      setShowingCarry(false);
     }
   };
 
@@ -1187,12 +1077,6 @@ export default function AdditionRetenueCE2() {
       setCurrentExercise(currentExercise + 1);
       setUserAnswer('');
       setIsCorrect(null);
-      // Reset des états d'animation pour le prochain exercice
-      setIsAnimationRunning(false);
-      setCalculationStep(null);
-      setPartialResults({units: null, tens: null, hundreds: null});
-      setCarryValues({toTens: 0, toHundreds: 0});
-      setShowingCarry(false);
     } else {
       setFinalScore(score);
       setShowCompletionModal(true);
@@ -1306,7 +1190,7 @@ export default function AdditionRetenueCE2() {
         </div>
       )}
 
-      {/* Animation CSS personnalisée pour les icônes et boutons parlants */}
+      {/* Animation CSS personnalisée pour les icônes */}
       <style dangerouslySetInnerHTML={{
         __html: `
           @keyframes subtle-glow {
@@ -1321,31 +1205,6 @@ export default function AdditionRetenueCE2() {
               filter: brightness(1.1);
             }
           }
-          
-          @keyframes speaking-button {
-            0%, 100% {
-              background-color: #10b981;
-              box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
-              border-color: #059669;
-            }
-            50% {
-              background-color: #059669;
-              box-shadow: 0 0 0 10px rgba(16, 185, 129, 0);
-              border-color: #047857;
-              transform: scale(1.02);
-            }
-          }
-          
-          .speaking-button {
-            animation: speaking-button 1.5s infinite;
-            filter: brightness(1.1);
-          }
-          
-          .speaking-input {
-            animation: speaking-button 1.5s infinite;
-            border-color: #10b981 !important;
-            box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.3);
-          }
         `
       }} />
       
@@ -1359,105 +1218,14 @@ export default function AdditionRetenueCE2() {
             <span className="text-sm sm:text-base">Retour à l'addition CE2</span>
             </Link>
           
-          <div className="bg-gradient-to-br from-orange-50 to-red-50 border-2 border-orange-200 rounded-xl p-4 sm:p-6 shadow-lg text-center">
-                          <h1 className="text-lg sm:text-2xl lg:text-3xl font-bold text-orange-900 mb-3">
-                📝 Addition avec retenue - CE2
-              </h1>
+          <div className="bg-white rounded-xl p-4 sm:p-6 shadow-lg text-center">
+            <h1 className="text-lg sm:text-2xl lg:text-3xl font-bold text-gray-900 mb-3">
+              📝 Addition avec retenue - CE2
+            </h1>
         </div>
       </div>
 
-        {/* Section DÉMARRER - Affiche le bouton selon l'onglet actif */}
-        {!showExercises ? (
-          /* Bouton DÉMARRER pour le COURS */
-          <div className="flex items-center justify-center gap-2 sm:gap-4 p-2 sm:p-4 mb-3 sm:mb-6">
-            {/* Image du personnage */}
-            <div className={`relative transition-all duration-500 border-2 border-green-300 rounded-full bg-gradient-to-br from-green-100 to-teal-100 ${
-              isPlayingVocal
-                  ? 'w-14 sm:w-24 h-14 sm:h-24' // When speaking - plus petit sur mobile
-                  : 'w-12 sm:w-20 h-12 sm:h-20' // Normal size
-            }`}>
-              {!imageError ? (
-                <img 
-                  src="/image/Minecraftstyle.png" 
-                  alt="Personnage Minecraft" 
-                  className="w-full h-full object-cover rounded-full"
-                  onError={() => setImageError(true)}
-                />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center text-lg sm:text-2xl rounded-full bg-gradient-to-br from-green-200 to-teal-200">
-                  🧱
-                </div>
-              )}
-              
-              {isPlayingVocal && (
-                <div className="absolute -top-1 -right-1 w-3 h-3 sm:w-4 sm:h-4 bg-red-500 rounded-full animate-pulse">
-                  <svg className="w-full h-full text-white" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12 2C13.1 2 14 2.9 14 4V12C14 13.1 13.1 14 12 14C10.9 14 10 13.1 10 12V4C10 2.9 10.9 2 12 2M19 11C19 15.4 15.4 19 11 19V21H13V23H11V21H9V23H7V21H9V19C4.6 19 1 15.4 1 11H3C3 14.3 5.7 17 9 17V15C7.3 15 6 13.7 6 12V11H4V9H6V8C6 6.3 7.3 5 9 5V7C8.4 7 8 7.4 8 8V12C8 12.6 8.4 13 9 13V11H11V13C11.6 13 12 12.6 12 12V8C12 7.4 11.6 7 11 7V5C12.7 5 14 6.3 14 8V9H16V11H14V12C14 13.7 12.7 15 11 15V17C14.3 17 17 14.3 17 11H19Z"/>
-                  </svg>
-                </div>
-              )}
-            </div>
 
-            {/* Bouton DÉMARRER pour le COURS */}
-            <button
-              onClick={explainChapterWithSam}
-              disabled={isPlayingVocal}
-              className={`px-2 sm:px-4 py-1 sm:py-2 rounded-lg font-bold text-xs sm:text-base shadow-lg transition-all ${
-                isPlayingVocal
-                  ? 'bg-gray-400 text-gray-200 cursor-not-allowed'
-                  : 'bg-gradient-to-r from-green-500 to-teal-500 text-white hover:shadow-xl hover:scale-105'
-              } ${!hasStarted && !isPlayingVocal ? 'animate-pulse' : ''}`}
-            >
-              <Play className="w-3 h-3 sm:w-5 sm:h-5 inline-block mr-1 sm:mr-2" />
-              {isPlayingVocal ? 'Le personnage explique...' : 'DÉMARRER LE COURS'}
-            </button>
-          </div>
-        ) : (
-          /* Bouton DÉMARRER pour les EXERCICES */
-          <div className="flex items-center justify-center gap-2 sm:gap-4 p-2 sm:p-4 mb-3 sm:mb-6">
-            {/* Image du personnage */}
-            <div className={`relative transition-all duration-500 border-2 border-orange-300 rounded-full bg-gradient-to-br from-orange-100 to-red-100 ${
-              exercisesIsPlayingVocal
-                  ? 'w-14 sm:w-24 h-14 sm:h-24' // When speaking - plus petit sur mobile
-                  : 'w-12 sm:w-20 h-12 sm:h-20' // Normal size
-            }`}>
-              {!exercisesImageError ? (
-                <img 
-                  src="/image/Minecraftstyle.png" 
-                  alt="Personnage Minecraft" 
-                  className="w-full h-full object-cover rounded-full"
-                  onError={() => setExercisesImageError(true)}
-                />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center text-lg sm:text-2xl rounded-full bg-gradient-to-br from-orange-200 to-red-200">
-                  🧱
-                </div>
-              )}
-              
-              {exercisesIsPlayingVocal && (
-                <div className="absolute -top-1 -right-1 w-3 h-3 sm:w-4 sm:h-4 bg-red-500 rounded-full animate-pulse">
-                  <svg className="w-full h-full text-white" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12 2C13.1 2 14 2.9 14 4V12C14 13.1 13.1 14 12 14C10.9 14 10 13.1 10 12V4C10 2.9 10.9 2 12 2M19 11C19 15.4 15.4 19 11 19V21H13V23H11V21H9V23H7V21H9V19C4.6 19 1 15.4 1 11H3C3 14.3 5.7 17 9 17V15C7.3 15 6 13.7 6 12V11H4V9H6V8C6 6.3 7.3 5 9 5V7C8.4 7 8 7.4 8 8V12C8 12.6 8.4 13 9 13V11H11V13C11.6 13 12 12.6 12 12V8C12 7.4 11.6 7 11 7V5C12.7 5 14 6.3 14 8V9H16V11H14V12C14 13.7 12.7 15 11 15V17C14.3 17 17 14.3 17 11H19Z"/>
-                  </svg>
-                </div>
-              )}
-            </div>
-
-            {/* Bouton DÉMARRER pour les EXERCICES */}
-            <button
-              onClick={explainExercisesWithSam}
-              disabled={exercisesIsPlayingVocal}
-              className={`px-2 sm:px-4 py-1 sm:py-2 rounded-lg font-bold text-xs sm:text-base shadow-lg transition-all ${
-                exercisesIsPlayingVocal
-                  ? 'bg-gray-400 text-gray-200 cursor-not-allowed'
-                  : 'bg-gradient-to-r from-orange-500 to-red-500 text-white hover:shadow-xl hover:scale-105'
-              } ${!exercisesHasStarted && !exercisesIsPlayingVocal ? 'animate-pulse' : ''}`}
-            >
-              <Play className="w-3 h-3 sm:w-5 sm:h-5 inline-block mr-1 sm:mr-2" />
-              {exercisesIsPlayingVocal ? 'Le personnage explique...' : 'DÉMARRER LES EXERCICES'}
-            </button>
-          </div>
-        )}
 
 
 
@@ -1472,8 +1240,8 @@ export default function AdditionRetenueCE2() {
             }}
             className={`px-6 py-3 rounded-lg font-semibold transition-all ${
               !showExercises
-                ? 'bg-orange-600 text-white shadow-lg'
-                : 'bg-white text-orange-600 hover:bg-orange-50'
+                ? 'bg-green-600 text-white shadow-lg'
+                : 'bg-white text-green-600 hover:bg-green-50'
             } ${highlightedElement === 'course_tab' ? 'ring-4 ring-green-400 animate-pulse' : ''}`}
           >
             📚 Cours
@@ -1485,8 +1253,8 @@ export default function AdditionRetenueCE2() {
             }}
             className={`px-6 py-3 rounded-lg font-semibold transition-all ${
               showExercises
-                ? 'bg-orange-600 text-white shadow-lg'
-                : 'bg-white text-orange-600 hover:bg-orange-50'
+                ? 'bg-green-600 text-white shadow-lg'
+                : 'bg-white text-green-600 hover:bg-green-50'
             } ${highlightedElement === 'exercise_tab' ? 'ring-4 ring-green-400 animate-pulse' : ''}`}
           >
             🎯 Exercices ({score}/{exercises.length})
@@ -1496,6 +1264,45 @@ export default function AdditionRetenueCE2() {
         {!showExercises ? (
           /* COURS */
           <div className="space-y-8">
+            {/* Bouton DÉMARRER pour le cours avec personnage Minecraft */}
+            <div className="flex items-center justify-center gap-2 sm:gap-4 p-2 sm:p-4 mb-3 sm:mb-6">
+              {/* Image du personnage pour le cours */}
+              <div className={`relative transition-all duration-500 border-2 border-green-300 rounded-full bg-gradient-to-br from-green-100 to-emerald-100 ${
+                isPlayingVocal
+                    ? 'w-14 sm:w-24 h-14 sm:h-24' // When speaking - plus petit sur mobile
+                    : 'w-12 sm:w-20 h-12 sm:h-20' // Normal size
+              }`}>
+                {!imageError ? (
+                  <img 
+                    src="/image/Minecraftstyle.png" 
+                    alt="Personnage Minecraft" 
+                    className="w-full h-full object-cover rounded-full"
+                    onError={() => setImageError(true)}
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-green-600 text-lg font-bold rounded-full">
+                    <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M12 2C13.1 2 14 2.9 14 4V12C14 13.1 13.1 14 12 14C10.9 14 10 13.1 10 12V4C10 2.9 10.9 2 12 2M19 11C19 15.4 15.4 19 11 19V21H13V23H11V21H9V23H7V21H9V19C4.6 19 1 15.4 1 11H3C3 14.3 5.7 17 9 17V15C7.3 15 6 13.7 6 12V11H4V9H6V8C6 6.3 7.3 5 9 5V7C8.4 7 8 7.4 8 8V12C8 12.6 8.4 13 9 13V11H11V13C11.6 13 12 12.6 12 12V8C12 7.4 11.6 7 11 7V5C12.7 5 14 6.3 14 8V9H16V11H14V12C14 13.7 12.7 15 11 15V17C14.3 17 17 14.3 17 11H19Z"/>
+                    </svg>
+                  </div>
+                )}
+              </div>
+
+              {/* Bouton DÉMARRER pour le cours */}
+              <button
+                onClick={explainChapterWithSam}
+                disabled={isPlayingVocal}
+                className={`px-2 sm:px-4 py-1 sm:py-2 rounded-lg font-bold text-xs sm:text-base shadow-lg transition-all ${
+                  isPlayingVocal
+                    ? 'bg-gray-400 text-gray-200 cursor-not-allowed'
+                    : 'bg-gradient-to-r from-green-500 to-emerald-500 text-white hover:shadow-xl hover:scale-105'
+                } ${!hasStarted && !isPlayingVocal ? 'animate-pulse' : ''}`}
+              >
+                <Play className="w-3 h-3 sm:w-5 sm:h-5 inline-block mr-1 sm:mr-2" />
+                {isPlayingVocal ? 'Sam explique le cours...' : 'DÉMARRER LE COURS'}
+              </button>
+            </div>
+
             {/* Introduction */}
             <div 
               id="intro-section"
@@ -1507,16 +1314,11 @@ export default function AdditionRetenueCE2() {
                 <div className="text-3xl sm:text-6xl mb-2 sm:mb-4">📝</div>
                 <div className="flex items-center justify-center gap-1 sm:gap-3 mb-3 sm:mb-4">
                   <h2 className="text-sm sm:text-xl font-bold text-gray-900">
-                    L'addition posée avec retenue
+                    Qu'est-ce que poser une addition ?
                   </h2>
-                  {/* Icône d'animation pour l'introduction */}
-                  <div className="bg-gradient-to-r from-green-500 to-teal-600 text-white rounded-full w-6 h-6 sm:w-12 sm:h-12 flex items-center justify-center text-xs sm:text-xl font-bold shadow-lg hover:scale-110 cursor-pointer transition-all duration-300 ring-2 ring-green-300" 
-                       style={{animation: 'subtle-glow 2s infinite'}}>
-                    📝
-                  </div>
                 </div>
                 <p className="text-xs sm:text-base text-gray-600">
-                  Nous apprenons les additions avec retenues sur des nombres plus grands !
+                  C'est aligner les nombres en colonnes pour calculer plus facilement !
                 </p>
             </div>
 
@@ -1531,25 +1333,25 @@ export default function AdditionRetenueCE2() {
                   🎯 Exemple principal
                 </h3>
                 <div className="text-center mb-6">
-                  <div className="bg-orange-100 text-orange-800 px-2 sm:px-4 py-1 sm:py-2 rounded-lg inline-block font-bold text-sm sm:text-lg">
-                    📝 Calculer : {additionExamples[0].num1} + {additionExamples[0].num2}
+                  <div className="bg-green-100 text-green-800 px-2 sm:px-4 py-1 sm:py-2 rounded-lg inline-block font-bold text-sm sm:text-lg">
+                    📝 Calculer : 23 + 14
                   </div>
                 </div>
 
                 {currentExample !== null ? (
                   <div className="text-center">
                     <div className="mb-6">
-                      {renderPostedAddition(additionExamples[currentExample], true, true)}
+                      {renderPostedAddition(additionExamples[currentExample], true)}
                         </div>
                     
                     {calculationStep && (
                       <div className="bg-white rounded-lg p-4 shadow-inner">
-                        <div className="text-lg font-semibold text-orange-700">
+                        <div className="text-lg font-semibold text-green-700">
                           {calculationStep === 'setup' && '1️⃣ J\'aligne les nombres en colonnes !'}
-                          {calculationStep === 'units' && '2️⃣ Je calcule les unités : il y a une retenue !'}
-                          {calculationStep === 'carry' && '3️⃣ J\'écris la retenue au-dessus des dizaines !'}
-                          {calculationStep === 'tens' && '4️⃣ Je calcule les dizaines + la retenue !'}
-                          {calculationStep === 'result' && '5️⃣ Résultat avec retenue ! Bravo !'}
+                          {calculationStep === 'units' && '2️⃣ Je calcule les unités en premier !'}
+                          {calculationStep === 'carry' && '3️⃣ Je gère la retenue ! Attention !'}
+                          {calculationStep === 'tens' && '4️⃣ Je calcule les dizaines !'}
+                          {calculationStep === 'result' && '5️⃣ Voici le résultat final ! Tu as réussi !'}
                       </div>
                     </div>
                   )}
@@ -1557,17 +1359,16 @@ export default function AdditionRetenueCE2() {
               ) : (
                   <div className="text-center">
                     <div className="mb-6">
-                      {renderPostedAddition(additionExamples[0], false, false)}
+                      {renderPostedAddition(additionExamples[0])}
                   </div>
                     <button
-                      id="main-example-button"
                       onClick={() => explainExample(0)}
                       disabled={isAnimationRunning}
                       className={`px-6 py-3 rounded-lg font-bold text-lg transition-colors ${
                         isAnimationRunning 
                           ? 'bg-gray-400 text-gray-200 cursor-not-allowed' 
                           : 'bg-green-500 text-white hover:bg-green-600'
-                      } ${activeSpeakingButton === 'main-example-button' ? 'speaking-button' : ''}`}
+                      }`}
                     >
                       {isAnimationRunning ? '⏳ Animation en cours...' : '▶️ Voir l\'animation'}
                     </button>
@@ -1585,7 +1386,7 @@ export default function AdditionRetenueCE2() {
             >
               <div className="flex items-center justify-center gap-1 sm:gap-3 mb-3 sm:mb-6">
                 <h2 className="text-sm sm:text-xl font-bold text-gray-900">
-                  🌟 Autres exemples : simple à complexe
+                  🌟 Autres exemples d'additions posées
                 </h2>
                 {/* Icône d'animation pour les exemples */}
                 <div className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-full w-6 h-6 sm:w-12 sm:h-12 flex items-center justify-center text-xs sm:text-xl font-bold shadow-lg hover:scale-110 cursor-pointer transition-all duration-300 ring-2 ring-blue-300" 
@@ -1610,7 +1411,7 @@ export default function AdditionRetenueCE2() {
                   >
                     <div className="text-center">
                       <div className="mb-4">
-                        {renderPostedAddition(example, false, false)}
+                        {renderPostedAddition(example)}
                     </div>
                       <div className="text-xs sm:text-sm text-gray-600 mb-3">
                         Addition {example.description}
@@ -1619,7 +1420,7 @@ export default function AdditionRetenueCE2() {
                         isAnimationRunning 
                           ? 'bg-gray-400 text-gray-200' 
                           : 'bg-green-500 text-white hover:bg-green-600'
-                      } ${activeSpeakingButton === 'examples-buttons' ? 'speaking-button' : ''}`}>
+                      }`}>
                         {isAnimationRunning ? '⏳ Attendez...' : '▶️ Voir l\'animation'}
                       </button>
                   </div>
@@ -1661,6 +1462,50 @@ export default function AdditionRetenueCE2() {
             }`}
           >
 
+            {/* Bouton DÉMARRER pour les exercices avec personnage Minecraft */}
+            <div className="flex items-center justify-center gap-2 sm:gap-4 p-2 sm:p-4 mb-3 sm:mb-6">
+              {/* Image du personnage pour les exercices */}
+              <div className={`relative transition-all duration-500 border-2 border-green-300 rounded-full bg-gradient-to-br from-green-100 to-emerald-100 ${
+                exercisesIsPlayingVocal
+                    ? 'w-14 sm:w-24 h-14 sm:h-24' // When speaking - plus petit sur mobile
+                    : 'w-12 sm:w-20 h-12 sm:h-20' // Normal size
+              }`}>
+                {!exercisesImageError ? (
+                  <img 
+                    src="/image/Minecraftstyle.png" 
+                    alt="Personnage Minecraft" 
+                    className="w-full h-full object-cover rounded-full"
+                    onError={() => setExercisesImageError(true)}
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-lg sm:text-2xl rounded-full bg-gradient-to-br from-green-200 to-emerald-200">
+                    🧱
+                  </div>
+                )}
+                
+                {exercisesIsPlayingVocal && (
+                  <div className="absolute -top-1 -right-1 w-3 h-3 sm:w-4 sm:h-4 bg-red-500 rounded-full animate-pulse">
+                    <svg className="w-full h-full text-white" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12 2C13.1 2 14 2.9 14 4V12C14 13.1 13.1 14 12 14C10.9 14 10 13.1 10 12V4C10 2.9 10.9 2 12 2M19 11C19 15.4 15.4 19 11 19V21H13V23H11V21H9V23H7V21H9V19C4.6 19 1 15.4 1 11H3C3 14.3 5.7 17 9 17V15C7.3 15 6 13.7 6 12V11H4V9H6V8C6 6.3 7.3 5 9 5V7C8.4 7 8 7.4 8 8V12C8 12.6 8.4 13 9 13V11H11V13C11.6 13 12 12.6 12 12V8C12 7.4 11.6 7 11 7V5C12.7 5 14 6.3 14 8V9H16V11H14V12C14 13.7 12.7 15 11 15V17C14.3 17 17 14.3 17 11H19Z"/>
+                    </svg>
+                  </div>
+                )}
+              </div>
+
+              {/* Bouton DÉMARRER pour les exercices */}
+              <button
+                onClick={explainExercisesWithSam}
+                disabled={exercisesIsPlayingVocal}
+                className={`px-2 sm:px-4 py-1 sm:py-2 rounded-lg font-bold text-xs sm:text-base shadow-lg transition-all ${
+                  exercisesIsPlayingVocal
+                    ? 'bg-gray-400 text-gray-200 cursor-not-allowed'
+                    : 'bg-gradient-to-r from-green-500 to-emerald-500 text-white hover:shadow-xl hover:scale-105'
+                } ${!exercisesHasStarted && !exercisesIsPlayingVocal ? 'animate-pulse' : ''}`}
+              >
+                <Play className="w-3 h-3 sm:w-5 sm:h-5 inline-block mr-1 sm:mr-2" />
+                {exercisesIsPlayingVocal ? 'Le personnage explique...' : 'DÉMARRER LES EXERCICES'}
+              </button>
+            </div>
 
             {/* Header exercices */}
             <div 
@@ -1675,7 +1520,7 @@ export default function AdditionRetenueCE2() {
                 </h2>
                 <div 
                   id="score-display"
-                  className={`text-sm sm:text-xl font-bold text-orange-600 ${
+                  className={`text-sm sm:text-xl font-bold text-green-600 ${
                     highlightedElement === 'score-display' ? 'ring-2 ring-green-400 bg-green-50 rounded px-2 py-1' : ''
                   }`}
                 >
@@ -1708,31 +1553,49 @@ export default function AdditionRetenueCE2() {
                   }}
                   className={`ml-4 px-3 py-2 bg-blue-500 text-white rounded-lg text-sm font-bold hover:bg-blue-600 transition-all ${
                     highlightedElement === 'listen-button' ? 'ring-4 ring-blue-400 animate-pulse' : ''
-                  } ${activeSpeakingButton === 'listen-button' ? 'speaking-button' : ''}`}
+                  }`}
                 >
                   🔊 Écouter
                 </button>
               </div>
               
-              {/* Addition posée - UNIQUEMENT pour correction de réponses incorrectes */}
-              {exercises[currentExercise].visual && isCorrect === false && (
-                <div id="exercise-animation-section" className="bg-gradient-to-br from-orange-50 to-red-50 border border-orange-200 rounded-lg p-6 mb-8 flex justify-center">
-                  {(() => {
-                    const match = exercises[currentExercise].question.match(/Calcule : (\d+) \+ (\d+)/);
-                    if (match) {
-                      const num1 = parseInt(match[1]);
-                      const num2 = parseInt(match[2]);
-                      const result = parseInt(exercises[currentExercise].correctAnswer);
-                      const example = { num1, num2, result, hasCarry: true };
-                      
-                      // Animation activée pour la correction (réponse fausse)
-                      const isExerciseAnimated = isAnimationRunning;
-                      const showHelperInExercise = false; // Pas de boîte jaune dans les exercices
-                      
-                      return renderPostedAddition(example, isExerciseAnimated, showHelperInExercise);
-                    }
-                    return null;
-                  })()}
+              {/* Visuel si disponible */}
+              {exercises[currentExercise].visual && (
+                <div className="bg-gray-50 rounded-lg p-6 mb-8 flex justify-center">
+                  {isAnimationRunning && isCorrect === false ? (
+                    // Animation interactive pendant les corrections
+                    (() => {
+                      const match = exercises[currentExercise].question.match(/Calcule : (\d+) \+ (\d+)/);
+                      if (match) {
+                        const num1 = parseInt(match[1]);
+                        const num2 = parseInt(match[2]);
+                        const result = parseInt(exercises[currentExercise].correctAnswer);
+                        const example = { num1, num2, result, hasCarry: false };
+                        return renderPostedAddition(example, true);
+                      }
+                      return null;
+                    })()
+                  ) : (
+                    // Visuel statique normal
+                    <div className="font-mono text-lg sm:text-xl text-gray-800 leading-tight" style={{ width: '10rem' }}>
+                      {exercises[currentExercise].visual.split('\n').map((line, index) => {
+                        // Espacer les chiffres mais pas les autres caractères
+                        let formattedLine = line;
+                        if (line.includes('─') || line === '  ?' || line === ' ?') {
+                          formattedLine = line; // Garder tel quel pour les lignes et les ?
+                        } else {
+                          // Pour les nombres, espacer les chiffres
+                          formattedLine = line.replace(/(\d)/g, '$1 ').replace(/\s+$/, '');
+                        }
+                        
+                        return (
+                          <div key={index} style={{ textAlign: 'right', minHeight: '1.2em' }}>
+                            {formattedLine}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -1760,15 +1623,15 @@ export default function AdditionRetenueCE2() {
                         : 'border-red-500 bg-red-50'
                     } disabled:opacity-50 disabled:cursor-not-allowed ${
                       highlightedElement === 'answer-input' ? 'ring-4 ring-green-400 animate-pulse' : ''
-                    } ${activeSpeakingButton === 'answer-input' ? 'speaking-input' : ''}`}
+                    }`}
                   />
                   <button
                     id="validate-button"
                     onClick={() => handleAnswerClick(userAnswer)}
                     disabled={!userAnswer || isCorrect !== null}
-                    className={`px-4 py-3 sm:px-6 sm:py-4 bg-orange-500 text-white rounded-lg font-bold text-sm sm:text-lg hover:bg-orange-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
+                    className={`px-4 py-3 sm:px-6 sm:py-4 bg-green-500 text-white rounded-lg font-bold text-sm sm:text-lg hover:bg-green-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
                       highlightedElement === 'validate-button' ? 'ring-4 ring-green-400 animate-pulse' : ''
-                    } ${activeSpeakingButton === 'validate-button' ? 'speaking-button' : ''}`}
+                    }`}
                   >
                     Valider
                   </button>
@@ -1831,9 +1694,9 @@ export default function AdditionRetenueCE2() {
                 <button
                   id="next-button"
                   onClick={nextExercise}
-                  className={`bg-orange-500 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-bold text-sm sm:text-base hover:bg-orange-600 transition-colors ${
+                  className={`bg-green-500 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-bold text-sm sm:text-base hover:bg-green-600 transition-colors ${
                     highlightedElement === 'next-button' ? 'ring-4 ring-green-400 animate-pulse' : ''
-                  } ${activeSpeakingButton === 'next-button' ? 'speaking-button' : ''}`}
+                  }`}
                 >
                   Suivant →
                 </button>
@@ -1888,8 +1751,6 @@ export default function AdditionRetenueCE2() {
             </div>
           </div>
         )}
-
-
       </div>
     </div>
   );
