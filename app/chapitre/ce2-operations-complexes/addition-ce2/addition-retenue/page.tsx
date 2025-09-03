@@ -1008,6 +1008,9 @@ export default function AdditionSansRetenueCE2() {
         // Extraire uniquement le chiffre des centaines
         const num1Hundreds = Math.floor(num1 / 100) % 10;
         const num2Hundreds = Math.floor(num2 / 100) % 10;
+        const num1Tens = Math.floor((num1 % 100) / 10);
+        const num2Tens = Math.floor((num2 % 100) / 10);
+        const tensSum = num1Tens + num2Tens;
         const hundredsSum = num1Hundreds + num2Hundreds;
         
         await playAudio(`Je calcule : ${num1Hundreds} plus ${num2Hundreds}${tensSum >= 10 ? ` plus ${Math.floor(tensSum / 10)} de retenue` : ''} égale ${hundredsSum}`, true);
