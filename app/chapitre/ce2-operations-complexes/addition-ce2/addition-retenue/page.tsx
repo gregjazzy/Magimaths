@@ -944,7 +944,7 @@ export default function AdditionSansRetenueCE2() {
     const num1 = parseInt(String(match[1]));
     const num2 = parseInt(String(match[2]));
     const result = parseInt(String(exercise.correctAnswer));
-    const example = { num1, num2, result, hasCarry: false };
+    const example = { num1, num2, result, hasCarry: false, num3: undefined };
     
     try {
       // Reset des états d'animation
@@ -1570,7 +1570,7 @@ export default function AdditionSansRetenueCE2() {
                         const num1 = parseInt(String(match[1]));
                         const num2 = parseInt(String(match[2]));
                         const result = parseInt(String(exercises[currentExercise].correctAnswer));
-                        const example = { num1, num2, result, hasCarry: false };
+                        const example = { num1, num2, result, hasCarry: false, num3: undefined };
                         return renderPostedAddition(example, true);
                       }
                       return null;
