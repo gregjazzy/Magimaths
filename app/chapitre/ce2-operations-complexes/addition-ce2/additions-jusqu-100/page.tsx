@@ -84,7 +84,7 @@ export default function AdditionsJusqua100CE2() {
     "Tu progresses bien", "C'est exact", "Impeccable", "Remarquable"
   ];
 
-  // Données des techniques d'addition avec animations - CE1 : 6 techniques adaptées
+  // Données des techniques d'addition avec animations - CE2 : 6 techniques adaptées
   const additionTechniques = [
     {
       id: 'decomposition',
@@ -2123,17 +2123,17 @@ export default function AdditionsJusqua100CE2() {
         {/* Header */}
         <div className="mb-8">
           <Link 
-            href="/chapitre/ce1-quatre-operations/addition-ce1" 
+            href="/chapitre/ce2-operations-complexes/addition-ce2" 
             onClick={stopAllVocalsAndAnimations}
             className="flex items-center space-x-2 text-gray-700 hover:text-gray-900 transition-colors mb-4"
           >
             <ArrowLeft className="w-4 h-4" />
-            <span>Retour à l'addition CE1</span>
+            <span>Retour à l'addition CE2</span>
           </Link>
           
           <div className="bg-white rounded-xl p-4 sm:p-6 shadow-lg text-center">
             <h1 className="text-xl sm:text-4xl font-bold text-gray-900 mb-2 sm:mb-4">
-              🧮 Additions jusqu'à 100 - CE1
+              🧮 Additions jusqu'à 100 - CE2
             </h1>
             <p className="text-lg text-gray-600 hidden sm:block">
               Maîtrise les additions avec des nombres plus grands ! Découvre 6 techniques incroyables.
@@ -4414,7 +4414,7 @@ export default function AdditionsJusqua100CE2() {
                        exercises[currentExercise].type === 'compensation' ? '🔄 Compensation' :
                        exercises[currentExercise].type === 'etapes-successives' ? '🎲 Étapes successives' :
                        exercises[currentExercise].type === 'doubles' ? '🧠 Doubles' :
-                       '✨ Technique CE1'}
+                       '✨ Technique CE2'}
                     </span>
                   </div>
                 </div>

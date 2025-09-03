@@ -15,31 +15,14 @@ interface SectionProgress {
   xpEarned: number;
 }
 
-export default function CE2CalculMentalPage() {
+export default function CE1CalculMentalPage() {
   const [completedSections, setCompletedSections] = useState<string[]>([]);
   const [xpEarned, setXpEarned] = useState(0);
   const [sectionsProgress, setSectionsProgress] = useState<SectionProgress[]>([]);
 
   const sections = [
-    {
-      id: 'tables-addition',
-      title: 'Tables d\'addition',
-      description: 'Mémoriser les faits numériques de l\'addition',
-      icon: '➕',
-      duration: '10 min',
-      xp: 15,
-      color: 'from-purple-500 to-violet-500'
-    },
 
-    {
-      id: 'complements-10',
-      title: 'Compléments à 10',
-      description: 'Compléments à 10 (automatismes)',
-      icon: '🎯',
-      duration: '8 min',
-      xp: 10,
-      color: 'from-blue-500 to-cyan-500'
-    },
+
     {
       id: 'complements-100',
       title: 'Compléments à 100',
@@ -58,7 +41,7 @@ export default function CE2CalculMentalPage() {
       duration: '35 min',
       xp: 70,
       color: 'from-green-500 to-emerald-500',
-      href: '/chapitre/ce1-quatre-operations/addition-ce1/additions-jusqu-100'
+      href: '/chapitre/ce2-operations-complexes/addition-ce2/additions-jusqu-100'
     },
     {
       id: 'additions-jusqu-1000',
@@ -68,51 +51,18 @@ export default function CE2CalculMentalPage() {
       duration: '40 min',
       xp: 80,
       color: 'from-emerald-500 to-teal-500',
-      href: '/chapitre/ce1-quatre-operations/addition-ce1/additions-jusqu-1000'
+      href: '/chapitre/ce2-operations-complexes/addition-ce2/additions-jusqu-1000'
     },
 
-    {
-      id: 'doubles-moities',
-      title: 'Doubles et moitiés',
-      description: 'Nombres usuels jusqu\'à 70 (6, 8, 11, 13, 17...)',
-      icon: '👥',
-      duration: '10 min',
-      xp: 12,
-      color: 'from-cyan-500 to-blue-500'
-    },
 
-    {
-      id: 'strategies-calcul',
-      title: 'Stratégies de calcul',
-      description: 'Méthodes et astuces de calcul mental',
-      icon: '🧠',
-      duration: '8 min',
-      xp: 12,
-      color: 'from-yellow-500 to-orange-500'
-    },
-    {
-      id: 'additions-simples',
-      title: 'Additions simples',
-      description: 'Additions rapides avec chronomètre',
-      icon: '⏱️',
-      duration: '8 min',
-      xp: 12,
-      color: 'from-orange-500 to-red-500'
-    },
-    {
-      id: 'soustractions-simples',
-      title: 'Soustractions simples',
-      description: 'Soustractions jusqu\'à 20 avec animations',
-      icon: '➖',
-      duration: '8 min',
-      xp: 12,
-      color: 'from-pink-500 to-purple-500'
-    }
+
+
+
   ];
 
   // Charger les progrès depuis localStorage au démarrage
   useEffect(() => {
-    const savedProgress = localStorage.getItem('ce1-calcul-mental-progress');
+    const savedProgress = localStorage.getItem('ce2-calcul-mental-progress');
     if (savedProgress) {
       const progress = JSON.parse(savedProgress);
       setSectionsProgress(progress);
@@ -126,7 +76,7 @@ export default function CE2CalculMentalPage() {
   // Écouter les changements dans localStorage (quand on revient d'un exercice)
   useEffect(() => {
     const handleStorageChange = () => {
-      const savedProgress = localStorage.getItem('ce1-calcul-mental-progress');
+      const savedProgress = localStorage.getItem('ce2-calcul-mental-progress');
       if (savedProgress) {
         const progress = JSON.parse(savedProgress);
         setSectionsProgress(progress);
@@ -163,9 +113,9 @@ export default function CE2CalculMentalPage() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
         {/* Header */}
         <div className="mb-6 sm:mb-8">
-          <Link href="/chapitre/ce1-quatre-operations/addition-ce1" className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors mb-4 touch-manipulation">
+          <Link href="/chapitre/ce2-operations-complexes/addition-ce2" className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors mb-4 touch-manipulation">
             <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />
-            <span className="text-sm sm:text-base">Retour aux additions CE1</span>
+            <span className="text-sm sm:text-base">Retour aux additions CE2</span>
           </Link>
           
           <div className="bg-white rounded-xl p-4 sm:p-6 shadow-lg text-center">
@@ -175,7 +125,7 @@ export default function CE2CalculMentalPage() {
               </div>
             </div>
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-3 sm:mb-4">
-              🧠 Calcul mental CE1
+              🧠 Calcul mental CE2
             </h1>
             <p className="text-base sm:text-lg text-gray-600 mb-4 sm:mb-6">
               Mémorise les faits numériques et maîtrise le calcul mental selon les programmes officiels !
@@ -252,7 +202,7 @@ export default function CE2CalculMentalPage() {
           {sections.map((section, index) => {
             const isCompleted = completedSections.includes(section.id);
             
-            const linkHref = section.href || `/chapitre/ce1-calcul-mental/${section.id}`;
+            const linkHref = section.href || `/chapitre/ce2-operations-complexes/addition-ce2/calcul-mental/${section.id}`;
             
             return (
               <div key={section.id} className="relative group">

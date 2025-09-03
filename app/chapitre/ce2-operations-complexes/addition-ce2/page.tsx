@@ -9,6 +9,15 @@ export default function CE2AdditionPage() {
 
   const subChapters = [
     {
+      id: 'addition-sans-retenue',
+      title: 'Addition sans retenue',
+      description: 'Maîtrise la technique de l\'addition en colonnes !',
+      icon: '📝',
+      estimatedTime: 25,
+      difficulty: 'Débutant',
+      href: '/chapitre/ce2-operations-complexes/addition-ce2/addition-sans-retenue'
+    },
+    {
       id: 'calcul-mental',
       title: 'Calcul mental - Techniques',
       description: 'Apprends les astuces pour calculer rapidement dans ta tête !',
@@ -17,15 +26,7 @@ export default function CE2AdditionPage() {
       difficulty: 'Débutant',
       href: '/chapitre/ce2-operations-complexes/addition-ce2/calcul-mental'
     },
-    {
-      id: 'addition-posee',
-      title: 'Addition posée',
-      description: 'Maîtrise la technique de l\'addition en colonnes !',
-      icon: '📝',
-      estimatedTime: 25,
-      difficulty: 'Intermédiaire',
-      href: '/chapitre/ce2-operations-complexes/addition-ce2/addition-posee'
-    },
+
     {
       id: 'addition-retenue',
       title: 'Addition avec retenue',
@@ -35,33 +36,7 @@ export default function CE2AdditionPage() {
       difficulty: 'Intermédiaire',
       href: '/chapitre/ce2-operations-complexes/addition-ce2/addition-retenue'
     },
-    {
-      id: 'additions-jusqu-100',
-      title: 'Additions jusqu\'à 100',
-      description: 'Maîtrise les additions avec des nombres jusqu\'à 100 !',
-      icon: '💯',
-      estimatedTime: 20,
-      difficulty: 'Intermédiaire',
-      href: '/chapitre/ce2-operations-complexes/addition-ce2/additions-jusqu-100'
-    },
-    {
-      id: 'additions-jusqu-1000',
-      title: 'Additions jusqu\'à 1000',
-      description: 'Découvre les additions avec des nombres jusqu\'à 1000 !',
-      icon: '🔢',
-      estimatedTime: 30,
-      difficulty: 'Avancé',
-      href: '/chapitre/ce2-operations-complexes/addition-ce2/additions-jusqu-1000'
-    },
-    {
-      id: 'complements-100',
-      title: 'Compléments à 100',
-      description: 'Trouve rapidement les compléments à 100 !',
-      icon: '🎯',
-      estimatedTime: 15,
-      difficulty: 'Intermédiaire',
-      href: '/chapitre/ce2-operations-complexes/addition-ce2/complements-100'
-    },
+
     {
       id: 'problemes-addition',
       title: 'Problèmes d\'addition',
