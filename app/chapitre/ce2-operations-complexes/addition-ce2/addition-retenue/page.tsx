@@ -685,16 +685,16 @@ export default function AdditionSansRetenueCE2() {
     const num3Hundreds = num3Str && maxDigits >= 3 && num3Str[num3Str.length - 3] !== ' ' ? num3Str[num3Str.length - 3] : '';
 
     // Calculer les sommes et retenues
-    const unitsSum = parseInt(num1Units || '0') + parseInt(num2Units || '0') + parseInt(num3Units || '0');
+    const unitsSum = parseInt(String(num1Units || '0')) + parseInt(String(num2Units || '0')) + parseInt(String(num3Units || '0'));
     const unitsCarry = Math.floor(unitsSum / 10);
     
     // Pour les dizaines, on n'ajoute la retenue des unités que si on est à l'étape des dizaines
-    const tensSum = parseInt(num1Tens || '0') + parseInt(num2Tens || '0') + parseInt(num3Tens || '0') + 
+    const tensSum = parseInt(String(num1Tens || '0')) + parseInt(String(num2Tens || '0')) + parseInt(String(num3Tens || '0')) + 
                    (calculationStep === 'tens' ? unitsCarry : 0);
     const tensCarry = Math.floor(tensSum / 10);
 
     // Pour les centaines, on n'ajoute la retenue des dizaines que si on est à l'étape des centaines
-    const hundredsSum = parseInt(num1Hundreds || '0') + parseInt(num2Hundreds || '0') + parseInt(num3Hundreds || '0') + 
+    const hundredsSum = parseInt(String(num1Hundreds || '0')) + parseInt(String(num2Hundreds || '0')) + parseInt(String(num3Hundreds || '0')) + 
                        (calculationStep === 'hundreds' ? tensCarry : 0);
 
     // Variable carry qui change selon l'étape
@@ -941,9 +941,9 @@ export default function AdditionSansRetenueCE2() {
       return;
     }
     
-    const num1 = parseInt(match[1]);
-    const num2 = parseInt(match[2]);
-    const result = parseInt(exercise.correctAnswer);
+    const num1 = parseInt(String(match[1]));
+    const num2 = parseInt(String(match[2]));
+    const result = parseInt(String(exercise.correctAnswer));
     const example = { num1, num2, result, hasCarry: false };
     
     try {
@@ -1567,9 +1567,9 @@ export default function AdditionSansRetenueCE2() {
                     (() => {
                       const match = exercises[currentExercise].question.match(/Calcule : (\d+) \+ (\d+)/);
                       if (match) {
-                        const num1 = parseInt(match[1]);
-                        const num2 = parseInt(match[2]);
-                        const result = parseInt(exercises[currentExercise].correctAnswer);
+                        const num1 = parseInt(String(match[1]));
+                        const num2 = parseInt(String(match[2]));
+                        const result = parseInt(String(exercises[currentExercise].correctAnswer));
                         const example = { num1, num2, result, hasCarry: false };
                         return renderPostedAddition(example, true);
                       }
