@@ -512,7 +512,7 @@ export default function AdditionSansRetenueCE2() {
         if (stopSignalRef.current) return;
         
         await wait(1000);
-        const tensSum = parseInt(num1Tens || '0') + parseInt(num2Tens || '0') + parseInt(num3Tens || '0') + carry;
+        const tensSum = parseInt(String(num1Tens || '0')) + parseInt(String(num2Tens || '0')) + parseInt(String(num3Tens || '0')) + carry;
                 await playAudio(`Je calcule : ${num1Tens} plus ${num2Tens}${example.num3 ? ` plus ${num3Tens}` : ''}${carry > 0 ? ` plus ${carry} de retenue` : ''} égale ${tensSum}. Je pose ${tensSum % 10} et je retiens ${Math.floor(tensSum / 10)}`, true);
         if (stopSignalRef.current) return;
         
