@@ -973,6 +973,7 @@ export default function AdditionSansRetenueCE2() {
       setCalculationStep('units');
       const num1Units = num1 % 10;
       const num2Units = num2 % 10;
+      const num3Units = 0; // Initialisation à 0 car pas de troisième nombre dans ce cas
       const unitsSum = num1Units + num2Units;
       
       await playAudio(`Je calcule : ${num1Units} plus ${num2Units}${example.num3 ? ` plus ${num3Units}` : ''} égale ${unitsSum}${unitsSum >= 10 ? `. Je pose ${unitsSum % 10} et je retiens ${Math.floor(unitsSum / 10)}` : ''}`, true);
