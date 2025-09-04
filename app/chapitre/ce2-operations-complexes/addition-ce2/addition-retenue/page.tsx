@@ -975,6 +975,7 @@ export default function AdditionSansRetenueCE2() {
       const num2Units = num2 % 10;
       const num3Units = 0; // Initialisation à 0 car pas de troisième nombre dans ce cas
       const unitsSum = num1Units + num2Units;
+      const unitsCarry = Math.floor(unitsSum / 10);
       
       await playAudio(`Je calcule : ${num1Units} plus ${num2Units}${example.num3 ? ` plus ${num3Units}` : ''} égale ${unitsSum}${unitsSum >= 10 ? `. Je pose ${unitsSum % 10} et je retiens ${Math.floor(unitsSum / 10)}` : ''}`, true);
       if (stopSignalRef.current) return;
@@ -982,6 +983,7 @@ export default function AdditionSansRetenueCE2() {
       await wait(500);
       const unitsResult = unitsSum >= 10 ? (unitsSum % 10).toString() : unitsSum.toString();
       setPartialResults(prev => ({ ...prev, units: unitsResult }));
+      setShowingCarry(unitsSum >= 10);
       await wait(1000);
       
       // Animation des dizaines si nécessaire
@@ -991,7 +993,8 @@ export default function AdditionSansRetenueCE2() {
         // Extraire uniquement le chiffre des dizaines
         const num1Tens = Math.floor((num1 % 100) / 10);
         const num2Tens = Math.floor((num2 % 100) / 10);
-        const tensSum = num1Tens + num2Tens;
+        const tensSum = num1Tens + num2Tens + unitsCarry;
+        const tensCarry = Math.floor(tensSum / 10);
         
         await playAudio(`Je calcule : ${num1Tens} plus ${num2Tens}${unitsSum >= 10 ? ` plus ${Math.floor(unitsSum / 10)} de retenue` : ''} égale ${tensSum}${tensSum >= 10 ? `. Je pose ${tensSum % 10} et je retiens ${Math.floor(tensSum / 10)}` : ''}`, true);
         if (stopSignalRef.current) return;
@@ -1008,10 +1011,7 @@ export default function AdditionSansRetenueCE2() {
         // Extraire uniquement le chiffre des centaines
         const num1Hundreds = Math.floor(num1 / 100) % 10;
         const num2Hundreds = Math.floor(num2 / 100) % 10;
-        const num1Tens = Math.floor((num1 % 100) / 10);
-        const num2Tens = Math.floor((num2 % 100) / 10);
-        const tensSum = num1Tens + num2Tens;
-        const hundredsSum = num1Hundreds + num2Hundreds;
+        const hundredsSum = num1Hundreds + num2Hundreds + tensCarry;
         
         await playAudio(`Je calcule : ${num1Hundreds} plus ${num2Hundreds}${tensSum >= 10 ? ` plus ${Math.floor(tensSum / 10)} de retenue` : ''} égale ${hundredsSum}`, true);
         if (stopSignalRef.current) return;
