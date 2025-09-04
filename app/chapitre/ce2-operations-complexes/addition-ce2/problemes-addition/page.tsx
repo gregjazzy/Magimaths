@@ -139,10 +139,10 @@ export default function ProblemesAdditionCE2() {
     {
       id: 'recreation',
       title: 'Les billes de Paul',
-      story: 'Paul collectionne les billes depuis qu\'il a 6 ans. Il possède 411 billes bleues et 378 billes rouges dans son coffre à trésors. Combien de billes a-t-il au total dans sa collection ?',
+      story: 'Paul collectionne les billes depuis qu\'il a 6 ans. Il possède 411 billes bleues. Son ami Lucas a 128 billes de plus que Paul. Combien de billes ont-ils à eux deux ?',
       first: 411,
-      second: 378,
-      result: 789,
+      second: 950,
+      result: 1361,
       item: '⚪',
       color1: 'text-blue-600',
       color2: 'text-red-600'
@@ -282,22 +282,22 @@ export default function ProblemesAdditionCE2() {
     
     // NIVEAU 5 : Problèmes complexes avec grands nombres (100-400)
     {
-      story: 'Dans une grande bibliothèque, l\'étage des enfants compte 156 livres d\'histoires et 178 livres documentaires. Quel est le nombre total de livres à l\'étage des enfants ?',
-      question: 'Quel est le nombre total de livres à l\'étage des enfants ?',
-      answer: 334,
+      story: 'Dans une grande bibliothèque, l\'étage des enfants compte 267 livres d\'histoires. La bibliothécaire ajoute 189 nouveaux livres, mais elle doit en retirer 45 qui sont abîmés. Combien de livres y a-t-il maintenant à l\'étage des enfants ?',
+      question: 'Combien de livres y a-t-il maintenant à l\'étage des enfants ?',
+      answer: 411,
       visual: '📖',
-      first: 156,
-      second: 178,
+      first: 267,
+      second: 144,
       item: '📖',
       color1: 'text-blue-600',
       color2: 'text-green-600'
     },
     {
-      story: 'Un fermier élève des animaux. Il possède 187 moutons dans le pré du nord et 146 moutons dans le pré du sud. Combien de moutons possède-t-il en totalité ?',
-      question: 'Combien de moutons possède-t-il en totalité ?',
-      answer: 333,
+      story: 'Un fermier élève des moutons. Dans le pré du nord, il a 187 brebis. Dans le pré du sud, il a 146 agneaux. Si chaque brebis donne naissance à 2 agneaux au printemps, combien y aura-t-il d\'agneaux dans le pré du sud ?',
+      question: 'Combien y aura-t-il d\'agneaux dans le pré du sud ?',
+      answer: 520,
       visual: '🐑',
-      first: 187,
+      first: 374,
       second: 146,
       item: '🐑',
       color1: 'text-gray-600',
@@ -306,12 +306,12 @@ export default function ProblemesAdditionCE2() {
     
     // NIVEAU 6 : Problèmes très complexes avec contexte élaboré (200-800)
     {
-      story: 'Une école organise une collecte de jouets pour Noël. Les élèves de maternelle ont apporté 245 jouets, les élèves de CP ont apporté 189 jouets, et les élèves de CE2 ont ajouté 178 jouets de plus que les CP. Combien de jouets les élèves de CE2 ont-ils apportés ?',
+      story: 'Une école organise une collecte de jouets pour Noël. Les élèves de maternelle ont apporté 245 jouets, les élèves de CP ont apporté 189 jouets. Les élèves de CE2, très motivés, ont décidé d\'apporter le double des jouets du CP plus 75 jouets supplémentaires. Combien de jouets les élèves de CE2 ont-ils apportés ?',
       question: 'Combien de jouets les élèves de CE2 ont-ils apportés ?',
-      answer: 367,
+      answer: 453,
       visual: '🧸',
-      first: 189,
-      second: 178,
+      first: 378,
+      second: 75,
       item: '🧸',
       color1: 'text-red-600',
       color2: 'text-blue-600'
@@ -319,12 +319,12 @@ export default function ProblemesAdditionCE2() {
     
     // NIVEAU 7 : Problèmes à données multiples et contexte riche (300-900)
     {
-      story: 'Un magasin de sport reçoit une livraison. Le matin, 278 ballons sont livrés. L\'après-midi, le camion apporte 156 ballons supplémentaires. Le soir, un dernier camion livre encore 89 ballons de plus que la livraison de l\'après-midi. Combien de ballons le dernier camion a-t-il livrés ?',
-      question: 'Combien de ballons le dernier camion a-t-il livrés ?',
-      answer: 245,
+      story: 'Un magasin de sport reçoit des équipements. Le matin, 278 ballons de foot sont livrés. L\'après-midi, le magasin reçoit 156 ballons de basket. Le gérant décide de commander 45 ballons de plus que le total des ballons déjà reçus. Combien de ballons le gérant a-t-il commandés ?',
+      question: 'Combien de ballons le gérant a-t-il commandés ?',
+      answer: 479,
       visual: '⚽',
-      first: 156,
-      second: 89,
+      first: 434,
+      second: 45,
       item: '⚽',
       color1: 'text-green-600',
       color2: 'text-orange-600'
@@ -332,12 +332,12 @@ export default function ProblemesAdditionCE2() {
     
     // NIVEAU 8 : Problèmes de synthèse avec calculs imbriqués (400-1000)
     {
-      story: 'Une pâtisserie prépare des gâteaux pour une fête. Le chef pâtissier fait 328 petits fours le matin. Son apprenti en prépare 245 l\'après-midi. En fin de journée, ils décident de faire ensemble 127 petits fours de plus que ce que l\'apprenti avait préparé. Combien de petits fours ont-ils faits ensemble en fin de journée ?',
-      question: 'Combien de petits fours ont-ils faits ensemble en fin de journée ?',
-      answer: 372,
+      story: 'Une pâtisserie prépare des gâteaux pour un mariage. Le chef pâtissier fait 328 petits fours salés. Son apprenti prépare 245 petits fours sucrés. Pour être sûr d\'en avoir assez, ils décident d\'en faire encore la moitié du total déjà préparé. Combien de petits fours supplémentaires vont-ils préparer ?',
+      question: 'Combien de petits fours supplémentaires vont-ils préparer ?',
+      answer: 286,
       visual: '🧁',
-      first: 245,
-      second: 127,
+      first: 573,
+      second: 286,
       item: '🧁',
       color1: 'text-pink-600',
       color2: 'text-yellow-600'
@@ -345,12 +345,12 @@ export default function ProblemesAdditionCE2() {
     
     // NIVEAU 9 : Problèmes de niveau avancé avec contexte professionnel (500-1000)
     {
-      story: 'Dans une usine de fabrication de puzzles, la machine A produit 456 pièces par heure. La machine B, plus performante, produit 189 pièces de plus par heure que la machine A. Combien de pièces la machine B produit-elle par heure ?',
-      question: 'Combien de pièces la machine B produit-elle par heure ?',
-      answer: 645,
+      story: 'Dans une usine de fabrication de puzzles, la machine A produit 456 pièces par heure. La machine B produit 189 pièces de plus par heure que la machine A. Si on fait fonctionner les deux machines pendant 2 heures, combien de pièces produiront-elles ensemble ?',
+      question: 'Combien de pièces produiront-elles ensemble en 2 heures ?',
+      answer: 2202,
       visual: '🧩',
-      first: 456,
-      second: 189,
+      first: 912,
+      second: 1290,
       item: '🧩',
       color1: 'text-blue-600',
       color2: 'text-purple-600'
@@ -358,8 +358,8 @@ export default function ProblemesAdditionCE2() {
     
     // NIVEAU 10 : Problèmes CE2 avancés avec nombres à 4 chiffres (1000-5000)
     {
-      story: 'Une grande bibliothèque municipale fait l\'inventaire de ses livres. Dans la section jeunesse, il y a 1247 livres d\'histoires et 1356 livres documentaires. Combien de livres y a-t-il au total dans la section jeunesse ?',
-      question: 'Combien de livres y a-t-il au total dans la section jeunesse ?',
+      story: 'Une grande bibliothèque municipale fait l\'inventaire de ses livres. Dans la section jeunesse, il y a 1247 livres d\'histoires et 1356 livres documentaires. La bibliothécaire décide d\'acheter autant de nouveaux livres que la somme des livres d\'histoires et documentaires. Combien de nouveaux livres va-t-elle acheter ?',
+      question: 'Combien de nouveaux livres va-t-elle acheter ?',
       answer: 2603,
       visual: '📚',
       first: 1247,
@@ -371,12 +371,12 @@ export default function ProblemesAdditionCE2() {
     
     // NIVEAU 11 : Problèmes CE2 complexes avec grands nombres (2000-8000)
     {
-      story: 'Un grand magasin organise une vente spéciale. Le premier jour, ils ont vendu 2345 articles. Le deuxième jour, ils en ont vendu 1789 de plus que le premier jour. Combien d\'articles ont-ils vendus le deuxième jour ?',
-      question: 'Combien d\'articles ont-ils vendus le deuxième jour ?',
-      answer: 4134,
+      story: 'Un grand magasin organise une vente spéciale. Le premier jour, ils ont vendu 2345 articles. Le deuxième jour, ils en ont vendu 1789 de plus que le premier jour. Le troisième jour, ils décident de commander le triple du nombre d\'articles vendus le premier jour. Combien d\'articles vont-ils commander ?',
+      question: 'Combien d\'articles vont-ils commander ?',
+      answer: 7035,
       visual: '🛍️',
       first: 2345,
-      second: 1789,
+      second: 4690,
       item: '🛍️',
       color1: 'text-red-600',
       color2: 'text-blue-600'
@@ -394,7 +394,13 @@ export default function ProblemesAdditionCE2() {
     let objectType = '';
     
     if (story.includes('billes')) {
-      subject = story.includes('léo') ? 'Léo' : 'l\'enfant';
+      if (story.includes('julien') && story.includes('ethan')) {
+        subject = 'Julien et Ethan ont';
+      } else if (story.includes('paul') && story.includes('lucas')) {
+        subject = 'Paul et Lucas ont';
+      } else {
+        subject = 'l\'enfant a';
+      }
       objectType = 'billes';
     } else if (story.includes('vaches') && story.includes('moutons')) {
       subject = '';
@@ -665,7 +671,7 @@ export default function ProblemesAdditionCE2() {
   };
 
     // Fonction pour faire défiler vers un élément par ID (pour compatibilité)
-  const scrollToElement = (elementId: string) => {
+  const scrollToElement = (elementId: string, position: 'start' | 'center' | 'end' = 'start') => {
     const element = document.getElementById(elementId);
     if (element) {
       const rect = element.getBoundingClientRect();
@@ -675,7 +681,7 @@ export default function ProblemesAdditionCE2() {
       if (!isAlreadyVisible) {
         element.scrollIntoView({ 
           behavior: 'smooth', 
-          block: 'center',  // Centre l'élément dans la vue
+          block: position,
           inline: 'nearest'
         });
       }
@@ -1095,7 +1101,7 @@ export default function ProblemesAdditionCE2() {
     await wait(300);
     
     // Scroll vers la zone d'animation maintenant que l'exemple est affiché
-    scrollToElement('animation-section');
+    scrollToElement('animation-section', 'start');
     await wait(500);
 
     try {
@@ -1106,15 +1112,31 @@ export default function ProblemesAdditionCE2() {
 
       if (stopSignalRef.current) return;
 
-      // Identifier les nombres - Phase 1 : Soulignage
+      // Identifier les nombres avec plus de détails selon le contexte
       setAnimatingStep('identify');
       setHighlightNumbersInStory(true);
-      await playAudio("Première chose à faire : je souligne tous les nombres que je vois dans l'histoire !");
-      await wait(1000);
-
-      if (stopSignalRef.current) return;
-
-      await playAudio(`Parfait ! J'ai souligné les nombres : ${example.first} et ${example.second}. Ce sont mes deux nombres importants !`);
+      
+      if (example.id === 'aquarium') {
+        await playAudio("Je commence par repérer les nombres importants dans l'histoire.");
+        await wait(700);
+        await playAudio(`Il y a d'abord ${example.first} poissons dans l'aquarium.`);
+        await wait(700);
+        await playAudio(`Le directeur commande 647 poissons, mais attention : 100 iront dans un autre bassin.`);
+        await wait(700);
+        await playAudio(`Donc sur les 647 poissons commandés, nous n'ajouterons que ${example.second} poissons dans le grand aquarium.`);
+      } else if (example.id === 'marche') {
+        await playAudio("Regardons les différents fruits sur l'étal.");
+        await wait(700);
+        await playAudio(`Il y a ${example.first} pommes d'un côté.`);
+        await wait(700);
+        await playAudio(`Et ${example.second} poires de l'autre côté.`);
+        await wait(700);
+        await playAudio("Pour trouver le total des fruits, nous devons additionner ces deux nombres.");
+      } else {
+        await playAudio("Je souligne tous les nombres que je vois dans l'histoire !");
+        await wait(700);
+        await playAudio(`J'ai trouvé ${example.first} et ${example.second}. Ce sont mes deux nombres importants !`);
+      }
       await wait(1000);
 
       if (stopSignalRef.current) return;
@@ -1122,33 +1144,78 @@ export default function ProblemesAdditionCE2() {
       setHighlightNumbersInStory(false);
       await wait(300);
 
-      // Montrer les objets du premier groupe
+      // Montrer les groupes avec plus d'explications
       setAnimatingStep('group1');
-      await playAudio(`Voici les ${example.first} premiers objets.`);
+      if (example.first > 100) {
+        await playAudio(`Pour le premier groupe, nous avons ${example.first} ${example.item}. C'est un grand nombre, il faudra bien poser l'opération.`);
+      } else {
+        await playAudio(`Voici le premier groupe avec ${example.first} ${example.item}.`);
+      }
       await wait(1000);
 
       if (stopSignalRef.current) return;
 
-      // Montrer les objets du deuxième groupe
       setAnimatingStep('group2');
-      await playAudio(`Et voici les ${example.second} autres objets.`);
+      if (example.second > 100) {
+        await playAudio(`Pour le deuxième groupe, nous avons ${example.second} ${example.item}. Là aussi, c'est un grand nombre.`);
+      } else {
+        await playAudio(`Et voici le deuxième groupe avec ${example.second} ${example.item}.`);
+      }
       await wait(1000);
 
       if (stopSignalRef.current) return;
 
-      // Calcul - D'abord annoncer l'addition
+      // Calculs intermédiaires si nécessaire
+      if (example.id === 'aquarium') {
+        setAnimatingStep('intermediate');
+        scrollToElement('animation-section', 'start');
+        await playAudio("D'abord, calculons combien de nouveaux poissons iront dans le grand aquarium.");
+        await wait(700);
+        await playAudio("Sur les 647 poissons commandés, 100 iront dans un autre bassin.");
+        await wait(700);
+        await playAudio("647 moins 100 égale 547 poissons pour le grand aquarium.");
+        await wait(1000);
+      }
+
+      // Calcul principal avec plus de détails
       setAnimatingStep('calculation');
-      await playAudio(`Pour trouver le total, je fais l'addition : ${example.first} plus ${example.second} égale ${example.result}.`);
+      scrollToElement('animation-section', 'start');
+      if (example.id === 'aquarium') {
+        await playAudio(`Maintenant, je peux additionner les ${example.first} poissons déjà présents avec les ${example.second} nouveaux poissons.`);
+        await wait(700);
+      }
+
+      if (example.first > 100 || example.second > 100) {
+        await playAudio("Je vais poser l'opération pour bien aligner les chiffres.");
+        await wait(700);
+        await playAudio(`Je pose ${example.first} en haut et ${example.second} en dessous.`);
+        await wait(700);
+        await playAudio("Je commence par les unités, en bas de la colonne de droite.");
+        await wait(700);
+        await playAudio("Puis je passe aux dizaines, dans la colonne du milieu.");
+        await wait(700);
+        await playAudio("Et enfin les centaines, dans la colonne de gauche.");
+        await wait(700);
+        await playAudio(`J'obtiens ${example.result} comme résultat.`);
+      } else {
+        await playAudio(`Je fais l'addition : ${example.first} plus ${example.second} égale ${example.result}.`);
+      }
       
-      // MAINTENANT scroller vers l'addition posée qui s'affiche
       scrollToElement('animation-section');
       await wait(800);
 
       if (stopSignalRef.current) return;
 
-      // Résultat final
+      // Résultat final avec contexte
       setAnimatingStep('result');
-      await playAudio(`La réponse est ${example.result} ! Bravo !`);
+      scrollToElement('animation-section', 'start');
+      if (example.id === 'aquarium') {
+        await playAudio(`Il y aura donc ${example.result} poissons dans le grand aquarium après avoir ajouté les nouveaux poissons !`);
+      } else if (example.id === 'marche') {
+        await playAudio(`Au total, le marchand propose ${example.result} fruits à la vente sur son étal !`);
+      } else {
+        await playAudio(`La réponse est ${example.result} ${example.item} ! Excellent !`);
+      }
       await wait(1000);
 
     } finally {
@@ -1231,12 +1298,9 @@ export default function ProblemesAdditionCE2() {
   const quickVocalCorrection = async () => {
     const exercise = exercises[currentExercise];
     
-    // Extraire les nombres de l'énoncé
-    const numbers = exercise.story.match(/\d+/g);
-    if (!numbers || numbers.length < 2) return;
-    
-    const first = parseInt(numbers[0]);
-    const second = parseInt(numbers[1]);
+    // Utiliser les valeurs first et second de l'exercice
+    const first = exercise.first;
+    const second = exercise.second;
     const result = exercise.answer;
 
     // Scroll vers la zone de correction
@@ -1340,7 +1404,39 @@ export default function ProblemesAdditionCE2() {
       await wait(700);
       
       setExerciseAnimationStep('show-calculation');
-      await quickAudio(`${first} plus ${second} égale ${result}`);
+      if (exercise.story.includes('Julien') && exercise.story.includes('Ethan')) {
+        await quickAudio(`Attention ! Ethan a 198 billes de plus que Julien. Julien a 123 billes, donc Ethan a 123 plus 198, ce qui fait 321 billes.`);
+        await wait(1000);
+        await quickAudio(`Maintenant que nous savons qu'Ethan a 321 billes, nous pouvons calculer le total : Julien a 123 billes, plus les 321 billes d'Ethan, ce qui fait ${result} billes en tout.`);
+      } else if (exercise.story.includes('Sophie') && exercise.story.includes('autocollants')) {
+        await quickAudio(`Attention ! La sœur de Sophie a 49 autocollants de plus que Sophie. Sophie a 67 autocollants, donc sa sœur a 67 plus 49, ce qui fait ${result} autocollants.`);
+      } else if (exercise.story.includes('brebis') && exercise.story.includes('agneaux')) {
+        await quickAudio(`Commençons par calculer combien de nouveaux agneaux vont naître. Chaque brebis va avoir 2 agneaux.`);
+        await wait(700);
+        await quickAudio(`Il y a 187 brebis, donc nous devons multiplier 187 par 2. Cela fait 374 nouveaux agneaux qui vont naître.`);
+        await wait(1000);
+        await quickAudio(`Maintenant, il faut ajouter les 146 agneaux qui sont déjà présents dans le pré du sud.`);
+        await wait(700);
+        await quickAudio(`374 nouveaux agneaux plus 146 agneaux déjà présents, cela fait ${result} agneaux en tout.`);
+      } else if (exercise.story.includes('poupées') && exercise.story.includes('plus que')) {
+        await quickAudio(`Attention ! Le gérant reçoit 285 poupées de plus que les 347 poupées déjà présentes. Il reçoit donc 347 plus 285, ce qui fait ${result} nouvelles poupées.`);
+      } else if (exercise.story.includes('bibliothèque') && exercise.story.includes('abîmés')) {
+        await quickAudio(`Regardons d'abord combien il y a de livres au départ : 267 livres d'histoires.`);
+        await wait(700);
+        await quickAudio(`La bibliothécaire ajoute 189 nouveaux livres, ce qui fait 267 plus 189, soit 456 livres.`);
+        await wait(1000);
+        await quickAudio(`Mais attention, elle doit retirer 45 livres qui sont abîmés.`);
+        await wait(700);
+        await quickAudio(`456 moins 45 égale ${result} livres. C'est le nombre final de livres à l'étage des enfants.`);
+      } else if (exercise.story.includes('tournoi de basket')) {
+        await quickAudio(`Calculons d'abord les points de chaque équipe. Les Aigles ont marqué 167 points le matin plus 235 points l'après-midi, ce qui fait 402 points.`);
+        await wait(1000);
+        await quickAudio(`Les Lions ont marqué 186 points le matin plus 198 points l'après-midi, ce qui fait 384 points.`);
+        await wait(1000);
+        await quickAudio(`Au total, les deux équipes ont marqué 402 plus 384, ce qui fait ${result} points.`);
+      } else {
+        await quickAudio(`${first} plus ${second} égale ${result}`);
+      }
       
       // Scroll vers la zone d'animation de l'exercice pour voir l'addition posée
       scrollToElement('exercise-correction');
@@ -1377,12 +1473,16 @@ export default function ProblemesAdditionCE2() {
   };
 
   const nextExercise = () => {
+    // Arrêter tous les vocaux et animations en cours
+    stopAllVocalsAndAnimations();
+
     if (currentExercise < exercises.length - 1) {
       setCurrentExercise(currentExercise + 1);
       setUserAnswer('');
       setIsCorrect(null);
       setShowExerciseAnimation(false);
       setExerciseAnimationStep(null);
+      setExercisesIsPlayingVocal(false);
     } else {
       setShowCompletionModal(true);
     }
@@ -2023,8 +2123,12 @@ export default function ProblemesAdditionCE2() {
             <div 
               id="animation-section"
               className={`bg-white rounded-xl shadow-lg transition-all duration-300 ${
-                currentExample !== null ? 'opacity-100 p-6' : 'opacity-0 p-0 h-4 overflow-hidden'
+                currentExample !== null ? 'opacity-100 p-6' : 'opacity-0 p-0 h-4'
               }`}
+              style={{ 
+                overflow: currentExample !== null ? 'visible' : 'hidden',
+                height: currentExample !== null ? 'auto' : '1rem'
+              }}
             >
               <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">
                 🎬 Animation du problème
@@ -2043,14 +2147,40 @@ export default function ProblemesAdditionCE2() {
                         </div>
                       </div>
 
-                      {/* Identification des nombres */}
-                      {animatingStep === 'identify' && (
-                        <div className="text-center p-4 bg-yellow-100 rounded-lg">
-                          <p className="text-lg text-yellow-800">
-                            Je trouve les nombres : <span className="font-bold text-blue-600">{example.first}</span> et <span className="font-bold text-green-600">{example.second}</span>
-                          </p>
-                        </div>
-                      )}
+                                                  {/* Identification des nombres */}
+                            {animatingStep === 'identify' && (
+                              <div className="text-center p-4 bg-yellow-100 rounded-lg">
+                                <p className="text-lg text-yellow-800">
+                                  Je trouve les nombres : <span className="font-bold text-blue-600">{example.first}</span> et <span className="font-bold text-green-600">{example.second}</span>
+                                </p>
+                              </div>
+                            )}
+
+                            {/* Calculs intermédiaires si nécessaire */}
+                            {animatingStep === 'intermediate' && example.id === 'aquarium' && (
+                              <div className="text-center p-4 bg-orange-100 rounded-lg border-2 border-orange-200">
+                                <p className="text-lg font-semibold text-orange-800 mb-2">Calcul des nouveaux poissons :</p>
+                                <div className="space-y-2">
+                                  <div className="flex items-center justify-center space-x-4">
+                                    <span className="text-gray-900">Poissons commandés :</span>
+                                    <span className="font-bold text-blue-600">647</span>
+                                  </div>
+                                  <div className="flex items-center justify-center space-x-4">
+                                    <span className="text-gray-900">Poissons pour l'autre bassin :</span>
+                                    <span className="font-bold text-red-600">100</span>
+                                  </div>
+                                  <div className="flex items-center justify-center space-x-4 mt-2 pt-2 border-t-2 border-orange-200">
+                                    <span className="text-gray-900">Calcul :</span>
+                                    <span className="font-bold text-blue-600">647</span>
+                                    <span className="text-gray-900">-</span>
+                                    <span className="font-bold text-red-600">100</span>
+                                    <span className="text-gray-900">=</span>
+                                    <span className="font-bold text-green-600">547</span>
+                                    <span className="text-gray-900">nouveaux poissons</span>
+                                  </div>
+                                </div>
+                              </div>
+                            )}
 
                       {/* Animation des objets ou addition posée */}
                       {example.first <= 9 && example.second <= 9 ? (
@@ -2303,12 +2433,194 @@ export default function ProblemesAdditionCE2() {
                             </div>
 
                             {/* Explication de l'identification des nombres */}
-                            {(exerciseAnimationStep === 'highlight-numbers' || exerciseAnimationStep === 'show-groups' || exerciseAnimationStep === 'show-calculation' || exerciseAnimationStep === 'show-result') && (
+                            {(exerciseAnimationStep === 'highlight-numbers' || exerciseAnimationStep === 'show-ethan-calculation' || exerciseAnimationStep === 'show-groups' || exerciseAnimationStep === 'show-calculation' || exerciseAnimationStep === 'show-result') && (
                               <div className="text-center p-3 bg-yellow-100 rounded-lg">
                                 <p className="text-lg text-yellow-800">
                                   🎯 Je trouve les nombres : <span className="font-bold text-blue-600">{exercise.first}</span> et <span className="font-bold text-green-600">{exercise.second}</span>
                                 </p>
                               </div>
+                            )}
+
+                            {/* Calcul intermédiaire pour l'exercice de Julien et Ethan */}
+                            {exercise.story.includes('Julien') && exercise.story.includes('Ethan') && exerciseAnimationStep === 'show-ethan-calculation' && (
+                              <div className="text-center p-4 bg-purple-100 rounded-lg">
+                                <p className="text-lg font-semibold text-purple-800 mb-2">
+                                  D'abord, calculons combien Ethan a de billes :
+                                </p>
+                                <div className="flex justify-center items-center space-x-4">
+                                  <span className="text-xl font-bold text-blue-600">123</span>
+                                  <span className="text-xl">+</span>
+                                  <span className="text-xl font-bold text-green-600">198</span>
+                                  <span className="text-xl">=</span>
+                                  <span className="text-xl font-bold text-purple-600">321</span>
+                                </div>
+                                <p className="mt-2 text-purple-700">
+                                  Ethan a donc 321 billes
+                                </p>
+                              </div>
+                            )}
+
+                            {/* Étapes intermédiaires pour les exercices complexes */}
+                            {(exerciseAnimationStep === 'show-calculation' || exerciseAnimationStep === 'show-result') && (
+                              <>
+                                {exercise.story.includes('tournoi de basket') && (
+                                  <div className="mb-4 p-4 bg-blue-50 rounded-lg border-2 border-blue-200">
+                                    <p className="text-lg font-semibold text-blue-800 mb-2">Étapes du calcul :</p>
+                                    <div className="space-y-2">
+                                      <div className="flex items-center justify-center space-x-4">
+                                        <span className="text-gray-900">Aigles :</span>
+                                        <span className="font-bold text-blue-600">167</span>
+                                        <span className="text-gray-900">+</span>
+                                        <span className="font-bold text-blue-600">235</span>
+                                        <span className="text-gray-900">=</span>
+                                        <span className="font-bold text-green-600">402</span>
+                                        <span className="text-gray-900">points</span>
+                                      </div>
+                                      <div className="flex items-center justify-center space-x-4">
+                                        <span className="text-gray-900">Lions :</span>
+                                        <span className="font-bold text-red-600">186</span>
+                                        <span className="text-gray-900">+</span>
+                                        <span className="font-bold text-red-600">198</span>
+                                        <span className="text-gray-900">=</span>
+                                        <span className="font-bold text-green-600">384</span>
+                                        <span className="text-gray-900">points</span>
+                                      </div>
+                                    </div>
+                                  </div>
+                                )}
+                                {exercise.story.includes('Julien') && exercise.story.includes('Ethan') && (
+                                  <div className="mb-4 p-4 bg-purple-50 rounded-lg border-2 border-purple-200">
+                                    <p className="text-lg font-semibold text-purple-800 mb-2">Calcul des billes d'Ethan :</p>
+                                    <div className="flex items-center justify-center space-x-4">
+                                      <span className="text-gray-900">Billes de Julien</span>
+                                      <span className="font-bold text-blue-600">123</span>
+                                      <span className="text-gray-900">+</span>
+                                      <span className="text-gray-900">Billes en plus</span>
+                                      <span className="font-bold text-purple-600">198</span>
+                                      <span className="text-gray-900">=</span>
+                                      <span className="font-bold text-green-600">321</span>
+                                      <span className="text-gray-900">billes</span>
+                                    </div>
+                                  </div>
+                                )}
+                                {exercise.story.includes('voyage scolaire') && exercise.story.includes('train') && (
+                                  <div className="mb-4 p-4 bg-orange-50 rounded-lg border-2 border-orange-200">
+                                    <p className="text-lg font-semibold text-orange-800 mb-2">Calcul du trajet complet :</p>
+                                    <div className="space-y-2">
+                                      <div className="flex items-center justify-center space-x-4">
+                                        <span className="text-gray-900">Trajet aller :</span>
+                                        <span className="font-bold text-blue-600">378</span>
+                                        <span className="text-gray-900">+</span>
+                                        <span className="font-bold text-blue-600">456</span>
+                                        <span className="text-gray-900">=</span>
+                                        <span className="font-bold text-green-600">834</span>
+                                        <span className="text-gray-900">kilomètres</span>
+                                      </div>
+                                      <div className="flex items-center justify-center space-x-4">
+                                        <span className="text-gray-900">Trajet retour :</span>
+                                        <span className="font-bold text-purple-600">834</span>
+                                        <span className="text-gray-900">kilomètres</span>
+                                        <span className="text-gray-900">(même distance)</span>
+                                      </div>
+                                      <div className="flex items-center justify-center space-x-4 mt-2 pt-2 border-t-2 border-orange-200">
+                                        <span className="text-gray-900">Total :</span>
+                                        <span className="font-bold text-blue-600">834</span>
+                                        <span className="text-gray-900">+</span>
+                                        <span className="font-bold text-purple-600">834</span>
+                                        <span className="text-gray-900">=</span>
+                                        <span className="font-bold text-green-600">1668</span>
+                                        <span className="text-gray-900">kilomètres</span>
+                                      </div>
+                                    </div>
+                                  </div>
+                                )}
+                                {exercise.story.includes('brebis') && exercise.story.includes('agneaux') && (
+                                  <div className="mb-4 p-4 bg-green-50 rounded-lg border-2 border-green-200">
+                                    <p className="text-lg font-semibold text-green-800 mb-2">Calcul des agneaux :</p>
+                                    <div className="space-y-2">
+                                      <div className="flex items-center justify-center space-x-4">
+                                        <span className="text-gray-900">Nouveaux agneaux :</span>
+                                        <span className="font-bold text-blue-600">187</span>
+                                        <span className="text-gray-900">brebis</span>
+                                        <span className="text-gray-900">×</span>
+                                        <span className="font-bold text-purple-600">2</span>
+                                        <span className="text-gray-900">=</span>
+                                        <span className="font-bold text-green-600">374</span>
+                                        <span className="text-gray-900">agneaux</span>
+                                      </div>
+                                      <div className="flex items-center justify-center space-x-4">
+                                        <span className="text-gray-900">Agneaux déjà présents :</span>
+                                        <span className="font-bold text-orange-600">146</span>
+                                        <span className="text-gray-900">agneaux</span>
+                                      </div>
+                                      <div className="flex items-center justify-center space-x-4 mt-2 pt-2 border-t-2 border-green-200">
+                                        <span className="text-gray-900">Total :</span>
+                                        <span className="font-bold text-blue-600">374</span>
+                                        <span className="text-gray-900">+</span>
+                                        <span className="font-bold text-orange-600">146</span>
+                                        <span className="text-gray-900">=</span>
+                                        <span className="font-bold text-green-600">520</span>
+                                        <span className="text-gray-900">agneaux</span>
+                                      </div>
+                                    </div>
+                                  </div>
+                                )}
+                                {exercise.story.includes('bibliothèque') && exercise.story.includes('abîmés') && (
+                                  <div className="mb-4 p-4 bg-blue-50 rounded-lg border-2 border-blue-200">
+                                    <p className="text-lg font-semibold text-blue-800 mb-2">Calcul des livres :</p>
+                                    <div className="space-y-2">
+                                      <div className="flex items-center justify-center space-x-4">
+                                        <span className="text-gray-900">Livres au départ :</span>
+                                        <span className="font-bold text-blue-600">267</span>
+                                      </div>
+                                      <div className="flex items-center justify-center space-x-4">
+                                        <span className="text-gray-900">Nouveaux livres :</span>
+                                        <span className="font-bold text-green-600">189</span>
+                                      </div>
+                                      <div className="flex items-center justify-center space-x-4">
+                                        <span className="text-gray-900">Livres abîmés :</span>
+                                        <span className="font-bold text-red-600">45</span>
+                                      </div>
+                                      <div className="flex items-center justify-center space-x-4 mt-2 pt-2 border-t-2 border-blue-200">
+                                        <span className="text-gray-900">Total :</span>
+                                        <span className="font-bold text-blue-600">267</span>
+                                        <span className="text-gray-900">+</span>
+                                        <span className="font-bold text-green-600">189</span>
+                                        <span className="text-gray-900">-</span>
+                                        <span className="font-bold text-red-600">45</span>
+                                        <span className="text-gray-900">=</span>
+                                        <span className="font-bold text-purple-600">411</span>
+                                        <span className="text-gray-900">livres</span>
+                                      </div>
+                                    </div>
+                                  </div>
+                                )}
+                                {exercise.story.includes('ruban') && exercise.story.includes('mètres') && (
+                                  <div className="mb-4 p-4 bg-yellow-50 rounded-lg border-2 border-yellow-200">
+                                    <p className="text-lg font-semibold text-yellow-800 mb-2">Conversion en décimètres :</p>
+                                    <div className="space-y-2">
+                                      <div className="flex items-center justify-center space-x-4">
+                                        <span className="text-gray-900">Premier ruban :</span>
+                                        <span className="font-bold text-blue-600">8</span>
+                                        <span className="text-gray-900">mètres</span>
+                                        <span className="text-gray-900">=</span>
+                                        <span className="font-bold text-green-600">80</span>
+                                        <span className="text-gray-900">décimètres</span>
+                                        <span className="text-gray-900">(× 10)</span>
+                                      </div>
+                                      <div className="flex items-center justify-center space-x-4">
+                                        <span className="text-gray-900">Deuxième ruban :</span>
+                                        <span className="font-bold text-blue-600">5</span>
+                                        <span className="text-gray-900">mètres</span>
+                                        <span className="text-gray-900">=</span>
+                                        <span className="font-bold text-green-600">50</span>
+                                        <span className="text-gray-900">décimètres</span>
+                                        <span className="text-gray-900">(× 10)</span>
+                                      </div>
+                                    </div>
+                                  </div>
+                                )}
+                              </>
                             )}
 
                             {/* Animation des objets ou addition posée avec fonction officielle */}
