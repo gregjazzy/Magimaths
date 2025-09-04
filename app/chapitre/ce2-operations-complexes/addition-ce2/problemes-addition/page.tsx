@@ -60,70 +60,70 @@ export default function ProblemesAdditionCE2() {
   // Données des problèmes avec animations - NIVEAU CE2 (nombres plus grands, contextes variés)
   const problemExamples = [
     {
-      id: 'bonbons',
-      title: 'Les bonbons de Léa - CE2',
-      story: 'Léa a 127 bonbons rouges et 89 bonbons bleus. Combien a-t-elle de bonbons en tout ?',
-      first: 127,
-      second: 89,
-      result: 216,
-      item: '🍬',
+      id: 'marche',
+      title: 'Le marché aux fruits',
+      story: 'Au marché, un marchand dispose de 678 pommes et 459 poires sur son étal. Combien de fruits propose-t-il à la vente ?',
+      first: 678,
+      second: 459,
+      result: 1137,
+      item: '🍎',
       color1: 'text-red-600',
+      color2: 'text-green-600'
+    },
+    {
+      id: 'cinema',
+      title: 'Le grand cinéma',
+      story: 'Dans un grand cinéma, la salle bleue accueille 875 spectateurs et la salle rouge 548 spectateurs. Combien y a-t-il de spectateurs en tout ?',
+      first: 875,
+      second: 548,
+      result: 1423,
+      item: '🎬',
+      color1: 'text-blue-600',
+      color2: 'text-red-600'
+    },
+    {
+      id: 'stade',
+      title: 'Le match de football',
+      story: 'Pour la finale de la coupe, le stade accueille 967 supporters de l\'équipe bleue et 856 supporters de l\'équipe rouge. Combien y a-t-il de supporters dans le stade ?',
+      first: 967,
+      second: 856,
+      result: 1823,
+      item: '⚽',
+      color1: 'text-blue-600',
+      color2: 'text-red-600'
+    },
+    {
+      id: 'timbres',
+      title: 'La collection de timbres',
+      story: 'Un collectionneur passionné possède 784 timbres d\'Europe dans son album rouge et 695 timbres d\'Asie dans son album bleu. Combien possède-t-il de timbres au total dans ces deux albums ?',
+      first: 784,
+      second: 695,
+      result: 1479,
+      item: '📬',
+      color1: 'text-amber-600',
+      color2: 'text-indigo-600'
+    },
+    {
+      id: 'aquarium',
+      title: 'L\'aquarium géant',
+      story: 'Dans le grand aquarium du musée, il y a 583 poissons tropicaux. Le directeur commande 647 nouveaux poissons, mais 100 d\'entre eux iront dans un autre bassin. Combien y aura-t-il de poissons dans le grand aquarium ?',
+      first: 583,
+      second: 547,
+      result: 1130,
+      item: '🐠',
+      color1: 'text-cyan-600',
       color2: 'text-blue-600'
     },
     {
-      id: 'jouets',
-      title: 'Les voitures de Tom - CE2',
-      story: 'Tom a 4 petites voitures et 3 camions. Combien a-t-il de véhicules au total ?',
-      first: 4,
-      second: 3,
-      result: 7,
-      item: '🚗',
-      color1: 'text-orange-600',
+      id: 'course',
+      title: 'La course de vélos',
+      story: 'Pour une course cycliste, 437 coureurs sont inscrits. Le jour de la course, 128 coureurs abandonnent à cause de la pluie, mais 246 nouveaux participants s\'inscrivent à la dernière minute. Combien de cyclistes prennent le départ ?',
+      first: 437,
+      second: 246,
+      result: 683,
+      item: '🚲',
+      color1: 'text-yellow-600',
       color2: 'text-green-600'
-    },
-    {
-      id: 'animaux',
-      title: 'Les chats de la ferme',
-      story: 'Dans la ferme de Mamie, il y a 35 chatons noirs et 28 chatons blancs. Combien y a-t-il de chatons ?',
-      first: 35,
-      second: 28,
-      result: 63,
-      item: '🐱',
-      color1: 'text-gray-800',
-      color2: 'text-gray-400'
-    },
-    {
-      id: 'ecole',
-      title: 'Les crayons de couleur',
-      story: 'Dans la trousse de Julie, il y a 46 crayons rouges et 37 crayons verts. Combien de crayons a-t-elle ?',
-      first: 46,
-      second: 37,
-      result: 83,
-      item: '✏️',
-      color1: 'text-red-600',
-      color2: 'text-green-600'
-    },
-    {
-      id: 'cuisine',
-      title: 'Les cookies de Maman',
-      story: 'Maman a fait 47 cookies au chocolat et 35 cookies aux pépites. Combien de cookies a-t-elle préparés ?',
-      first: 47,
-      second: 35,
-      result: 82,
-      item: '🍪',
-      color1: 'text-amber-700',
-      color2: 'text-amber-600'
-    },
-    {
-      id: 'jardin',
-      title: 'Les fleurs du jardin',
-      story: 'Dans le jardin, Papa a planté 248 tulipes rouges et 316 tulipes jaunes. Combien de fleurs vont pousser ?',
-      first: 248,
-      second: 316,
-      result: 564,
-      item: '🌷',
-      color1: 'text-red-600',
-      color2: 'text-yellow-600'
     },
     {
       id: 'bibliotheque',
@@ -184,89 +184,89 @@ export default function ProblemesAdditionCE2() {
 
   // 22 Exercices progressifs CE2 : simple → nombres à 2-4 chiffres avec retenues → jusqu'à 10000+
   const exercises = [
-    // NIVEAU 1 : Problèmes de réunion simples (nombres 1-20)
+    // NIVEAU 1 : Problèmes avec nombres à 2 chiffres (50-200)
     {
-      story: 'Léo a 5 billes. Son ami lui en donne 3. Combien de billes a Léo en tout ?',
-      question: 'Combien de billes a Léo en tout ?',
-      answer: 8,
-      visual: '⚪',
-      first: 5,
-      second: 3,
-      item: '⚪',
+      story: 'Une boulangerie a vendu 78 croissants le matin et 95 l\'après-midi. Combien de croissants ont été vendus en tout ?',
+      question: 'Combien de croissants ont été vendus en tout ?',
+      answer: 173,
+      visual: '🥐',
+      first: 78,
+      second: 95,
+      item: '🥐',
+      color1: 'text-yellow-600',
+      color2: 'text-orange-600'
+    },
+    {
+      story: 'Dans une bibliothèque municipale, au rayon jeunesse, on compte 86 romans d\'aventures sur les étagères du haut, ainsi que 67 documentaires sur les étagères du bas. De combien de livres dispose ce rayon en tout ?',
+      question: 'De combien de livres dispose ce rayon en tout ?',
+      answer: 153,
+      visual: '📚',
+      first: 86,
+      second: 67,
+      item: '📚',
       color1: 'text-blue-600',
       color2: 'text-green-600'
     },
-    {
-      story: 'Dans un champ, il y a 8 vaches et 6 moutons. Combien y a-t-il d\'animaux au total ?',
-      question: 'Combien y a-t-il d\'animaux au total ?',
-      answer: 14,
-      visual: '🐄',
-      first: 8,
-      second: 6,
-      item: '🐄',
-      color1: 'text-brown-600',
-      color2: 'text-gray-600'
-    },
     
-    // NIVEAU 2 : Problèmes de transformation (nombres 1-30)
+    // NIVEAU 2 : Problèmes avec calcul intermédiaire
     {
-      story: 'Julie a 7 pommes. Sa maman lui en donne 4 de plus. Combien de pommes Julie a-t-elle maintenant ?',
-      question: 'Combien de pommes Julie a-t-elle maintenant ?',
-      answer: 11,
-      visual: '🍎',
-      first: 7,
-      second: 4,
-      item: '🍎',
-      color1: 'text-red-600',
-      color2: 'text-green-600'
-    },
-    {
-      story: 'Tom avait 12 cartes. Il en achète 9 nouvelles. Combien Tom a-t-il de cartes maintenant ?',
-      question: 'Combien Tom a-t-il de cartes maintenant ?',
-      answer: 21,
-      visual: '🎴',
-      first: 12,
-      second: 9,
-      item: '🎴',
+      story: 'Julien possède 123 billes dans sa collection. Ethan, son meilleur ami, en a 198 de plus que lui. Combien ont-ils de billes à eux deux ?',
+      question: 'Combien ont-ils de billes à eux deux ?',
+      answer: 444,
+      visual: '🔮',
+      first: 123,
+      second: 321,
+      item: '🔮',
       color1: 'text-blue-600',
       color2: 'text-purple-600'
     },
-    
-    // NIVEAU 3 : Problèmes avec données inutiles (nombres 20-80)
     {
-      story: 'Max a 10 ans. Il a acheté 25 cahiers et 18 stylos. Combien d\'articles a-t-il achetés en tout ?',
-      question: 'Combien d\'articles a-t-il achetés en tout ?',
-      answer: 43,
-      visual: '📝',
-      first: 25,
-      second: 18,
-      item: '📝',
+      story: 'Lors d\'un tournoi de basket, l\'équipe des Aigles a marqué 167 points pendant les matchs du matin, puis 235 points l\'après-midi. L\'équipe des Lions, quant à elle, a marqué 186 points le matin et 198 points en fin de journée. Quel est le total des points marqués par les deux équipes durant toute la journée ?',
+      question: 'Quel est le total des points marqués par les deux équipes durant toute la journée ?',
+      answer: 786,
+      visual: '🏀',
+      first: 402,
+      second: 384,
+      item: '🏀',
+      color1: 'text-red-600',
+      color2: 'text-yellow-600'
+    },
+    
+    // NIVEAU 3 : Problèmes avec données inutiles et grands nombres (200-400)
+    {
+      story: 'Dans une grande école de 3 étages, la classe de CE2 organise une collecte de livres. Le lundi, ils récoltent 234 livres. Le mardi matin, avant la récréation de 10h30, ils en récoltent encore 156. Combien de livres ont-ils récoltés en tout ?',
+      question: 'Combien de livres ont-ils récoltés en tout ?',
+      answer: 390,
+      visual: '📚',
+      first: 234,
+      second: 156,
+      item: '📚',
+      color1: 'text-blue-600',
+      color2: 'text-green-600'
+    },
+    {
+      story: 'Pour décorer la salle de spectacle, la maîtresse coupe un ruban de 8 mètres, puis un autre de 5 mètres. Combien de décimètres de ruban a-t-elle en tout ?',
+      question: 'Combien de décimètres de ruban a-t-elle en tout ?',
+      answer: 130,
+      visual: '📏',
+      first: 80,
+      second: 50,
+      item: '📏',
+      color1: 'text-red-600',
+      color2: 'text-blue-600'
+    },
+    
+    // NIVEAU 4 : Problèmes complexes avec grands nombres (300-2000)
+    {
+      story: 'Pour son voyage scolaire, la classe de CE2 prend le train. À l\'aller, ils parcourent 378 kilomètres jusqu\'à Paris, puis 456 kilomètres de Paris jusqu\'à Bordeaux. Au retour, ils font le même trajet en sens inverse. Combien de kilomètres parcourent-ils en tout pendant leur voyage ?',
+      question: 'Combien de kilomètres parcourent-ils en tout pendant leur voyage ?',
+      answer: 1668,
+      visual: '🚂',
+      first: 834,
+      second: 834,
+      item: '🚂',
       color1: 'text-blue-600',
       color2: 'text-red-600'
-    },
-    {
-      story: 'Emma mesure 1m20. Elle range sa collection : 34 livres de contes et 29 livres de poésie. Combien de livres a-t-elle ?',
-      question: 'Combien de livres a-t-elle ?',
-      answer: 63,
-      visual: '📚',
-      first: 34,
-      second: 29,
-      item: '📚',
-      color1: 'text-green-600',
-      color2: 'text-purple-600'
-    },
-    
-    // NIVEAU 4 : Problèmes de comparaison (nombres 30-150)
-    {
-      story: 'Léa a 45 poupées. Tom a 28 poupées de plus que Léa. Combien de poupées Tom a-t-il ?',
-      question: 'Combien de poupées Tom a-t-il ?',
-      answer: 73,
-      visual: '🎎',
-      first: 45,
-      second: 28,
-      item: '🎎',
-      color1: 'text-pink-600',
-      color2: 'text-blue-600'
     },
     {
       story: 'Sophie collectionne les autocollants. Elle en a 67. Sa sœur en a 49 de plus. Combien d\'autocollants sa sœur a-t-elle ?',
@@ -671,12 +671,12 @@ export default function ProblemesAdditionCE2() {
       const rect = element.getBoundingClientRect();
       const isAlreadyVisible = rect.top >= 0 && rect.bottom <= window.innerHeight;
       
-      // Ne pas scroller si l'élément est déjà visible
+      // Si l'élément n'est pas déjà entièrement visible
       if (!isAlreadyVisible) {
         element.scrollIntoView({ 
           behavior: 'smooth', 
-          block: 'start',
-          inline: 'nearest' 
+          block: 'center',  // Centre l'élément dans la vue
+          inline: 'nearest'
         });
       }
     }
@@ -1350,7 +1350,7 @@ export default function ProblemesAdditionCE2() {
       await quickAudio(`La bonne réponse est ${result} !`);
       await wait(1000);
       
-      setExerciseAnimationStep(null);
+      // Ne pas réinitialiser l'animation pour qu'elle reste visible
       
     } catch (error) {
       console.error('Erreur dans quickVocalCorrection:', error);

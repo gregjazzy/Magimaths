@@ -66,84 +66,116 @@ export default function AdditionSansRetenueCE2() {
   };
 
   const baseExercises = [
-    // 1. Introduction rapide
+    // 1. Question de compréhension pour commencer
     {
       question: 'Pour poser une addition, je dois...', 
       correctAnswer: 'Aligner les chiffres en colonnes',
       choices: ['Écrire n\'importe comment', 'Aligner les chiffres en colonnes', 'Mélanger les nombres']
     },
     
-    // 2. Démarrage avec calculs simples à 2 nombres
+    // 2. Additions à 2 nombres avec retenue
     { 
-      question: 'Calcule : 37 + 25', 
-      correctAnswer: '62',
-      choices: ['62', '52', '72'],
-      visual: '   37\n+  25\n─────\n   ?'
+      question: 'Calcule : 58 + 47', 
+      correctAnswer: '105',
+      choices: ['105', '95', '115'],
+      visual: '   58\n+  47\n─────\n   ?'
     },
     { 
-      question: 'Calcule : 48 + 36', 
-      correctAnswer: '84',
-      choices: ['84', '74', '94'],
-      visual: '   48\n+  36\n─────\n   ?'
-    },
-    
-    // 3. Addition de 2 nombres à 3 chiffres avec retenue
-    { 
-      question: 'Quand je fais 7 + 8 = 15, que fais-je du 1 ?', 
-      correctAnswer: 'Je le mets en retenue',
-      choices: ['Je le mets en retenue', 'Je le laisse à droite', 'Je le barre']
-    },
-    { 
-      question: 'Calcule : 267 + 358', 
-      correctAnswer: '625',
-      choices: ['615', '625', '635'],
-      visual: '  267\n+ 358\n─────\n   ?'
-    },
-    { 
-      question: 'Calcule : 456 + 367', 
-      correctAnswer: '823',
-      choices: ['813', '823', '833'],
-      visual: '  456\n+ 367\n─────\n   ?'
+      question: 'Calcule : 76 + 85', 
+      correctAnswer: '161',
+      choices: ['151', '161', '171'],
+      visual: '   76\n+  85\n─────\n   ?'
     },
     
-    // 4. Addition de 3 nombres à 2 chiffres avec retenue
+    // 3. Additions à 3 nombres avec retenue aux unités
     { 
-      question: 'Calcule : 26 + 37 + 28', 
-      correctAnswer: '91',
-      choices: ['81', '91', '101'],
-      visual: '   26\n+  37\n+  28\n─────\n   ?'
+      question: 'Calcule : 45 + 38 + 29', 
+      correctAnswer: '112',
+      choices: ['102', '112', '122'],
+      visual: '   45\n+  38\n+  29\n─────\n   ?'
     },
     { 
-      question: 'Calcule : 35 + 27 + 29', 
-      correctAnswer: '91',
-      choices: ['81', '91', '101'],
-      visual: '   35\n+  27\n+  29\n─────\n   ?'
-    },
-    
-    // 5. Addition mixte (2 nombres à 3 chiffres + 1 nombre à 2 chiffres)
-    { 
-      question: 'Calcule : 256 + 167 + 78', 
-      correctAnswer: '501',
-      choices: ['491', '501', '511'],
-      visual: '  256\n+ 167\n+  78\n─────\n   ?'
-    },
-    { 
-      question: 'Calcule : 267 + 156 + 77', 
-      correctAnswer: '500',
-      choices: ['490', '500', '510'],
-      visual: '  267\n+ 156\n+  77\n─────\n   ?'
+      question: 'Calcule : 67 + 56 + 48', 
+      correctAnswer: '171',
+      choices: ['161', '171', '181'],
+      visual: '   67\n+  56\n+  48\n─────\n   ?'
     },
     
-    // 6. Questions de compréhension
+    // 4. Additions à 3 nombres avec retenue aux dizaines
     { 
-      question: 'Par quelle colonne commence-t-on toujours ?', 
-      correctAnswer: 'Les unités (à droite)',
-      choices: ['Les dizaines (à gauche)', 'Les unités (à droite)', 'Les centaines (à gauche)']
+      question: 'Calcule : 85 + 67 + 39', 
+      correctAnswer: '191',
+      choices: ['181', '191', '201'],
+      visual: '   85\n+  67\n+  39\n─────\n   ?'
     },
     { 
-      question: 'L\'addition posée sans retenue nous aide à...', 
-      correctAnswer: 'Calculer plus facilement',
-      choices: ['Aller plus vite', 'Faire plus joli', 'Calculer plus facilement']
+      question: 'Calcule : 78 + 94 + 53', 
+      correctAnswer: '225',
+      choices: ['215', '225', '235'],
+      visual: '   78\n+  94\n+  53\n─────\n   ?'
+    },
+    
+    // 5. Additions à 3 nombres dont un à 3 chiffres
+    { 
+      question: 'Calcule : 156 + 87 + 68', 
+      correctAnswer: '311',
+      choices: ['301', '311', '321'],
+      visual: '  156\n+  87\n+  68\n─────\n   ?'
+    },
+    { 
+      question: 'Calcule : 234 + 98 + 79', 
+      correctAnswer: '411',
+      choices: ['401', '411', '421'],
+      visual: '  234\n+  98\n+  79\n─────\n   ?'
+    },
+    
+    // 6. Additions à 3 nombres à 3 chiffres
+    { 
+      question: 'Calcule : 347 + 285 + 169', 
+      correctAnswer: '801',
+      choices: ['791', '801', '811'],
+      visual: '  347\n+ 285\n+ 169\n─────\n   ?'
+    },
+    { 
+      question: 'Calcule : 456 + 378 + 289', 
+      correctAnswer: '1123',
+      choices: ['1113', '1123', '1133'],
+      visual: '  456\n+ 378\n+ 289\n─────\n   ?'
+    },
+    
+    // 7. Additions complexes avec plusieurs retenues
+    { 
+      question: 'Calcule : 568 + 397 + 258', 
+      correctAnswer: '1223',
+      choices: ['1213', '1223', '1233'],
+      visual: '  568\n+ 397\n+ 258\n─────\n   ?'
+    },
+    { 
+      question: 'Calcule : 789 + 456 + 378', 
+      correctAnswer: '1623',
+      choices: ['1613', '1623', '1633'],
+      visual: '  789\n+ 456\n+ 378\n─────\n   ?'
+    },
+    
+    // 8. Additions très complexes avec retenues en cascade
+    { 
+      question: 'Calcule : 899 + 699 + 599', 
+      correctAnswer: '2197',
+      choices: ['2187', '2197', '2207'],
+      visual: '  899\n+ 699\n+ 599\n─────\n   ?'
+    },
+    { 
+      question: 'Calcule : 978 + 967 + 889', 
+      correctAnswer: '2834',
+      choices: ['2824', '2834', '2844'],
+      visual: '  978\n+ 967\n+ 889\n─────\n   ?'
+    },
+    
+    // 9. Question finale de compréhension
+    { 
+      question: 'Quand je fais une addition avec retenue, je dois...', 
+      correctAnswer: 'Poser la retenue au-dessus de la colonne suivante',
+      choices: ['L\'oublier', 'Poser la retenue au-dessus de la colonne suivante', 'La mettre à la fin']
     }
   ];
 
@@ -541,6 +573,24 @@ export default function AdditionSansRetenueCE2() {
         await wait(500);
         setPartialResults(prev => ({ ...prev, hundreds: hundredsSum.toString() }));
         await wait(1000);
+
+        // Animation des centaines si nécessaire
+        if (maxDigits >= 3) {
+          await wait(1500);
+          setCalculationStep('hundreds');
+          // Extraire uniquement le chiffre des centaines
+          const num1Hundreds = Math.floor(num1 / 100);
+          const num2Hundreds = Math.floor(num2 / 100);
+          const num3Hundreds = match[3] ? Math.floor(parseInt(match[3]) / 100) : 0;
+          const hundredsSum = num1Hundreds + num2Hundreds + num3Hundreds + tensCarry;
+          
+          await playAudio(`Je calcule : ${num1Hundreds} plus ${num2Hundreds}${num3Hundreds ? ` plus ${num3Hundreds}` : ''}${tensCarry ? ` plus ${tensCarry} de retenue` : ''} égale ${hundredsSum}`, true);
+          if (stopSignalRef.current) return;
+          
+          await wait(500);
+          setPartialResults(prev => ({ ...prev, hundreds: hundredsSum.toString() }));
+          await wait(1000);
+        }
       }
       
       // Résultat final
@@ -956,7 +1006,7 @@ export default function AdditionSansRetenueCE2() {
       if (stopSignalRef.current) return;
       
       await wait(1000);
-      const maxDigits = Math.max(num1.toString().length, num2.toString().length);
+      const maxDigits = Math.max(num1.toString().length, num2.toString().length, result.toString().length);
       if (maxDigits >= 3) {
         await playAudio("Tu vois les trois colonnes : C pour centaines, D pour dizaines, et U pour unités !", true);
       } else {
@@ -973,11 +1023,12 @@ export default function AdditionSansRetenueCE2() {
       setCalculationStep('units');
       const num1Units = num1 % 10;
       const num2Units = num2 % 10;
-      const num3Units = 0; // Initialisation à 0 car pas de troisième nombre dans ce cas
-      const unitsSum = num1Units + num2Units;
+      const num3Units = match[3] ? parseInt(match[3]) % 10 : 0;
+      const unitsSum = num1Units + num2Units + num3Units;
       const unitsCarry = Math.floor(unitsSum / 10);
       
-      await playAudio(`Je calcule : ${num1Units} plus ${num2Units}${example.num3 ? ` plus ${num3Units}` : ''} égale ${unitsSum}${unitsSum >= 10 ? `. Je pose ${unitsSum % 10} et je retiens ${Math.floor(unitsSum / 10)}` : ''}`, true);
+      await playAudio(`Je calcule : ${num1Units} plus ${num2Units}${num3Units ? ` plus ${num3Units}` : ''} égale ${unitsSum}${unitsSum >= 10 ? `. Je pose ${unitsSum % 10} et je retiens ${unitsCarry}` : ''}`, true);
+      setShowingCarry(unitsSum >= 10);
       if (stopSignalRef.current) return;
       
       await wait(500);
@@ -993,32 +1044,35 @@ export default function AdditionSansRetenueCE2() {
         // Extraire uniquement le chiffre des dizaines
         const num1Tens = Math.floor((num1 % 100) / 10);
         const num2Tens = Math.floor((num2 % 100) / 10);
-        const tensSum = num1Tens + num2Tens + unitsCarry;
+        const num3Tens = match[3] ? Math.floor(parseInt(match[3]) % 100 / 10) : 0;
+        const tensSum = num1Tens + num2Tens + num3Tens + unitsCarry;
         const tensCarry = Math.floor(tensSum / 10);
         
-        await playAudio(`Je calcule : ${num1Tens} plus ${num2Tens}${unitsSum >= 10 ? ` plus ${Math.floor(unitsSum / 10)} de retenue` : ''} égale ${tensSum}${tensSum >= 10 ? `. Je pose ${tensSum % 10} et je retiens ${Math.floor(tensSum / 10)}` : ''}`, true);
+        await playAudio(`Je calcule : ${num1Tens} plus ${num2Tens}${num3Tens ? ` plus ${num3Tens}` : ''}${unitsCarry ? ` plus ${unitsCarry} de retenue` : ''} égale ${tensSum}${tensSum >= 10 ? `. Je pose ${tensSum % 10} et je retiens ${tensCarry}` : ''}`, true);
+        setShowingCarry(tensSum >= 10);
         if (stopSignalRef.current) return;
         
         await wait(500);
         setPartialResults(prev => ({ ...prev, tens: (tensSum % 10).toString() }));
+        setShowingCarry(tensSum >= 10);
         await wait(1000);
-      }
-      
-      // Animation des centaines si nécessaire
-      if (maxDigits >= 3) {
-        await wait(1500);
-        setCalculationStep('hundreds');
-        // Extraire uniquement le chiffre des centaines
-        const num1Hundreds = Math.floor(num1 / 100) % 10;
-        const num2Hundreds = Math.floor(num2 / 100) % 10;
-        const hundredsSum = num1Hundreds + num2Hundreds + tensCarry;
-        
-        await playAudio(`Je calcule : ${num1Hundreds} plus ${num2Hundreds}${tensSum >= 10 ? ` plus ${Math.floor(tensSum / 10)} de retenue` : ''} égale ${hundredsSum}`, true);
-        if (stopSignalRef.current) return;
-        
-        await wait(500);
-        setPartialResults(prev => ({ ...prev, hundreds: hundredsSum.toString() }));
-        await wait(1000);
+
+        // Animation des centaines si nécessaire
+        if (maxDigits >= 3) {
+          await wait(1500);
+          setCalculationStep('hundreds');
+          // Extraire uniquement le chiffre des centaines
+          const num1Hundreds = Math.floor(num1 / 100);
+          const num2Hundreds = Math.floor(num2 / 100);
+          const hundredsSum = num1Hundreds + num2Hundreds + tensCarry;
+          
+          await playAudio(`Je calcule : ${num1Hundreds} plus ${num2Hundreds}${tensCarry > 0 ? ` plus ${tensCarry} de retenue` : ''} égale ${hundredsSum}`, true);
+          if (stopSignalRef.current) return;
+          
+          await wait(500);
+          setPartialResults(prev => ({ ...prev, hundreds: hundredsSum.toString() }));
+          await wait(1000);
+        }
       }
       
       // Résultat final
