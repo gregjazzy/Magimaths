@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trouve le bon mot de position</title>
+    <style>
+        .position-mots {
+            margin: 0;
+            padding: 20px;
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f7ff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .game-container {
+            max-width: 800px;
+            width: 100%;
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .question {
+            text-align: center;
+            font-size: 1.5em;
+            color: #2563eb;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .image-container {
+            width: 100%;
+            height: 300px;
+            background: #f8fafc;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .image-container img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .options-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .option-button {
+            padding: 15px;
+            font-size: 1.2em;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #1e40af;
+            font-weight: bold;
+        }
+
+        .option-button:hover {
+            background: #f0f9ff;
+            border-color: #60a5fa;
+        }
+
+        .option-button.correct {
+            background: #86efac;
+            border-color: #22c55e;
+            color: #14532d;
+        }
+
+        .option-button.incorrect {
+            background: #fca5a5;
+            border-color: #ef4444;
+            color: #7f1d1d;
+        }
+
+        .score {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 215, 0, 0.9);
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .score::before {
+            content: "🪙";
+            font-size: 1.4em;
+        }
+
+        @keyframes coinWin {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        .coin-win {
+            animation: coinWin 0.5s ease-out;
+        }
+
+        .feedback {
+            text-align: center;
+            font-size: 1.2em;
+            margin-top: 20px;
+            font-weight: bold;
+            min-height: 2em;
+        }
+
+        .feedback.correct {
+            color: #22c55e;
+        }
+
+        .feedback.incorrect {
+            color: #ef4444;
+        }
+    </style>
+</head>
+<body>
+    <div class="position-mots">
+        <div class="game-container">
+            <div class="question">Quel mot décrit la position sur cette image ?</div>
+            <div class="image-container">
+                <!-- L'image sera chargée ici par JavaScript -->
+            </div>
+            <div class="options-container">
+                <!-- Les options seront générées ici par JavaScript -->
+            </div>
+            <div class="feedback"></div>
+        </div>
+        <div class="score">0</div>
+    </div>
+
+    <script>
+        class PositionGame {
+            constructor() {
+                this.questions = [
+                    {
+                        image: '/micro-apps/position-mots/images/dessus.jpg',
+                        options: ['Dessus', 'Dessous', 'Au-dessus', 'En-dessous'],
+                        correct: 'Dessus',
+                        explanation: 'Le chat est sur le canapé, il le touche.'
+                    },
+                    {
+                        image: '/micro-apps/position-mots/images/au-dessus.jpg',
+                        options: ['Dessus', 'Au-dessus', 'À côté', 'Devant'],
+                        correct: 'Au-dessus',
+                        explanation: 'La lampe est au-dessus de la table, il y a de l\'espace entre les deux.'
+                    },
+                    // Ajouter d'autres questions ici
+                ];
+
+                this.currentQuestion = 0;
+                this.score = parseInt(localStorage.getItem('position-mots-score') || '0');
+                this.updateScore();
+
+                this.imageContainer = document.querySelector('.image-container');
+                this.optionsContainer = document.querySelector('.options-container');
+                this.feedbackElement = document.querySelector('.feedback');
+
+                this.loadQuestion();
+            }
+
+            loadQuestion() {
+                const question = this.questions[this.currentQuestion];
+                
+                // Charger l'image
+                this.imageContainer.innerHTML = `<img src="${question.image}" alt="Position à identifier">`;
+                
+                // Mélanger les options
+                const shuffledOptions = this.shuffle([...question.options]);
+                
+                // Créer les boutons
+                this.optionsContainer.innerHTML = shuffledOptions.map(option => `
+                    <button class="option-button" data-option="${option}">${option}</button>
+                `).join('');
+
+                // Ajouter les événements aux boutons
+                this.optionsContainer.querySelectorAll('.option-button').forEach(button => {
+                    button.addEventListener('click', () => this.checkAnswer(button));
+                });
+
+                // Réinitialiser le feedback
+                this.feedbackElement.textContent = '';
+                this.feedbackElement.className = 'feedback';
+            }
+
+            checkAnswer(button) {
+                const selectedOption = button.dataset.option;
+                const question = this.questions[this.currentQuestion];
+                const isCorrect = selectedOption === question.correct;
+
+                // Désactiver tous les boutons
+                this.optionsContainer.querySelectorAll('.option-button').forEach(btn => {
+                    btn.disabled = true;
+                });
+
+                // Marquer le bouton sélectionné
+                button.classList.add(isCorrect ? 'correct' : 'incorrect');
+
+                // Montrer la bonne réponse si c'est incorrect
+                if (!isCorrect) {
+                    this.optionsContainer.querySelector(`[data-option="${question.correct}"]`)
+                        .classList.add('correct');
+                }
+
+                // Afficher le feedback
+                this.feedbackElement.textContent = isCorrect ? 
+                    'Bravo ! ' + question.explanation :
+                    'Pas tout à fait... ' + question.explanation;
+                this.feedbackElement.className = `feedback ${isCorrect ? 'correct' : 'incorrect'}`;
+
+                // Mettre à jour le score si correct
+                if (isCorrect) {
+                    this.score++;
+                    this.updateScore(true);
+                    localStorage.setItem('position-mots-score', this.score.toString());
+                }
+
+                // Passer à la question suivante après un délai
+                setTimeout(() => {
+                    this.currentQuestion = (this.currentQuestion + 1) % this.questions.length;
+                    this.loadQuestion();
+                }, 2000);
+            }
+
+            updateScore(animate = false) {
+                const scoreElement = document.querySelector('.score');
+                scoreElement.textContent = this.score.toString();
+                if (animate) {
+                    scoreElement.classList.add('coin-win');
+                    setTimeout(() => scoreElement.classList.remove('coin-win'), 500);
+                }
+            }
+
+            shuffle(array) {
+                for (let i = array.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [array[i], array[j]] = [array[j], array[i]];
+                }
+                return array;
+            }
+        }
+
+        // Démarrer le jeu quand la page est chargée
+        window.addEventListener('DOMContentLoaded', () => {
+            const game = new PositionGame();
+        });
+    </script>
+</body>
+</html>
