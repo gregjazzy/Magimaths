@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+    <!-- Corps du robot -->
+    <g transform="translate(100 100)" fill="none" stroke-width="4">
+        <!-- Tête -->
+        <rect x="-40" y="-50" width="80" height="60" rx="10" fill="#4299e1" stroke="#2b6cb0"/>
+        <circle cx="-15" cy="-30" r="10" fill="#fff"/>
+        <circle cx="15" cy="-30" r="10" fill="#fff"/>
+        <circle cx="-15" cy="-30" r="5" fill="#000"/>
+        <circle cx="15" cy="-30" r="5" fill="#000"/>
+        <path d="M-20 -10 Q 0 0 20 -10" stroke="#2b6cb0" stroke-width="4" stroke-linecap="round"/>
+        
+        <!-- Antennes -->
+        <line x1="-30" y1="-50" x2="-40" y2="-70" stroke="#2b6cb0" stroke-width="4"/>
+        <line x1="30" y1="-50" x2="40" y2="-70" stroke="#2b6cb0" stroke-width="4"/>
+        <circle cx="-40" cy="-70" r="5" fill="#f56565"/>
+        <circle cx="40" cy="-70" r="5" fill="#f56565"/>
+        
+        <!-- Corps -->
+        <rect x="-50" y="20" width="100" height="80" rx="10" fill="#3182ce" stroke="#2b6cb0"/>
+        
+        <!-- Motifs du corps -->
+        <circle cx="0" cy="40" r="15" fill="#4299e1" stroke="#2b6cb0"/>
+        <rect x="-30" y="70" width="60" height="20" rx="5" fill="#4299e1" stroke="#2b6cb0"/>
+        
+        <!-- Bras -->
+        <rect x="-80" y="30" width="30" height="20" rx="5" fill="#4299e1" stroke="#2b6cb0"/>
+        <rect x="50" y="30" width="30" height="20" rx="5" fill="#4299e1" stroke="#2b6cb0"/>
+        
+        <!-- Roues -->
+        <circle cx="-40" cy="110" r="15" fill="#2b6cb0" stroke="#1a4971"/>
+        <circle cx="40" cy="110" r="15" fill="#2b6cb0" stroke="#1a4971"/>
+    </g>
+</svg>

@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Robotino et les Positions</title>
+    <style>
+        /* Reset et styles de base isolés */
+        .reperage-espace {
+            margin: 0;
+            overflow: hidden;
+            font-family: 'Arial', sans-serif;
+            background-color: #e0f7fa;
+            display: flex;
+            width: 100%;
+            height: 100vh;
+        }
+
+        /* Conteneur principal */
+        #reperage-espace-container { 
+            flex-grow: 1; 
+            position: relative;
+            min-height: 90vh;
+            margin: 20px;
+            background-color: #f5f5f5;
+            border-radius: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        /* Liste des mots */
+        #reperage-espace-word-list {
+            width: 200px;
+            background-color: #f0f4c3;
+            padding: 20px;
+            box-shadow: 4px 0 12px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            overflow-y: auto;
+        }
+
+        /* Boutons de position */
+        .reperage-espace-word-button {
+            background-color: #c5e1a5;
+            border: none;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #33691e;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.1s ease;
+        }
+        .reperage-espace-word-button:hover {
+            background-color: #aed581;
+            transform: translateY(-2px);
+        }
+        .reperage-espace-word-button.selected {
+            background-color: #8bc34a;
+            color: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        /* Robot */
+        #reperage-espace-robot {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            cursor: grab;
+            user-select: none;
+            touch-action: none;
+            z-index: 1000;
+            will-change: transform, opacity;
+            transform: translate(calc(100% - 120px), 20px);
+            transition: transform 0.1s ease-out;
+        }
+        #reperage-espace-robot.dragging {
+            transition: none;
+            cursor: grabbing;
+            transform: scale(1.05);
+        }
+        #reperage-espace-robot.behind {
+            opacity: 0.5;
+            filter: brightness(0.9);
+            transition: opacity 0.2s ease-out, filter 0.2s ease-out;
+        }
+
+        /* Instructions */
+        #reperage-espace-instruction {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 15px 25px;
+            border-radius: 15px;
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #3f51b5;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            z-index: 100;
+        }
+
+        /* Message de succès */
+        #reperage-espace-success {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(76, 175, 80, 0.9);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 1.2em;
+            font-weight: 500;
+            display: none;
+            z-index: 2000;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            transition: opacity 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="reperage-espace">
+        <div id="reperage-espace-word-list">
+            <button class="reperage-espace-word-button selected" data-position="dessus">Dessus</button>
+            <button class="reperage-espace-word-button" data-position="dessous">Dessous</button>
+            <button class="reperage-espace-word-button" data-position="devant">Devant</button>
+            <button class="reperage-espace-word-button" data-position="derriere">Derrière</button>
+            <button class="reperage-espace-word-button" data-position="entre">Entre</button>
+            <button class="reperage-espace-word-button" data-position="a-cote">À côté</button>
+            <button class="reperage-espace-word-button" data-position="pres">Près</button>
+            <button class="reperage-espace-word-button" data-position="loin">Loin</button>
+        </div>
+        <div id="reperage-espace-container">
+            <div id="reperage-espace-instruction">Place le robot sur la table !</div>
+            <div id="reperage-espace-robot">
+                <img src="/micro-apps/reperage-espace/robot.svg" alt="Robotino" style="width: 100%; height: 100%;">
+            </div>
+            <div id="reperage-espace-success"></div>
+        </div>
+    </div>
+
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+            "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+        }
+    }
+    </script>
+
+    <script type="module">
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+        
+        const textureLoader = new THREE.TextureLoader();
+        
+        // Définir des couleurs simples au lieu des textures
+        const woodColor = 0x8B4513;  // Marron
+        const fabricColor = 0x4A90E2;  // Bleu
+        const metalColor = 0x808080;  // Gris
+        const woodDarkColor = 0x3E2723;  // Marron foncé
+
+        class Game {
+            constructor() {
+                this.container = document.getElementById('reperage-espace-container');
+                this.scene = new THREE.Scene();
+                this.scene.background = new THREE.Color(0xf0f0f0);
+                this.camera = new THREE.PerspectiveCamera(75, this.container.clientWidth / this.container.clientHeight, 0.1, 1000);
+                
+                this.renderer = new THREE.WebGLRenderer({ antialias: true });
+                this.renderer.setSize(this.container.clientWidth, this.container.clientHeight);
+                this.renderer.shadowMap.enabled = true;
+                this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+                this.container.appendChild(this.renderer.domElement);
+
+                // Position de la caméra par défaut
+                this.camera.position.set(0, 4, 8);
+                this.camera.lookAt(0, 0, 0);
+
+                // Créer un sol
+                const groundGeometry = new THREE.PlaneGeometry(20, 20);
+                const groundMaterial = new THREE.MeshStandardMaterial({ 
+                    color: 0xcccccc,
+                    roughness: 0.8,
+                    metalness: 0.2
+                });
+                const ground = new THREE.Mesh(groundGeometry, groundMaterial);
+                ground.rotation.x = -Math.PI / 2;
+                ground.position.y = 0;
+                ground.receiveShadow = true;
+                this.scene.add(ground);
+
+                this.setupLights();
+                this.createObjects();
+                this.setupEventListeners();
+
+                // Initialiser avec le premier bouton
+                const firstButton = document.querySelector('.word-button');
+                if (firstButton) {
+                    firstButton.classList.add('selected');
+                    this.setPosition(firstButton.dataset.position);
+                }
+
+                // Démarrer l'animation
+                this.animate();
+            }
+
+            setupLights() {
+                // Lumière ambiante
+                const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+                this.scene.add(ambientLight);
+
+                // Lumière principale
+                const mainLight = new THREE.DirectionalLight(0xffffff, 0.8);
+                mainLight.position.set(5, 8, 5);
+                mainLight.castShadow = true;
+                mainLight.shadow.mapSize.width = 2048;
+                mainLight.shadow.mapSize.height = 2048;
+                mainLight.shadow.camera.near = 0.5;
+                mainLight.shadow.camera.far = 50;
+                mainLight.shadow.camera.left = -10;
+                mainLight.shadow.camera.right = 10;
+                mainLight.shadow.camera.top = 10;
+                mainLight.shadow.camera.bottom = -10;
+                this.scene.add(mainLight);
+
+                // Lumière d'appoint pour les détails
+                const fillLight = new THREE.DirectionalLight(0xffffff, 0.4);
+                fillLight.position.set(-5, 3, -5);
+                this.scene.add(fillLight);
+
+                // Lumière douce pour l'ambiance
+                const backLight = new THREE.DirectionalLight(0xffd700, 0.2);
+                backLight.position.set(0, 2, -5);
+                this.scene.add(backLight);
+            }
+
+            createObjects() {
+                // Table basse pour dessus/dessous
+                const createTable = () => {
+                    const table = new THREE.Group();
+                    const topGeometry = new THREE.BoxGeometry(4, 0.3, 2.4);
+                    const tableMaterial = new THREE.MeshStandardMaterial({ 
+                        color: woodColor,
+                        roughness: 0.8,
+                        metalness: 0.2
+                    });
+                    const top = new THREE.Mesh(topGeometry, tableMaterial);
+                    top.position.y = 2;  // Remettre la hauteur originale de la table
+
+                    const legGeometry = new THREE.BoxGeometry(0.2, 2, 0.2);
+                    for (let i = 0; i < 4; i++) {
+                        const leg = new THREE.Mesh(legGeometry, tableMaterial);
+                        leg.position.x = (i < 2 ? -1.6 : 1.6);
+                        leg.position.z = (i % 2 === 0 ? 1 : -1);
+                        leg.position.y = 1;
+                        table.add(leg);
+                    }
+                    table.add(top);
+                    return table;
+                };
+
+                // Chaise pour devant/derrière
+                const createChair = () => {
+                    const chair = new THREE.Group();
+                    const material = new THREE.MeshStandardMaterial({ 
+                        color: fabricColor,
+                        roughness: 0.9,
+                        metalness: 0.1
+                    });
+                    const darkMaterial = new THREE.MeshStandardMaterial({ 
+                        color: metalColor,
+                        roughness: 0.4,
+                        metalness: 0.8
+                    });
+                    
+                    // Assise
+                    const seat = new THREE.Mesh(
+                        new THREE.BoxGeometry(1.6, 0.15, 1.6),
+                        material
+                    );
+                    seat.position.y = 1.0;
+                    
+                    // Dossier principal
+                    const back = new THREE.Mesh(
+                        new THREE.BoxGeometry(1.6, 1.6, 0.15),
+                        material
+                    );
+                    back.position.y = 1.8;
+                    back.position.z = -0.7;
+                    back.rotation.x = -0.15; // Légère inclinaison pour le confort
+                    
+                    // Barreaux du dossier
+                    for (let i = 0; i < 3; i++) {
+                        const bar = new THREE.Mesh(
+                            new THREE.BoxGeometry(0.1, 1.4, 0.05),
+                            darkMaterial
+                        );
+                        bar.position.y = 1.7;
+                        bar.position.z = -0.55;
+                        bar.position.x = -0.4 + (i * 0.4);
+                        bar.rotation.x = -0.1;
+                        chair.add(bar);
+                    }
+                    
+                    // Pieds
+                    const frontLegGeometry = new THREE.BoxGeometry(0.15, 1.0, 0.15);
+                    const backLegGeometry = new THREE.BoxGeometry(0.15, 1.6, 0.15);
+                    
+                    // Pieds avant (plus courts)
+                    for (let i = 0; i < 2; i++) {
+                        const leg = new THREE.Mesh(frontLegGeometry, darkMaterial);
+                        leg.position.x = (i === 0 ? -0.65 : 0.65);
+                        leg.position.z = 0.65;
+                        leg.position.y = 0.5;
+                        chair.add(leg);
+                    }
+                    
+                    // Pieds arrière (plus longs et inclinés)
+                    for (let i = 0; i < 2; i++) {
+                        const leg = new THREE.Mesh(backLegGeometry, darkMaterial);
+                        leg.position.x = (i === 0 ? -0.65 : 0.65);
+                        leg.position.z = -0.65;
+                        leg.position.y = 0.8;
+                        leg.rotation.x = 0.2; // Inclinaison vers l'arrière plus prononcée
+                        chair.add(leg);
+                    }
+                    
+                    // Barres de renfort entre les pieds
+                    const supportGeometry = new THREE.BoxGeometry(0.08, 0.08, 1.3);
+                    const frontSupport = new THREE.Mesh(supportGeometry, darkMaterial);
+                    frontSupport.position.set(-0.65, 0.3, 0);
+                    chair.add(frontSupport);
+                    
+                    const backSupport = new THREE.Mesh(supportGeometry, darkMaterial);
+                    backSupport.position.set(0.65, 0.3, 0);
+                    chair.add(backSupport);
+                    
+                    const sideSupport = new THREE.Mesh(
+                        new THREE.BoxGeometry(1.3, 0.08, 0.08),
+                        darkMaterial
+                    );
+                    sideSupport.position.set(0, 0.3, 0.65);
+                    chair.add(sideSupport);
+                    
+                    const backSideSupport = new THREE.Mesh(
+                        new THREE.BoxGeometry(1.3, 0.08, 0.08),
+                        darkMaterial
+                    );
+                    backSideSupport.position.set(0, 0.3, -0.65);
+                    chair.add(backSideSupport);
+                    
+                    chair.add(seat, back);
+                    
+                    // Rotation de trois quarts
+                    chair.rotation.y = Math.PI / 6;
+                    
+                    return chair;
+                };
+
+                // Cubes colorés pour entre
+                const createCubes = () => {
+                    const cubes = new THREE.Group();
+                    const geometry = new THREE.BoxGeometry(1, 2, 1);
+                    
+                    const cube1 = new THREE.Mesh(
+                        geometry,
+                        new THREE.MeshStandardMaterial({ color: 0xff6b6b })
+                    );
+                    cube1.position.x = -2;
+                    cube1.position.y = 1;
+                    
+                    const cube2 = new THREE.Mesh(
+                        geometry,
+                        new THREE.MeshStandardMaterial({ color: 0x4dabf7 })
+                    );
+                    cube2.position.x = 2;
+                    cube2.position.y = 1;
+                    
+                    cubes.add(cube1, cube2);
+                    return cubes;
+                };
+
+                // Armoire pour à côté
+                const createCabinet = () => {
+                    const cabinet = new THREE.Group();
+                    
+                    // Corps principal
+                    const bodyMaterial = new THREE.MeshStandardMaterial({ 
+                        color: woodDarkColor,
+                        roughness: 0.7,
+                        metalness: 0.1
+                    });
+                    const body = new THREE.Mesh(
+                        new THREE.BoxGeometry(1.8, 3.2, 1),
+                        bodyMaterial
+                    );
+                    body.position.y = 1.6;
+                    
+                    // Socle
+                    const baseMaterial = new THREE.MeshStandardMaterial({ 
+                        color: woodDarkColor,
+                        roughness: 0.6,
+                        metalness: 0.2
+                    });
+                    const base = new THREE.Mesh(
+                        new THREE.BoxGeometry(2, 0.2, 1.2),
+                        baseMaterial
+                    );
+                    base.position.y = 0.1;
+                    
+                    // Corniche
+                    const cornice = new THREE.Mesh(
+                        new THREE.BoxGeometry(2, 0.15, 1.2),
+                        baseMaterial
+                    );
+                    cornice.position.y = 3.2;
+                    
+                    // Portes
+                    const doorMaterial = new THREE.MeshStandardMaterial({ 
+                        color: woodDarkColor,
+                        roughness: 0.5,
+                        metalness: 0.1
+                    });
+                    const doorGeometry = new THREE.BoxGeometry(0.85, 2.8, 0.08);
+                    
+                    const leftDoor = new THREE.Mesh(doorGeometry, doorMaterial);
+                    leftDoor.position.set(-0.45, 1.6, 0.5);
+                    
+                    const rightDoor = new THREE.Mesh(doorGeometry, doorMaterial);
+                    rightDoor.position.set(0.45, 1.6, 0.5);
+                    
+                    // Poignées
+                    const handleMaterial = new THREE.MeshStandardMaterial({ 
+                        color: metalColor,
+                        roughness: 0.2,
+                        metalness: 0.8
+                    });
+                    const handleGeometry = new THREE.CylinderGeometry(0.02, 0.02, 0.2, 8);
+                    
+                    const leftHandle = new THREE.Mesh(handleGeometry, handleMaterial);
+                    leftHandle.rotation.z = Math.PI / 2;
+                    leftHandle.position.set(-0.15, 1.6, 0.55);
+                    
+                    const rightHandle = new THREE.Mesh(handleGeometry, handleMaterial);
+                    rightHandle.rotation.z = Math.PI / 2;
+                    rightHandle.position.set(0.15, 1.6, 0.55);
+                    
+                    // Moulures des portes
+                    const createDoorFrame = (x) => {
+                        const frame = new THREE.Group();
+                        const frameMaterial = new THREE.MeshStandardMaterial({ 
+                            color: woodDarkColor,
+                            roughness: 0.6,
+                            metalness: 0.2
+                        });
+                        
+                        const topFrame = new THREE.Mesh(
+                            new THREE.BoxGeometry(0.75, 0.05, 0.02),
+                            frameMaterial
+                        );
+                        topFrame.position.set(x, 2.9, 0.54);
+                        
+                        const bottomFrame = new THREE.Mesh(
+                            new THREE.BoxGeometry(0.75, 0.05, 0.02),
+                            frameMaterial
+                        );
+                        bottomFrame.position.set(x, 0.3, 0.54);
+                        
+                        frame.add(topFrame, bottomFrame);
+                        return frame;
+                    };
+                    
+                    const leftFrame = createDoorFrame(-0.45);
+                    const rightFrame = createDoorFrame(0.45);
+                    
+                    cabinet.add(body, base, cornice, leftDoor, rightDoor, leftHandle, rightHandle, leftFrame, rightFrame);
+                    return cabinet;
+                };
+
+                this.objects = {
+                    table: createTable(),
+                    chair: createChair(),
+                    cubes: createCubes(),
+                    cabinet: createCabinet()
+                };
+            }
+
+            setPosition(position) {
+                if (!position) return;
+                
+                this.currentPosition = position;
+                this.hasSucceeded = false;
+                
+                // Ajuster la caméra selon la position
+                if (position === 'loin') {
+                    this.camera.position.set(0, 6, 12);
+                } else if (position === 'derriere') {
+                    this.camera.position.set(0, 3, 6);
+                    this.camera.lookAt(0, 1, 0);
+                } else {
+                    this.camera.position.set(0, 4, 8);
+                }
+                this.camera.lookAt(0, 0, 0);
+
+                // Nettoyer la scène des objets précédents
+                Object.values(this.objects).forEach(obj => {
+                    if (obj.parent) {
+                        this.scene.remove(obj);
+                    }
+                });
+
+                // Ajouter l'objet approprié
+                if (['dessus', 'dessous', 'pres', 'loin'].includes(position)) {
+                    this.scene.add(this.objects.table);
+                } else if (['devant', 'derriere'].includes(position)) {
+                    this.scene.add(this.objects.chair);
+                } else if (position === 'entre') {
+                    this.scene.add(this.objects.cubes);
+                } else if (position === 'a-cote') {
+                    this.scene.add(this.objects.cabinet);
+                }
+
+                // Mettre à jour l'instruction
+                const instruction = document.getElementById('reperage-espace-instruction');
+                instruction.textContent = this.getInstruction(position);
+
+                // Réinitialiser la position du robot en haut à droite
+                const robot = document.getElementById('reperage-espace-robot');
+                robot.style.transform = 'translate(calc(100% - 120px), 20px)';
+                robot.classList.remove('behind');
+                
+                const successMessage = document.getElementById('reperage-espace-success');
+                successMessage.style.display = 'none';
+            }
+
+            getInstruction(position) {
+                const instructions = {
+                    'dessus': "Place le robot sur la table !",
+                    'dessous': "Place le robot sous la table !",
+                    'devant': "Place le robot devant la chaise !",
+                    'derriere': "Place le robot derrière la chaise !",
+                    'entre': "Place le robot entre les cubes !",
+                    'a-cote': "Place le robot à côté de l'armoire !",
+                    'pres': "Place le robot près de la table !",
+                    'loin': "Place le robot loin de la table !"
+                };
+                return instructions[position] || "Place le robot au bon endroit !";
+            }
+
+            setupEventListeners() {
+                this.isDragging = false;
+                this.startX = 0;
+                this.startY = 0;
+                const robot = document.getElementById('reperage-espace-robot');
+
+                this.startDrag = (e) => {
+                    e.preventDefault();
+                    if (this.isDragging) {
+                        this.endDrag();
+                        return;
+                    }
+                    this.isDragging = true;
+                    robot.classList.add('dragging');
+
+                    const rect = robot.getBoundingClientRect();
+                    if (e.type === 'mousedown') {
+                        this.startX = e.clientX - rect.left;
+                        this.startY = e.clientY - rect.top;
+                    } else {
+                        this.startX = e.touches[0].clientX - rect.left;
+                        this.startY = e.touches[0].clientY - rect.top;
+                    }
+
+                    document.addEventListener('mousemove', this.doDrag);
+                    document.addEventListener('mouseup', this.endDrag);
+                    document.addEventListener('touchmove', this.doDrag, { passive: false });
+                    document.addEventListener('touchend', this.endDrag);
+                }
+
+                this.doDrag = (e) => {
+                    if (!this.isDragging) return;
+                    e.preventDefault();
+
+                    const containerRect = this.container.getBoundingClientRect();
+                    let clientX, clientY;
+                    if (e.type === 'mousemove') {
+                        clientX = e.clientX;
+                        clientY = e.clientY;
+                    } else {
+                        clientX = e.touches[0].clientX;
+                        clientY = e.touches[0].clientY;
+                    }
+
+                    // Calculer la nouvelle position relative au conteneur
+                    const x = clientX - containerRect.left - this.startX;
+                    const y = clientY - containerRect.top - this.startY;
+                    
+                    // Limiter le mouvement à l'intérieur du conteneur
+                    const maxX = containerRect.width - robot.offsetWidth;
+                    const maxY = containerRect.height - robot.offsetHeight;
+                    const boundedX = Math.max(0, Math.min(x, maxX));
+                    const boundedY = Math.max(0, Math.min(y, maxY));
+                    
+                    robot.style.transform = `translate(${boundedX}px, ${boundedY}px)`;
+                }
+
+                this.endDrag = () => {
+                    if (!this.isDragging) return;
+                    this.isDragging = false;
+                    robot.classList.remove('dragging');
+
+                    document.removeEventListener('mousemove', this.doDrag);
+                    document.removeEventListener('mouseup', this.endDrag);
+                    document.removeEventListener('touchmove', this.doDrag);
+                    document.removeEventListener('touchend', this.endDrag);
+
+                    this.checkPosition();
+                }
+
+                robot.addEventListener('mousedown', this.startDrag);
+                robot.addEventListener('touchstart', this.startDrag, { passive: false });
+
+                // Gestion des boutons de position
+                const wordList = document.getElementById('reperage-espace-word-list');
+                wordList.addEventListener('click', (e) => {
+                    const button = e.target.closest('.reperage-espace-word-button');
+                    if (button) {
+                        document.querySelectorAll('.reperage-espace-word-button').forEach(btn => {
+                            btn.classList.remove('selected');
+                        });
+                        button.classList.add('selected');
+                        this.setPosition(button.dataset.position);
+                    }
+                });
+            }
+
+            checkPosition() {
+                const robot = document.getElementById('reperage-espace-robot');
+                const robotRect = robot.getBoundingClientRect();
+                const containerRect = this.container.getBoundingClientRect();
+                
+                // Convertir la position du robot en coordonnées normalisées (-1 à 1)
+                const robotX = ((robotRect.left + robotRect.width/2) - containerRect.left) / containerRect.width * 2 - 1;
+                const robotY = -((robotRect.top + robotRect.height/2) - containerRect.top) / containerRect.height * 2 + 1;
+                
+                // Convertir en coordonnées monde
+                const vector = new THREE.Vector3(robotX, robotY, 0.5);
+                vector.unproject(this.camera);
+                const dir = vector.sub(this.camera.position).normalize();
+                const distance = -this.camera.position.y / dir.y;
+                const pos = this.camera.position.clone().add(dir.multiplyScalar(distance));
+
+                let isCorrect = false;
+                let objectPos;
+                
+                // Déterminer l'objet de référence en fonction de la position actuelle
+                if (['dessus', 'dessous', 'pres', 'loin'].includes(this.currentPosition)) {
+                    objectPos = this.objects.table.position;
+                } else if (['devant', 'derriere'].includes(this.currentPosition)) {
+                    objectPos = this.objects.chair.position;
+                } else if (this.currentPosition === 'entre') {
+                    // Pour 'entre', on utilise les positions des deux cubes
+                    const cube1 = this.objects.cubes.children[0];
+                    const cube2 = this.objects.cubes.children[1];
+                    objectPos = {
+                        x: (cube1.position.x + cube2.position.x) / 2,
+                        y: cube1.position.y,
+                        z: (cube1.position.z + cube2.position.z) / 2
+                    };
+                } else if (this.currentPosition === 'a-cote') {
+                    objectPos = this.objects.cabinet.position;
+                }
+                
+                if (!objectPos) return;
+                
+                // Augmenter la tolérance pour la détection des positions
+                const TOLERANCE = 1.5; // Tolérance générale pour les positions
+                const Y_TOLERANCE = 0.8; // Tolérance spéciale pour la hauteur
+
+                // Logs détaillés pour le débogage
+                console.log('%c=== Vérification de position ===', 'color: blue; font-weight: bold');
+                console.log('%cPosition actuelle: ' + this.currentPosition, 'color: green');
+                
+                const robotPos = {
+                    x: Number(pos.x.toFixed(2)),
+                    y: Number(pos.y.toFixed(2)),
+                    z: Number(pos.z.toFixed(2))
+                };
+                console.table({
+                    'Position du robot': robotPos,
+                    'Position de l\'objet': {
+                        x: Number(objectPos.x.toFixed(2)),
+                        y: Number(objectPos.y.toFixed(2)),
+                        z: Number(objectPos.z.toFixed(2))
+                    }
+                });
+
+                // Ajouter plus de logs pour comprendre ce qui se passe
+                console.log('Position actuelle:', this.currentPosition);
+                console.log('Position du robot:', {
+                    x: pos.x.toFixed(2),
+                    y: pos.y.toFixed(2),
+                    z: pos.z.toFixed(2)
+                });
+                console.log('Position de l\'objet:', {
+                    x: objectPos.x.toFixed(2),
+                    y: objectPos.y.toFixed(2),
+                    z: objectPos.z.toFixed(2)
+                });
+
+                // Définir une zone large pour toutes les positions
+                const ZONE_LARGE = 4;  // Zone très large pour plus de tolérance
+
+                switch(this.currentPosition) {
+                    case 'dessus':
+                        // Pour "dessus", utiliser la position à l'écran
+                        const robotRect = robot.getBoundingClientRect();
+                        const containerRect = this.container.getBoundingClientRect();
+                        const robotCenterY = robotRect.top + robotRect.height/2;
+                        const containerCenterY = containerRect.top + containerRect.height/2;
+                        
+                        // Le robot est considéré "dessus" s'il est dans la moitié supérieure du conteneur
+                        isCorrect = robotCenterY < containerCenterY;
+                        
+                        console.log('Position dessus:', {
+                            robotCenterY,
+                            containerCenterY,
+                            difference: containerCenterY - robotCenterY,
+                            estAuDessus: isCorrect
+                        });
+                        break;
+
+                    case 'dessous':
+                        // Pour "dessous", vérifier que le robot est sous la table
+                        isCorrect = Math.abs(pos.x - objectPos.x) < ZONE_LARGE &&  // Large zone X
+                                  Math.abs(pos.z - objectPos.z) < ZONE_LARGE &&    // Large zone Z
+                                  pos.y < 0.5;                                     // Sous la table
+                        console.log('Position dessous:', {pos, objectPos, isCorrect});
+                        break;
+
+                    case 'devant':
+                        // Zone large devant l'objet
+                        isCorrect = Math.abs(pos.x - objectPos.x) < ZONE_LARGE &&  // Large zone X
+                                  pos.z > objectPos.z &&                           // Devant l'objet
+                                  pos.z < objectPos.z + ZONE_LARGE;                // Pas trop loin devant
+                        console.log('Position devant:', {pos, objectPos, isCorrect});
+                        break;
+
+                    case 'derriere':
+                        // Zone large derrière l'objet
+                        isCorrect = Math.abs(pos.x - objectPos.x) < ZONE_LARGE &&  // Large zone X
+                                  pos.z < 0;                                       // Simplement derrière (Z négatif)
+                        console.log('Position derrière:', {
+                            robotX: pos.x.toFixed(2),
+                            robotZ: pos.z.toFixed(2),
+                            estDerriere: pos.z < 0,
+                            estBienPlace: isCorrect
+                        });
+                        break;
+
+                    case 'a-cote':
+                        // Large zone de chaque côté
+                        isCorrect = (Math.abs(pos.x - objectPos.x) > 2 &&          // Assez loin sur le côté
+                                   Math.abs(pos.x - objectPos.x) < ZONE_LARGE) &&  // Mais pas trop loin
+                                  Math.abs(pos.z - objectPos.z) < ZONE_LARGE;      // Aligné en Z
+                        console.log('Position à côté:', {pos, objectPos, isCorrect});
+                        break;
+
+                    case 'entre':
+                        const cube1 = this.objects.cubes.children[0];
+                        const cube2 = this.objects.cubes.children[1];
+                        // Zone large entre les cubes
+                        isCorrect = pos.x > cube1.position.x &&                    // À droite du cube 1
+                                  pos.x < cube2.position.x &&                      // À gauche du cube 2
+                                  Math.abs(pos.z - objectPos.z) < ZONE_LARGE;      // Aligné en Z
+                        console.log('Position entre:', {pos, objectPos, cube1: cube1.position, cube2: cube2.position, isCorrect});
+                        break;
+
+                    case 'pres':
+                        const distanceForPres = Math.sqrt(
+                            Math.pow(pos.x - objectPos.x, 2) +
+                            Math.pow(pos.z - objectPos.z, 2)
+                        );
+                        isCorrect = distanceForPres > 2 && distanceForPres < ZONE_LARGE;
+                        console.log('Position près:', {pos, objectPos, distance: distanceForPres, isCorrect});
+                        break;
+
+                    case 'loin':
+                        const distanceForLoin = Math.sqrt(
+                            Math.pow(pos.x - objectPos.x, 2) +
+                            Math.pow(pos.z - objectPos.z, 2)
+                        );
+                        isCorrect = distanceForLoin > ZONE_LARGE;
+                        console.log('Position loin:', {pos, objectPos, distance: distanceForLoin, isCorrect});
+                        break;
+                        break;
+                }
+
+                if (isCorrect && !this.hasSucceeded) {
+                    this.hasSucceeded = true;
+                    const successMessage = document.getElementById('reperage-espace-success');
+                    successMessage.style.display = 'block';
+                    successMessage.style.opacity = '1';
+                    const messages = {
+                        'dessus': 'Bravo ! Le robot est bien sur la table !',
+                        'dessous': 'Bravo ! Le robot est bien sous la table !',
+                        'devant': 'Bravo ! Le robot est bien devant la chaise !',
+                        'derriere': 'Bravo ! Le robot est bien derrière la chaise !',
+                        'entre': 'Bravo ! Le robot est bien entre les cubes !',
+                        'a-cote': "Bravo ! Le robot est bien à côté de l'armoire !",
+                        'pres': 'Bravo ! Le robot est bien près de la table !',
+                        'loin': 'Bravo ! Le robot est bien loin de la table !'
+                    };
+                    successMessage.textContent = messages[this.currentPosition] || 'Bravo !';
+                    
+                    const utterance = new SpeechSynthesisUtterance(successMessage.textContent);
+                    utterance.lang = 'fr-FR';
+                    window.speechSynthesis.speak(utterance);
+
+                    // Faire disparaître le message après 2 secondes
+                    setTimeout(() => {
+                        successMessage.style.opacity = '0';
+                        setTimeout(() => {
+                            successMessage.style.display = 'none';
+                        }, 300);
+                    }, 2000);
+                }
+            }
+
+            animate() {
+                requestAnimationFrame(() => this.animate());
+                this.renderer.render(this.scene, this.camera);
+            }
+
+            onWindowResize() {
+                this.camera.aspect = this.container.clientWidth / this.container.clientHeight;
+                this.camera.updateProjectionMatrix();
+                this.renderer.setSize(this.container.clientWidth, this.container.clientHeight);
+            }
+        }
+
+        // Démarrer le jeu
+        window.addEventListener('DOMContentLoaded', () => {
+            const game = new Game();
+            window.addEventListener('resize', () => game.onWindowResize());
+        });
+    </script>
+</body>
+</html>
