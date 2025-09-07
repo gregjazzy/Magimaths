@@ -2,7 +2,9 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, CheckCircle, XCircle, RotateCcw } from 'lucide-react';
+import { ArrowLeft, CheckCircle, XCircle, RotateCcw, Star } from 'lucide-react';
+import { motion, Reorder, useDragControls } from 'framer-motion';
+import confetti from 'canvas-confetti';
 
 export default function FormesGeometriquesCP() {
   // États pour l'audio et animations
@@ -25,6 +27,37 @@ export default function FormesGeometriquesCP() {
   const [answeredCorrectly, setAnsweredCorrectly] = useState<Set<number>>(new Set());
   const [showCompletionModal, setShowCompletionModal] = useState(false);
   const [finalScore, setFinalScore] = useState(0);
+  
+  // États pour le jeu de drag and drop
+  // Fonction pour mélanger un tableau
+  const shuffleArray = (array: any[]) => {
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+  };
+
+  // Liste initiale des items avec leurs positions
+  const initialItems = [
+    { id: 1, type: 'triangle', emoji: '🔺', name: 'triangle', found: false, currentZone: null, initialPosition: { col: 0, row: 0 } },
+    { id: 10, type: 'cercle', emoji: '⭕', name: 'cercle', found: false, currentZone: null, initialPosition: { col: 1, row: 0 } },
+    { id: 5, type: 'carre', emoji: '🎲', name: 'dé', found: false, currentZone: null, initialPosition: { col: 2, row: 0 } },
+    { id: 8, type: 'rectangle', emoji: '🏳️', name: 'drapeau', found: false, currentZone: null, initialPosition: { col: 3, row: 0 } },
+    { id: 11, type: 'cercle', emoji: '🌕', name: 'lune', found: false, currentZone: null, initialPosition: { col: 0, row: 1 } },
+    { id: 2, type: 'triangle', emoji: '⚠️', name: 'panneau', found: false, currentZone: null, initialPosition: { col: 1, row: 1 } },
+    { id: 7, type: 'rectangle', emoji: '📲', name: 'smartphone', found: false, currentZone: null, initialPosition: { col: 2, row: 1 } },
+    { id: 4, type: 'carre', emoji: '⬛', name: 'carré', found: false, currentZone: null, initialPosition: { col: 3, row: 1 } },
+    { id: 6, type: 'carre', emoji: '🔲', name: 'bouton', found: false, currentZone: null, initialPosition: { col: 0, row: 2 } },
+    { id: 3, type: 'triangle', emoji: '🎄', name: 'sapin', found: false, currentZone: null, initialPosition: { col: 1, row: 2 } },
+    { id: 12, type: 'cercle', emoji: '⚽', name: 'ballon', found: false, currentZone: null, initialPosition: { col: 2, row: 2 } },
+    { id: 9, type: 'rectangle', emoji: '🎫', name: 'ticket', found: false, currentZone: null, initialPosition: { col: 3, row: 2 } },
+  ];
+
+  const [dragItems, setDragItems] = useState(shuffleArray(initialItems));
+  const [dragSuccess, setDragSuccess] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   
   // Refs pour gérer l'audio
   const stopSignalRef = useRef(false);
@@ -126,7 +159,7 @@ export default function FormesGeometriquesCP() {
       question: 'Un rectangle a 2 côtés longs et...', 
       correctAnswer: '2 côtés courts',
       choices: ['1 côté court', '2 côtés courts', '3 côtés courts'],
-      visual: '📺'
+      visual: '📱'
     },
     { 
       question: 'Quelle forme ressemble à une montagne ?', 
@@ -400,6 +433,70 @@ export default function FormesGeometriquesCP() {
     setShowExercises(false);
   };
 
+  // Fonction pour lancer les confettis
+  const launchConfetti = () => {
+    const count = 200;
+    const defaults = {
+      origin: { y: 0.7 },
+      zIndex: 1000
+    };
+
+    function fire(particleRatio: number, opts: any) {
+      confetti({
+        ...defaults,
+        ...opts,
+        particleCount: Math.floor(count * particleRatio)
+      });
+    }
+
+    fire(0.25, {
+      spread: 26,
+      startVelocity: 55,
+    });
+
+    fire(0.2, {
+      spread: 60,
+    });
+
+    fire(0.35, {
+      spread: 100,
+      decay: 0.91,
+      scalar: 0.8
+    });
+
+    fire(0.1, {
+      spread: 120,
+      startVelocity: 25,
+      decay: 0.92,
+      scalar: 1.2
+    });
+
+    fire(0.1, {
+      spread: 120,
+      startVelocity: 45,
+    });
+  };
+
+  // Fonction pour gérer le drag and drop
+  const handleDragEnd = async (item: any, dropzone: string) => {
+    if (item.type === dropzone) {
+      const newItems = dragItems.map(i => 
+        i.id === item.id ? { ...i, found: true } : i
+      );
+      setDragItems(newItems);
+      await playAudio(`Bravo ! ${item.name} est bien un ${dropzone} !`);
+      
+      // Vérifier si tous les items sont bien placés
+      if (newItems.every(i => i.found)) {
+        setDragSuccess(true);
+        launchConfetti();
+        await playAudio("Félicitations ! Tu es un véritable expert des formes géométriques !");
+      }
+    } else {
+      await playAudio(`Essaie encore ! ${item.name} n'est pas un ${dropzone}.`);
+    }
+  };
+
   if (!isClient) {
     return <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50 flex items-center justify-center">
       <div className="text-xl">Chargement...</div>
@@ -513,6 +610,14 @@ export default function FormesGeometriquesCP() {
               }
               .animate-shimmer {
                 animation: shimmer 2s infinite linear;
+              }
+              @keyframes shake {
+                0%, 100% { transform: translateX(0); }
+                25% { transform: translateX(-5px); }
+                75% { transform: translateX(5px); }
+              }
+              .shake-animation {
+                animation: shake 0.5s ease-in-out;
               }
             `}</style>
 
@@ -631,6 +736,307 @@ export default function FormesGeometriquesCP() {
                     <p className="text-center font-medium text-purple-800">
                       🔍 <strong>Maintenant tu peux :</strong> Reconnaître toutes les formes autour de toi !
                     </p>
+                  </div>
+
+                  {/* Jeu de Drag and Drop */}
+                  <div className="mt-8">
+                    <div className="p-6 bg-white/80 backdrop-blur-sm rounded-xl shadow-lg border border-white/50">
+                      <h3 className="text-xl font-bold text-center mb-6 bg-gradient-to-r from-indigo-600 to-purple-600 text-transparent bg-clip-text">
+                        🎮 Glisse les objets dans leur forme géométrique !
+                      </h3>
+
+                        {/* Zones de dépôt */}
+                        <div className="grid grid-cols-2 gap-2 mb-6">
+                          <div
+                            data-type="triangle"
+                            className="dropzone bg-gradient-to-br from-red-50 to-orange-50 p-2 rounded-lg border-2 border-dashed border-red-200 text-center min-h-[80px] flex flex-col"
+                          >
+                            <div className="text-xl mb-1">🔺</div>
+                            <div className="font-bold text-red-600 text-sm">Triangles</div>
+                            <div className="mt-2 grid grid-cols-3 gap-1">
+                              {dragItems.filter(item => item.found && item.type === 'triangle').map(item => (
+                                <div key={item.id} className="text-xs bg-white/50 rounded">{item.emoji}</div>
+                              ))}
+                            </div>
+                          </div>
+                          <div
+                            data-type="carre"
+                            className="dropzone bg-gradient-to-br from-blue-50 to-indigo-50 p-2 rounded-lg border-2 border-dashed border-blue-200 text-center min-h-[80px] flex flex-col"
+                          >
+                            <div className="text-xl mb-1">⬛</div>
+                            <div className="font-bold text-blue-600 text-sm">Carrés</div>
+                            <div className="mt-2 grid grid-cols-3 gap-1">
+                              {dragItems.filter(item => item.found && item.type === 'carre').map(item => (
+                                <div key={item.id} className="text-xs bg-white/50 rounded">{item.emoji}</div>
+                              ))}
+                            </div>
+                          </div>
+                          <div
+                            data-type="rectangle"
+                            className="dropzone bg-gradient-to-br from-green-50 to-emerald-50 p-2 rounded-lg border-2 border-dashed border-green-200 text-center min-h-[80px] flex flex-col"
+                          >
+                            <div className="text-xl mb-1">📱</div>
+                            <div className="font-bold text-green-600 text-sm">Rectangles</div>
+                            <div className="mt-2 grid grid-cols-3 gap-1">
+                              {dragItems.filter(item => item.found && item.type === 'rectangle').map(item => (
+                                <div key={item.id} className="text-xs bg-white/50 rounded">{item.emoji}</div>
+                              ))}
+                            </div>
+                          </div>
+                          <div
+                            data-type="cercle"
+                            className="dropzone bg-gradient-to-br from-purple-50 to-pink-50 p-2 rounded-lg border-2 border-dashed border-purple-200 text-center min-h-[80px] flex flex-col"
+                          >
+                            <div className="text-xl mb-1">⭕</div>
+                            <div className="font-bold text-purple-600 text-sm">Cercles</div>
+                            <div className="mt-2 grid grid-cols-3 gap-1">
+                              {dragItems.filter(item => item.found && item.type === 'cercle').map(item => (
+                                <div key={item.id} className="text-xs bg-white/50 rounded">{item.emoji}</div>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Zone des objets à trier */}
+                        <div className="flex justify-end mb-2">
+                          <button
+                            onClick={() => setDragItems(shuffleArray(initialItems))}
+                            className="text-sm text-purple-600 hover:text-purple-800 transition-colors"
+                          >
+                            🔄 Mélanger les formes
+                          </button>
+                        </div>
+                        <div className="grid grid-cols-4 gap-2 mb-4" style={{ gridTemplateRows: 'repeat(3, minmax(0, 1fr))' }}>
+                          {dragItems.filter(item => !item.found).map((item) => (
+                            <motion.div
+                              style={{
+                                gridColumn: item.initialPosition.col + 1,
+                                gridRow: item.initialPosition.row + 1,
+                              }}
+                              key={item.id}
+                              data-id={item.id}
+                              drag
+                              dragMomentum={false}
+                              whileDrag={{ scale: 1.1 }}
+                              onDragEnd={(event, info) => {
+                                const dropzones = document.querySelectorAll('.dropzone');
+                                let droppedZone = null;
+                                let closestDistance = Infinity;
+                                
+                                // Trouver la zone la plus proche du point de drop
+                                dropzones.forEach((zone: any) => {
+                                  const rect = zone.getBoundingClientRect();
+                                  const centerX = rect.left + rect.width / 2;
+                                  const centerY = rect.top + rect.height / 2;
+                                  
+                                  const distance = Math.sqrt(
+                                    Math.pow(info.point.x - centerX, 2) + 
+                                    Math.pow(info.point.y - centerY, 2)
+                                  );
+                                  
+                                  // Si le point est dans la zone ou c'est la zone la plus proche
+                                  if (distance < closestDistance && 
+                                      info.point.x >= rect.left &&
+                                      info.point.x <= rect.right &&
+                                      info.point.y >= rect.top &&
+                                      info.point.y <= rect.bottom) {
+                                    closestDistance = distance;
+                                    droppedZone = zone;
+                                  }
+                                });
+
+                                if (droppedZone) {
+                                  const zoneType = droppedZone.dataset.type;
+                                  console.log('Déposé:', item.id, 'dans zone:', zoneType);
+                                  setDragItems(prev => prev.map(i => 
+                                    i.id === item.id 
+                                      ? { ...i, found: true, currentZone: zoneType } 
+                                      : i
+                                  ));
+                                } else {
+                                  // Retour à la position initiale si pas de zone
+                                  setDragItems(prev => prev.map(i => 
+                                    i.id === item.id 
+                                      ? { ...i, found: false, currentZone: null } 
+                                      : i
+                                  ));
+                                }
+                              }}
+                              className={`
+                                p-1 rounded shadow cursor-move text-center
+                                ${item.type === 'triangle' ? 'bg-red-50' : ''}
+                                ${item.type === 'carre' ? 'bg-blue-50' : ''}
+                                ${item.type === 'rectangle' ? 'bg-green-50' : ''}
+                                ${item.type === 'cercle' ? 'bg-purple-50' : ''}
+                              `}
+                            >
+                              <div className="text-sm">{item.emoji}</div>
+                              <div className="text-[10px] font-medium text-gray-600">{item.name}</div>
+                            </motion.div>
+                          ))}
+                        </div>
+
+                        {/* Message d'erreur et bouton Vérifier */}
+                        {!dragSuccess && (
+                          <div className="flex flex-col items-center mt-4">
+                            {errorMessage && (
+                              <div className="mb-4 bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded shadow-lg">
+                                <strong>Formes mal placées :</strong>
+                                <br />
+                                {errorMessage}
+                              </div>
+                            )}
+                            <button
+                              onClick={() => {
+                                console.log("Bouton cliqué");
+                                // Vérifier la position de chaque forme
+                                const incorrectItems = [];
+                                const correctItems = [];
+
+                                // Récupérer toutes les formes et leurs positions
+                                const items = document.querySelectorAll('[data-id]');
+                                console.log("Nombre d'items trouvés:", items.length);
+
+                                items.forEach((itemElement: any) => {
+                                  const id = parseInt(itemElement.getAttribute('data-id'));
+                                  const item = dragItems.find(i => i.id === id);
+                                  if (!item) return;
+
+                                  console.log("Vérification de l'item:", item.emoji);
+                                  const itemRect = itemElement.getBoundingClientRect();
+                                  const itemCenter = {
+                                    x: itemRect.left + itemRect.width / 2,
+                                    y: itemRect.top + itemRect.height / 2
+                                  };
+
+                                  let currentZone = null;
+                                  document.querySelectorAll('.dropzone').forEach((zone: any) => {
+                                    const zoneRect = zone.getBoundingClientRect();
+                                    if (
+                                      itemCenter.x >= zoneRect.left &&
+                                      itemCenter.x <= zoneRect.right &&
+                                      itemCenter.y >= zoneRect.top &&
+                                      itemCenter.y <= zoneRect.bottom
+                                    ) {
+                                      currentZone = zone.dataset.type;
+                                      console.log("Item", item.emoji, "trouvé dans la zone", currentZone);
+                                    }
+                                  });
+
+                                  if (currentZone === item.type) {
+                                    console.log("Item", item.emoji, "correctement placé");
+                                    correctItems.push(item);
+                                  } else if (currentZone) {
+                                    console.log("Item", item.emoji, "mal placé:", currentZone, "au lieu de", item.type);
+                                    incorrectItems.push({
+                                      ...item,
+                                      placedIn: currentZone
+                                    });
+                                  }
+                                });
+
+                                if (incorrectItems.length === 0 && correctItems.length === dragItems.length) {
+                                  setDragSuccess(true);
+                                  setErrorMessage(null);
+                                  launchConfetti();
+                                  playAudio("Bravo ! Tu as parfaitement classé toutes les formes !");
+                                } else {
+                                  // Réinitialiser complètement l'état du jeu
+                                  const resetItems = [...initialItems];
+                                  
+                                  // Séparer les formes correctes et incorrectes
+                                  const remainingItems = resetItems.filter(item => 
+                                    !correctItems.some(correct => correct.id === item.id)
+                                  );
+                                  
+                                  // Mélanger les formes incorrectes
+                                  const shuffledRemaining = shuffleArray(remainingItems);
+                                  
+                                  // Créer le nouvel état avec les formes correctes en place et les autres mélangées
+                                  const newItems = resetItems.map(item => {
+                                    const correctItem = correctItems.find(c => c.id === item.id);
+                                    if (correctItem) {
+                                      return {
+                                        ...item,
+                                        found: true,
+                                        currentZone: correctItem.type
+                                      };
+                                    } else {
+                                      const shuffledItem = shuffledRemaining.shift();
+                                      return {
+                                        ...shuffledItem!,
+                                        found: false,
+                                        currentZone: null
+                                      };
+                                    }
+                                  });
+                                  
+                                  // Réinitialiser l'état avec les formes mélangées
+                                  setDragItems(newItems);
+
+                                  // Message d'erreur dans l'état
+                                  setErrorMessage(incorrectItems.map(item => 
+                                    `${item.emoji} n'est pas un ${item.placedIn}, c'est un ${item.type}`
+                                  ).join(', '));
+
+                                  // Message vocal
+                                  let audioMessage = "Vérifie bien : ";
+                                  incorrectItems.forEach(item => {
+                                    audioMessage += `${item.name} n'est pas un ${item.placedIn}, c'est un ${item.type}. `;
+                                  });
+                                  playAudio(audioMessage);
+                                }
+                              }}
+                              className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white px-8 py-4 rounded-xl font-bold text-lg transition-all hover:shadow-lg hover:scale-105 animate-pulse"
+                            >
+                              ✨ Vérifier mes réponses
+                            </button>
+                          </div>
+                        )}
+
+                        {dragSuccess && (
+                          <motion.div
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            className="mt-6 p-6 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-xl text-center shadow-lg"
+                          >
+                            <motion.div 
+                              className="text-6xl mb-4"
+                              animate={{ 
+                                rotate: [0, 10, -10, 10, 0],
+                                scale: [1, 1.2, 1, 1.2, 1]
+                              }}
+                              transition={{ 
+                                duration: 1.5,
+                                repeat: Infinity,
+                                repeatType: "reverse"
+                              }}
+                            >
+                              🏆
+                            </motion.div>
+                            <div className="text-2xl font-bold text-white mb-4">
+                              Bravo ! Tu es un véritable expert des formes !
+                            </div>
+                            <div className="flex justify-center space-x-2 text-white/80">
+                              <Star className="w-6 h-6 fill-current" />
+                              <Star className="w-6 h-6 fill-current" />
+                              <Star className="w-6 h-6 fill-current" />
+                            </div>
+                            <motion.button
+                              whileHover={{ scale: 1.05 }}
+                              whileTap={{ scale: 0.95 }}
+                              onClick={() => {
+                                setDragItems(prev => prev.map(i => ({ ...i, found: false })));
+                                setDragSuccess(false);
+                                playAudio("C'est reparti ! Essaie de battre ton record !");
+                              }}
+                              className="mt-4 px-6 py-3 bg-white/20 hover:bg-white/30 rounded-lg text-white font-bold transition-all"
+                            >
+                              Rejouer
+                            </motion.button>
+                          </motion.div>
+                        )}
+                      </div>
                   </div>
                 </div>
               </div>
