@@ -579,9 +579,9 @@ export default function AdditionSansRetenueCE2() {
           await wait(1500);
           setCalculationStep('hundreds');
           // Extraire uniquement le chiffre des centaines
-          const num1Hundreds = Math.floor(parseInt(match[1]) / 100);
-          const num2Hundreds = Math.floor(parseInt(match[2]) / 100);
-          const num3Hundreds = match[3] ? Math.floor(parseInt(match[3]) / 100) : 0;
+          const num1Hundreds = Math.floor(num1 / 100);
+          const num2Hundreds = Math.floor(num2 / 100);
+          const num3Hundreds = 0; // Pas de troisième nombre dans ce cas
           const hundredsSum = num1Hundreds + num2Hundreds + num3Hundreds;
           
           await playAudio(`Je calcule : ${num1Hundreds} plus ${num2Hundreds}${num3Hundreds ? ` plus ${num3Hundreds}` : ''}${tensCarry ? ` plus ${tensCarry} de retenue` : ''} égale ${hundredsSum}`, true);
