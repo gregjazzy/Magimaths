@@ -29,6 +29,7 @@
     "@types/recharts": "^1.8.29",
     "@types/three": "0.180.0",
     "autoprefixer": "^10.4.0",
+    "canvas-confetti": "^1.9.3",
     "clsx": "^2.0.0",
     "firebase": "^10.0.0",
     "framer-motion": "^10.18.0",
