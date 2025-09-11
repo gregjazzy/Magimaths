@@ -8,7 +8,7 @@ import { Chapter, ClassLevel } from '@/types';
 import { useState } from 'react';
 
 export default function ChaptersSection() {
-  const [selectedClass, setSelectedClass] = useState<ClassLevel>('1ere');
+  const [selectedClass, setSelectedClass] = useState<ClassLevel>('CP');
   const chaptersGroupedByClass = getChaptersGroupedByClass();
   const availableClassLevels = getAvailableClassLevels();
 
@@ -120,9 +120,13 @@ export default function ChaptersSection() {
 
 
 
-  const isChapterAvailable = (chapterId: string) => {
-    const availableChapters = ['equations-second-degre', 'exponentielle', 'nombres-derives', 'fonctions-references-derivees'];
-    return availableChapters.includes(chapterId);
+  const isChapterAvailable = (chapter: Chapter) => {
+    // Les chapitres de CP, CE1 et CE2 sont disponibles
+    if (chapter.classLevel === 'CP' || chapter.classLevel === 'CE1' || chapter.classLevel === 'CE2') {
+      return true;
+    }
+    // Les autres niveaux sont grisés pour l'instant
+    return false;
   };
 
   const getChapterXP = (chapterId: string) => {
@@ -206,15 +210,15 @@ export default function ChaptersSection() {
             {selectedChapters.length > 0 ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {selectedChapters.map((chapter: Chapter) => {
-                  const isAvailable = isChapterAvailable(chapter.id);
+                  const isAvailable = isChapterAvailable(chapter);
                   
                   if (isAvailable) {
                         return (
-                                      <Link
-              key={chapter.id}
-              href={chapter.id === 'equations-second-degre' ? '/chapitre/equations-second-degre-overview' : `/chapitre/${chapter.id}`}
-              className="block"
-            >
+                          <Link
+                            key={chapter.id}
+                            href={`/chapitre/${chapter.id}`}
+                            className="block"
+                          >
                             <motion.div
                               variants={cardVariants}
                               className="bg-white rounded-3xl p-6 shadow-xl border border-gray-100 hover:border-gray-200 hover:shadow-2xl transition-all duration-500 group cursor-pointer hover:scale-110 hover:-translate-y-3 relative overflow-hidden"
@@ -292,10 +296,13 @@ export default function ChaptersSection() {
 
                   // Pour les chapitres non disponibles
                       return (
-                        <motion.div
+                        <div
                           key={chapter.id}
-                          variants={cardVariants}
-                      className="bg-white rounded-2xl p-6 shadow-lg border-2 border-gray-200 opacity-75 cursor-not-allowed"
+                          className="bg-white rounded-2xl p-6 shadow-lg border-2 border-gray-200 opacity-75 cursor-not-allowed"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            alert('Seuls les chapitres de CP, CE1 et CE2 sont accessibles pour le moment.');
+                          }}
                         >
                           <div className="flex items-center justify-between mb-4">
                             <div className="flex items-center space-x-3">
@@ -308,7 +315,7 @@ export default function ChaptersSection() {
                                 </h4>
                                 <div className="flex items-center space-x-2 mt-1">
                               <span className="px-2 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-600">
-                                🔒 Bientôt disponible
+                                🔒 Niveaux CP, CE1 et CE2 uniquement
                               </span>
                                 </div>
                               </div>
@@ -332,13 +339,13 @@ export default function ChaptersSection() {
                             </div>
 
                         <div className="bg-gradient-to-r from-gray-400 to-gray-500 text-white p-3 rounded-xl text-center">
-                          <div className="font-bold text-sm">🔒 Bientôt disponible</div>
+                          <div className="font-bold text-sm">🔒 Niveaux CP, CE1 et CE2 uniquement</div>
                           <div className="text-xs opacity-90">
-                            En cours de développement...
+                            Seuls les chapitres de CP, CE1 et CE2 sont accessibles
                           </div>
                   </div>
                 </div>
-              </motion.div>
+              </div>
             );
           })}
         </div>

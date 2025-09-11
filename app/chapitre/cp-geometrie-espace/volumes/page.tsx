@@ -12,6 +12,78 @@ const Volume3DViewer = dynamic(
   { ssr: false }
 );
 
+// Volumes 3D à apprendre
+const volumes3D = [
+  {
+    name: 'cube',
+    emoji: '🎲',
+    story: 'Un cube est comme une boîte avec 6 faces carrées identiques',
+    characteristics: [
+      'Il a 6 faces carrées égales',
+      'Il a 8 sommets',
+      'Il a 12 arêtes de même longueur'
+    ],
+    proprietes: [
+      'Toutes ses faces sont des carrés 🟦',
+      'Il peut tenir debout sur n\'importe quelle face',
+      'Il ne roule pas'
+    ],
+    explications: 'Le cube est comme un dé : tous ses côtés sont pareils ! C\'est la forme parfaite pour construire des blocs.',
+    examples: ['🎲 dé', '📦 boîte', '🧊 glaçon', '🎁 cadeau', '🗄️ casier']
+  },
+  {
+    name: 'pavé droit',
+    emoji: '📦',
+    story: 'Un pavé droit est comme une boîte de chaussures avec 6 faces rectangulaires',
+    characteristics: [
+      'Il a 6 faces rectangulaires',
+      'Il a 8 sommets',
+      'Il a 12 arêtes (certaines plus longues que d\'autres)'
+    ],
+    proprietes: [
+      'Ses faces sont des rectangles 📏',
+      'Il a une longueur, une largeur et une hauteur',
+      'Il peut tenir debout comme une boîte'
+    ],
+    explications: 'Le pavé droit est comme une boîte à chaussures : elle est plus longue que large ! On en voit partout dans la maison.',
+    examples: ['📱 téléphone', '📚 livre', '🏠 maison', '📺 télé', '🚌 bus']
+  },
+  {
+    name: 'sphère',
+    emoji: '⚽',
+    story: 'Une sphère est ronde comme une balle, pareille de tous les côtés',
+    characteristics: [
+      'Elle est parfaitement ronde',
+      'Elle roule dans toutes les directions',
+      'Elle n\'a ni faces, ni sommets, ni arêtes'
+    ],
+    proprietes: [
+      'Elle est toute ronde comme une balle ⚽',
+      'Elle roule dans tous les sens',
+      'Elle n\'a pas de coins pointus'
+    ],
+    explications: 'La sphère est la forme la plus ronde qui existe ! Comme un ballon de foot, elle roule parfaitement dans toutes les directions.',
+    examples: ['⚽ ballon', '🌍 Terre', '🍊 orange', '🎱 bille', '🪀 yoyo']
+  },
+  {
+    name: 'cylindre',
+    emoji: '🥫',
+    story: 'Un cylindre est comme une boîte de conserve avec deux faces rondes',
+    characteristics: [
+      'Il a 2 faces rondes (cercles)',
+      'Il a une surface courbe',
+      'Il roule sur le côté'
+    ],
+    proprietes: [
+      'Il a deux faces rondes aux bouts ⭕',
+      'Il roule seulement sur le côté',
+      'Il peut tenir debout sur ses faces rondes'
+    ],
+    explications: 'Le cylindre est comme un rouleau de papier toilette : il a deux bouts ronds et peut rouler sur le côté ! On peut aussi le poser debout.',
+    examples: ['🥫 conserve', '📏 crayon', '🧻 rouleau', '🥤 verre', '🪣 seau']
+  }
+];
+
 interface MatchingItem {
   id: string;
   type: 'object' | 'shape';
@@ -29,11 +101,11 @@ const matchingItems: MatchingItem[] = [
     matches: 'cube-object'
   },
   {
-    id: 'cone-shape',
+    id: 'cylindre-shape',
     type: 'shape',
-    image: '/images/solides et formes/formecone.jpg',
-    name: 'Cône',
-    matches: 'cone-object'
+    image: '/images/solides et formes/formecylindre.jpg',
+    name: 'Cylindre',
+    matches: 'cylindre-object'
   },
   {
     id: 'pyramide-object',
@@ -50,11 +122,11 @@ const matchingItems: MatchingItem[] = [
     matches: 'parallelepipede-object'
   },
   {
-    id: 'cone-object',
+    id: 'cylindre-object',
     type: 'object',
-    image: '/images/solides et formes/coneobjet.png',
-    name: 'Cône de signalisation',
-    matches: 'cone-shape'
+    image: '/images/solides et formes/boiteconserve.png',
+    name: 'Boîte de conserve',
+    matches: 'cylindre-shape'
   },
   {
     id: 'cube-object',
@@ -90,6 +162,7 @@ export default function VolumesCP() {
   const [showingProcess, setShowingProcess] = useState<'observation' | 'characteristics' | 'result' | null>('observation');
   const [animatingShape, setAnimatingShape] = useState(true);
   const [rotationProgress, setRotationProgress] = useState<number>(0);
+  const [currentVolume, setCurrentVolume] = useState(volumes3D[0]); // Volume actuellement sélectionné
 
   // États pour les exercices
   const [showExercises, setShowExercises] = useState(false);
@@ -106,6 +179,29 @@ export default function VolumesCP() {
   const [matchedPairs, setMatchedPairs] = useState<Set<string>>(new Set());
   const [attempts, setAttempts] = useState(0);
 
+  // États pour le memory vocal
+  const [memoryCards, setMemoryCards] = useState(() => {
+    const shapes = ['cube', 'pavé droit', 'sphère', 'cylindre'];
+    const cards = shapes.flatMap(shape => [
+      { id: `${shape}-name`, type: 'name', content: shape, isFlipped: false, isMatched: false },
+      { id: `${shape}-shape`, type: 'shape', content: shape, isFlipped: false, isMatched: false }
+    ]);
+    return cards.sort(() => Math.random() - 0.5);
+  });
+  const [flippedCards, setFlippedCards] = useState<number[]>([]);
+  const [matchedCards, setMatchedCards] = useState<string[]>([]);
+  const [canFlip, setCanFlip] = useState(true);
+  const [memoryScore, setMemoryScore] = useState(0);
+  const [showMemorySuccess, setShowMemorySuccess] = useState(false);
+
+  // Effet pour vérifier si toutes les paires sont trouvées
+  useEffect(() => {
+    if (matchedCards.length === memoryCards.length / 2) {
+      setShowMemorySuccess(true);
+      playAudio('Bravo ! Tu as trouvé toutes les paires !');
+    }
+  }, [matchedCards.length, memoryCards.length]);
+
   // Fonction pour la synthèse vocale
   const playAudio = (text: string) => {
     if ('speechSynthesis' in window) {
@@ -116,102 +212,114 @@ export default function VolumesCP() {
     }
   };
 
-  // États pour le memory
-  const [memoryCards, setMemoryCards] = useState(() => {
-    // Fonction de mélange Fisher-Yates
-    const shuffleArray = <T extends unknown>(array: T[]): T[] => {
-      const shuffled = [...array];
-      for (let i = shuffled.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-      }
-      return shuffled;
-    };
+  // États pour l'exploration des volumes
+  const [currentExploredVolume, setCurrentExploredVolume] = useState<number | null>(null);
+  const [clickedFaces, setClickedFaces] = useState<Set<string>[]>(volumes3D.map(() => new Set()));
+  const [isCountingFaces, setIsCountingFaces] = useState<boolean[]>(new Array(volumes3D.length).fill(false));
 
-    // Créer toutes les cartes possibles
-    const allCards = [
-      { id: 'cube-name', type: 'name', content: 'cube', isFlipped: false, isMatched: false },
-      { id: 'cube-shape', type: 'shape', content: 'cube', isFlipped: false, isMatched: false },
-      { id: 'pave-name', type: 'name', content: 'pavé droit', isFlipped: false, isMatched: false },
-      { id: 'pave-shape', type: 'shape', content: 'pavé droit', isFlipped: false, isMatched: false },
-      { id: 'sphere-name', type: 'name', content: 'sphère', isFlipped: false, isMatched: false },
-      { id: 'sphere-shape', type: 'shape', content: 'sphère', isFlipped: false, isMatched: false },
-      { id: 'cylindre-name', type: 'name', content: 'cylindre', isFlipped: false, isMatched: false },
-      { id: 'cylindre-shape', type: 'shape', content: 'cylindre', isFlipped: false, isMatched: false }
-    ];
+  const startCountingAnimation = async (volumeIndex: number) => {
+    const volume = volumes3D[volumeIndex];
+    const totalFaces = volume.name === 'cube' || volume.name === 'pavé droit' ? 6 : 3;
 
-    // Mélanger les cartes avec l'algorithme Fisher-Yates
-    return shuffleArray(allCards);
-  });
-  const [memoryMatchedPairs, setMemoryMatchedPairs] = useState<Set<string>>(new Set());
-  const [memoryAttempts, setMemoryAttempts] = useState(0);
-  const [showMemorySuccess, setShowMemorySuccess] = useState(false);
-  const [firstCard, setFirstCard] = useState<number | null>(null);
-  const [canFlip, setCanFlip] = useState(true);
+    // Démarrer l'animation
+    setIsCountingFaces(prev => {
+      const newState = [...prev];
+      newState[volumeIndex] = true;
+      return newState;
+    });
+
+    // Message d'introduction
+    await playAudio(`Regardons les faces du ${volume.name} ensemble !`);
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
+    // Compter chaque face
+    const newClickedFaces = [...clickedFaces];
+    newClickedFaces[volumeIndex] = new Set();
+    
+    for (let i = 0; i < totalFaces; i++) {
+      // Ajouter la face au set
+      newClickedFaces[volumeIndex].add(i.toString());
+      setClickedFaces([...newClickedFaces]);
+      
+      // Dire le numéro
+      await playAudio((i + 1).toString());
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    }
+
+    // Message de conclusion
+    await playAudio(`Super ! Le ${volume.name} a ${totalFaces} faces !`);
+
+    // Garder les faces colorées
+    setIsCountingFaces(prev => {
+      const newState = [...prev];
+      newState[volumeIndex] = false;
+      return newState;
+    });
+  };
+
+  const handleStartCounting = (volumeIndex: number) => {
+    setClickedFaces(prev => {
+      const newState = [...prev];
+      newState[volumeIndex] = new Set();
+      return newState;
+    });
+    startCountingAnimation(volumeIndex);
+  };
+
+
+
+
 
   const handleMemoryCardClick = (index: number) => {
     if (!canFlip || memoryCards[index].isFlipped || memoryCards[index].isMatched) return;
+
+    // Lire le nom du volume si c'est une carte "name"
+    if (memoryCards[index].type === 'name') {
+      playAudio(memoryCards[index].content);
+    }
 
     const newCards = [...memoryCards];
     newCards[index].isFlipped = true;
     setMemoryCards(newCards);
 
-    // Lecture vocale automatique quand on retourne une carte avec un nom
-    if (memoryCards[index].type === 'name') {
-      playAudio(memoryCards[index].content);
-    }
-
-    if (firstCard === null) {
-      setFirstCard(index);
-    } else {
-      setCanFlip(false);
-      setMemoryAttempts(prev => prev + 1);
-
-      const firstCardContent = memoryCards[firstCard].content;
-      const secondCardContent = memoryCards[index].content;
+    setFlippedCards(prev => {
+      const newFlipped = [...prev, index];
       
-      if (firstCardContent === secondCardContent) {
-        // Match trouvé
-        setTimeout(() => {
-          const newCards = [...memoryCards];
-          newCards[firstCard].isMatched = true;
-          newCards[index].isMatched = true;
-          setMemoryCards(newCards);
-          setMemoryMatchedPairs(prev => new Set([...prev, firstCardContent]));
-          setFirstCard(null);
-          setCanFlip(true);
+      // Si on a retourné 2 cartes
+      if (newFlipped.length === 2) {
+        setCanFlip(false);
+        const firstCard = memoryCards[newFlipped[0]];
+        const secondCard = memoryCards[index];
 
-          // Message personnalisé selon la forme trouvée
-          const messages = {
-            'cube': "Super ! Tu as trouvé le cube !",
-            'pavé droit': "Super ! Tu as trouvé le pavé droit !",
-            'sphère': "Super ! Tu as trouvé la sphère !",
-            'cylindre': "Super ! Tu as trouvé le cylindre !"
-          };
-
-          // Vérifier si toutes les paires sont trouvées
-          if (memoryMatchedPairs.size + 1 === volumes3D.length) {
-            setShowMemorySuccess(true);
-            playAudio("Bravo ! Tu as trouvé toutes les paires !");
-          } else {
-            playAudio(messages[firstCardContent]);
-          }
-        }, 1000);
-      } else {
-        // Pas de match
-        setTimeout(() => {
-          const newCards = [...memoryCards];
-          newCards[firstCard].isFlipped = false;
-          newCards[index].isFlipped = false;
-          setMemoryCards(newCards);
-          setFirstCard(null);
-          setCanFlip(true);
-        }, 1500);
+        // Vérifier si les cartes correspondent
+        if (firstCard.content === secondCard.content) {
+          setTimeout(() => {
+            const updatedCards = [...memoryCards];
+            updatedCards[newFlipped[0]].isMatched = true;
+            updatedCards[index].isMatched = true;
+            setMemoryCards(updatedCards);
+            setMatchedCards(prev => [...prev, firstCard.content]);
+            setMemoryScore(prev => prev + 1);
+            setCanFlip(true);
+            setFlippedCards([]);
+            playAudio(`Bravo ! Tu as trouvé ${firstCard.content} !`);
+          }, 1000);
+        } else {
+          // Les cartes ne correspondent pas
+          setTimeout(() => {
+            const updatedCards = [...memoryCards];
+            updatedCards[newFlipped[0]].isFlipped = false;
+            updatedCards[index].isFlipped = false;
+            setMemoryCards(updatedCards);
+            setCanFlip(true);
+            setFlippedCards([]);
+          }, 1500);
+        }
+        return newFlipped;
       }
-    }
+      return newFlipped;
+    });
   };
-
-
 
   const handleItemClick = (itemId: string) => {
     if (matchedPairs.has(itemId)) return;
@@ -236,77 +344,6 @@ export default function VolumesCP() {
     setSelectedItem(null);
   };
 
-  // Volumes 3D à apprendre
-  const volumes3D = [
-    {
-      name: 'cube',
-      emoji: '🎲',
-      story: 'Un cube est comme une boîte avec 6 faces carrées identiques',
-      characteristics: [
-        'Il a 6 faces carrées égales',
-        'Il a 8 sommets',
-        'Il a 12 arêtes de même longueur'
-      ],
-      proprietes: [
-        'Toutes ses faces sont des carrés 🟦',
-        'Il peut tenir debout sur n\'importe quelle face',
-        'Il ne roule pas'
-      ],
-      explications: 'Le cube est comme un dé : tous ses côtés sont pareils ! C\'est la forme parfaite pour construire des blocs.',
-      examples: ['🎲 dé', '📦 boîte', '🧊 glaçon', '🎁 cadeau', '🗄️ casier']
-    },
-    {
-      name: 'pavé droit',
-      emoji: '📦',
-      story: 'Un pavé droit est comme une boîte de chaussures avec 6 faces rectangulaires',
-      characteristics: [
-        'Il a 6 faces rectangulaires',
-        'Il a 8 sommets',
-        'Il a 12 arêtes (certaines plus longues que d\'autres)'
-      ],
-      proprietes: [
-        'Ses faces sont des rectangles 📏',
-        'Il a une longueur, une largeur et une hauteur',
-        'Il peut tenir debout comme une boîte'
-      ],
-      explications: 'Le pavé droit est comme une boîte à chaussures : elle est plus longue que large ! On en voit partout dans la maison.',
-      examples: ['📱 téléphone', '📚 livre', '🏠 maison', '📺 télé', '🚌 bus']
-    },
-    {
-      name: 'sphère',
-      emoji: '⚽',
-      story: 'Une sphère est ronde comme une balle, pareille de tous les côtés',
-      characteristics: [
-        'Elle est parfaitement ronde',
-        'Elle roule dans toutes les directions',
-        'Elle n\'a ni faces, ni sommets, ni arêtes'
-      ],
-      proprietes: [
-        'Elle est toute ronde comme une balle ⚽',
-        'Elle roule dans tous les sens',
-        'Elle n\'a pas de coins pointus'
-      ],
-      explications: 'La sphère est la forme la plus ronde qui existe ! Comme un ballon de foot, elle roule parfaitement dans toutes les directions.',
-      examples: ['⚽ ballon', '🌍 Terre', '🍊 orange', '🎱 bille', '🪀 yoyo']
-    },
-    {
-      name: 'cylindre',
-      emoji: '🥫',
-      story: 'Un cylindre est comme une boîte de conserve avec deux faces rondes',
-      characteristics: [
-        'Il a 2 faces rondes (cercles)',
-        'Il a une surface courbe',
-        'Il roule sur le côté'
-      ],
-      proprietes: [
-        'Il a deux faces rondes aux bouts ⭕',
-        'Il roule seulement sur le côté',
-        'Il peut tenir debout sur ses faces rondes'
-      ],
-      explications: 'Le cylindre est comme un rouleau de papier toilette : il a deux bouts ronds et peut rouler sur le côté ! On peut aussi le poser debout.',
-      examples: ['🥫 conserve', '📏 crayon', '🧻 rouleau', '🥤 verre', '🪣 seau']
-    }
-  ];
 
   // Exercices sur les volumes
   const exercises = [
@@ -562,10 +599,10 @@ export default function VolumesCP() {
             onClick={stopAllAnimations}
             className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors mb-4"
           >
-            <ArrowLeft className="w-4 h-4" />
+          <ArrowLeft className="w-4 h-4" />
             <span>Retour à la géométrie et espace</span>
-          </Link>
-          
+        </Link>
+        
           <div className="bg-white rounded-xl p-6 shadow-lg text-center">
             <h1 className="text-4xl font-bold text-gray-900 mb-4">
               📦 Les volumes
@@ -639,103 +676,62 @@ export default function VolumesCP() {
                   </div>
                 
                   {/* Démonstrations des volumes */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-6 mb-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     {volumes3D.map((volume, index) => (
-                      <div 
-                        key={index} 
-                        className="bg-white rounded-xl p-3 shadow-md hover:shadow-lg transition-all"
+                      <div
+                        key={index}
+                        className={`rounded-lg p-4 text-center cursor-pointer transition-all duration-300 hover:scale-105 ${
+                          currentVolume.name === volume.name ? 'ring-2 ring-purple-500' : ''
+                        } ${
+                          volume.name === 'cube' ? 'bg-blue-50 hover:bg-blue-100' :
+                          volume.name === 'pavé droit' ? 'bg-amber-50 hover:bg-amber-100' :
+                          volume.name === 'sphère' ? 'bg-green-50 hover:bg-green-100' :
+                          'bg-red-50 hover:bg-red-100'
+                        }`}
+                        onClick={() => setCurrentVolume(volume)}
                       >
-                        <div className="flex flex-col h-full">
-                          {/* En-tête avec emoji et nom */}
-                          <div className="text-center mb-2">
-                            <div className="text-3xl mb-1">{volume.emoji}</div>
-                            <h4 className="font-bold text-purple-700 text-base">{volume.name}</h4>
-                            <div className="bg-white rounded-lg p-1">
-                              <p className="text-xs text-gray-700">{volume.characteristics[0]}</p>
-                            </div>
-                          </div>
-
-                          {/* Visualisation 3D interactive */}
-                          <div className="h-[220px] flex items-center justify-center mb-2">
-                            <Volume3DViewer
-                              volumeType={volume.name === 'cube' ? 'cube' : 
-                                        volume.name === 'pavé droit' ? 'pave' :
-                                        volume.name === 'sphère' ? 'sphere' : 'cylindre'}
-                              width={200}
-                              height={200}
-                            />
-                          </div>
-
-                          {/* Propriété principale avec animation */}
-                          <div 
-                            className="bg-white rounded-xl p-3 mb-4 cursor-pointer hover:bg-gray-50 transition-colors shadow-sm"
-                            onClick={() => playAudio(volume.proprietes[0])}
-                          >
-                            <div className="flex items-center justify-center text-lg text-gray-700">
-                              <span className="animate-bounce mr-2">👆</span>
-                              {volume.proprietes[0]}
-                            </div>
-                          </div>
-
-                          {/* Exemples interactifs */}
-                          <div className="mt-3 grid grid-cols-3 gap-2">
-                            {volume.examples.slice(0, 3).map((example, idx) => (
-                              <div
-                                key={idx}
-                                className="group bg-purple-50 p-2 rounded-lg text-center cursor-pointer hover:bg-purple-100 transition-all transform hover:scale-105"
-                              >
-                                <div className="text-2xl">{example.split(' ')[0]}</div>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                        
-                        {/* Zone d'animation pour chaque volume */}
-                        {currentExample === index && animatingShape && (
-                          <div className="mt-4">
-                            {/* Caractéristiques */}
-                            {showingProcess === 'characteristics' && (
-                              <div className="bg-purple-100 rounded-lg p-3 mt-2">
-                                <h5 className="font-bold text-purple-800 mb-2 text-xs">Caractéristiques :</h5>
-                                <ul className="space-y-1">
-                                  {volume.characteristics.map((char, charIndex) => (
-                                    <li
-                                      key={charIndex}
-                                      className={`text-xs transition-all duration-500 ${
-                                        highlightedElement === `characteristic-${charIndex}`
-                                          ? 'text-purple-800 font-bold' 
-                                          : 'text-purple-600'
-                                      }`}
-                                    >
-                                      • {char}
-                                    </li>
-                                  ))}
-                                </ul>
-                              </div>
-                            )}
-                            
-                            {/* Exemples */}
-                            {showingProcess === 'result' && highlightedElement === 'examples' && (
-                              <div className="bg-green-100 rounded-lg p-3 mt-2 animate-pulse">
-                                <h5 className="font-bold text-green-800 mb-2 text-xs">Tu peux voir des {volume.name}s :</h5>
-                                <div className="flex flex-wrap gap-1">
-                                  {volume.examples.map((example, exIndex) => (
-                                    <span
-                                      key={exIndex}
-                                      className="bg-white px-1 py-0.5 rounded text-xs text-green-700"
-                                    >
-                                      {example}
-                                    </span>
-                                  ))}
-                                </div>
-                              </div>
-                            )}
-                          </div>
-                        )}
+                        <div className="text-4xl mb-2">{volume.emoji}</div>
+                        <h3 className={`text-lg font-medium mb-1 ${
+                          volume.name === 'cube' ? 'text-blue-800' :
+                          volume.name === 'pavé droit' ? 'text-amber-800' :
+                          volume.name === 'sphère' ? 'text-green-800' :
+                          'text-red-800'
+                        }`}>{volume.name}</h3>
+                        <p className={`text-sm ${
+                          volume.name === 'cube' ? 'text-blue-600' :
+                          volume.name === 'pavé droit' ? 'text-amber-600' :
+                          volume.name === 'sphère' ? 'text-green-600' :
+                          'text-red-600'
+                        }`}>{volume.description}</p>
                       </div>
                     ))}
                   </div>
-                
+
+                  <div className="flex flex-col md:flex-row items-center justify-center gap-8 mt-8">
+                    <div className="w-full md:w-1/2 h-[400px] flex items-center justify-center bg-gray-50 rounded-lg">
+                      <Volume3DViewer
+                        volumeType={currentVolume.name === 'cube' ? 'cube' : 
+                                  currentVolume.name === 'pavé droit' ? 'pave' :
+                                  currentVolume.name === 'sphère' ? 'sphere' : 'cylindre'}
+                        width={300}
+                        height={300}
+                      />
+                    </div>
+
+                    <div className="w-full md:w-1/2 text-center">
+                      <div className="text-6xl mb-4">{currentVolume.emoji}</div>
+                      <h3 className="text-2xl font-bold text-purple-800 mb-2">{currentVolume.name}</h3>
+                      <p className="text-lg text-gray-700">{currentVolume.description}</p>
+                      <div className="mt-4">
+                        <button
+                          className="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition-colors"
+                          onClick={() => playAudio(currentVolume.name)}
+                        >
+                          Écouter le nom
+                        </button>
+                      </div>
+                    </div>
+                  </div>
                   {/* Récapitulatif */}
                   <div className={`mt-6 p-4 rounded-xl transition-all duration-500 ${
                     highlightedElement === 'summary' ? 'bg-green-200 scale-110' : 'bg-gray-100'
@@ -804,13 +800,13 @@ export default function VolumesCP() {
                       transition-all transform perspective-1000
                       ${card.isFlipped ? 'rotate-y-180' : ''}
                       ${card.isMatched ? 'opacity-50' : 'hover:scale-102'}
-                      ${!card.isFlipped ? 'from-purple-500 to-indigo-600' : 'bg-white'}
+                      ${!card.isFlipped ? 'from-purple-200 to-indigo-300' : 'bg-white'}
                       rounded-xl shadow-md flex items-center justify-center
                     `}
                   >
-                    <div className={`w-full h-full flex items-center justify-center transition-all duration-300 ${card.isFlipped ? '' : 'text-white'}`}>
+                    <div className={`w-full h-full flex items-center justify-center transition-all duration-300`}>
                       {!card.isFlipped ? (
-                        <span className="text-2xl">❔</span>
+                        <span className="text-2xl text-purple-100">❔</span>
                       ) : (
                         <div className="w-full h-full p-2">
                           {card.type === 'name' ? (
@@ -839,13 +835,74 @@ export default function VolumesCP() {
                 ))}
               </div>
               <div className="mt-4 text-center text-gray-600">
-                Paires trouvées : {memoryMatchedPairs.size / 2} sur {memoryCards.length / 4} • Essais : {memoryAttempts}
+                Paires trouvées : {matchedCards.length / 2} sur {memoryCards.length / 4} • Essais : {flippedCards.length / 2}
               </div>
               {showMemorySuccess && (
                 <div className="mt-4 p-4 bg-green-100 text-green-700 rounded-lg text-center animate-bounce">
                   Bravo ! Tu as trouvé toutes les paires ! 🎉
                 </div>
               )}
+            </div>
+
+            {/* Activité 3: Explore et Devine */}
+            <div className="bg-white rounded-xl p-6 shadow-lg mt-8">
+              <h2 className="text-2xl font-bold text-center text-gray-900 mb-4">
+                Activité 3 : Explore les formes 🔍
+              </h2>
+              <div className="max-w-4xl mx-auto">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {volumes3D.map((volume, index) => (
+                    <div 
+                      key={index}
+                      className="bg-white rounded-lg shadow-sm"
+                    >
+                      <div className="flex items-center gap-4 p-4">
+                        {/* Visualisation 3D */}
+                        <div className="w-[200px] h-[200px] flex-shrink-0 flex items-center justify-center bg-gray-50 rounded-lg">
+                          <Volume3DViewer
+                            volumeType={volume.name === 'cube' ? 'cube' : 
+                                      volume.name === 'pavé droit' ? 'pave' :
+                                      volume.name === 'sphère' ? 'sphere' : 'cylindre'}
+                            width={200}
+                            height={200}
+                          />
+                        </div>
+
+                        {/* Informations */}
+                        <div className="flex-grow">
+                          <div className="flex items-center gap-2 mb-3">
+                            <span className="text-2xl">{volume.emoji}</span>
+                            <h3 className="text-lg font-bold text-purple-800">{volume.name}</h3>
+                          </div>
+
+                          {volume.name !== 'sphère' ? (
+                            <div className="bg-purple-50 rounded-lg p-3">
+                              <div className="flex items-center gap-3">
+                                <span className="text-3xl font-bold text-purple-800">
+                                  {volume.name === 'cube' || volume.name === 'pavé droit' ? '6' : '2'}
+                                </span>
+                                <div>
+                                  <div className="text-purple-800 font-medium">faces</div>
+                                  <div className="text-sm text-purple-700">
+                                    {volume.name === 'cube' ? 'Toutes carrées' : 
+                                     volume.name === 'pavé droit' ? 'Rectangulaires' : 
+                                     'Rondes aux bouts'}
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="bg-yellow-50 rounded-lg p-3 text-yellow-800">
+                              <p className="font-medium">La sphère est magique ! ✨</p>
+                              <p className="text-sm">Elle est parfaitement ronde comme une balle ! 🌟</p>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
 
             {/* Conseils pratiques */}

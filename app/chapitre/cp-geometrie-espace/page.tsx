@@ -35,6 +35,16 @@ const sections = [
     verified: true
   },
   {
+    id: 'volumes',
+    title: 'Les volumes',
+    description: 'Découvrir les cubes, pavés droits, sphères et cylindres',
+    icon: '📦',
+    duration: '10 min',
+    xp: 12,
+    color: 'from-orange-500 to-amber-500',
+    verified: true
+  },
+  {
     id: 'lignes-traits',
     title: 'Lignes et traits',
     description: 'Tracer des lignes droites et courbes avec précision',
