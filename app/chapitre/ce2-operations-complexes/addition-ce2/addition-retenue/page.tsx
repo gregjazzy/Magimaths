@@ -469,8 +469,6 @@ export default function AdditionSansRetenueCE2() {
     setCurrentExample(index);
     setPartialResults({units: null, tens: null, hundreds: null}); // Reset des résultats partiels
     
-    const example = additionExamples[index];
-    
     // Scroll automatique vers l'animation
     scrollToElement('example-section');
     
