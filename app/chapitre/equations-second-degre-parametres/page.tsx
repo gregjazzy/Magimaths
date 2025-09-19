@@ -212,8 +212,9 @@ export default function ParametresPage() {
       description="Étudier les équations du second degré dépendant d'un paramètre"
       sections={sections}
       navigation={{
-        previous: { href: '/chapitre/equations-second-degre-tableaux-signes', text: 'Tableaux de signes' },
-        next: { href: '/chapitre/equations-second-degre-techniques-avancees', text: 'Techniques avancées' }
+        previous: { href: '/chapitre/equations-second-degre-overview', text: 'Vue d\'ensemble' },
+        next: { href: '/chapitre/equations-second-degre-techniques-avancees', text: 'Techniques avancées' },
+        backToTop: { href: '/chapitre/equations-second-degre-overview', text: 'Retour au sommaire' }
       }}
     />
   );

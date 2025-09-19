@@ -59,6 +59,18 @@ export default function EquationsSecondDegreOverviewPage() {
     },
     {
       id: 5,
+      title: "Résolution d'équations élaborées",
+      description: "Approfondissez vos compétences avec des équations plus complexes : équations produit, quotient et équations se ramenant au second degré.",
+      difficulty: "Intermédiaire",
+      duration: "40 min",
+      xp: 275,
+      gradient: "from-yellow-500 to-yellow-600",
+      difficultyColor: "bg-yellow-100 text-yellow-800",
+      href: "/chapitre/equations-second-degre-resolution-elaboree",
+      available: true
+    },
+    {
+      id: 6,
       title: "Tableaux de signes",
       description: "Construisez et interprétez les tableaux de signes des expressions du second degré pour résoudre des inéquations.",
       difficulty: "Intermédiaire",
@@ -70,7 +82,19 @@ export default function EquationsSecondDegreOverviewPage() {
       available: true
     },
     {
-      id: 6,
+      id: 7,
+      title: "Inéquations plus compliquées",
+      description: "Maîtrisez la résolution d'inéquations complexes : produits, quotients, et systèmes d'inéquations du second degré.",
+      difficulty: "Intermédiaire",
+      duration: "35 min",
+      xp: 250,
+      gradient: "from-pink-500 to-pink-600",
+      difficultyColor: "bg-yellow-100 text-yellow-800",
+      href: "/chapitre/equations-second-degre-inequations-complexes",
+      available: true
+    },
+    {
+      id: 8,
       title: "Équations avec paramètres",
       description: "Résolvez des équations du second degré contenant des paramètres et analysez l'influence de ces paramètres sur les solutions.",
       difficulty: "Avancé",
@@ -82,7 +106,7 @@ export default function EquationsSecondDegreOverviewPage() {
       available: true
     },
     {
-      id: 7,
+      id: 9,
       title: "Techniques avancées",
       description: "Explorez des méthodes avancées de résolution et d'analyse des équations du second degré sans discriminant.",
       difficulty: "Avancé",
@@ -94,7 +118,7 @@ export default function EquationsSecondDegreOverviewPage() {
       available: true
     },
     {
-      id: 8,
+      id: 10,
       title: "Équations du cube",
       description: "Découvrez les équations du troisième degré et leurs liens avec les équations du second degré dans la résolution.",
       difficulty: "Expert",
@@ -143,39 +167,39 @@ export default function EquationsSecondDegreOverviewPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         
         {/* Stats Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div className="bg-white/60 backdrop-blur-md rounded-2xl p-6 shadow-lg border border-white/30 hover:bg-white/70 transition-all duration-300">
+        <div className="grid grid-cols-3 gap-2 sm:gap-6 mb-4 sm:mb-8">
+          <div className="bg-white/60 backdrop-blur-md rounded-lg sm:rounded-2xl p-2 sm:p-6 shadow-md sm:shadow-lg border border-white/30 hover:bg-white/70 transition-all duration-300">
             <div className="flex items-center">
-              <div className="p-3 bg-blue-100/80 backdrop-blur-sm rounded-lg">
-                <BookOpen className="h-6 w-6 text-blue-600" />
+              <div className="p-1.5 sm:p-3 bg-blue-100/80 backdrop-blur-sm rounded-md sm:rounded-lg">
+                <BookOpen className="h-4 w-4 sm:h-6 sm:w-6 text-blue-600" />
               </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-500">Chapitres</p>
-                <p className="text-2xl font-bold text-gray-900">{chapters.length}</p>
+              <div className="ml-2 sm:ml-4">
+                <p className="text-[10px] sm:text-sm font-medium text-gray-500">Chapitres</p>
+                <p className="text-base sm:text-2xl font-bold text-gray-900">{chapters.length}</p>
               </div>
             </div>
           </div>
           
-          <div className="bg-white/60 backdrop-blur-md rounded-2xl p-6 shadow-lg border border-white/30 hover:bg-white/70 transition-all duration-300">
+          <div className="bg-white/60 backdrop-blur-md rounded-lg sm:rounded-2xl p-2 sm:p-6 shadow-md sm:shadow-lg border border-white/30 hover:bg-white/70 transition-all duration-300">
             <div className="flex items-center">
-              <div className="p-3 bg-green-100/80 backdrop-blur-sm rounded-lg">
-                <Clock className="h-6 w-6 text-green-600" />
+              <div className="p-1.5 sm:p-3 bg-green-100/80 backdrop-blur-sm rounded-md sm:rounded-lg">
+                <Clock className="h-4 w-4 sm:h-6 sm:w-6 text-green-600" />
               </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-500">Durée totale</p>
-                <p className="text-2xl font-bold text-gray-900">{Math.floor(totalDuration / 60)}h {totalDuration % 60}min</p>
+              <div className="ml-2 sm:ml-4">
+                <p className="text-[10px] sm:text-sm font-medium text-gray-500">Durée</p>
+                <p className="text-base sm:text-2xl font-bold text-gray-900">{Math.floor(totalDuration / 60)}h{totalDuration % 60}</p>
               </div>
             </div>
           </div>
           
-          <div className="bg-white/60 backdrop-blur-md rounded-2xl p-6 shadow-lg border border-white/30 hover:bg-white/70 transition-all duration-300">
+          <div className="bg-white/60 backdrop-blur-md rounded-lg sm:rounded-2xl p-2 sm:p-6 shadow-md sm:shadow-lg border border-white/30 hover:bg-white/70 transition-all duration-300">
             <div className="flex items-center">
-              <div className="p-3 bg-purple-100/80 backdrop-blur-sm rounded-lg">
-                <Trophy className="h-6 w-6 text-purple-600" />
+              <div className="p-1.5 sm:p-3 bg-purple-100/80 backdrop-blur-sm rounded-md sm:rounded-lg">
+                <Trophy className="h-4 w-4 sm:h-6 sm:w-6 text-purple-600" />
               </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-500">XP Total</p>
-                <p className="text-2xl font-bold text-gray-900">{totalXP}</p>
+              <div className="ml-2 sm:ml-4">
+                <p className="text-[10px] sm:text-sm font-medium text-gray-500">XP</p>
+                <p className="text-base sm:text-2xl font-bold text-gray-900">{totalXP}</p>
               </div>
             </div>
           </div>

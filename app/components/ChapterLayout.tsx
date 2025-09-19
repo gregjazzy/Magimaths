@@ -15,6 +15,7 @@ interface ChapterSection {
 interface ChapterNavigation {
   previous: { href: string; text: string };
   next: { href: string; text: string };
+  backToTop?: { href: string; text: string };
 }
 
 interface ChapterLayoutProps {
@@ -45,45 +46,74 @@ export default function ChapterLayout({ title, description, sections, navigation
         <div className="absolute bottom-40 right-40 w-32 h-32 bg-indigo-300/20 rounded-full blur-3xl animate-pulse" style={{animationDelay: '1s'}}></div>
       </div>
 
-      {/* Header avec navigation */}
-      <div className="max-w-4xl mx-auto px-6 py-4 relative z-10">
-        <div className="flex items-center justify-between">
-          <Link href={navigation.previous.href} className="inline-flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors">
-            <ArrowLeft className="h-5 w-5" />
-            <span>Retour</span>
-          </Link>
-          
-          {/* XP Display */}
-          <div className="flex items-center space-x-4">
-            <div className="bg-white/80 backdrop-blur-sm px-4 py-2 rounded-full shadow-xl border border-white/20">
-              <div className="flex items-center space-x-2">
-                <Zap className="h-5 w-5 text-yellow-500" />
-                <span className="font-semibold text-gray-900">{xpEarned} XP</span>
+      {/* Header avec navigation - Version mobile */}
+      <div className="sm:hidden">
+        <div className="px-4 py-2">
+          <div className="flex items-center justify-between mb-2">
+            <Link href={navigation.previous.href} className="flex items-center text-gray-600">
+              <ArrowLeft className="h-4 w-4" />
+              <span className="text-sm ml-1">Retour</span>
+            </Link>
+            <div className="flex items-center gap-2">
+              <div className="bg-white/80 px-2 py-1 rounded-lg shadow-sm border border-white/20 flex items-center">
+                <BookOpen className="h-4 w-4 text-blue-500" />
+                <span className="text-sm font-medium ml-1">{sections.length}</span>
+              </div>
+              <div className="bg-white/80 px-2 py-1 rounded-lg shadow-sm border border-white/20 flex items-center">
+                <Target className="h-4 w-4 text-green-500" />
+                <span className="text-sm font-medium ml-1">{completedSections.length}/{sections.length}</span>
+              </div>
+              <div className="bg-white/80 px-2 py-1 rounded-lg shadow-sm border border-white/20 flex items-center">
+                <Zap className="h-4 w-4 text-yellow-500" />
+                <span className="text-sm font-medium ml-1">{xpEarned}</span>
               </div>
             </div>
+          </div>
+          <h1 className="text-xl font-bold text-gray-900">{title}</h1>
+          {description && <p className="text-sm text-gray-600 mt-1">{description}</p>}
+        </div>
+      </div>
+
+      {/* Header avec navigation - Version desktop */}
+      <div className="hidden sm:block">
+        <div className="max-w-4xl mx-auto px-6 py-4 relative z-10">
+          <div className="flex items-center justify-between">
+            <Link href={navigation.previous.href} className="inline-flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors">
+              <ArrowLeft className="h-5 w-5" />
+              <span>Retour</span>
+            </Link>
             
-            <div className="bg-white/80 backdrop-blur-sm px-4 py-2 rounded-full shadow-xl border border-white/20">
-              <div className="flex items-center space-x-2">
-                <Target className="h-5 w-5 text-green-500" />
-                <span className="font-semibold text-gray-900">
-                  {completedSections.length}/{sections.length}
-                </span>
+            {/* XP Display */}
+            <div className="flex items-center space-x-4">
+              <div className="bg-white/80 backdrop-blur-sm px-4 py-2 rounded-full shadow-xl border border-white/20">
+                <div className="flex items-center space-x-2">
+                  <Zap className="h-5 w-5 text-yellow-500" />
+                  <span className="font-semibold text-gray-900">{xpEarned} XP</span>
+                </div>
+              </div>
+              
+              <div className="bg-white/80 backdrop-blur-sm px-4 py-2 rounded-full shadow-xl border border-white/20">
+                <div className="flex items-center space-x-2">
+                  <Target className="h-5 w-5 text-green-500" />
+                  <span className="font-semibold text-gray-900">
+                    {completedSections.length}/{sections.length}
+                  </span>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Chapter Title */}
-      <div className="max-w-4xl mx-auto px-6 pb-6">
-        <div className="text-center">
-          <h1 className="text-4xl font-bold text-gray-900 mb-3">{title}</h1>
-          <p className="text-lg text-gray-600">{description}</p>
+        <div className="max-w-4xl mx-auto px-4 pb-2">
+          <div className="text-center">
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">{title}</h1>
+            {description && <p className="text-base text-gray-600">{description}</p>}
+          </div>
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="max-w-4xl mx-auto p-6 space-y-12">
+      <div className="max-w-4xl mx-auto p-4 space-y-6">
         {sections.map((section, index) => (
           <section key={section.id} className="group relative bg-white/90 backdrop-blur-sm rounded-3xl p-8 shadow-2xl border-2 border-gray-200 hover:border-blue-300 transition-all duration-500 hover:shadow-3xl hover:scale-105 overflow-hidden">
             {/* Effet de fond magique */}
@@ -97,14 +127,18 @@ export default function ChapterLayout({ title, description, sections, navigation
             </div>
             
             <div className="relative z-10">
-              <div className="text-center mb-8">
-                <div className="inline-flex items-center space-x-3 bg-gradient-to-r from-blue-100 to-purple-100 px-6 py-3 rounded-full mb-6 shadow-lg">
-                  <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center text-white text-xl font-bold shadow-lg">
-                    {section.icon}
+              <div className="mb-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="flex items-center bg-gradient-to-r from-blue-100 to-purple-100 px-2 py-1 rounded-lg">
+                      <div className="w-5 h-5 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center text-white text-xs font-bold">
+                        {section.icon}
+                      </div>
+                      <span className="font-bold text-blue-800 text-sm ml-1.5 sm:whitespace-nowrap">Section {index + 1}</span>
+                    </div>
+                    <h2 className="text-base font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">{section.title}</h2>
                   </div>
-                  <span className="font-bold text-blue-800 text-lg">Section {index + 1}</span>
                 </div>
-                <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent mb-4">{section.title}</h2>
             </div>
             
             {section.content}

@@ -297,8 +297,9 @@ export default function EquationsCubePage() {
       description="Résolution par recherche de racine évidente et factorisation"
       sections={sections}
       navigation={{
-        previous: { href: '/chapitre/equations-second-degre-techniques-avancees', text: 'Techniques avancées' },
-        next: { href: '/chapitre/equations-second-degre-overview', text: 'Retour au menu' }
+        previous: { href: '/chapitre/equations-second-degre-overview', text: 'Vue d\'ensemble' },
+        next: { href: '/chapitre/equations-second-degre-overview', text: 'Retour au menu' },
+        backToTop: { href: '/chapitre/equations-second-degre-overview', text: 'Retour au sommaire' }
       }}
     />
   );

@@ -9,7 +9,8 @@ export default function MultiplicationCE2Page() {
 
   const subChapters = [
     {
-      id: 'tables-multiplication',
+      id: '
+      tables-multiplication',
       title: 'Tables de multiplication',
       description: 'Apprends et révise toutes les tables de multiplication !',
       icon: '📊',
@@ -125,6 +126,9 @@ export default function MultiplicationCE2Page() {
     </div>
   );
 }
+
+
+
 
 
 

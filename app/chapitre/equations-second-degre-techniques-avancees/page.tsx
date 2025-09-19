@@ -312,8 +312,9 @@ export default function TechniquesAvanceesPage() {
       description="Équations bicarrées et méthodes de substitution"
       sections={sections}
       navigation={{
-        previous: { href: '/chapitre/equations-second-degre-parametres', text: 'Paramètres' },
-        next: { href: '/chapitre/equations-second-degre-equations-cube', text: 'Équations cubiques' }
+        previous: { href: '/chapitre/equations-second-degre-overview', text: 'Vue d\'ensemble' },
+        next: { href: '/chapitre/equations-second-degre-equations-cube', text: 'Équations cubiques' },
+        backToTop: { href: '/chapitre/equations-second-degre-overview', text: 'Retour au sommaire' }
       }}
     />
   );
