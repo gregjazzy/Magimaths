@@ -459,6 +459,7 @@ export default function AdditionSansRetenueCE2() {
   };
 
   const explainExample = async (index: number) => {
+    const example = additionExamples[index];
     if (isAnimationRunning) return;
     
     stopAllVocalsAndAnimations();
